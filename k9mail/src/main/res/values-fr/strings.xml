@@ -55,36 +55,27 @@
     <string name="open_market">Ouvrir le Google Play Store</string>
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">=== App-specific strings =============================================================</string>
-    <string name="app_revision_fmt">Informations de révision\u00A0: %s</string>
-    <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes\u00A0: <xliff:g id="app_libraries_list">%s</xliff:g>
-    </string>
-    <string name="app_emoji_icons">Icônes Emoji\u00A0: <xliff:g id="app_emoji_icons_link">%s</xliff:g>
-    </string>
+    <string name="app_revision_fmt">=== App-specific strings =============================================================</string>
+    <string name="app_libraries">=== App-specific strings =============================================================</string>
+    <string name="app_emoji_icons">=== App-specific strings =============================================================</string>
     <string name="read_attachment_label">lire les pièces jointes</string>
     <string name="read_attachment_desc">Permet à cette application de lire vos pièces jointes.</string>
     <string name="read_messages_label">lire les courriels</string>
     <string name="read_messages_desc">Permet à cette application de lire vos courriels.</string>
     <string name="delete_messages_label">Supprimer les courriels</string>
-    <string name="delete_messages_desc">Permet à cette application de supprimer vos courriels</string>
-    <string name="about_title_fmt">À propos de <xliff:g id="app_name">%s</xliff:g>
-    </string>
+    <string name="delete_messages_desc">Permet à cette application de supprimer vos courriels.</string>
+    <string name="about_title_fmt">=== App-specific strings =============================================================</string>
     <string name="accounts_title">Comptes</string>
     <string name="folders_title">Dossiers</string>
     <string name="advanced">Avancé</string>
-    <string name="message_list_title">
-        <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g>
-    </string>
+    <string name="message_list_title">=== App-specific strings =============================================================</string>
     <string name="compose_title_compose">Composer</string>
     <string name="compose_title_reply">Répondre</string>
     <string name="compose_title_reply_all">Répondre à tous</string>
     <string name="compose_title_forward">Transférer</string>
     <string name="choose_folder_title">Choisir un dossier</string>
-    <string name="status_loading_account_folder">Récup. <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g>
-        <xliff:g id="progress">%s</xliff:g>
-    </string>
-    <string name="status_loading_account_folder_headers">Récup. entêtes <xliff:g id="account">%s</xliff:g>:<xliff:g id="folder">%s</xliff:g>
-        <xliff:g id="progress">%s</xliff:g>
-    </string>
+    <string name="status_loading_account_folder">=== App-specific strings =============================================================</string>
+    <string name="status_loading_account_folder_headers">=== App-specific strings =============================================================</string>
     <string name="status_sending_account">Envoi <xliff:g id="account">%s</xliff:g>
         <xliff:g id="progress">%s</xliff:g>
     </string>
@@ -1117,4 +1108,8 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="message_view_sender_label">via %1$s</string>
     <string name="message_view_status_no_space">La pièce jointe n\'a pas pu être enregistrée car l\'espace est insuffisant.</string>
     <string name="status_syncing">Synchronisation des messages</string>
+    <string name="switch_off">Désactiver</string>
+    <string name="switch_on">Activer</string>
+    <string name="ac_transfer_error_send">Une erreur s\'est produite pendant l\'envoi du message. Veuillez vérifier votre connectivité réseau et la configuration du serveur sortant.</string>
+    <string name="ac_transfer_msg_body">Ce message contient toutes les informations pour transférer vos paramètres Autocrypt ainsi que votre clé secrète en toute sécurité depuis votre appareil d\'origine. Pour configurer votre nouvel appareil pour Autocrypt, veuillez suivre les instructions qui devraient être présentées par votre nouvel appareil. Vous pouvez conserver ce message et l\'utiliser comme sauvegarde de votre clé secrète. Si vous souhaitez le faire, vous devez noter le mot de passe et le stocker en toute sécurité.</string>
 </resources>
