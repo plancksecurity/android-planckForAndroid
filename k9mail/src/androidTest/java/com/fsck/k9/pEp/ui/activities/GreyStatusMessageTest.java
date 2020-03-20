@@ -6,6 +6,7 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.runner.AndroidJUnit4;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -17,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-
 import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -26,7 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
 
 @LargeTest
-//@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4.class)
 public class GreyStatusMessageTest {
 
     private static final String EMAIL = "newemail@mail.es";
