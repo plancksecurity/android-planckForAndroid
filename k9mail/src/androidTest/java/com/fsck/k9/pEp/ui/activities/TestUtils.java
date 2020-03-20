@@ -1596,6 +1596,32 @@ public class TestUtils {
         }
     }
 
+    public void selectSwitchButton(int resource) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(resources.getString(resource))) {
+                        try {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            object.longClick();
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
     public void selectFromScreen(int resource) {
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
