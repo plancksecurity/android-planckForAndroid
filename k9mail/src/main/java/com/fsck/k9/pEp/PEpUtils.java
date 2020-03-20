@@ -561,5 +561,9 @@ public class PEpUtils {
     public static boolean isPepStatusClickable(ArrayList<Identity> recipients ,Rating rating) {
         return recipients.size() > 0 && rating.value >= Rating.pEpRatingReliable.value;
     }
+
+    public static boolean isRatingUnsecure(Rating rating){
+    return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
+    }
 }
 
