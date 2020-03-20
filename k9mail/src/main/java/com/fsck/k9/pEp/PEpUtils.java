@@ -472,6 +472,10 @@ public class PEpUtils {
                 || message.getFolder().getName().equals(account.getOutboxFolderName());
     }
 
+    public static boolean shouldUseOutgoingRating(Message message, Account account, Rating rating) {
+        return isMessageOnOutgoingFolder(message, account) && !isRatingUnsecure(rating);
+    }
+
     public static Message generateKeyImportRequest(Context context, PEpProvider pEp, Account account,
                                                    boolean ispEp, boolean encrypted) throws MessagingException {
         foundation.pEp.jniadapter.Message result;
@@ -560,6 +564,10 @@ public class PEpUtils {
 
     public static boolean isPepStatusClickable(ArrayList<Identity> recipients ,Rating rating) {
         return recipients.size() > 0 && rating.value >= Rating.pEpRatingReliable.value;
+    }
+
+    public static boolean isRatingUnsecure(Rating rating){
+    return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
     }
 }
 

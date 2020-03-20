@@ -1739,14 +1739,13 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
                                     ) {
                                 MimeMessage decryptedMessage = alreadyDecrypted ? ((MimeMessage) message) : result.msg;
-                                if (message.getFolder().getName().equals(account.getSentFolderName())
-                                        || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
-                                } else {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
-                                }
+                                // sync UID so we know our mail
+                                decryptedMessage.setUid(message.getUid());
 
-                                decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+                                Rating ratingToSave = PEpUtils.shouldUseOutgoingRating(message, account, result.rating)
+                                        ? pEpProvider.getRating(message)
+                                        : result.rating;
+                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(ratingToSave));
 
                                 // Store the updated message locally
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
