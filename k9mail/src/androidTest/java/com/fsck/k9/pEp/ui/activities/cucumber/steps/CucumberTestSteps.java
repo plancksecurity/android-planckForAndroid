@@ -805,6 +805,146 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @Then("^I walk through app$")
+    public void I_walk_through_app(){
+        timeRequiredForThisMethod(15);
+        testUtils.openOptionsMenu();
+        testUtils.selectFromScreen(testUtils.stringToID("action_settings"));
+        walkThroughDisplay();
+        walkThroughInteraction();
+        walkThroughNotifications();
+        walkThroughPrivacy();
+        walkThroughAdvanced();
+    }
+
+    private void walkThroughDisplay () {
+        testUtils.selectFromScreen(testUtils.stringToID("display_preferences"));
+        testUtils.selectFromScreen(testUtils.stringToID("settings_language_label"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_settings_title"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_account_list"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_account_name"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_account_description"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_folder_list"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_folder_name"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_folder_status"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_subject"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_sender"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_date"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_preview"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_sender"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view_to"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view_cc"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_list_subject"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view_date"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view_additional_headers"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_view_content"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_compose"));
+        testUtils.selectFromScreen(testUtils.stringToID("font_size_message_compose_input"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("animations_title"));
+        testUtils.scrollToView(resources.getString(R.string.accountlist_preferences));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("measure_accounts_title"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("count_search_title"));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("folderlist_preferences")));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("messagelist_preferences")));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("global_settings_preview_lines_label"));
+        testUtils.pressBack();
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_flag_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_checkbox_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_show_correspondent_names_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_sender_above_subject_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_show_contact_name_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_show_contact_picture_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_background_as_unread_indicator_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_threaded_view_label"));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("messageview_preferences")));
+        testUtils.selectFromScreen(testUtils.stringToID("global_settings_messageview_visible_refile_actions_title"));
+        testUtils.pressBack();
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_messageview_autofit_width_label"));
+        testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_messageview_fixedwidth_label"));
+        testUtils.pressBack();
+    }
+
+    private void walkThroughInteraction() {
+        testUtils.selectFromScreen(testUtils.stringToID("interaction_preferences"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("gestures_title"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("volume_navigation_title"));
+        testUtils.pressBack();
+        testUtils.scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_messageview_return_to_list_label"));
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("global_settings_messageview_show_next_label"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("global_settings_confirm_actions_title"));
+        testUtils.pressBack();
+        testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("start_integrated_inbox_title"));
+        testUtils.pressBack();
+    }
+
+    private void walkThroughNotifications() {
+        testUtils.selectFromScreen(testUtils.stringToID("notifications_title"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("quiet_time"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("global_settings_notification_quick_delete_title"));
+        testUtils.pressBack();
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("global_settings_lock_screen_notification_visibility_title"));
+        testUtils.pressBack();
+        testUtils.pressBack();
+    }
+
+    private void walkThroughPrivacy() {
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_passive_mode"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_forward_warning"));
+        testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
+        testUtils.pressBack();
+        testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
+        testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_subject_unprotected"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
+        testUtils.pressBack();
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
+        testUtils.pressBack();
+    }
+
+    private void walkThroughAdvanced() {
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("settings_attachment_default_path"));
+        testUtils.pressBack();
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("background_ops_label"));
+        testUtils.pressBack();
+        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("debug_enable_debug_logging_title"));
+        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("debug_enable_sensitive_logging_title"));
+
+
+
+    }
+
     @Then("^I remove account$")
     public void I_remove_account() {
         timeRequiredForThisMethod(25);
