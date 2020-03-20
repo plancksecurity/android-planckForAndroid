@@ -1,90 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.fsck.k9.ui.messageview.AttachmentView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/attachment">
+    android:id="@+id/attachment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:background="@drawable/selectable_item_background"
+    android:clickable="true"
+    android:paddingTop="16dp">
 
-    <LinearLayout android:id="@+id/attachment_container"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/download"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:background="@drawable/selectable_item_background"
-        android:orientation="vertical">
+        android:clickable="true"
+        android:padding="16dp"
+        android:src="?attr/iconActionDownload"
+        app:layout_constraintBottom_toBottomOf="@+id/attachment_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:gravity="center_vertical">
-            <ImageView
-                android:id="@+id/attachment_icon"
-                android:layout_width="62dp"
-                android:layout_height="62dp"
-                android:src="@drawable/attached_image_placeholder" />
-            <TextView
-                android:id="@+id/attachment_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="?android:attr/textColorSecondary"
-                android:ellipsize="middle"
-                android:layout_alignParentTop="true"
-                android:maxLines="2"
-                android:layout_toStartOf="@+id/download"
-                android:layout_toRightOf="@id/attachment_icon"
-                tools:text="here be attachment name and it can be so long but no more than 2 lines"
-                android:layout_alignWithParentIfMissing="true"/>
-            <TextView
-                android:id="@+id/attachment_info"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorTertiary"
-                android:singleLine="true"
-                android:ellipsize="middle"
-                android:paddingLeft="16dp"
-                tools:text="here be attachment name and this is not so long"
-                android:layout_alignLeft="@id/attachment_name"
-                android:layout_toStartOf="@+id/download"
-                android:layout_below="@id/attachment_name"
-                android:layout_alignWithParentIfMissing="true" />
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/attachment_icon"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:padding="8dp"
+        android:src="?attr/iconFile"
+        app:layout_constraintBottom_toBottomOf="@+id/attachment_info"
+        app:layout_constraintStart_toEndOf="@+id/download"
+        app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/buttonStyleSmall"
-                android:paddingLeft="20dip"
-                android:paddingRight="20dip"
-                android:text="@string/message_view_attachment_view_action"
-                android:singleLine="true"
-                android:layout_alignWithParentIfMissing="true"
-                android:layout_below="@id/attachment_name"
-                android:visibility="gone"
-                android:layout_marginTop="6dip" />
+    <TextView
+        android:id="@+id/attachment_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:maxLines="2"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="?android:attr/textColorSecondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/attachment_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="here be attachment name and it can be so long but no more than 2 lines" />
 
-            <ImageView
-                android:id="@+id/download"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/message_view_attachment_download_action"
-                android:clickable="true"
-                android:background="@drawable/selectable_item_background"
-                android:src="@drawable/ic_file_file_download"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@+id/attachment_icon" />
-        </RelativeLayout>
+    <TextView
+        android:id="@+id/attachment_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="?android:attr/textColorTertiary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/attachment_name"
+        app:layout_constraintTop_toBottomOf="@+id/attachment_name"
+        tools:text="here be attachment name and this is not so long" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E1E1E1" />
-    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?attr/messageListDividerColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/attachment_info" />
 </com.fsck.k9.ui.messageview.AttachmentView>

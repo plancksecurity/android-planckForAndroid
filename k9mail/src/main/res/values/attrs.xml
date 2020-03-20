@@ -33,6 +33,8 @@
         <attr name="iconActionAdd" format="reference" />
         <attr name="iconActionImportExport" format="reference" />
         <attr name="iconActionUpload" format="reference" />
+        <attr name="iconActionDownload" format="reference" />
+        <attr name="iconFile" format="reference" />
         <attr name="iconActionSelectAll" format="reference" />
         <attr name="iconActionSave" format="reference" />
         <attr name="iconActionCancel" format="reference" />
@@ -84,6 +86,7 @@
         <attr name="openpgp_blue" format="reference|color" />
         <attr name="openpgp_grey" format="reference|color" />
         <attr name="openpgp_dark_grey" format="reference|color" />
+        <attr name="iconPepLogo" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

@@ -23,11 +23,9 @@ import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
-import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -94,9 +92,9 @@ import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
@@ -128,6 +126,8 @@ import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
+
+import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
@@ -273,6 +273,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     ResourcesProvider resourcesProvider;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+
+    public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
+        Intent intent = new Intent(context, MessageCompose.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(MessageCompose.EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
+        intent.setAction(MessageCompose.ACTION_EDIT_DRAFT);
+        return intent;
+    }
 
     @Override
     public void inject() {
@@ -1122,7 +1130,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void onPEpPrivacyStatus(boolean force) {
         recipientMvpView.refreshRecipients();
-        if (force || recipientPresenter.isPepStatusClickable()) {
+        if (force || recipientMvpView.isPepStatusClickable()) {
             recipientMvpView.setMessageReference(relatedMessageReference);
             handlePEpState(false);
             recipientPresenter.onPEpPrivacyStatus();
@@ -1448,6 +1456,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void processDraftMessage(MessageViewInfo messageViewInfo) {
         Message message = messageViewInfo.message;
+        showNotEncryptedMessageSnackBar(message);
         draftId = MessagingController.getInstance(getApplication()).getId(message);
         subjectView.setText(message.getSubject());
 
@@ -1520,11 +1529,20 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         identity = newIdentity;
-
         updateSignature();
         updateFrom();
 
         quotedMessagePresenter.processDraftMessage(messageViewInfo, k9identity);
+    }
+
+    private void showNotEncryptedMessageSnackBar(Message message) {
+        if (message.isSet(X_PEP_WASNT_ENCRYPTED)) {
+            FeedbackTools.showIndefiniteFeedback(
+                    rootView,
+                    getString(R.string.message_failed_to_encrypt),
+                    getString(R.string.pep_force_unprotected),
+                    v -> recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE));
+        }
     }
 
     public static class SendMessageTask extends AsyncTask<Void, Void, Void> {
@@ -1658,6 +1676,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void onMessageBuildSuccess(MimeMessage message, boolean isDraft) {
         try {
             message.setFlag(Flag.SEEN, true);
+            message.setFlag(
+                    Flag.X_PEP_SHOWN_ENCRYPTED,
+                    PEpUtils.isMessageToEncrypt(account, recipientMvpView.getpEpRating(), recipientPresenter.isForceUnencrypted())
+            );
         } catch (MessagingException e) {
             //shall never happen at this point as the message is just build
             Timber.e(e);
@@ -1960,8 +1982,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
                 @Override
                 public void onPermissionDenied(PermissionDeniedResponse response) {
-                    String permissionDenied = getResources().getString(R.string.read_snackbar_permission_permanently_denied);
-                    FeedbackTools.showLongFeedback(getRootView(), permissionDenied);
+
                 }
 
                 @Override

@@ -93,18 +93,21 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        LinearLayout bar;
-
-        ListView list = findViewById(android.R.id.list);
-        ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
-        ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
-        bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-        layoutParams.setMargins(0, bar.getHeight(), 0, 0);
-        root.addView(bar, 0); // insert at top
-
+        LinearLayout bar = startLinearLayout();
         this.toolbar = (Toolbar) bar.getChildAt(0);
         this.toolbar.setNavigationOnClickListener(v -> finish());
         setStatusBar();
+    }
+
+    private LinearLayout startLinearLayout() {
+        // insert at top
+        ListView list = findViewById(android.R.id.list);
+        ListView.MarginLayoutParams layoutParams = (ListView.MarginLayoutParams) list.getLayoutParams();
+        ViewGroup root = (ViewGroup) list.getParent().getParent().getParent();
+        LinearLayout bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+        layoutParams.setMargins(0, bar.getHeight(), 0, 0);
+        root.addView(bar, 0);
+        return bar;
     }
 
     public void setStatusBar() {
