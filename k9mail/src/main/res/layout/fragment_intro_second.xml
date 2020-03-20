@@ -18,7 +18,7 @@
             android:layout_height="@dimen/intro_icon_width_height_standard"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pep_status_green" />
+            app:srcCompat="@drawable/pep_status_yellow" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/header_secure"
@@ -47,7 +47,7 @@
             android:layout_marginTop="@dimen/intro_margin_top_large"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_secure"
-            app:srcCompat="@drawable/pep_status_yellow" />
+            app:srcCompat="@drawable/pep_status_green" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/header_secure_trusted"
