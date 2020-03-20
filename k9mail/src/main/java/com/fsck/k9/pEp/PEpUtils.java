@@ -472,6 +472,10 @@ public class PEpUtils {
                 || message.getFolder().getName().equals(account.getOutboxFolderName());
     }
 
+    public static boolean shouldUseOutgoingRating(Message message, Account account, Rating rating) {
+        return isMessageOnOutgoingFolder(message, account) && !isRatingUnsecure(rating);
+    }
+
     public static Message generateKeyImportRequest(Context context, PEpProvider pEp, Account account,
                                                    boolean ispEp, boolean encrypted) throws MessagingException {
         foundation.pEp.jniadapter.Message result;
