@@ -2226,7 +2226,7 @@ public class TestUtils {
         return context.checkCallingOrSelfPermission(ANIMATION_PERMISSION);
     }
 
-    public void checkBoxOnScreenChecked(int resource, boolean checked) {
+    public void checkBoxOnScreenChecked(int resource, boolean check) {
         boolean textViewFound = false;
         BySelector selector = By.clazz("android.widget.TextView");
         while (!textViewFound) {
@@ -2235,12 +2235,12 @@ public class TestUtils {
                     if (object.getText().contains(resources.getString(resource))) {
                         device.waitForIdle();
                         UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
-                        if (checkbox.isChecked() != checked){
+                        if (checkbox.isChecked() != check){
                             device.waitForIdle();
                             checkbox.longClick();
                             device.waitForIdle();
                         }
-                        if (checkbox.isChecked() == checked) {
+                        if (checkbox.isChecked() == check) {
                             device.waitForIdle();
                             textViewFound = true;
                             break;
@@ -2269,15 +2269,20 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToCehckBoxAndCheckIt(boolean up, int view) {
+    public void scrollToCehckBoxAndCheckIt(boolean isChecked, int view) {
         scrollToView(resources.getString(view));
-        checkBoxOnScreenChecked(view, false);
+        if (isChecked) {
+            checkBoxOnScreenChecked(view, false);
+        }
         checkBoxOnScreenChecked(view, true);
+        if (!isChecked) {
+            checkBoxOnScreenChecked(view, false);
+        }
     }
 
     public void scrollToViewAndClickIt(int view) {
-        selectFromScreen(view);
         scrollToView(resources.getString(view));
+        selectFromScreen(view);
     }
 
     public void scrollToView (String text){
