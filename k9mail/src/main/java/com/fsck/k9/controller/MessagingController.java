@@ -1742,7 +1742,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
 
-                                // get rating depending on being an outgoing message
                                 Rating ratingToSave = PEpUtils.shouldUseOutgoingRating(message, account, result.rating)
                                         ? pEpProvider.getRating(message)
                                         : result.rating;
