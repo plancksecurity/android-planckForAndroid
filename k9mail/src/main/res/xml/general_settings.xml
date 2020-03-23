@@ -363,9 +363,9 @@
                 <!--CheckBoxPreference
                     android:key="pep_use_keyserver"
                     android:title="@string/pep_use_keyserver" /-->
-                <CheckBoxPreference
-                    android:key="pep_subject_unprotected"
-                    android:title="@string/pep_subject_unprotected" />
+                <SwitchPreferenceCompat
+                    android:key="pep_subject_protection"
+                    android:title="@string/pep_subject_protection" />
 
 
                 <Preference

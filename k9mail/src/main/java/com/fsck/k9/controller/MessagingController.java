@@ -4859,8 +4859,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         pEpProvider.setPassiveModeEnabled(enable);
     }
 
-    public void setSubjectUnprotected(boolean subjectUnprotected) {
-        pEpProvider.setSubjectUnprotected(subjectUnprotected);
+    public void setSubjectProtected(boolean pEpSubjectProtection) {
+        pEpProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
     public Message appendToInboxpEpSyncMessage(final Account account, final Message message) {

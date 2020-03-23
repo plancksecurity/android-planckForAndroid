@@ -13,7 +13,6 @@
     <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Buscar las claves en el servidor de claves</string>
     <string name="pep_passive_mode">Modo pasivo</string>
-    <string name="pep_subject_unprotected">Deshabilitar protección del asunto</string>
     <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
     <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
     <string name="pep_confirm_trustwords">Aceptar</string>
