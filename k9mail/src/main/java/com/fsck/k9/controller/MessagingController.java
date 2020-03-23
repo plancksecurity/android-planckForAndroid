@@ -126,6 +126,7 @@ import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.X_PEP_DISABLED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 /**
@@ -2922,7 +2923,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             localFolder.open(Folder.OPEN_MODE_RW);
             localFolder.appendMessages(Collections.singletonList(message));
             Message localMessage = localFolder.getMessage(message.getUid());
-            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
+
+            // Only add rating to the local copy, not on headers
+            // to avoid sending the rating to the server
+            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))
+                    || message.isSet(X_PEP_DISABLED)) {
                 ((LocalMessage) localMessage).setpEpRating(Rating.pEpRatingUnencrypted);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
