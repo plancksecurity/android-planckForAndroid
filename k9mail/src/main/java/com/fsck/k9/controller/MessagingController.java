@@ -2272,8 +2272,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
-                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(localMessage)));
-                        localFolder.appendMessages(Collections.singletonList(localMessage));
+                        localMessage.setpEpRating(pEpProvider.getRating(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
