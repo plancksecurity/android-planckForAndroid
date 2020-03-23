@@ -8,7 +8,6 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
         tools:openDrawer="start">
 
         <LinearLayout
@@ -51,29 +50,27 @@
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true">
+            android:layout_gravity="start">
 
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
                 android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                <include
+                    android:id="@+id/menu_header"
+                    layout="@layout/nav_header_main" />
 
-                    <include layout="@layout/nav_header_main" />
+                        <include
+                            android:id="@+id/navigation_bar_folders_layout"
+                            layout="@layout/navigation_bar_folders" />
 
-                    <include
-                        android:id="@+id/navigation_bar_folders_layout"
-                        layout="@layout/navigation_bar_folders" />
+                        <include
+                            android:id="@+id/navigation_bar_accounts_layout"
+                            layout="@layout/navigation_bar_accounts" />
+                    </LinearLayout>
 
-                    <include
-                        android:id="@+id/navigation_bar_accounts_layout"
-                        layout="@layout/navigation_bar_accounts" />
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
+
         </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 
