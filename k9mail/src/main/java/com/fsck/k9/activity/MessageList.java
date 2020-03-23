@@ -2370,7 +2370,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void goBack() {
-        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+        if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+            if(!isThreadDisplayed) {
+                updateToolbarColorToOriginal();
+            }
+            showMessageList();
+        }
+        else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             if(isBackstackClear()) {
                 if (mAccount != null) {
                     Router.onOpenAccount(this, mAccount);
@@ -2381,11 +2387,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
 
-        } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            if(!isThreadDisplayed) {
-                updateToolbarColorToOriginal();
-            }
-            showMessageList();
         } else if (isThreadDisplayed) {
             actionDisplaySearch(this, mSearch, false, false);
         } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {
