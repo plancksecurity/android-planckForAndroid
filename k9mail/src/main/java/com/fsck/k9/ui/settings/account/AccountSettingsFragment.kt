@@ -22,7 +22,7 @@ import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
+import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
