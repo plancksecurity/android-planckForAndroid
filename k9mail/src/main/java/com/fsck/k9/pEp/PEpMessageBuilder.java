@@ -70,7 +70,7 @@ class PEpMessageBuilder {
         if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
                 String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
-                if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(mm)))) {
+                if ((isAnAttachment(mm))) {
                     Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                     String filename = MimeUtility.getHeaderParameter(disposition, "filename");
                     addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
@@ -122,7 +122,7 @@ class PEpMessageBuilder {
             //FIXME> Deal with non text and non multipart message and non attachments
 
             boolean plain = mbp.isMimeType("text/plain");
-            if (plain || mbp.isMimeType("text/html")) {
+            if (!isAnAttachment(mbp) && (plain || mbp.isMimeType("text/html"))) {
                 String charset = getMessageCharset();
                 String text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
 
@@ -244,13 +244,17 @@ class PEpMessageBuilder {
         if (part.getMimeType().equalsIgnoreCase("message/rfc822")) return "ForwardedMessage.eml";
         if (filename == null) {
             String disposition = MimeUtility.unfoldAndDecode(part.getDisposition());
-            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part)))) {
+            if (isAnAttachment(part)) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 filename = MimeUtility.getHeaderParameter(disposition, "filename");
             }
         }
 
         return filename != null ? filename : DEFAULT_FILENAME;
+    }
+
+    private boolean isAnAttachment(Part part) {
+        return "attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part));
     }
 
 }
