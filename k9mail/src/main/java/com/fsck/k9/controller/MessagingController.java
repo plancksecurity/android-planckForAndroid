@@ -3191,7 +3191,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             if (pEpVersionHeader.length > 0) {
                 message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
             }
-            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(message.getpEpRating()));
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
