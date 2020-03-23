@@ -1,6 +1,9 @@
 package com.fsck.k9.message.quote;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.Objects;
 
 /**
  * <p>Represents an HTML document with an insertion point for placing a reply. The quoted
@@ -12,8 +15,8 @@ import java.io.Serializable;
  *
  * TODO: This container should also have a text part, along with its insertion point.  Or maybe a generic InsertableContent and maintain one each for Html and Text?
  */
-public class InsertableHtmlContent implements Serializable {
-    private static final long serialVersionUID = 2397327034L;
+public class InsertableHtmlContent implements Parcelable {
+
     // Default to a headerInsertionPoint at the beginning of the message.
     private int headerInsertionPoint = 0;
     private int footerInsertionPoint = 0;
@@ -23,6 +26,8 @@ public class InsertableHtmlContent implements Serializable {
     private StringBuilder userContent = new StringBuilder();
     // Where to insert the content.  Default to top posting.
     private InsertionLocation insertionLocation = InsertionLocation.BEFORE_QUOTE;
+
+    public InsertableHtmlContent() { }
 
     /**
      * Defines where user content should be inserted, either before or after quoted content.
@@ -167,4 +172,43 @@ public class InsertableHtmlContent implements Serializable {
                ", compiledResult=" + toString() +
                '}';
     }
+
+    /*
+        Parcelable implementation
+     */
+    private InsertableHtmlContent(Parcel in) {
+        headerInsertionPoint = in.readInt();
+        footerInsertionPoint = in.readInt();
+        // TODO: 2020-03-23 Check if it is really needed to store the Strings.
+        quotedContent = new StringBuilder(Objects.requireNonNull(in.readString()));
+        userContent = new StringBuilder(Objects.requireNonNull(in.readString()));
+
+    }
+
+    public static final Creator<InsertableHtmlContent> CREATOR = new Creator<InsertableHtmlContent>() {
+        @Override
+        public InsertableHtmlContent createFromParcel(Parcel in) {
+            return new InsertableHtmlContent(in);
+        }
+
+        @Override
+        public InsertableHtmlContent[] newArray(int size) {
+            return new InsertableHtmlContent[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(headerInsertionPoint);
+        dest.writeInt(footerInsertionPoint);
+        // TODO: 2020-03-23 Check if it is really needed to store the Strings.
+        dest.writeString(quotedContent.toString());
+        dest.writeString(userContent.toString());
+    }
+
 }
