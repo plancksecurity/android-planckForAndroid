@@ -1954,7 +1954,7 @@ public class TestUtils {
                     device.waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     device.waitForIdle();
-                    object.getParent().getChildren().get(3).click();
+                    object.getParent().getChildren().get(0).click();
                     device.waitForIdle();
                     waitForToolbar();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
