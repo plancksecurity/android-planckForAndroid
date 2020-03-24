@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +35,9 @@ import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessageHelper;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.mail.internet.MimeUtility;
+
+import org.jetbrains.annotations.NotNull;
+
 import timber.log.Timber;
 
 import static com.fsck.k9.mail.store.imap.ImapUtility.getLastResponse;
@@ -44,6 +48,13 @@ class ImapFolder extends Folder<ImapMessage> {
         @Override
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat("dd-MMM-yyyy", Locale.US);
+        }
+    };
+
+    private static final ThreadLocal<SimpleDateFormat> RFC2822_DATE = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss Z", Locale.US);
         }
     };
     private static final int MORE_MESSAGES_WINDOW_SIZE = 500;
@@ -1155,8 +1166,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
                 String encodeFolderName = folderNameCodec.encode(getPrefixedName());
                 String escapedFolderName = ImapUtility.encodeString(encodeFolderName);
-                String command = String.format(Locale.US, "APPEND %s (%s) {%d}", escapedFolderName,
-                        combineFlags(message.getFlags()), messageSize);
+                String command = generateAppendCommand(message, messageSize, escapedFolderName);
                 connection.sendCommand(command, false);
 
                 ImapResponse response;
@@ -1222,6 +1232,19 @@ class ImapFolder extends Folder<ImapMessage> {
             return (uidMap.isEmpty()) ? null : uidMap;
         } catch (IOException ioe) {
             throw ioExceptionHandler(connection, ioe);
+        }
+    }
+
+    @NotNull
+    private String generateAppendCommand(Message message, long messageSize, String escapedFolderName) {
+        if (message.getInternalDate() == null) {
+            return String.format(Locale.US, "APPEND %s (%s) {%d}", escapedFolderName,
+                    combineFlags(message.getFlags()), messageSize);
+        } else {
+            String internalDate = Objects.requireNonNull(RFC2822_DATE.get()).format(message.getInternalDate());
+            String escapedInternalDate = ImapUtility.encodeString(internalDate);
+            return String.format(Locale.US, "APPEND %s (%s) %s {%d}", escapedFolderName,
+                    combineFlags(message.getFlags()), escapedInternalDate, messageSize);
         }
     }
 
