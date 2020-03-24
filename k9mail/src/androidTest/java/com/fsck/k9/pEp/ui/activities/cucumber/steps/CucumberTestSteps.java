@@ -457,12 +457,12 @@ public class CucumberTestSteps {
     }
 
     private void checkTrustWords(JSONArray array, String words) {
-        BySelector selector = By.clazz("android.widget.CheckedTextView");
+        BySelector selector = By.clazz("android.widget.ListView");
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
             device.waitForIdle();
             Espresso.onIdle();
-            testUtils.selectFromMenu(R.string.settings_language_label);
+            onView(withId(R.id.change_language)).perform(click());
             if (size == 1) {
                 size = calculateNewSize(size, selector);
             }
@@ -532,28 +532,25 @@ public class CucumberTestSteps {
     private  int calculateNewSize(int size, BySelector selector) {
         while (size <= 1) {
             device.waitForIdle();
-            size = device.findObjects(selector).size();
+            size = device.findObjects(selector).get(0).getChildren().size();
         }
         return size;
     }
 
     private void selectLanguage(int positionToClick, int size, BySelector selector) {
-        do {
             device.waitForIdle();
             for (int position = 0; position < size; position++) {
                 if (position == positionToClick) {
-                    while (device.findObjects(selector).size() <= 1){
+                    while (device.findObjects(selector).get(0).getChildren().size() <= 1){
                         device.waitForIdle();
                     }
-                    while (!device.findObjects(selector).get(position).isChecked()) {
                         try {
                             device.waitForIdle();
-                            device.findObjects(selector).get(position).longClick();
+                            device.findObjects(selector).get(0).getChildren().get(position).longClick();
                             device.waitForIdle();
                         } catch (Exception ex) {
                             Timber.i("Cannot click language selected");
                         }
-                    }
                     try {
                         device.waitForIdle();
                         onView(withId(android.R.id.button1)).perform(click());
@@ -563,7 +560,6 @@ public class CucumberTestSteps {
                     }
                 }
             }
-        } while (exists(onView(withId(android.R.id.button1))));
     }
 
     private void getTrustWords() {
