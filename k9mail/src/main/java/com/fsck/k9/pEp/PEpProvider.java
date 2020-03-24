@@ -176,7 +176,7 @@ public interface PEpProvider extends AutoCloseable {
 
     KeyDetail getOwnKeyDetails(Message message);
 
-    void setSubjectUnprotected(boolean enabled);
+    void setSubjectProtection(boolean enabled);
 
     List<KeyListItem> getBlacklistInfo();
 

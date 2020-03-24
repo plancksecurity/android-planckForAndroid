@@ -153,13 +153,13 @@ public class QuotedMessagePresenter {
 
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(STATE_KEY_QUOTED_TEXT_MODE, quotedTextMode);
-        outState.putSerializable(STATE_KEY_HTML_QUOTE, quotedHtmlContent);
+        outState.putParcelable(STATE_KEY_HTML_QUOTE, quotedHtmlContent);
         outState.putSerializable(STATE_KEY_QUOTED_TEXT_FORMAT, quotedTextFormat);
         outState.putBoolean(STATE_KEY_FORCE_PLAIN_TEXT, forcePlainText);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        quotedHtmlContent = (InsertableHtmlContent) savedInstanceState.getSerializable(STATE_KEY_HTML_QUOTE);
+        quotedHtmlContent = savedInstanceState.getParcelable(STATE_KEY_HTML_QUOTE);
         if (quotedHtmlContent != null && quotedHtmlContent.getQuotedContent() != null) {
             // we don't have the part here, but inline-displayed images are cached by the webview
             view.setQuotedHtml(quotedHtmlContent.getQuotedContent(), null);

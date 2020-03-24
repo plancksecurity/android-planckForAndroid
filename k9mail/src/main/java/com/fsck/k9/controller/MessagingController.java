@@ -126,6 +126,7 @@ import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
+import static com.fsck.k9.mail.Flag.X_PEP_DISABLED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
 /**
@@ -1738,24 +1739,23 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
                                     || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
                                     ) {
-                                MimeMessage decryptedMessage = result.msg;
-                                if (message.getFolder().getName().equals(account.getSentFolderName())
-                                        || message.getFolder().getName().equals(account.getDraftsFolderName())) {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
-                                } else {
-                                    decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(result.rating));
-                                }
+                                MimeMessage decryptedMessage = alreadyDecrypted ? ((MimeMessage) message) : result.msg;
+                                // sync UID so we know our mail
+                                decryptedMessage.setUid(message.getUid());
 
-                                decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
+                                Rating ratingToSave = PEpUtils.shouldUseOutgoingRating(message, account, result.rating)
+                                        ? pEpProvider.getRating(message)
+                                        : result.rating;
+                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(ratingToSave));
 
-                                if (!alreadyDecrypted) {                    // Store the updated message locally
+                                // Store the updated message locally
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                                         @Override
                                         public void run() {
                                             progress.incrementAndGet();
                                         }
                                     });
-                                    if (controller.shouldDownloadMessageInTrustedServer(result, decryptedMessage, account)) {
+                                    if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                                     Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
@@ -1780,7 +1780,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                         // Notify with the localMessage so that we don't have to recalculate the content preview.
                                         notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
                                     }
-                                }
                             }
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
@@ -2273,8 +2272,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
-                        localMessage.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(localMessage)));
-                        localFolder.appendMessages(Collections.singletonList(localMessage));
+                        localMessage.setpEpRating(pEpProvider.getRating(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -2924,7 +2922,11 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             localFolder.open(Folder.OPEN_MODE_RW);
             localFolder.appendMessages(Collections.singletonList(message));
             Message localMessage = localFolder.getMessage(message.getUid());
-            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
+
+            // Only add rating to the local copy, not on headers
+            // to avoid sending the rating to the server
+            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))
+                    || message.isSet(X_PEP_DISABLED)) {
                 ((LocalMessage) localMessage).setpEpRating(Rating.pEpRatingUnencrypted);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
@@ -3188,7 +3190,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
             if (pEpVersionHeader.length > 0) {
                 message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
             }
-            message.addHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(message.getpEpRating()));
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
@@ -4856,8 +4858,8 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         pEpProvider.setPassiveModeEnabled(enable);
     }
 
-    public void setSubjectUnprotected(boolean subjectUnprotected) {
-        pEpProvider.setSubjectUnprotected(subjectUnprotected);
+    public void setSubjectProtected(boolean pEpSubjectProtection) {
+        pEpProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
     public Message appendToInboxpEpSyncMessage(final Account account, final Message message) {

@@ -2,6 +2,7 @@ package com.fsck.k9.ui.settings.account
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -63,6 +64,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
+        initializeNewRingtoneOptions()
 
         if (!BuildConfig.WITH_KEY_SYNC) {
             hideKeySyncOptions()
@@ -172,6 +174,12 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun hideKeySyncOptions() {
         findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
+    }
+
+    private fun initializeNewRingtoneOptions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            findPreference(PREFERENCE_RINGTONE)?.remove()
+        }
     }
 
     private fun dopEpKeyReset(account: Account) {
@@ -289,6 +297,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
+        private const val PREFERENCE_RINGTONE = "account_ringtone"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"

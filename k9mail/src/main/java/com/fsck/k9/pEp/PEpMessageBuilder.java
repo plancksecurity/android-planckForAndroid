@@ -65,12 +65,12 @@ class PEpMessageBuilder {
         // - plain text body if html above
         // - many attachments (of type binarymemoryblob (hopefully ;-)).
         Body b = mm.getBody();
-        Vector<Blob> attachments = new Vector<Blob>();
+        Vector<Blob> attachments = new Vector<>();
 
         if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
                 String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
-                if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(mm)))) {
+                if ((isAnAttachment(mm))) {
                     Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                     String filename = MimeUtility.getHeaderParameter(disposition, "filename");
                     addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
@@ -78,13 +78,7 @@ class PEpMessageBuilder {
                  //   return;
                 }
 
-            String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
-
-            if (charset == null || !Charset.isSupported(charset)) {
-                // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
-                // FIXME: charset, trate non text bod4y types like application/pgp-keys
-                charset = Charset.defaultCharset().name();
-            }
+            String charset = getMessageCharset();
             String text = new String(PEpUtils.extractBodyContent(b), charset);
             if(mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
@@ -98,6 +92,17 @@ class PEpMessageBuilder {
         handleMultipart(pEpMsg, mmp, attachments);           // recurse into the Joys of Mime...
 
         pEpMsg.setAttachments(attachments);
+    }
+
+    private String getMessageCharset() {
+        String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
+
+        if (charset == null || !Charset.isSupported(charset)) {
+            // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
+            // FIXME: charset, treat non text body types like application/pgp-keys
+            charset = Charset.defaultCharset().name();
+        }
+        return charset;
     }
 
     private void handleMultipart(Message pEpMsg, MimeMultipart mmp, Vector<Blob> attachments) throws MessagingException, IOException, UnsupportedEncodingException {
@@ -117,14 +122,10 @@ class PEpMessageBuilder {
             //FIXME> Deal with non text and non multipart message and non attachments
 
             boolean plain = mbp.isMimeType("text/plain");
-            if (plain || mbp.isMimeType("text/html")) {
-                String charset = MimeUtility.getHeaderParameter(mbp.getContentType(), "charset");
-                String text;
-                if (charset != null) {
-                    text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
-                } else {
-                    text = new String(PEpUtils.extractBodyContent(mbp_body));
-                }
+            if (!isAnAttachment(mbp) && (plain || mbp.isMimeType("text/html"))) {
+                String charset = getMessageCharset();
+                String text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
+
                 if (plain) {
                     String longmsg = pEpMsg.getLongmsg();
                     if (longmsg != null) {
@@ -231,7 +232,7 @@ class PEpMessageBuilder {
     }
 
     private Vector<String> createMessageReferences(String[] references) {
-        Vector<String> rv = new Vector<String>();
+        Vector<String> rv = new Vector<>();
         if(references != null)
             for(String s : references)
                 rv.add(s);
@@ -243,13 +244,17 @@ class PEpMessageBuilder {
         if (part.getMimeType().equalsIgnoreCase("message/rfc822")) return "ForwardedMessage.eml";
         if (filename == null) {
             String disposition = MimeUtility.unfoldAndDecode(part.getDisposition());
-            if (("attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part)))) {
+            if (isAnAttachment(part)) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 filename = MimeUtility.getHeaderParameter(disposition, "filename");
             }
         }
 
         return filename != null ? filename : DEFAULT_FILENAME;
+    }
+
+    private boolean isAnAttachment(Part part) {
+        return "attachment".equalsIgnoreCase(MessageExtractor.getContentDisposition(part));
     }
 
 }

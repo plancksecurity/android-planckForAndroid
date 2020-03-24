@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
@@ -445,6 +446,23 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         setupNavigationFoldersList();
 
         createFoldersMenu();
+
+        setNavigationViewInsets();
+    }
+
+    private void setNavigationViewInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                navigationView,
+                (v, insets) -> {
+                    View view = navigationView.findViewById(R.id.menu_header);
+                    view.setPadding(
+                            view.getPaddingLeft(),
+                            insets.getSystemWindowInsetTop(),
+                            view.getPaddingRight(),
+                            view.getPaddingBottom()
+                    );
+                    return insets.consumeSystemWindowInsets();
+                });
     }
 
     private void setupNavigationFoldersList() {
@@ -2352,7 +2370,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void goBack() {
-        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+        if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+            if(!isThreadDisplayed) {
+                updateToolbarColorToOriginal();
+            }
+            showMessageList();
+        }
+        else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             if(isBackstackClear()) {
                 if (mAccount != null) {
                     Router.onOpenAccount(this, mAccount);
@@ -2363,11 +2387,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
 
-        } else if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            if(!isThreadDisplayed) {
-                updateToolbarColorToOriginal();
-            }
-            showMessageList();
         } else if (isThreadDisplayed) {
             actionDisplaySearch(this, mSearch, false, false);
         } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {

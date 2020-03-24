@@ -32,6 +32,8 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 
+import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
@@ -47,6 +49,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            );
+        }
+
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
 //        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
