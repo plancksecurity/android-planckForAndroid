@@ -23,6 +23,7 @@
             android:measureAllChildren="false"
             android:animateLayoutChanges="true">
             <TextView
+                android:id="@+id/shortTrustwords"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
@@ -32,6 +33,7 @@
                 android:breakStrategy="simple" />
 
             <TextView
+                android:id="@+id/longTrustwords"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="?android:attr/textColorPrimary"
