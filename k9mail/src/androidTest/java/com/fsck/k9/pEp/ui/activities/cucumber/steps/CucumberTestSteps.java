@@ -1162,16 +1162,12 @@ public class CucumberTestSteps {
     public void I_click_reply_message(){
         timeRequiredForThisMethod(10);
         device.waitForIdle();
-        if (!viewIsDisplayed(testUtils.intToID("reply_message"))) {
-            TestUtils.swipeDownScreen();
-        }
         while (!viewIsDisplayed(R.id.openCloseButton)) {
             device.waitForIdle();
         }
         onView(withId(R.id.openCloseButton)).check(matches(isDisplayed()));
         testUtils.clickView(testUtils.intToID("openCloseButton"));
         device.waitForIdle();
-        testUtils.clickView(testUtils.intToID("fabReply"));
         device.waitForIdle();
         while (!viewIsDisplayed(R.id.message_content)) {
             device.waitForIdle();
