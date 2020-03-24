@@ -786,6 +786,15 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
+    @And("^I disable protection from privacy status menu$")
+    public void I_disable_protection_from_privacy_status_menu(){
+        timeRequiredForThisMethod(15);
+        testUtils.selectFromMenu(testUtils.stringToID("pep_title_activity_privacy_status"));
+        testUtils.selectFromMenu(testUtils.stringToID("pep_force_unprotected"));
+        testUtils.pressBack();
+        device.waitForIdle();
+    }
+
     @Then("^I open menu$")
     public void I_select_from_menu(){
         timeRequiredForThisMethod(10);
