@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui
+package security.pEp.ui.about
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.PepActivity
 import kotlinx.android.synthetic.main.activity_about.*
 import security.pEp.ui.toolbar.ToolBarCustomizer
@@ -42,6 +41,7 @@ class AboutActivity : PepActivity() {
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
         initializeToolbar(true, about)
         onAbout()
+        license_button.setOnClickListener { openLicenseActivity(this) }
     }
 
     override fun inject() {
@@ -70,13 +70,6 @@ class AboutActivity : PepActivity() {
                 //                              "</a>"))
                 .append("</p><hr/><p>")
                 .append(String.format(getString(R.string.app_copyright_fmt), year, year))
-                .append("</p><hr/><p>")
-                .append(getString(R.string.pep_app_license))
-                .append("</p><hr/><p>")
-                // Credits
-                .append("p≡p Team in alphabetical order:<br /><br />")
-                .append("Volker Birk, Simon Witts, Sandro Köchli,Sabrina Schleifer, Robert Goldmann, Rena Tangens, Patricia Bednar, Patrick Meier, padeluun, Nana Karlstetter, Meinhard Starostik, Mathijs de Haan, Martin Vojcik, Markus Schaber, Lix, Leonard Marquitan, Leon Schumacher, Lars Rohwedder, Krista Grothoff, Kinga Prettenhoffer, Hussein Kasem, Hernâni Marques, Edouard Tisserant, Dolça Moreno, Dirk Zimmermann Dietz Proepper, Detlev Sieber, Dean, Daniel Sosa, be, Berna Alp, Bart Polot, Andy Weber, Ana Rebollo")
-                .append("</p><hr/><p>")
 
         val libs = StringBuilder().append("<ul>")
         for ((library, url) in USED_LIBRARIES) {

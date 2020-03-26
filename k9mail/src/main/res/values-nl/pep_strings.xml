@@ -77,7 +77,7 @@
     <string name="pep_enable_privacy_protection">p≡p-privacybescherming</string>
     <string name="pep_explanation">Uitleg</string>
     <string name="pep_suggestion">Suggestie</string>
-    <string name="pep_app_license">Licentie onder de GNU General Public License v3</string>
+    <string name="pep_app_license"></string>
     <string name="pep_trust_server_description">Sla mails aan serverzijde in een veilige indeling op.</string>
     <string name="pep_account_privacy_protection_explanation">Hiermee wordt p≡p-privacybescherming voor deze account ingeschakeld</string>
     <string name="pep_forward_warning">Waarschuwing onveilig antwoord</string>

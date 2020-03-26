@@ -3,7 +3,7 @@ package com.fsck.k9.ui.settings
 import android.app.Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.pEp.ui.AboutActivity
+import security.pEp.ui.about.AboutActivity
 
 internal enum class SettingsAction {
     GENERAL_SETTINGS {
