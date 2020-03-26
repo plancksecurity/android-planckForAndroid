@@ -1349,16 +1349,14 @@ public class CucumberTestSteps {
     @Then("^I check if the privacy status is (\\S+)$")
     public void I_check_toolBar_color_is(String color) {
         timeRequiredForThisMethod(10);
-        TestUtils.swipeUpScreen();
-        TestUtils.swipeDownScreen();
-        TestUtils.swipeDownScreen();
         try {
+            TestUtils.swipeUpScreen();
+            TestUtils.swipeDownScreen();
+            TestUtils.swipeDownScreen();
             testUtils.typeTextToForceRatingCaltulation(R.id.subject);
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
-        device.waitForIdle();
-        waitUntilIdle();
         device.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
