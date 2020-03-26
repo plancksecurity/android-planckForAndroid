@@ -269,13 +269,11 @@ public interface PEpProvider extends AutoCloseable {
     }
 
     class DecryptResult {
-        public final KeyDetail keyDetails;
         public int flags = -1;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, int flags) {
+        public DecryptResult(MimeMessage msg, Rating rating, int flags) {
             this.msg = msg;
             this.rating = rating;
-            this.keyDetails = keyDetails;
             this.flags = flags;
         }
 

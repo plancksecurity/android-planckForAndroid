@@ -228,21 +228,12 @@ public class PEpProviderImpl implements PEpProvider {
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected);
 
             extractpEpImportHeaderFromReplyTo(decMsg);
+            // TODO: 2020-02-20 Seem like this flgs currently are not used on the engine, this needs to be reviewed and probably removed
             DecryptResult flaggedResult = processKeyImportSyncMessages(decReturn, decMsg);
             if (flaggedResult != null) return flaggedResult;
 
-            if (isUsablePrivateKey(decReturn)) {
-                if (decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT)
-                        || decMsg.getHeaderNames().contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)) {
-                    Log.d(TAG, "pEpdecryptMessage() after decrypt has usable pEp key (import)");
-                    return new DecryptResult(decMsg, decReturn.rating, new KeyDetail("", null), decReturn.flags);
-                } else if (!PEpUtils.isAutoConsumeMessage(decMsg)) {
-                    Log.d(TAG, "pEpdecryptMessage() after decrypt has usable PGP key (import)");
-                    return new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), decReturn.flags);
-                } else return new DecryptResult(decMsg, decReturn.rating, null, 0x2);
-            }
-           else return new DecryptResult(decMsg, decReturn.rating, null, -1);
-        }catch (Throwable t) {
+            return new DecryptResult(decMsg, decReturn.rating, -1);
+        } catch (Throwable t) {
             Log.e(TAG, "while decrypting message: "  + source.getSubject()
                     + "\n" + source.getFrom()[0]
                     + "\n" + source.getSentDate().toString()
@@ -266,17 +257,16 @@ public class PEpProviderImpl implements PEpProvider {
 
             if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
                 flags = DecryptFlags.pEpDecryptFlagConsumed.value;
-                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
+                return new DecryptResult(decryptedMimeMessage, decReturn.rating, flags);
             }
         }
         else if (PEpUtils.isAutoConsumeMessage(decryptedMimeMessage)) {
             if (lastValidDate.after(decryptedMimeMessage.getSentDate())) {
                 flags = DecryptFlags.pEpDecryptFlagConsumed.value;
-                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             } else {
                 flags = DecryptFlags.pEpDecryptFlagIgnored.value;
-                return new DecryptResult(decryptedMimeMessage, decReturn.rating, null, flags);
             }
+            return new DecryptResult(decryptedMimeMessage, decReturn.rating, flags);
         }
         return null;
     }
@@ -323,16 +313,9 @@ public class PEpProviderImpl implements PEpProvider {
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
 
-                if (isUsablePrivateKey(decReturn)) {
-                    notifyLoaded(new DecryptResult(decMsg, decReturn.rating, getOwnKeyDetails(srcMsg), -1), callback);
-                }
-                else notifyLoaded(new DecryptResult(decMsg, decReturn.rating, null, decReturn.flags), callback);
-//        } catch (pEpMessageConsume | pEpMessageIgnore pe) {
-//            // TODO: 15/11/16 deal with it as flag not exception
+                notifyLoaded(new DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback);
 
-//            //  throw pe;
-//            return null;
-            }catch (Throwable t) {
+            } catch (Throwable t) {
                 Log.e(TAG, "while decrypting message:", t);
                 notifyError(new AppCannotDecryptException("Could not decrypt", t), callback);
             } finally {
@@ -802,7 +785,11 @@ public class PEpProviderImpl implements PEpProvider {
         engine.stopKeyserverLookup();
     }
 
+    /**
+     * @deprecated private key detection is not supported anymore, alternatives are pEp sync and import from FS
+     */
     @Override
+    @Deprecated
     public synchronized KeyDetail getOwnKeyDetails(Message message) {
         Identity id;
         try {
@@ -1194,7 +1181,8 @@ public class PEpProviderImpl implements PEpProvider {
     public void keyResetIdentity(Identity ident, String fpr) {
         createEngineInstanceIfNeeded();
         ident = updateIdentity(ident);
-        engine.key_reset_identity(ident, fpr);
+        engine.key_reset_identity(ident,
+                fpr);
     }
 
     @Override

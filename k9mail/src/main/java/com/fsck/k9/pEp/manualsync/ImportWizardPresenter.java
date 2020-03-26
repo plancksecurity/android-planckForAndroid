@@ -41,7 +41,7 @@ public class ImportWizardPresenter implements Presenter {
 
     public void onStartClicked(Account account) {
         //new Thread(() ->
-        messagingController.startKeyImport(account, new Callback() {
+        importKeyController.start(ispEp, new Callback() {
             @Override
             public void onStart() {
                 view.starSendKeyImportRequest();
@@ -52,7 +52,7 @@ public class ImportWizardPresenter implements Presenter {
                 if (success) view.finishSendingKeyImport();
                 else view.showSendError();
             }
-        }, ispEp);
+        });
         //).start();
     }
 
@@ -61,7 +61,6 @@ public class ImportWizardPresenter implements Presenter {
         this.view = view;
         importKeyController.setAccount(account);
         importKeyController.setStarter(isStarter);
-        messagingController.setImportKeyController(importKeyController);
 
         showInitialScreen(serializableExtra);
     }
