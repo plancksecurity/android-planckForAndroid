@@ -1454,8 +1454,8 @@ public class CucumberTestSteps {
                     if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
-                            if (!object.getChildren().get(attachment).getChildren().get(0).getChildren().get(0).getChildren().get(1).toString().contains("results.json")) {
-                                object.getChildren().get(attachment).getChildren().get(0).getChildren().get(0).getChildren().get(3).click();
+                            if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json")) {
+                                object.getChildren().get(attachment).getChildren().get(0).click();
                             }
                         }
                         Timber.i("");
