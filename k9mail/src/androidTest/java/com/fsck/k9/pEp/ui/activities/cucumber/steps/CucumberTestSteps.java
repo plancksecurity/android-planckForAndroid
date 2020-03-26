@@ -421,9 +421,11 @@ public class CucumberTestSteps {
 
     @When("^I reset handshake$")
     public void I_reset_handshake() {
-        timeRequiredForThisMethod(30);
-        testUtils.clickStatus();
-        testUtils.resetHandshake();
+        timeRequiredForThisMethod(10);
+        testUtils.selectFromMenu(R.string.pep_title_activity_privacy_status);
+        onView(withId(R.id.button_identity_key_reset)).perform(click());
+        device.waitForIdle();
+        testUtils.pressBack();
     }
 
     @Then("^I check there is an extra key$")
