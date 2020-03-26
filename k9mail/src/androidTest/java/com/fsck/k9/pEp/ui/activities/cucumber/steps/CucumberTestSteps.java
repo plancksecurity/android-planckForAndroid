@@ -452,7 +452,7 @@ public class CucumberTestSteps {
     private void confirmAllTrustWords (JSONArray array) {
         checkTrustWords(array, "short");
         device.waitForIdle();
-        testUtils.selectFromMenu(R.string.pep_menu_long_trustwords);
+        onView(withId(R.id.trustwords)).perform(click());
         checkTrustWords(array, "long");
     }
 
@@ -469,7 +469,11 @@ public class CucumberTestSteps {
             device.waitForIdle();
             Espresso.onIdle();
             selectLanguage(positionToClick, size, selector);
-            getTrustWords();
+            if (words.equals("short")) {
+                getTrustWords(R.id.shortTrustwords);
+            } else {
+                getTrustWords(R.id.longTrustwords);
+            }
             assertTextInJSONArray(trustWords, array, words);
         }
     }
@@ -523,7 +527,7 @@ public class CucumberTestSteps {
             size = calculateNewSize(size, selector);
             device.waitForIdle();
             selectLanguage(positionToClick, size, selector);
-            getTrustWords();
+            //getTrustWords();
             String []trustWordsSplited = trustWords.split("\\s+");
             checkWordIsInText(trustWordsSplited, webViewText);
         }
@@ -562,11 +566,11 @@ public class CucumberTestSteps {
             }
     }
 
-    private void getTrustWords() {
+    private void getTrustWords(int trustWordsId) {
         do {
             try {
                 device.waitForIdle();
-                trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+                trustWords = getTextFromView(onView(withId(trustWordsId)));
             } catch (Exception ex) {
                 Timber.i("Cannot find trustWords: " + ex.getMessage());
             }
@@ -635,34 +639,33 @@ public class CucumberTestSteps {
     public void I_click_confirm_trust_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
-        while (!viewIsDisplayed(R.id.confirmTrustWords)) {
+        while (!viewIsDisplayed(R.id.confirmHandshake)) {
             TestUtils.swipeUpScreen();
         }
-        testUtils.doWaitForResource(R.id.confirmTrustWords);
-        while (!exists(onView(withId(R.id.confirmTrustWords)))) {
+        while (!exists(onView(withId(R.id.confirmHandshake)))) {
             device.waitForIdle();
             waitUntilIdle();
         }
-        onView(withId(R.id.confirmTrustWords)).check(matches(isCompletelyDisplayed()));
-        onView(withId(R.id.confirmTrustWords)).perform(click());
+        onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.confirmHandshake)).perform(click());
         device.waitForIdle();
         testUtils.pressBack();
     }
-    @When("^I click wrong trust words$")
-    public void I_click_wrong_trust_words() {
+    @When("^I click reject trust words$")
+    public void I_click_reject_trust_words() {
         timeRequiredForThisMethod(10);
-        testUtils.goToHandshakeDialog();
-        testUtils.doWaitForResource(R.id.wrongTrustwords);
-        while (!exists(onView(withId(R.id.wrongTrustwords)))) {
+        testUtils.clickStatus();
+        testUtils.doWaitForResource(R.id.rejectHandshake);
+        while (!exists(onView(withId(R.id.rejectHandshake)))) {
             device.waitForIdle();
             waitUntilIdle();
         }
-        onView(withId(R.id.wrongTrustwords)).check(matches(isCompletelyDisplayed()));
+        onView(withId(R.id.rejectHandshake)).check(matches(isCompletelyDisplayed()));
         while (!viewIsDisplayed(R.id.trustwords)) {
             device.waitForIdle();
         }
         TestUtils.swipeUpScreen();
-        onView(withId(R.id.wrongTrustwords)).perform(click());
+        onView(withId(R.id.rejectHandshake)).perform(click());
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();
@@ -763,7 +766,8 @@ public class CucumberTestSteps {
                 statusRating = Rating.pEpRatingFullyAnonymous;
                 break;
             case "pEpRatingMistrust":
-                statusRating = Rating.pEpRatingMistrust;
+                statusRating = null;
+                status = "pep_red";
                 break;
             case "pEpRatingB0rken":
                 statusRating = Rating.pEpRatingB0rken;
