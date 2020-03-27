@@ -929,17 +929,17 @@ public class PEpProviderImpl implements PEpProvider {
 
     //FIXME: Implement sync use lists.
     @Override
-    public synchronized void acceptHandshake(Identity identity) {
+    public synchronized void acceptSync() {
         engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, new Vector<>());
     }
 
     @Override
-    public synchronized void rejectHandshake(Identity identity) {
+    public synchronized void rejectSync() {
         engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, new Vector<>());
     }
 
     @Override
-    public synchronized void cancelHandshake(Identity identity) {
+    public synchronized void cancelSync() {
         engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, new Vector<>());
     }
 

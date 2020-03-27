@@ -26,17 +26,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:text="@string/pep"
+                tools:text="p≡p"
                 android:textSize="24sp"
                 android:gravity="center_vertical"
                 android:textColor="@color/colorPrimaryDark"
-                android:id="@+id/toolbar_pEp_title" />
+                android:id="@+id/toolbar_pEp_title"
+                android:fontFamily="@font/univers_lts_sd"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:paddingLeft="4dp"
-                android:text="Key import"
+                android:text="Sync"
                 android:textStyle="bold"
                 android:textSize="24sp"
                 android:textColor="@color/light_black"

@@ -244,7 +244,7 @@
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">his is an own message, no communication partner involved.</string>
     <!-- Key sync dialog Strings -->
-    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so ou can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
     <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
     <!-- Group creation -->

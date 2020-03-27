@@ -223,18 +223,18 @@ public class AddDevicePresenter implements Presenter {
 
         @Override
         void acceptHandshake(Identity partner) {
-            Log.e("pEpEngine", String.format("acceptHandshake: myself(%s), partner(%s)", pEpProvider.myself(partner), partner) );
-            pEpProvider.acceptHandshake(pEpProvider.myself(partner));
+            Log.e("pEpEngine", String.format("acceptSync: myself(%s), partner(%s)", pEpProvider.myself(partner), partner) );
+            pEpProvider.acceptSync();
         }
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.rejectHandshake(partner);
+            pEpProvider.rejectSync();
         }
 
         @Override
         void cancelHandshake(Identity partner) {
-            pEpProvider.cancelHandshake(partner);
+            pEpProvider.cancelSync();
         }
     }
 }

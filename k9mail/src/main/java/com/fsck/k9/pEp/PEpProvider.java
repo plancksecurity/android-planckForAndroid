@@ -188,11 +188,11 @@ public interface PEpProvider extends AutoCloseable {
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
 
-    void acceptHandshake(Identity identity);
+    void acceptSync();
 
-    void rejectHandshake(Identity identity);
+    void rejectSync();
 
-    void cancelHandshake(Identity identity);
+    void cancelSync();
 
     void loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id, ResultCallback<Rating> loadedCallback);
 

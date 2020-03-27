@@ -448,7 +448,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     @OnClick(R.id.add_device_background)
     public void onClickOutside() {
-        //presenter.cancelHandshake();
+        //presenter.cancelSync();
     }
 
     @OnClick(R.id.show_long_trustwords)

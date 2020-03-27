@@ -1,43 +1,31 @@
 package com.fsck.k9.pEp.manualsync;
 
 interface ImportWizardFromPGPView {
-    void showDescription(String description);
+    void renderpEpCreateDeviceGroupRequest();
 
-    void setImportTitle(String type);
-
-    void renderpEpInitialScreen();
-
-    void renderPGPInitialScreen();
-
-    void renderWaitingForHandshake();
-
-    void renderWaitingForPGPHandshake();
-
-    void renderpEpSecondlScreen();
-
-    void notifyAcceptedHandshakeAndWaitingForPrivateKey();
-
-    void notifyKeySent();
-
-    void finishImportSuccefully();
+    void renderpEpAddToExistingDeviceGroupRequest();
 
     void close();
 
     void cancel();
 
-    void setDialogEnabled();
+    void showHandshake(String trustwords);
 
-    void notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
+    void showWaitingForSync();
 
-    void starSendKeyImportRequest();
+    void showGroupCreated();
 
-    void finishSendingKeyImport();
+    void showJoinedGroup();
 
-    void showSendError();
+    void showSomethingWentWrong();
 
-    void notifySendingOwnKey();
+    void disableSync();
 
-    void renderPgpSendHandshakeFirstStep();
+    void showLongTrustwordsIndicator();
 
-    void renderPgpSendHandshakeSecondStep();
+    void hideLongTrustwordsIndicator();
+
+    void prepareGroupCreationLoading();
+
+    void prepareGroupJoiningLoading();
 }

@@ -47,7 +47,7 @@ import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
+import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -784,8 +784,11 @@ public class K9 extends MultiDexApplication {
     }
 
     public PEpProvider getpEpSyncProvider() {
-        if (pEpSyncEnabled) return pEpSyncProvider;
-        else return pEpProvider;
+        if (pEpSyncEnabled) {
+            return pEpSyncProvider;
+        } else {
+            return pEpProvider;
+        }
     }
 
     private void initSync() {
@@ -806,19 +809,17 @@ public class K9 extends MultiDexApplication {
             }
         });
 //        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-        if (!pEpSyncProvider.isSyncRunning())  {
+        if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
 //        }
     }
 
-    private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, String explanation) {
+    private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
         Timber.i("PEPJNI", "showHandshake: " + signal.name() + " " + myself.toString() + "\n::\n" + partner.toString());
 
-        language = Locale.getDefault().getLanguage();
-        String trust = pEpSyncProvider.trustwords(myself, partner, language, true);
         Context context = K9.this.getApplicationContext();
-        Intent syncTrustowordsActivity = PEpAddDevice.getActionRequestHandshake(context, trust, myself, partner, explanation, false);
+        Intent syncTrustowordsActivity = ImportWizardFrompEp.createActionStartKeySyncIntent(context, myself, partner, signal, formingGroup);
         syncTrustowordsActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(syncTrustowordsActivity);
     }
@@ -1071,6 +1072,10 @@ public class K9 extends MultiDexApplication {
 
     public static String getK9Language() {
         return language;
+    }
+
+    public static String getK9CurrentLanguage() {
+        return language.isEmpty() ? Locale.getDefault().getLanguage() : language;
     }
 
     public static void setK9Language(String nlanguage) {
@@ -1827,6 +1832,7 @@ public class K9 extends MultiDexApplication {
         } else {
             shutdownSync();
         }
+        forceSaveAppSettings();
     }
 
     public boolean needsFastPoll() {
@@ -1845,42 +1851,41 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
-            System.out.println("pEpSync" + "notifyHandshakeCallFromC: " + notifyHandshakeCallback + " :: " + signal.name());
-            new Handler(Looper.getMainLooper()).post(()
-                    -> Toast.makeText(K9.this, signal.name(), Toast.LENGTH_SHORT).show());
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
             // Before starting a new "event" we dismiss the current one.
-            Intent broadcastIntent = new Intent("KEYSYNC_DISMISS");
-            K9.this.sendOrderedBroadcast(broadcastIntent, null);
+//            Intent broadcastIntent = new Intent("KEYSYNC_DISMISS");
+//            K9.this.sendOrderedBroadcast(broadcastIntent, null);
             switch (signal) {
                 case SyncNotifyUndefined:
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
+                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                    break;
                 case SyncNotifyInitFormGroup:
+                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                     needsFastPoll = true;
-                    goToAddDevice(myself, partner, signal, getString(R.string.pep_add_device_ask_trustwords));
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake
-                    new Handler(Looper.getMainLooper()).post(()
-                            -> Toast.makeText(K9.this, R.string.pep_keysync_timeout, Toast.LENGTH_SHORT).show());
+                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     needsFastPoll = false;
                     break;
                 case SyncNotifyAcceptedDeviceAdded:
                 case SyncNotifyAcceptedGroupCreated:
                     needsFastPoll = false;
-                    new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(K9.this, R.string.pep_device_group, Toast.LENGTH_LONG).show());
                     break;
                 case SyncNotifySole:
                     needsFastPoll = false;
                     grouped = false;
+                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
                 case SyncNotifyInGroup:
                     needsFastPoll = false;
                     grouped = true;
                     pEpSyncEnabled = true;
+                    ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
             }
 
@@ -1914,6 +1919,13 @@ public class K9 extends MultiDexApplication {
         }
         pEpSyncEnabled = false;
     }
+
+    private void forceSaveAppSettings() {
+        StorageEditor editor = Preferences.getPreferences(this).getStorage().edit();
+        save(editor);
+        editor.commit();
+    }
+
 
 
 }
