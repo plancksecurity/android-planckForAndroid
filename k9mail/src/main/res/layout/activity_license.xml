@@ -12,13 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:padding="16dp"
         tools:context="com.fsck.k9.security.pEp.ui.about.AboutActivity">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/licenseText"
             style="@style/LightBlackText"
             android:layout_width="match_parent"
+            android:padding="16dp"
             android:layout_height="wrap_content"
             android:text="@string/gpl_license"
             android:textSize="12sp" />

@@ -6,8 +6,7 @@
     </string>
     <string name="app_revision_fmt">Informació de la revisió: <xliff:g id="app_revision_url">%s</xliff:g>
     </string>
-    <string name="app_libraries">Fem servir les següents biblioteques de tercers: <xliff:g id="app_libraries_list">%s</xliff:g>
-    </string>
+    <string name="app_libraries">Fem servir les següents biblioteques de tercers:</string>
     <string name="app_emoji_icons">Icones Emoji: <xliff:g id="app_emoji_icons_link">%s</xliff:g>
     </string>
     <string name="read_attachment_label">Llegeix adjunts del correu</string>

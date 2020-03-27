@@ -7,7 +7,7 @@
     <string name="open_market">Otvoriť Obchod Play</string>
     <string name="app_authors_fmt">Autori: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Informácie o revízii: <xliff:g id="app_revision_url">%s</xliff:g></string>
-    <string name="app_libraries">Používame tieto knižnice tretích strán: <xliff:g id="app_libraries_list">%s</xliff:g></string>
+    <string name="app_libraries">Používame tieto knižnice tretích strán:</string>
     <string name="app_emoji_icons">Ikony Emoji: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_attachment_label">čítať prílohy správ</string>
     <string name="read_attachment_desc">Umožňuje tejto aplikácii čítať prílohy vašich e-mailov.</string>

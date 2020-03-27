@@ -3,9 +3,12 @@ package security.pEp.ui.about
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Paint
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
 import kotlinx.android.synthetic.main.activity_about.*
@@ -40,54 +43,46 @@ class AboutActivity : PepActivity() {
         toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
         initializeToolbar(true, about)
-        onAbout()
+
+        val aboutString = buildAboutString()
+        aboutText.movementMethod = LinkMovementMethod.getInstance()
+        aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
         license_button.setOnClickListener { openLicenseActivity(this) }
+        license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
     }
 
     override fun inject() {
         getpEpComponent().inject(this)
     }
 
-    private fun onAbout() {
+    private fun buildAboutString(): String {
         val appName = getString(R.string.app_name)
         val year = Calendar.getInstance().get(Calendar.YEAR)
         val html = StringBuilder()
-                .append("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />")
-                .append("<img src=\"file:///android_asset/icon.png\" alt=\"").append(appName).append("\"/>")
-                .append("<h1>")
-                .append("</a>")
-                .append("</h1><p>")
-                .append(appName)
-                .append(" ")
-                .append(String.format(getString(R.string.debug_version_fmt), versionNumber))
-                .append("</p><p>")
-                .append(String.format(getString(R.string.app_authors_fmt),
-                        getString(R.string.app_authors)))
-                .append("</p><p>")
-                //        .append(String.format(getString(R.string.app_revision_fmt),
-                //                              "<a href=\"" + getString(R.string.app_revision_url) + "\">" +
-                //                              getString(R.string.app_revision_url) +
-                //                              "</a>"))
-                .append("</p><hr/><p>")
+                .append("<p>$appName ${String.format(getString(R.string.debug_version_fmt), versionNumber)}</p>")
+                .append("<p>${String.format(getString(R.string.app_authors_fmt), getString(R.string.app_authors))}</p>")
                 .append(String.format(getString(R.string.app_copyright_fmt), year, year))
 
-        val libs = StringBuilder().append("<ul>")
-        for ((library, url) in USED_LIBRARIES) {
-            libs.append("<li><a href=\"").append(url).append("\">")
-                    .append(library)
-                    .append("</a></li>")
-        }
-        libs.append("</ul>")
 
-        html.append(String.format(getString(R.string.app_libraries), libs.toString()))
+        val libs = buildLibrariesHtml()
+        html.append("<p>${getString(R.string.app_libraries)}</p>")
+        html.append(libs)
 
+        return html.toString()
+    }
 
-        about_text!!.loadDataWithBaseURL("file:///android_res/drawable/", html.toString(), "text/html", "utf-8", null)
+    private fun buildLibrariesHtml(): String {
+        val libs = StringBuilder()
+        USED_LIBRARIES
+                .forEach { entry ->
+                    libs.append("<p>&emsp;<a href=\"${entry.value}\"><b>${entry.key}</b></a></p>")
+                }
+        return libs.toString()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val itemId = item.itemId
-        when (itemId) {
+        when (item.itemId) {
             android.R.id.home -> {
                 finish()
             }
@@ -102,7 +97,11 @@ class AboutActivity : PepActivity() {
         }
 
         val USED_LIBRARIES = mapOf(
-                "Android Support Library" to "https://developer.android.com/topic/libraries/support-library/index.html",
+
+                "pEpEngine" to "https://pep.foundation/dev/repos/pEpEngine/",
+                "pEpJNIAdapter" to "https://pep.foundation/dev/repos/pEpJNIAdapter/",
+                "libpEpAdapter" to "https://pep.foundation/dev/repos/libpEpAdapter/",
+                "Android X Library" to "https://developer.android.com/jetpack/androidx",
                 "Android-Support-Preference-V7-Fix" to "https://github.com/Gericop/Android-Support-Preference-V7-Fix",
                 "jutf7" to "http://jutf7.sourceforge.net/",
                 "JZlib" to "http://www.jcraft.com/jzlib/",
@@ -119,14 +118,28 @@ class AboutActivity : PepActivity() {
                 "TokenAutoComplete" to "https://github.com/splitwise/TokenAutoComplete/",
                 "ButterKnife" to "https://github.com/JakeWharton/butterknife",
                 "Calligraphy" to "https://github.com/chrisjenx/Calligraphy",
-                "GPGME" to "https://www.gnupg.org/(en)/related_software/gpgme/index.html",
-                "LibGPG-error" to "https://www.gnupg.org/(en)/related_software/libgpg-error/index.html",
-                "Libcrypt" to "https://directory.fsf.org/wiki/Libgcrypt",
-                "Libassuan" to "https://www.gnupg.org/(en)/related_software/libassuan/index.html",
-                "Libksba" to "https://www.gnupg.org/(en)/related_software/libksba/index.html",
-                "GNUPG" to "https://www.gnupg.org/",
-                "Libcurl" to "https://curl.haxx.se/libcurl/",
                 "Libiconv" to "https://www.gnu.org/software/libiconv/",
-                "LibEtPan" to "https://www.etpan.org/libetpan.html")
+                "LibEtPan" to "https://www.etpan.org/libetpan.html",
+                "Sequoia-pgp" to "https://sequoia-pgp.org",
+                "Libnettle" to "https://www.lysator.liu.se/~nisse/nettle",
+                "libgmp" to "https://gmplib.org",
+                "openssl" to "https://www.openssl.org",
+                "Okio" to "https://github.com/square/okio",
+                "jcip-annotations" to "https://github.com/stephenc/jcip-annotations",
+                "Renderers" to "https://github.com/pedrovgs/Renderers",
+                "AppIntro" to "https://github.com/AppIntro/AppIntro",
+                "AndroidSwipeLayout" to "https://github.com/daimajia/AndroidSwipeLayout",
+                "Dexter" to "https://github.com/Karumi/Dexter",
+                "Acra" to "https://github.com/ACRA/acra",
+                "CircleImageView" to "https://github.com/hdodenhof/CircleImageView",
+                "Groupie" to "https://github.com/lisawray/groupie",
+                "Robolectric" to "http://robolectric.org/",
+                "Dagger" to "https://github.com/google/dagger",
+                "Barista" to "https://github.com/AdevintaSpain/Barista",
+                "Spoon" to "https://github.com/square/spoon",
+                "Koin" to "https://github.com/InsertKoinIO/koin",
+                "Cucumber" to "https://cucumber.io/"
+
+        )
     }
 }
