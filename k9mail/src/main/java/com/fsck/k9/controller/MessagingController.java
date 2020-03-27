@@ -105,10 +105,6 @@ import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
-import com.fsck.k9.pEp.manualsync.ImportKeyController;
-import com.fsck.k9.pEp.manualsync.ImportKeyController.KeyImportMessagingActions;
-import com.fsck.k9.pEp.manualsync.ImportKeyControllerFactory;
-import com.fsck.k9.pEp.manualsync.ImportWizardPresenter;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -142,7 +138,7 @@ import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
  * removed from the queue once the activity is no longer active.
  */
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
-public class MessagingController implements Sync.MessageToSendCallback, KeyImportMessagingActions {
+public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
@@ -165,7 +161,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
     private PEpProvider pEpProvider;
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
-    private ImportKeyController importKeyController;
 
 
     @VisibleForTesting
@@ -1686,53 +1681,21 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
                                     if (!rating.equals(Rating.pEpRatingUndefined)) {
                                         // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
                                         alreadyDecrypted = controller.getAlreadyDecrypted(message, account, rating);
-                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, null, tempResult.flags);
+                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, tempResult.flags);
                                     }
                                 }
                                 if (tempResult.flags == -1)
                                     Timber.e("PEPJNI %s", "messageFinished: null");
                                 if (tempResult.flags != -1) {
                                     Timber.e("PEPJNI %s: %s", "messageFinished", tempResult.flags);
-                           /* For keysync not needed intil pEp sync is in place again.
-                           switch (tempResult.flags) {
-                                case PEPDecryptFlagConsumed:
-                                    Timber.v("pEpJNI", "messageFinished: Deleting");
-                                    tempResult = null;
-                                    store = false;
-                                    break;
-                                case PEPDecryptFlagIgnored:
-                                    Timber.v("pEpJNI", "messageFinished: ");
-                                    tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, null);
-                                    store = false;
-                                    break;
-                            }
-                                    */
-/*
-                                    if ((tempResult.flags & DecryptFlags.pEpDecryptFlagConsumed.value) == DecryptFlags.pEpDecryptFlagConsumed.value) {
-                                        Timber.v("pEpJNI %s", "messageFinished: Deleting");
-                                        tempResult = null;
-                                        store = false;
-                                    } else if ((tempResult.flags & DecryptFlags.pEpDecryptFlagIgnored.value) == DecryptFlags.pEpDecryptFlagIgnored.value) {
-                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
-                                        store = false;
-                                    }
-                                    */
                                 }
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
                             } else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, null, -1);
+                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                            importKeyController = ImportKeyControllerFactory.getInstance().getImportKeyController(context, pEpProvider);
-                            importKeyController.setMessagingActions(MessagingController.this);
-                            importKeyController.setAccount(account);
                             if (result == null) {
-                                deleteMessage(message, account, folder, localFolder);
-                            } else if (importKeyController.isKeyImportMessage(message, result)) {
-                                importKeyController.processKeyImportMessage(message, result, folder, localFolder);
-                            } else if (result.keyDetails != null) {
-                                showImportKeyDialogIfNeeded(message, result, account);
                                 deleteMessage(message, account, folder, localFolder);
                             } else if (store
                                     && (!account.ispEpPrivacyProtected()
@@ -1803,7 +1766,7 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         try {
             tempResult = pEpProvider.decryptMessage(message);
         } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, null, -1);
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, -1);
         }
         return tempResult;
     }
@@ -1813,30 +1776,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         uuids.add(message.getUid());
         queueSetFlag(account, folder, true, Flag.DELETED, uuids);
         localFolder.setFlags(Collections.singletonList(message), Collections.singleton(Flag.DELETED), true);
-    }
-
-    public  <T extends Message> void showImportKeyDialogIfNeeded(final T message, final PEpProvider.DecryptResult result, Account account) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        String currentFpr = pEpProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context)).fpr;
-//                        if (!message.getFrom()[0].getAddress().equals(result.keyDetails.getAddress().getAddress())) {
-        if (!result.keyDetails.getFpr().equals(currentFpr) && result.keyDetails.getStringAddress().equalsIgnoreCase(account.getEmail())) {
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    Intent broadcastIntent = new Intent(context, K9ActivityCommon.PrivateKeyReceiver.class);
-                    fillPrivateKeyDetails(broadcastIntent, message, result);
-                    context.getApplicationContext().sendOrderedBroadcast(broadcastIntent, null);
-                }
-            });
-        }
-    }
-
-    private <T extends Message> void fillPrivateKeyDetails(Intent broadcastIntent, T message, PEpProvider.DecryptResult result) {
-        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FROM, message.getFrom()[0].getAddress());
-        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_FPR, result.keyDetails.getFpr());
-        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_ADDRESS, result.keyDetails.getAddress().getAddress());
-        broadcastIntent.putExtra(PEpProvider.PEP_PRIVATE_KEY_USERNAME, result.keyDetails.getAddress().getPersonal());
     }
 
     private <T extends Message> void downloadLargeMessages(final Account account, final Folder<T> remoteFolder,
@@ -4573,15 +4512,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
         }
     }
 
-    public void startKeyImport(Account account, ImportWizardPresenter.Callback callback, boolean ispEp) {
-        importKeyController.start(ispEp, callback);
-    }
-
-    public void setImportKeyController(ImportKeyController importKeyController) {
-        this.importKeyController = importKeyController;
-        importKeyController.setMessagingActions(this);
-    }
-
     public MessagingListener getCheckMailListener() {
         return checkMailListener;
     }
@@ -4982,23 +4912,6 @@ public class MessagingController implements Sync.MessageToSendCallback, KeyImpor
 
     public PEpProvider getpEpProvider() {
         return pEpProvider;
-    }
-
-    @Override
-    public void deleteMessage(Account account, Message srcMsg, String folder, LocalFolder localFolder) throws MessagingException {
-        deleteMessage(srcMsg, account, folder, localFolder);
-    }
-
-    @Override
-    public void sendMessage(Account account, Message message) throws MessagingException {
-        Log.i("pEpKeyImport", "sendingMessage: ");
-        Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
-        sendMessage(transport, message);
-
-    }
-
-    public ImportKeyController getImportKeyController() {
-        return importKeyController;
     }
 
     private interface MessageActor {

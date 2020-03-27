@@ -1,27 +1,163 @@
 package com.fsck.k9.pEp.manualsync;
 
 
-import com.fsck.k9.Account;
-import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.K9;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Presenter;
-import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.SyncHandshakeSignal;
+import security.pEp.sync.SyncState;
 import timber.log.Timber;
 
 public class ImportWizardPresenter implements Presenter {
 
-    private final ImportKeyController importKeyController;
-    MessagingController messagingController;
-    private boolean ispEp;
+    private boolean formingGroup;
     private ImportWizardFromPGPView view;
+    private Identity myself;
+    private Identity partner;
+    private SyncHandshakeSignal signal;
+    private PEpProvider pEp;
+    private SyncState state;
+    private String trustwordsLanguage = K9.getK9CurrentLanguage();
+    private String trustWords = "";
+    private boolean showingShort = true;
 
     @Inject
-    public ImportWizardPresenter(ImportKeyController importKeyController, MessagingController messagingController) {
-        this.messagingController = messagingController;
-        this.importKeyController = importKeyController;
+    public ImportWizardPresenter(@Named("Background") PEpProvider pEp) {
+        this.pEp = pEp;
     }
+
+
+    private void showInitialScreen(boolean formingGroup) {
+        if (formingGroup) {
+            view.renderpEpCreateDeviceGroupRequest();
+        } else {
+            view.renderpEpAddToExistingDeviceGroupRequest();
+        }
+    }
+
+    public void cancel() {
+        pEp.cancelSync();
+        state.finish();
+        view.cancel();
+        trustWords = "";
+    }
+
+    public void next() {
+        Timber.e(state.name());
+        state = state.next();
+        processState();
+    }
+
+    private void processState() {
+        switch (state) {
+            case INITIAL:
+                //NOP
+                break;
+            case HANDSHAKING:
+                view.showHandshake(trustWords);
+                break;
+            case WAITING:
+                if (formingGroup) {
+                    view.prepareGroupCreationLoading();
+                } else {
+                    view.prepareGroupJoiningLoading();
+
+                }
+                view.showWaitingForSync();
+                break;
+            case DONE:
+                if (formingGroup) {
+                    view.showGroupCreated();
+                } else {
+                    view.showJoinedGroup();
+                }
+                break;
+        }
+    }
+
+    public SyncState getState() {
+        return state;
+    }
+
+    public void setState(SyncState state) {
+        this.state = state;
+    }
+
+
+    public void init(ImportWizardFrompEp view,
+                     Identity myself,
+                     Identity partner,
+                     SyncHandshakeSignal signal,
+                     boolean isFormingGroup) {
+
+        this.view = view;
+        this.myself = myself;
+        this.partner = partner;
+        this.signal = signal;
+        this.formingGroup = isFormingGroup;
+        this.state = SyncState.INITIAL;
+
+        showInitialScreen(isFormingGroup);
+        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
+
+
+    }
+
+
+    public boolean isHandshaking() {
+        return state == SyncState.HANDSHAKING;
+    }
+
+    void switchTrustwordsLength() {
+        showDebugInfo();
+        showingShort = !showingShort;
+
+        if (showingShort) {
+            view.showLongTrustwordsIndicator();
+        } else {
+            view.hideLongTrustwordsIndicator();
+        }
+        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
+        view.showHandshake(trustWords);
+    }
+
+    private void showDebugInfo() {
+        Timber.e("------------------------");
+        Timber.e(trustWords);
+        Timber.e(myself.fpr);
+        Timber.e(partner.fpr);
+        Timber.e("------------------------");
+    }
+
+    boolean changeTrustwordsLanguage(int languagePosition) {
+        showDebugInfo();
+        final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
+        String language = pEpLanguages[languagePosition].toString();
+        changeTrustwords(language);
+        return true;
+    }
+
+    private void changeTrustwords(String language) {
+        trustwordsLanguage = language;
+        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
+        view.showHandshake(trustWords);
+    }
+
+    public void acceptHandshake() {
+        pEp.acceptSync();
+        next();
+    }
+
+    public void leaveDeviceGroup() {
+        view.disableSync();
+    }
+
 
     @Override
     public void resume() {
@@ -36,168 +172,24 @@ public class ImportWizardPresenter implements Presenter {
 
     @Override
     public void destroy() {
-        importKeyController.finish();
     }
 
-    public void onStartClicked(Account account) {
-        //new Thread(() ->
-        messagingController.startKeyImport(account, new Callback() {
-            @Override
-            public void onStart() {
-                view.starSendKeyImportRequest();
-            }
-
-            @Override
-            public void onFinish(boolean success) {
-                if (success) view.finishSendingKeyImport();
-                else view.showSendError();
-            }
-        }, ispEp);
-        //).start();
-    }
-
-    public void init(ImportWizardFromPGPView view, Account account, boolean isStarter,
-                     KeySourceType serializableExtra) {
-        this.view = view;
-        importKeyController.setAccount(account);
-        importKeyController.setStarter(isStarter);
-        messagingController.setImportKeyController(importKeyController);
-
-        showInitialScreen(serializableExtra);
-    }
-
-    private void showInitialScreen(KeySourceType serializableExtra) {
-
-        if (importKeyController.isImporter()) {
-            switch (serializableExtra) {
-                case PEP:
-                    view.renderpEpInitialScreen();
-                    ispEp = true;
-                    break;
-                case PGP:
-                    view.setImportTitle("PGP");
-                    view.renderPGPInitialScreen();
-                    ispEp = false;
-                    break;
-            }
-        } else {
-            if (serializableExtra == KeySourceType.PEP) {
-                view.renderpEpSecondlScreen();
-                ispEp = true;
-            } // No else, PGP key is always started from pEp device
-
-        }
-    }
-
-    public void cancel() {
-        importKeyController.cancel();
-        view.cancel();
-    }
-
-    public void next() {
-        ImportKeyWizardState currentState = importKeyController.getState();
-        Timber.e(currentState.name()+ " :: " + importKeyController.getState().name());
-
-        switch (currentState) {
-            //It will be reached?: don't think so
-            case INIT:
-                Timber.e("INIT");
-                break;
-            case BEACON_SENT:
-                Timber.e("Beacon sent");
-                view.setDialogEnabled();
-                if (ispEp) {
-                    view.renderWaitingForHandshake();
+    public void processSignal(SyncHandshakeSignal signal) {
+        //We only can process signals while we are waiting and timeouts.
+        if (signal != SyncHandshakeSignal.SyncNotifyTimeout &&
+                state != SyncState.WAITING) return;
+        switch (signal) {
+            case SyncNotifySole:
+            case SyncNotifyInGroup:
+                if (formingGroup) {
+                    view.showGroupCreated();
                 } else {
-                    view.renderWaitingForPGPHandshake();
+                    view.showJoinedGroup();
                 }
                 break;
-            case BEACON_RECEIVED:
-                Timber.e("Beacon received");
-                break;
-            case HANDSHAKE_REQUESTED:
-                Timber.e("Handshake requested");
-                break;
-            case PRIVATE_KEY_WAITING:
-                Timber.e("Private key waiting");
-                break;
+            case SyncNotifyTimeout:
+                state = SyncState.ERROR;
+                view.showSomethingWentWrong();
         }
     }
-
-    public void processHandshakeResult(PEpAddDevice.Result result) {
-        Timber.e(importKeyController.getState().name());
-
-        if (result.equals(PEpAddDevice.Result.ACCEPTED)) {
-            if (importKeyController.isImporter()) {
-                if (ispEp) {
-                    view.notifyAcceptedHandshakeAndWaitingForPrivateKey();
-                }
-                else {
-                    view.notifyAcceptedHandshakeAndWaitingForPGPPrivateKey();
-                }
-
-                importKeyController.next();
-            } else {
-
-                importKeyController.sendOwnKey(new Callback() {
-                    @Override
-                    public void onStart() {
-                         view.notifySendingOwnKey();
-                    }
-
-                    @Override
-                    public void onFinish(boolean successful) {
-                        view.notifyKeySent();
-                        importKeyController.next();
-                    }
-                });
-
-                //importKeyController.finish();
-            }
-        }
-    }
-
-    public void onPrivateKeyReceived() {
-        Timber.e(importKeyController.getState().name());
-        view.finishImportSuccefully();
-    }
-
-    public void close() {
-        importKeyController.finish();
-        view.close();
-    }
-
-    public void reset() {
-        importKeyController.finish();
-    }
-
-    public ImportKeyWizardState getState() {
-        return importKeyController.getState();
-    }
-
-    public void setState(ImportKeyWizardState state) {
-        importKeyController.setState(state);
-    }
-
-    public void initialPgpMessageReceived() {
-        view.renderPgpSendHandshakeFirstStep();
-    }
-
-    public void createdPgpReply() {
-        view.renderPgpSendHandshakeSecondStep();
-    }
-
-    public interface Callback {
-        void onStart();
-        void onFinish(boolean successful);
-    }
-
-    class WizartStateInfo {
-        String description;
-        String step;
-        boolean loading;
-        boolean next;
-        boolean close;
-    }
-
 }

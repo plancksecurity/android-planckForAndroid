@@ -16,22 +16,25 @@
         app:showAsAction="always" >
         <item
             android:id="@+id/catalan"
-            android:title="Catalan"/>
+            android:title="Català"/>
         <item
             android:id="@+id/german"
-            android:title="German"/>
+            android:title="Deutsch"/>
         <item
             android:id="@+id/spanish"
-            android:title="Spanish"/>
+            android:title="Español"/>
         <item
             android:id="@+id/french"
-            android:title="French"/>
+            android:title="Français"/>
         <item
             android:id="@+id/turkish"
-            android:title="Turkish"/>
+            android:title="Türkçe"/>
         <item
             android:id="@+id/english"
             android:title="English"/>
+        <item
+            android:id="@+id/nederlands"
+            android:title="Nederlands"/>
     </item>
 
     <item

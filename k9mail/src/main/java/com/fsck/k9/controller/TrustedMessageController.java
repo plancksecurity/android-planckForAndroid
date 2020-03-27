@@ -62,6 +62,7 @@ class TrustedMessageController {
                 localMessage.getFlags().contains(Flag.X_PEP_NEVER_UNSECURE)) { //Untrusted server
             encryptedMessage = encryptUntrustedMessage(context, pEpProvider, account, localMessage);
         } else { // Trusted
+            localMessage.setInternalDate(localMessage.getSentDate());
             return localMessage;
         }
         return encryptedMessage;

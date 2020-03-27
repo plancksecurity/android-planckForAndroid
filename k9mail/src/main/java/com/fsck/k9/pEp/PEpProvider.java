@@ -188,11 +188,11 @@ public interface PEpProvider extends AutoCloseable {
 
     //com.fsck.k9.mail.Message getMimeMessage(Message message);
 
-    void acceptHandshake(Identity identity);
+    void acceptSync();
 
-    void rejectHandshake(Identity identity);
+    void rejectSync();
 
-    void cancelHandshake(Identity identity);
+    void cancelSync();
 
     void loadMessageRatingAfterResetTrust(MimeMessage message, boolean isIncoming, Identity id, ResultCallback<Rating> loadedCallback);
 
@@ -269,13 +269,11 @@ public interface PEpProvider extends AutoCloseable {
     }
 
     class DecryptResult {
-        public final KeyDetail keyDetails;
         public int flags = -1;
 
-        public DecryptResult(MimeMessage msg, Rating rating, KeyDetail keyDetails, int flags) {
+        public DecryptResult(MimeMessage msg, Rating rating, int flags) {
             this.msg = msg;
             this.rating = rating;
-            this.keyDetails = keyDetails;
             this.flags = flags;
         }
 

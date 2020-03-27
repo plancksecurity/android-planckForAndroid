@@ -10,8 +10,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.manualsync.ImportKeyController;
-import com.fsck.k9.pEp.manualsync.ImportKeyControllerFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
@@ -22,8 +20,6 @@ import dagger.Module;
 import dagger.Provides;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.ui.permissions.PEpPermissionChecker;
-import security.pEp.ui.resources.PEpResourcesProvider;
-import security.pEp.ui.resources.ResourcesProvider;
 
 @Module
 public class PEpModule {
@@ -67,11 +63,6 @@ public class PEpModule {
     @Provides
     public MessagingController provideMessagingController() {
         return MessagingController.getInstance(context);
-    }
-
-    @Provides
-    public ImportKeyController provideImportkeyController(@Named("Background") PEpProvider pEp) {
-        return ImportKeyControllerFactory.getInstance().getImportKeyController(context, pEp);
     }
 
     @Provides

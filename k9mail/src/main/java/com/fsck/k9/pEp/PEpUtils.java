@@ -58,7 +58,7 @@ public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
     private static final int CHUNK_SIZE = 4;
 
-    private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en"};
+    private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en", "nl"};
 
     public static CharSequence[] getPEpLocales() {
         return pEpLanguages;
