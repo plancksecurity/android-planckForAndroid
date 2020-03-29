@@ -132,7 +132,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         setContentView(R.layout.activity_import_wizzard_from_pgp);
         ButterKnife.bind(this);
 
-        setUpFloatingWindow();
         Intent intent = getIntent();
         if (intent.hasExtra(MYSELF_KEY)
                 && intent.hasExtra(PARTNER_KEY)
@@ -145,13 +144,11 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
             presenter.init(this, myself, partner, signal, isFormingGroup);
 
         } else {
-            //Nothing to be started.
             finish();
         }
 
-        //setTitle("p≡p key import wizard");
         setUpToolbar(false);
-        // getToolbar().setNavigationIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        setUpFloatingWindow();
 
     }
 
@@ -190,7 +187,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         // this.toolbarpEpTitle.setText(R.string.pep);
         description.setText((R.string.keysync_wizard_create_group_first_message));
         action.setOnClickListener(view -> presenter.next());
-        currentState.setImageResource(R.drawable.ic_sync_create_devicegroup);
+        currentState.setImageResource(R.drawable.ic_sync_2nd_device);
     }
 
 
@@ -198,7 +195,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void renderpEpAddToExistingDeviceGroupRequest() {
         description.setText((R.string.keysync_wizard_add_device_to_existing_group_message));
         action.setOnClickListener(view -> presenter.next());
-        currentState.setImageResource(R.drawable.ic_sync_grouped_add_device);
+        currentState.setImageResource(R.drawable.ic_sync_3rd_device);
     }
 
 
@@ -249,7 +246,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showGroupCreated() {
         description.setText(R.string.keysync_wizard_group_creation_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_add_devicegroup_created);
+        currentState.setImageResource(R.drawable.ic_sync_2nd_device_synced);
 
         showKeySyncDone();
     }
@@ -257,7 +254,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showJoinedGroup() {
         description.setText(R.string.keysync_wizard_group_joining_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_add_devicegroup_created);
+        currentState.setImageResource(R.drawable.ic_sync_3rd_device_synced);
         showKeySyncDone();
     }
 
@@ -269,6 +266,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         action.setVisibility(View.VISIBLE);
         action.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         action.setOnClickListener(v -> finish());
+        currentState.setVisibility(View.VISIBLE);
     }
 
     @Override
