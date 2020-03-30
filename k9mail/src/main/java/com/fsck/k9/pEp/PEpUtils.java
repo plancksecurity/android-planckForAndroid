@@ -64,6 +64,10 @@ public class PEpUtils {
         return pEpLanguages;
     }
 
+    public static boolean trustWordsAvailableForLang(String trustwordsLanguage) {
+        return pEpLanguages.contains(trustwordsLanguage);
+    }
+
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {
         Vector<Identity> rv = new Vector<>(addressList.size());
         for (Address adr : addressList)

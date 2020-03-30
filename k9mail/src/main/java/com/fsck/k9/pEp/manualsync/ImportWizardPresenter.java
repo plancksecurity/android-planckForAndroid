@@ -18,6 +18,7 @@ import timber.log.Timber;
 
 public class ImportWizardPresenter implements Presenter {
 
+    private static final String DEFAULT_TRUSTWORDS_LANGUAGE = "en";
     private boolean formingGroup;
     private ImportWizardFromPGPView view;
     private Identity myself;
@@ -106,11 +107,16 @@ public class ImportWizardPresenter implements Presenter {
         this.state = SyncState.INITIAL;
 
         showInitialScreen(isFormingGroup);
-        trustwordsLanguage = PEpUtils.getPEpLocales().contains(trustwordsLanguage) ? trustwordsLanguage : "en";
 
+        fixUnsupportedLanguage();
         trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
 
+    }
 
+    private void fixUnsupportedLanguage() {
+        if (!PEpUtils.trustWordsAvailableForLang(trustwordsLanguage)) {
+            trustwordsLanguage = DEFAULT_TRUSTWORDS_LANGUAGE;
+        }
     }
 
 
