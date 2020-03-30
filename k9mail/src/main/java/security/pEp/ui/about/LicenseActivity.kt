@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Layout.JUSTIFICATION_MODE_INTER_WORD
+import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
@@ -35,7 +36,17 @@ class LicenseActivity : PepActivity() {
     override fun inject() {
         getpEpComponent().inject(this)
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+            }
+        }
+        return true
+    }
 }
+
 
 fun openLicenseActivity(context: Context) {
     context.startActivity(Intent(context, LicenseActivity::class.java))
