@@ -1,9 +1,12 @@
 package com.fsck.k9.pEp.manualsync;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +43,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public static final String SYNC_SIGNAL_KEY = "syncSignal";
     public static final String MYSELF_KEY = "myself";
     public static final String PARTNER_KEY = "partner";
+    private static final String PEP_SYNC_SIGNAL_ACTION = "PEP_SYNC_SIGNAL";
 
     @Inject
     ImportWizardPresenter presenter;
@@ -67,6 +71,9 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
 
+
+    private SyncDialogReceiver receiver;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -89,19 +96,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         presenter.setState(((SyncState) savedInstanceState.getSerializable("state")));
 
     }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-
-        super.onNewIntent(intent);
-
-        if (intent.hasExtra(SYNC_SIGNAL_KEY)) {
-            SyncHandshakeSignal signal =
-                    (SyncHandshakeSignal) Objects.requireNonNull(intent.getSerializableExtra(SYNC_SIGNAL_KEY));
-            presenter.processSignal(signal);
-        }
-    }
-
 
     public static void actionStartKeySync(Context context,
                                           Identity myself,
@@ -128,11 +122,10 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        initBroadcastReceiver();
         setContentView(R.layout.activity_import_wizzard_from_pgp);
         ButterKnife.bind(this);
 
-        setUpFloatingWindow();
         Intent intent = getIntent();
         if (intent.hasExtra(MYSELF_KEY)
                 && intent.hasExtra(PARTNER_KEY)
@@ -145,14 +138,20 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
             presenter.init(this, myself, partner, signal, isFormingGroup);
 
         } else {
-            //Nothing to be started.
             finish();
         }
 
-        //setTitle("p≡p key import wizard");
         setUpToolbar(false);
-        // getToolbar().setNavigationIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        setUpFloatingWindow();
 
+    }
+
+    private void initBroadcastReceiver() {
+        receiver = new SyncDialogReceiver(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(PEP_SYNC_SIGNAL_ACTION);
+        filter.setPriority(1);
+        registerReceiver(receiver, filter);
     }
 
 
@@ -171,6 +170,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     protected void onDestroy() {
         super.onDestroy();
         presenter.destroy();
+        unregisterReceiver(receiver);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         // this.toolbarpEpTitle.setText(R.string.pep);
         description.setText((R.string.keysync_wizard_create_group_first_message));
         action.setOnClickListener(view -> presenter.next());
-        currentState.setImageResource(R.drawable.ic_sync_create_devicegroup);
+        currentState.setImageResource(R.drawable.ic_sync_2nd_device);
     }
 
 
@@ -198,7 +198,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void renderpEpAddToExistingDeviceGroupRequest() {
         description.setText((R.string.keysync_wizard_add_device_to_existing_group_message));
         action.setOnClickListener(view -> presenter.next());
-        currentState.setImageResource(R.drawable.ic_sync_grouped_add_device);
+        currentState.setImageResource(R.drawable.ic_sync_3rd_device);
     }
 
 
@@ -227,6 +227,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         tvTrustwords.setText(trustwords);
         currentState.setVisibility(View.GONE);
         reject.setVisibility(View.VISIBLE);
+        reject.setOnClickListener( v -> presenter.rejectHandshake());
 
     }
 
@@ -243,13 +244,14 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         loading.setVisibility(View.VISIBLE);
         action.setVisibility(View.GONE);
         reject.setVisibility(View.GONE);
+        cancel.setOnClickListener(v -> presenter.cancel());
 
     }
 
     @Override
     public void showGroupCreated() {
         description.setText(R.string.keysync_wizard_group_creation_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_add_devicegroup_created);
+        currentState.setImageResource(R.drawable.ic_sync_2nd_device_synced);
 
         showKeySyncDone();
     }
@@ -257,7 +259,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showJoinedGroup() {
         description.setText(R.string.keysync_wizard_group_joining_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_add_devicegroup_created);
+        currentState.setImageResource(R.drawable.ic_sync_3rd_device_synced);
         showKeySyncDone();
     }
 
@@ -269,6 +271,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         action.setVisibility(View.VISIBLE);
         action.setTextColor(ContextCompat.getColor(this, android.R.color.black));
         action.setOnClickListener(v -> finish());
+        currentState.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -318,10 +321,10 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     public static void notifyNewSignal(Context context, SyncHandshakeSignal signal) {
-        Intent intent = new Intent(context, ImportWizardFrompEp.class);
+        Intent intent = new Intent(PEP_SYNC_SIGNAL_ACTION);
         intent.putExtra(SYNC_SIGNAL_KEY, signal);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        context.sendOrderedBroadcast(intent, null);
     }
 
     @Override
@@ -364,5 +367,27 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public boolean onTrustwordsLongClick() {
         presenter.switchTrustwordsLength();
         return true;
+    }
+
+    public static class SyncDialogReceiver extends BroadcastReceiver {
+
+        private ImportWizardFrompEp activity;
+
+        public SyncDialogReceiver(ImportWizardFrompEp activity) {
+            this.activity = activity;
+        }
+        public SyncDialogReceiver() {
+        }
+
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            if (activity != null) {
+                if (intent.hasExtra(SYNC_SIGNAL_KEY)) {
+                    SyncHandshakeSignal signal =
+                            (SyncHandshakeSignal) Objects.requireNonNull(intent.getSerializableExtra(SYNC_SIGNAL_KEY));
+                    activity.presenter.processSignal(signal);
+                }
+            }
+        }
     }
 }

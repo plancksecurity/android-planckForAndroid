@@ -15,7 +15,6 @@
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd vanp≡p.</string>
   <string name="account_recreate_dlg_instructions_fmt">Alle data voor \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van p≡p, maar account instellingen blijven behouden.</string>
-  <string name="account_clear_dlg_instructions_fmt">Alle berichten in \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van  p≡p, maar account instellingen blijven behouden.</string>
 
- 
+
 </resources>

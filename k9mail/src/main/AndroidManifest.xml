@@ -516,6 +516,11 @@
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver">
+            <intent-filter>
+                <action android:name="PEP_SYNC_SIGNAL" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".pEp.ui.activities.SplashActivity"
@@ -529,8 +534,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
-        <activity android:name=".pEp.ui.AboutActivity"
+        <activity android:name="security.pEp.ui.about.AboutActivity"
             android:label="@string/about_action"/>
+        <activity android:name="security.pEp.ui.about.LicenseActivity"
+            android:label="@string/license"/>
         <activity
             android:name=".pEp.ui.keys.PepExtraKeys"
             android:label="Extra keys" />

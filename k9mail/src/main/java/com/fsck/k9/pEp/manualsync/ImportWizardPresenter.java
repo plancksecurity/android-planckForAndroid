@@ -175,21 +175,27 @@ public class ImportWizardPresenter implements Presenter {
     }
 
     public void processSignal(SyncHandshakeSignal signal) {
-        //We only can process signals while we are waiting and timeouts.
-        if (signal != SyncHandshakeSignal.SyncNotifyTimeout &&
-                state != SyncState.WAITING) return;
         switch (signal) {
             case SyncNotifySole:
             case SyncNotifyInGroup:
-                if (formingGroup) {
-                    view.showGroupCreated();
+                if (state == SyncState.WAITING) {
+                    if (formingGroup) {
+                        view.showGroupCreated();
+                    } else {
+                        view.showJoinedGroup();
+                    }
                 } else {
-                    view.showJoinedGroup();
+                    view.cancel();
                 }
                 break;
             case SyncNotifyTimeout:
                 state = SyncState.ERROR;
                 view.showSomethingWentWrong();
         }
+    }
+
+    public void rejectHandshake() {
+        pEp.rejectSync();
+        view.disableSync();
     }
 }

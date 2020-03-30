@@ -1853,6 +1853,10 @@ public class K9 extends MultiDexApplication {
         public void notifyHandshake(Identity myself, Identity partner, SyncHandshakeSignal signal) {
             Log.e("pEpEngine", String.format("pEp notifyHandshake: %s", signal.name()));
 
+            if (isDebug()) {
+                new Handler(Looper.getMainLooper()).post(() ->
+                        Toast.makeText(K9.this, signal.name(), Toast.LENGTH_LONG).show());
+            }
             // Before starting a new "event" we dismiss the current one.
 //            Intent broadcastIntent = new Intent("KEYSYNC_DISMISS");
 //            K9.this.sendOrderedBroadcast(broadcastIntent, null);

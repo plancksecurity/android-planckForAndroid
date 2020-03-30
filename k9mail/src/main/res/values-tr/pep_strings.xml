@@ -34,7 +34,7 @@
     <string name="pep_enable_privacy_protection">Gizlilik koruması</string>
     <string name="pep_explanation">Açıklama</string>
     <string name="pep_suggestion">Öneri</string>
-    <string name="pep_app_license">GNU Genel Kamu Lisansı v3 altında Lisanslı</string>
+    <string name="pep_app_license"></string>
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
     <string name="key_list_title">Available keys</string>
@@ -128,7 +128,6 @@
     <string name="key_import_wizard_from_pgp_initial_text">PGP istemcisinden anahtar içe aktarma işlemine başlamak üzeresiniz:</string>
     <string name="key_import_wizard_from_pep_initial_text">Anahtar içe aktarma işlemine başlamak üzereyiz: Bu işlem, p≡p anahtarınızı başka bir aygıttan içe aktararak kullanacak ve özel anahtarınızı dışa aktaracaktır.</string>
     <string name="key_import_wizard_handshake_explanation">Lütfen aşağıdaki Güvenli kelimeleri aygıtınızdakilerle karşılaştırın ve bunların uyumlu olduğunu teyit edin.</string>
-    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Aygıt grubundan ayrıl</string>
     <string name="pep_sync">p≡p eşitleme</string>
     <string name="message_loading_error">İleti derecelendirmesi hala devam ediyor, tekrar deneyin</string>
@@ -140,7 +139,6 @@
     <string name="nnf_need_valid_filename">Lütfen geçerli bir dosya adı girin veya seçin</string>
     <string name="nnf_create_folder_error">Klasör oluşturulamadı</string>
     <string name="nnf_new_folder">Yeni klasör</string>
-    <string name="device_offline_warning">Aygıtınız çevrim dışı görünüyor; devam etmeden önce lütfen bağlantınızı kontrol edin</string>
     <string name="account_already_exists">Hesap zaten mevcut</string>
     <string name="add_account_message">Aygıtınıza eklemeniz durumunda bu hesabı kullanabilmeniz için</string>
     <string name="add_account_title">Hesabınızı ekleyin</string>
@@ -159,11 +157,9 @@
     <string name="pep_keysync_timeout">p≡p eşitlemesi zaman aşımı</string>
     <string name="pep_add_device_ask_move_trustwords">Aygıtı başka bir p≡p aygıt grubuna taşımak üzeresiniz. Aşağıdaki Güvenli kelimeleri başarıyla doğrulayarak onaylayın.</string>
     <string name="configure_account_action">Hesapları yönet</string>
-    <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="pep_app_description">K-9/p≡p oldukça kolay bir şekilde gizlilik sunan, Android için geliştirilmiş güçlü, ücretsiz bir e-posta istemcisidir.</string>
     <string name="available_accounts_title">Müsait kişiler</string>
     <string name="message_list_item_undo">GERİ AL</string>
-    <string name="pgp">PGP</string>
     <string name="nnf_select_something_first">Lütfen önce bir seçim yapın</string>
     <string name="download_permission_rationale_title">Dosyaları indir</string>
     <string name="download_permission_first_explanation">Dosyaları cep telefonunuza indirmek için izninize ihtiyacımız var</string>
