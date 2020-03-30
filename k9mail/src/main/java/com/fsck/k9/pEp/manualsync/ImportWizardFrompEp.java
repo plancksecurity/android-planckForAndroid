@@ -227,6 +227,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         tvTrustwords.setText(trustwords);
         currentState.setVisibility(View.GONE);
         reject.setVisibility(View.VISIBLE);
+        reject.setOnClickListener( v -> presenter.rejectHandshake());
 
     }
 
@@ -243,6 +244,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         loading.setVisibility(View.VISIBLE);
         action.setVisibility(View.GONE);
         reject.setVisibility(View.GONE);
+        cancel.setOnClickListener(v -> presenter.cancel());
 
     }
 
