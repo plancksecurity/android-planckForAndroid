@@ -516,6 +516,11 @@
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver">
+            <intent-filter>
+                <action android:name="PEP_SYNC_SIGNAL" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".pEp.ui.activities.SplashActivity"
