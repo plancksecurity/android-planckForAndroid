@@ -27,11 +27,11 @@ import cucumber.api.junit.Cucumber;
                  // the following path here and in the build.gradle: /data/data/com.neoranga55.cleanguitestarchitecture/cucumber-reports/
          }*/
         //,plugin = {"json:target/cucumber.json"}
-        //,plugin = {"pretty", "json:/data/data/security.pEp.debug/cucumber-reports/cucumber.json"
+        ,plugin = {"pretty", "json:/data/data/security.pEp.debug/cucumber-reports/cucumber.json"
         //, "html:/data/data/security.pEp.debug/cucumber-reports/"
         //, "de.monochromata.cucumber.report.PrettyReports:/data/data/security.pEp.debug/cucumber-reports/pretty-cucumber"  //IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!: Change the cucumber.json name file to create save_report.apk file
         //,plugin = {"pretty", "json:/mnt/sdcard/files/cucumber.json"
-        //}
+        }
         //,monochrome = true
          ,tags={"~@ignore"}
 )
