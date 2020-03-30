@@ -882,8 +882,7 @@
     <string name="recipient_error_parse_failed">¡Error al analizar la dirección!</string>
     <string name="pep_menu_long_trustwords">Ver más Palabras de Confianza</string>
     <string name="pep_menu_short_trustwords">Ver menos Palabras de Confianza</string>
-    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="openpgp_sign_only_disable">Desactivar</string>
+  <string name="openpgp_sign_only_disable">Desactivar</string>
     <string name="openpgp_enabled_error_back">Atrás</string>
   <string name="account_setup_auth_type_xoauth2">Token OAuth 2.0</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Identifíquese como \'localhost\' cuando se conecte a servidores SMTP</string>
@@ -922,7 +921,6 @@
   <string name="no_crypto_provider_see_global">No hay una aplicación OpenPGP configurada, ¡vea la configuración global!</string>
     <string name="unsigned_text_divider_label">Texto sin Firmar</string>
   <string name="messageview_crypto_warning_show_anyway">Mostrar mensaje de todos modos</string>
-    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
   <string name="enable_sign_only">Hablitar solo-Firmas PGP</string>
   <string name="account_setup_basics_oauth2_token">Utilice token OAuth 2.0 (cuentas de Google)</string>
     <string name="settings_export_success_generic">Configuraciones exportadas con éxito</string>

@@ -874,8 +874,7 @@
     <string name="messageview_decrypt_retry">Opnieuw</string>
     <string name="messageview_decrypt_incomplete">Versleuteld bericht moet gedownloed zijn voor ontsleuteling.</string>
     <string name="messageview_crypto_error_title">Foute mail versleuteling</string>
-    <string name="messageview_crypto_warning_title">Beveiliging Waarschuwing</string>
-    <string name="messageview_crypto_warning_revoked">Dit bericht is ondertekend door een <b>ingetrokken sleutel!</b></string>
+  <string name="messageview_crypto_warning_revoked">Dit bericht is ondertekend door een <b>ingetrokken sleutel!</b></string>
     <string name="messageview_crypto_warning_expired">Dit bericht is getekend door een <b>verlopen sleutel!</b></string>
     <string name="messageview_crypto_warning_insecure">Dit bericht is ondertekend door een <b>onveilige sleutel!</b></string>
     <string name="messageview_crypto_warning_error">Er was een <b>fout in de handtekening!</b></string>
@@ -927,6 +926,6 @@
     <string name="no_crypto_provider_see_global">Geen OpenPGP app geconfigureerd, zie algemene instellingen!</string>
     <string name="unsigned_text_divider_label">Niet-ondertekende Tekst</string>
   <string name="messageview_crypto_warning_show_anyway">Toon bericht alsnog</string>
-    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
   <string name="pep_subject_protection">Onderwerp van bericht beschermen</string>
+
 </resources>

@@ -880,8 +880,7 @@
     <string name="messageview_decrypt_retry">Wiederholen</string>
     <string name="messageview_decrypt_incomplete">Verschlüsselte Nachricht muss für die Entschlüsselung heruntergeladen werden.</string>
     <string name="messageview_crypto_error_title">Fehler beim Entschlüsseln der E-Mail</string>
-    <string name="messageview_crypto_warning_title">Sicherheitswarnung</string>
-  <string name="messageview_crypto_warning_revoked">Diese Nachricht wurde mit einem <b>zurückgezogenem Schlüssel</b> signiert!</string>
+    <string name="messageview_crypto_warning_revoked">Diese Nachricht wurde mit einem <b>zurückgezogenem Schlüssel</b> signiert!</string>
   <string name="messageview_crypto_warning_expired">Diese Nachricht wurde mit einem <b>abgelaufenem Schlüssel</b> signiert!</string>
   <string name="messageview_crypto_warning_insecure">Diese Nachricht wurde mit einem <b>unsicherem Schlüssel</b> signiert!</string>
   <string name="messageview_crypto_warning_error">Es gab einen Fehler in der Signatur dieser Nachricht!</string>
@@ -890,8 +889,7 @@
     <string name="unsigned_text_divider_label">Unsignierter Text</string>
     <string name="openpgp_enabled_error_back">Zurück</string>
   <string name="switch_off">Aus</string>
-    <string name="app_authors">Die K-9 Dog Walkers, p≡p Security S.A.</string>
-  <string name="switch_on">Aktiviert</string>
+    <string name="switch_on">Aktiviert</string>
   <string name="toast_openpgp_provider_error">Fehler beim Verbinden mit %s!</string>
     <string name="toast_account_not_found">Interner Fehler: Ungültiges Konto!</string>
     <string name="encrypted_subject">Verschlüsselte Nachricht</string>
@@ -910,7 +908,6 @@
     <string name="xoauth2_auth_cancelled_by_user">Authentifizierung abgebrochen</string>
   <string name="no_crypto_provider_see_global">Keine OpenPGP-App konfiguriert, siehe globale Einstellungen!</string>
   <string name="messageview_crypto_warning_show_anyway">Nachricht trotzdem anzeigen</string>
-    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
     <string name="account_setup_basics_oauth2_token">OAuth 2.0-Token verwenden (Google-Konten)</string>
     <string name="settings_export_success_generic">Einstellungen erfolgreich exportiert</string>
     <string name="account_settings_openpgp_missing">Fehlende OpenPGP-App - wurde sie deinstalliert\?</string>

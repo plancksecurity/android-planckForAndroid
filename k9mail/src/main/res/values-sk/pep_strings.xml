@@ -2,7 +2,6 @@
 <resources>
     <string name="navigation_drawer_open">Otvorte navigačný panel</string>
     <string name="navigation_drawer_close">Zatvorte navigačný panel</string>
-    <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
@@ -87,7 +86,6 @@
     <string name="message_list_item_undo">VRÁTENIE SPÄŤ</string>
     <string name="available_accounts_title">Dostupné účty</string>
     <string name="pep_app_description">K-9 / p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
-    <string name="app_k9_pep_name">"p≡p "</string>
     <string name="global_settings_title">Všeobecné nastavenia</string>
     <string name="configure_account_action">Správa účtov</string>
     <string name="pep_add_device_ask_trustwords">Chystáte sa pridať zariadenie do inej skupiny zariadení p≡p. Potvrďte úspešným overením nasledujúcich Trustwords.</string>

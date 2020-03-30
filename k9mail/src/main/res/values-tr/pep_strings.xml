@@ -157,7 +157,6 @@
     <string name="pep_keysync_timeout">p≡p eşitlemesi zaman aşımı</string>
     <string name="pep_add_device_ask_move_trustwords">Aygıtı başka bir p≡p aygıt grubuna taşımak üzeresiniz. Aşağıdaki Güvenli kelimeleri başarıyla doğrulayarak onaylayın.</string>
     <string name="configure_account_action">Hesapları yönet</string>
-    <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="pep_app_description">K-9/p≡p oldukça kolay bir şekilde gizlilik sunan, Android için geliştirilmiş güçlü, ücretsiz bir e-posta istemcisidir.</string>
     <string name="available_accounts_title">Müsait kişiler</string>
     <string name="message_list_item_undo">GERİ AL</string>

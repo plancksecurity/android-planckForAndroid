@@ -866,7 +866,6 @@
     <string name="locked_attach_unlock">Aç</string>
     <string name="message_progress_text">Yükleniyor...</string>
     <string name="messageview_decrypt_retry">Tekrar</string>
-    <string name="messageview_crypto_warning_title">Güvenlik Uyarısı</string>
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="account_clear_dlg_instructions_fmt">Bütün mesajlar \"<xliff:g id="account">%s</xliff:g>\" içinden ve K-9 Mail\'den kaldırılacak, fakat hesap ayarları korunacak.</string>
     <string name="pep_subject_protection">Protect message subject</string>

@@ -919,7 +919,6 @@
     <string name="status_poll_and_push_disabled">Polling a pushing sú zakázané</string>
     <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
-    <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
     <string name="unsigned_text_divider_label">Nepodpísaný text</string>
     <string name="xoauth2_error_contacting_auth_server">Pri kontaktovaní autentifikačného servera sa vyskytla chyba</string>
     <string name="xoauth2_account_doesnt_exist">Účet neexistuje</string>

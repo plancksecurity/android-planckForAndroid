@@ -101,7 +101,6 @@
     <string name="message_list_item_undo">Rückgängig</string>
     <string name="available_accounts_title">Verfügbare Konten</string>
     <string name="pep_app_description">p≡p ist ein tolles kostenloses E-Mail Programm für Android mit pretty Easy privacy.</string>
-    <string name="app_k9_pep_name">"p≡p "</string>
     <string name="global_settings_title">Globale Einstellungen</string>
     <string name="configure_account_action">Konten verwalten</string>
     <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere p≡p-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>

@@ -127,4 +127,8 @@
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
 
+    <string name="intro_frag_second_header_1">Segur</string>
+    <string name="pep_rating_secure">Segur</string>
+    <string name="pep_rating_secure_trusted">Segur i de condiança</string>
+
 </resources>

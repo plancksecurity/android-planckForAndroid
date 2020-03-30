@@ -9,7 +9,7 @@
     <!--<string name="remote_control_label">K-9 Mail remote control</string>-->
     <!--<string name="remote_control_desc">Allows this application to control K-9 Mail activities and settings.</string>-->
     <!-- Used in the about dialog -->
-    <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
+    <string name="app_authors" translatable="false">The K-9 Dog Walkers, p≡p Security S.A.</string>
     <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <!-- Welcome message -->
     <!--<string name="welcome_message_title">Welcome to K-9 Mail</string>-->
@@ -988,12 +988,12 @@
     <string name="messageview_decrypt_retry">Retry</string>
     <string name="messageview_decrypt_incomplete">Encrypted message must be downloaded for decryption.</string>
     <string name="messageview_crypto_error_title">Error decrypting email</string>
-    <string name="messageview_crypto_warning_title">Security Warning</string>
+    <string name="messageview_crypto_warning_title" translatable="false">Security Warning</string>
     <string name="messageview_crypto_warning_revoked">This message was signed by a <b>revoked key!</b></string>
     <string name="messageview_crypto_warning_expired">This message was signed by an <b>expired key!</b></string>
     <string name="messageview_crypto_warning_insecure">This message was signed by an <b>insecure key!</b></string>
     <string name="messageview_crypto_warning_error">There was an <b>error in this message\'s signature!</b></string>
-    <string name="messageview_crypto_warning_unsigned">This message was encrypted, but not signed. It is <b>not end-to-end secure</b>!</string>
+    <string name="messageview_crypto_warning_unsigned" translatable="false">This message was encrypted, but not signed. It is <b>not end-to-end secure</b>!</string>
     <string name="messageview_crypto_warning_show_anyway">Show message anyway</string>
     <string name="recipient_error_non_ascii">Special characters are currently not supported!</string>
     <string name="recipient_error_parse_failed">Error parsing address!</string>

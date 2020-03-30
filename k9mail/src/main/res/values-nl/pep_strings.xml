@@ -87,12 +87,13 @@
     <string name="message_list_item_undo">ONGEDAAN MAKEN</string>
     <string name="available_accounts_title">Beschikbare accounts</string>
     <string name="pep_app_description">K-9/p≡p is een krachtige gratis e-mailclient voor Android met erg eenvoudige privacy.</string>
-    <string name="app_k9_pep_name">"K-9/p≡p "</string>
     <string name="global_settings_title">Algemene instellingen</string>
     <string name="configure_account_action">Accounts beheren</string>
     <string name="pep_add_device_ask_trustwords">U staat op het punt een apparaat toe te voegen aan een andere p≡p-apparatengroep. Bevestig door de volgende Trustwords te verifiëren.</string>
     <string name="pep_add_device_ask_move_trustwords">U staat op het punt een apparaat te verplaatsen naar een andere p≡p-apparatengroep. Bevestig door de volgende Trustwords te verifiëren.</string>
-    <string name="pep_device_group">p≡p-apparatengroep</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="pep_rating_secure">Veilig</string>
+    <string name="intro_frag_second_header_1">Veilig</string>    <string name="pep_device_group">p≡p-apparatengroep</string>
     <string name="handshake_reset_dialog_message">Waarschuwing: Deze communicatiepartner was eerder al aangemerkt als niet-vertrouwd. Weet u zeker dat u wilt doorgaan met een handshake\?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibiliteit</string>
     <string name="crash_toast_text">Oeps, er is iets misgelopen</string>
