@@ -10,6 +10,7 @@ import com.fsck.k9.activity.UnreadWidgetConfiguration;
 import com.fsck.k9.activity.FolderList;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 
@@ -123,15 +124,28 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
         }
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        boolean noAccounts = Preferences.getPreferences(context).getAccounts().size() == 0;
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId,
-                clickIntent, 0);
+        if (noAccounts) {
+            PendingIntent noAccountsAction = noAccountPendingIntent(context);
+            remoteViews.setOnClickPendingIntent(R.id.unread_widget_layout, noAccountsAction);
+        } else {
+            PendingIntent pendingIntent = viewUnreadInboxPendingIntent(context, appWidgetId, clickIntent);
+            remoteViews.setOnClickPendingIntent(R.id.unread_widget_layout, pendingIntent);
+        }
 
-        remoteViews.setOnClickPendingIntent(R.id.unread_widget_layout, pendingIntent);
 
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
 
+    private static PendingIntent viewUnreadInboxPendingIntent(Context context, int appWidgetId, Intent clickIntent) {
+        return  PendingIntent.getActivity(context, appWidgetId, clickIntent, 0);
+    }
+
+    private static PendingIntent noAccountPendingIntent(Context context) {
+        Intent intent = new Intent(context, SplashActivity.class);
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     /**
      * Called when one or more widgets need to be updated.

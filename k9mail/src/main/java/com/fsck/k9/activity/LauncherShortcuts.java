@@ -6,7 +6,9 @@ import android.os.Parcelable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BaseAccount;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.search.SearchAccount;
 
 public class LauncherShortcuts extends AccountList {
@@ -29,8 +31,9 @@ public class LauncherShortcuts extends AccountList {
     @Override
     protected void onAccountSelected(BaseAccount account) {
         Intent shortcutIntent = null;
-
-        if (account instanceof SearchAccount) {
+        if (Preferences.getPreferences(this).getAccounts().size() == 0) {
+            shortcutIntent = new Intent(this, SplashActivity.class);
+        } else if (account instanceof SearchAccount) {
             SearchAccount searchAccount = (SearchAccount) account;
             shortcutIntent = MessageList.shortcutIntent(this, searchAccount.getId());
         } else {
@@ -46,6 +49,7 @@ public class LauncherShortcuts extends AccountList {
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, description);
         Parcelable iconResource = Intent.ShortcutIconResource.fromContext(this, R.mipmap.icon);
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
+
 
         setResult(RESULT_OK, intent);
         finish();
