@@ -69,4 +69,8 @@
     <color name="message_list_divider_color_light">#ffcccccc</color>
     <color name="message_list_divider_color_dark">#ff333333</color>
 
+    <color name="keysync_disable_warning_cancel_color">#969696</color>
+    <color name="keysync_disable_warning_text_color">#c8c8c8</color>
+
+
 </resources>
