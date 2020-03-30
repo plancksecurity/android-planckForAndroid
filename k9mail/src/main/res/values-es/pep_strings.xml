@@ -31,7 +31,6 @@
     <string name="pep_enable_privacy_protection">p≡p protección de privacidad</string>
     <string name="pep_explanation">Explicación</string>
     <string name="pep_suggestion">Sugerencia</string>
-    <string name="pep_app_license">Licenciado bajo el GNU General Public License v3</string>
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Habilitar p≡p protección de privacidad para esta cuenta</string>
     <string name="configure_account_action">Administrar cuentas</string>
@@ -143,7 +142,7 @@
     <string name="pep_rating_forced_unencrypt">Deshabilitado</string>
     <string name="pep_rating_mistrusted">Sospechoso</string>
     <string name="pep_rating_secure">Seguro</string>
-    <string name="pep_rating_secure_trusted">Seguro y de 
+    <string name="pep_rating_secure_trusted">Seguro y de
 \nconfianza</string>
     <string name="intro_frag_fourth_text_3">En este caso el Estado de Privacidad es \"Seguro\", ya que éste es el mínimo común denominador de los dos interlocutores.</string>
     <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el Estado de Privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje, por ejemplo:</string>
@@ -164,9 +163,9 @@
 \n<font color="#4caf50">p≡p</font> utiliza el grado de privacidad para indicar el nivell de seguridad de su comunicación.
 \nEste grado de privacidad se muestra en forma de icono en el avatar del contacto</string>
     <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
-    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta. 
+    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta.
 \n¿Confirma que quiere restablecer\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas sus cuentas. 
+    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas sus cuentas.
 \n¿Confirma que quiere restablecer\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>

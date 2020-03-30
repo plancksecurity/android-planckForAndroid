@@ -13,7 +13,8 @@ import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-import com.fsck.k9.pEp.ui.AboutActivity;
+import security.pEp.ui.about.AboutActivity;
+import security.pEp.ui.about.LicenseActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupCheckSettingsFragment;
@@ -48,6 +49,8 @@ public interface PEpComponent extends ActivityComponent {
     void inject(KeysyncManagement activity);
 
     void inject(AboutActivity activity);
+
+    void inject(LicenseActivity activity);
 
     void inject(PermissionsActivity activity);
 

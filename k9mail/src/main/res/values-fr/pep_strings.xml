@@ -93,7 +93,7 @@
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Faire confiance au serveur et stocker les messages sans protection</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Protéger les messages stockés</string>
     <string name="pep_enable_privacy_protection">protection de la vie privée p≡p</string>
-    <string name="pep_app_license">Sous licence GNU General Public License v3</string>
+    <string name="pep_app_license"></string>
     <string name="pep_trust_server_description">Stocker les messages de façon sûr coté serveur.</string>
     <string name="pep_account_privacy_protection_explanation">Activer la protection de vie privée p≡p pour ce compte</string>
     <string name="pep_forward_warning">Avertissement de réponse non sécurisée</string>
@@ -122,10 +122,10 @@
     <string name="action_continue">Continuer</string>
     <string name="battery_optimization_rationale_title">Désactiver les optimisation d\'économie d\'énergie</string>
     <string name="battery_optimiazation_explanation">Afin de synchroniser vos e-mail en tâche de fond, vous devez désactiver les optimisation d\'économie d\'énergie</string>
-    <string name="pgp_key_import_instructions">Afin de procéder à l’importation de la clef, veuillez importer la clef publique p≡p jointe et répondre avec un message qui : 
-\n 
-\n 
-\n 1 - possède votre clef publique PGP et 
+    <string name="pgp_key_import_instructions">Afin de procéder à l’importation de la clef, veuillez importer la clef publique p≡p jointe et répondre avec un message qui :
+\n
+\n
+\n 1 - possède votre clef publique PGP et
 \n 2 - soit crypté et signé avec la clef p≡p que vous venez d’importer</string>
     <string name="search_empty_error">Veuillez saisir votre recherche</string>
     <string name="pep_sync_is_disabled_global">La synchronisation p≡p est désactivée</string>

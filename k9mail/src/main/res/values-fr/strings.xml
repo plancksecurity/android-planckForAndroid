@@ -6,8 +6,7 @@
     <string name="open_market">Ouvrir le Google Play Store</string>
     <string name="app_authors_fmt">=== App-specific strings =============================================================</string>
     <string name="app_revision_fmt">Informations de révision\u00A0: %s</string>
-    <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes\u00A0: <xliff:g id="app_libraries_list">%s</xliff:g>
-    </string>
+    <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes\u00A0:</string>
     <string name="app_emoji_icons">Icônes Emoji\u00A0: <xliff:g id="app_emoji_icons_link">%s</xliff:g>
     </string>
     <string name="read_attachment_label">lire les pièces jointes</string>

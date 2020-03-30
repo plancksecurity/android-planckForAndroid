@@ -36,7 +36,7 @@
     <string name="pep_enable_privacy_protection">Protegir privacitat</string>
     <string name="pep_explanation">Explicació</string>
     <string name="pep_suggestion">Sugerencia</string>
-    <string name="pep_app_license">Llicenciat sota GNU General Public License v3</string>
+    <string name="pep_app_license"></string>
     <string name="pep_trust_server_description">Desa els correus al servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>

@@ -21,13 +21,12 @@ import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import security.pEp.ui.intro.WelcomeMessage
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
-import com.fsck.k9.pEp.ui.AboutActivity
+import security.pEp.ui.about.AboutActivity
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools

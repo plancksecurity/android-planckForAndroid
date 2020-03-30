@@ -4,7 +4,7 @@
     <string name="open_market">Open Play Store</string>
     <string name="app_authors_fmt">Auteurs: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Revisie Informatie: <xliff:g id="app_revision_url">%s</xliff:g></string>
-    <string name="app_libraries">De volgende externe bibliotheken worden gebruikt: <xliff:g id="app_libraries_list">%s</xliff:g></string>
+    <string name="app_libraries">De volgende externe bibliotheken worden gebruikt:</string>
     <string name="app_emoji_icons">Emoji icons: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_attachment_label">Lees E-mail Bijlages</string>
     <string name="read_attachment_desc">Sta deze applicatie toe om bijlagen van e-mails te lezen.</string>
