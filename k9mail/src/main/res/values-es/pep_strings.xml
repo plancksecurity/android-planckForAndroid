@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--<string name="pep_account_setup_generating_keys">Setting your Privacy by Default </string>-->
     <string name="pep_reset_trust">Desconfiar</string>
     <string name="pep_pgp_fingerprint">Huella PGP</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
@@ -9,12 +10,15 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
     <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
+    <!--<string name="pep_extra_addresses">Extra key ids:</string>-->
     <string name="pep_use_keyserver">Buscar las claves en el servidor de claves</string>
     <string name="pep_passive_mode">Modo pasivo</string>
+    <!--<string name="pep_add_key_to_blacklist">Add a key to blacklist</string>-->
+    <!--<string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>-->
     <string name="pep_confirm_trustwords">Confirmar</string>
     <string name="pep_wrong_trustwords">Rechazar</string>
     <string name="pep_wrong_fingerprint">Huella incorrecta</string>
-    <string name="pep_ask_trustwords">Pregunte a su interlocutor cuáles son las trustwords. Después compárelas con las que se muestran a continuación.</string>
+    <string name="pep_ask_trustwords">Pregunte a su interlocutor en persona o por teléfono: ¿Cuáles son las Trustwords\? Después compárelas con las que se muestran a continuación.</string>
     <string name="pep_complete_partner_format">Compañero\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Compañero\n%1$s</string>
     <string name="pep_complete_myself_format">Yo\n%1$s &lt;%2$s&gt;</string>
@@ -31,13 +35,14 @@
     <string name="pep_enable_privacy_protection">p≡p protección de privacidad</string>
     <string name="pep_explanation">Explicación</string>
     <string name="pep_suggestion">Sugerencia</string>
+    <string name="pep_app_license">Licenciado bajo pEp security EULA</string>
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Habilitar p≡p protección de privacidad para esta cuenta</string>
     <string name="configure_account_action">Administrar cuentas</string>
     <string name="key_list_title">Claves disponibles</string>
     <string name="pep_add_device_ask_trustwords">Está a punto de agregar un dispositivo a otro grupo de dispositivos p≡p. Confirme verificando con éxito las siguientes Trustwords.</string>
     <string name="pep_device_group">Grupo de Dispositivos de p≡p</string>
-    <string name="handshake_reset_dialog_message">Advertencia: Has desconfiado de este interlocutor anteriormente. ¿Seguro que quieres realizar un nuevo handshake\?</string>
+    <string name="handshake_reset_dialog_message">Advertencia: Has desconfiado de este interlocutor anteriormente. ¿Seguro que quieres realizar un nuevo Handshake\?</string>
     <string name="pep_gpg_compatibility">Compatibilidad con OpenPGP</string>
     <string name="crash_toast_text">Oops, algo salió mal</string>
     <string name="advanced_options">Opciones avanzadas</string>
@@ -137,13 +142,12 @@
     <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_title">No pudimos proteger este mensaje.</string>
     <string name="message_failed_to_encrypt">No pudimos proteger este mensaje.</string>
-    <string name="only_own_identities">el suyo es un mensaje propio, sin que participe ningun interlocutor.</string>
+    <string name="only_own_identities">Este es un mensaje propio, sin que participe ningun interlocutor.</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="pep_rating_forced_unencrypt">Deshabilitado</string>
     <string name="pep_rating_mistrusted">Sospechoso</string>
     <string name="pep_rating_secure">Seguro</string>
-    <string name="pep_rating_secure_trusted">Seguro y de
-\nconfianza</string>
+    <string name="pep_rating_secure_trusted">Seguro y de confianza</string>
     <string name="intro_frag_fourth_text_3">En este caso el Estado de Privacidad es \"Seguro\", ya que éste es el mínimo común denominador de los dos interlocutores.</string>
     <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el Estado de Privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje, por ejemplo:</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
@@ -157,15 +161,16 @@
     <string name="intro_frag_second_header_2">Seguro y de confianza</string>
     <string name="intro_frag_second_header_1">Seguro</string>
     <string name="intro_frag_first_text_3">Y también en la barra superior, cuando abre o redacta un correo electrónico:</string>
-    <string name="intro_frag_first_text_1">Le damos la bienvenida al tutorial de <font color="#4caf50">p≡p</font></string>
-    <string name="intro_frag_first_text_2">Puede cerrar este tutorial en cualquier momento.
+    <string name="intro_frag_first_text_2">Puedes cerrar este tutorial en cualquier momento.
 \n
-\n<font color="#4caf50">p≡p</font> utiliza el grado de privacidad para indicar el nivell de seguridad de su comunicación.
-\nEste grado de privacidad se muestra en forma de icono en el avatar del contacto</string>
+\n<font color="# 4caf50">p≡p</font> utiliza un Estado de Privacidad para indicar qué tan segura es su comunicación.
+\n
+\nEste Estado de Privacidad se muestra como un icono en el avatar del usuario</string>
+    <string name="intro_frag_first_text_1">Bienvenidos al tutorial <font color="#4caf50">p≡p</font></string>
     <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
-    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta.
+    <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta. 
 \n¿Confirma que quiere restablecer\?</string>
-    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas sus cuentas.
+    <string name="pep_key_reset_all_own_ids_warning">Esta acción restablecerá todas sus cuentas. 
 \n¿Confirma que quiere restablecer\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
@@ -194,6 +199,8 @@
     <string name="key_import_wizard_from_pgp_initial_text">Está a punto de iniciar el proceso de importación de la clave a partir de un cliente PGP</string>
     <string name="key_import_wizard_from_pep_initial_text">Vamos a iniciar el proceso de importación de la clave: Se importará y usará su clave p≡p de otro dispositivo, y se exportará su clave privada.</string>
     <string name="key_import_wizard_handshake_explanation">Por favor compare las siguientes Trustwords con las que se muestran en su otro dispositivo y confirme que coincidan.</string>
+    <string name="pgp">PGP</string>
+    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Salir del Grupo de dispositivos</string>
     <string name="pep_sync_is_disabled_global">La sincronización de p≡p está desactivada</string>
     <string name="pep_sync_is_enabled_global">La sincronización de p≡p está activada</string>
@@ -204,10 +211,26 @@
     <string name="nnf_name">Nombre</string>
     <string name="nnf_new_folder">Nueva carpeta</string>
     <string name="permissions_needed_message">No otorgar los permisos necesarios puede causar comportamientos inesperados. Presione OK para otorgarlos.</string>
+    <string name="device_offline_warning">Su dispositivo parece estar desconectado, por favor verifique su conexión antes de poder continuar</string>
     <string name="account_already_exists">La cuenta ya existe</string>
     <string name="add_account_title">Agregue su cuenta</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep" translatable="false">p≡p</string>
+    <string name="keysync_wizard_group_creation_done_message">Hemos creado con éxito un grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
+    <string name="keysync_wizard_create_group_first_message">Se ha encontrado un segundo dispositivo. Podemos formar un grupo de dispositivos para sincronizar toda tu privacidad en ambos. ¿Iniciamos la sincronización\?</string>
+    <string name="keysync_wizard_error_message">Se ha producido un error al sincronizar los dispositivos. Inténtelo de nuevo.</string>
+    <string name="keysync_wizard_waiting_message">Espera unos instantes mientras sincronizamos tus dispositivos. Este proceso puede llevar unos minutos.</string>
+    <string name="keysync_wizard_action_cancel">Cancelar</string>
+    <string name="keysync_wizard_action_leave">Salir</string>
+    <string name="keysync_wizard_action_next">Siguiente</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Se ha encontrado otro dispositivo. Podemos añadirlo a tu grupo de dispositivos para sincronizar tu privacidad entre todos los miembros del grupo. ¿Iniciamos la sincronización\?</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositivo ahora forma parte de su grupo de dispositivos. Ahora toda su privacidad está sincronizada.</string>
+    <string name="keysync_wizard_handshake_message">Asegúrese de tener ambos dispositivos juntos para poder comparar las Trustwords en los dos. ¿Son las Trustwords a continuación iguales a las Trustwords en el otro dispositivo\?</string>
+    <string name="license">Licencia</string>
+    <string name="keysync_wizard_action_try_again">Inténtelo de nuevo</string>
+    <string name="pep_subject_protection">Proteger asunto del mensaje</string>
 </resources>

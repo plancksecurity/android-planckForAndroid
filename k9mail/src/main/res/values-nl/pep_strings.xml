@@ -4,6 +4,8 @@
     <string name="navigation_drawer_close">Navigatielade sluiten</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
@@ -40,89 +42,88 @@
     </array>
     <!-- Translatable strings -->
     <string name="pep_account_setup_generating_keys">"Uw privacy standaard instellen "</string>
-    <string name="pep_reset_trust">Stoppen met vertrouwen</string>
-    <string name="pep_pgp_fingerprint">PGP-Fingerprint</string>
-    <string name="pep_dialog_weaker_forward_warning_message">U staat op het punt een beveiligd bericht door te sturen als onbeveiligd. Als u ervoor kiest om door te gaan, dan lopen u en uw communicatie partners het risico dat vertrouwelijke informatie gelekt kan worden. Weet u zeker dat u door wilt gaan\?</string>
+    <string name="pep_reset_trust">Stop met vertrouwen</string>
+    <string name="pep_pgp_fingerprint">PGP-vingerafdruk</string>
+    <string name="pep_dialog_weaker_forward_warning_message">U staat op het punt een beveiligd bericht als onveilig door te sturen. Als u ervoor kiest om door te gaan, kan er vertrouwelijke informatie uitlekken, waardoor u en uw communicatiepartners gevaar lopen. Weet je zeker dat je door wilt gaan\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Doorgaan</string>
-    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Annuleren</string>
-    <string name="pep_dialog_confirm_forward_title">Doorsturen bevestigen</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">annuleren</string>
+    <string name="pep_dialog_confirm_forward_title">Vooruit bevestigen</string>
     <string name="pep_title_activity_privacy_status">Privacystatus</string>
-    <string name="pep_extra_addresses">Extra sleutel-id\'s:</string>
-    <string name="pep_use_keyserver">Sleutels opzoeken op sleutelserver</string>
+    <string name="pep_extra_addresses">Extra sleutel-ID\'s:</string>
+    <string name="pep_use_keyserver">Zoek sleutels op de sleutelserver</string>
     <string name="pep_passive_mode">Passieve modus</string>
-    <string name="pep_add_key_to_blacklist">Een sleutel toevoegen aan een blokkeringslijst</string>
-    <string name="pep_remove_key_from_blacklist">Een sleutel uit de blokkeringslijst verwijderen</string>
-    <string name="pep_confirm_trustwords">Accepteren</string>
-    <string name="pep_wrong_trustwords">Weigeren</string>
+    <string name="pep_add_key_to_blacklist">Voeg een sleutel toe aan de zwarte lijst</string>
+    <string name="pep_remove_key_from_blacklist">Verwijder een sleutel uit de zwarte lijst</string>
+    <string name="pep_confirm_trustwords">Bevestigen</string>
+    <string name="pep_wrong_trustwords">Afwijzen</string>
     <string name="pep_wrong_fingerprint">Verkeerde vingerafdruk</string>
-    <string name="pep_ask_trustwords">Vraag het uw partner persoonlijk of via de telefoon: Wat zijn uw Trustwords\? Vergelijk vervolgens met het juiste antwoord hieronder.</string>
+    <string name="pep_ask_trustwords">Vraag uw partner persoonlijk of telefonisch: wat zijn uw vertrouwenswoorden\? Vergelijk dan met het juiste antwoord hieronder.</string>
     <string name="pep_complete_partner_format">Partner
-\n%1$s &lt;%2$s&gt;</string>
+\n% 1 $ s &lt;% 2 $ s&gt;</string>
     <string name="pep_partner_format">Partner
-\n%1$s</string>
-    <string name="pep_complete_myself_format">Ikzelf
-\n%1$s &lt;%2$s&gt;</string>
-    <string name="pep_myself_format">Ikzelf
-\n%1$s</string>
-    <string name="pep_force_unprotected">Bescherming uitschakelen</string>
-    <string name="pep_force_protected">Bescherming inschakelen</string>
+\n% 1 $ s</string>
+    <string name="pep_complete_myself_format">Mezelf
+\n% 1 $ s &lt;% 2 $ s&gt;</string>
+    <string name="pep_myself_format">Mezelf
+\n% 1 $ s</string>
+    <string name="pep_force_unprotected">Schakel beveiliging uit</string>
+    <string name="pep_force_protected">Beveiliging inschakelen</string>
     <string name="pep_receivedSecretKey">Deze geheime sleutel ontvangen:</string>
     <string name="pep_username">Gebruikersnaam</string>
     <string name="pep_userAddress">Gebruikersadres</string>
     <string name="pep_secret_key_detected">Geheime sleutel gedetecteerd</string>
-    <string name="pep_received_this_secret_key" translatable="false">The following secret key was received. Are you sure you want to use it?</string>
-    <string name="pep_from_format">van afzender %1$s</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Server vertrouwen en mails onbeschermd opslaan</string>
-    <string name="pep_mistrust_server_and_store_mails_encrypted">Berichten veilig opslaan</string>
-    <string name="pep_enable_privacy_protection">p≡p-privacybescherming</string>
+    <string name="pep_received_this_secret_key" translatable="false">De volgende geheime sleutel is ontvangen. Weet je zeker dat je het wilt gebruiken\?</string>
+    <string name="pep_from_format">van afzender% 1 $ s</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Vertrouw server en bewaar e-mails onbeschermd</string>
+    <string name="pep_mistrust_server_and_store_mails_encrypted">Bewaar berichten veilig</string>
+    <string name="pep_enable_privacy_protection">p≡p privacybescherming</string>
     <string name="pep_explanation">Uitleg</string>
     <string name="pep_suggestion">Suggestie</string>
-    <string name="pep_app_license"></string>
-    <string name="pep_trust_server_description">Sla mails aan serverzijde in een veilige indeling op.</string>
-    <string name="pep_account_privacy_protection_explanation">Hiermee wordt p≡p-privacybescherming voor deze account ingeschakeld</string>
-    <string name="pep_forward_warning">Waarschuwing onveilig antwoord</string>
-    <string name="pep_forward_warning_description">Toon een waarschuwing wanneer een bericht beveiliging verliest door middel van beantwoorden of doorsturen.</string>
+    <string name="pep_app_license">Gelicentieerd onder pEp security EULA</string>
+    <string name="pep_trust_server_description">Bewaar mails aan de serverzijde in een veilige vorm.</string>
+    <string name="pep_account_privacy_protection_explanation">Schakel p≡p-privacybescherming in voor dit account</string>
+    <string name="pep_forward_warning">Onveilige antwoordwaarschuwing</string>
+    <string name="pep_forward_warning_description">Geef een waarschuwing weer wanneer een bericht de beveiliging verliest door te antwoorden of door te sturen.</string>
     <string name="key_list_title">Beschikbare sleutels</string>
     <string name="message_list_item_removed">Verwijderd</string>
-    <string name="message_list_item_undo">ONGEDAAN MAKEN</string>
+    <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Beschikbare accounts</string>
-    <string name="pep_app_description">K-9/p≡p is een krachtige gratis e-mailclient voor Android met erg eenvoudige privacy.</string>
+    <string name="pep_app_description">K-9 / p≡p is een krachtige gratis e-mailclient voor Android met vrij gemakkelijke privacy.</string>
     <string name="global_settings_title">Algemene instellingen</string>
     <string name="configure_account_action">Accounts beheren</string>
-    <string name="pep_add_device_ask_trustwords">U staat op het punt een apparaat toe te voegen aan een andere p≡p-apparatengroep. Bevestig door de volgende Trustwords te verifiëren.</string>
-    <string name="pep_add_device_ask_move_trustwords">U staat op het punt een apparaat te verplaatsen naar een andere p≡p-apparatengroep. Bevestig door de volgende Trustwords te verifiëren.</string>
-    <string name="action_tutorial">Tutorial</string>
-    <string name="pep_rating_secure">Veilig</string>
-    <string name="intro_frag_second_header_1">Veilig</string>    <string name="pep_device_group">p≡p-apparatengroep</string>
-    <string name="handshake_reset_dialog_message">Waarschuwing: Deze communicatiepartner was eerder al aangemerkt als niet-vertrouwd. Weet u zeker dat u wilt doorgaan met een handshake\?</string>
-    <string name="pep_gpg_compatibility">OpenPGP Compatibiliteit</string>
-    <string name="crash_toast_text">Oeps, er is iets misgelopen</string>
+    <string name="pep_add_device_ask_trustwords">U staat op het punt een apparaat toe te voegen aan een andere p≡p-apparaatgroep. Bevestig door met succes de volgende vertrouwenswoorden te verifiëren.</string>
+    <string name="pep_add_device_ask_move_trustwords">U staat op het punt een apparaat naar een andere p≡p-apparaatgroep te verplaatsen. Bevestig door met succes de volgende vertrouwenswoorden te verifiëren.</string>
+    <string name="pep_device_group">p≡p Apparaatgroep</string>
+    <string name="handshake_reset_dialog_message">Waarschuwing: deze communicatiepartner was eerder gemarkeerd als wantrouwend. Weet je zeker dat je door wilt gaan met nog een handdruk\?</string>
+    <string name="pep_gpg_compatibility">Compatibiliteit met OpenPGP</string>
+    <string name="crash_toast_text">Oeps! Er is iets misgegaan</string>
     <string name="advanced_options">Geavanceerde opties</string>
     <string name="basic_options">Basisopties</string>
-    <string name="synchronize_these_accounts_between_my_devices">Deze accounts synchroniseren tussen mijn apparaten</string>
-    <string name="pep_keysync_timeout">Time-out van p≡p-synchronisatie</string>
-    <string name="read_permission_first_explanation">We hebben uw toestemming nodig om de contactpersonen te lezen die op uw mobiele telefoon opgeslagen zijn</string>
+    <string name="synchronize_these_accounts_between_my_devices">Synchroniseer deze accounts tussen mijn apparaten</string>
+    <string name="pep_keysync_timeout">p≡p time-out voor synchronisatie</string>
+    <string name="read_permission_first_explanation">We hebben uw toestemming nodig om de contacten te lezen die op uw mobiele telefoon zijn opgeslagen</string>
     <string name="button_settings">Instellingen</string>
-    <string name="read_snackbar_permission_rationale">We hebben uw toestemming nodig om de contactpersonen te lezen die op uw mobiele telefoon opgeslagen zijn</string>
-    <string name="read_snackbar_permission_permanently_denied">Als u ons niet toestaat uw contactpersonen te lezen, kan dit onverwacht gedrag veroorzaken</string>
-    <string name="read_permission_rationale_title">Contactpersonen lezen</string>
+    <string name="read_snackbar_permission_rationale">We hebben uw toestemming nodig om de contacten te lezen die op uw mobiele telefoon zijn opgeslagen</string>
+    <string name="read_snackbar_permission_permanently_denied">Als u ons niet toestaat uw contacten te lezen, kan dit onverwacht gedrag veroorzaken</string>
+    <string name="read_permission_rationale_title">Contacten lezen</string>
     <string name="download_permission_first_explanation">We hebben uw toestemming nodig om bestanden op uw mobiele telefoon te downloaden</string>
     <string name="download_snackbar_permission_rationale">We hebben uw toestemming nodig om bijlagen van uw e-mails op te slaan.</string>
-    <string name="download_snackbar_permission_permanently_denied">Als u ons niet toestaat bestanden te downloaden, kan dit onverwacht gedrag veroorzaken</string>
+    <string name="download_snackbar_permission_permanently_denied">Als u ons geen bestanden laat downloaden, kan dit onverwacht gedrag veroorzaken</string>
     <string name="download_permission_rationale_title">Bestanden downloaden</string>
     <string name="add_fpr">Vingerafdruk toevoegen</string>
-    <string name="error_parsing_fingerprint">Fout bij het parseren van de vingerafdruk.</string>
-    <string name="is_always_secure">Beschermd op server opslaan</string>
-    <string name="is_not_always_secure">Onbeschermd op server opslaan</string>
+    <string name="error_parsing_fingerprint">Fout bij het parseren van vingerafdruk!</string>
+    <string name="is_always_secure">Beveiligd opslaan op server</string>
+    <string name="is_not_always_secure">Bewaar onbeschermd op de server</string>
     <string name="master_key_management">Extra sleutelbeheer</string>
     <string name="message_saving_error">Fout bij opslaan van bericht</string>
-    <string name="action_continue">Doorgaan</string>
-    <string name="battery_optimization_rationale_title">Batterij-optimalisaties uitschakelen</string>
-    <string name="battery_optimiazation_explanation">Om uw e-mails op de achtergrond te synchroniseren, moeten we batterij-optimalisaties uitschakelen</string>
+    <string name="action_continue">Doorgaan met</string>
+    <string name="battery_optimization_rationale_title">Schakel batterij-optimalisaties uit</string>
+    <string name="battery_optimiazation_explanation">Om uw e-mails op de achtergrond te synchroniseren, moeten we batterijoptimalisaties uitschakelen</string>
     <string name="add_account_title">Voeg uw account toe</string>
-    <string name="add_account_message">Om deze account te kunnen gebruiken, moet u deze aan uw apparaat toevoegen</string>
+    <string name="add_account_message">Om dit account te kunnen gebruiken, moet u het aan uw apparaat toevoegen</string>
     <string name="account_already_exists">Account bestaat al</string>
-    <string name="permissions_needed_message">Als u niet de benodigde machtigingen verleent, kan dit onverwacht gedrag veroorzaken. Druk op OK om ze ons te verlenen.</string>
+    <string name="device_offline_warning">Je apparaat lijkt offline te zijn, controleer je verbinding voordat je verder kunt gaan</string>
+    <string name="permissions_needed_message">Het niet verlenen van de benodigde toestemmingen kan onverwacht gedrag veroorzaken. Druk op OK om ze aan ons toe te kennen.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -171,65 +172,99 @@
     <string name="nnf_new_folder">Nieuwe map</string>
     <string name="nnf_create_folder_error">Kan map niet maken</string>
     <string name="nnf_name">Naam</string>
-    <string name="nnf_select_something_first">Selecteer eerst een item</string>
-    <string name="nnf_need_valid_filename">Vul een geldige bestandsnaam in of selecteer deze</string>
+    <string name="nnf_select_something_first">Selecteer eerst iets</string>
+    <string name="nnf_need_valid_filename">Voer een geldige bestandsnaam in of selecteer deze</string>
     <string name="nnf_permission_external_write_denied">Toestemming voor toegang tot bestandssysteem geweigerd</string>
     <string name="nnf_filename">Bestandsnaam</string>
-    <string name="key_import_accept">Accepteren</string>
-    <string name="key_import_reject">Weigeren</string>
+    <string name="key_import_accept">Aanvaarden</string>
+    <string name="key_import_reject">Afwijzen</string>
     <string name="key_import_accept_feedback">Sleutel vervangen</string>
-    <string name="key_import_reject_feedback">Sleutel geweigerd</string>
-    <string name="message_loading_error">Nog bezig met het laden van berichtwaardering, probeer het opnieuw</string>
-    <string name="pep_sync">p≡p-synchronisatie</string>
-    <string name="pep_sync_enable_account">Deze account synchroniseren</string>
-    <string name="pep_sync_leave_device_group">Apparatengroep verlaten</string>
-    <string name="key_import_wizard_handshake_explanation">Vergelijk de volgende Trustwords met die op uw andere apparaat en controleer of ze overeenstemmen.</string>
-    <string name="key_import_wizard_from_pep_initial_text">We staan op het punt het proces voor het importeren van de sleutels te starten: Hiermee wordt uw p≡p-sleutel van een ander apparaat geïmporteerd en gebruikt en wordt uw persoonlijke sleutel geëxporteerd.</string>
-    <string name="key_import_wizard_from_pgp_initial_text">U staat op het punt het proces voor het importeren van de sleutels van een PGP-client te starten</string>
-    <string name="key_import_wizard_from_pgp_key_sent">Een bericht met uw openbare p≡p-sleutel is naar uzelf verzonden. Open dit bericht op uw PGP-apparaat en importeer uw openbare p≡p-sleutel in uw sleutelhanger.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">Maak in uw PGP-apparaat een antwoordbericht op het bericht dat u hebt ontvangen van p≡p en voeg uw openbare PGP-sleutel toe.</string>
-    <string name="key_import_wizard_from_pgp_send_handshake_request">Versleutel en onderteken het antwoordbericht met de openbare p≡p-sleutel die u zopas hebt geïmporteerd en verzend deze.</string>
-    <string name="key_import_wizard_handshake_explanation_pgp">Vergelijk de PGP-vingerafdrukken van de onderstaande sleutels met die op uw PGP-apparaat en controleer of ze overeenstemmen.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">Maak in uw PGP-apparaat een extra antwoordbericht op het bericht dat u hebt ontvangen van p≡p. Voeg deze keer uw persoonlijke PGP-sleutel toe.</string>
-    <string name="key_import_wizard_from_pgp_send_private_key_msg">Versleutel en onderteken het antwoordbericht met de openbare p≡p-sleutel en verzend deze.</string>
-    <string name="pgp_key_import_instructions">Om door te gaan met het importeren van de sleutel, moet u de openbare p≡p-sleutel in de bijlage importeren en antwoorden met een bericht dat: 
-\n
-\n
-\n 1. uw openbare PGP-sleutel in de bijlage bevat
-\n 2. versleuteld is en ondertekend is met de p≡p-sleutel die u zopas geïmporteerd hebt</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Als u een sleutelimportbewerking hebt gestart voor de volgende account: %s, klikt u op Starten.</string>
-    <string name="key_import_failure">Kan niet importeren en een willekeurige sleutel van %1$s met sleutel-id %2$s gebruiken</string>
-    <string name="key_import_success">%1$s-sleutel geïmporteerd van %2$s</string>
-    <string name="key_import_from_fs_input_fpr">Vul de sleutel-id of de vingerafdruk van de sleutel in.</string>
-    <string name="reset">Opnieuw instellen</string>
-    <string name="reset_all">Alles opnieuw instellen</string>
-    <string name="key_reset_for_identity_context_title">Alle p≡p-gegevens voor deze communicatiepartner opnieuw instellen:</string>
-    <string name="key_reset_identity_feedback">Alle p≡p-gegevens voor deze communicatiepartner zijn opnieuw ingesteld.</string>
-    <string name="key_reset_own_identity_feedback">De account is opnieuw ingesteld.</string>
-    <string name="trust_identity_feedback">%s is nu vertrouwd</string>
-    <string name="mistrust_identity_feedback">%s is nu niet vertrouwd</string>
-    <string name="pep_key_reset_all_own_ids_summary">Alle accounts opnieuw instellen</string>
-    <string name="key_reset_all_own_identitities_feedback">Alle p≡p-accounts zijn opnieuw ingesteld.</string>
-    <string name="pep_key_reset_all_own_ids_warning">Met deze actie worden al uw accounts opnieuw ingesteld. \n Weet u zeker dat u opnieuw wilt instellen\?</string>
-    <string name="pep_key_reset_own_id_warning">Met deze actie wordt uw account opnieuw ingesteld. \n Weet u zeker dat u opnieuw wilt instellen\?</string>
-    <string name="pep_key_reset_own_id_warning_title">%s-account opnieuw instellen</string>
-    <string name="pep_sync_is_enabled_global">p≡p-synchronisatie is ingeschakeld</string>
+    <string name="key_import_reject_feedback">Sleutel afgewezen</string>
+    <string name="message_loading_error">Berichtclassificatie wordt nog steeds geladen, probeer het opnieuw</string>
+    <string name="pep_sync">p≡p synchronisatie</string>
+    <string name="pep_sync_enable_account">Synchroniseer dit account</string>
+    <string name="pep_sync_is_enabled_global">p≡p sync is ingeschakeld</string>
     <string name="pep_sync_is_disabled_global">p≡p-synchronisatie is uitgeschakeld</string>
-    <string name="search_empty_error">Voer tekst in om te zoeken</string>
-    <string name="intro_frag_first_text_1"> Unstranslatable strings </string>
-    <string name="intro_frag_first_text_2"> Unstranslatable strings </string>
+    <string name="pep_sync_leave_device_group">Apparaatgroep verlaten</string>
+    <string name="open_pgp"/>
+    <string name="pgp"/>
+    <string name="key_import_wizard_handshake_explanation">Vergelijk de volgende vertrouwenswoorden met die op uw andere apparaat en bevestig of ze overeenkomen.</string>
+    <string name="key_import_wizard_from_pep_initial_text">We staan op het punt het sleutelimportproces te starten: dit importeert en gebruikt uw p≡p-sleutel vanaf een ander apparaat en exporteert uw privésleutel.</string>
+    <string name="key_import_wizard_from_pgp_initial_text">U staat op het punt het sleutelimportproces te starten vanaf een PGP-client</string>
+    <string name="key_import_wizard_from_pgp_key_sent">Er is een bericht met uw openbare p≡p-sleutel naar uzelf verzonden. Open dit bericht op uw PGP-apparaat en importeer uw openbare p≡p-sleutel in uw sleutelhanger.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Maak op uw PGP-apparaat een antwoordbericht aan dat u van p≡p hebt ontvangen en voeg uw openbare PGP-sleutel toe.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Versleutel en onderteken het antwoordbericht met de openbare p≡p-sleutel die u zojuist hebt geïmporteerd en verzend deze.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Vergelijk de PGP-vingerafdrukken van de onderstaande sleutels met die op uw PGP-apparaat en controleer of ze overeenkomen.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Maak op uw PGP-apparaat nog een antwoordbericht aan dat u van p≡p hebt ontvangen. Voeg deze keer uw persoonlijke PGP-sleutel toe.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Versleutel en onderteken het antwoordbericht opnieuw met de openbare p≡p-sleutel en verzend het.</string>
+    <string name="pgp_key_import_instructions">Om verder te gaan met de sleutelimport, importeert u de bijgevoegde openbare p≡p-sleutel en antwoordt u met een bericht dat:
+\n
+\n
+\n 1. heeft uw openbare PGP-sleutel bijgevoegd en
+\n 2. is gecodeerd en ondertekend met de p≡p-sleutel die u zojuist hebt geïmporteerd</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Als u een sleutelimport hebt gestart voor het volgende account:% s, klikt u op Start.</string>
+    <string name="key_import_failure">Kan sleutel van% 1 $ s met sleutel-id:% 2 $ s niet importeren en gebruiken</string>
+    <string name="key_import_success">Sleutel% 1 $ s geïmporteerd uit% 2 $ s</string>
+    <string name="key_import_from_fs_input_fpr">Voer de sleutel-ID of de vingerafdruk van de sleutel in.</string>
+    <string name="reset">Reset</string>
+    <string name="reset_all">Alles resetten</string>
+    <string name="key_reset_for_identity_context_title">Reset alle p≡p-gegevens voor deze communicatiepartner:</string>
+    <string name="key_reset_identity_feedback">Alle p≡p-gegevens voor deze communicatiepartner zijn gereset.</string>
+    <string name="key_reset_own_identity_feedback">Het account is gereset.</string>
+    <string name="trust_identity_feedback">% s wordt nu vertrouwd</string>
+    <string name="mistrust_identity_feedback">% s wordt nu gewantrouwd</string>
+    <string name="pep_key_reset_all_own_ids_summary">Reset alle accounts</string>
+    <string name="key_reset_all_own_identitities_feedback">Alle p≡p-accounts zijn gereset.</string>
+    <string name="pep_key_reset_all_own_ids_warning">Met deze actie worden al uw accounts gereset.
+\n Weet je zeker dat je wilt resetten\?</string>
+    <string name="pep_key_reset_own_id_warning">Met deze actie wordt uw account gereset.
+\n Weet je zeker dat je wilt resetten\?</string>
+    <string name="pep_key_reset_own_id_warning_title">Reset% s account</string>
+    <string name="ellipsized_text" translatable="false">%s  …</string>
+    <!-- Folder list-->
+    <string name="search_empty_error">Schrijf tekst om te zoeken</string>
+    <!-- Welcome/Tutorial-->
+    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> tutorial</string>
+    <string name="intro_frag_first_text_2">Je kunt deze tutorial op elk moment sluiten.
+\n
+\n<font color="# 4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.
+\n
+\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker</string>
     <string name="intro_frag_first_text_3">En in de bovenste balk wanneer u een e-mail opent of schrijft:</string>
-    <string name="intro_frag_second_text_1">Met deze privacystatus is alle communicatie beveiligd, maar om te bevestigen dat uw contactpersoon werkelijk de persoon is die u kent, moet u Trustwords bij deze contactpersoon gebruiken.</string>
-    <string name="intro_frag_second_text_2">Wanneer wordt bevestigd dat de Trustwords correct zijn en de Handshake is uitgevoerd, zal de communicatie volledig veilig en vertrouwd zijn.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
-    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
-    <string name="intro_frag_fourth_text_2">Het pictogram in de bovenste balk geeft de privacystatus van het bericht weer, die de laagste gemene deler is van alle communicatiepartners van dat bericht, bijvoorbeeld:</string>
-    <string name="intro_frag_fourth_text_3">In dit geval is de privacystatus van het bericht beveiligd, omdat dit de kleinste gemene deler is van de twee communicatiepartners.</string>
-    <string name="pep_rating_secure_trusted">Veilig en
-\n vertrouwd</string>
-    <string name="pep_rating_forced_unencrypt">Uitgeschakeld</string>
-    <string name="only_own_identities">Dit is een eigen bericht, er is geen communicatiepartner bij betrokken.</string>
-    <string name="keysync_wizard_handshake_message">Zorg dat u de apparaten bij elkaar hebt, zodat u de Trustwords op de apparaten kunt vergelijken. Stemmen de Trustwords hieronder overeen met de Trustwords op het andere apparaat\?</string>
-    <string name="keysync_wizard_create_group_first_message">Er is een tweede apparaat gedetecteerd. We kunnen een apparatengroep vormen om al uw persoonlijke informatie op beide apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
-    <string name="keysync_wizard_action_try_again">Opnieuw proberen</string>
+    <string name="intro_frag_second_header_1">Veilig</string>
+    <string name="intro_frag_second_header_2">Veilig en vertrouwd</string>
+    <string name="intro_frag_second_header_3">Wantrouwde</string>
+    <string name="intro_frag_second_text_1">Met deze privacystatus is alle communicatie veilig, maar om te bevestigen dat uw contactpersoon werkelijk de persoon is die u kent, moet u deze contactpersoon vertrouwen.</string>
+    <string name="intro_frag_second_text_2">Wanneer wordt bevestigd dat de Trustwords correct zijn en de Handshake is voltooid, zal de communicatie volledig veilig en vertrouwd zijn.</string>
+    <string name="intro_frag_second_text_3">Als de Trustwords niet correct zijn, wordt uw communicatiepartner wantrouwt.</string>
+    <string name="intro_frag_third_text_1">Handdruk</string>
+    <string name="intro_frag_third_text_2">Wanneer u op het pictogram Privacystatus in de bovenste balk klikt, komt u bij de Handshake, waar u uw communicatiepartner kunt verifiëren.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE CORRINA ETHIOPIA OUTDRAW FLEECER ...</string>
+    <string name="intro_frag_third_text_4">Maak een handdruk met je communicatiepartner. Een handdruk is slechts één keer per partner nodig en zorgt voor veilige en vertrouwde communicatie.</string>
+    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_2">Het pictogram in de bovenste balk geeft de privacystatus van het bericht weer, wat de laagste gemene deler is van alle communicatiepartners van dat bericht, bijvoorbeeld:</string>
+    <string name="intro_frag_fourth_text_3">In dit geval is de privacystatus van het bericht beveiligd, omdat dit de laagste gemene deler is van de twee communicatiepartners.</string>
+    <string name="pep_rating_secure_trusted">Veilig en vertrouwd</string>
+    <string name="pep_rating_secure">Veilig</string>
+    <string name="pep_rating_mistrusted">Wantrouwde</string>
+    <string name="pep_rating_forced_unencrypt">Gehandicapt</string>
+    <string name="pep_rating_none">" "</string>
+    <string name="action_tutorial">Zelfstudie</string>
+    <string name="only_own_identities">Dit is een eigen bericht, er is geen andere communicatiepartner bij betrokken.</string>
+    <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>
+    <string name="notification_failed_to_encrypt_title">We konden dit bericht niet beschermen.</string>
+    <string name="notification_failed_to_encrypt_text">We hebben het niet verzonden en in plaats daarvan opgeslagen in de conceptmap.</string>
+    <string name="keysync_wizard_handshake_message">Zorg ervoor dat u beide apparaten bij elkaar heeft, zodat u de Trustwords op beide apparaten kunt vergelijken. Zijn de onderstaande Trustwords gelijk aan de Trustwords op het andere apparaat\?</string>
+    <string name="pep_subject_protection">Onderwerp van bericht beschermen</string>
+    <string name="license">Licentie</string>
+    <string name="keysync_wizard_action_cancel">annuleren</string>
+    <string name="keysync_wizard_group_creation_done_message">We hebben met succes een apparaatgroep gemaakt. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Er is een ander apparaat gedetecteerd. We kunnen het aan uw apparaatgroep toevoegen om al uw privacy op alle apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
+    <string name="keysync_wizard_action_leave">Het verlof</string>
+    <string name="keysync_wizard_waiting_message">Geef ons een momentje terwijl we uw apparaten synchroniseren. Dit kan een minuut of langer duren.</string>
+    <string name="keysync_wizard_error_message">Er is iets misgegaan bij het synchroniseren van de apparaten. Probeer het alstublieft opnieuw.</string>
+    <string name="keysync_wizard_create_group_first_message">Er is een tweede apparaat gedetecteerd. We kunnen een apparaatgroep vormen om al uw privacy op beide apparaten te synchroniseren. Zullen we beginnen met synchroniseren\?</string>
+    <string name="keysync_wizard_action_try_again">Probeer het opnieuw</string>
+    <string name="keysync_wizard_group_joining_done_message">Het apparaat is nu lid van uw apparaatgroep. Al uw privacy is nu gesynchroniseerd.</string>
+    <string name="keysync_wizard_action_next">De volgende</string>
 </resources>

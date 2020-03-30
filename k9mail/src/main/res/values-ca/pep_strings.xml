@@ -2,20 +2,16 @@
 <resources>
     <string name="pep_reset_trust">Desconfia</string>
     <string name="pep_pgp_fingerprint">Empremta PGP</string>
-
     <string name="pep_dialog_weaker_forward_warning_message">Està a punt de re-enviar un missatge segur com a no segur. Si decideix continuar, informació confidencial podria ser filtrada posant-lo a vostè i les persones involucrades en aquesta comunicació en peril. Segur que desitja continuar?</string>
-
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel·lar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenviament</string>
-
     <string name="pep_title_activity_privacy_status">Estat de privacitat</string>
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
     <string name="pep_passive_mode">Mode passiu</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
-
     <string name="pep_confirm_trustwords">Acceptar</string>
     <string name="pep_wrong_trustwords">Rebutjar</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
@@ -36,7 +32,7 @@
     <string name="pep_enable_privacy_protection">Protegir privacitat</string>
     <string name="pep_explanation">Explicació</string>
     <string name="pep_suggestion">Sugerencia</string>
-    <string name="pep_app_license"></string>
+    <string name="pep_app_license">Llicenciat sota GNU General Public License v3</string>
     <string name="pep_trust_server_description">Desa els correus al servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
@@ -66,7 +62,6 @@
         <item>Ooops: Problema intern<!--pEpRatingB0rken--></item>
         <item>Falsificat<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_explanation">
         <item>No es disposa d\'informació suficient per determinar si la comunicació és segura.<!--pEpRatingUndefined--></item>
         <item>No s\'ha pogut desxifrar el missatge.<!--pEpRatingCannotDecrypt--></item>
@@ -82,7 +77,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Aquest missatge no és segur i ha sigut manipulat.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string-array name="pep_suggestion">
         <item>Si us plau, introdueixi la informació necessària.<!--pEpRatingUndefined--></item>
         <item>Si ets el destinatari d\'aquest missatge, si us plau informa a la persona que envia el missatge que no disposes de la seva clau.<!--pEpRatingCannotDecrypt--></item>
@@ -98,7 +92,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Verifiqui tant vostè com el seu company de comunicació el contingut del missatge.<!--pEpRatingUnderAttack--></item>
     </string-array>
-
     <string name="pep_forward_warning_description">Mostrar un avís quan es reenvii o respongui un missatge segur de forma insegura.</string>
     <string name="navigation_drawer_open">Obrir el panell de navegació</string>
     <string name="navigation_drawer_close">Tancar el panell de navegació</string>
@@ -115,7 +108,6 @@
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="read_snackbar_permission_permanently_denied">Denegant la lectura dels seus contactes podria produïr comportaments inesperats</string>
     <string name="read_permission_rationale_title">Llegint contactes</string>
-
     <string name="download_permission_first_explanation">Necesitem el seu permís per descarragar fitxers al seu dispositiu</string>
     <string name="add_fpr">Afegir emprempta</string>
     <string name="error_parsing_fingerprint">Empremta no valida!</string>
@@ -126,9 +118,105 @@
     <string name="action_continue">Continuar</string>
     <string name="battery_optimization_rationale_title">Desactivar l\'optimitzaciò de bateria</string>
     <string name="battery_optimiazation_explanation">Per a sincronitzar els seus missatges en segon pla necessitem desactivar l\'optimització de bateria</string>
-
+    <string name="nnf_name">Nom</string>
+    <string name="key_import_reject">Denegar</string>
+    <string name="pep_sync">p≡p sync</string>
+    <string name="reset">Reset</string>
+    <string name="key_reset_identity_feedback">S\'han restablert totes les dades de p≡p relatives a aquest company de comunicació.</string>
+    <string name="key_reset_own_identity_feedback">S\'ha restablert el compte.</string>
+    <string name="pep_key_reset_all_own_ids_summary">Restableix tots els comptes</string>
     <string name="intro_frag_second_header_1">Segur</string>
+    <string name="intro_frag_second_header_2">Segur i de confiança</string>
+    <string name="intro_frag_second_header_3">No confiable</string>
+    <string name="intro_frag_third_text_1">Handshake</string>
+    <string name="pep_rating_secure_trusted">Segur i de confiança</string>
     <string name="pep_rating_secure">Segur</string>
-    <string name="pep_rating_secure_trusted">Segur i de condiança</string>
-
+    <string name="pep_rating_mistrusted">No confiable</string>
+    <string name="pep_rating_forced_unencrypt">Desactivat</string>
+    <string name="action_tutorial">Tutorial</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_joining_done_message">El dispositiu és ara membre del teu grup de dispositius. Tota la teva privacitat s\'ha sincronitzat.</string>
+    <string name="keysync_wizard_error_message">Hi ha hagut un problema amb la sincronització dels dispositius. Torna-ho a provar.</string>
+    <string name="keysync_wizard_waiting_message">Espera un moment mentre sincronitzem els teus dispositius. Aquest procés pot tardar un minut o més.</string>
+    <string name="keysync_wizard_group_creation_done_message">Hem creat un grup de dispositius correctament. Tota la teva privacitat s\'ha sincronitzat.</string>
+    <string name="keysync_wizard_action_next">Següent</string>
+    <string name="keysync_wizard_action_leave">Surt</string>
+    <string name="keysync_wizard_action_cancel">Cancel·lar</string>
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="download_snackbar_permission_permanently_denied">No permetre’ns descarregar fitxers pot provocar un comportament inesperat</string>
+    <string name="add_account_title">Afegiu el vostre compte</string>
+    <string name="add_account_message">Per poder utilitzar aquest compte, heu d\'afegir-lo al dispositiu</string>
+    <string name="account_already_exists">El compte ja existeix</string>
+    <string name="device_offline_warning">Sembla que el vostre dispositiu està fora de línia. Comproveu la connexió abans de continuar</string>
+    <string name="nnf_new_folder">Carpeta nova</string>
+    <string name="nnf_create_folder_error">No s\'ha pogut crear la carpeta</string>
+    <string name="nnf_select_something_first">Seleccioneu primer alguna cosa</string>
+    <string name="nnf_need_valid_filename">Introduïu o seleccioneu un nom de fitxer vàlid</string>
+    <string name="nnf_filename">Nom de l\'arxiu</string>
+    <string name="key_import_accept">Accepta</string>
+    <string name="key_import_accept_feedback">S\'ha substituït la clau</string>
+    <string name="key_import_reject_feedback">Ha rebutjat la clau</string>
+    <string name="message_loading_error">Encara s\'està carregant la qualificació de missatges, torna-ho a provar</string>
+    <string name="pep_sync_is_enabled_global">La sincronització p≡p està habilitada</string>
+    <string name="pep_sync_is_disabled_global">La sincronització p≡p està desactivada</string>
+    <string name="pep_sync_leave_device_group">Surt el grup de dispositius</string>
+    <string name="key_import_wizard_handshake_explanation">Compareu les següents paraules clau de confiança amb les de l’altre dispositiu i confirmeu si coincideixen.</string>
+    <string name="key_import_wizard_from_pep_initial_text">Estem a punt d’iniciar el procés d’importació de claus: això importarà i utilitzarà la vostra clau p≡p des d’un altre dispositiu i exportarà la vostra clau privada.</string>
+    <string name="key_import_wizard_from_pgp_initial_text">Esteu a punt d’iniciar el procés d’importació de claus des d’un client PGP</string>
+    <string name="key_import_wizard_from_pgp_key_sent">S\'ha enviat un missatge amb la vostra clau pública p≡p. Obriu aquest missatge al dispositiu PGP i importeu la vostra clau pública p≡p a la vostra clauera.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">Al vostre dispositiu PGP, creeu un missatge de resposta a la que heu rebut de p≡p i adjunteu la clau PGP pública.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Xifra i signa el missatge de resposta amb la clau pública p youp que acabeu d’importar i l’envia.</string>
+    <string name="key_import_wizard_handshake_explanation_pgp">Compareu les empremtes digitals PGP de les tecles següents amb les del dispositiu PGP i confirmeu si coincideixen.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">Al vostre dispositiu PGP, creeu un altre missatge de resposta a aquell que heu rebut de p≡p. Aquesta vegada, adjunteu la vostra clau privada PGP.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Xifra i torna a signar el missatge de resposta amb la clau pública p≡p i envia-ho.</string>
+    <string name="pgp_key_import_instructions">Per continuar amb la importació de claus, importeu la clau pública p≡p adjunta i responeu-li un missatge que:
+\n
+\n
+\n 1. té la clau PGP pública adjunta i
+\n 2. està xifrat i signat amb la clau p≡p que acabeu d’importar</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Si heu iniciat una importació de clau per al compte següent:% s, feu clic a Inicia.</string>
+    <string name="key_import_failure">No s\'ha pogut importar i utilitzar cap clau de% 1 $ s amb l\'identificador de clau:% 2 $ s</string>
+    <string name="key_import_success">% 1 $ s Clau importada amb èxit de% 2 $ s</string>
+    <string name="key_import_from_fs_input_fpr">Introduïu l\'ID de clau o l\'empremta digital de la clau.</string>
+    <string name="reset_all">Restableix-ho tot</string>
+    <string name="key_reset_for_identity_context_title">Restabliu totes les dades de p≡p d\'aquest soci de comunicació:</string>
+    <string name="pep_app_description">K-9 / p≡p és un potent client de correu electrònic gratuït per a Android amb una privacitat bastant fàcil.</string>
+    <string name="pep_subject_protection">Protegir l\'assumpte del missatge</string>
+    <string name="pep_add_device_ask_move_trustwords">Estàs a punt de traslladar un dispositiu a un altre grup de dispositius p≡p. Confirmeu verificant correctament els mots de confiança següents.</string>
+    <string name="pep_keysync_timeout">el temps d\'espera de sincronització poutp</string>
+    <string name="download_snackbar_permission_rationale">Necessitem el vostre permís per desar els fitxers adjunts dels vostres correus electrònics.</string>
+    <string name="trust_identity_feedback">% s ara és de confiança</string>
+    <string name="mistrust_identity_feedback">% s ara es desconfia</string>
+    <string name="key_reset_all_own_identitities_feedback">Tots els comptes de p≡p s’han restablert.</string>
+    <string name="pep_key_reset_all_own_ids_warning">Aquesta acció restablirà tots els vostres comptes.
+\n Esteu segur que voleu reiniciar-lo\?</string>
+    <string name="pep_key_reset_own_id_warning">Aquesta acció restablirà el vostre compte.
+\n Esteu segur que voleu reiniciar-lo\?</string>
+    <string name="pep_key_reset_own_id_warning_title">Restableix el compte% s</string>
+    <string name="search_empty_error">Escriviu el text per cercar-lo</string>
+    <string name="intro_frag_first_text_1">Benvingut al <font color="# 4caf50"> p≡p </font> tutorial</string>
+    <string name="intro_frag_first_text_2">Podeu tancar aquest tutorial en qualsevol moment.
+\n
+\n<font color="# 4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.
+\n
+\nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari</string>
+    <string name="intro_frag_first_text_3">I a la barra superior quan obriu o escriviu un correu electrònic:</string>
+    <string name="intro_frag_second_text_1">Amb aquest estat de privacitat, tota comunicació és segura, però per confirmar que el vostre contacte és realment la persona que coneixeu, haureu de confegir les paraules de confiança amb aquest contacte.</string>
+    <string name="intro_frag_second_text_2">Quan es confirmi que les paraules de confiança són correctes i es fa el cop de mà, la comunicació serà completament segura i de confiança.</string>
+    <string name="intro_frag_second_text_3">Si les paraules clau de confiança no són correctes, el seu soci de comunicació no té cap confiança.</string>
+    <string name="intro_frag_third_text_2">Quan feu clic a la icona de l\'estat de privadesa de la barra superior, arribareu al cop de mà, on podreu verificar el vostre soci de comunicació.</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE CORRINA ETHIOPIA EXTERIOR FLEECER ...</string>
+    <string name="intro_frag_third_text_4">Completa un cop de mà amb el teu company de comunicació. Un cop de mà només es necessita una vegada per part i s’assegurarà una comunicació segura i de confiança.</string>
+    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_2">La icona de la barra superior reflecteix l\'estat de privadesa del missatge, que és el denominador comú més baix de tots els socis de comunicació d\'aquest missatge, per exemple:</string>
+    <string name="intro_frag_fourth_text_3">En aquest cas, l’estat de privadesa del missatge és segur, perquè aquest és el denominador més baix comú dels dos socis de comunicació.</string>
+    <string name="keysync_wizard_handshake_message">Assegureu-vos que teniu tots dos dispositius junts, de manera que podeu comparar els mots de confiança dels dos dispositius. Les paraules clau de confiança que apareixen a continuació són iguals a les de confiança de l’altre dispositiu\?</string>
+    <string name="message_failed_to_encrypt">No hem pogut protegir aquest missatge.</string>
+    <string name="notification_failed_to_encrypt_title">No hem pogut protegir aquest missatge.</string>
+    <string name="notification_failed_to_encrypt_text">En canvi, no l’hem enviat i l’hem desat a la carpeta d’esborrany.</string>
+    <string name="license">Llicència</string>
+    <string name="nnf_permission_external_write_denied">Es denegat el permís per accedir al sistema de fitxers</string>
+    <string name="permissions_needed_message">No concedir els permisos necessaris pot provocar conductes inesperades. Premeu OK per concedir-nos-les.</string>
+    <string name="keysync_wizard_action_try_again">Torna-ho a provar</string>
+    <string name="only_own_identities">Es tracta d’un missatge propi, no hi ha cap altre soci de comunicació implicat.</string>
 </resources>

@@ -34,7 +34,7 @@
     <string name="pep_enable_privacy_protection">p≡p-Datenschutz</string>
     <string name="pep_explanation">Erklärung</string>
     <string name="pep_suggestion">Vorschlag</string>
-    <string name="pep_app_license"></string>
+    <string name="pep_app_license">Lizenziert unter der pEp Security EULA</string>
     <string name="pep_trust_server_description">Nachrichten auf dem Server geschützt speichern.</string>
     <string name="pep_account_privacy_protection_explanation">p≡p-Datenschutz für dieses Konto aktivieren</string>
     <string name="key_list_title">Verfügbare Schlüssel</string>
@@ -127,6 +127,8 @@
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep" translatable="false">p≡p</string>
     <string name="intro_frag_first_text_1">Willkommen zur <font color="#4caf50">p≡p</font> Anleitung</string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
@@ -163,6 +165,8 @@
     <string name="key_import_wizard_from_pgp_initial_text">Wir starten den Schlüsselimport vom Gerät mit PGP</string>
     <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dabei importieren wir Ihren p≡p-Schlüsselcode und verwenden ihn, um Ihren privaten Schlüsselcode von diesem Gerät zu exportieren.</string>
     <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="pgp">PGP</string>
+    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
@@ -179,6 +183,7 @@
     <string name="nnf_create_folder_error">Erstellen des Ordners fehlgeschlagen</string>
     <string name="nnf_new_folder">Neuer Ordner</string>
     <string name="permissions_needed_message">Das Nichtgewähren der erforderlichen Berechtigungen kann unerwartetes Verhalten verursachen. Gewähren Sie uns diese Berechtigungen mit einem Klick auf OK.</string>
+    <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
     <string name="account_already_exists">Dieses Konto existiert bereits</string>
     <string name="add_account_message">Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können</string>
     <string name="add_account_title">Konto hinzufügen</string>
@@ -201,7 +206,7 @@
     <string name="pep_rating_secure_trusted">Sicher &amp;
 \n Verifiziert</string>
     <string name="intro_frag_fourth_text_3">In diesem Fall ist der Datenschutzstatus der Nachricht \"Sicher\", da es sich dabei um den kleinsten gemeinsamen Nenner der beiden Kommunikationspartner handelt.</string>
-    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
     <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
     <string name="intro_frag_third_text_2">Durch Klick auf das Datenschutzstatussymbol öffnen Sie den Handshake-Dialog, in dem Sie Ihren Kommunikationspartner verifizieren können.</string>
@@ -212,4 +217,17 @@
     <string name="intro_frag_second_header_2">Sicher &amp; Verifiziert</string>
     <string name="intro_frag_second_header_3">Nicht vertrauenswürdig</string>
     <string name="intro_frag_second_header_1">Sicher</string>
+    <string name="keysync_wizard_group_creation_done_message">Ihre Gerätegruppe wurde erfolgreich gebildet. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="keysync_wizard_group_joining_done_message">Das Gerät ist nun Teil Ihrer Gerätegruppe. Ihre gesamten Datenschutz-Einstellungen sind jetzt synchronisiert.</string>
+    <string name="keysync_wizard_action_cancel">Abbrechen</string>
+    <string name="keysync_wizard_action_next">Weiter</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Es wurde ein weiteres Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="keysync_wizard_waiting_message">Bitte warten Sie einen Moment, bis ihre Geräte synchronisiert sind. Das kann eine Minute oder länger dauern.</string>
+    <string name="keysync_wizard_error_message">Etwas ist beim Synchronisieren der Geräte schief gelaufen. Bitte versuchen Sie es noch einmal.</string>
+    <string name="keysync_wizard_action_leave">Verlassen</string>
+    <string name="keysync_wizard_create_group_first_message">Es wurde ein zweites Gerät gefunden, mit dem Sie Ihre Datenschutzeinstellungen synchronisieren können. Möchten Sie mit der Synchronisierung beginnen\?</string>
+    <string name="pep_subject_protection">Betreff der Nachricht schützen</string>
+    <string name="keysync_wizard_handshake_message">Stellen Sie sicher, dass Sie beide Geräte zusammen haben, damit Sie die Trustwords auf beiden Geräten vergleichen können. Entsprechen die folgenden Trustwords den Trustwords auf dem anderen Gerät\?</string>
+    <string name="license">Lizenz</string>
+    <string name="keysync_wizard_action_try_again">Versuchen Sie es nochmal</string>
 </resources>
