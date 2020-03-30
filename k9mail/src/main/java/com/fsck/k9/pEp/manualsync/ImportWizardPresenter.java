@@ -106,6 +106,8 @@ public class ImportWizardPresenter implements Presenter {
         this.state = SyncState.INITIAL;
 
         showInitialScreen(isFormingGroup);
+        trustwordsLanguage = PEpUtils.getPEpLocales().contains(trustwordsLanguage) ? trustwordsLanguage : "en";
+
         trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
 
 
