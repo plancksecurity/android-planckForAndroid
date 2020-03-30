@@ -12,11 +12,10 @@
   <!--Welcome message-->
   <string name="welcome_message_title">Bienvenido a p≡p</string>
   <!--Default signature-->
-  <string name="default_signature">-- \nEnviado desde mi p≡p para Android.\n</string>
+  <string name="default_signature">"--  Enviado desde mi p≡p para Android. "</string>
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">La cuenta \"<xliff:g id="account">%s</xliff:g>\" será eliminada de p≡p.</string>
   <string name="account_recreate_dlg_instructions_fmt">Los datos de \"<xliff:g id="account">%s</xliff:g>\" serán eliminados de p≡p, pero se mantendrá su configuración.</string>
-  <string name="account_clear_dlg_instructions_fmt">Todos los mensajes en \"<xliff:g id="account">%s</xliff:g>\" serán eliminados de p≡p, pero la configuración de la cuenta se mantendrá.</string>
 
 
 </resources>

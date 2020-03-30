@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="app_webpage_url">https://cacert.pep-security.lu/gitlab/android/k9-pep/</string>
-    <string name="message_header_mua">p≡p for Android</string>
+    <string name="app_webpage_url" translatable="false">https://pep-security.lu/gitlab/android/k9-pep/</string>
+    <string name="message_header_mua" translatable="false">p≡p for Android</string>
 </resources>

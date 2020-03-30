@@ -1,59 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!--=== App-specific strings =============================================================-->
-    <!--This should make it easier for forks to change the branding-->
-    <!--Used in AndroidManifest.xml-->
-    <!--&lt;!&ndash;<string name="app_name">K-9 Mail/pEp</string>&ndash;&gt;-->
-    <!--<string name="shortcuts_title">K-9 Účty</string>-->
-    <!--<string name="unread_widget_label">K-9 Neprečítaná</string>-->
-    <!--<string name="remote_control_label">diaľkové ovládanie K-9 Mail</string>-->
-    <!--<string name="remote_control_desc">Umožňuje tejto aplikácii ovládať aktivity a nastavenia K-9 Mail.</string>-->
-    <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
-    <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
     <string name="app_copyright_fmt">Autorské práva 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
-    <!--<string name="app_license">Licenciované pod licenciou Apache 2.0.</string>-->
-    <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
-    <!--<string name="welcome_message_title">Vitajte v K-9 Mail</string>-->
-    <!--<string name="accounts_welcome"><![CDATA[-->
-    <!--<p>-->
-    <!--K-9 Mail je výkonný a slobodný e-mailový klient pre Android.-->
-    <!--</p><p>-->
-    <!--Medzi jeho vylepšené funkcie patria:-->
-    <!--</p>-->
-    <!--<ul>-->
-    <!--<li>Push pošta pri použití IMAP IDLE</li>-->
-    <!--<li>Lepší výkon</li>-->
-    <!--<li>Doplňovanie správ</li>-->
-    <!--<li>Podpisy správ</li>-->
-    <!--<li>Skrytá kópia sebe</li>-->
-    <!--<li>Odbery priečinkov</li>-->
-    <!--<li>Synchronizácia všetkých priečinkov</li>-->
-    <!--<li>Nastavenie spiatočnej adresy</li>-->
-    <!--<li>Klávesové skratky</li>-->
-    <!--<li>Lepšia podpora IMAP protokolu</li>-->
-    <!--<li>Ukladanie príloh na SD kartu</li>-->
-    <!--<li>Vyprázdňovanie koša</li>-->
-    <!--<li>Zoraďovanie správ</li>-->
-    <!--<li>…a ďalšie</li>-->
-    <!--</ul>-->
-    <!--<p>-->
-    <!--Prosím, vezmite na vedomie, že K-9 Mail nepodporuje väčšinu bezplatných účtov složby Hotmail a ako mnoho ďalších e-mailových klientov-->
-    <!--vykazuje isté zvláštnosti pri komunikácii s Microsoft Exchange.-->
-    <!--</p><p>-->
-    <!--Prosím, nahlasujte prípadné chyby, prispievajte novými funkciami a pýtajte sa na-->
-    <!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.-->
-    <!--</p>-->
-    <!--]]></string>-->
-    <!--&lt;!&ndash;Default signature&ndash;&gt;-->
-    <!--<string name="default_signature">&#45;&#45; \nOdoslané z môjho Android zariadenia prostredníctvom K-9 Mail. Prosím, ospravedlňte moju statočnosť.</string>-->
-    <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
-    <!--<string name="account_delete_dlg_instructions_fmt">Účet \"<xliff:g id="account">%s</xliff:g>\" bude odstránený z K-9 Mail.</string>-->
     <string name="account_recreate_dlg_instructions_fmt">Všetky lokálne údaje pre účet \"<xliff:g id="account">%s</xliff:g>\" budú odstránené. Nastavenia účtu budú zachované.</string>
     <string name="account_clear_dlg_instructions_fmt">Všetky správy pre účet \"<xliff:g id="account">%s</xliff:g>\" budú odstránené. Nastavenia účtu budú však zachované.</string>
-    <!--=== App Store-specific strings =======================================================-->
     <string name="import_dialog_error_message">Nainštalujte, prosím, správcu súborov pre pokračovanie v tomto importovaní.</string>
     <string name="open_market">Otvoriť Obchod Play</string>
-    <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Autori: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Informácie o revízii: <xliff:g id="app_revision_url">%s</xliff:g></string>
     <string name="app_libraries">Používame tieto knižnice tretích strán: <xliff:g id="app_libraries_list">%s</xliff:g></string>
@@ -84,7 +35,6 @@
     <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> vybraných</string>
     <string name="next_action">Ďalej</string>
     <string name="previous_action">Späť</string>
-    <!--Used to confirm acceptance of dialog boxes, warnings, errors, etc.-->
     <string name="okay_action">OK</string>
     <string name="cancel_action">Zrušiť</string>
     <string name="send_action">Odoslať</string>
@@ -476,8 +426,6 @@
     <string name="account_settings_folders">Priečinky</string>
     <string name="account_settings_quote_prefix_label">Predpona citovaného textu</string>
     <string name="account_settings_crypto">Šifrovanie</string>
-    <string name="account_settings_crypto_app">Aplikácia OpenPGP</string>
-    <string name="account_settings_crypto_key">Môj kľúč</string>
     <string name="account_settings_no_openpgp_provider_installed">Žiadna nainštalovaná aplikácia OpenPGP</string>
     <string name="account_settings_mail_check_frequency_label">Frekvencia synchronizácie priečinkov</string>
     <string name="account_settings_storage_title">Ukladací priestor</string>
@@ -926,55 +874,11 @@
     <string name="compose_error_no_draft_folder">Pre tento účet nie je zadefinovaný priečinok pre koncepty správ!</string>
     <string name="compose_error_no_signing_key">Nie je nastavený kľúč pre podpis! Prosím, skontroľujte si nastavenia.</string>
     <string name="compose_error_private_missing_keys">Je aktivovaný Súkromný režim, niektorí príjemcovia nemajú kľúče!</string>
-    <string name="crypto_mode_disabled">Nešifrovať</string>
-    <string name="crypto_mode_opportunistic">Ak je možné, šifrovať</string>
-    <string name="crypto_mode_private">Šifrovať</string>
-    <string name="error_crypto_provider_connect">Nie je možné pripojenie ku poskytovateľovi šifrovania, skontrolujte svoje nastavenia alebo kliknite na ikonu šifrovania pre ďalší pokus!</string>
-    <string name="error_crypto_provider_ui_required">Bol odopretý prístup ku poskytovateľovi šifrovania, kliknite na ikonu šifrovania pre ďalší pokus</string>
-    <string name="error_crypto_inline_attach">V režine PGP/INLINE nie sú prílohy podporované!</string>
     <string name="enable_inline_pgp">Povoliť PGP/INLINE</string>
-    <string name="disable_inline_pgp">Zakázať PGP/INLINE</string>
     <string name="enable_sign_only">Povoliť PGP \"len podpis\"</string>
-    <string name="disable_sign_only">Zakázať PGP \"len podpis\"</string>
-    <string name="openpgp_inline_title">Režim PGP/INLINE</string>
-    <string name="openpgp_inline_text">Odosielate správu vo formáte PGP/INLINE.\nTento formát použite len pre kompatibilitu:</string>
-    <string name="openpgp_inline_plus_compat">Niektoré klienty podporujú iba tento formát</string>
-    <string name="openpgp_inline_minus_transit">Počas prenosu môže dôjsť k poškodeniu podpisov</string>
-    <string name="openpgp_inline_minus_attach">Prílohy nie sú podporované</string>
-    <string name="openpgp_inline_ok">Rozumiem!</string>
     <string name="openpgp_inline_disable">Zakázať</string>
-    <string name="openpgp_inline_keep_enabled">Zachovať povolené</string>
-    <string name="openpgp_sign_only_ok">Rozumiem!</string>
     <string name="openpgp_sign_only_disable">Zakázať</string>
-    <string name="openpgp_sign_only_keep_enabled">Zachovať povolené</string>
-    <string name="openpgp_dialog_sign_only_title">PGP režim \"len podpis\"</string>
-    <string name="openpgp_dialog_sign_only_text">V tomto režime bude pomocou vášho PGP kľúča vytvorený kryptografický podpis pre nešifrovanú správu.</string>
-    <string name="openpgp_dialog_sign_only_plus_verified">E-mail nie je šifrovaný, je však možné overiť, že bola správa podpísaná vaším kľúčom.</string>
-    <string name="openpgp_dialog_sign_only_minus_break">Podpisy môžu byť pri odoslaní do diskusných skupín poškodené.</string>
-    <string name="openpgp_dialog_sign_only_minus_attach">Niektoré e-mailové klienty zobrazujú podpis ako prílohu s názvom \'signature.asc\'.</string>
-    <string name="openpgp_dialog_sign_only_neutral_encsigned">Šifrované správy vždy obsahujú podpis.</string>
-    <string name="crypto_msg_disabled">Správa nie je šifrovaná</string>
-    <string name="crypto_msg_encrypted_error">Správa je šifrovaná, chyba dešifrovania správy.</string>
-    <string name="crypto_msg_signed_error">Správa je podpísané, nie je možné overiť podpis.</string>
-    <string name="crypto_msg_unsupported_encrypted">Formát šifrovanej správy nie je podporovaný.</string>
-    <string name="crypto_msg_unsupported_signed">Formát podpisu správy nie je podporovaný.</string>
-    <string name="crypto_msg_incomplete_encrypted">Správa je šifrovaná, pre dešifrovanie je potrebné ju celú stiahnuť.</string>
-    <string name="crypto_msg_cancelled">Správa je šifrovaná, dešifrovanie bolo zrušené.</string>
-    <string name="crypto_msg_signed_unencrypted">Správa je podpísané, nie je šifrovaná.</string>
-    <string name="crypto_msg_encrypted_unsigned">Správa je šifrovaná, nie je podpísaná.</string>
-    <string name="crypto_msg_sign_unknown">Podpis vytvorený neznámym kľúčom.</string>
-    <string name="crypto_msg_sign_verified">Podpis vytvorený dôveryhodným kľúčom.</string>
-    <string name="crypto_msg_sign_unverified">Podpis vytvorený nedôveryhodným kľúčom!</string>
-    <string name="crypto_msg_sign_error">Podpis je chybný.</string>
-    <string name="crypto_msg_sign_mismatch">Podpis vytvorený nesprávnym kľúčom.</string>
-    <string name="crypto_msg_sign_expired">Podpis vytvorený neplatným kľúčom.</string>
-    <string name="crypto_msg_sign_revoked">Podpis vytvorený zrušeným kľúčom.</string>
-    <string name="crypto_msg_sign_insecure">Podpis vytvorený nezabezpečeným kľúčom.</string>
-    <string name="crypto_msg_sign_incomplete">Pre overenie podpisu je potrebné stiahnuť celú správu.</string>
-    <string name="crypto_msg_signed_encrypted">Správa je podpísaná a šifrovaná.</string>
-    <string name="crypto_msg_unsigned_encrypted">Chýbajúci podpis, správa mohla byť odchytená.</string>
     <string name="crypto_info_ok">OK</string>
-    <string name="crypto_info_view_key">Zobraziť podpisovateľa</string>
     <string name="locked_attach_unlock">Odomknúť</string>
     <string name="locked_attach_unencrypted">Táto časť nebola zašifrovaná a nemusí byť bezpečná.</string>
     <string name="locked_attach_title">Nechránená príloha</string>
@@ -983,20 +887,16 @@
     <string name="messageview_decrypt_retry">Skúsiť znova</string>
     <string name="messageview_decrypt_incomplete">Šifrovaná správa musí byť stiahnutá pre dešifrovanie.</string>
     <string name="messageview_crypto_error_title">Chyba pri dešifrovaní správy</string>
-    <string name="messageview_crypto_warning_title">Bezpečnostná výstraha</string>
     <string name="messageview_crypto_warning_revoked">Táto správa bola podpísaná <b>zrušeným kľúčom!</b></string>
     <string name="messageview_crypto_warning_expired">Táto správa bola podpísaná <b>neplatným kľúčom!</b></string>
     <string name="messageview_crypto_warning_insecure">Táto správa bola podpísaná <b>nezabezpečeným kľúčom!</b></string>
     <string name="messageview_crypto_warning_error">Vyskytla sa <b>chyba v podpise správy!</b></string>
     <string name="recipient_error_non_ascii">Špeciálne znaky nie sú v súčasnosti podporované!</string>
     <string name="recipient_error_parse_failed">Chyba pri spracovaní adresy!</string>
-    <string name="error_sign_only_no_encryption">V režime \"len podpis\" nie je možné šifrovať!</string>
     <string name="account_setup_basics_oauth2_token">Použite token OAuth 2.0 (účty Google)</string>
     <string name="settings_export_success_generic">Nastavenia boli úspešne exportované</string>
     <string name="account_settings_openpgp_missing">Chýba aplikácia OpenPGP - bola odinštalovaná\?</string>
     <string name="account_settings_no_openpgp_provider_configured">Nie je nakonfigurovaná žiadna aplikácia OpenPGP</string>
-    <string name="account_settings_crypto_summary_on">Pripojené k % s</string>
-    <string name="account_settings_crypto_summary_off">Nie je nakonfigurovaná žiadna aplikácia OpenPGP</string>
     <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Token</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Pri pripájaní k serverom SMTP sa identifikujte ako \'localhost\'</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting">Skryť názov hostiteľa</string>
@@ -1009,38 +909,18 @@
     <string name="status_syncing_blocked">Synchronizácia je zablokovaná</string>
     <string name="status_no_background">Synchronizácia je zakázaná - žiadna aktivita na pozadí</string>
     <string name="status_no_network">Synchronizácia je zakázaná - žiadna sieť</string>
-    <string name="app_license">Licencované na základe licencie Apache, verzia 2.0.</string>
-    <string name="app_authors">K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="app_name">p≡p</string>
     <string name="xoauth2_auth_cancelled_by_user">Overenie bolo zrušené</string>
     <string name="hello_world">Ahoj svet!</string>
-    <string name="decrypt_message_explanation">Tento e-mail je zašifrovaný a jeho dešifrovanie môže trvať niekoľko sekúnd. Chceš pokračovať\?</string>
     <string name="no_crypto_provider_see_global">Nie je nakonfigurovaná žiadna aplikácia OpenPGP, pozrite si globálne nastavenia!</string>
-    <string name="crypto_no_provider_message">Tento e-mail bol šifrovaný pomocou OpenPGP.
-\nAk si ju chcete prečítať, musíte si nainštalovať a nakonfigurovať kompatibilnú aplikáciu OpenPGP.</string>
     <string name="xoauth2_unable_to_contact_auth_server">Nie je možné kontaktovať overovací server</string>
     <string name="pep_menu_long_trustwords">Zobraziť dlhé trustwords</string>
     <string name="fetching_folders_failed">Načítanie zoznamu priečinkov zlyhalo</string>
-    <string name="error_recipient_crypto_retrieve">Pri načítavaní stavu príjemcu od poskytovateľa OpenPGP sa vyskytla chyba!</string>
-    <string name="openpgp_enabled_error_title">Šifrovanie nie je možné</string>
-    <string name="openpgp_enabled_error_msg">Niektorí z vybraných príjemcov túto funkciu nepodporujú!</string>
-    <string name="openpgp_description_text1">Šifrovacie správy zaisťujú, že ich bude môcť prečítať príjemca a nikto iný.</string>
-    <string name="openpgp_description_text3">Šifrovanie sa zobrazí iba v prípade, že ho podporujú všetci príjemcovia a predtým vám museli poslať e-mail.</string>
-    <string name="openpgp_enabled_error_disable">Zakázať šifrovanie</string>
-    <string name="openpgp_encryption">OpenPGP šifrovanie</string>
-    <string name="dialog_openkeychain_info_text">K-9 Mail vyžaduje OpenKeychain na šifrovanie end-to-end.</string>
     <string name="toast_account_not_found">Interná chyba: Neplatný účet!</string>
-    <string name="ac_transfer_msg_body">Táto správa obsahuje všetky informácie o bezpečnom prenose nastavení automatického šifrovania spolu s tajným kľúčom z pôvodného zariadenia. Ak chcete nastaviť svoje nové zariadenie na automatické šifrovanie, postupujte podľa pokynov, ktoré by malo nové zariadenie predložiť. Túto správu si môžete ponechať a použiť ju ako zálohu tajného kľúča. Ak to chcete urobiť, mali by ste si zapísať heslo a bezpečne ho uložiť.</string>
     <string name="status_poll_and_push_disabled">Polling a pushing sú zakázané</string>
     <string name="debug_delete_local_body">Ladenie / vymazanie tela správy</string>
     <string name="messageview_crypto_warning_show_anyway">Zobraziť správu napriek tomu</string>
     <string name="messageview_crypto_warning_unsigned">=== App-specific strings =============================================================</string>
-    <string name="account_settings_crypto_hide_sign_only">Skryť nezašifrované podpisy</string>
-    <string name="account_settings_crypto_hide_sign_only_on">Zobrazia sa iba šifrované podpisy</string>
-    <string name="account_settings_crypto_hide_sign_only_off">Budú zobrazené všetky podpisy</string>
     <string name="unsigned_text_divider_label">Nepodpísaný text</string>
-    <string name="crypto_no_provider_title">Tento e-mail je šifrovaný</string>
-    <string name="crypto_no_provider_button">Choď do nastavení</string>
     <string name="xoauth2_error_contacting_auth_server">Pri kontaktovaní autentifikačného servera sa vyskytla chyba</string>
     <string name="xoauth2_account_doesnt_exist">Účet neexistuje</string>
     <string name="pep_menu_short_trustwords">Zobraziť krátke trustwords</string>
@@ -1048,33 +928,12 @@
     <string name="mail_list_widget_loading">Načítavanie správ…</string>
     <string name="messageview_crypto_warning_details">Zobraziť podrobnosti</string>
     <string name="enable_encryption">Povoliť šifrovanie</string>
-    <string name="disable_encryption">Zakázať šifrovanie</string>
-    <string name="openpgp_description_text2">Kliknutím na túto ikonu prepnete šifrovanie.</string>
-    <string name="openpgp_enabled_error_gotit">Mám to</string>
     <string name="openpgp_enabled_error_back">späť</string>
-    <string name="account_settings_crypto_prefer_encrypt">Autocrypt vzájomný režim</string>
-    <string name="dialog_autocrypt_mutual_title">Autocrypt vzájomný režim</string>
-    <string name="dialog_autocrypt_mutual_description_1">Správy sa zvyčajne šifrujú podľa výberu alebo pri odpovedi na šifrovanú správu.</string>
-    <string name="dialog_autocrypt_mutual_description_2">Ak odosielateľ aj príjemca povolia vzájomný režim, v predvolenom nastavení bude šifrovanie povolené.</string>
-    <string name="dialog_autocrypt_mutual_learn_more">=== App-specific strings =============================================================</string>
     <string name="general_settings_title">Všeobecné nastavenia</string>
-    <string name="dialog_openkeychain_info_title">Nie je nainštalovaná žiadna aplikácia OpenPGP</string>
-    <string name="dialog_openkeychain_info_install">Inštalovať</string>
     <string name="encrypted_subject">Šifrovaná správa</string>
     <string name="toast_openpgp_provider_error">Chyba pri pripájaní k %s!</string>
-    <string name="ac_transfer_setting_title">Poslať nastavovaciu správu Autocryptu</string>
-    <string name="ac_transfer_setting_summary">Bezpečne zdieľajte kompletné nastavenie s ostatnými zariadeniami</string>
-    <string name="ac_transfer_title">Nastavovacia správa Autocryptu</string>
-    <string name="ac_transfer_intro">Správa o automatickom šifrovaní bezpečne zdieľa vaše nastavenie medzi ostatnými zariadeniami.</string>
-    <string name="ac_transfer_button_send">Poslať nastavovaciu správu</string>
-    <string name="ac_transfer_will_be_sent">Správa sa odošle na vašu adresu:</string>
-    <string name="ac_transfer_generating">Prebieha generovanie správy o nastavení …</string>
-    <string name="ac_transfer_sending_to">Posiela sa správa:</string>
-    <string name="ac_transfer_finish">Na dokončenie otvorte správu na druhom zariadení a zadajte inštalačný kód.</string>
-    <string name="ac_transfer_show_code">Zobraziť inštalačný kód</string>
-    <string name="ac_transfer_msg_subject">Nastavovacia správa Autocryptu</string>
-    <string name="ac_transfer_error_send">Pri odosielaní správy došlo k chybe. Skontrolujte sieťové pripojenie a konfiguráciu servera odchádzajúcich serverov.</string>
     <string name="switch_on">Zapnúť</string>
     <string name="switch_off">Vypnúť</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Správanie po odstránení správy</string>
+    <string name="pep_subject_protection">Chráňte predmet správy</string>
 </resources>

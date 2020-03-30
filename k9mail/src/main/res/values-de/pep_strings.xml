@@ -12,7 +12,6 @@
     <string name="pep_extra_addresses">Zusätzliche Schlüsselkennungen:</string>
     <string name="pep_use_keyserver">Schlüssel auf Schlüsselserver suchen</string>
     <string name="pep_passive_mode">Passivmodus</string>
-    <string name="pep_subject_unprotected">Betreff in Nachrichten nicht schützen</string>
     <string name="pep_add_key_to_blacklist">Schlüssel nicht mehr verwenden</string>
     <string name="pep_remove_key_from_blacklist">Schlüssel wieder verwenden</string>
     <string name="pep_confirm_trustwords">Bestätigen</string>
@@ -46,7 +45,6 @@
     <string name="crash_toast_text">Entschuldigung, es ist etwas schiefgelaufen</string>
     <string name="advanced_options">Erweiterte Optionen</string>
     <string name="basic_options">Einfache Optionen</string>
-    <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
     <string-array name="pep_title">
@@ -130,8 +128,6 @@
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep" translatable="false">p≡p</string>
     <string name="intro_frag_first_text_1">Willkommen zur <font color="#4caf50">p≡p</font> Anleitung</string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
@@ -168,8 +164,6 @@
     <string name="key_import_wizard_from_pgp_initial_text">Wir starten den Schlüsselimport vom Gerät mit PGP</string>
     <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dabei importieren wir Ihren p≡p-Schlüsselcode und verwenden ihn, um Ihren privaten Schlüsselcode von diesem Gerät zu exportieren.</string>
     <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
-    <string name="pgp">PGP</string>
-    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
@@ -186,7 +180,6 @@
     <string name="nnf_create_folder_error">Erstellen des Ordners fehlgeschlagen</string>
     <string name="nnf_new_folder">Neuer Ordner</string>
     <string name="permissions_needed_message">Das Nichtgewähren der erforderlichen Berechtigungen kann unerwartetes Verhalten verursachen. Gewähren Sie uns diese Berechtigungen mit einem Klick auf OK.</string>
-    <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
     <string name="account_already_exists">Dieses Konto existiert bereits</string>
     <string name="add_account_message">Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können</string>
     <string name="add_account_title">Konto hinzufügen</string>

@@ -3,7 +3,7 @@
     <!-- === App-specific strings ============================================================= -->
     <!-- This should make it easier for forks to change the branding -->
     <!-- Used in AndroidManifest.xml -->
-    <string name="app_name">p≡p</string>
+    <string name="app_name" translatable="false">p≡p</string>
     <!--<string name="shortcuts_title">K-9 Accounts</string>-->
     <!--<string name="unread_widget_label">K-9 Unread</string>-->
     <!--<string name="remote_control_label">K-9 Mail remote control</string>-->
@@ -11,7 +11,6 @@
     <!-- Used in the about dialog -->
     <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
     <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
-    <string name="app_license">Licensed under the Apache License, Version 2.0.</string>
     <!-- Welcome message -->
     <!--<string name="welcome_message_title">Welcome to K-9 Mail</string>-->
     <!--<string name="accounts_welcome"><![CDATA[-->
@@ -314,7 +313,7 @@
     <string name="account_setup_basics_password_hint">Password</string>
     <string name="account_setup_basics_show_password">Show password</string>
     <string name="account_setup_basics_manual_setup_action">Manual setup</string>
-    <string name="account_setup_check_settings_title" translatable="false"/>
+    <string name="account_setup_check_settings_title" translatable="false">.</string>
     <string name="account_setup_check_settings_retr_info_msg">Retrieving account information\u2026</string>
     <string name="account_setup_check_settings_check_incoming_msg">Checking incoming server settings\u2026</string>
     <string name="account_setup_check_settings_check_outgoing_msg">Checking outgoing server settings\u2026</string>
@@ -490,10 +489,10 @@
     <string name="account_settings_folders">Default folders</string>
     <string name="account_settings_quote_prefix_label">Quoted text prefix</string>
     <string name="account_settings_crypto">End-to-end encryption</string>
-    <string name="account_settings_crypto_app">Enable OpenPGP support</string>
-    <string name="account_settings_crypto_key">Configure end-to-end key</string>
-    <string name="account_settings_crypto_summary_off">No OpenPGP app configured</string>
-    <string name="account_settings_crypto_summary_on">Connected to %s</string>
+    <string name="account_settings_crypto_app" translatable="false">Enable OpenPGP support</string>
+    <string name="account_settings_crypto_key" translatable="false">Configure end-to-end key</string>
+    <string name="account_settings_crypto_summary_off" translatable="false">No OpenPGP app configured</string>
+    <string name="account_settings_crypto_summary_on" translatable="false">Connected to %s</string>
     <string name="account_settings_no_openpgp_provider_configured">No OpenPGP app configured</string>
     <string name="account_settings_no_openpgp_provider_installed">No OpenPGP app found - click to install</string>
     <string name="account_settings_mail_check_frequency_label">Folder poll frequency</string>
@@ -941,47 +940,46 @@
     <string name="compose_error_no_draft_folder">No Drafts folder configured for this account!</string>
     <string name="compose_error_no_signing_key">No key configured for signing! Please check your settings.</string>
     <string name="compose_error_private_missing_keys">Private mode is enabled, but some recipients do not have keys!</string>
-    <string name="crypto_mode_disabled">Don\'t encrypt</string>
-    <string name="crypto_mode_opportunistic">Encrypt if possible</string>
-    <string name="crypto_mode_private">Encrypt</string>
-    <string name="error_crypto_provider_connect">Cannot connect to crypto provider, check your settings or click crypto icon to retry!</string>
-    <string name="error_crypto_provider_ui_required">Failed to initialize end-to-end encryption, please check your settings</string>
-    <string name="error_crypto_inline_attach">PGP/INLINE mode does not support attachments!</string>
+    <string name="crypto_mode_disabled" translatable="false">Don\'t encrypt</string>
+    <string name="crypto_mode_opportunistic" translatable="false">Encrypt if possible</string>
+    <string name="crypto_mode_private" translatable="false">Encrypt</string>
+    <string name="error_crypto_provider_connect" translatable="false">Cannot connect to crypto provider, check your settings or click crypto icon to retry!</string>
+    <string name="error_crypto_provider_ui_required" translatable="false">Failed to initialize end-to-end encryption, please check your settings</string>
+    <string name="error_crypto_inline_attach" translatable="false">PGP/INLINE mode does not support attachments!</string>
     <string name="enable_inline_pgp">Enable PGP/INLINE</string>
-    <string name="disable_inline_pgp">Disable PGP/INLINE</string>
     <string name="enable_sign_only">Enable PGP Sign-Only</string>
-    <string name="disable_sign_only">Disable PGP Sign-Only</string>
-    <string name="openpgp_sign_only_ok">Got it!</string>
+    <string name="disable_sign_only" translatable="false">Disable PGP Sign-Only</string>
+    <string name="openpgp_sign_only_ok" translatable="false">Got it!</string>
     <string name="openpgp_sign_only_disable">Disable</string>
-    <string name="openpgp_sign_only_keep_enabled">Keep Enabled</string>
-    <string name="openpgp_dialog_sign_only_title">PGP Sign-Only Mode</string>
-    <string name="openpgp_dialog_sign_only_text">In this mode, your PGP key will be used to create a cryptographic signature of an unencrypted email.</string>
-    <string name="openpgp_dialog_sign_only_plus_verified">This does not encrypt the email, but verifies that it was sent from your key.</string>
-    <string name="openpgp_dialog_sign_only_minus_break">Signatures may break when sent to mailing lists.</string>
-    <string name="openpgp_dialog_sign_only_minus_attach">Signatures may be displayed as \'signature.asc\' attachments in some clients.</string>
-    <string name="openpgp_dialog_sign_only_neutral_encsigned">Encrypted messages always include a signature.</string>
-    <string name="crypto_msg_disabled">Message is not encrypted</string>
-    <string name="crypto_msg_encrypted_error">Message is encrypted, but there was a decryption error.</string>
-    <string name="crypto_msg_signed_error">Message is signed, but the signature could not be verified.</string>
-    <string name="crypto_msg_unsupported_encrypted">Message is encrypted, but in an unsupported format.</string>
-    <string name="crypto_msg_unsupported_signed">Message is signed, but in an unsupported format.</string>
-    <string name="crypto_msg_incomplete_encrypted">Message is encrypted, but must be fully downloaded for decryption.</string>
-    <string name="crypto_msg_cancelled">Message is encrypted, but decryption was cancelled.</string>
-    <string name="crypto_msg_signed_unencrypted">Message is signed, but not encrypted.</string>
-    <string name="crypto_msg_encrypted_unsigned">Message was encrypted, but not signed.</string>
-    <string name="crypto_msg_sign_unknown">Signature made by unknown key.</string>
-    <string name="crypto_msg_sign_verified">Signature made by trusted key.</string>
-    <string name="crypto_msg_sign_unverified">Signature made by untrusted key!</string>
-    <string name="crypto_msg_sign_error">Signature contained an error.</string>
-    <string name="crypto_msg_sign_mismatch">Signature made by wrong key.</string>
-    <string name="crypto_msg_sign_expired">Signature made by expired key.</string>
-    <string name="crypto_msg_sign_revoked">Signature made by revoked key.</string>
-    <string name="crypto_msg_sign_insecure">Signature made by insecure key.</string>
-    <string name="crypto_msg_sign_incomplete">Message must be fully downloaded to verify its signature.</string>
-    <string name="crypto_msg_signed_encrypted">Message is signed and encrypted.</string>
-    <string name="crypto_msg_unsigned_encrypted">There is no signature, this message may have been intercepted.</string>
+    <string name="openpgp_sign_only_keep_enabled" translatable="false">Keep Enabled</string>
+    <string name="openpgp_dialog_sign_only_title" translatable="false">PGP Sign-Only Mode</string>
+    <string name="openpgp_dialog_sign_only_text" translatable="false">In this mode, your PGP key will be used to create a cryptographic signature of an unencrypted email.</string>
+    <string name="openpgp_dialog_sign_only_plus_verified" translatable="false">This does not encrypt the email, but verifies that it was sent from your key.</string>
+    <string name="openpgp_dialog_sign_only_minus_break" translatable="false">Signatures may break when sent to mailing lists.</string>
+    <string name="openpgp_dialog_sign_only_minus_attach" translatable="false">Signatures may be displayed as \'signature.asc\' attachments in some clients.</string>
+    <string name="openpgp_dialog_sign_only_neutral_encsigned" translatable="false">Encrypted messages always include a signature.</string>
+    <string name="crypto_msg_disabled" translatable="false">Message is not encrypted</string>
+    <string name="crypto_msg_encrypted_error" translatable="false">Message is encrypted, but there was a decryption error.</string>
+    <string name="crypto_msg_signed_error" translatable="false">Message is signed, but the signature could not be verified.</string>
+    <string name="crypto_msg_unsupported_encrypted" translatable="false">Message is encrypted, but in an unsupported format.</string>
+    <string name="crypto_msg_unsupported_signed" translatable="false">Message is signed, but in an unsupported format.</string>
+    <string name="crypto_msg_incomplete_encrypted" translatable="false">Message is encrypted, but must be fully downloaded for decryption.</string>
+    <string name="crypto_msg_cancelled" translatable="false">Message is encrypted, but decryption was cancelled.</string>
+    <string name="crypto_msg_signed_unencrypted" translatable="false">Message is signed, but not encrypted.</string>
+    <string name="crypto_msg_encrypted_unsigned" translatable="false">Message was encrypted, but not signed.</string>
+    <string name="crypto_msg_sign_unknown" translatable="false">Signature made by unknown key.</string>
+    <string name="crypto_msg_sign_verified" translatable="false">Signature made by trusted key.</string>
+    <string name="crypto_msg_sign_unverified" translatable="false">Signature made by untrusted key!</string>
+    <string name="crypto_msg_sign_error" translatable="false">Signature contained an error.</string>
+    <string name="crypto_msg_sign_mismatch" translatable="false">Signature made by wrong key.</string>
+    <string name="crypto_msg_sign_expired" translatable="false">Signature made by expired key.</string>
+    <string name="crypto_msg_sign_revoked" translatable="false">Signature made by revoked key.</string>
+    <string name="crypto_msg_sign_insecure" translatable="false">Signature made by insecure key.</string>
+    <string name="crypto_msg_sign_incomplete" translatable="false">Message must be fully downloaded to verify its signature.</string>
+    <string name="crypto_msg_signed_encrypted" translatable="false">Message is signed and encrypted.</string>
+    <string name="crypto_msg_unsigned_encrypted" translatable="false">There is no signature, this message may have been intercepted.</string>
     <string name="crypto_info_ok">OK</string>
-    <string name="crypto_info_view_key">View Signer</string>
+    <string name="crypto_info_view_key" translatable="false">View Signer</string>
     <string name="locked_attach_unlock">Unlock</string>
     <string name="locked_attach_unencrypted">This part was not encrypted, and may be insecure.</string>
     <string name="locked_attach_title">Unprotected Attachment</string>
@@ -999,77 +997,76 @@
     <string name="messageview_crypto_warning_show_anyway">Show message anyway</string>
     <string name="recipient_error_non_ascii">Special characters are currently not supported!</string>
     <string name="recipient_error_parse_failed">Error parsing address!</string>
-    <string name="account_settings_crypto_hide_sign_only">Hide unencrypted signatures</string>
-    <string name="account_settings_crypto_hide_sign_only_on">Only encrypted signatures will be displayed</string>
-    <string name="account_settings_crypto_hide_sign_only_off">All signatures will be displayed</string>
+    <string name="account_settings_crypto_hide_sign_only" translatable="false">Hide unencrypted signatures</string>
+    <string name="account_settings_crypto_hide_sign_only_on" translatable="false">Only encrypted signatures will be displayed</string>
+    <string name="account_settings_crypto_hide_sign_only_off" translatable="false">All signatures will be displayed</string>
     <string name="error_sign_only_no_encryption">Encryption unavailable in sign-only mode!</string>
     <string name="unsigned_text_divider_label">Unsigned Text</string>
-    <string name="openpgp_inline_title">PGP/INLINE Mode</string>
-    <string name="openpgp_inline_text">The email is sent in PGP/INLINE format.\nThis should only be used for compatibility:</string>
-    <string name="openpgp_inline_plus_compat">Some clients only support this format</string>
-    <string name="openpgp_inline_minus_transit">Signatures may break during transit</string>
-    <string name="openpgp_inline_minus_attach">Attachments are not supported</string>
-    <string name="openpgp_inline_ok">Got it!</string>
+    <string name="openpgp_inline_title" translatable="false">PGP/INLINE Mode</string>
+    <string name="openpgp_inline_text" translatable="false">The email is sent in PGP/INLINE format.\nThis should only be used for compatibility:</string>
+    <string name="openpgp_inline_plus_compat" translatable="false">Some clients only support this format</string>
+    <string name="openpgp_inline_minus_transit" translatable="false">Signatures may break during transit</string>
+    <string name="openpgp_inline_minus_attach" translatable="false">Attachments are not supported</string>
+    <string name="openpgp_inline_ok" translatable="false">Got it!</string>
     <string name="openpgp_inline_disable">Disable</string>
-    <string name="openpgp_inline_keep_enabled">Keep Enabled</string>
+    <string name="openpgp_inline_keep_enabled" translatable="false">Keep Enabled</string>
     <string name="no_crypto_provider_see_global">No OpenPGP app configured, see global settings!</string>
-    <string name="crypto_no_provider_title">This email is encrypted</string>
-    <string name="crypto_no_provider_message">This email has been encrypted with OpenPGP.\nTo read it, you need to install and configure a compatible OpenPGP App.</string>
-    <string name="crypto_no_provider_button">Go to Settings</string>
+    <string name="crypto_no_provider_title" translatable="false">This email is encrypted</string>
+    <string name="crypto_no_provider_message" translatable="false">This email has been encrypted with OpenPGP.\nTo read it, you need to install and configure a compatible OpenPGP App.</string>
+    <string name="crypto_no_provider_button" translatable="false">Go to Settings</string>
     <string name="xoauth2_auth_cancelled_by_user">Authentication cancelled</string>
     <string name="xoauth2_unable_to_contact_auth_server">Unable to contact authentication server</string>
     <string name="xoauth2_error_contacting_auth_server">Error contacting authentication server</string>
     <string name="xoauth2_account_doesnt_exist">Account doesn\'t exist</string>
     <string name="hello_world">Hello world!</string>
-    <string name="decrypt_message_explanation">This email is encrypted and it may take a few seconds to decrypt it. Do you want to continue?</string>
+    <string name="decrypt_message_explanation" translatable="false">This email is encrypted and it may take a few seconds to decrypt it. Do you want to continue?</string>
     <string name="pep_menu_long_trustwords">Show long Trustwords</string>
     <string name="pep_menu_short_trustwords">Show short Trustwords</string>
     <string name="mail_list_widget_text">p≡p Message List</string>
     <string name="mail_list_widget_loading">Loading messages…</string>
     <string name="fetching_folders_failed">Fetching folder list failed</string>
     <string name="messageview_crypto_warning_details">Show Details</string>
-    <string name="error_recipient_crypto_retrieve">Error retrieving recipient status from OpenPGP provider!</string>
-    <string name="openpgp_enabled_error_title">Encryption not possible</string>
-    <string name="openpgp_enabled_error_msg">Some of the selected recipients don\'t support this feature!</string>
+    <string name="error_recipient_crypto_retrieve" translatable="false">Error retrieving recipient status from OpenPGP provider!</string>
+    <string name="openpgp_enabled_error_title" translatable="false">Encryption not possible</string>
+    <string name="openpgp_enabled_error_msg" translatable="false">Some of the selected recipients don\'t support this feature!</string>
     <string name="enable_encryption">Enable Encryption</string>
-    <string name="disable_encryption">Disable Encryption</string>
-    <string name="openpgp_description_text1">Encrypting messages ensures they can be read by the recipient, and nobody else.</string>
-    <string name="openpgp_description_text3">Encryption will only show up if supported by all recipients, and they must have sent you an email before.</string>
-    <string name="openpgp_description_text2">Toggle encryption by clicking this icon.</string>
-    <string name="openpgp_enabled_error_gotit">Got it</string>
+    <string name="openpgp_description_text1" translatable="false">Encrypting messages ensures they can be read by the recipient, and nobody else.</string>
+    <string name="openpgp_description_text3" translatable="false">Encryption will only show up if supported by all recipients, and they must have sent you an email before.</string>
+    <string name="openpgp_description_text2" translatable="false">Toggle encryption by clicking this icon.</string>
+    <string name="openpgp_enabled_error_gotit" translatable="false">Got it</string>
     <string name="openpgp_enabled_error_back">Back</string>
-    <string name="openpgp_enabled_error_disable">Disable Encryption</string>
-    <string name="openpgp_encryption">OpenPGP Encryption</string>
-    <string name="account_settings_crypto_prefer_encrypt">Autocrypt mutual mode</string>
-    <string name="dialog_autocrypt_mutual_title">Autocrypt mutual mode</string>
-    <string name="dialog_autocrypt_mutual_description_1">Messages will normally be encrypted by choice, or when replying to an encrypted message.</string>
-    <string name="dialog_autocrypt_mutual_description_2">If both sender and recipients enable mutual mode, encryption will be enabled by default.</string>
-    <string name="dialog_autocrypt_mutual_learn_more">You can <a href="https://k9mail.github.io/2018/02/26/OpenPGP-Considerations-Part-III-Autocrypt.html">click here</a> to learn more.</string>
+    <string name="openpgp_enabled_error_disable" translatable="false">Disable Encryption</string>
+    <string name="openpgp_encryption" translatable="false">OpenPGP Encryption</string>
+    <string name="account_settings_crypto_prefer_encrypt" translatable="false">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_title" translatable="false">Autocrypt mutual mode</string>
+    <string name="dialog_autocrypt_mutual_description_1" translatable="false">Messages will normally be encrypted by choice, or when replying to an encrypted message.</string>
+    <string name="dialog_autocrypt_mutual_description_2" translatable="false">If both sender and recipients enable mutual mode, encryption will be enabled by default.</string>
+    <string name="dialog_autocrypt_mutual_learn_more" translatable="false">You can <a href="https://k9mail.github.io/2018/02/26/OpenPGP-Considerations-Part-III-Autocrypt.html">click here</a> to learn more.</string>
     <string name="general_settings_title">General settings</string>
-    <string name="dialog_openkeychain_info_title">No OpenPGP app installed</string>
-    <string name="dialog_openkeychain_info_install">Install</string>
-    <string name="dialog_openkeychain_info_text">K-9 Mail requires OpenKeychain for end-to-end encryption.</string>
+    <string name="dialog_openkeychain_info_title" translatable="false">No OpenPGP app installed</string>
+    <string name="dialog_openkeychain_info_install" translatable="false">Install</string>
+    <string name="dialog_openkeychain_info_text" translatable="false">K-9 Mail requires OpenKeychain for end-to-end encryption.</string>
     <string name="encrypted_subject">"Encrypted Message"</string>
     <string name="toast_account_not_found">Internal error: Invalid account!</string>
     <string name="toast_openpgp_provider_error">Error connecting to %s!</string>
-    <string name="ac_transfer_setting_title">Send Autocrypt Setup Message</string>
-    <string name="ac_transfer_setting_summary">Securely share end-to-end setup with other devices</string>
-    <string name="ac_transfer_title">Autocrypt Setup Message</string>
-    <string name="ac_transfer_intro">An Autocrypt Setup Message securely shares your end-to-end setup with other devices.</string>
-    <string name="ac_transfer_button_send">Send Setup Message</string>
-    <string name="ac_transfer_will_be_sent">The message will be sent to your address:</string>
-    <string name="ac_transfer_generating">Generating setup message…</string>
-    <string name="ac_transfer_sending_to">Sending message to:</string>
-    <string name="ac_transfer_finish">To finish, open the message on your other device and enter the setup code.</string>
-    <string name="ac_transfer_show_code">Show Setup Code</string>
-    <string name="ac_transfer_msg_subject">Autocrypt Setup Message</string>
-    <string name="ac_transfer_msg_body">This message contains all information to transfer your Autocrypt settings along with your secret key securely from your original device.
+    <string name="ac_transfer_setting_title" translatable="false">Send Autocrypt Setup Message</string>
+    <string name="ac_transfer_setting_summary" translatable="false">Securely share end-to-end setup with other devices</string>
+    <string name="ac_transfer_title" translatable="false">Autocrypt Setup Message</string>
+    <string name="ac_transfer_intro" translatable="false">An Autocrypt Setup Message securely shares your end-to-end setup with other devices.</string>
+    <string name="ac_transfer_button_send" translatable="false">Send Setup Message</string>
+    <string name="ac_transfer_will_be_sent" translatable="false">The message will be sent to your address:</string>
+    <string name="ac_transfer_generating" translatable="false">Generating setup message…</string>
+    <string name="ac_transfer_sending_to" translatable="false">Sending message to:</string>
+    <string name="ac_transfer_finish" translatable="false">To finish, open the message on your other device and enter the setup code.</string>
+    <string name="ac_transfer_show_code" translatable="false">Show Setup Code</string>
+    <string name="ac_transfer_msg_subject" translatable="false">Autocrypt Setup Message</string>
+    <string name="ac_transfer_msg_body" translatable="false">This message contains all information to transfer your Autocrypt settings along with your secret key securely from your original device.
 
 To set up your new device for Autocrypt, please follow the instructions that should be presented by your new device.
 
 You can keep this message and use it as a backup for your secret key. If you want to do this, you should write down the password and store it securely.
 </string>
-    <string name="ac_transfer_error_send">An error occurred while sending the message. Please check your network connectivity and outgoing server configuration.</string>
+    <string name="ac_transfer_error_send" translatable="false">An error occurred while sending the message. Please check your network connectivity and outgoing server configuration.</string>
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
 </resources>

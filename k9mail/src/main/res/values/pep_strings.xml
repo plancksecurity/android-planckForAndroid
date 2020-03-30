@@ -184,8 +184,8 @@
     <string name="pep_sync_is_enabled_global">p≡p sync is enabled</string>
     <string name="pep_sync_is_disabled_global"> p≡p sync is disabled</string>
     <string name="pep_sync_leave_device_group">Leave Device group</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pgp">PGP</string>
+    <string name="open_pgp" translatable="false">OpenPGP</string>
+    <string name="pgp" translatable="false">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
     <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your p≡p key from another device, and export your private key.</string>
     <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
@@ -236,13 +236,13 @@
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
-    <string name="pep_rating_secure_trusted">Secure &amp;\n Trusted</string>
+    <string name="pep_rating_secure_trusted">Secure &amp; Trusted</string>
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
     <string name="pep_rating_none"/>
     <string name="action_tutorial">Tutorial</string>
-    <string name="only_own_identities">his is an own message, no communication partner involved.</string>
+    <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
     <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>

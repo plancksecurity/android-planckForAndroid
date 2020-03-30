@@ -13,7 +13,6 @@
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
     <string name="pep_passive_mode">Mode passiu</string>
-    <string name="pep_subject_unprotected">Deshabilitar protecció de l\'assumpte</string>
     <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
     <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
 
@@ -50,7 +49,6 @@
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
-    <string name="pep_enable_auto_download">Decrypt messages</string>
     <string name="pep_sync_enable_account">Sincronitza aquest compte</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string-array name="pep_title">

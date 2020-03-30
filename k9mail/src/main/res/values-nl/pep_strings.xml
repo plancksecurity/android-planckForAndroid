@@ -4,8 +4,6 @@
     <string name="navigation_drawer_close">Navigatielade sluiten</string>
     <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
@@ -52,7 +50,6 @@
     <string name="pep_extra_addresses">Extra sleutel-id\'s:</string>
     <string name="pep_use_keyserver">Sleutels opzoeken op sleutelserver</string>
     <string name="pep_passive_mode">Passieve modus</string>
-    <string name="pep_subject_unprotected">Onderwerpen van niet-beschermde berichten</string>
     <string name="pep_add_key_to_blacklist">Een sleutel toevoegen aan een blokkeringslijst</string>
     <string name="pep_remove_key_from_blacklist">Een sleutel uit de blokkeringslijst verwijderen</string>
     <string name="pep_confirm_trustwords">Accepteren</string>
@@ -124,7 +121,6 @@
     <string name="add_account_title">Voeg uw account toe</string>
     <string name="add_account_message">Om deze account te kunnen gebruiken, moet u deze aan uw apparaat toevoegen</string>
     <string name="account_already_exists">Account bestaat al</string>
-    <string name="device_offline_warning">Uw apparaat is blijkbaar offline. Controleer uw verbinding voordat u kunt doorgaan</string>
     <string name="permissions_needed_message">Als u niet de benodigde machtigingen verleent, kan dit onverwacht gedrag veroorzaken. Druk op OK om ze ons te verlenen.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
@@ -186,8 +182,6 @@
     <string name="pep_sync">p≡p-synchronisatie</string>
     <string name="pep_sync_enable_account">Deze account synchroniseren</string>
     <string name="pep_sync_leave_device_group">Apparatengroep verlaten</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Vergelijk de volgende Trustwords met die op uw andere apparaat en controleer of ze overeenstemmen.</string>
     <string name="key_import_wizard_from_pep_initial_text">We staan op het punt het proces voor het importeren van de sleutels te starten: Hiermee wordt uw p≡p-sleutel van een ander apparaat geïmporteerd en gebruikt en wordt uw persoonlijke sleutel geëxporteerd.</string>
     <string name="key_import_wizard_from_pgp_initial_text">U staat op het punt het proces voor het importeren van de sleutels van een PGP-client te starten</string>
