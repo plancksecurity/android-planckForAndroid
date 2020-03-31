@@ -630,6 +630,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
     private void goForward() {
         if (editSettings) {
+            mAccount.save(Preferences.getPreferences(getActivity()));
             getActivity().finish();
         } else {
             accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
