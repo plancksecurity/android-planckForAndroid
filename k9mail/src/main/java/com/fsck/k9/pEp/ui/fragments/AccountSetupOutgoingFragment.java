@@ -99,6 +99,8 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    @Inject Preferences preferences;
+    
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean mBack;
@@ -150,7 +152,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
         mBack = getArguments().getBoolean(EXTRA_BACK);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = preferences.getAccount(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
                 mAccount.setTransportUri(mAccount.getStoreUri());
@@ -195,7 +197,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         //FIXME: get Account object again?
         accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = preferences.getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -204,7 +206,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+            mAccount = preferences.getAccount(accountUuid);
         }
 
         try {
@@ -569,7 +571,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (mEdit) {
-                mAccount.save(Preferences.getPreferences(getActivity()));
+                mAccount.save(preferences);
                 goForward();
             } else {
                 AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
@@ -611,6 +613,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         uri = Transport.createTransportUri(server);
         mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
         mAccount.setTransportUri(uri);
+        mAccount.save(preferences);
         checkSettings();
     }
 
