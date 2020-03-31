@@ -30,6 +30,7 @@ import org.jsoup.Jsoup;
 import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Pair;
+import timber.log.Timber;
 
 import java.util.Locale;
 import java.util.Vector;
@@ -317,7 +318,8 @@ public class MimeMessageBuilder extends MessageBuilder {
 
         if (messageText == null) {       // FIXME: This must (should?) never happen!
             messageText = "";
-            Log.e("pep", "\"Got null msg text (This Is A Bug, please report!)\"=" + pEpMessage.getLongmsg() + " format=" + pEpMessage.getLongmsgFormatted());
+            Log.e("pEp", "Got null msg text (This Is A Bug, please report!)");
+            Timber.e("pEp", "\"Got null msg text (This Is A Bug, please report!)\"=" + pEpMessage.getLongmsg() + " format=" + pEpMessage.getLongmsgFormatted());
         }
 
         MimeTextBodyBuilder mimeTextBodyBuilder = new MimeTextBodyBuilder(messageText);
