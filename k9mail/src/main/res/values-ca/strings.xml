@@ -844,7 +844,7 @@
     <string name="status_syncing_blocked">La sincronització està bloquejada</string>
     <string name="status_syncing">Sincronització de missatges</string>
     <string name="empty_subject">L\'assumpte està buit, feu clic de nou per enviar-lo</string>
-    <string name="app_copyright_fmt">Copyright 2020 p≡p Security SA Copyright 2008- &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\"&gt;% 1 $ s &lt;/xliff: g&gt; The K-9 Dog Walkers . Porcions Copyright 2006- &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\"&gt;% 2 $ s &lt;/xliff: g&gt; el projecte Open Source d\'Android.<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="app_copyright_fmt" translatable="false">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <plurals name="copy_address_to_clipboard">
         <item quantity="one">Adreça copiada al porta-retalls</item>
         <item quantity="other"></item>
