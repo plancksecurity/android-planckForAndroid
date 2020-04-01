@@ -233,7 +233,7 @@
     <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>
-    <string name="intro_frag_second_header_3">nedôveroval</string>
+    <string name="intro_frag_second_header_3">Nedôveryhodne</string>
     <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
     <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
     <string name="intro_frag_second_text_3">Ak Trustwords nie sú správne, váš komunikačný partner je nedôveryhodný.</string>
@@ -246,7 +246,7 @@
     <string name="intro_frag_fourth_text_3">V takom prípade je stav ochrany súkromia správy bezpečný, pretože ide o najmenšieho spoločného menovateľa oboch komunikačných partnerov.</string>
     <string name="pep_rating_secure_trusted">Zabezpečené a Dôveryhodné</string>
     <string name="pep_rating_secure">Zabezpečiť</string>
-    <string name="pep_rating_mistrusted">nedôveroval</string>
+    <string name="pep_rating_mistrusted">Nedôveryhodne</string>
     <string name="pep_rating_forced_unencrypt">Vypnuté</string>
     <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Návod</string>
@@ -267,4 +267,8 @@
     <string name="keysync_wizard_create_group_first_message">Bolo zistené druhé zariadenie. Môžeme vytvoriť skupinu zariadení na synchronizáciu všetkého vášho súkromia na oboch zariadeniach. Začneme synchronizáciu\?</string>
     <string name="keysync_wizard_group_creation_done_message">Úspešne sme vytvorili skupinu zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
     <string name="keysync_wizard_add_device_to_existing_group_message">Bolo zistené ďalšie zariadenie. Môžeme ho pridať do skupiny zariadení, aby sa synchronizovalo všetko vaše súkromie na všetkých zariadeniach. Začneme synchronizáciu\?</string>
+    <string name="keysync_disable_warning_title">Zakázať synchronizáciu p≡p</string>
+    <string name="keysync_disable_warning_explanation">Ak zakážete synchronizáciu p≡p, vaše účty sa na vašich zariadeniach už nebudú synchronizovať.
+\n<b> Naozaj chcete zakázať synchronizáciu p≡p\? </b></string>
+    <string name="keysync_disable_warning_action_disable">Zakázať</string>
 </resources>

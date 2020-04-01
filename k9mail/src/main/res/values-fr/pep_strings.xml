@@ -252,4 +252,8 @@
     <string name="keysync_wizard_handshake_message">Veuillez vous assurer d\'avoir les deux appareils ensemble afin de pouvoir comparer les mots de confiance sur les deux appareils. Les Trustwords ci-dessous sont-ils égaux aux Trustwords sur l\'autre appareil \?</string>
     <string name="license">Licence</string>
     <string name="keysync_wizard_action_try_again">Réessayer</string>
+    <string name="keysync_disable_warning_title">Désactiver la synchronisation p≡p</string>
+    <string name="keysync_disable_warning_explanation">Si vous désactivez p≡p Sync, vos comptes sur vos appareils ne seront plus synchronisés.
+\n<b>Voulez-vous vraiment désactiver la synchronisation p≡p\?</b></string>
+    <string name="keysync_disable_warning_action_disable">Désactiver</string>
 </resources>

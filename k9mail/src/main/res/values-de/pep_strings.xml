@@ -203,8 +203,7 @@
     <string name="pep_rating_forced_unencrypt">Deaktiviert</string>
     <string name="pep_rating_mistrusted">Nicht vertrauenswürdig</string>
     <string name="pep_rating_secure">Sicher</string>
-    <string name="pep_rating_secure_trusted">Sicher &amp;
-\n Verifiziert</string>
+    <string name="pep_rating_secure_trusted">Sicher &amp; Verifiziert</string>
     <string name="intro_frag_fourth_text_3">In diesem Fall ist der Datenschutzstatus der Nachricht \"Sicher\", da es sich dabei um den kleinsten gemeinsamen Nenner der beiden Kommunikationspartner handelt.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_4">Führen Sie einen Handshake mit Ihrem Kommunikationspartner durch. Der Handshake ist nur einmal pro Partner nötig und garantiert eine sichere und verifizierte Kommunikation.</string>
@@ -230,4 +229,8 @@
     <string name="keysync_wizard_handshake_message">Stellen Sie sicher, dass Sie beide Geräte zusammen haben, damit Sie die Trustwords auf beiden Geräten vergleichen können. Entsprechen die folgenden Trustwords den Trustwords auf dem anderen Gerät\?</string>
     <string name="license">Lizenz</string>
     <string name="keysync_wizard_action_try_again">Versuchen Sie es nochmal</string>
+    <string name="keysync_disable_warning_title">p≡p Sync deaktivieren</string>
+    <string name="keysync_disable_warning_explanation">Wenn Sie p≡p Sync deaktivieren, werden Ihre Konten auf Ihren Geräten nicht mehr synchronisiert.
+\n&lt;b&gt;Möchten Sie die p≡p-Synchronisierung wirklich deaktivieren\?&lt;/ b&gt;<b>Are you sure you want to disable p≡p Sync\? </b></string>
+    <string name="keysync_disable_warning_action_disable">Deaktivieren</string>
 </resources>
