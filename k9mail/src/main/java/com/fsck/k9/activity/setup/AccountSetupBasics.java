@@ -149,7 +149,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     protected void onImportFinished() {
-        SettingsActivity.Companion.listAccounts(this);
+        SettingsActivity.Companion.actionBasicStart(this);
     }
 
     @Override
