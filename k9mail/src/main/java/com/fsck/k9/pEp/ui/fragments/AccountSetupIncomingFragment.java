@@ -89,6 +89,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    
+    @Inject Preferences preferences;
 
     private ServerSettings.Type mStoreType;
     private EditText mUsernameView;
@@ -210,7 +212,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mPortView.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = preferences.getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -219,7 +221,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+            mAccount = preferences.getAccount(accountUuid);
         }
 
         editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
@@ -576,7 +578,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 if (isPushCapable && mAccount.getFolderPushMode() != Account.FolderMode.NONE) {
                     jobManager.schedulePusherRefresh();
                 }
-                mAccount.save(Preferences.getPreferences(getActivity()));
+                mAccount.save(preferences);
                 getActivity().finish();
             } else {
                 /*
@@ -728,6 +730,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
         mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
         mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
+        mAccount.save(preferences);
     }
 
     public void onClick(View v) {
@@ -987,7 +990,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                                 getString(R.string.account_setup_failed_dlg_invalid_certificate_reject),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+                                        preferences.deleteAccount(mAccount);
                                         getFragmentManager().popBackStack();
                                     }
                                 })

@@ -141,7 +141,6 @@ class PEpMessageBuilder {
                         pEpMsg.setLongmsgFormatted(text);
                     }
                 }
-                Log.d("pep", "found Text: " + text);
             } else  {
                 addAttachment(attachments, mbp);
             }

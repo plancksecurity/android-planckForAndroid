@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -120,7 +119,7 @@ public class AccountSetupCheckSettings extends PepActivity implements OnClickLis
 
     private void handleCertificateValidationException(PEpSetupException cve) {
         PEpCertificateException certificateException = (PEpCertificateException) cve;
-        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", certificateException.getOriginalException());
+        Timber.e(certificateException.getOriginalException(), "Error while testing settings (cve)");
 
         // Avoid NullPointerException in acceptKeyDialog()
         if (certificateException.hasCertChain()) {
