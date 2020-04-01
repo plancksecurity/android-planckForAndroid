@@ -26,7 +26,7 @@
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Yazarlar: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Revizyon Bilgileri: <xliff:g id="app_revision_url">%s</xliff:g></string>
-    <string name="app_libraries">K-9 posta kaynak kodları içerir: <xliff:g id="app_libraries_list">%s</xliff:g></string>
+    <string name="app_libraries">K-9 posta kaynak kodları içerir:</string>
     <string name="app_emoji_icons">İfadeler: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_attachment_label">E-posta eklerini oku</string>
     <string name="read_attachment_desc">Bu uygulamaya E-posta eklerinizi okumasına izin ver.</string>
