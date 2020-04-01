@@ -582,7 +582,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     private void goForward() {
         if (mEdit) {
-            getActivity().finish();
+            if (getActivity() != null)  {
+                getActivity().finish();
+            }
         } else {
             accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
         }
