@@ -233,4 +233,8 @@
     <string name="license">Licencia</string>
     <string name="keysync_wizard_action_try_again">Inténtelo de nuevo</string>
     <string name="pep_subject_protection">Proteger asunto del mensaje</string>
+    <string name="keysync_disable_warning_title">Deshabilitar la sincronización de p≡p</string>
+    <string name="keysync_disable_warning_explanation">Si desactiva p≡p Sync, sus cuentas en sus dispositivos ya no se sincronizarán.
+\n<b> ¿Está seguro de que desea desactivar la sincronización p≡p\? </b></string>
+    <string name="keysync_disable_warning_action_disable">Inhabilitar</string>
 </resources>

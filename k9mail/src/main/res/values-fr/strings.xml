@@ -68,7 +68,7 @@
     <string name="accounts_title">Comptes</string>
     <string name="folders_title">Dossiers</string>
     <string name="advanced">Avancé</string>
-    <string name="message_list_title">=== App-specific strings =============================================================</string>
+    <string name="message_list_title">"=== App-specific strings ============================================================= "</string>
     <string name="compose_title_compose">Composer</string>
     <string name="compose_title_reply">Répondre</string>
     <string name="compose_title_reply_all">Répondre à tous</string>
