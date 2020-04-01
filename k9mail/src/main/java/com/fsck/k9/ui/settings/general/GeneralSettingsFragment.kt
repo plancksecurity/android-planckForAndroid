@@ -8,6 +8,7 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
+import androidx.preference.TwoStatePreference
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
@@ -45,14 +46,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
-
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            hideKeySyncOptions()
-        }
-    }
-
-    private fun hideKeySyncOptions() {
-        findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
+        initializeGlobalpEpSync()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -130,6 +124,43 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun initializeGlobalpEpSync() {
+
+        if (!BuildConfig.WITH_KEY_SYNC) {
+            findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
+
+        } else {
+            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as TwoStatePreference?)?.apply {
+                onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+                    processKeySyncSwitchClick(preference as TwoStatePreference)
+                }
+            }
+        }
+    }
+
+    private fun processKeySyncSwitchClick(preference: TwoStatePreference): Boolean {
+        // IF we are disabling sync, warning, if not just set it.
+        // 1 uncheck to return to "current state
+        preference.isChecked = !preference.isChecked
+
+        //2 If we are disabling (which means it is checked)
+        if (preference.isChecked) {
+            AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+                    .setTitle(R.string.keysync_disable_warning_title)
+                    .setMessage(R.string.keysync_disable_warning_explanation)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
+                        preference.isChecked = false
+                    }.setNegativeButton(R.string.cancel_action) { _, _ ->
+                        preference.isChecked = true
+                    }
+                    .show()
+        } else {
+            preference.isChecked = true
+        }
+        return true
     }
 
     private fun initializeAfterMessageDeleteBehavior() {

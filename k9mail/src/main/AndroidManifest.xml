@@ -559,7 +559,7 @@
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:screenOrientation="portrait"/>

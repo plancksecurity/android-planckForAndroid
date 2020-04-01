@@ -41,8 +41,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import android.util.Log;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
 import com.fsck.k9.Account.Expunge;
@@ -3182,7 +3180,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void sendMessage(Transport transport, Message message) throws MessagingException {
         Timber.e("pEp", "sendMessage: init");
-        Log.e("ManualImport", "sendMessage: init");
         message.setFlag(Flag.X_SEND_IN_PROGRESS, true);
         transport.sendMessage(message);
         message.setFlag(Flag.X_SEND_IN_PROGRESS, false);
@@ -3956,7 +3953,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     synchronized public void checkpEpSyncMail(final Context context,
                                  final PEpProvider.CompletedCallback completedCallback) {
         final boolean useManualWakeLock = true;
-        Log.d("pEpDecrypt", "add pEpSyncJob");
+        Timber.d("pEpDecrypt", "add pEpSyncJob");
 
         TracingWakeLock twakeLock = null;
         if (useManualWakeLock) {
@@ -4819,8 +4816,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @Override
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
-        Log.e("pEpEngine", "messageToSend from<>to: " + pEpMessage.getFrom().address + "<>" + pEpMessage.getTo().get(0).address);
-        Log.e("pEpEngine", "messageToSend ID from engine: " + pEpMessage.getId());
+        Timber.e("%s %s", "pEpEngine", "messageToSend from<>to: " + pEpMessage.getFrom().address + "<>" + pEpMessage.getTo().get(0).address);
+        Timber.e("%s %s", "pEpEngine", "messageToSend ID from engine: " + pEpMessage.getId());
         threadPool.execute(() -> {
             try {
                 Account fromAccount = loadAddressAccount(pEpMessage.getFrom().address);
@@ -4853,9 +4850,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
 
                 } else { */
-                    Log.e("pEpEngine", "Start SMTP send: " + message.getMessageId());
+                    Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
-                    Log.e("pEpEngine", "Finish SMTP send: " + message.getMessageId());
+                    Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
                // }
 

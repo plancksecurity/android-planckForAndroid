@@ -289,6 +289,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
         createDynamicShortcut();
         uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
@@ -298,7 +299,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             return;
         }
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
+        Timber.e("P4A-941 took %d to before rendering", System.currentTimeMillis()-time);
         if (K9.getK9ComposerThemeSetting() != K9.Theme.USE_GLOBAL) {
             // theme the whole content according to the theme (except the action bar)
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
@@ -318,6 +319,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         // on api level 15, setContentView() shows the progress bar for some reason...
         setProgressBarIndeterminateVisibility(false);
+        Timber.e("P4A-941 render %d ", System.currentTimeMillis()-time);
 
         final Intent intent = getIntent();
 
@@ -347,6 +349,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             finish();
             return;
         }
+        Timber.e("P4A-941 account checks %d", System.currentTimeMillis()-time);
 
         contacts = Contacts.getInstance(MessageCompose.this);
 
@@ -363,12 +366,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         );
         recipientPresenter.updateCryptoStatus();
 
+        Timber.e("P4A-941 init recipient presenter %d ", System.currentTimeMillis()-time);
 
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
+        Timber.e("P4A-941 subject-view init %d ", System.currentTimeMillis()-time);
 
         QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
@@ -412,6 +417,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         subjectView.setOnFocusChangeListener(this);
         messageContentView.setOnFocusChangeListener(this);
+        Timber.e("P4A-941 init attachment and quote view %d ", System.currentTimeMillis()-time);
 
         if (savedInstanceState != null) {
             /*
@@ -464,6 +470,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         requestReadReceipt = account.isMessageReadReceiptAlways();
 
         updateFrom();
+        Timber.e("P4A-941 showed from %d ", System.currentTimeMillis()-time);
 
         if (!relatedMessageProcessed) {
             if (action == Action.REPLY || action == Action.REPLY_ALL ||
@@ -500,8 +507,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (action == Action.FORWARD) {
             relatedMessageReference = relatedMessageReference.withModifiedFlag(Flag.FORWARDED);
         }
+        Timber.e("P4A-941 process related message %d ", System.currentTimeMillis()-time);
 
         updateMessageFormat();
+        Timber.e("P4A-941 update message format view %d ", System.currentTimeMillis()-time);
 
         // Set font size of input controls
         int fontSize = K9.getFontSizes().getMessageComposeInput();
@@ -520,8 +529,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.reattachCallback(this);
         }
+        Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
+        Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
 
     }
 

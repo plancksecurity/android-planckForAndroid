@@ -6,6 +6,8 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Presenter;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -16,6 +18,7 @@ import timber.log.Timber;
 
 public class ImportWizardPresenter implements Presenter {
 
+    private static final String DEFAULT_TRUSTWORDS_LANGUAGE = "en";
     private boolean formingGroup;
     private ImportWizardFromPGPView view;
     private Identity myself;
@@ -104,9 +107,16 @@ public class ImportWizardPresenter implements Presenter {
         this.state = SyncState.INITIAL;
 
         showInitialScreen(isFormingGroup);
+
+        fixUnsupportedLanguage();
         trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
 
+    }
 
+    private void fixUnsupportedLanguage() {
+        if (!PEpUtils.trustWordsAvailableForLang(trustwordsLanguage)) {
+            trustwordsLanguage = DEFAULT_TRUSTWORDS_LANGUAGE;
+        }
     }
 
 
@@ -137,8 +147,8 @@ public class ImportWizardPresenter implements Presenter {
 
     boolean changeTrustwordsLanguage(int languagePosition) {
         showDebugInfo();
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
-        String language = pEpLanguages[languagePosition].toString();
+        final List pEpLanguages = PEpUtils.getPEpLocales();
+        String language = pEpLanguages.get(languagePosition).toString();
         changeTrustwords(language);
         return true;
     }

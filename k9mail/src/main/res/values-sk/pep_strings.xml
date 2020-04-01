@@ -2,7 +2,10 @@
 <resources>
     <string name="navigation_drawer_open">Otvorte navigačný panel</string>
     <string name="navigation_drawer_close">Zatvorte navigačný panel</string>
+    <!-- Unstranslatable strings -->
     <string name="pep" translatable="false">p≡p</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
@@ -76,7 +79,7 @@
     <string name="pep_enable_privacy_protection">p≡p ochrana súkromia</string>
     <string name="pep_explanation">Vysvetlenie</string>
     <string name="pep_suggestion">Návrh</string>
-    <string name="pep_app_license"></string>
+    <string name="pep_app_license">Licencované pod licenciou pEp security EULA</string>
     <string name="pep_trust_server_description">Uchovávajte e-maily na serveri v bezpečnej forme.</string>
     <string name="pep_account_privacy_protection_explanation">Povoľte p≡p ochrana súkromia pre tento účet</string>
     <string name="pep_forward_warning">Varovanie nezabezpečenej odpovede</string>
@@ -119,6 +122,7 @@
     <string name="add_account_title">Pridajte svoj účet</string>
     <string name="add_account_message">Ak chcete tento účet používať, musíte si ho pridať do svojho zariadenia</string>
     <string name="account_already_exists">Účet už existuje</string>
+    <string name="device_offline_warning">Zdá sa, že vaše zariadenie je v režime offline, skôr ako budete pokračovať, skontrolujte pripojenie</string>
     <string name="permissions_needed_message">Neudelenie potrebných povolení môže spôsobiť neočakávané správanie. Stlačením tlačidla OK ich udelíte.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
@@ -182,6 +186,8 @@
     <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
     <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
     <string name="pep_sync_leave_device_group">Opustiť skupinu zariadení</string>
+    <string name="open_pgp">OpenPGP</string>
+    <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Porovnajte nasledujúce Trustwords s tými na vašom druhom zariadení a potvrďte, či sa zhodujú.</string>
     <string name="key_import_wizard_from_pep_initial_text">Chystáme sa začať proces importovania kľúča: Týmto sa importuje a použije váš kľúč p≡p z iného zariadenia a exportuje váš súkromný kľúč.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Chystáte sa začať proces importovania kľúča od klienta PGP</string>
@@ -218,12 +224,16 @@
     <!-- Folder list-->
     <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1"> Unstranslatable strings </string>
-    <string name="intro_frag_first_text_2"> Unstranslatable strings </string>
+    <string name="intro_frag_first_text_1">Vitajte v tutoriále <font color="#4caf50">p≡p</font></string>
+    <string name="intro_frag_first_text_2">Túto príručku môžete kedykoľvek zavrieť.
+\n
+\n<font color="#4caf50">p≡p</font> používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie.
+\n
+\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa</string>
     <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>
-    <string name="intro_frag_second_header_3">nedôveroval</string>
+    <string name="intro_frag_second_header_3">Nedôveryhodne</string>
     <string name="intro_frag_second_text_1">Pri tomto Stave súkromia je všetka komunikácia bezpečná, ale na potvrdenie, že váš kontakt je skutočne osobou, ktorú poznáte, by ste si s týmto kontaktom mali overiť Trustwords.</string>
     <string name="intro_frag_second_text_2">Po potvrdení správnosti Trustwords a dokončení Handshake bude komunikácia úplne bezpečná a dôveryhodná.</string>
     <string name="intro_frag_second_text_3">Ak Trustwords nie sú správne, váš komunikačný partner je nedôveryhodný.</string>
@@ -231,13 +241,12 @@
     <string name="intro_frag_third_text_2">Po kliknutí na ikonu stavu súkromia na hornom paneli sa dostanete na stránku Handshake, kde môžete overiť svojho komunikačného partnera.</string>
     <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
-    <string name="intro_frag_fourth_text_1">\@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža Stav súkromia správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
     <string name="intro_frag_fourth_text_3">V takom prípade je stav ochrany súkromia správy bezpečný, pretože ide o najmenšieho spoločného menovateľa oboch komunikačných partnerov.</string>
-    <string name="pep_rating_secure_trusted">Zabezpečené a 
-\ndôveryhodné</string>
+    <string name="pep_rating_secure_trusted">Zabezpečené a Dôveryhodné</string>
     <string name="pep_rating_secure">Zabezpečiť</string>
-    <string name="pep_rating_mistrusted">nedôveroval</string>
+    <string name="pep_rating_mistrusted">Nedôveryhodne</string>
     <string name="pep_rating_forced_unencrypt">Vypnuté</string>
     <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Návod</string>
@@ -245,4 +254,21 @@
     <string name="message_failed_to_encrypt">Túto správu sme nemohli ochrániť.</string>
     <string name="notification_failed_to_encrypt_title">Túto správu sme nemohli ochrániť.</string>
     <string name="notification_failed_to_encrypt_text">Neodoslali sme ho a namiesto toho sme ho uložili do priečinka konceptu.</string>
+    <string name="keysync_wizard_error_message">Pri synchronizácii zariadení sa vyskytla chyba. Prosím skúste znova.</string>
+    <string name="keysync_wizard_waiting_message">Venujte nám chvíľu, kým synchronizujeme vaše zariadenia. Môže to trvať minútu alebo viac.</string>
+    <string name="keysync_wizard_handshake_message">Uistite sa, že máte obe zariadenia spolu, aby ste mohli porovnať Trustwords na oboch zariadeniach. Sú Trustwords nižšie rovnaké ako Trustwords na druhom zariadení\?</string>
+    <string name="pep_subject_protection">Chrániť predmet správy</string>
+    <string name="license">Licencia</string>
+    <string name="keysync_wizard_action_cancel">Zrušiť</string>
+    <string name="keysync_wizard_action_next">Ďalšie</string>
+    <string name="keysync_wizard_group_joining_done_message">Zariadenie je teraz členom vašej skupiny zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
+    <string name="keysync_wizard_action_leave">Odísť</string>
+    <string name="keysync_wizard_action_try_again">Skúste to znova</string>
+    <string name="keysync_wizard_create_group_first_message">Bolo zistené druhé zariadenie. Môžeme vytvoriť skupinu zariadení na synchronizáciu všetkého vášho súkromia na oboch zariadeniach. Začneme synchronizáciu\?</string>
+    <string name="keysync_wizard_group_creation_done_message">Úspešne sme vytvorili skupinu zariadení. Všetko vaše súkromie je teraz synchronizované.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Bolo zistené ďalšie zariadenie. Môžeme ho pridať do skupiny zariadení, aby sa synchronizovalo všetko vaše súkromie na všetkých zariadeniach. Začneme synchronizáciu\?</string>
+    <string name="keysync_disable_warning_title">Zakázať synchronizáciu p≡p</string>
+    <string name="keysync_disable_warning_explanation">Ak zakážete synchronizáciu p≡p, vaše účty sa na vašich zariadeniach už nebudú synchronizovať.
+\n<b> Naozaj chcete zakázať synchronizáciu p≡p\? </b></string>
+    <string name="keysync_disable_warning_action_disable">Zakázať</string>
 </resources>

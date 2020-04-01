@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!--=== App-specific strings =============================================================-->
+    <!--This should make it easier for forks to change the branding-->
+    <!--Used in AndroidManifest.xml-->
+    <!--<string name="app_name">K-9 Mail/pEp</string>-->
+    <!--<string name="remote_control_label">Control remot del Correu K-9 Mail</string>-->
+    <!--<string name="remote_control_desc">Permet a aquesta aplicació controlar les activitats i la configuració de K-9 Mail.</string>-->
+    <!--Used in the about dialog-->
+    <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
+    <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Porcions de Copyright 2006-<xliff:g>%s</xliff:g> Projecte de codi obert d\'Android.</string>-->
+    <!--<string name="app_license">Llicenciat sota Llicència Apache, Versió 2.0.</string>-->
+    <!--Welcome message-->
+    <!--<string name="welcome_message_title">Us donem la benvinguda a K-9 Mail</string>-->
+    <!--Default signature-->
+    <!--General strings that include the app name-->
+    <!--<string name="account_delete_dlg_instructions_fmt">El compte \"<xliff:g id="account">%s</xliff:g>\" serà esborrat de K-9 Mail.</string>-->
+    <!--<string name="account_recreate_dlg_instructions_fmt">Totes les dades de \"<xliff:g id="account">%s</xliff:g>\" seran esborrades de K-9 Mail, però la configuració del compte romandrà.</string>-->
+    <!--<string name="account_clear_dlg_instructions_fmt">Tots els missatges a \"<xliff:g id="account">%s</xliff:g>\" seran esborrats de K-9 Mail, però la configuració del compte romandrà.</string>-->
+    <!--=== App Store-specific strings =======================================================-->
     <string name="import_dialog_error_message">No s\'a trobat cap aplicació per realitzar la importació. Instal·leu un gestor d\'arxius des de Google Play Store.</string>
     <string name="open_market">Obre la Play Store</string>
+    <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Autors: <xliff:g id="app_authors">%s</xliff:g>
     </string>
     <string name="app_revision_fmt">Informació de la revisió: <xliff:g id="app_revision_url">%s</xliff:g>
@@ -20,7 +39,7 @@
     <string name="accounts_title">Comptes</string>
     <string name="folders_title">Carpetes</string>
     <string name="advanced">Avançat</string>
-    <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g></string>
+    <string name="message_list_title">=== App-specific strings =============================================================</string>
     <string name="compose_title_compose">Redacta</string>
     <string name="compose_title_reply">Respon</string>
     <string name="compose_title_reply_all">Respon a tothom all</string>
@@ -43,9 +62,10 @@
     <string name="status_next_poll">Propera comprovació <xliff:g id="nexttime">%s</xliff:g>
     </string>
     <string name="status_syncing_off">Comprovació acabada</string>
-    <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> seleccionats</string>
+    <string name="actionbar_selected">=== App-specific strings =============================================================</string>
     <string name="next_action">Següent</string>
     <string name="previous_action">Anterior</string>
+    <!--Used to confirm acceptance of dialog boxes, warnings, errors, etc.-->
     <string name="okay_action">D\'acord</string>
     <string name="cancel_action">Cancel·la</string>
     <string name="send_action">Envia</string>
@@ -100,6 +120,7 @@
     <string name="about_action">Sobre</string>
     <string name="prefs_title">Configuració</string>
     <string name="accounts_context_menu_title">Opcions del compte</string>
+    <!--Shown in place of the subject when a message has no subject. Showing this in parentheses is customary.-->
     <string name="general_no_subject">(Sense assumpte)</string>
     <string name="general_no_sender">Sense remitent</string>
     <string name="status_loading">Comprovant</string>
@@ -119,7 +140,7 @@
     <string name="clearing_account">S\'està netejant el compte \"<xliff:g id="account">%s</xliff:g>\"</string>
     <string name="recreating_account">S\'està creant un compte \"<xliff:g id="account">%s</xliff:g>\"</string>
     <string name="notification_new_title">Nou correu</string>
-    <string name="notification_new_one_account_fmt"><xliff:g id="unread_message_count">%1$d</xliff:g> no llegit(s) (<xliff:g id="account">%2$s</xliff:g>)</string>
+    <string name="notification_new_one_account_fmt">=== App-specific strings =============================================================</string>
     <string name="notification_action_reply">Respon</string>
     <string name="notification_action_mark_as_read">Marca Llegit</string>
     <string name="notification_action_mark_all_as_read">Marca\'ls tots com a llegits</string>
@@ -143,11 +164,11 @@
     <string name="special_mailbox_name_sent">Enviat</string>
     <string name="special_mailbox_name_archive">Arxiu</string>
     <string name="special_mailbox_name_spam">Brossa</string>
-    <string name="special_mailbox_name_drafts_fmt"><xliff:g id="folder">%s</xliff:g> (Esborranys)</string>
-    <string name="special_mailbox_name_trash_fmt"><xliff:g id="folder">%s</xliff:g> (Paperera)</string>
-    <string name="special_mailbox_name_sent_fmt"><xliff:g id="folder">%s</xliff:g> (Enviat)</string>
-    <string name="special_mailbox_name_archive_fmt"><xliff:g id="folder">%s</xliff:g> (Arxiu)</string>
-    <string name="special_mailbox_name_spam_fmt"><xliff:g id="folder">%s</xliff:g> (Brossa)</string>
+    <string name="special_mailbox_name_drafts_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_trash_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_sent_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_archive_fmt">=== App-specific strings =============================================================</string>
+    <string name="special_mailbox_name_spam_fmt">=== App-specific strings =============================================================</string>
     <string name="send_failure_subject">La tramesa d\'alguns missatges ha fallat</string>
     <string name="debug_version_fmt">Versió: <xliff:g id="version">%s</xliff:g>
     </string>
@@ -167,7 +188,7 @@
     <string name="message_compose_quote_header_from">De:</string>
     <string name="message_compose_quote_header_to">A:</string>
     <string name="message_compose_quote_header_cc">A/c:</string>
-    <string name="message_compose_reply_header_fmt"><xliff:g id="sender">%s</xliff:g> ha escrit:</string>
+    <string name="message_compose_reply_header_fmt">=== App-specific strings =============================================================</string>
     <string name="message_compose_error_no_recipients">Has d\'afegir-hi, com a mínim, un destinatari.</string>
     <string name="error_contact_address_not_found">No s\'ha trobat cap adreça de correu.</string>
     <string name="message_compose_attachments_skipped_toast">Alguns adjunts no es poden reenviar perquè no s\'han carregat.</string>
@@ -183,6 +204,7 @@
     <string name="message_view_show_pictures_action">Mostra fotos</string>
     <string name="message_view_no_viewer">No ha estat capaç de trobar un visualitzador per <xliff:g id="mimetype">%s</xliff:g>.</string>
     <string name="message_view_download_remainder">Descarrega el missatge complet</string>
+    <!--NOTE: The following message refers to strings with id account_setup_incoming_save_all_headers_label and account_setup_incoming_title-->
     <string name="message_no_additional_headers_available">S\'han descarregat totes les capçaleres, no hi ha capçaleres addicionals per mostrar.</string>
     <string name="message_additional_headers_retrieval_failed">La recuperació de capçaleres addicionals de la base de dades o del servidor de correu ha fallat.</string>
     <string name="from_same_sender">Més d\'aquest remitent</string>
@@ -236,7 +258,7 @@
     <string name="account_setup_basics_email_hint">Adreça de correu electrònic</string>
     <string name="account_setup_basics_password_hint">Contrasenya</string>
     <string name="account_setup_basics_manual_setup_action">Configuració manual</string>
-    <string name="account_setup_check_settings_title" />
+    <string name="account_setup_check_settings_title"/>
     <string name="account_setup_check_settings_retr_info_msg">Recuperant la informació del compte\u2026</string>
     <string name="account_setup_check_settings_check_incoming_msg">S\'està comprovant la configuració del servidor d\'entrada\u2026</string>
     <string name="account_setup_check_settings_check_outgoing_msg">S\'està comprovant la configuració del servidor de sortida\u2026</string>
@@ -606,7 +628,7 @@
     <string name="count_search_summary">Apaga-ho perquè es mostri més ràpid</string>
     <string name="hide_special_accounts_title">Amaga comptes especials</string>
     <string name="hide_special_accounts_summary">Amaga la bústia d\'entrada unificada i tots els missatges dels comptes</string>
-    <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
+    <string name="search_title">=== App-specific strings =============================================================</string>
     <string name="flagged_modifier">- Senyalat</string>
     <string name="unread_modifier">- No llegit</string>
     <string name="search_all_messages_title">Tots els missatges</string>
@@ -695,7 +717,7 @@
     </string>
     <plurals name="settings_import_accounts">
         <item quantity="one">un compte</item>
-        <item quantity="other"><xliff:g id="numAccounts">%s</xliff:g> comptes</item>
+        <item quantity="other">=== App-specific strings =============================================================</item>
     </plurals>
     <string name="settings_export_failure">No s\'ha pogut exportar els paràmetres.</string>
     <string name="settings_import_failure">No s\'ha pogut importar els paràmetres des de <xliff:g id="filename">%s</xliff:g>
@@ -799,6 +821,8 @@
     <string name="fetching_attachment_dialog_title_send">Enviant missatge</string>
     <string name="fetching_attachment_dialog_title_save">Guardant esborrany</string>
     <string name="fetching_attachment_dialog_message">Recuperant adjunt…</string>
+    <!--=== Client certificates specific ==================================================================-->
+    <!--Note: This references message_view_download_remainder-->
     <string name="crypto_info_ok">D’acord</string>
     <string name="account_settings_folder_notify_new_mail_mode_all">Tots</string>
     <string name="account_settings_folder_notify_new_mail_mode_none">Cap</string>
@@ -811,11 +835,170 @@
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="openpgp_sign_only_disable">Disable</string>
     <string name="openpgp_inline_disable">Disable</string>
-    <string name="account_already_exists">El compte ja existeix</string>
-    <string name="account_clear_dlg_instructions_fmt">>Totes les còpies locals dels missatges de \\\"<xliff:g id="account">%s</xliff:g>\\\" s\\\'eliminaran, però la configuració del compte romandrà.</string>
-    <string name="account_notify_contacts_mail_only_label">Només els contactes</string>
-    <string name="account_notify_contacts_mail_only_summary">Mostra notificacions només per als missatges de contactes coneguts</string>
-    <string name="account_recreate_dlg_instructions_fmt">Totes les dades locals de \\\"<xliff:g id="account">%s</xliff:g>\\\" s\\\'eliminaran, però la configuració del compte romandrà.</string>
-    <string name="action_tutorial">Tutorial</string>
-    <string name="pep_subject_protection">Habilitar protecció de l’assumpte</string>
+    <string name="app_name">p≡p</string>
+    <string name="account_recreate_dlg_instructions_fmt">S\'eliminaran totes les dades locals de \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" compte \"&gt;% s &lt;/xliff: g&gt;\". La configuració del compte es conservarà.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="account_clear_dlg_instructions_fmt">S\'eliminaran còpies locals de missatges a \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" compte \"&gt;% s &lt;/xliff: g&gt;\". La configuració del compte es conservarà.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="status_no_network">Sincronització desactivada: sense xarxa</string>
+    <string name="status_no_background">Sincronització desactivada: no hi ha cap activitat de fons</string>
+    <string name="status_poll_and_push_disabled">Polling i empenta discapacitats</string>
+    <string name="status_syncing_blocked">La sincronització està bloquejada</string>
+    <string name="status_syncing">Sincronització de missatges</string>
+    <string name="empty_subject">L\'assumpte està buit, feu clic de nou per enviar-lo</string>
+    <string name="app_copyright_fmt" translatable="false">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <plurals name="copy_address_to_clipboard">
+        <item quantity="one">Adreça copiada al porta-retalls</item>
+        <item quantity="other"></item>
+    </plurals>
+    <string name="account_setup_outgoing_invalid_setting_combo_notice">\"&lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" setting_1_label \"&gt;% 1 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" setting_1_value \"&gt;% 2 $ s &lt;/xliff: g&gt;\" no és vàlid amb \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names : tc: xliff: document: 1.2 \"id =\" setting_2_label \"&gt;% 3 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id = \"setting_2_value\"&gt;% 4 $ s &lt;/xliff: g&gt; \"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_setup_options_mail_display_count_2500">2500 missatges</string>
+    <string name="account_setup_options_mail_display_count_5000">5000 missatges</string>
+    <string name="account_setup_options_mail_display_count_10000">10000 missatges</string>
+    <string name="account_setup_failed_dlg_auth_message_fmt">Usuari o contrasenya incorrecta.
+\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_certificate_message_fmt">El servidor va presentar un certificat SSL no vàlid. De vegades, això es deu a una configuració errònia del servidor. De vegades és perquè algú intenta atacar-lo o el servidor de correu. Si no esteu segurs de l\'actualitat, feu clic a Rebutja i contacteu amb els usuaris que gestionen el vostre servidor de correu.
+\n
+\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_setup_failed_dlg_server_message_fmt">No es pot connectar al servidor.
+\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+    <string name="account_settings_folder_notify_new_mail_mode_label">Carpetes de notificacions</string>
+    <string name="account_settings_folder_notify_new_mail_mode_first_class">Només carpetes de 1a classe</string>
+    <string name="account_settings_folder_notify_new_mail_mode_first_and_second_class">Carpetes de 1a i 2a classe</string>
+    <string name="account_settings_folder_notify_new_mail_mode_not_second_class">Totes les carpetes de segona classe</string>
+    <string name="account_notify_contacts_mail_only_label">Només contactes</string>
+    <string name="account_notify_contacts_mail_only_summary">Mostra només les notificacions per a missatges de contactes coneguts</string>
+    <string name="account_settings_no_openpgp_provider_configured">No s’ha configurat cap aplicació OpenPGP</string>
+    <string name="account_settings_no_openpgp_provider_installed">No s\'ha trobat cap aplicació OpenPGP: feu clic per instal·lar</string>
+    <string name="address_type_mobile">Mobile</string>
+    <string name="status_loading_error">Error de càrrega del missatge</string>
+    <plurals name="notification_new_messages_title">
+        <item quantity="one">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"new_message_count\"&gt;% d &lt;/ xliff: g&gt; nou missatge</item>
+        <item quantity="other"></item>
+    </plurals>
+    <string name="notification_additional_messages">+ &lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"addicionals_messatges\"&gt;% 1 $ d &lt;/xliff: g&gt; més a &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"account\"&gt;% 2 $ s &lt;/xliff: g&gt;<xliff:g id="additional_messages">%1$d</xliff:g> more on <xliff:g id="account">%2$s</xliff:g></string>
+    <string name="notification_action_delete_all">Eliminar tots</string>
+    <string name="notification_action_archive_all">Arxivar tot</string>
+    <string name="notification_authentication_error_title">L\'autenticació ha fallat</string>
+    <string name="font_size_message_view_content_summary">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"fontsize\"&gt;% d &lt;/ xliff: g&gt; %%<xliff:g id="fontsize">%d</xliff:g>%%</string>
+    <string name="font_size_message_view_content_dialog_title">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"title\"&gt;% 1 $ s &lt;/xliff: g&gt;: &lt;xliff: g xmlns: xliff = \"urna : oasi: noms: tc: xliff: document: 1.2 \"id =\" resum \"&gt;% 2 $ s &lt;/xliff: g&gt;<xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
+    <string name="send_failed_reason">L\'enviament ha fallat:% s</string>
+    <string name="dialog_confirm_mark_all_as_read_title">Confirmeu-ho com a llegit</string>
+    <string name="dialog_confirm_mark_all_as_read_message">Voleu marcar tots els missatges com a llegits\?</string>
+    <string name="dialog_confirm_mark_all_as_read_confirm_button">Sí</string>
+    <string name="dialog_confirm_mark_all_as_read_cancel_button">No</string>
+    <string name="settings_export_success_generic">La configuració s\'ha exportat correctament</string>
+    <string name="auth_external_error">No es pot autenticar. El servidor no fa publicitat de la capacitat SASL EXTERNAL. Això podria ser degut a un problema amb el certificat de client (caducitat, autoritat de certificat desconeguda) o a algun altre problema de configuració.</string>
+    <string name="account_setup_basics_client_certificate">Utilitzeu el certificat de client</string>
+    <string name="account_setup_basics_oauth2_token">Utilitzeu el testimoni OAuth 2.0 (comptes de Google)</string>
+    <string name="client_certificate_spinner_empty">Sense certificat de client</string>
+    <string name="client_certificate_spinner_delete">Elimineu la selecció de certificat de client</string>
+    <string name="client_certificate_retrieval_failure">No s\'ha pogut recuperar el certificat de client per a alias \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" alias \"&gt;% s &lt;/xliff: g&gt;\"<xliff:g id="alias">%s</xliff:g>\""</string>
+    <string name="client_certificate_expired">Certificat de client \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" certificat_alias \"&gt;% 1 $ s &lt;/xliff: g&gt;\" ha caducat o encara no és vàlid (&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"exception_message\"&gt;% 2 $ s &lt;/xliff: g&gt;)<xliff:g id="certificate_alias">%1$s</xliff:g>\" has expired or is not yet valid (<xliff:g id="exception_message">%2$s</xliff:g>)"</string>
+    <string name="preview_encrypted">* Xifrat *</string>
+    <string name="add_from_contacts">Afegeix des de Contactes</string>
+    <string name="recipient_bcc">Bcc</string>
+    <string name="recipient_from">Des de</string>
+    <string name="unknown_recipient">&lt;Destinatari desconegut&gt;</string>
+    <string name="address_type_home">Inici</string>
+    <string name="address_type_work">Treball</string>
+    <string name="address_type_other">Altres</string>
+    <string name="notification_authentication_error_text">Fallada l\'autenticació per a &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"account\"&gt;% s &lt;/xliff: g&gt;. Actualitzeu la configuració del servidor.<xliff:g id="account">%s</xliff:g>. Update your server settings.</string>
+    <string name="message_compose_reply_header_fmt_with_date">A &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"sent_date\"&gt;% 1 $ s &lt;/xliff: g&gt;, &lt;xliff: g xmlns: xliff = \" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" remitent \"&gt;% 2 $ s &lt;/xliff: g&gt; va escriure:<xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> wrote:</string>
+    <string name="compose_error_incomplete_recipient">El camp del destinatari conté una entrada incompleta.</string>
+    <string name="message_view_status_no_space">No s\'ha pogut desar el fitxer adjunt ja que no hi ha prou espai.</string>
+    <string name="message_view_toast_unable_to_display_message">No es pot mostrar el missatge</string>
+    <string name="message_view_sender_label">via% 1 $ s</string>
+    <string name="debug_delete_local_body">Depuració / elimina el cos del missatge</string>
+    <string name="global_settings_messageiew_after_delete_behavior_title">Comportament del missatge suprimit</string>
+    <string name="global_settings_confirm_menu_mark_all_read">Marca tots els missatges com a llegits</string>
+    <string name="global_settings_privacy_hide_useragent">Amagueu el client de correu</string>
+    <string name="global_settings_privacy_hide_useragent_detail">Elimineu p Userp User-Agent de les capçaleres de correu</string>
+    <string name="global_settings_privacy_hide_timezone">Amagueu la zona horària</string>
+    <string name="global_settings_privacy_hide_timezone_detail">Utilitzeu UTC en lloc de la zona horària local a les capçaleres de correu i a la capçalera de resposta</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting">Amagueu el nom de l\'amfitrió</string>
+    <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Identifiqueu-lo com \"localhost\" quan us connecteu a servidors SMTP</string>
+    <string name="global_settings_lock_screen_notification_visibility_title">Bloquejar les notificacions de la pantalla</string>
+    <string name="global_settings_lock_screen_notification_visibility_nothing">No hi ha notificacions de pantalla de bloqueig</string>
+    <string name="global_settings_lock_screen_notification_visibility_app_name">Nom de la sol·licitud</string>
+    <string name="global_settings_lock_screen_notification_visibility_message_count">Nombre de missatges sense llegir</string>
+    <string name="global_settings_lock_screen_notification_visibility_senders">Recompte de missatges i remitents</string>
+    <string name="global_settings_lock_screen_notification_visibility_everything">Igual quan es desbloqueja la pantalla</string>
+    <string name="quiet_time_notification">Desactiva les notificacions</string>
+    <string name="quiet_time_notification_description">Desactiveu completament les notificacions durant el temps tranquil</string>
+    <string name="account_setup_basics_show_password">Ensenya la contrasenya</string>
+    <string name="account_setup_auth_type_normal_password">Contrasenya normal</string>
+    <string name="account_setup_auth_type_insecure_password">Contrasenya, transmesa de forma insegura</string>
+    <string name="account_setup_auth_type_encrypted_password">Contrasenya xifrada</string>
+    <string name="account_setup_auth_type_xoauth2">Token OAuth 2.0</string>
+    <string name="account_setup_auth_type_tls_client_certificate">Certificat de client</string>
+    <string name="account_setup_incoming_client_certificate_label">Certificat de client</string>
+    <string name="account_setup_incoming_invalid_setting_combo_notice">\"&lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" setting_1_label \"&gt;% 1 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" setting_1_value \"&gt;% 2 $ s &lt;/xliff: g&gt;\" no és vàlid amb \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names : tc: xliff: document: 1.2 \"id =\" setting_2_label \"&gt;% 3 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id = \"setting_2_value\"&gt;% 4 $ s &lt;/xliff: g&gt; \"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_settings_openpgp_missing">Falta l\'aplicació OpenPGP: s\'ha desinstal·lat\?</string>
+    <string name="folder_settings_folder_notify_mode_label">Classe de notificació de carpeta</string>
+    <string name="folder_settings_folder_notify_mode_first_class">1a classe</string>
+    <string name="folder_settings_folder_notify_mode_second_class">2ª classe</string>
+    <string name="folder_settings_folder_notify_mode_inherited">Igual que la classe push</string>
+    <string name="message_list_help_key">Del (o D): suprimeix
+\nR - Respon
+\nA - Respon a tots
+\nC - Composar
+\nF - Endavant
+\nM - Es mou
+\nV - Arxiu
+\nI - Copia
+\nZ - Marcar (Un) llegit
+\nG - Estel
+\nO - Tipus d’ordenació
+\nI - Ordena la comanda
+\nP - Tornar a les carpetes
+\nS - Seleccioneu / desseleccioneu
+\nJ o P - Missatge anterior
+\nK o N - Missatge següent</string>
+    <string name="folder_list_help_key">1: només mostra carpetes de 1a classe
+\n2: Mostrar carpetes de 1a i segona classe
+\n3: mostra totes les excepte les carpetes de segona classe
+\n4: Mostra totes les carpetes
+\nP - Tornar a comptes
+\nS - Edita la configuració del compte</string>
+    <string name="tap_hint">Toqueu cercle o estrella per veure missatges no llegits o destacats</string>
+    <string name="compose_error_no_draft_folder">No s\'ha configurat cap carpeta d\'esborranys per a aquest compte.</string>
+    <string name="compose_error_no_signing_key">No hi ha cap clau configurada per signar. Comproveu la configuració.</string>
+    <string name="compose_error_private_missing_keys">El mode privat està habilitat, però alguns destinataris no tenen claus.</string>
+    <string name="enable_inline_pgp">Activa PGP / INLINE</string>
+    <string name="enable_sign_only">Habilita només la signatura PGP</string>
+    <string name="locked_attach_unlock">Descobrir</string>
+    <string name="locked_attach_unencrypted">Aquesta part no estava xifrada i pot ser que no sigui segura.</string>
+    <string name="locked_attach_title">Fitxer adjunt no protegit</string>
+    <string name="message_progress_text">Carregant ...</string>
+    <string name="messageview_decrypt_cancelled">El desxiframent s\'ha cancel·lat.</string>
+    <string name="messageview_decrypt_retry">Torneu-ho a provar</string>
+    <string name="messageview_decrypt_incomplete">El missatge xifrat s’ha de descarregar per desxifrar.</string>
+    <string name="messageview_crypto_error_title">S\'ha produït un error en desxifrar el correu electrònic</string>
+    <string name="messageview_crypto_warning_revoked">Aquest missatge es va signar amb una <b> clau revocada! </b></string>
+    <string name="messageview_crypto_warning_expired">Aquest missatge es va signar amb una <b> clau caducada! </b></string>
+    <string name="messageview_crypto_warning_insecure">Aquest missatge es va signar amb una <b> clau insegura! </b></string>
+    <string name="messageview_crypto_warning_error">S\'ha produït un <b> error en la signatura d\'aquest missatge! </b></string>
+    <string name="messageview_crypto_warning_show_anyway">Mostra el missatge de totes maneres</string>
+    <string name="recipient_error_non_ascii">En aquest moment no s\'admeten caràcters especials.</string>
+    <string name="recipient_error_parse_failed">S\'ha produït un error en analitzar l\'adreça.</string>
+    <string name="error_sign_only_no_encryption">El xifrat no està disponible en el mode només de signes.</string>
+    <string name="unsigned_text_divider_label">Text no signat</string>
+    <string name="no_crypto_provider_see_global">No hi ha cap aplicació OpenPGP configurada, consulteu la configuració global.</string>
+    <string name="xoauth2_auth_cancelled_by_user">S\'ha cancel·lat l\'autenticació</string>
+    <string name="xoauth2_unable_to_contact_auth_server">No es pot contactar amb el servidor d\'autenticació</string>
+    <string name="xoauth2_error_contacting_auth_server">S\'ha produït un error en contactar amb el servidor d\'autenticació</string>
+    <string name="xoauth2_account_doesnt_exist">El compte no existeix</string>
+    <string name="hello_world">Hola món!</string>
+    <string name="pep_menu_long_trustwords">Mostra paraules clau de confiança llargues</string>
+    <string name="pep_menu_short_trustwords">Mostra paraules clau de confiança breus</string>
+    <string name="mail_list_widget_text">Llista de missatges p≡p</string>
+    <string name="mail_list_widget_loading">Carregant missatges ...</string>
+    <string name="fetching_folders_failed">Ha fallat la llista de carpetes</string>
+    <string name="messageview_crypto_warning_details">Mostra els detalls</string>
+    <string name="enable_encryption">Activa el xifrat</string>
+    <string name="general_settings_title">Configuració general</string>
+    <string name="encrypted_subject">Missatge xifrat</string>
+    <string name="toast_account_not_found">Error intern: compte no vàlid.</string>
+    <string name="toast_openpgp_provider_error">S\'ha produït un error en connectar a% s!</string>
+    <string name="switch_on">Encès</string>
+    <string name="switch_off">Desactivat</string>
 </resources>

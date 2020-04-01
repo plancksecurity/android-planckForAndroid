@@ -926,6 +926,5 @@
     <string name="no_crypto_provider_see_global">Geen OpenPGP app geconfigureerd, zie algemene instellingen!</string>
     <string name="unsigned_text_divider_label">Niet-ondertekende Tekst</string>
   <string name="messageview_crypto_warning_show_anyway">Toon bericht alsnog</string>
-  <string name="pep_subject_protection">Onderwerp van bericht beschermen</string>
 
 </resources>

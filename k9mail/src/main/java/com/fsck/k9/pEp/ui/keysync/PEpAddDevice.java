@@ -238,8 +238,8 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
             //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
             Timber.e("------------------------");
         } catch (Exception ignored) {}
-        final CharSequence[] pEpLanguages = PEpUtils.getPEpLocales();
-        String language = pEpLanguages[languagePosition].toString();
+        final List pEpLanguages = PEpUtils.getPEpLocales();
+        String language = pEpLanguages.get(languagePosition).toString();
         changeTrustwords(language);
         return true;
     }

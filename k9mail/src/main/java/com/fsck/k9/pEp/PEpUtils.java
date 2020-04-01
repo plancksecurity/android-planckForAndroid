@@ -58,10 +58,14 @@ public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
     private static final int CHUNK_SIZE = 4;
 
-    private static final CharSequence[] pEpLanguages = {"ca", "de", "es", "fr", "tr", "en", "nl"};
+    private static final List<String> pEpLanguages = Arrays.asList("ca", "de", "es", "fr", "tr", "en", "nl");
 
-    public static CharSequence[] getPEpLocales() {
+    public static List<String> getPEpLocales() {
         return pEpLanguages;
+    }
+
+    public static boolean trustWordsAvailableForLang(String trustwordsLanguage) {
+        return pEpLanguages.contains(trustwordsLanguage);
     }
 
     public static Vector<Identity> createIdentities(List<Address> addressList, Context context) {

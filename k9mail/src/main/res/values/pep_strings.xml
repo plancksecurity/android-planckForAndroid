@@ -263,4 +263,8 @@
     <string name="notification_failed_to_encrypt_text">We didn\'t send it and saved it to the draft folder instead.</string>
     <string name="license">License</string>
 
+    <string name="keysync_disable_warning_title">Disable p≡p Sync</string>
+    <string name="keysync_disable_warning_explanation">If you disable p≡p Sync your accounts on your devices will not be synchronized anymore.\n<b>Are you sure you want to disable p≡p Sync\? </b></string>
+    <string name="keysync_disable_warning_action_disable">Disable</string>
+
 </resources>

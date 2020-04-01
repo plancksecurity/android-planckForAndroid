@@ -4,7 +4,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
@@ -90,7 +89,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             return engine.outgoing_message_rating(message);
         } catch (pEpException e) {
-            Log.e(TAG, "during getRating:", e);
+            Timber.e(e, "%s %s", TAG, "during getRating:");
         }
         return Rating.pEpRatingUndefined;
     }
@@ -149,11 +148,11 @@ public class PEpProviderImpl implements PEpProvider {
             testee.setDir(Message.Direction.Outgoing);
 
             Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-            Log.i(TAG, "getRating " + result.name());
+            Timber.i(TAG, "getRating " + result.name());
 
             return result;
         } catch (Throwable e) {
-            Log.e(TAG, "during color test:", e);
+            Timber.e(e, "%s %s", TAG, "during color test:");
         } finally {
             if (testee != null) testee.close();
         }
@@ -181,7 +180,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized DecryptResult decryptMessage(MimeMessage source) {
-        Log.d(TAG, "decryptMessage() enter");
+        Timber.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
         try {
@@ -190,12 +189,11 @@ public class PEpProviderImpl implements PEpProvider {
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
-            Log.d(TAG, "pEpdecryptMessage() before decrypt");
-            Log.e("KeySync", "pEpdecryptMessage() before decrypt");
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() before decrypt");
             decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
-            Log.e("KeySync", "pEpdecryptMessage() *after* decrypt");
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt");
 
-            Log.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
+            Timber.d(TAG, "pEpdecryptMessage() after decrypt Subject" +  decReturn.dst.getShortmsg());
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
 
@@ -206,7 +204,7 @@ public class PEpProviderImpl implements PEpProvider {
 //                    msg.setFrom(message.getFrom());
 //                    msg.setTo(message.getTo());
 //                    msg.setId(MessageIdGenerator.getInstance().generateMessageId());
-//                    Log.e("pEpEngine", "I am D2: ");
+//                    Timber.e("pEpEngine", "I am D2: ");
 //                    msg.setShortmsg(i + 1 + "");
 //                    msg.setLongmsg(i + 1 + "");
 //                    msg.setReplyTo(new Vector<>());
@@ -216,11 +214,11 @@ public class PEpProviderImpl implements PEpProvider {
 //
 //            }
             if (PEpUtils.isAutoConsumeMessage(decMsg)) {
-                Log.e("pEpEngine", "Called decrypt on auto-consume message");
-                Log.e("pEpEngine", message.getAttachments().get(0).toString());
+                Timber.e("%s %s", TAG, "Called decrypt on auto-consume message");
+                Timber.e("%s %s", TAG,  message.getAttachments().get(0).toString());
             } else {
-                Log.e("pEpEngine", "Called decrypt on non auto-consume message");
-                Log.e("pEpEngine", "Subject: " + decMsg.getSubject() + "Message-id: " + decMsg.getMessageId());
+                Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message");
+                Timber.e("%s %s", TAG, "Subject: " + decMsg.getSubject() + "Message-id: " + decMsg.getMessageId());
 
             }
             boolean neverUnprotected = decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).length > 0
@@ -234,16 +232,15 @@ public class PEpProviderImpl implements PEpProvider {
 
             return new DecryptResult(decMsg, decReturn.rating, -1);
         } catch (Throwable t) {
-            Log.e(TAG, "while decrypting message: "  + source.getSubject()
+            Timber.e(t, "%s %s", TAG, "while decrypting message: "  + source.getSubject()
                     + "\n" + source.getFrom()[0]
                     + "\n" + source.getSentDate().toString()
-                    + "\n" + source.getMessageId(),
-                    t);
+                    + "\n" + source.getMessageId());
             throw new AppCannotDecryptException("Could not decrypt", t);
         } finally {
             if (srcMsg != null) srcMsg.close();
             if (decReturn != null && decReturn.dst != srcMsg) decReturn.dst.close();
-            Log.d(TAG, "decryptMessage() exit");
+            Timber.d(TAG, "decryptMessage() exit");
         }
     }
 
@@ -290,7 +287,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback) {
         threadExecutor.execute(() -> {
-            Log.d(TAG, "decryptMessage() enter");
+            Timber.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
             Engine.decrypt_message_Return decReturn = null;
             Engine engine = null;
@@ -300,9 +297,9 @@ public class PEpProviderImpl implements PEpProvider {
                 srcMsg = new PEpMessageBuilder(source).createMessage(context);
                 srcMsg.setDir(Message.Direction.Incoming);
 
-                Log.d(TAG, "decryptMessage() before decrypt");
+                Timber.d(TAG, "decryptMessage() before decrypt");
                 decReturn = engine.decrypt_message(srcMsg, new Vector<>(), 0);
-                Log.d(TAG, "decryptMessage() after decrypt");
+                Timber.d(TAG, "decryptMessage() after decrypt");
 
                 if (decReturn.rating == Rating.pEpRatingCannotDecrypt
                         || decReturn.rating == Rating.pEpRatingHaveNoKey){
@@ -316,7 +313,7 @@ public class PEpProviderImpl implements PEpProvider {
                 notifyLoaded(new DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback);
 
             } catch (Throwable t) {
-                Log.e(TAG, "while decrypting message:", t);
+                Timber.e(t, "%s %s", TAG, "while decrypting message:");
                 notifyError(new AppCannotDecryptException("Could not decrypt", t), callback);
             } finally {
                 if (srcMsg != null) srcMsg.close();
@@ -324,7 +321,7 @@ public class PEpProviderImpl implements PEpProvider {
                 if (engine != null) {
                     engine.close();
                 }
-                Log.d(TAG, "decryptMessage() exit");
+                Timber.d(TAG, "decryptMessage() exit");
             }
         });
     }
@@ -396,7 +393,7 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized List<MimeMessage> encryptMessage(MimeMessage source, String[] extraKeys) {
         // TODO: 06/12/16 add unencrypted for some
-        Log.d(TAG, "encryptMessage() enter");
+        Timber.d(TAG, "encryptMessage() enter");
         List<MimeMessage> resultMessages = new ArrayList<>();
         Message message = new PEpMessageBuilder(source).createMessage(context);
         try {
@@ -415,10 +412,10 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (AppDidntEncryptMessageException e) {
             throw e;
         } catch (Throwable t) {
-            Log.e(TAG, "while encrypting message:", t);
+            Timber.e(t, "%s %s", TAG, "while encrypting message:");
             throw new RuntimeException("Could not encrypt", t);
         } finally {
-            Log.d(TAG, "encryptMessage() exit");
+            Timber.d(TAG, "encryptMessage() exit");
         }
     }
 
@@ -432,17 +429,17 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             message = new PEpMessageBuilder(source).createMessage(context);
             message.setDir(Message.Direction.Outgoing);
-            Log.d(TAG, "encryptMessage() before encrypt to self");
+            Timber.d(TAG, "encryptMessage() before encrypt to self");
             Identity from = message.getFrom();
             from.user_id = PEP_OWN_USER_ID;
             from.me = true;
             message.setFrom(from);
             Message currentEnc = engine.encrypt_message_for_self(message.getFrom(), message, convertExtraKeys(keys));
             if (currentEnc == null) currentEnc = message;
-            Log.d(TAG, "encryptMessage() after encrypt to self");
+            Timber.d(TAG, "encryptMessage() after encrypt to self");
             return getMimeMessage(source, currentEnc);
-        } catch (Exception exception) {
-            Log.e(TAG, "encryptMessageToSelf: ", exception);
+        } catch (Exception e) {
+            Timber.e(e, "%s %s", TAG, "encryptMessageToSelf: ");
             return source;
         } finally {
             if (message != null) {
@@ -528,7 +525,7 @@ public class PEpProviderImpl implements PEpProvider {
 
     private MimeMessage getEncryptedCopy(MimeMessage source, Message message, String[] extraKeys) throws pEpException, MessagingException, AppDidntEncryptMessageException {
         message.setDir(Message.Direction.Outgoing);
-        Log.d(TAG, "encryptMessage() before encrypt");
+        Timber.d(TAG, "encryptMessage() before encrypt");
         Identity from = message.getFrom();
         from.user_id = PEP_OWN_USER_ID;
         from.me = true;
@@ -541,7 +538,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             currentEnc = message;
         }
-        Log.d(TAG, "encryptMessage() after encrypt");
+        Timber.d(TAG, "encryptMessage() after encrypt");
         return getMimeMessage(source, currentEnc);
     }
 
@@ -592,7 +589,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return engine.identity_rating(ident);
         } catch (pEpException e) {
-            Log.e(TAG, "getRating: ", e);
+            Timber.e(e, "%s %s", TAG, "getRating: ");
             return Rating.pEpRatingUndefined;
         }
     }
@@ -631,7 +628,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return engine.get_trustwords(myself, partner, lang, !isShort);
         } catch (pEpException e) {
-            Log.e(TAG, "trustwords: ");
+            Timber.e(e, "%s %s", TAG, "trustwords: ");
             return null;
         }
     }
@@ -685,13 +682,13 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void trustPersonaKey(Identity id) {
         createEngineInstanceIfNeeded();
-        Log.i("pEpDecrypt", "Calling trust personal key");
+        Timber.i(TAG, "Calling trust personal key");
         engine.trustPersonalKey(id);
     }
 
     public synchronized void trustOwnKey(Identity id) {
         createEngineInstanceIfNeeded();
-        Log.i("pEpDecrypt", "Calling trust own key");
+        Timber.i(TAG, "Calling trust own key");
         engine.trustOwnKey(id);
     }
 
@@ -743,7 +740,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized void printLog() {
         String[] logLines = getLog().split("\n");
         for (String logLine : logLines) {
-            Log.i("PEPJNI", logLine);
+            Timber.i(TAG, logLine);
         }
     }
 
@@ -796,7 +793,7 @@ public class PEpProviderImpl implements PEpProvider {
             id = engine.own_message_private_key_details(message);
             return  new KeyDetail(id.fpr, new Address(id.address, id.username));
         } catch (Exception e) {
-            Log.e(TAG, "getOwnKeyDetails: ", e);
+            Timber.e(e, "%s %s", TAG, "getOwnKeyDetails: ");
         }
         return null;
     }
@@ -806,10 +803,10 @@ public class PEpProviderImpl implements PEpProvider {
             try {
                 createEngineSession();
             } catch (pEpException e) {
-                Log.e(TAG, "createIfNeeded " + Thread.currentThread().getId());
+                Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().getId());
             }
         } else {
-            Log.d(TAG, "createIfNeeded " + Thread.currentThread().getId());
+            Timber.d(TAG, "createIfNeeded " + Thread.currentThread().getId());
         }
     }
 
@@ -853,7 +850,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             return identites;
         } catch (pEpException e) {
-            Log.e(TAG, "getBlacklistInfo", e);
+            Timber.e(e, "%s %s", TAG, "getBlacklistInfo");
         }
 
         return null;
@@ -873,7 +870,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             return identites;
         } catch (pEpException e) {
-            Log.e(TAG, "getBlacklistInfo", e);
+            Timber.e(e, "%s %s", TAG, "getBlacklistInfo");
         }
 
         return null;
@@ -894,7 +891,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return getMimeMessage(null, message);
         } catch (MessagingException e) {
-            Log.e(TAG, "getMimeMessage: ", e);
+            Timber.e(e, "%s %s", TAG, "getMimeMessage: ");
         }
         return null;
     }
@@ -920,10 +917,10 @@ public class PEpProviderImpl implements PEpProvider {
     @Override
     public synchronized void startSync() {
         try {
-            Log.e("pEpEngine-app", "Trying to start sync thread Engine.startSync()");
+            Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()");
             engine.startSync();
         } catch (pEpException exception) {
-            Log.e("pEpEngine", "Could not Engine.startSync()", exception);
+            Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception);
         }
     }
 
@@ -1007,7 +1004,7 @@ public class PEpProviderImpl implements PEpProvider {
             }
             engine.enable_identity_for_sync(identity);
         } catch (pEpException e) {
-            Log.e(TAG, "setIdentityFlag: ", e);
+            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ");
         }
     }
 
@@ -1016,7 +1013,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             engine.unset_identity_flags(identity, flags);
         } catch (pEpException e) {
-            Log.e(TAG, "setIdentityFlag: ", e);
+            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ");
         }
     }
 
@@ -1086,11 +1083,11 @@ public class PEpProviderImpl implements PEpProvider {
                 testee.setDir(Message.Direction.Outgoing);
 
                 Rating result = engine.outgoing_message_rating(testee);   // stupid way to be able to patch the value in debugger
-                Log.i(TAG, "getRating " + result.name());
+                Timber.i(TAG, "getRating " + result.name());
 
                 notifyLoaded(result, callback);
             } catch (Throwable e) {
-                Log.e(TAG, "during color test:", e);
+                Timber.e(e, "%s %s", TAG, "during color test:");
                 notifyError(e, callback);
             } finally {
                 Timber.i("Contador de PEpProviderImpl  -1");
@@ -1130,7 +1127,7 @@ public class PEpProviderImpl implements PEpProvider {
             return getMimeMessage(engine.encrypt_message_and_add_priv_key(containerMsg, fpr));
         } catch (pEpException e) {
             e.printStackTrace();
-            Log.e(TAG, "generatePrivateKeyMessage: ", e);
+            Timber.e(e, "%s %s", TAG, "generatePrivateKeyMessage: ");
         }
 
         return null;

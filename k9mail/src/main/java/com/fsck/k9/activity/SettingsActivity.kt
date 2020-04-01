@@ -26,7 +26,6 @@ import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
-import security.pEp.ui.about.AboutActivity
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -49,8 +48,9 @@ import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
-import security.pEp.ui.resources.ResourcesProvider
+import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
+import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -1063,6 +1063,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             intent.putExtra(EXTRA_STARTUP, false)
             activity.startActivity(intent)
 
+        }
+
+        fun actionBasicStart(context: Context) {
+            val intent = Intent(context, SettingsActivity::class.java)
+            context.startActivity(intent)
         }
     }
 
