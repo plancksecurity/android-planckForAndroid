@@ -804,10 +804,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         quotedMessagePresenter.builderSetProperties(builder);
 
-        quotedMessagePresenter.builderSetProperties(builder);
-
-        quotedMessagePresenter.builderSetProperties(builder);
-
         return builder;
     }
 

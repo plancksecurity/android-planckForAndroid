@@ -1,23 +1,14 @@
 package com.fsck.k9.ui.compose;
 
 
-import java.util.Map;
-
 import android.content.res.Resources;
 import android.os.Bundle;
-import timber.log.Timber;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
 import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.K9;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageCompose.Action;
-import com.fsck.k9.message.extractors.BodyTextExtractor;
-import com.fsck.k9.message.html.HtmlConverter;
-import com.fsck.k9.message.quote.HtmlQuoteCreator;
-import com.fsck.k9.message.quote.TextQuoteCreator;
-import com.fsck.k9.message.signature.HtmlSignatureRemover;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MessageExtractor;
@@ -25,11 +16,20 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.IdentityField;
-import com.fsck.k9.message.quote.InsertableHtmlContent;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.message.extractors.BodyTextExtractor;
+import com.fsck.k9.message.html.HtmlConverter;
+import com.fsck.k9.message.quote.HtmlQuoteCreator;
+import com.fsck.k9.message.quote.InsertableHtmlContent;
+import com.fsck.k9.message.quote.TextQuoteCreator;
+import com.fsck.k9.message.signature.HtmlSignatureRemover;
 import com.fsck.k9.message.signature.TextSignatureRemover;
+
+import java.util.Map;
+
+import timber.log.Timber;
 
 
 public class QuotedMessagePresenter {
@@ -53,7 +53,7 @@ public class QuotedMessagePresenter {
     private SimpleMessageFormat quotedTextFormat;
     private InsertableHtmlContent quotedHtmlContent;
     private Account account;
-
+    private String quotedText;
 
     public QuotedMessagePresenter(
             MessageCompose messageCompose, QuotedMessageMvpView quotedMessageMvpView, Account account) {
@@ -64,6 +64,7 @@ public class QuotedMessagePresenter {
 
         quotedTextMode = QuotedTextMode.NONE;
         quoteStyle = account.getQuoteStyle();
+        quotedText = "";
 
         quotedMessageMvpView.setOnClickPresenter(this);
     }
@@ -80,8 +81,7 @@ public class QuotedMessagePresenter {
     /**
      * Build and populate the UI with the quoted message.
      *
-     * @param showQuotedText
-     *         {@code true} if the quoted text should be shown, {@code false} otherwise.
+     * @param showQuotedText {@code true} if the quoted text should be shown, {@code false} otherwise.
      */
     public void populateUIWithQuotedMessage(MessageViewInfo messageViewInfo, boolean showQuotedText, Action action)
             throws MessagingException {
@@ -121,18 +121,20 @@ public class QuotedMessagePresenter {
             view.setQuotedHtml(quotedHtmlContent.getQuotedContent(),
                     AttachmentResolver.createFromPart(messageViewInfo.rootPart));
 
-            // TODO: Also strip the signature from the text/plain part
-            view.setQuotedText(TextQuoteCreator.quoteOriginalTextMessage(resources, messageViewInfo.message,
+            quotedText = TextQuoteCreator.quoteOriginalTextMessage(
+                    resources,
+                    messageViewInfo.message,
                     BodyTextExtractor.getBodyTextFromMessage(messageViewInfo.rootPart, SimpleMessageFormat.TEXT),
-                    quoteStyle, account.getQuotePrefix()));
+                    quoteStyle,
+                    account.getQuotePrefix());
 
         } else if (quotedTextFormat == SimpleMessageFormat.TEXT) {
             if (account.isStripSignature() && (action == Action.REPLY || action == Action.REPLY_ALL)) {
                 content = TextSignatureRemover.stripSignature(content);
             }
-
-            view.setQuotedText(TextQuoteCreator.quoteOriginalTextMessage(
-                    resources, messageViewInfo.message, content, quoteStyle, account.getQuotePrefix()));
+            quotedText = TextQuoteCreator.quoteOriginalTextMessage(
+                    resources, messageViewInfo.message, content, quoteStyle, account.getQuotePrefix());
+            view.setQuotedText(quotedText);
         }
 
         if (showQuotedText) {
@@ -142,10 +144,14 @@ public class QuotedMessagePresenter {
         }
     }
 
+    private String getEscapedQuotedText(){
+        return quotedText.replace("\n", "\r\n");
+    }
+
     public void builderSetProperties(MessageBuilder builder) {
         builder.setQuoteStyle(quoteStyle)
                 // TODO avoid using a getter from the view!
-                .setQuotedText(view.getQuotedText())
+                .setQuotedText(getEscapedQuotedText())
                 .setQuotedTextMode(quotedTextMode)
                 .setQuotedHtmlContent(quotedHtmlContent)
                 .setReplyAfterQuote(account.isReplyAfterQuote());
@@ -308,8 +314,9 @@ public class QuotedMessagePresenter {
     /**
      * Pull out the parts of the now loaded source message and apply them to the new message
      * depending on the type of message being composed.
-     * @param bodyOffset Insertion point for reply.
-     * @param bodyLength Length of reply.
+     *
+     * @param bodyOffset         Insertion point for reply.
+     * @param bodyLength         Length of reply.
      * @param viewMessageContent Update mMessageContentView or not.
      */
     private void processSourceMessageText(
