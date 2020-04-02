@@ -55,9 +55,9 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         PendingIntent viewAction = viewActionTemplatePendingIntent(context);
         views.setPendingIntentTemplate(R.id.listView, viewAction);
 
-        boolean noAccounts = Preferences.getPreferences(context).getAccounts().size() == 0;
+        boolean availableAccount = Preferences.getPreferences(context).getAvailableAccounts().size() != 0;
 
-        if (noAccounts) {
+        if (!availableAccount) {
             PendingIntent noAccountsAction = noAccountPendingIntent(context);
             views.setOnClickPendingIntent(R.id.new_message, noAccountsAction);
             views.setOnClickPendingIntent(R.id.top_controls, noAccountsAction);

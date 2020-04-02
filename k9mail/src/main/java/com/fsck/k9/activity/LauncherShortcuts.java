@@ -31,7 +31,7 @@ public class LauncherShortcuts extends AccountList {
     @Override
     protected void onAccountSelected(BaseAccount account) {
         Intent shortcutIntent = null;
-        if (Preferences.getPreferences(this).getAccounts().size() == 0) {
+        if (Preferences.getPreferences(this).getAvailableAccounts().size() == 0) {
             shortcutIntent = new Intent(this, SplashActivity.class);
         } else if (account instanceof SearchAccount) {
             SearchAccount searchAccount = (SearchAccount) account;
@@ -49,7 +49,6 @@ public class LauncherShortcuts extends AccountList {
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, description);
         Parcelable iconResource = Intent.ShortcutIconResource.fromContext(this, R.mipmap.icon);
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
-
 
         setResult(RESULT_OK, intent);
         finish();
