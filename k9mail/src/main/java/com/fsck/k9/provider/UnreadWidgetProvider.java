@@ -124,9 +124,9 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
         }
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        boolean noAccounts = Preferences.getPreferences(context).getAvailableAccounts().size() == 0;
+        boolean availableAccounts = Preferences.getPreferences(context).getAvailableAccounts().size() != 0;
 
-        if (noAccounts) {
+        if (!availableAccounts) {
             PendingIntent noAccountsAction = noAccountPendingIntent(context);
             remoteViews.setOnClickPendingIntent(R.id.unread_widget_layout, noAccountsAction);
         } else {
