@@ -6,8 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.fsck.k9.Account
 import com.fsck.k9.R
+import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.PEpUtils.isRatingUnsecure
+import com.fsck.k9.pEp.models.FolderModel
 import foundation.pEp.jniadapter.Rating
 
 object PEpUIUtils {
@@ -165,6 +168,51 @@ object PEpUIUtils {
             else ->
                 R.string.pep_rating_none
         }
+    }
+
+    @JvmStatic
+    fun orderFolderLists(account: Account, folders: MutableList<FolderModel>): MutableList<FolderModel> {
+        val inboxFolderName = account.inboxFolderName
+        val sentFolderName = account.sentFolderName
+        val draftsFolderName = account.draftsFolderName
+        val inboxFolder = folders.find { folderModel -> folderModel.localFolder.name == inboxFolderName }
+        val sentFolder = folders.find { folderModel -> folderModel.localFolder.name == sentFolderName }
+        val draftsFolder = folders.find { folderModel -> folderModel.localFolder.name == draftsFolderName }
+
+        val newList =
+                folders
+                        .filterNot { folder ->
+                            val folderName = folder.localFolder.name
+                            folderName == inboxFolderName || folderName == sentFolderName || folderName == draftsFolderName
+                        }
+                        .toMutableList()
+        if (inboxFolder != null) newList.add(0, inboxFolder)
+        if (sentFolder != null) newList.add(1, sentFolder)
+        if (draftsFolder != null) newList.add(2, draftsFolder)
+        return newList
+    }
+
+    @JvmStatic
+    fun orderFolderInfoLists(account: Account, folders: List<FolderInfoHolder>): MutableList<FolderInfoHolder> {
+        val inboxFolderName = account.inboxFolderName
+        val sentFolderName = account.sentFolderName
+        val draftsFolderName = account.draftsFolderName
+        val inboxFolder = folders.find { folderModel -> folderModel.name == inboxFolderName }
+        val sentFolder = folders.find { folderModel -> folderModel.name == sentFolderName }
+        val draftsFolder = folders.find { folderModel -> folderModel.name == draftsFolderName }
+
+        val newList =
+                folders
+                        .filterNot { folder ->
+                            val folderName = folder.name
+                            folderName == inboxFolderName || folderName == sentFolderName || folderName == draftsFolderName
+                        }
+                        .toMutableList()
+        if (inboxFolder != null) newList.add(0, inboxFolder)
+        if (sentFolder != null) newList.add(1, sentFolder)
+        if (draftsFolder != null) newList.add(2, draftsFolder)
+
+        return newList
     }
 
 }
