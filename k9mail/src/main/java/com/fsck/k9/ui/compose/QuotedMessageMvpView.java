@@ -117,11 +117,6 @@ public class QuotedMessageMvpView {
         mQuotedText.setCharacters(quotedText);
     }
 
-    // TODO we shouldn't have to retrieve the state from the view here
-    public String getQuotedText() {
-        return mQuotedText.getCharacters();
-    }
-
     public void setMessageContentCharacters(String text) {
         mMessageContentView.setCharacters(text);
     }
