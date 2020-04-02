@@ -121,15 +121,12 @@ public class QuotedMessagePresenter {
             view.setQuotedHtml(quotedHtmlContent.getQuotedContent(),
                     AttachmentResolver.createFromPart(messageViewInfo.rootPart));
 
-            // TODO: Also strip the signature from the text/plain part
             quotedText = TextQuoteCreator.quoteOriginalTextMessage(
                     resources,
                     messageViewInfo.message,
                     BodyTextExtractor.getBodyTextFromMessage(messageViewInfo.rootPart, SimpleMessageFormat.TEXT),
                     quoteStyle,
                     account.getQuotePrefix());
-
-           //view.setQuotedText(quotedText);
 
         } else if (quotedTextFormat == SimpleMessageFormat.TEXT) {
             if (account.isStripSignature() && (action == Action.REPLY || action == Action.REPLY_ALL)) {
