@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
@@ -43,6 +44,7 @@ public class K9ActivityCommon {
     }
 
     public static void setLanguage(Context context, String language) {
+        invalidateChromeLocaleForWebView(context);
         Locale locale;
         if (TextUtils.isEmpty(language)) {
             locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -62,6 +64,11 @@ public class K9ActivityCommon {
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
+    private static void invalidateChromeLocaleForWebView(Context context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            new WebView(context).destroy();
+        }
+    }
 
     /**
      * Base activities need to implement this interface.
