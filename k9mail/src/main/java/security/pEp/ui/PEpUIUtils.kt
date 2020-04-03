@@ -175,21 +175,27 @@ object PEpUIUtils {
         val inboxFolderName = account.inboxFolderName
         val sentFolderName = account.sentFolderName
         val draftsFolderName = account.draftsFolderName
+        val outboxFolderName = account.outboxFolderName
+        val archiveFolderName = account.archiveFolderName
+        val spamFolderName = account.spamFolderName
+        val trashFolderName = account.trashFolderName
+
         val inboxFolder = folders.find { folderModel -> folderModel.localFolder.name == inboxFolderName }
         val sentFolder = folders.find { folderModel -> folderModel.localFolder.name == sentFolderName }
         val draftsFolder = folders.find { folderModel -> folderModel.localFolder.name == draftsFolderName }
+        val outboxFolder = folders.find { folderModel -> folderModel.localFolder.name == outboxFolderName }
+        val archiveFolder = folders.find { folderModel -> folderModel.localFolder.name == archiveFolderName }
+        val spamFolder = folders.find { folderModel -> folderModel.localFolder.name == spamFolderName }
+        val trashFolder = folders.find { folderModel -> folderModel.localFolder.name == trashFolderName }
+        val specialFolders = listOf(inboxFolder, sentFolder, draftsFolder, outboxFolder, archiveFolder, spamFolder, trashFolder)
 
-        val newList =
-                folders
-                        .filterNot { folder ->
-                            val folderName = folder.localFolder.name
-                            folderName == inboxFolderName || folderName == sentFolderName || folderName == draftsFolderName
-                        }
-                        .toMutableList()
-        if (inboxFolder != null) newList.add(0, inboxFolder)
-        if (sentFolder != null) newList.add(1, sentFolder)
-        if (draftsFolder != null) newList.add(2, draftsFolder)
-        return newList
+        return folders
+                .filterNot { folder ->
+                    val folderName = folder.localFolder.name
+                    account.isSpecialFolder(folderName)
+                }
+                .toMutableList()
+                .addSpecialFoldersOrderedToTopOfList(specialFolders)
     }
 
     @JvmStatic
@@ -197,22 +203,35 @@ object PEpUIUtils {
         val inboxFolderName = account.inboxFolderName
         val sentFolderName = account.sentFolderName
         val draftsFolderName = account.draftsFolderName
+        val outboxFolderName = account.outboxFolderName
+        val archiveFolderName = account.archiveFolderName
+        val spamFolderName = account.spamFolderName
+        val trashFolderName = account.trashFolderName
+
         val inboxFolder = folders.find { folderModel -> folderModel.name == inboxFolderName }
         val sentFolder = folders.find { folderModel -> folderModel.name == sentFolderName }
         val draftsFolder = folders.find { folderModel -> folderModel.name == draftsFolderName }
+        val outboxFolder = folders.find { folderModel -> folderModel.name == outboxFolderName }
+        val archiveFolder = folders.find { folderModel -> folderModel.name == archiveFolderName }
+        val spamFolder = folders.find { folderModel -> folderModel.name == spamFolderName }
+        val trashFolder = folders.find { folderModel -> folderModel.name == trashFolderName }
+        val specialFolders = listOf(inboxFolder, sentFolder, draftsFolder, outboxFolder, archiveFolder, spamFolder, trashFolder)
 
-        val newList =
-                folders
-                        .filterNot { folder ->
-                            val folderName = folder.name
-                            folderName == inboxFolderName || folderName == sentFolderName || folderName == draftsFolderName
-                        }
-                        .toMutableList()
-        if (inboxFolder != null) newList.add(0, inboxFolder)
-        if (sentFolder != null) newList.add(1, sentFolder)
-        if (draftsFolder != null) newList.add(2, draftsFolder)
-
-        return newList
+        return folders
+                .filterNot { folder ->
+                    val folderName = folder.name
+                    account.isSpecialFolder(folderName)
+                }
+                .toMutableList()
+                .addSpecialFoldersOrderedToTopOfList(specialFolders)
     }
 
 }
+
+private fun <E : Any> MutableList<E>.addSpecialFoldersOrderedToTopOfList(specialFolders: List<E?>): MutableList<E> {
+    specialFolders
+            .filterNotNull()
+            .forEachIndexed { index, folder -> this.add(index, folder) }
+    return this
+}
+
