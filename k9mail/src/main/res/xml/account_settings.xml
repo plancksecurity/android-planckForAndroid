@@ -451,7 +451,6 @@
                 app:allowDividerAbove="false">
 
                 <SwitchPreferenceCompat
-                    android:persistent="false"
                     android:key="pep_enable_sync_account"
                     android:title="@string/pep_sync_enable_account"
                     android:defaultValue="true"
