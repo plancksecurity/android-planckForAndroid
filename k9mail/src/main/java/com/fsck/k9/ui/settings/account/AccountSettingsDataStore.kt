@@ -36,6 +36,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
             "pep_disable_privacy_protection" -> account.ispEpPrivacyProtected()
             "pep_save_encrypted" -> account.isUntrustedSever
+            "pep_enable_sync_account" -> account.isPepSyncEnabled
             else -> defValue
         }
     }
@@ -67,6 +68,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
             "pep_disable_privacy_protection" -> account.setpEpPrivacyProtection(value)
             "pep_save_encrypted" -> account.setPEpStoreEncryptedOnServer(value)
+            "pep_enable_sync_account" -> account.setPEpSyncAccount(value)
             else -> return
         }
 
