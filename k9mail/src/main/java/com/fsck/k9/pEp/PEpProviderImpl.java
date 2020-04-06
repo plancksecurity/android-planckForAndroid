@@ -1002,7 +1002,6 @@ public class PEpProviderImpl implements PEpProvider {
             } else {
                 engine.disable_identity_for_sync(identity);
             }
-            engine.enable_identity_for_sync(identity);
         } catch (pEpException e) {
             Timber.e(e, "%s %s", TAG, "setIdentityFlag: ");
         }
