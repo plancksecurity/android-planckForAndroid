@@ -20,7 +20,11 @@ import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 
@@ -147,7 +151,7 @@ public class ContactPictureLoader {
      * @see #mBitmapCache
      * @see #calculateFallbackBitmap(Address)
      */
-    public void loadContactPicture(Address address, ImageView imageView) {
+    public void setContactPicture(Address address, ImageView imageView) {
         Bitmap bitmap = getBitmapFromCache(address);
         if (bitmap != null) {
             // The picture was found in the bitmap cache
@@ -156,8 +160,7 @@ public class ContactPictureLoader {
             // Query the contacts database in a background thread and try to load the contact
             // picture, if there is one.
             ContactPictureRetrievalTask task = new ContactPictureRetrievalTask(imageView, address);
-            AsyncDrawable asyncDrawable = new AsyncDrawable(mResources,
-                    calculateFallbackBitmap(address), task);
+            AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, calculateFallbackBitmap(address), task);
             imageView.setImageDrawable(asyncDrawable);
             try {
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -166,6 +169,23 @@ public class ContactPictureLoader {
                 imageView.setImageBitmap(calculateFallbackBitmap(address));
             }
         }
+    }
+
+    public void setContactPicture(Uri photoThumbnailUri, ImageView imageView) {
+        Glide.with(imageView.getContext())
+                .load(photoThumbnailUri)
+                .asBitmap()
+                .placeholder(null)
+                .dontAnimate()
+                .into(new BitmapImageViewTarget(imageView) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(imageView.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        imageView.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
     }
 
     private Bitmap getCroppedBitmap(Bitmap bitmap) {
@@ -279,7 +299,6 @@ public class ContactPictureLoader {
 
         return null;
     }
-
 
     /**
      * Load a contact picture in a background thread.

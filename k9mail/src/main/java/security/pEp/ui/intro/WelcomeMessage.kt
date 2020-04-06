@@ -114,7 +114,7 @@ class IntroFirstFragment : Fragment() {
     private fun startImage() {
         val address = Address("A")
         contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, contactBadge)
+        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, contactBadge)
     }
 }
 
@@ -148,10 +148,10 @@ class IntroFourthFragment : Fragment() {
     private fun startImage() {
         var address = Address("A")
         secureBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureBadge)
+        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, secureBadge)
         address = Address("B")
         secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
-        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureTrustedBadge)
+        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, secureTrustedBadge)
     }
 
 }
