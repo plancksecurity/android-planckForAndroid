@@ -318,7 +318,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
                 public Integer doDbWork(final SQLiteDatabase db) throws WrappedException {
                     int unreadMessageCount = 0;
                     Cursor cursor = db.query("messages", new String[] { "COUNT(id)" },
-                            "folder_id = ? AND empty = 0 AND deleted = 0 AND read=0",
+                            "folder_id = ? AND empty = 0 AND deleted = 0 AND read=0 AND auto_consume = 0",
                             new String[] { Long.toString(mFolderId) }, null, null, null);
 
                     try {
