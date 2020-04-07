@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.compose.RecipientAdapter;
+import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
@@ -135,7 +135,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             holder.headerAddressLabel.setVisibility(View.GONE);
         }
 
-        RecipientAdapter.setContactPhotoOrPlaceholder(context, holder.headerPhoto, recipient);
+        ContactPicture.getContactPictureLoader().setContactPicture(holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
         if (account != null) {
             holder.headerPhoto.setPepRating(pEp.getRating(recipient.address), account.ispEpPrivacyProtected());

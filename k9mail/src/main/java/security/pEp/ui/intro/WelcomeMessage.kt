@@ -103,7 +103,7 @@ class IntroFirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startImage()
-        startTexts();
+        startTexts()
     }
 
     private fun startTexts() {
@@ -114,7 +114,7 @@ class IntroFirstFragment : Fragment() {
     private fun startImage() {
         val address = Address("A")
         contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, contactBadge)
+        ContactPicture.getContactPictureLoader().setContactPicture(contactBadge, address)
     }
 }
 
@@ -148,10 +148,10 @@ class IntroFourthFragment : Fragment() {
     private fun startImage() {
         var address = Address("A")
         secureBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, secureBadge)
+        ContactPicture.getContactPictureLoader().setContactPicture(secureBadge, address)
         address = Address("B")
         secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
-        ContactPicture.getGrayPictureLoader(context).setContactPicture(address, secureTrustedBadge)
+        ContactPicture.getContactPictureLoader().setContactPicture(secureTrustedBadge, address)
     }
 
 }

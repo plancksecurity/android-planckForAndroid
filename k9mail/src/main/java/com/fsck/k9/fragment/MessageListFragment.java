@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import security.pEp.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -50,11 +51,9 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
@@ -497,7 +496,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         checkboxes = K9.messageListCheckboxes();
 
         if (K9.showContactPicture()) {
-            contactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
+            contactsPictureLoader = ContactPicture.getContactPictureLoader();
         }
 
         restoreInstanceState(savedInstanceState);

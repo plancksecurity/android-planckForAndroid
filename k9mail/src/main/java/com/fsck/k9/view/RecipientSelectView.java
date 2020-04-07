@@ -32,6 +32,7 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.activity.compose.RecipientLoader;
+import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -142,7 +143,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
-        RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
+        ContactPicture.getContactPictureLoader().setContactPicture(holder.vContactPhoto, recipient);
 
         pEp.getRating(recipient.address, new PEpProvider.ResultCallback<Rating>() {
             @Override

@@ -91,7 +91,7 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
         String address = recipient.address.getAddress();
         holder.email.setText(highlightText(address));
 
-        setContactPhotoOrPlaceholder(context, holder.photo, recipient);
+        ContactPicture.getContactPictureLoader().setContactPicture(holder.photo, recipient);
 
         Integer cryptoStatusRes = null, cryptoStatusColor = null;
         RecipientCryptoStatus cryptoStatus = recipient.getCryptoStatus();
@@ -121,14 +121,6 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
             holder.cryptoStatus.setVisibility(View.VISIBLE);
         } else {
             holder.cryptoStatus.setVisibility(View.GONE);
-        }
-    }
-
-    public static void setContactPhotoOrPlaceholder(Context context, ImageView imageView, Recipient recipient) {
-        if (recipient.photoThumbnailUri != null) {
-            ContactPicture.getContactPictureLoader(context).setContactPicture(recipient.photoThumbnailUri, imageView);
-        } else {
-            ContactPicture.getContactPictureLoader(context).setContactPicture(recipient.address, imageView);
         }
     }
 

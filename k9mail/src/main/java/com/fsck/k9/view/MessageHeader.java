@@ -22,7 +22,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.misc.ContactPictureLoader;
+import security.pEp.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.Contacts;
@@ -339,7 +339,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         if (K9.showContactPicture()) {
             mContactBadge.setVisibility(View.VISIBLE);
-            mContactsPictureLoader = ContactPicture.getContactPictureLoader(mContext);
+            mContactsPictureLoader = ContactPicture.getContactPictureLoader();
         }  else {
             mContactBadge.setVisibility(View.GONE);
         }
@@ -372,7 +372,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         if (K9.showContactPicture()) {
             if (counterpartyAddress != null) {
                 Utility.setContactForBadge(mContactBadge, counterpartyAddress);
-                mContactsPictureLoader.setContactPicture(counterpartyAddress, mContactBadge);
+                mContactsPictureLoader.setContactPicture(mContactBadge, counterpartyAddress);
             } else {
                 mContactBadge.setImageResource(R.drawable.ic_contact_picture);
             }

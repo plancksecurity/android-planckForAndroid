@@ -71,8 +71,8 @@ abstract class PEpStatusBaseRenderer(
         val realAddress = Address(identity.address, identity.username)
         if (K9.showContactPicture()) {
             Utility.setContactForBadge(badge, realAddress)
-            val mContactsPictureLoader = ContactPicture.getContactPictureLoader(context)
-            mContactsPictureLoader.setContactPicture(realAddress, badge)
+            val mContactsPictureLoader = ContactPicture.getContactPictureLoader()
+            mContactsPictureLoader.setContactPicture(badge, realAddress)
             badge.setPepRating(identity.rating, true)
         }
         val contacts = if (permissionChecker.hasContactsPermission() &&
