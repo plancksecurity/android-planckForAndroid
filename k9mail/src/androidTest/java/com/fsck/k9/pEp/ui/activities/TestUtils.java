@@ -1513,6 +1513,7 @@ public class TestUtils {
                 openOptionsMenu();
                 selectFromScreen(viewId);
                 device.waitForIdle();
+                Espresso.onIdle();
                 return;
             } catch (Exception ex) {
                 Timber.i("Toolbar is not closed yet");
@@ -1732,6 +1733,7 @@ public class TestUtils {
                     if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
                         textView.findObject(textViewSelector).longClick();
                         device.waitForIdle();
+                        waitForToolbar();
                         if (hashCode == 0) {
                             hashCode = textView.findObject(textViewSelector).hashCode();
                         } else {
@@ -1741,6 +1743,13 @@ public class TestUtils {
                     device.waitForIdle();
                 } catch (Exception e) {
                     Timber.i("View is not sent folder");
+                    try {
+                        if (getTextFromView(onView(withId(R.id.actionbar_title_first))).contains(folder)) {
+                            return;
+                        }
+                    } catch (Exception noTitle) {
+                        Timber.i("Title bar doesn't exist");
+                    }
                 }
             }
         }
