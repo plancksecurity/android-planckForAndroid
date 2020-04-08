@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -1077,7 +1078,12 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getK9CurrentLanguage() {
-        return language.isEmpty() ? Locale.getDefault().getLanguage() : language;
+        return language.isEmpty()
+            ?
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage()
+                : Resources.getSystem().getConfiguration().locale.getLanguage()
+            : language;
     }
 
     public static void setK9Language(String nlanguage) {
