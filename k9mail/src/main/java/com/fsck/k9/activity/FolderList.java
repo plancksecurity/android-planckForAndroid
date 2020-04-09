@@ -71,6 +71,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.resources.PEpResourcesProvider;
 import security.pEp.ui.resources.ResourcesProvider;
 import timber.log.Timber;
@@ -856,6 +857,7 @@ public class FolderList extends K9ListActivity {
                     Collections.sort(newFolders);
                     Collections.sort(topFolders);
                     topFolders.addAll(newFolders);
+                    topFolders = PEpUIUtils.orderFolderInfoLists(mAccount, topFolders);
                     mHandler.newFolders(topFolders);
                 }
                 super.listFolders(account, folders);

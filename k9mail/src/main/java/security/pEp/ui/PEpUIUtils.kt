@@ -6,8 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.fsck.k9.Account
 import com.fsck.k9.R
+import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.PEpUtils.isRatingUnsecure
+import com.fsck.k9.pEp.models.FolderModel
 import foundation.pEp.jniadapter.Rating
 
 object PEpUIUtils {
@@ -167,4 +170,69 @@ object PEpUIUtils {
         }
     }
 
+    @JvmStatic
+    fun orderFolderLists(account: Account, folders: MutableList<FolderModel>): MutableList<FolderModel> {
+
+        val specialFolders = folders.getSpecialFolders(account)
+        return folders
+                .filterNot { folder ->
+                    val folderName = folder.localFolder.name
+                    account.isSpecialFolder(folderName)
+                }
+                .toMutableList()
+                .addSpecialFoldersOrderedToTopOfList(specialFolders)
+    }
+
+    @JvmStatic
+    fun orderFolderInfoLists(account: Account, folders: MutableList<FolderInfoHolder>): MutableList<FolderInfoHolder> {
+        val specialFolders = folders.getSpecialFolders(account)
+
+        return folders
+                .filterNot { folder ->
+                    val folderName = folder.name
+                    account.isSpecialFolder(folderName)
+                }
+                .toMutableList()
+                .addSpecialFoldersOrderedToTopOfList(specialFolders)
+    }
+
+    private fun <E : Any> MutableList<E>.getSpecialFolders(account: Account): List<E?> {
+        val inboxFolderName = account.inboxFolderName
+        val sentFolderName = account.sentFolderName
+        val draftsFolderName = account.draftsFolderName
+        val outboxFolderName = account.outboxFolderName
+        val archiveFolderName = account.archiveFolderName
+        val spamFolderName = account.spamFolderName
+        val trashFolderName = account.trashFolderName
+
+        val inboxFolder = this.find { orderFolderPredicate(it, inboxFolderName) }
+        val sentFolder = this.find { orderFolderPredicate(it, sentFolderName) }
+        val draftsFolder = this.find { orderFolderPredicate(it, draftsFolderName) }
+        val outboxFolder = this.find { orderFolderPredicate(it, outboxFolderName) }
+        val archiveFolder = this.find { orderFolderPredicate(it, archiveFolderName) }
+        val spamFolder = this.find { orderFolderPredicate(it, spamFolderName) }
+        val trashFolder = this.find { orderFolderPredicate(it, trashFolderName) }
+        return listOf(inboxFolder, sentFolder, draftsFolder, outboxFolder, archiveFolder, spamFolder, trashFolder)
+    }
+
+    private fun orderFolderPredicate(folderName: Any, name: String?): Boolean {
+        return when (folderName) {
+            is FolderModel -> folderName.localFolder.name == name
+            is FolderInfoHolder -> folderName.name == name
+            else -> false
+        }
+
+    }
+
+    private fun <E : Any> MutableList<E>.addSpecialFoldersOrderedToTopOfList(specialFolders: List<E?>): MutableList<E> {
+        specialFolders
+                .filterNotNull()
+                .forEachIndexed { index, folder -> this.add(index, folder) }
+        return this
+    }
+
+
 }
+
+
+
