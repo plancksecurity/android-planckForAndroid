@@ -673,29 +673,6 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @When("^I stop trusting$")
-    public void I_untrust_trust_words() {
-        timeRequiredForThisMethod(10);
-        testUtils.clickMessageStatus();
-        device.waitForIdle();
-        testUtils.clickHandShakeButton();
-        while (!viewIsDisplayed(R.id.trustwords)) {
-            device.waitForIdle();
-        }
-        TestUtils.swipeUpScreen();
-        while (exists(onView(withId(R.id.wrongTrustwords)))) {
-            device.waitForIdle();
-            try {
-                onView(withId(R.id.wrongTrustwords)).check(matches(isDisplayed()));
-                onView(withId(R.id.wrongTrustwords)).perform(click());
-                device.waitForIdle();
-            } catch (Exception e) {
-                Timber.i("Cannot click wrong Trustwords");
-            }
-        }
-        device.waitForIdle();
-    }
-
     @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         timeRequiredForThisMethod(20);
@@ -759,7 +736,8 @@ public class CucumberTestSteps {
                 statusRating = Rating.pEpRatingReliable;
                 break;
             case "pEpRatingTrusted":
-                statusRating = Rating.pEpRatingTrusted;
+                statusRating = null;
+                status = "pep_green";
                 break;
             case "pEpRatingTrustedAndAnonymized":
                 statusRating = Rating.pEpRatingTrustedAndAnonymized;
