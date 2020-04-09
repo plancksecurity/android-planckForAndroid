@@ -5,6 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
+import com.fsck.k9.activity.SettingsActivity
 import java.util.concurrent.ExecutorService
 
 class GeneralSettingsDataStore(
@@ -150,7 +151,7 @@ class GeneralSettingsDataStore(
             else -> return
         }
 
-        saveSettings()
+        saveSettingsRestarting(key == "language")
     }
 
     override fun getStringSet(key: String, defValues: Set<String>?): Set<String>? {
@@ -221,6 +222,19 @@ class GeneralSettingsDataStore(
 
         executorService.execute {
             editor.commit()
+        }
+    }
+
+    private fun saveSettingsRestarting(shouldRestart: Boolean) {
+        val editor = preferences.storage.edit()
+        K9.save(editor)
+
+        executorService.execute {
+            editor.commit()
+            if(shouldRestart) {
+                SettingsActivity.actionBasicStart(activity!!)
+                activity!!.finishAffinity()
+            }
         }
     }
 
