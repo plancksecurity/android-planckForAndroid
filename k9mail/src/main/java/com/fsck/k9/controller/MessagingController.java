@@ -796,6 +796,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.d("SYNC: About to process pending commands for account %s", account.getDescription());
 
             try {
+                consumeMessages(context);
                 processPendingCommandsSynchronous(account);
             } catch (Exception e) {
                 Timber.e(e, "Failure processing command, but allow message sync attempt");
@@ -4961,6 +4962,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @WorkerThread
     public void consumeMessages(final Context context) throws MessagingException {
+        Timber.e("Delete pEp-auto-consume messages older than 10min");
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
         for (Account account : accounts) {
             List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
