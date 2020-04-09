@@ -61,6 +61,7 @@ import com.fsck.k9.widget.list.MessageListWidgetProvider;
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -1674,7 +1675,7 @@ public class K9 extends MultiDexApplication {
         int activityCount = 0;
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        public void onActivityCreated(@NotNull Activity activity, Bundle savedInstanceState) {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
@@ -1684,34 +1685,35 @@ public class K9 extends MultiDexApplication {
         }
 
         @Override
-        public void onActivityStarted(Activity activity) {
+        public void onActivityStarted(@NotNull Activity activity) {
 
         }
 
         @Override
-        public void onActivityResumed(Activity activity) {
+        public void onActivityResumed(@NotNull Activity activity) {
 
         }
 
         @Override
-        public void onActivityPaused(Activity activity) {
+        public void onActivityPaused(@NotNull Activity activity) {
 
         }
 
         @Override
-        public void onActivityStopped(Activity activity) {
+        public void onActivityStopped(@NotNull Activity activity) {
 
         }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        public void onActivitySaveInstanceState(@NotNull Activity activity, @NotNull Bundle outState) {
 
         }
 
         @Override
-        public void onActivityDestroyed(Activity activity) {
+        public void onActivityDestroyed(@NotNull Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                MessagingController.getInstance().deleteConsumedMessages();
                 pEpSyncProvider.stopSync();
                 pEpProvider.close();
                 pEpProvider = null;

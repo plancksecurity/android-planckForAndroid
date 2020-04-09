@@ -80,7 +80,7 @@ dependencies {
     implementation "com.takisoft.fix:preference-v7-colorpicker:${versions.preferencesFix}"
     implementation "com.takisoft.fix:preference-v7-ringtone:${versions.preferencesFix}"
     implementation "com.evernote:android-job:${versions.androidJob}"
-    implementation "androidx.work:work-runtime:${versions.workRuntime}"
+    implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
@@ -244,6 +244,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     productFlavors {
     }
 
