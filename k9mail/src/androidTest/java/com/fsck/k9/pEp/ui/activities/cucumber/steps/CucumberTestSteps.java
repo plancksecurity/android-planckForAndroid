@@ -622,12 +622,6 @@ public class CucumberTestSteps {
         return webViewText;
     }
 
-    @When("^I reject trust words$")
-    public void I_reject_trust_words() {
-        timeRequiredForThisMethod(20);
-        onView(withId(R.id.wrongTrustwords)).perform(click());
-    }
-
     @When("^I click stop trusting words$")
     public void I_click_stop_trusting_words() {
         timeRequiredForThisMethod(10);
@@ -653,8 +647,8 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.pressBack();
     }
-    @When("^I click reject trust words$")
-    public void I_click_reject_trust_words() {
+    @When("^I reject trust words$")
+    public void I_reject_trust_words() {
         timeRequiredForThisMethod(10);
         testUtils.clickStatus();
         testUtils.doWaitForResource(R.id.rejectHandshake);
