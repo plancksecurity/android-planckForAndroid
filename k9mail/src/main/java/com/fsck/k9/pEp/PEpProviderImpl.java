@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
@@ -215,7 +216,10 @@ public class PEpProviderImpl implements PEpProvider {
 //            }
             if (PEpUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message");
-                Timber.e("%s %s", TAG,  message.getAttachments().get(0).toString());
+                if (K9.DEBUG) {
+                    //Not using Timber on purpose.
+                    Log.e( TAG,  message.getAttachments().get(0).toString());
+                }
             } else {
                 Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message");
                 Timber.e("%s %s", TAG, "Subject: " + decMsg.getSubject() + "Message-id: " + decMsg.getMessageId());
