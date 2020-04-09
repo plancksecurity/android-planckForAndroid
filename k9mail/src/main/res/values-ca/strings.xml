@@ -129,7 +129,7 @@
     <string name="status_invalid_id_error">No s\'ha trobat el missatge</string>
     <string name="status_loading_more_failed">Reintenta carregar més missatges</string>
     <string name="load_more_messages_fmt">Carrega\'n
-    fins a <xliff:g id="messages_to_load">%d</xliff:g> més</string>
+    fins a <xliff:g id="messages_to_load">%d</xliff:g>més</string>
     <string name="abbrev_gigabytes">GB</string>
     <string name="abbrev_megabytes">MB</string>
     <string name="abbrev_kilobytes">KB</string>
@@ -836,8 +836,8 @@
     <string name="openpgp_sign_only_disable">Disable</string>
     <string name="openpgp_inline_disable">Disable</string>
     <string name="app_name">p≡p</string>
-    <string name="account_recreate_dlg_instructions_fmt">S\'eliminaran totes les dades locals de \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" compte \"&gt;% s &lt;/xliff: g&gt;\". La configuració del compte es conservarà.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
-    <string name="account_clear_dlg_instructions_fmt">S\'eliminaran còpies locals de missatges a \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" compte \"&gt;% s &lt;/xliff: g&gt;\". La configuració del compte es conservarà.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="account_recreate_dlg_instructions_fmt">S\'eliminaran totes les dades locals de \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>
+    <string name="account_clear_dlg_instructions_fmt">S\'eliminaran còpies locals de missatges a \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>
     <string name="status_no_network">Sincronització desactivada: sense xarxa</string>
     <string name="status_no_background">Sincronització desactivada: no hi ha cap activitat de fons</string>
     <string name="status_poll_and_push_disabled">Polling i empenta discapacitats</string>
@@ -849,17 +849,17 @@
         <item quantity="one">Adreça copiada al porta-retalls</item>
         <item quantity="other"></item>
     </plurals>
-    <string name="account_setup_outgoing_invalid_setting_combo_notice">\"&lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" setting_1_label \"&gt;% 1 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" setting_1_value \"&gt;% 2 $ s &lt;/xliff: g&gt;\" no és vàlid amb \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names : tc: xliff: document: 1.2 \"id =\" setting_2_label \"&gt;% 3 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id = \"setting_2_value\"&gt;% 4 $ s &lt;/xliff: g&gt; \"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_setup_outgoing_invalid_setting_combo_notice">\"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" no és vàlid amb \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
     <string name="account_setup_options_mail_display_count_2500">2500 missatges</string>
     <string name="account_setup_options_mail_display_count_5000">5000 missatges</string>
     <string name="account_setup_options_mail_display_count_10000">10000 missatges</string>
     <string name="account_setup_failed_dlg_auth_message_fmt">Usuari o contrasenya incorrecta.
-\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_certificate_message_fmt">El servidor va presentar un certificat SSL no vàlid. De vegades, això es deu a una configuració errònia del servidor. De vegades és perquè algú intenta atacar-lo o el servidor de correu. Si no esteu segurs de l\'actualitat, feu clic a Rebutja i contacteu amb els usuaris que gestionen el vostre servidor de correu.
 \n
-\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_setup_failed_dlg_server_message_fmt">No es pot connectar al servidor.
-\n(&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"error\"&gt;% s &lt;/xliff: g&gt;)<xliff:g id="error">%s</xliff:g>)</string>
+\n(<xliff:g id="error">%s</xliff:g>)</string>
     <string name="account_settings_folder_notify_new_mail_mode_label">Carpetes de notificacions</string>
     <string name="account_settings_folder_notify_new_mail_mode_first_class">Només carpetes de 1a classe</string>
     <string name="account_settings_folder_notify_new_mail_mode_first_and_second_class">Carpetes de 1a i 2a classe</string>
@@ -871,16 +871,17 @@
     <string name="address_type_mobile">Mobile</string>
     <string name="status_loading_error">Error de càrrega del missatge</string>
     <plurals name="notification_new_messages_title">
-        <item quantity="one">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"new_message_count\"&gt;% d &lt;/ xliff: g&gt; nou missatge</item>
-        <item quantity="other"></item>
+        <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> nou missatge</item>
+        <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> nous missatges</item>
     </plurals>
-    <string name="notification_additional_messages">+ &lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"addicionals_messatges\"&gt;% 1 $ d &lt;/xliff: g&gt; més a &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"account\"&gt;% 2 $ s &lt;/xliff: g&gt;<xliff:g id="additional_messages">%1$d</xliff:g> more on <xliff:g id="account">%2$s</xliff:g></string>
+    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%$d</xliff:g> més a <xliff:g id="account">%2$s</xliff:g></string>
     <string name="notification_action_delete_all">Eliminar tots</string>
     <string name="notification_action_archive_all">Arxivar tot</string>
     <string name="notification_authentication_error_title">L\'autenticació ha fallat</string>
-    <string name="font_size_message_view_content_summary">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"fontsize\"&gt;% d &lt;/ xliff: g&gt; %%<xliff:g id="fontsize">%d</xliff:g>%%</string>
-    <string name="font_size_message_view_content_dialog_title">&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"title\"&gt;% 1 $ s &lt;/xliff: g&gt;: &lt;xliff: g xmlns: xliff = \"urna : oasi: noms: tc: xliff: document: 1.2 \"id =\" resum \"&gt;% 2 $ s &lt;/xliff: g&gt;<xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
-    <string name="send_failed_reason">L\'enviament ha fallat:% s</string>
+    <string name="font_size_message_view_content_summary"><xliff:g id="fontsize">%d</xliff:g>%%</string>
+    <string name="font_size_message_view_content_dialog_title"><xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
+    :
+    <string name="send_failed_reason">L\'enviament ha fallat: %s</string>
     <string name="dialog_confirm_mark_all_as_read_title">Confirmeu-ho com a llegit</string>
     <string name="dialog_confirm_mark_all_as_read_message">Voleu marcar tots els missatges com a llegits\?</string>
     <string name="dialog_confirm_mark_all_as_read_confirm_button">Sí</string>
@@ -891,8 +892,8 @@
     <string name="account_setup_basics_oauth2_token">Utilitzeu el testimoni OAuth 2.0 (comptes de Google)</string>
     <string name="client_certificate_spinner_empty">Sense certificat de client</string>
     <string name="client_certificate_spinner_delete">Elimineu la selecció de certificat de client</string>
-    <string name="client_certificate_retrieval_failure">No s\'ha pogut recuperar el certificat de client per a alias \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" alias \"&gt;% s &lt;/xliff: g&gt;\"<xliff:g id="alias">%s</xliff:g>\""</string>
-    <string name="client_certificate_expired">Certificat de client \"&lt;xliff: g xmlns: xliff =\" urn: oasis: noms: tc: xliff: document: 1.2 \"id =\" certificat_alias \"&gt;% 1 $ s &lt;/xliff: g&gt;\" ha caducat o encara no és vàlid (&lt;xliff: g xmlns: xliff = \"urna: oasis: noms: tc: xliff: document: 1.2\" id = \"exception_message\"&gt;% 2 $ s &lt;/xliff: g&gt;)<xliff:g id="certificate_alias">%1$s</xliff:g>\" has expired or is not yet valid (<xliff:g id="exception_message">%2$s</xliff:g>)"</string>
+    <string name="client_certificate_retrieval_failure">No s\'ha pogut recuperar el certificat de client per a alias \"<xliff:g id="alias">%s</xliff:g>\"</string>
+    <string name="client_certificate_expired">Certificat de client \"<xliff:g id="certificate_alias">%1$s</xliff:g>\" ha caducat o encara no és vàlid (<xliff:g id="exception_message">%2$s</xliff:g>)</string>
     <string name="preview_encrypted">* Xifrat *</string>
     <string name="add_from_contacts">Afegeix des de Contactes</string>
     <string name="recipient_bcc">Bcc</string>
@@ -901,12 +902,12 @@
     <string name="address_type_home">Inici</string>
     <string name="address_type_work">Treball</string>
     <string name="address_type_other">Altres</string>
-    <string name="notification_authentication_error_text">Fallada l\'autenticació per a &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"account\"&gt;% s &lt;/xliff: g&gt;. Actualitzeu la configuració del servidor.<xliff:g id="account">%s</xliff:g>. Update your server settings.</string>
-    <string name="message_compose_reply_header_fmt_with_date">A &lt;xliff: g xmlns: xliff = \"urn: oasis: names: tc: xliff: document: 1.2\" id = \"sent_date\"&gt;% 1 $ s &lt;/xliff: g&gt;, &lt;xliff: g xmlns: xliff = \" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" remitent \"&gt;% 2 $ s &lt;/xliff: g&gt; va escriure:<xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="sender">%2$s</xliff:g> wrote:</string>
+    <string name="notification_authentication_error_text">Fallada l\'autenticació per a <xliff:g id="account">%s</xliff:g>. Actualitzeu la configuració del servidor.</string>
+    <string name="message_compose_reply_header_fmt_with_date">A <xliff:g id="sent_date">%1$s</xliff:g>, <xliff:g id="remitent">%2$s</xliff:g> va escriure:</string>
     <string name="compose_error_incomplete_recipient">El camp del destinatari conté una entrada incompleta.</string>
     <string name="message_view_status_no_space">No s\'ha pogut desar el fitxer adjunt ja que no hi ha prou espai.</string>
     <string name="message_view_toast_unable_to_display_message">No es pot mostrar el missatge</string>
-    <string name="message_view_sender_label">via% 1 $ s</string>
+    <string name="message_view_sender_label">via %1$s</string>
     <string name="debug_delete_local_body">Depuració / elimina el cos del missatge</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Comportament del missatge suprimit</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marca tots els missatges com a llegits</string>
@@ -931,7 +932,7 @@
     <string name="account_setup_auth_type_xoauth2">Token OAuth 2.0</string>
     <string name="account_setup_auth_type_tls_client_certificate">Certificat de client</string>
     <string name="account_setup_incoming_client_certificate_label">Certificat de client</string>
-    <string name="account_setup_incoming_invalid_setting_combo_notice">\"&lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id =\" setting_1_label \"&gt;% 1 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" setting_1_value \"&gt;% 2 $ s &lt;/xliff: g&gt;\" no és vàlid amb \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names : tc: xliff: document: 1.2 \"id =\" setting_2_label \"&gt;% 3 $ s &lt;/xliff: g&gt; = &lt;xliff: g xmlns: xliff =\" urna: oasis: noms: tc: xliff: document: 1.2 \"id = \"setting_2_value\"&gt;% 4 $ s &lt;/xliff: g&gt; \"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" is not valid with \"<xliff:g id="setting_2_label">%3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
+    <string name="account_setup_incoming_invalid_setting_combo_notice">\"<xliff:g id="setting_1_label">%1$s</xliff:g> = <xliff:g id="setting_1_value">%2$s</xliff:g>\" no és vàlid amb \"<xliff:g id="setting_2_label">3$s</xliff:g> = <xliff:g id="setting_2_value">%4$s</xliff:g>\"</string>
     <string name="account_settings_openpgp_missing">Falta l\'aplicació OpenPGP: s\'ha desinstal·lat\?</string>
     <string name="folder_settings_folder_notify_mode_label">Classe de notificació de carpeta</string>
     <string name="folder_settings_folder_notify_mode_first_class">1a classe</string>
@@ -998,7 +999,7 @@
     <string name="general_settings_title">Configuració general</string>
     <string name="encrypted_subject">Missatge xifrat</string>
     <string name="toast_account_not_found">Error intern: compte no vàlid.</string>
-    <string name="toast_openpgp_provider_error">S\'ha produït un error en connectar a% s!</string>
+    <string name="toast_openpgp_provider_error">S\'ha produït un error en connectar a %s!</string>
     <string name="switch_on">Encès</string>
     <string name="switch_off">Desactivat</string>
 </resources>

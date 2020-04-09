@@ -231,6 +231,6 @@
     <string name="keysync_wizard_action_try_again">Versuchen Sie es nochmal</string>
     <string name="keysync_disable_warning_title">p≡p Sync deaktivieren</string>
     <string name="keysync_disable_warning_explanation">Wenn Sie p≡p Sync deaktivieren, werden Ihre Konten auf Ihren Geräten nicht mehr synchronisiert.
-\n&lt;b&gt;Möchten Sie die p≡p-Synchronisierung wirklich deaktivieren\?&lt;/ b&gt;<b>Are you sure you want to disable p≡p Sync\? </b></string>
+\n<b>Möchten Sie die p≡p-Synchronisierung wirklich deaktivieren\?</b></string>
     <string name="keysync_disable_warning_action_disable">Deaktivieren</string>
 </resources>

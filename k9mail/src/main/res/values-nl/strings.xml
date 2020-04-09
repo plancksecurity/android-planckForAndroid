@@ -902,7 +902,7 @@
     <string name="status_poll_and_push_disabled">Poll en push uitgeschakeld</string>
     <string name="status_no_network">Synchronisatie uitgeschakeld: geen netwerk</string>
     <string name="status_syncing_blocked">Synchroniseren geblokkeerd</string>
-    <string name="account_clear_dlg_instructions_fmt">Lokale kopieën van berichten in \"&lt;xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="account_clear_dlg_instructions_fmt">Lokale kopieën van berichten in \"<xliff:g id="account">%s</xliff:g>\" worden verwijderd. Accountinstellingen blijven behouden.</string>
     <string name="account_recreate_dlg_instructions_fmt">Alle gegevens voor \"<xliff:g id="account">%s</xliff:g>\" worden verwijderd van K-9 Mail, maar account instellingen blijven behouden.</string>
     <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="switch_off">Uit</string>
