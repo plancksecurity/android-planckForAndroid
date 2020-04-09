@@ -129,7 +129,7 @@
     <string name="status_invalid_id_error">No s\'ha trobat el missatge</string>
     <string name="status_loading_more_failed">Reintenta carregar més missatges</string>
     <string name="load_more_messages_fmt">Carrega\'n
-    fins a <xliff:g id="messages_to_load">%d</xliff:g>més</string>
+    fins a <xliff:g id="messages_to_load">%d</xliff:g> més</string>
     <string name="abbrev_gigabytes">GB</string>
     <string name="abbrev_megabytes">MB</string>
     <string name="abbrev_kilobytes">KB</string>
@@ -880,8 +880,7 @@
     <string name="notification_authentication_error_title">L\'autenticació ha fallat</string>
     <string name="font_size_message_view_content_summary"><xliff:g id="fontsize">%d</xliff:g>%%</string>
     <string name="font_size_message_view_content_dialog_title"><xliff:g id="title">%1$s</xliff:g>: <xliff:g id="summary">%2$s</xliff:g></string>
-    :
-    <string name="send_failed_reason">L\'enviament ha fallat: %s</string>
+    <string name="send_failed_reason">L\'enviament ha fallat:% s</string>
     <string name="dialog_confirm_mark_all_as_read_title">Confirmeu-ho com a llegit</string>
     <string name="dialog_confirm_mark_all_as_read_message">Voleu marcar tots els missatges com a llegits\?</string>
     <string name="dialog_confirm_mark_all_as_read_confirm_button">Sí</string>
@@ -907,7 +906,7 @@
     <string name="compose_error_incomplete_recipient">El camp del destinatari conté una entrada incompleta.</string>
     <string name="message_view_status_no_space">No s\'ha pogut desar el fitxer adjunt ja que no hi ha prou espai.</string>
     <string name="message_view_toast_unable_to_display_message">No es pot mostrar el missatge</string>
-    <string name="message_view_sender_label">via %1$s</string>
+    <string name="message_view_sender_label">via% 1 $ s</string>
     <string name="debug_delete_local_body">Depuració / elimina el cos del missatge</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Comportament del missatge suprimit</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marca tots els missatges com a llegits</string>
@@ -999,7 +998,7 @@
     <string name="general_settings_title">Configuració general</string>
     <string name="encrypted_subject">Missatge xifrat</string>
     <string name="toast_account_not_found">Error intern: compte no vàlid.</string>
-    <string name="toast_openpgp_provider_error">S\'ha produït un error en connectar a %s!</string>
+    <string name="toast_openpgp_provider_error">S\'ha produït un error en connectar a% s!</string>
     <string name="switch_on">Encès</string>
     <string name="switch_off">Desactivat</string>
 </resources>

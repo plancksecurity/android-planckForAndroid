@@ -996,7 +996,7 @@
     <string name="settings_export_success_generic">Nastavenia boli úspešne exportované</string>
     <string name="account_settings_openpgp_missing">Chýba aplikácia OpenPGP - bola odinštalovaná\?</string>
     <string name="account_settings_no_openpgp_provider_configured">Nie je nakonfigurovaná žiadna aplikácia OpenPGP</string>
-    <string name="account_settings_crypto_summary_on">Pripojené k %s</string>
+    <string name="account_settings_crypto_summary_on">Pripojené k % s</string>
     <string name="account_settings_crypto_summary_off">Nie je nakonfigurovaná žiadna aplikácia OpenPGP</string>
     <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Token</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Pri pripájaní k serverom SMTP sa identifikujte ako \'localhost\'</string>
