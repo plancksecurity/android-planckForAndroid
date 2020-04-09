@@ -20,9 +20,10 @@ import android.widget.TextView;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.ThemeUtils;
 
@@ -41,6 +42,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private List<Recipient> recipients;
     private Recipient currentRecipient;
     private final PEpProvider pEp;
+    private ContactPictureLoader contactPictureLoader;
 
 
     public AlternateRecipientAdapter(Context context, AlternateRecipientListener listener, Account account) {
@@ -49,6 +51,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         this.listener = listener;
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         this.account = account;
+        contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
     }
 
     public void setCurrentRecipient(Recipient currentRecipient) {
@@ -135,7 +138,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             holder.headerAddressLabel.setVisibility(View.GONE);
         }
 
-        ContactPicture.getContactPictureLoader().setContactPicture(holder.headerPhoto, recipient);
+        contactPictureLoader.setContactPicture(holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
         if (account != null) {
             holder.headerPhoto.setPepRating(pEp.getRating(recipient.address), account.ispEpPrivacyProtected());

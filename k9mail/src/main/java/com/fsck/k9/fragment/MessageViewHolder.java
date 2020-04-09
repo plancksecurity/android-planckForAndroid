@@ -231,7 +231,7 @@ public class MessageViewHolder implements View.OnClickListener {
     }
 
     private void updateContactBadge(Address counterpartyAddress) {
-        if (fragment.contactsPictureLoader == null) {
+        if (!K9.showContactPicture()) {
             contactBadge.setVisibility(GONE);
         } else if (counterpartyAddress != null) {
             Utility.setContactForBadge(contactBadge, counterpartyAddress);

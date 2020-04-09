@@ -22,9 +22,9 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
-import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.helper.Utility;
@@ -76,7 +76,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private SavedState mSavedState;
 
     private MessageHelper mMessageHelper;
-    private ContactPictureLoader mContactsPictureLoader;
+    private ContactPictureLoader contactsPictureLoader;
     private PEpContactBadge mContactBadge;
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
@@ -110,6 +110,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
+        contactsPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
         permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
     }
 
@@ -339,7 +340,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         if (K9.showContactPicture()) {
             mContactBadge.setVisibility(View.VISIBLE);
-            mContactsPictureLoader = ContactPicture.getContactPictureLoader();
         }  else {
             mContactBadge.setVisibility(View.GONE);
         }
@@ -372,7 +372,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         if (K9.showContactPicture()) {
             if (counterpartyAddress != null) {
                 Utility.setContactForBadge(mContactBadge, counterpartyAddress);
-                mContactsPictureLoader.setContactPicture(mContactBadge, counterpartyAddress);
+                contactsPictureLoader.setContactPicture(mContactBadge, counterpartyAddress);
             } else {
                 mContactBadge.setImageResource(R.drawable.ic_contact_picture);
             }

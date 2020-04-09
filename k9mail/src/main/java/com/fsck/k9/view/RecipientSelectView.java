@@ -32,11 +32,12 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.activity.compose.RecipientAdapter;
 import com.fsck.k9.activity.compose.RecipientLoader;
-import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
 
@@ -78,6 +79,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PePUIArtefactCache uiCache;
 
+    ContactPictureLoader contactPictureLoader;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -97,6 +99,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void initView(Context context) {
         // TODO: validator?
         this.context = context;
+        contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
         uiCache = PePUIArtefactCache.getInstance(context);
         account = uiCache.getComposingAccount();
         alternatesPopup = new ListPopupWindow(context);
@@ -143,7 +146,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.vName.setText(recipient.getDisplayNameOrAddress());
 
-        ContactPicture.getContactPictureLoader().setContactPicture(holder.vContactPhoto, recipient);
+        contactPictureLoader.setContactPicture(holder.vContactPhoto, recipient);
 
         pEp.getRating(recipient.address, new PEpProvider.ResultCallback<Rating>() {
             @Override

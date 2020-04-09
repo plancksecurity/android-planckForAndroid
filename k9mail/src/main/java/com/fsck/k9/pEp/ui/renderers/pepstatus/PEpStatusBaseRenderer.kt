@@ -12,7 +12,6 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.helper.ContactPicture
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.helper.Utility
@@ -21,8 +20,10 @@ import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
+import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
+import javax.inject.Inject
 import security.pEp.permissions.PermissionChecker
 import security.pEp.ui.permissions.PEpPermissionChecker
 
@@ -43,6 +44,8 @@ abstract class PEpStatusBaseRenderer(
 
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
+
+    @Inject lateinit var contactsPictureLoader:ContactPictureLoader
 
     protected lateinit var permissionChecker: PermissionChecker
 
@@ -71,8 +74,7 @@ abstract class PEpStatusBaseRenderer(
         val realAddress = Address(identity.address, identity.username)
         if (K9.showContactPicture()) {
             Utility.setContactForBadge(badge, realAddress)
-            val mContactsPictureLoader = ContactPicture.getContactPictureLoader()
-            mContactsPictureLoader.setContactPicture(badge, realAddress)
+            contactsPictureLoader.setContactPicture(badge, realAddress)
             badge.setPepRating(identity.rating, true)
         }
         val contacts = if (permissionChecker.hasContactsPermission() &&

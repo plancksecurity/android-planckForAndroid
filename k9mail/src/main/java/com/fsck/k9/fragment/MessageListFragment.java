@@ -67,7 +67,6 @@ import com.fsck.k9.fragment.MessageListFragmentComparators.ReverseIdComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.SenderComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.SubjectComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.UnreadComparator;
-import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.MergeCursorWithUniqueId;
 import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.helper.Utility;
@@ -259,7 +258,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * make sure we don't access member variables before initialization is complete.
      */
     private boolean initialized = false;
-    ContactPictureLoader contactsPictureLoader;
+
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver cacheBroadcastReceiver;
     private IntentFilter cacheIntentFilter;
@@ -277,6 +276,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
 
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
+    @Inject
+    ContactPictureLoader contactsPictureLoader;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
     @Inject
@@ -495,9 +496,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         checkboxes = K9.messageListCheckboxes();
 
-        if (K9.showContactPicture()) {
-            contactsPictureLoader = ContactPicture.getContactPictureLoader();
-        }
 
         restoreInstanceState(savedInstanceState);
         decodeArguments();

@@ -21,7 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.helper.ContactPicture;
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
 import com.fsck.k9.view.ThemeUtils;
@@ -32,10 +33,12 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
     private List<Recipient> recipients;
     private String highlight;
 
+    private ContactPictureLoader contactPictureLoader;
 
     public RecipientAdapter(Context context) {
         super();
         this.context = context;
+        this.contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
     }
 
     public void setRecipients(List<Recipient> recipients) {
@@ -91,7 +94,7 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
         String address = recipient.address.getAddress();
         holder.email.setText(highlightText(address));
 
-        ContactPicture.getContactPictureLoader().setContactPicture(holder.photo, recipient);
+        contactPictureLoader.setContactPicture(holder.photo, recipient);
 
         Integer cryptoStatusRes = null, cryptoStatusColor = null;
         RecipientCryptoStatus cryptoStatus = recipient.getCryptoStatus();

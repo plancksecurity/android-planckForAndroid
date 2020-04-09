@@ -14,14 +14,15 @@ import androidx.fragment.app.Fragment
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.helper.ContactPicture
 import com.fsck.k9.mail.Address
+import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.*
 import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import javax.inject.Inject
 
 
 private const val AUTOMATIC: String = "automatic"
@@ -96,6 +97,9 @@ class WelcomeMessage : AppIntro() {
 
 class IntroFirstFragment : Fragment() {
 
+    @Inject
+    lateinit var contactsPictureLoader: ContactPictureLoader
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
     }
@@ -114,7 +118,7 @@ class IntroFirstFragment : Fragment() {
     private fun startImage() {
         val address = Address("A")
         contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getContactPictureLoader().setContactPicture(contactBadge, address)
+        contactsPictureLoader.setContactPicture(contactBadge, address)
     }
 }
 
@@ -136,6 +140,9 @@ class IntroThirdFragment : Fragment() {
 
 class IntroFourthFragment : Fragment() {
 
+    @Inject
+    lateinit var contactsPictureLoader: ContactPictureLoader
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
     }
@@ -148,10 +155,10 @@ class IntroFourthFragment : Fragment() {
     private fun startImage() {
         var address = Address("A")
         secureBadge.setPepRating(Rating.pEpRatingReliable, true)
-        ContactPicture.getContactPictureLoader().setContactPicture(secureBadge, address)
+        contactsPictureLoader.setContactPicture(secureBadge, address)
         address = Address("B")
         secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
-        ContactPicture.getContactPictureLoader().setContactPicture(secureTrustedBadge, address)
+        contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
     }
 
 }

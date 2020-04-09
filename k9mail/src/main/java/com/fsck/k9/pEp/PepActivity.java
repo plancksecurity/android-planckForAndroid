@@ -8,6 +8,7 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 public abstract class PepActivity extends K9Activity {
@@ -47,6 +48,7 @@ public abstract class PepActivity extends K9Activity {
         pEpComponent = DaggerPEpComponent.builder()
                 .applicationComponent(applicationComponent)
                 .activityModule(new ActivityModule(this))
+                .contactLoaderModule(new ContactLoaderModule(this))
                 .pEpModule(new PEpModule(this, getSupportLoaderManager(), getSupportFragmentManager()))
                 .build();
     }
