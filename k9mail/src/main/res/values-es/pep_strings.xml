@@ -174,7 +174,7 @@
 \n¿Confirma que quiere restablecer\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
-    <string name="trust_identity_feedback">%s ahora es de confianza</string>
+    <string name="trust_identity_feedback">% s ahora es de confianza</string>
     <string name="key_reset_own_identity_feedback">La cuenta ha sido restablecida.</string>
     <string name="key_reset_identity_feedback">Todos los datos p≡p para este interlocutor se han restablecido.</string>
     <string name="key_reset_for_identity_context_title">Restablece todos los datos de p≡p relativos a este interlocutor:</string>

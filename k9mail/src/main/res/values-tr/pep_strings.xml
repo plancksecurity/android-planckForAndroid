@@ -101,17 +101,17 @@
 \n
 \n 1. genel PGP anahtarınız eklenmiş ve
 \n 2. yeni içe aktardığınız p≡p anahtarı ile şifrelenir ve imzalanır</string>
-    <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesap için bir anahtar içe aktarma başlattıysanız:%s, lütfen Başlat\'ı tıklayın.</string>
-    <string name="key_import_failure">%1$s anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı:%2$s</string>
-    <string name="key_import_success">%1$s%2$s anahtarından başarıyla aktarıldı</string>
+    <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesap için bir anahtar içe aktarma başlattıysanız:% s, lütfen Başlat\'ı tıklayın.</string>
+    <string name="key_import_failure">% 1 $ s anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı:% 2 $ s</string>
+    <string name="key_import_success">% 1 $ s% 2 $ s anahtarından başarıyla aktarıldı</string>
     <string name="key_import_from_fs_input_fpr">Lütfen Anahtar Kimliğini veya anahtarın parmak izini girin.</string>
     <string name="reset">Sıfırla</string>
     <string name="reset_all">Hepsini sıfırla</string>
     <string name="key_reset_for_identity_context_title">Bu iletişim ortağı için tüm p≡p verilerini sıfırlayın:</string>
     <string name="key_reset_identity_feedback">Bu iletişim ortağı için tüm p≡p verileri sıfırlandı.</string>
     <string name="key_reset_own_identity_feedback">Hesap sıfırlandı.</string>
-    <string name="trust_identity_feedback">%s artık güvenilir</string>
-    <string name="mistrust_identity_feedback">%s artık güvensiz</string>
+    <string name="trust_identity_feedback">% s artık güvenilir</string>
+    <string name="mistrust_identity_feedback">% s artık güvensiz</string>
     <string name="pep_key_reset_all_own_ids_summary">Tüm hesapları sıfırla</string>
     <string name="key_reset_all_own_identitities_feedback">Tüm p≡p hesapları sıfırlandı.</string>
     <string name="pep_key_reset_all_own_ids_warning">Bu işlem tüm hesaplarınızı sıfırlayacaktır.

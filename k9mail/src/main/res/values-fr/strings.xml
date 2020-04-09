@@ -55,8 +55,8 @@
     <string name="open_market">Ouvrir le Google Play Store</string>
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Auteurs\u00A0: <xliff:g id="app_authors">%s</xliff:g></string>
-    <string name="app_revision_fmt">=== App-specific strings =============================================================</string>
-    <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes\u00A0: <xliff:g id="app_libraries_list">%s</xliff:g></string>
+    <string name="app_revision_fmt">Informations de révision : <xliff:g id="app_revision_url">%s</xliff:g></string>
+    <string name="app_libraries">Nous utilisons les bibliothèques tierces suivantes :<xliff:g id="app_libraries_list">%s</xliff:g></string>
     <string name="app_emoji_icons">Icônes Emoji\u00A0: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_attachment_label">lire les pièces jointes</string>
     <string name="read_attachment_desc">Permet à cette application de lire vos pièces jointes.</string>
@@ -68,7 +68,7 @@
     <string name="accounts_title">Comptes</string>
     <string name="folders_title">Dossiers</string>
     <string name="advanced">Avancé</string>
-    <string name="message_list_title">"=== App-specific strings ============================================================= "</string>
+    <string name="message_list_title"><xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g> </string>
     <string name="compose_title_compose">Composer</string>
     <string name="compose_title_reply">Répondre</string>
     <string name="compose_title_reply_all">Répondre à tous</string>
@@ -900,9 +900,9 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="account_setup_basics_client_certificate">Utiliser le certificat client</string>
     <string name="client_certificate_spinner_empty">Aucun certificat client</string>
     <string name="client_certificate_spinner_delete">Enlever le choix de certificat client</string>
-    <string name="client_certificate_retrieval_failure">=== App-specific strings =============================================================</string>
+    <string name="client_certificate_retrieval_failure">Impossible de récupérer le certificat client pour l\'alias \"<xliff:g id="alias">%s</xliff:g>\"</string>
     <string name="client_certificate_advanced_options">Options avancées</string>
-    <string name="client_certificate_expired">=== App-specific strings =============================================================</string>
+    <string name="client_certificate_expired">Le certificat client \"<xliff:g id="certificate_alias">%1$s</xliff:g>\" a expiré ou n\'est pas encore valide (<xliff:g id="exception_message">%2$s</xliff:g>)</string>
     <!--Note: This references message_view_download_remainder-->
     <string name="preview_encrypted">*Chiffré*</string>
     <string name="add_from_contacts">Ajouter à partir des contacts</string>
@@ -987,7 +987,7 @@ jusqu\'à <xliff:g id="messages_to_load">%d</xliff:g> de plus</string>
     <string name="unsigned_text_divider_label">Texte non signé</string>
     <string name="app_name">p≡p</string>
     <string name="app_authors">Google, The K-9 Dog Walkers, p≡p Security S.A.</string>
-    <string name="app_copyright_fmt">=== App-specific strings =============================================================</string>
+    <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marquer tous les messages comme lus</string>
     <string name="account_setup_auth_type_xoauth2">Jeton OAuth 2.0</string>
     <string name="status_no_background">Synchronisation désactivée - Aucune activité en arrière-plan</string>
