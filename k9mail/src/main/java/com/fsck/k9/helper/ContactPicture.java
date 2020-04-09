@@ -1,7 +1,7 @@
 package com.fsck.k9.helper;
 
 import com.fsck.k9.DI;
-import security.pEp.ui.contacts.ContactPictureLoader;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 
 public class ContactPicture {
 

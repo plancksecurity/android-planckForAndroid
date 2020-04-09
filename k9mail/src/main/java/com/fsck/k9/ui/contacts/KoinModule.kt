@@ -1,4 +1,4 @@
-package security.pEp.ui.contacts
+package com.fsck.k9.ui.contacts
 
 import org.koin.dsl.module.applicationContext
 

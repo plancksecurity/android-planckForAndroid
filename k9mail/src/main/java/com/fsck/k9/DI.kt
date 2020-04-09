@@ -3,7 +3,7 @@ package com.fsck.k9
 import android.app.Application
 import android.content.Context
 import com.fsck.k9.autocrypt.autocryptModule
-import security.pEp.ui.contacts.contactsModule
+import com.fsck.k9.ui.contacts.contactsModule
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.crypto.openPgpModule
 import com.fsck.k9.mail.TransportProvider

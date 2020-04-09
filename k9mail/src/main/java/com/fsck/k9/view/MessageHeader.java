@@ -22,7 +22,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import security.pEp.ui.contacts.ContactPictureLoader;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.Contacts;
