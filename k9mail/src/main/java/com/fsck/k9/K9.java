@@ -809,6 +809,7 @@ public class K9 extends MultiDexApplication {
             }
         });
 //        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
+        PEpUtils.updateSyncAccountsConfig(this, pEpSyncProvider);
         if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
