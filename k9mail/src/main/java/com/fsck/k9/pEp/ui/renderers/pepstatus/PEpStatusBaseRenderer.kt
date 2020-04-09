@@ -46,12 +46,7 @@ abstract class PEpStatusBaseRenderer(
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
-    private lateinit var contactsPictureLoader: ContactPictureLoader
-
-    override fun onCreate(content: PEpIdentity?, layoutInflater: LayoutInflater?, parent: ViewGroup?) {
-        super.onCreate(content, layoutInflater, parent)
-        contactsPictureLoader = ContactLoaderModule(context).provideContactPictureLoader()
-    }
+    @Inject lateinit var contactsPictureLoader:ContactPictureLoader
 
     protected lateinit var permissionChecker: PermissionChecker
 
