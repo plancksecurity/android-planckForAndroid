@@ -42,6 +42,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -1080,7 +1081,7 @@ public class K9 extends MultiDexApplication {
 
     public static String getK9CurrentLanguage() {
         if(language.isEmpty()) {
-           return K9ActivityCommon.getDefaultLocaleForAndroidVersion().getLanguage();
+           return LangUtils.getDefaultLocale().getLanguage();
         }
         else return language;
     }
