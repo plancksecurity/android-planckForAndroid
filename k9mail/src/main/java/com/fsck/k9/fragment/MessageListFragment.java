@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import security.pEp.ui.contacts.ContactPictureLoader;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
