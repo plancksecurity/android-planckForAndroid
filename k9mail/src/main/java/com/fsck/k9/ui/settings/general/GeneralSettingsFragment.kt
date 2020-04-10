@@ -10,6 +10,7 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
@@ -250,4 +251,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
                 PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to rootKey)
     }
+
+    fun setLanguage(newLanguage: String?) {
+        K9.setK9Language(newLanguage)
+        dataStore.saveSettingsRestarting()
+    }
+
 }

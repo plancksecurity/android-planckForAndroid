@@ -132,9 +132,12 @@ class GeneralSettingsDataStore(
 
     override fun putString(key: String, value: String?) {
         if (value == null) return
+        else if(key == "language") {
+            showChangeLanguageDialog(value)
+            return
+        }
 
         when (key) {
-            "language" -> setLanguage(value)
             "theme" -> setTheme(value)
             "fixed_message_view_theme" -> K9.setK9MessageViewThemeSetting(stringToTheme(value))
             "message_compose_theme" -> K9.setK9ComposerThemeSetting(stringToTheme(value))
@@ -151,7 +154,7 @@ class GeneralSettingsDataStore(
             else -> return
         }
 
-        saveSettingsRestarting(key == "language")
+        saveSettings()
     }
 
     override fun getStringSet(key: String, defValues: Set<String>?): Set<String>? {
@@ -225,16 +228,14 @@ class GeneralSettingsDataStore(
         }
     }
 
-    private fun saveSettingsRestarting(shouldRestart: Boolean) {
+    fun saveSettingsRestarting() {
         val editor = preferences.storage.edit()
         K9.save(editor)
 
         executorService.execute {
             editor.commit()
-            if(shouldRestart) {
-                SettingsActivity.actionBasicStart(activity!!)
-                activity!!.finishAffinity()
-            }
+            SettingsActivity.actionBasicStart(activity!!)
+            activity!!.finishAffinity()
         }
     }
 
@@ -243,9 +244,8 @@ class GeneralSettingsDataStore(
         recreateActivity()
     }
 
-    private fun setLanguage(language: String?) {
-        K9.setK9Language(language)
-        recreateActivity()
+    private fun showChangeLanguageDialog(language: String?) {
+        (activity!! as GeneralSettingsActivity).showLanguageChangeDialog(language)
     }
 
     private fun themeToString(theme: Theme) = when (theme) {
