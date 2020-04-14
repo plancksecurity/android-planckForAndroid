@@ -7,9 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.preference.ListPreference
-import com.fsck.k9.Account
-import com.fsck.k9.BuildConfig
-import com.fsck.k9.R
+import androidx.preference.Preference
+import com.fsck.k9.*
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
@@ -65,10 +64,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
         initializeNewRingtoneOptions()
-
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            hideKeySyncOptions()
-        }
+        initializeAccountpEpSync(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -174,6 +170,31 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun hideKeySyncOptions() {
         findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
+    }
+
+    private fun initializeAccountpEpSync(account: Account) {
+        if (!BuildConfig.WITH_KEY_SYNC) {
+            hideKeySyncOptions()
+        } else {
+
+            val app: K9 = context?.applicationContext as K9
+            val preference: Preference? = findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)
+
+            //It is only possible to enable/disable sync if the device is not part of device group
+            // and is not the only/latest account enabled
+            //if grouped sync per Account only can be disabled on setup
+            preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
+
+        }
+    }
+
+    private fun canSyncAccountBeModified(account: Account): Boolean {
+        // if the account is disabled it can be always enabled
+
+        val accounts = Preferences.getPreferences(context).accounts
+        val enabledSyncAccount = accounts.sumBy { if (it.isPepSyncEnabled) 1 else 0 }
+
+        return !account.isPepSyncEnabled || enabledSyncAccount != 1
     }
 
     private fun initializeNewRingtoneOptions() {
