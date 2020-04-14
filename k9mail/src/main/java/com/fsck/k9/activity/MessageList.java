@@ -22,7 +22,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -99,6 +98,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
+import security.pEp.ui.nav_view.NavFolderAccountButton;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -161,8 +161,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private View secondAccountLayout;
     private View mainAccountLayout;
     private TextView mainAccountText;
-    private ImageView navigationViewFolders;
-    private ImageView navigationViewAccounts;
+    private NavFolderAccountButton navFoldersAccountsButton;
     private NavigationView navigationView;
     private TextView mainAccountName;
     private TextView mainAccountEmail;
@@ -436,9 +435,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         secondAccountLayout = findViewById(R.id.second_account_container);
 
         navigationFolders = (RecyclerView) findViewById(R.id.navigation_folders);
-        navigationViewFolders = (ImageView) findViewById(R.id.nav_header_folders);
-        navigationViewAccounts = (ImageView) findViewById(R.id.nav_header_accounts);
-        navigationViewAccounts.setVisibility(View.VISIBLE);
+        navFoldersAccountsButton = findViewById(R.id.navFoldersAccountsButton);
 
         navigationAccounts = (RecyclerView) findViewById(R.id.navigation_accounts);
         setupNavigationHeader();
@@ -496,25 +493,20 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mainAccountName.setText(mAccount.getName());
         mainAccountEmail.setText(mAccount.getEmail());
         setupNavigationHeaderListeners();
+        setupAccountsListeners();
     }
 
     private void setupNavigationHeaderListeners() {
-        navigationViewAccounts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFoldersArrowIndicator();
-                createAccountsMenu();
-            }
-        });
-
-        navigationViewFolders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAccountsArrowIndicator();
-                createFoldersMenu();
-            }
-        });
-        setupAccountsListeners();
+        findViewById(R.id.menu_header).setOnClickListener(v -> {
+                    if (!showingAccountsMenu) {
+                        navFoldersAccountsButton.showFolders();
+                        createAccountsMenu();
+                    } else {
+                        navFoldersAccountsButton.showAccounts();
+                        createFoldersMenu();
+                    }
+                }
+        );
     }
 
     private void setupAccountsListeners() {
@@ -528,33 +520,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             firstAccountLayout.setVisibility(View.GONE);
             secondAccountLayout.setVisibility(View.GONE);
         }
-
-        setupMainAccountListener();
-    }
-
-    private void setupMainAccountListener() {
-        mainAccountLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!showingAccountsMenu) {
-                    showFoldersArrowIndicator();
-                    createAccountsMenu();
-                } else {
-                    showAccountsArrowIndicator();
-                    createFoldersMenu();
-                }
-            }
-        });
-    }
-
-    private void showFoldersArrowIndicator() {
-        navigationViewAccounts.setVisibility(View.GONE);
-        navigationViewFolders.setVisibility(View.VISIBLE);
-    }
-
-    private void showAccountsArrowIndicator() {
-        navigationViewAccounts.setVisibility(View.VISIBLE);
-        navigationViewFolders.setVisibility(View.GONE);
     }
 
     private void setupTwoAcountsListeners(List<Account> accounts) {
@@ -773,8 +738,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                         refreshMessages(search);
                         setupNavigationHeader();
                         createFoldersMenu();
-                        navigationViewFolders.setVisibility(View.GONE);
-                        navigationViewAccounts.setVisibility(View.VISIBLE);
+                        navFoldersAccountsButton.showAccounts();
                         drawerLayout.removeDrawerListener(drawerCloseListener);
                         changeAccountsOrder();
                     }
