@@ -435,8 +435,8 @@
             <CheckBoxPreference
                 android:key="pep_save_encrypted"
                 android:title="@string/pep_mistrust_server_and_store_mails_encrypted"
-                android:summaryOn="Stores encrypted messages encrypted on the server."
-                android:summaryOff="Encrypted messages will be decrypted and stored unencrypted on the server."
+                android:summaryOn="@string/account_settings_save_encrypted_summary_enabled"
+                android:summaryOff="@string/account_settings_save_encrypted_summary_disabled"
                 android:defaultValue="true"
                 app:dependency="pep_disable_privacy_protection"
                 />
