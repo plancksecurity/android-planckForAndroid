@@ -395,10 +395,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         channelUtils.updateChannels();
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.setDrawerListener(toggle);
-        toggle.syncState();
+        initializeDrawerToggle();
 
         foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
         accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
@@ -633,15 +630,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void changeAccount(View fromView, Account accountClicked) {
         fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
         drawerLayout.closeDrawers();
-        setAccount(accountClicked);
-    }
-
-    public void setAccount(Account account) {
-        mAccount = account;
+        mAccount = accountClicked;
         setupNavigationHeader();
-        String folder = account.getAutoExpandFolderName();
+        String folder = accountClicked.getAutoExpandFolderName();
         LocalSearch search = new LocalSearch(folder);
-        search.addAccountUuid(account.getUuid());
+        search.addAccountUuid(accountClicked.getUuid());
         search.addAllowedFolder(folder);
         refreshMessages(search);
         changeAccountsOrder();
@@ -1144,6 +1137,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeDisplayMode(null);
         initializeFragments();
         displayViews();
+
+        channelUtils.updateChannels();
+        initializeDrawerToggle();
+
+    }
+
+    private void initializeDrawerToggle() {
+        toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.removeDrawerListener(toggle);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
     }
 
     /**
@@ -1394,11 +1399,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
     }
 
-    private boolean currentAccountWasJustDeleted() {
-        List<Account> accounts = preferences.getAccounts();
-        return accounts != null && !accounts.isEmpty() && !accounts.contains(mAccount);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -1409,10 +1409,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             Search.setActive(false);
         }
         hideSearchView();
-
-        if(currentAccountWasJustDeleted()) {
-            setAccount(preferences.getDefaultAccount());
-        }
 
         if (mAccount != null && !mAccount.isAvailable(this)) {
             onAccountUnavailable();
@@ -1466,9 +1462,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        if(!isThreadDisplayed) {
-            setUpToolbar(true, v -> setDrawerEnabled(true));
-        }
+        setUpToolbar(true, v -> setDrawerEnabled(true));
         customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -2366,6 +2360,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else {
+            if(isThreadDisplayed) {
+                updateToolbarColorToOriginal();
+                isThreadDisplayed = false;
+            }
             super.onBackPressed();
         }
     }
