@@ -2303,22 +2303,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             Map<String, String> remoteUidMap = null;
 
-            if (!isCopy && destFolder.equals(account.getTrashFolderName())) {
-                Timber.d("processingPendingMoveOrCopy doing special case for deleting message");
+            remoteDestFolder = remoteStore.getFolder(destFolder);
 
-                String destFolderName = destFolder;
-                if (K9.FOLDER_NONE.equals(destFolderName)) {
-                    destFolderName = null;
-                }
-                remoteSrcFolder.delete(messages, destFolderName);
+            if (isCopy) {
+                remoteUidMap = remoteSrcFolder.copyMessages(messages, remoteDestFolder);
             } else {
-                remoteDestFolder = remoteStore.getFolder(destFolder);
-
-                if (isCopy) {
-                    remoteUidMap = remoteSrcFolder.copyMessages(messages, remoteDestFolder);
-                } else {
-                    remoteUidMap = remoteSrcFolder.moveMessages(messages, remoteDestFolder);
-                }
+                remoteUidMap = remoteSrcFolder.moveMessages(messages, remoteDestFolder);
             }
             if (!isCopy && Expunge.EXPUNGE_IMMEDIATELY == account.getExpungePolicy()) {
                 Timber.i("processingPendingMoveOrCopy expunging folder %s:%s", account.getDescription(), srcFolder);
