@@ -583,8 +583,10 @@ public class PEpUtils {
         // Accounts config is stored by the app and needs to told to the engine
         for (Account account : Preferences.getPreferences(context).getAccounts()) {
             Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
+            pEpSyncProvider.stopSync();
+            id = pEpSyncProvider.myself(id);
             pEpSyncProvider.setIdentityFlag(id, account.isPepSyncEnabled());
-            pEpSyncProvider.myself(id);
+            pEpSyncProvider.startSync();
         }
     }
 }
