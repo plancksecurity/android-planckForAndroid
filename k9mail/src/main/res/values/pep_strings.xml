@@ -219,8 +219,8 @@
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1">Welcome to the <font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2">You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
+    <string name="intro_frag_first_text_1"><![CDATA[Welcome to the <font color="#4caf50">p≡p</font> tutorial]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar]]></string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>

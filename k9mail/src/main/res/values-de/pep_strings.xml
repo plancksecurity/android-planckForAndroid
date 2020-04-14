@@ -130,7 +130,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep" translatable="false">p≡p</string>
-    <string name="intro_frag_first_text_1">Willkommen zur <font color="#4caf50">p≡p</font> Anleitung</string>
+    <string name="intro_frag_first_text_1"><![CDATA[Willkommen zur <font color="#4caf50">p≡p</font> Anleitung]]></string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
     <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
     <string name="ellipsized_text" translatable="false">%s …</string>
@@ -192,11 +192,7 @@
     <string name="notification_failed_to_encrypt_title">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="intro_frag_fourth_text_2">Das Symbol in der oberen Leiste spiegelt den Datenschutzstatus der Nachricht wieder, der für alle Kommunikationspartner dieser Nachricht den kleinsten gemeinsamen Nenner darstellt, z. B.:</string>
     <string name="intro_frag_first_text_3">Und in der oberen Leiste, wenn Sie eine E-Mail öffnen oder schreiben:</string>
-    <string name="intro_frag_first_text_2">Sie können dieses Tutorial jederzeit schließen. 
-\n 
-\n<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
-\n 
-\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt</string>
+    <string name="intro_frag_first_text_2"><![CDATA[Sie können dieses Tutorial jederzeit schließen.\n\n<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.\n\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt]]></string>
     <string name="message_failed_to_encrypt">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
     <string name="action_tutorial">Anleitung</string>
