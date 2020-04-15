@@ -10,9 +10,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.search.SearchAccount;
 
 
@@ -53,11 +55,18 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         PendingIntent viewAction = viewActionTemplatePendingIntent(context);
         views.setPendingIntentTemplate(R.id.listView, viewAction);
 
-        PendingIntent composeAction = composeActionPendingIntent(context);
-        views.setOnClickPendingIntent(R.id.new_message, composeAction);
+        boolean availableAccount = Preferences.getPreferences(context).getAvailableAccounts().size() != 0;
 
-        PendingIntent headerClickAction = viewUnifiedInboxPendingIntent(context);
-        views.setOnClickPendingIntent(R.id.top_controls, headerClickAction);
+        if (!availableAccount) {
+            PendingIntent noAccountsAction = noAccountPendingIntent(context);
+            views.setOnClickPendingIntent(R.id.new_message, noAccountsAction);
+            views.setOnClickPendingIntent(R.id.top_controls, noAccountsAction);
+        } else {
+            PendingIntent composeAction = composeActionPendingIntent(context);
+            PendingIntent headerClickAction = viewUnifiedInboxPendingIntent(context);
+            views.setOnClickPendingIntent(R.id.new_message, composeAction);
+            views.setOnClickPendingIntent(R.id.top_controls, headerClickAction);
+        }
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
@@ -92,6 +101,12 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
     private PendingIntent composeActionPendingIntent(Context context) {
         Intent intent = new Intent(context, MessageCompose.class);
         intent.setAction(MessageCompose.ACTION_COMPOSE);
+
+        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent noAccountPendingIntent(Context context) {
+        Intent intent = new Intent(context, SplashActivity.class);
 
         return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }

@@ -118,14 +118,10 @@
 \n Sıfırlamak istediğinizden emin misiniz\?</string>
     <string name="pep_key_reset_own_id_warning">Bu işlem hesabınızı sıfırlayacaktır.
 \n Sıfırlamak istediğinizden emin misiniz\?</string>
-    <string name="pep_key_reset_own_id_warning_title">% S hesabını sıfırla</string>
+    <string name="pep_key_reset_own_id_warning_title">%s hesabını sıfırla</string>
     <string name="search_empty_error">Lütfen aramak için metin yazın</string>
-    <string name="intro_frag_first_text_1">&lt;Font color = \"# 4caf50\"&gt; p≡p &lt;/font&gt; eğitimine hoş geldiniz<font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2">Bu öğreticiyi istediğiniz zaman kapatabilirsiniz.
-\n
-\n<font color="# 4caf50"> p≡p </font> iletişiminizin ne kadar güvenli olduğunu belirtmek için bir Gizlilik Durumu kullanır.
-\n
-\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir</string>
+    <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> eğitimine hoş geldiniz<font color="#4caf50">p≡p</font> tutorial</string>
+    <string name="intro_frag_first_text_2"><![CDATA[Bu öğreticiyi istediğiniz zaman kapatabilirsiniz.\n\n<font color="#4caf50"> p≡p </font> iletişiminizin ne kadar güvenli olduğunu belirtmek için bir Gizlilik Durumu kullanır.\n\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir]]></string>
     <string name="pep_force_protected">Korumayı etkinleştir</string>
     <string name="navigation_drawer_close">Gezinme çekmecesini kapat</string>
     <string name="message_list_item_removed">Kaldırılan</string>

@@ -253,7 +253,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private Context context;
     private final ActivityListener activityListener = new MessageListActivityListener();
     private Preferences preferences;
-    private boolean loaderJustInitialized;
+    private boolean loaderJustInitializedForTheFirstTime;
     MessageReference activeMessage;
     /**
      * {@code true} after {@link #onCreate(Bundle)} was executed. Used in {@link #updateTitle()} to
@@ -513,6 +513,22 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         getpEpComponent().inject(this);
     }
 
+    private void destroyLoaders() {
+        LoaderManager manager = LoaderManager.getInstance(this);
+        for (int i = 0, len = accountUuids.length; i < len; i++) {
+            manager.destroyLoader(i);
+        }
+    }
+
+    private boolean anyAccountWasDeleted() {
+        for(String uuid : accountUuids) {
+            if(preferences.getAccount(uuid) == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -550,15 +566,29 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
+        if(!anyAccountWasDeleted()) {
+            loaderJustInitializedForTheFirstTime = true;
+            initializeLoaders();
+        }
+    }
 
-        loaderJustInitialized = true;
-        LoaderManager loaderManager = getLoaderManager();
+    private void initializeLoaders() {
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         int len = accountUuids.length;
         cursors = new Cursor[len];
         cursorValid = new boolean[len];
         for (int i = 0; i < len; i++) {
             loaderManager.initLoader(i, null, this);
             cursorValid[i] = false;
+        }
+    }
+
+    private void initializeLoadersIfNeeded() {
+        if(!loaderJustInitializedForTheFirstTime && !anyAccountWasDeleted()) {
+            initializeLoaders();
+        }
+        else {
+            loaderJustInitializedForTheFirstTime = false;
         }
     }
 
@@ -747,6 +777,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
+        destroyLoaders();
     }
 
     /**
@@ -758,13 +789,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
 
-        if (!loaderJustInitialized) {
-            if(accountExists()) {
-                restartLoader();
-            }
-        } else {
-            loaderJustInitialized = false;
-        }
+        initializeLoadersIfNeeded();
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -806,17 +831,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
     }
 
-    private boolean accountExists() {
-        return preferences.getAccounts().contains(account);
-    }
-
     private void restartLoader() {
         if (cursorValid == null) {
             return;
         }
 
         // Refresh the message list
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         for (int i = 0; i < accountUuids.length; i++) {
             loaderManager.restartLoader(i, null, this);
             cursorValid[i] = false;
@@ -1121,7 +1142,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         int toastString = sortType.getToast(sortAscending);
         FeedbackTools.showShortFeedback(getView(), getString(toastString));
 
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         for (int i = 0, len = accountUuids.length; i < len; i++) {
             loaderManager.restartLoader(i, null, this);
         }

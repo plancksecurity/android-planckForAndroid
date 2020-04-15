@@ -4,10 +4,10 @@ buildscript {
                 'compileSdk'           : 29,
                 'targetSdk'            : 28,
                 'minSdk'               : 21,
-                'versionCode'          : 46,
-                'pEpEngineRevision'    : 4505,
-                'pEpJNIAdapterRevision': 661,
-                'versionName'          : '1.1.001',
+                'versionCode'          : 51,
+                'pEpEngineRevision'    : 4549,
+                'pEpJNIAdapterRevision': 666,
+                'versionName'          : '1.1.005',
                 'libpEpAdapterRevision': 158
         ]
 
@@ -40,7 +40,7 @@ buildscript {
                 'appIntro'           : '5.1.0',
                 'swipeLayout'        : '1.2.0',
                 'dexter'             : '6.0.1',
-                'workRuntime'        : '2.0.1',
+                'workRuntime'        : '2.3.4',
                 'androidJob'         : '1.3.0-rc1',
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',

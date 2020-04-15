@@ -26,7 +26,7 @@
     <!--=== General strings ==================================================================-->
     <string name="app_authors_fmt">Yazarlar: <xliff:g id="app_authors">%s</xliff:g></string>
     <string name="app_revision_fmt">Revizyon Bilgileri: <xliff:g id="app_revision_url">%s</xliff:g></string>
-    <string name="app_libraries">K-9 posta kaynak kodları içerir:</string>
+    <string name="app_libraries">Posta kaynak kodları içerir:</string>
     <string name="app_emoji_icons">İfadeler: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
     <string name="read_attachment_label">E-posta eklerini oku</string>
     <string name="read_attachment_desc">Bu uygulamaya E-posta eklerinizi okumasına izin ver.</string>
@@ -910,9 +910,9 @@
     <string name="messageview_crypto_warning_title">Güvenlik Uyarısı</string>
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="app_name">p≡p</string>
-    <string name="app_copyright_fmt">Copyright 2020 p≡p Security SA Telif Hakkı 2008- &lt;xliff: g xmlns: xliff = \"urn: vaha: isimler: tc: xliff: belge: 1.2\"&gt;% 1 $ s &lt;/ xliff: g&gt; K-9 Köpek Gezdiricileri . Bölümler Telif Hakkı 2006- &lt;xliff: g xmlns: xliff = \"urn: vaha: isimler: tc: xliff: belge: 1.2\"&gt;% 2 $ s &lt;/ xliff: g&gt; Android Açık Kaynak Projesi.<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
-    <string name="account_recreate_dlg_instructions_fmt">\"&lt;Xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" için tüm yerel veriler kaldırılacak. Hesap ayarları korunur.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
-    <string name="account_clear_dlg_instructions_fmt">\"&lt;Xliff: g xmlns: xliff =\" urn: oasis: names: tc: xliff: document: 1.2 \"id =\" account \"&gt;% s &lt;/ xliff: g&gt;\" içindeki iletilerin yerel kopyaları kaldırılacak. Hesap ayarları korunur.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
+    <string name="app_copyright_fmt">Copyright 2020 p≡p Security SA Telif Hakkı 2008- <xliff:g>%1$s</xliff:g> K-9 Köpek Gezdiricileri . Bölümler Telif Hakkı 2006- <xliff:g>%2$s</xliff:g> Android Açık Kaynak Projesi.</string>
+    <string name="account_recreate_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\" için tüm yerel veriler kaldırılacak. Hesap ayarları korunur.</string>
+    <string name="account_clear_dlg_instructions_fmt">\"<xliff:g id="account">%s</xliff:g>\" içindeki iletilerin yerel kopyaları kaldırılacak. Hesap ayarları korunur.</string>
     <string name="status_no_network">Senkronizasyon devre dışı - Ağ yok</string>
     <string name="status_no_background">Senkronizasyon devre dışı - Arka plan etkinliği yok</string>
     <string name="status_poll_and_push_disabled">Yoklama ve itme devre dışı</string>
@@ -960,7 +960,7 @@
     <string name="general_settings_title">Genel Ayarlar</string>
     <string name="encrypted_subject">Şifreli Mesaj</string>
     <string name="toast_account_not_found">Dahili hata: Geçersiz hesap!</string>
-    <string name="toast_openpgp_provider_error">% S cihazına bağlanırken hata oluştu!</string>
+    <string name="toast_openpgp_provider_error">%s cihazına bağlanırken hata oluştu!</string>
     <string name="switch_on">üzerinde</string>
     <string name="switch_off">kapalı</string>
     <string name="account_settings_no_openpgp_provider_configured">Hiçbir OpenPGP uygulaması yapılandırılmadı</string>

@@ -73,7 +73,7 @@
     <string name="pep_from_format">from sender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
-    <string name="pep_enable_privacy_protection">p≡p privacy protection</string>
+    <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="pep_app_license">Licenced under pEp security EULA</string>
@@ -219,8 +219,8 @@
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1">Welcome to the <font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2">You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
+    <string name="intro_frag_first_text_1"><![CDATA[Welcome to the <font color="#4caf50">p≡p</font> tutorial]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar]]></string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
@@ -266,5 +266,11 @@
     <string name="keysync_disable_warning_title">Disable p≡p Sync</string>
     <string name="keysync_disable_warning_explanation">If you disable p≡p Sync your accounts on your devices will not be synchronized anymore.\n<b>Are you sure you want to disable p≡p Sync\? </b></string>
     <string name="keysync_disable_warning_action_disable">Disable</string>
+    <string name="global_settings_extra_keys_summary">Encrypt messages with additional keys.</string>
+    <string name="global_settings_passive_mode_summary">Doesn\'t attach a pEpkey.asc if your communication partner is not using p≡p</string>
+    <string name="global_settings_subject_protection_summary">Encrypt the message subject when writing to a communication partner with OpenPGP</string>
+    <string name="global_settings_blacklist_summary">Blacklist a key of an OpenPGP communication partner not to use it anymore</string>
+    <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
+    <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
 
 </resources>

@@ -3,6 +3,10 @@ package security.pEp.sync
 import android.content.Context
 import androidx.work.*
 import com.fsck.k9.controller.MessagingController
+import java.util.concurrent.TimeUnit
+
+
+//TODO: Cleanup and take worker infra from k9.
 
 class CleanWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
@@ -15,15 +19,24 @@ class CleanWorker(appContext: Context, workerParams: WorkerParameters)
 }
 
 class KeySyncCleaner {
+    private val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresStorageNotLow(false)
+            .build()
+
+    private fun autoConsumeRequest(): WorkRequest {
+        return PeriodicWorkRequestBuilder<CleanWorker>(15, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .addTag(AUTO_CONSUME_CLEAN_TAG)
+                .build()
+    }
 
     companion object {
-        private fun autoConsumeRequest(): WorkRequest {
-            return OneTimeWorkRequest.Builder(CleanWorker::class.java).build()
-        }
+        const val AUTO_CONSUME_CLEAN_TAG = "AutoConsumeCleanUp"
 
         @JvmStatic
         fun queueAutoConsumeMessages() {
-            WorkManager.getInstance().enqueue(autoConsumeRequest())
+            WorkManager.getInstance().enqueue(KeySyncCleaner().autoConsumeRequest())
         }
     }
 }

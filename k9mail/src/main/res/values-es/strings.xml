@@ -74,11 +74,11 @@
     <string name="compose_title_reply_all">Responder a todos</string>
     <string name="compose_title_forward">Reenviar</string>
     <string name="choose_folder_title">Seleccionar carpeta</string>
-    <string name="status_loading_account_folder">Encuesta &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"folder\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;</string>
-    <string name="status_loading_account_folder_headers">Obteniendo encabezados &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"folder\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;</string>
-    <string name="status_sending_account">Enviando &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%2$s&lt;/xliff:g&gt;</string>
-    <string name="status_processing_account">Proceso &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%1$s&lt;/xliff:g&gt;:&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"command\"&gt;%2$s&lt;/xliff:g&gt;&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"progress\"&gt;%3$s&lt;/xliff:g&gt;</string>
-    <string name="folder_progress">" &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"completed\"&gt;%1$d&lt;/xliff:g&gt;/&lt;xliff:gxmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"total\"&gt;%2$d&lt;/xliff:g&gt;"</string>
+    <string name="status_loading_account_folder">Encuesta <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_loading_account_folder_headers">Obteniendo encabezados <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="folder">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="status_sending_account">Enviando <xliff:g id="account">%1$s</xliff:g><xliff:g id="progress">%2$s</xliff:g></string>
+    <string name="status_processing_account">Proceso <xliff:g id="account">%1$s</xliff:g>:<xliff:g id="command">%2$s</xliff:g><xliff:g id="progress">%3$s</xliff:g></string>
+    <string name="folder_progress">" <xliff:g id="completed">%1$d</xliff:g>/<xliff:g id="total">%2$d</xliff:g>"</string>
     <string name="status_next_poll">Siguiente encuesta <xliff:g id="nexttime">%s</xliff:g></string>
     <string name="status_syncing_off">Sincronización deshabilitada</string>
     <string name="actionbar_selected"><xliff:g id="selection_count">%d</xliff:g> seleccionado</string>

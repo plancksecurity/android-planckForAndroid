@@ -3,8 +3,11 @@ package com.fsck.k9.ui.settings.account
 import android.content.Context
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.service.MailServiceLegacy
+import org.koin.dsl.module.applicationContext
 import java.util.concurrent.ExecutorService
 
 class AccountSettingsDataStore(
@@ -36,6 +39,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
             "pep_disable_privacy_protection" -> account.ispEpPrivacyProtected()
             "pep_save_encrypted" -> account.isUntrustedSever
+            "pep_enable_sync_account" -> account.isPepSyncEnabled
             else -> defValue
         }
     }
@@ -67,6 +71,7 @@ class AccountSettingsDataStore(
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
             "pep_disable_privacy_protection" -> account.setpEpPrivacyProtection(value)
             "pep_save_encrypted" -> account.setPEpStoreEncryptedOnServer(value)
+            "pep_enable_sync_account" -> setSyncEnabled(value)
             else -> return
         }
 
@@ -220,5 +225,11 @@ class AccountSettingsDataStore(
 
     private fun restartPushers() {
         MailServiceLegacy.actionRestartPushers(context, null)
+    }
+
+    private fun setSyncEnabled(value: Boolean) {
+        account.setPEpSyncAccount(value)
+        PEpUtils.updateSyncFlag(context, account,
+                (context.applicationContext as K9).pEpSyncProvider)
     }
 }

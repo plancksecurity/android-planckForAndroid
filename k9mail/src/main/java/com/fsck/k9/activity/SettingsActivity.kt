@@ -82,6 +82,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private var exportAccountUuids: ArrayList<String>? = null
 
     /**
+     * This flag is true when messages of the deleted account were being diplayed in MessageList. (Wether it was done as Inbox or Unified Inbox).
+     */
+    private var anyAccountWasDeleted = false
+
+    /**
      * Contains information about objects that need to be retained on configuration changes.
      *
      * @see .onRetainCustomNonConfigurationInstance
@@ -499,32 +504,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             DIALOG_REMOVE_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
                     null
-                } else ConfirmationDialog.create(this, id,
-                        R.string.account_delete_dlg_title,
+                } else ConfirmationDialog.create(
+                        this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                                selectedContextAccount!!.description),
+                        selectedContextAccount!!.description),
                         R.string.okay_action,
-                        R.string.cancel_action
-                ) {
-                    if (selectedContextAccount is Account) {
-                        val realAccount = selectedContextAccount as Account?
-                        try {
-                            realAccount!!.localStore.delete()
-                        } catch (e: Exception) {
-                            // Ignore, this may lead to localStores on sd-cards that
-                            // are currently not inserted to be left
-                        }
-
-                        MessagingController.getInstance(application)
-                                .deleteAccount(realAccount)
-                        Preferences.getPreferences(this@SettingsActivity)
-                                .deleteAccount(realAccount)
-                        K9.setServicesEnabled(this@SettingsActivity)
-                        refresh()
-
-                    }
-                    selectedContextAccount = null
-                }
+                        R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
             }
             DIALOG_CLEAR_ACCOUNT -> {
@@ -590,6 +575,34 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         return super.onCreateDialog(id)
+    }
+
+    private fun deleteAccountWork() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+
+            if (selectedContextAccount is Account) {
+                val realAccount = selectedContextAccount as Account?
+                try {
+                    realAccount!!.localStore.delete()
+                } catch (e: Exception) {
+                    // Ignore, this may lead to localStores on sd-cards that
+                    // are currently not inserted to be left
+                }
+
+                MessagingController.getInstance(application)
+                        .deleteAccount(realAccount)
+                Preferences.getPreferences(this@SettingsActivity)
+                        .deleteAccount(realAccount)
+                K9.setServicesEnabled(this@SettingsActivity)
+
+                anyAccountWasDeleted = true
+
+                refresh()
+
+            }
+            selectedContextAccount = null
+        }
     }
 
     public override fun onPrepareDialog(id: Int, d: Dialog) {
@@ -840,7 +853,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
 
-    internal inner class AccountListAdapter(accounts: List<BaseAccount>, private val onFolderClickListener: OnFolderClickListener, private val onBaseAccountClickListener: OnBaseAccountClickListener) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
+    internal inner class AccountListAdapter(
+            accounts: List<BaseAccount>,
+            private val onFolderClickListener: OnFolderClickListener,
+            private val onBaseAccountClickListener: OnBaseAccountClickListener
+    ) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
@@ -901,12 +918,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCount!!.text = String.format("%d", unreadMessageCount)
 
                 holder.flaggedMessageCount!!.text = String.format("%d", stats.flaggedMessageCount)
-                holder.flaggedMessageCountWrapper!!.visibility = if (K9.messageListStars() && stats.flaggedMessageCount > 0) View.VISIBLE else View.GONE
+                holder.flaggedMessageCountWrapper!!.visibility = if (K9.messageListStars() && stats.flaggedMessageCount > 0) {
+                    View.VISIBLE
+                } else View.GONE
 
                 holder.flaggedMessageCountWrapper!!.setOnClickListener(createFlaggedSearchListener(account))
                 holder.newMessageCountWrapper!!.setOnClickListener(createUnreadSearchListener(account))
 
-                holder.activeIcons!!.setOnClickListener { FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint)) }
+                holder.activeIcons!!.setOnClickListener {
+                    FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint))
+                }
 
             } else {
                 holder.newMessageCountWrapper!!.visibility = View.GONE
@@ -1077,6 +1098,23 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         GeneralSettingsActivity.start(this, preferenceScreen.key)
 
         return true
+    }
+
+    override fun onBackPressed() {
+        if(anyAccountWasDeleted) {
+            if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
+                if(onOpenAccount(unifiedInboxAccount)) {
+                    anyAccountWasDeleted = false
+                    finish()
+                }
+            } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
+                anyAccountWasDeleted = false
+                finish()
+            }
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 
 }

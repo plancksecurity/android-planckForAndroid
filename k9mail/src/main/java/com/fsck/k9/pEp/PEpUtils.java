@@ -387,6 +387,11 @@ public class PEpUtils {
         pEp.setIdentityFlag(myIdentity, account.isPepSyncEnabled());
     }
 
+    public static void updateSyncFlag(Context context, Account account, PEpProvider pEp) {
+        Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
+        pEp.setIdentityFlag(id, account.isPepSyncEnabled());
+    }
+
     public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {
         ArrayList<Identity> identities = new ArrayList<>();
 
@@ -571,7 +576,18 @@ public class PEpUtils {
     }
 
     public static boolean isRatingUnsecure(Rating rating){
-    return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
+        return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
+    }
+
+    public static void updateSyncAccountsConfig(Context context, PEpProvider pEpSyncProvider) {
+        // Accounts config is stored by the app and needs to told to the engine
+        for (Account account : Preferences.getPreferences(context).getAccounts()) {
+            Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
+            pEpSyncProvider.stopSync();
+            id = pEpSyncProvider.myself(id);
+            pEpSyncProvider.setIdentityFlag(id, account.isPepSyncEnabled());
+            pEpSyncProvider.startSync();
+        }
     }
 }
 

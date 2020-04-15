@@ -118,12 +118,12 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
         List<Recipient> recipients = new ArrayList<>();
 
-        if (permissionChecker.hasContactsPermission()) {
-            Map<String, Recipient> recipientMap = new HashMap<>();
-
-            if (addresses != null) {
-                fillContactDataFromAddresses(addresses, recipients, recipientMap);
-            } else if (contactUri != null) {
+        Map<String, Recipient> recipientMap = new HashMap<>();
+        if (addresses != null) {
+            fillContactDataFromAddresses(addresses, recipients, recipientMap);
+        }
+        else if (permissionChecker.hasContactsPermission()) {
+             if (contactUri != null) {
                 fillContactDataFromEmailContentUri(contactUri, recipients, recipientMap);
             } else if (query != null) {
                 fillContactDataFromQuery(query, recipients, recipientMap);

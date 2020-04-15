@@ -314,20 +314,30 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void validateFields() {
-        boolean clientCertificateChecked = mClientCertificateCheckBox.isChecked();
-        boolean oauth2Checked = mOAuth2CheckBox.isChecked();
         String clientCertificateAlias = mClientCertificateSpinner.getAlias();
         String email = mEmailView.getText().toString().trim();
 
-        boolean valid =
-                (oauth2Checked
-                        && mAccountSpinner.getSelectedItem() != null
-                        && mAccountSpinner.getSelectedItem().toString() != null
-                        && !mAccountSpinner.getSelectedItem().toString().isEmpty()) ||
-                        (Utility.requiredFieldValid(mEmailView)
-                                && ((!clientCertificateChecked && Utility.requiredFieldValid(mPasswordView))
-                                || (clientCertificateChecked && clientCertificateAlias != null)))
-                                && mEmailValidator.isValidAddressOnly(email);
+        boolean clientCertificateChecked = mClientCertificateCheckBox.isChecked();
+        boolean oauth2Checked = mOAuth2CheckBox.isChecked();
+        boolean emailValid = Utility.requiredFieldValid(mEmailView) && mEmailValidator.isValidAddressOnly(email);
+        boolean passwordValid = Utility.requiredFieldValid(mPasswordView);
+
+        boolean oauth2 =
+                oauth2Checked &&
+                mAccountSpinner.getSelectedItem() != null &&
+                !mAccountSpinner.getSelectedItem().toString().isEmpty();
+
+        boolean certificateAuth =
+                clientCertificateChecked && clientCertificateAlias != null && emailValid;
+
+        boolean emailPasswordAuth =
+                !oauth2Checked
+                        && !certificateAuth
+                        && !clientCertificateChecked
+                        && emailValid
+                        && passwordValid;
+
+        boolean valid = oauth2 || certificateAuth || emailPasswordAuth;
 
         mNextButton.setEnabled(valid);
         mManualSetupButton.setEnabled(valid);

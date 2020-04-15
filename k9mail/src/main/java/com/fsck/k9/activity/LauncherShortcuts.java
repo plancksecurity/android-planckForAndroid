@@ -6,7 +6,9 @@ import android.os.Parcelable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BaseAccount;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.search.SearchAccount;
 
 public class LauncherShortcuts extends AccountList {
@@ -29,8 +31,9 @@ public class LauncherShortcuts extends AccountList {
     @Override
     protected void onAccountSelected(BaseAccount account) {
         Intent shortcutIntent = null;
-
-        if (account instanceof SearchAccount) {
+        if (Preferences.getPreferences(this).getAvailableAccounts().size() == 0) {
+            shortcutIntent = new Intent(this, SplashActivity.class);
+        } else if (account instanceof SearchAccount) {
             SearchAccount searchAccount = (SearchAccount) account;
             shortcutIntent = MessageList.shortcutIntent(this, searchAccount.getId());
         } else {

@@ -113,26 +113,14 @@
             android:paddingTop="16dp"
             tools:text="android.studio@android.com" />
 
-        <ImageView
-            android:id="@+id/nav_header_accounts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <security.pEp.ui.nav_view.NavFolderAccountButton
+            android:id="@+id/navFoldersAccountsButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_gravity="end"
-            android:background="@drawable/ic_nav_header_accounts"
-            android:visibility="gone"
-            tools:visibility="gone" />
-
-        <ImageView
-            android:id="@+id/nav_header_folders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end"
-            android:background="@drawable/ic_nav_header_folders"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:padding="4dp"
+            android:src="@drawable/ic_arrow_drop_up_light" />
     </RelativeLayout>
 </LinearLayout>

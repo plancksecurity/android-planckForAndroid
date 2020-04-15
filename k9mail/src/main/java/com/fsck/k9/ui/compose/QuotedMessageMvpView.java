@@ -54,26 +54,9 @@ public class QuotedMessageMvpView {
     }
 
     public void setOnClickPresenter(final QuotedMessagePresenter presenter) {
-        OnClickListener onClickListener = new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch(view.getId()) {
-                    case R.id.quoted_text_show:
-                        presenter.onClickShowQuotedText();
-                        break;
-                    case R.id.quoted_text_delete:
-                        presenter.onClickDeleteQuotedText();
-                        break;
-                    case R.id.quoted_text_edit:
-                        presenter.onClickEditQuotedText();
-                        break;
-                }
-            }
-        };
-
-        mQuotedTextShow.setOnClickListener(onClickListener);
-        mQuotedTextEdit.setOnClickListener(onClickListener);
-        mQuotedTextDelete.setOnClickListener(onClickListener);
+        mQuotedTextShow.setOnClickListener(v ->presenter.onClickShowQuotedText());
+        mQuotedTextEdit.setOnClickListener(v -> presenter.onClickEditQuotedText());
+        mQuotedTextDelete.setOnClickListener(v -> presenter.onClickEditQuotedText());
     }
 
     public void addTextChangedListener(TextWatcher draftNeedsChangingTextWatcher) {
@@ -132,11 +115,6 @@ public class QuotedMessageMvpView {
 
     public void setQuotedText(String quotedText) {
         mQuotedText.setCharacters(quotedText);
-    }
-
-    // TODO we shouldn't have to retrieve the state from the view here
-    public String getQuotedText() {
-        return mQuotedText.getCharacters();
     }
 
     public void setMessageContentCharacters(String text) {
