@@ -907,9 +907,9 @@ public class CucumberTestSteps {
         testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
         testUtils.pressBack();
-        testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
-        testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
-        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_subject_unprotected"));
+        //testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
+        //testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
+        //testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_subject_unprotected"));
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
         testUtils.pressBack();
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
@@ -917,12 +917,13 @@ public class CucumberTestSteps {
     }
 
     private void walkThroughAdvanced() {
+        testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("settings_attachment_default_path"));
         testUtils.pressBack();
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("background_ops_label"));
         testUtils.pressBack();
-        testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("debug_enable_debug_logging_title"));
-        testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("debug_enable_sensitive_logging_title"));
+        //testUtils.scrollToCehckBoxAndCheckIt(true, testUtils.stringToID("debug_enable_debug_logging_title"));
+        //testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("debug_enable_sensitive_logging_title"));
 
 
 
