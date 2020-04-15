@@ -665,12 +665,12 @@ public class TestUtils {
     }
 
     private void selectAccountFromHamburgerMenu (int accountToSelect) {
-        device.waitForIdle();
+        /*device.waitForIdle();
         openHamburgerMenu();
         clickView(R.id.nav_header_accounts);
         device.waitForIdle();
         onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
-    }
+    */}
 
     private void selectAccountFromList (int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
