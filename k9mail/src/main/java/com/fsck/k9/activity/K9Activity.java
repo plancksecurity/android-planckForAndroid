@@ -41,6 +41,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
     @Nullable @Bind(R.id.search_input) EditText searchInput;
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
+    @Nullable @Bind(R.id.fab_button_compose_message) View fabButton;
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
@@ -86,7 +87,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
 //    }
 
-
     public void setUpToolbar(boolean showUpButton) {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -130,7 +130,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-
     public ViewGroup getRootView() {
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
@@ -139,8 +138,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return isAndroidLollipop;
     }
 
-    protected void showComposeFab(boolean showornot) {
-        findViewById(R.id.fab_button_compose_message).setVisibility(showornot? View.VISIBLE : View.GONE);
+    protected void showComposeFab(boolean show) {
+        if (fabButton != null) {
+            fabButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void showSearchView() {
@@ -149,16 +150,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             showComposeFab(false);
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             searchManager.setOnDismissListener(() -> showComposeFab(true));
-        } else {
-            if (toolbarSearchContainer != null && toolbar != null
-                    && searchInput != null) {
-                toolbarSearchContainer.setVisibility(View.VISIBLE);
-                toolbar.setVisibility(View.GONE);
-                searchInput.setEnabled(true);
-                setFocusOnKeyboard();
-                searchInput.setError(null);
-                showComposeFab(false);
-            }
+        } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
+            toolbarSearchContainer.setVisibility(View.VISIBLE);
+            toolbar.setVisibility(View.GONE);
+            searchInput.setEnabled(true);
+            setFocusOnKeyboard();
+            searchInput.setError(null);
+            showComposeFab(false);
         }
     }
 
