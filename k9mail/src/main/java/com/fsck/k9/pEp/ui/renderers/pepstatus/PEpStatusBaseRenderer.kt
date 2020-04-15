@@ -17,6 +17,7 @@ import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PePUIArtefactCache
+import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
@@ -45,13 +46,18 @@ abstract class PEpStatusBaseRenderer(
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
-    @Inject lateinit var contactsPictureLoader:ContactPictureLoader
+    private lateinit var contactsPictureLoader: ContactPictureLoader
+
+    override fun onCreate(content: PEpIdentity?, layoutInflater: LayoutInflater?, parent: ViewGroup?) {
+        super.onCreate(content, layoutInflater, parent)
+        contactsPictureLoader = ContactLoaderModule(context).provideContactPictureLoader()
+    }
 
     protected lateinit var permissionChecker: PermissionChecker
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
         permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
-        val view : View = inflater!!.inflate(getLayout(), parent, false)
+        val view: View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
         return view
     }
@@ -67,7 +73,7 @@ abstract class PEpStatusBaseRenderer(
     private fun renderRating(rating: Rating) {
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
-        if(::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
+        if (::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
     }
 
     private fun renderBadge(identity: PEpIdentity) {

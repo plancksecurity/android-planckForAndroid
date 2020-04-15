@@ -26,8 +26,8 @@ import kotlin.math.max
 
 class ContactPictureLoader(
         private val context: Context,
-        private val contactLetterBitmapCreator: ContactLetterBitmapCreator
-) {
+        private val contactLetterBitmapCreator: ContactLetterBitmapCreator) {
+
     private val contactsHelper: Contacts = Contacts.getInstance(context)
     private val pictureSizeInPx: Int = PICTURE_SIZE.toDip(context)
     private val backgroundCacheId: String = with(contactLetterBitmapCreator.config) {
