@@ -651,15 +651,12 @@ public class CucumberTestSteps {
     public void I_reject_trust_words() {
         timeRequiredForThisMethod(10);
         testUtils.clickStatus();
-        testUtils.doWaitForResource(R.id.rejectHandshake);
         while (!exists(onView(withId(R.id.rejectHandshake)))) {
             device.waitForIdle();
             waitUntilIdle();
         }
         onView(withId(R.id.rejectHandshake)).check(matches(isCompletelyDisplayed()));
-        while (!viewIsDisplayed(R.id.trustwords)) {
-            device.waitForIdle();
-        }
+        Espresso.onIdle();
         TestUtils.swipeUpScreen();
         onView(withId(R.id.rejectHandshake)).perform(click());
         device.waitForIdle();
