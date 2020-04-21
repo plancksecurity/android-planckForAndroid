@@ -417,6 +417,7 @@ public class CucumberTestSteps {
         testUtils.goToHandshakeDialog();
         onView(withId(R.id.rejectHandshake)).perform(click());
         device.waitForIdle();
+        testUtils.pressBack();
     }
 
     @When("^I reset handshake$")
