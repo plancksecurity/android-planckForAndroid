@@ -5,7 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
-import com.fsck.k9.activity.SettingsActivity
+import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 
 class GeneralSettingsDataStore(
@@ -228,14 +228,11 @@ class GeneralSettingsDataStore(
         }
     }
 
-    fun saveSettingsRestarting() {
+    suspend fun saveLanguageSettings() {
         val editor = preferences.storage.edit()
         K9.save(editor)
-
-        executorService.execute {
+        withContext(Dispatchers.IO) {
             editor.commit()
-            SettingsActivity.actionBasicStart(activity!!)
-            activity!!.finishAffinity()
         }
     }
 

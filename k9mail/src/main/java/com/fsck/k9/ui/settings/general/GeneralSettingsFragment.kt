@@ -12,6 +12,7 @@ import androidx.preference.TwoStatePreference
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
@@ -254,7 +255,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     fun setLanguage(newLanguage: String?) {
         K9.setK9Language(newLanguage)
-        dataStore.saveSettingsRestarting()
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            dataStore.saveLanguageSettings()
+            restartFromMainScreen()
+        }
+    }
+
+    private fun restartFromMainScreen() {
+        SettingsActivity.actionBasicStart(requireContext())
+        requireActivity().finishAffinity()
     }
 
 }
