@@ -29,7 +29,8 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.pEp.PEpImporterActivity
+import com.fsck.k9.pEp.importAccount.PEpImporterActivity
+import com.fsck.k9.pEp.importAccount.PasswordPromptDialog
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
