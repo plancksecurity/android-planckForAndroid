@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Set;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PEpPermissionChecker;
 import timber.log.Timber;
 
 
@@ -84,6 +86,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnMessageOptionsListener onMessageOptionsListener;
     private ImageView moreOptions;
+    private PermissionChecker permissionChecker;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
         this.onMessageOptionsListener = onMessageOptionsListener;
@@ -107,6 +110,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
+        permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
     }
 
     @Override
@@ -298,7 +302,10 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         else {
             loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
         }
-        final Contacts contacts = K9.showContactName() ? mContacts : null;
+
+        final Contacts contacts =
+                permissionChecker.hasContactsPermission() &&
+                        K9.showContactName() ? mContacts : null;
         final CharSequence from = MessageHelper.toFriendly(message.getFrom(), contacts);
         final CharSequence to = MessageHelper.toFriendly(message.getRecipients(Message.RecipientType.TO), contacts);
         final CharSequence cc = MessageHelper.toFriendly(message.getRecipients(Message.RecipientType.CC), contacts);
