@@ -39,7 +39,7 @@ public class PasswordPromptDialog implements NonConfigurationInstance, TextWatch
     private CheckBox useIncomingCheckbox;
 
     private Account mAccount;
-    private List<Account> mRemainingAccounts;
+    private List<Account> remainingAccounts;
 
     private String incomingPassword;
     private String outgoingPassword;
@@ -56,7 +56,7 @@ public class PasswordPromptDialog implements NonConfigurationInstance, TextWatch
      */
     public PasswordPromptDialog(Account account, List<Account> accounts) {
         mAccount = account;
-        mRemainingAccounts = accounts;
+        remainingAccounts = accounts;
     }
 
     @Override
@@ -138,14 +138,11 @@ public class PasswordPromptDialog implements NonConfigurationInstance, TextWatch
                     dialog.dismiss();
 
                     // Set the server passwords in the background
-                    SetPasswordsAsyncTask asyncTask =
-                            new SetPasswordsAsyncTask(activity,
-                                    mAccount,
-                                    incomingPassword,
-                                    outgoingPassword,
-                                    mRemainingAccounts);
-                    activity.setNonConfigurationInstance(asyncTask);
-                    asyncTask.execute();
+                    SetPasswordsKt.setPasswords(activity,
+                            mAccount,
+                            incomingPassword,
+                            outgoingPassword,
+                            remainingAccounts);
                 });
         builder.setNegativeButton(activity.getString(R.string.cancel_action),
                 (dialog, which) -> {
