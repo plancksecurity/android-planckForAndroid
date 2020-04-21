@@ -8,7 +8,11 @@ interface PermissionRequester {
 
     fun requestStoragePermission(view: View, listener: PermissionListener)
 
+    fun requestStoragePermission(view: View)
+
     fun requestContactsPermission(view: View, listener: PermissionListener)
+
+    fun requestContactsPermission(view: View)
 
     fun requestBatteryOptimizationPermission()
 
