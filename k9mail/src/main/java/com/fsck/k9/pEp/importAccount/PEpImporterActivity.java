@@ -105,7 +105,7 @@ public abstract class PEpImporterActivity extends PepActivity {
         setNonConfigurationInstance(dialog);
     }
 
-    private void promptServerPasswords(ArrayList<String> ids) {
+    void promptServerPasswords(ArrayList<String> ids) {
         disabledAccounts = ids;
         // new ArrayList<>(ids) -> deep copy
         Intent intent = PasswordPromptKt.showPasswordDialog(this, new ArrayList<>(ids));
@@ -506,6 +506,8 @@ public abstract class PEpImporterActivity extends PepActivity {
             }
         }
     }
+
+    protected abstract void onImportFinished();
 
     /**
      * Handles exporting of global settings and/or accounts in a background thread.

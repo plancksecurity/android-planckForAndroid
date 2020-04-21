@@ -29,6 +29,8 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
+import com.fsck.k9.pEp.importAccount.PEpImporterActivity
+import com.fsck.k9.pEp.importAccount.PasswordPromptDialog
 import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID
 import com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS
 import com.fsck.k9.pEp.importAccount.PEpImporterActivity
