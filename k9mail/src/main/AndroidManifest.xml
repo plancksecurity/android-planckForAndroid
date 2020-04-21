@@ -44,15 +44,6 @@
     <uses-permission android:name="${applicationId}.permission.READ_ATTACHMENT" />
 
     <permission
-        android:name="${applicationId}.permission.REMOTE_CONTROL"
-        android:description="@string/remote_control_desc"
-        android:label="@string/remote_control_label"
-        android:permissionGroup="android.permission-group.MESSAGES"
-        android:protectionLevel="dangerous" />
-
-    <uses-permission android:name="${applicationId}.permission.REMOTE_CONTROL" />
-
-    <permission
         android:name="${applicationId}.permission.READ_MESSAGES"
         android:description="@string/read_messages_desc"
         android:label="@string/read_messages_label"
