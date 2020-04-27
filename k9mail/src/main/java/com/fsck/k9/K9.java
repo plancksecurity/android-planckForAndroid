@@ -1869,6 +1869,7 @@ public class K9 extends MultiDexApplication {
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
                     ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                    needsFastPoll = true;
                     break;
                 case SyncNotifyInitFormGroup:
                     ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
