@@ -552,8 +552,7 @@
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:screenOrientation="portrait"/>
+            android:excludeFromRecents="true" />
     </application>
 
 </manifest>
