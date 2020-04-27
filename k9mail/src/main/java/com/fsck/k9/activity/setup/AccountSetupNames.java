@@ -14,8 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
+
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
@@ -43,7 +44,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     private Account mAccount;
 
     private Button mDoneButton;
-    private CheckBox pepSyncAccount;
+    private SwitchCompat pepSyncAccount;
     private PePUIArtefactCache pePUIArtefactCache;
 
     @Inject
@@ -67,7 +68,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
-        pepSyncAccount = (CheckBox)findViewById(R.id.pep_enable_sync_account);
+        pepSyncAccount = findViewById(R.id.pep_enable_sync_account);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
