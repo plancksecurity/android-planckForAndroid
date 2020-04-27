@@ -4780,7 +4780,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         pEpProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
-    public Message appendToInboxpEpSyncMessage(final Account account, final Message message) {
+    private synchronized Message appendToInboxpEpSyncMessage(final Account account, final Message message) {
         Message localMessage = null;
         try {
             LocalStore localStore = account.getLocalStore();
@@ -4832,20 +4832,20 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 recipients.addAll(ccRecipients);
 
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
-               /* if (accountsToAppend != null) {
+                if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
-                        Log.e("pEpEngine", "Start Append: " + message.getMessageId());
+                        Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
-                        Log.e("pEpEngine", "Finish Append: " + message.getMessageId());
+                        Timber.e("%s %s", "pEpEngine", "Finish Append: " + message.getMessageId());
 
                     }
 
-                } else { */
+                } else {
                     Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
                     Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
-               // }
+                }
 
                 checkpEpSyncMailForAccount(fromAccount, null);
 
@@ -4872,7 +4872,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return result;
     }
 
-    private void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
+    private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
         Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
         sendMessage(transport, message);
     }
