@@ -366,7 +366,7 @@ public class K9 extends MultiDexApplication {
      * on each new folder and can be incremented with "Load more messages..." by the
      * VISIBLE_LIMIT_INCREMENT
      */
-    public static final int DEFAULT_VISIBLE_LIMIT = 1000;
+    public static final int DEFAULT_VISIBLE_LIMIT = 100;
 
     /**
      * The maximum size of an attachment we're willing to download (either View or Save)
