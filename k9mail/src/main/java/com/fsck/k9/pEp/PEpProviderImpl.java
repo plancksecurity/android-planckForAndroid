@@ -1205,6 +1205,8 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void stopSync() {
+        Timber.d("%s %s", TAG, "stopSync");
+
         createEngineInstanceIfNeeded();
         engine.stopSync();
     }
