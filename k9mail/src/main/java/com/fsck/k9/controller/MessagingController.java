@@ -4832,7 +4832,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 recipients.addAll(ccRecipients);
 
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
-                if (accountsToAppend != null) {
+                /*if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
                         Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
@@ -4840,12 +4840,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     }
 
-                } else {
+                } else {*/
                     Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
                     Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
-                }
+                //}
 
                 checkpEpSyncMailForAccount(fromAccount, null);
 
