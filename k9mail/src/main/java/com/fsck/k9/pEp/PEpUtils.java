@@ -380,7 +380,17 @@ public class PEpUtils {
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
-        ((K9) context).pEpInitSyncEnvironment();
+        K9 app = (K9) context;
+
+        // As global sync cannot be enabled if there is no enabled account, we disable it if we only
+        // have one account an disabled sync on it
+        // If we add an account with sync enabled, we enable sync globally if it was not already enabled
+        if (!account.isPepSyncEnabled() && Preferences.getPreferences(context).getAccounts().size() == 1) {
+            app.setpEpSyncEnabled(false);
+        } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
+            app.setpEpSyncEnabled(true);
+        }
+        app.pEpInitSyncEnvironment();
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
@@ -586,7 +596,7 @@ public class PEpUtils {
             //pEpSyncProvider.stopSync();
             id = pEpSyncProvider.myself(id);
             pEpSyncProvider.setIdentityFlag(id, account.isPepSyncEnabled());
-            pEpSyncProvider.startSync();
+            //pEpSyncProvider.startSync();
         }
     }
 }
