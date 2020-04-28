@@ -198,22 +198,6 @@ public class PEpProviderImpl implements PEpProvider {
             Message message = decReturn.dst;
             MimeMessage decMsg = getMimeMessage(source, message);
 
-//            try {
-//                int i = Integer.parseInt(decMsg.getSubject());
-//                if (i%2 == 1 ) {
-//                    Message msg = new Message();
-//                    msg.setFrom(message.getFrom());
-//                    msg.setTo(message.getTo());
-//                    msg.setId(MessageIdGenerator.getInstance().generateMessageId());
-//                    Timber.e("pEpEngine", "I am D2: ");
-//                    msg.setShortmsg(i + 1 + "");
-//                    msg.setLongmsg(i + 1 + "");
-//                    msg.setReplyTo(new Vector<>());
-//                    MessagingController.getInstance().messageToSend(msg);
-//                }
-//            } catch (Exception e) {
-//
-//            }
             if (PEpUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message");
                 if (K9.DEBUG) {
@@ -1205,6 +1189,8 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public void stopSync() {
+        Timber.d("%s %s", TAG, "stopSync");
+
         createEngineInstanceIfNeeded();
         engine.stopSync();
     }

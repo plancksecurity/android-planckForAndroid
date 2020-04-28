@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,8 +55,6 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     ViewGroup trustwordsContainer;
     @Bind(R.id.description)
     TextView description;
-    @Bind(R.id.toolbar_pEp_title)
-    TextView toolbarpEpTitle;
     @Bind(R.id.afirmativeActionButton)
     Button action;
     @Bind(R.id.dissmissActionButton)
@@ -77,24 +74,19 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//         outState.putString("currentAction", currentAction.getText().toString());
-        outState.putString("description", description.getText().toString());
-        outState.putString("toolbarpEpTitle", toolbarpEpTitle.getText().toString());
-        outState.putString("action", action.getText().toString());
-        outState.putInt("loadingVisibility", loading.getVisibility());
+
+        outState.putString("trustwords", tvTrustwords.getText().toString());
         outState.putSerializable("state", presenter.getState());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        //  currentAction.setText(savedInstanceState.getString("currentAction"));
-        description.setText(savedInstanceState.getString("description"));
-        toolbarpEpTitle.setText(savedInstanceState.getString("toolbarpEpTitle"));
-        action.setText(savedInstanceState.getString("action"));
-        loading.setVisibility(savedInstanceState.getInt("loadingVisibility"));
-        presenter.setState(((SyncState) savedInstanceState.getSerializable("state")));
 
+        SyncState state = (SyncState) savedInstanceState.getSerializable("state");
+        String trustwords = savedInstanceState.getString("trustwords", "");
+
+        presenter.restoreState(state, trustwords);
     }
 
     public static void actionStartKeySync(Context context,
