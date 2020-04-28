@@ -45,7 +45,7 @@ public class PepPermissionRequester implements PermissionRequester {
     }
 
     @Override
-    public void requestStoragePermission(@NotNull View view, @NotNull PermissionListener listener) {
+    public void requestStoragePermission(@NotNull View view, PermissionListener listener) {
         String explanation = activity.getString(R.string.download_permission_first_explanation);
         startDexterActivity(
                 view,
@@ -54,8 +54,9 @@ public class PepPermissionRequester implements PermissionRequester {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+
     @Override
-    public void requestContactsPermission(@NotNull View view, @NotNull PermissionListener listener) {
+    public void requestContactsPermission(@NotNull View view, PermissionListener listener) {
         String explanation = activity.getString(R.string.read_permission_first_explanation);
         startDexterActivity(
                 view,
@@ -65,7 +66,17 @@ public class PepPermissionRequester implements PermissionRequester {
                 Manifest.permission.WRITE_CONTACTS);
     }
 
-    private void startDexterActivity(@NotNull View view, @NotNull String explanation, @NotNull PermissionListener listener, String... permissions) {
+    @Override
+    public void requestStoragePermission(@NotNull View view) {
+        requestStoragePermission(view, null);
+    }
+
+    @Override
+    public void requestContactsPermission(@NotNull View view) {
+        requestContactsPermission(view, null);
+    }
+
+    private void startDexterActivity(@NotNull View view, @NotNull String explanation, PermissionListener listener, String... permissions) {
         MultiplePermissionsListener compositePermissionsListener =
                 getMultiplePermissionListener(view, listener, explanation);
 
@@ -94,18 +105,22 @@ public class PepPermissionRequester implements PermissionRequester {
                 new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        for (PermissionGrantedResponse response : report.getGrantedPermissionResponses()) {
-                            listener.onPermissionGranted(response);
-                        }
-                        for (PermissionDeniedResponse response : report.getDeniedPermissionResponses()) {
-                            listener.onPermissionDenied(response);
+                        if(listener != null) {
+                            for (PermissionGrantedResponse response : report.getGrantedPermissionResponses()) {
+                                listener.onPermissionGranted(response);
+                            }
+                            for (PermissionDeniedResponse response : report.getDeniedPermissionResponses()) {
+                                listener.onPermissionDenied(response);
+                            }
                         }
                     }
 
                     @Override
                     public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        if (permissions != null && permissions.size() > 0)
+                        if (listener != null &&
+                                permissions != null && permissions.size() > 0) {
                             listener.onPermissionRationaleShouldBeShown(permissions.get(0), token);
+                        }
                     }
                 };
         return new CompositeMultiplePermissionsListener(dialogMultiplePermissionsListener, snackBarMultiplePermissionsListener);

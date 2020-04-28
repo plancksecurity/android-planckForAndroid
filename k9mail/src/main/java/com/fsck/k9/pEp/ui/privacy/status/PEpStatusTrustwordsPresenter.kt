@@ -10,11 +10,13 @@ import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.HandshakeData
 import foundation.pEp.jniadapter.Identity
+import security.pEp.permissions.PermissionChecker
 import java.util.*
 
 class PEpStatusTrustwordsPresenter(
         myselfAddress: String, private val context: Context,
-        private val identityView: PEpStatusIdentityView
+        private val identityView: PEpStatusIdentityView,
+        private val permissionChecker: PermissionChecker
 ) {
 
     private var myself: Identity = PEpUtils.createIdentity(Address(myselfAddress), context)
@@ -93,7 +95,8 @@ class PEpStatusTrustwordsPresenter(
         else if(identityView is PEpStatusPGPIdentityView) {
             myself = handshakeData.myself
             val partner = handshakeData.partner
-            val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+            val contacts = if (permissionChecker.hasContactsPermission() &&
+                    K9.showContactName()) Contacts.getInstance(context) else null
             val myselfLabelText = getToFriendly(myself, contacts)
             val partnerLabelText = getToFriendly(partner, contacts)
 

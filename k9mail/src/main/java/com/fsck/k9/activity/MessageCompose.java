@@ -1982,21 +1982,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void askForPermissions() {
         if (!permissionAsked && permissionChecker.doesntHaveContactsPermission()) {
             permissionAsked = true;
-            permissionRequester.requestContactsPermission(getRootView(), new PermissionListener() {
-                @Override
-                public void onPermissionGranted(PermissionGrantedResponse response) {
-                }
-
-                @Override
-                public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                }
-
-                @Override
-                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                }
-            });
+            permissionRequester.requestContactsPermission(getRootView());
         }
     }
 

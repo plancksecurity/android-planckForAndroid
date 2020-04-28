@@ -50,7 +50,7 @@ class PEpStatusSecureRenderer(
     }
 
     override fun setUpView(rootView: View?) {
-        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context, this)
+        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context, this, permissionChecker)
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
