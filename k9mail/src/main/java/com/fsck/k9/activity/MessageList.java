@@ -2345,9 +2345,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else {
                 finish();
             }
-
-        } else if (isThreadDisplayed) {
-            actionDisplaySearch(this, mSearch, false, false);
         } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {
             if(isBackstackClear()) {
                 LocalSearch search = new LocalSearch(mAccount.getAutoExpandFolderName());
