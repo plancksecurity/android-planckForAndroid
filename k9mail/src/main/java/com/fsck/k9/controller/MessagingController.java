@@ -37,6 +37,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
@@ -1036,7 +1037,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
+    private void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
                                               Folder providedRemoteFolder) {
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
@@ -1059,8 +1060,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         Exception commandException = null;
         try {
-            Timber.d("pEp SYNC: About to process pending commands for account %s",
-                    account.getDescription());
+            Timber.d("pEp SYNC: About to process pending commands for account %s:%s",
+                    account.getDescription(), account.getEmail());
 
             try {
                 processPendingCommandsSynchronous(account);
@@ -1233,10 +1234,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
              */
             int newMessages = downloadMessages(account, remoteFolder, localFolder, remoteMessages, false, true);
 
-            int unreadMessageCount = localFolder.getUnreadMessageCount();
-            for (MessagingListener l : getListeners()) {
-                l.folderStatusChanged(account, folder, unreadMessageCount);
-            }
 
             /* Notify listeners that we're finally done. */
 
@@ -3943,17 +3940,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     synchronized public void checkpEpSyncMail(final Context context,
                                  final PEpProvider.CompletedCallback completedCallback) {
-        final boolean useManualWakeLock = true;
-        Timber.d("pEpDecrypt", "add pEpSyncJob");
+        Timber.d("fastpoll %s ", "add pEpSyncJob");
 
-        TracingWakeLock twakeLock = null;
-        if (useManualWakeLock) {
-            TracingPowerManager pm = TracingPowerManager.getPowerManager(context);
+        TracingWakeLock twakeLock;
+        TracingPowerManager pm = TracingPowerManager.getPowerManager(context);
 
-            twakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "K9 MessagingController.checkMail");
-            twakeLock.setReferenceCounted(false);
-            twakeLock.acquire(K9.MANUAL_WAKE_LOCK_TIMEOUT);
-        }
+        twakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "K9 MessagingController.checkMail.pEpSync");
+        twakeLock.setReferenceCounted(false);
+        twakeLock.acquire(K9.MANUAL_WAKE_LOCK_TIMEOUT);
+
         final TracingWakeLock wakeLock = twakeLock;
 
 //        for (MessagingListener l : getListeners()) {
@@ -3979,15 +3974,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 putBackground("finalize sync", null, new Runnable() {
                             @Override
                             public void run() {
-
-                                Timber.i( "pEp Finished mail sync");
-
-                                if (wakeLock != null) {
-                                    wakeLock.release();
-                                }
-//                                for (MessagingListener l : getListeners()) {
-//                                    l.checkMailFinished(context, null);
-//                                }
+                                Timber.i("pEp Finished mail sync");
+                                wakeLock.release();
                                 completedCallback.onComplete();
 
                             }
@@ -4084,12 +4072,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         final long accountInterval = account.getAutomaticCheckIntervalMinutes() * 60 * 1000;
 
-
-        Timber.i("pEp Synchronizing account %s", account.getDescription());
+        Timber.i("pEp Synchronizing account %s", account.getEmail());
 
         account.setRingNotified(false);
-// on pEp Sync send is bypassed
-//        sendPendingMessages(account, listener);
 
         try {
             Account.FolderMode aDisplayMode = account.getFolderDisplayMode();
