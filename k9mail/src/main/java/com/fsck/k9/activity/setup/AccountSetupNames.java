@@ -36,12 +36,14 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
+    private static final String EXTRA_MANUAL_SETUP = "manualSetup";
 
     private EditText mDescription;
 
     private EditText mName;
 
     private Account mAccount;
+    private boolean isManualSetup;
 
     private Button mDoneButton;
     private SwitchCompat pepSyncAccount;
@@ -51,9 +53,10 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     ToolBarCustomizer toolBarCustomizer;
 
 
-    public static void actionSetNames(Context context, Account account) {
+    public static void actionSetNames(Context context, Account account, boolean isManualSetup) {
         Intent i = new Intent(context, AccountSetupNames.class);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_MANUAL_SETUP, isManualSetup);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
     }
@@ -89,6 +92,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
         mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+        isManualSetup = getIntent().getBooleanExtra(EXTRA_MANUAL_SETUP, false);
 
         /*
          * Since this field is considered optional, we don't set this here. If
@@ -185,5 +189,14 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             K9.setServicesEnabled(getApplicationContext());
             return null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(!isManualSetup) {
+            // delete account
+        }
+        finish();
     }
 }

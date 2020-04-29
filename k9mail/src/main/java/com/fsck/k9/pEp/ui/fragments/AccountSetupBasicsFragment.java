@@ -482,7 +482,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
                         @Override
                         public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                            AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                            AccountSetupNames.actionSetNames(getActivity(), mAccount, false);
                         }
                     });
         } catch (URISyntaxException use) {
@@ -659,7 +659,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     mAccount.setDescription(mAccount.getEmail());
                     mAccount.save(Preferences.getPreferences(getActivity()));
                     K9.setServicesEnabled(getActivity());
-                    AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                    AccountSetupNames.actionSetNames(getActivity(), mAccount, false);
                     getActivity().finish();
                 }
             }

@@ -180,7 +180,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);
         }
         K9.setServicesEnabled(getActivity());
-        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+        AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
     }
 
     public void onClick(View v) {

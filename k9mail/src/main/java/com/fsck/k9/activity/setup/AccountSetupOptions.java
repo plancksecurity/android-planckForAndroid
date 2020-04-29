@@ -177,7 +177,7 @@ public class AccountSetupOptions extends K9Activity implements OnClickListener {
             Preferences.getPreferences(this).setDefaultAccount(mAccount);
         }
         K9.setServicesEnabled(this);
-        AccountSetupNames.actionSetNames(this, mAccount);
+        AccountSetupNames.actionSetNames(this, mAccount, true);
         finish();
     }
 
