@@ -39,12 +39,12 @@ public class AccountSetupBasics extends PEpImporterActivity {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
     private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
-    private static final String EXTRA_BACK_OUTGOING = "extra_back_outgoing";
+    //private static final String EXTRA_BACK_OUTGOING = "extra_back_outgoing";
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
     public boolean isManualSetupRequired;
     public boolean isEditingIncomingSettings;
     public boolean isEditingOutgoingSettings;
-    public boolean isBackOutgoingSettings;
+    //public boolean isBackOutgoingSettings;
     private NonConfigurationInstance nonConfigurationInstance;
     @Inject
     AccountSetupNavigator accountSetupNavigator;
@@ -80,7 +80,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
         return i;
     }
 
-    public static void actionBackToOutgoingSettings(Context context, Account account) {
+    /*public static void actionBackToOutgoingSettings(Context context, Account account) {
         context.startActivity(intentActionBackToOutgoingSettings(context, account));
     }
 
@@ -89,7 +89,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
         i.putExtra(EXTRA_BACK_OUTGOING, true);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
         return i;
-    }
+    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,7 +97,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
         bindViews(R.layout.account_setup_basics);
         isEditingIncomingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_INCOMING, false);
         isEditingOutgoingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_OUTGOING, false);
-        isBackOutgoingSettings = getIntent().getBooleanExtra(EXTRA_BACK_OUTGOING, false);
+        //isBackOutgoingSettings = getIntent().getBooleanExtra(EXTRA_BACK_OUTGOING, false);
         if (isEditingIncomingSettings) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
@@ -110,12 +110,12 @@ public class AccountSetupBasics extends PEpImporterActivity {
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
             accountSetupNavigator.setIsEditing(true);
-        } else if (isBackOutgoingSettings) {
+        } /*else if (isBackOutgoingSettings) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupIncomingFragment");
             String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
             ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
-        } else if (savedInstanceState == null) {
+        }*/ else if (savedInstanceState == null) {
             accountSetupBasicsFragment = new AccountSetupBasicsFragment();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.addToBackStack("AccountSetupBasicsFragment");

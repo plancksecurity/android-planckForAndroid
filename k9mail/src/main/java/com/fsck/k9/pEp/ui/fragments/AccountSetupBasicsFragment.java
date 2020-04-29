@@ -483,7 +483,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
                         @Override
                         public void onLoaded(PEpSettingsChecker.Redirection redirection) {
                             AccountSetupNames.actionSetNames(getActivity(), mAccount);
-                            getActivity().finish();
                         }
                     });
         } catch (URISyntaxException use) {

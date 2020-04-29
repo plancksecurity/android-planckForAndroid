@@ -126,9 +126,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home: {
-                AccountSetupBasics.actionBackToOutgoingSettings(this, mAccount);
-
-                finish();
+                onBackPressed();
                 return true;
             }
         }

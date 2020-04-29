@@ -132,14 +132,14 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         return fragment;
     }
 
-    public static AccountSetupOutgoingFragment intentBackToOutgoingSettings(String accountUuid) {
+    /*public static AccountSetupOutgoingFragment intentBackToOutgoingSettings(String accountUuid) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, accountUuid);
         bundle.putBoolean(EXTRA_BACK, true);
         fragment.setArguments(bundle);
         return fragment;
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
