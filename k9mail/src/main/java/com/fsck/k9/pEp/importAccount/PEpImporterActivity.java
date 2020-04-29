@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -45,6 +46,9 @@ import java.util.Set;
 
 import timber.log.Timber;
 
+import static com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID;
+import static com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS;
+
 public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
@@ -52,9 +56,8 @@ public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final String CURRENT_ACCOUNT_UUID = "CURRENT_ACCOUNT_UUID";
 
-    protected abstract void refresh();
-
     protected String currentAccountUuid;
+    private ArrayList<String> disabledAccounts = new ArrayList<>();
 
     public void onSettingsImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -102,12 +105,32 @@ public abstract class PEpImporterActivity extends PepActivity {
         setNonConfigurationInstance(dialog);
     }
 
-    void promptForServerPasswords(final List<Account> disabledAccounts) {
-        Account account = disabledAccounts.remove(0);
-        PasswordPromptDialog dialog = new PasswordPromptDialog(account, disabledAccounts);
-        setNonConfigurationInstance(dialog);
-        dialog.show(this);
+    private void promptServerPasswords(ArrayList<String> ids) {
+        disabledAccounts = ids;
+        // new ArrayList<>(ids) -> deep copy
+        Intent intent = PasswordPromptKt.showPasswordDialog(this, new ArrayList<>(ids));
+        startActivityForResult(intent, ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                ArrayList<String> returnValue = data.getStringArrayListExtra(ACCOUNTS_ID);
+                if (returnValue != null && !returnValue.isEmpty()) {
+                    promptServerPasswords(returnValue);
+                } else {
+                    onImportFinished();
+                }
+            } else {
+                promptServerPasswords(disabledAccounts);
+            }
+        }
+    }
+
+    protected abstract void onImportFinished();
 
     public static class ListImportContentsAsyncTask extends ExtendedAsyncTask<Boolean, Void, Boolean> {
         private Uri mUri;
@@ -434,8 +457,6 @@ public abstract class PEpImporterActivity extends PepActivity {
                 } else {
                     activity.showAccountsImportedDialog(mImportResults, filename);
                 }
-
-                activity.refresh();
             } else {
                 //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_import_failed_header,
@@ -471,22 +492,20 @@ public abstract class PEpImporterActivity extends PepActivity {
         protected void okayAction(PEpImporterActivity activity) {
             Context context = activity.getApplicationContext();
             Preferences preferences = Preferences.getPreferences(context);
-            List<Account> disabledAccounts = new ArrayList<Account>();
+            ArrayList<String> disabledAccounts = new ArrayList<>();
             for (SettingsImporter.AccountDescriptionPair accountPair : mImportResults.importedAccounts) {
                 Account account = preferences.getAccount(accountPair.imported.uuid);
                 if (account != null && !account.isEnabled()) {
-                    disabledAccounts.add(account);
+                    disabledAccounts.add(account.getUuid());
                 }
             }
             if (disabledAccounts.size() > 0) {
-                activity.promptForServerPasswords(disabledAccounts);
+                activity.promptServerPasswords(disabledAccounts);
             } else {
                 activity.setNonConfigurationInstance(null);
             }
         }
     }
-
-    protected abstract void onImportFinished();
 
     /**
      * Handles exporting of global settings and/or accounts in a background thread.

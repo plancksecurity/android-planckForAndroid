@@ -29,8 +29,10 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
+import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID
+import com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS
 import com.fsck.k9.pEp.importAccount.PEpImporterActivity
-import com.fsck.k9.pEp.importAccount.PasswordPromptDialog
+import com.fsck.k9.pEp.importAccount.showPasswordDialog
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -58,6 +60,7 @@ import security.pEp.ui.intro.startWelcomeMessage
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
+import security.pEp.utils.whenNotNullNorEmpty
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -223,6 +226,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         val intent = intent
         //onNewIntent(intent);
 
+        if (UpgradeDatabases.actionUpgradeDatabases(this, intent)) {
+            finish()
+            return
+        }
+
         // see if we should show the welcome message
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
@@ -233,12 +241,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             return
         }
 
-        if (UpgradeDatabases.actionUpgradeDatabases(this, intent)) {
-            finish()
+        if (checkDisabledAccounts(accounts)) {
             return
         }
-
-
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
             onOpenAccount(unifiedInboxAccount)
@@ -276,6 +281,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
+    }
+
+    private fun checkDisabledAccounts(accounts: List<Account>): Boolean {
+        accounts.filter { account -> !account.isEnabled }
+                .map { account -> account.uuid }
+                .whenNotNullNorEmpty { list ->
+                    selectedContextAccount = null
+                    promptServerPasswords(ArrayList(list))
+                    return true
+                }
+        return false
     }
 
     override fun search(query: String) {
@@ -369,7 +385,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         return accountLocation
     }
 
-    public override fun refresh() {
+    fun refresh() {
         accounts.clear()
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
@@ -486,9 +502,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
 
     private fun onActivateAccount(account: Account) {
-        val disabledAccounts = ArrayList<Account>()
-        disabledAccounts.add(account)
-        promptForServerPasswords(disabledAccounts)
+        promptServerPasswords(arrayListOf(account.uuid))
         selectedContextAccount = null
     }
 
@@ -500,15 +514,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      *
      * **Note:** Calling this method will modify the supplied list.
      */
-    private fun promptForServerPasswords(disabledAccounts: MutableList<Account>) {
-        val account = disabledAccounts.removeAt(0)
-        val dialog = PasswordPromptDialog(account, disabledAccounts)
-        setNonConfigurationInstance(dialog)
-        dialog.show(this)
+    private fun promptServerPasswords(ids: ArrayList<String>) {
+        val intent = showPasswordDialog(this, ids)
+        startActivityForResult(intent, ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS)
     }
 
     override fun onImportFinished() {
-
+        onOpenAccount(Preferences.getPreferences(this).defaultAccount)
     }
 
     private fun onDeleteAccount(account: Account) {
@@ -779,14 +791,24 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_OK)
-            return
-        if (data == null) {
-            return
-        }
         when (requestCode) {
-            ACTIVITY_REQUEST_PICK_SETTINGS_FILE -> onImport(data.data)
-            ACTIVITY_REQUEST_SAVE_SETTINGS_FILE -> onExport(data)
+            ACTIVITY_REQUEST_PICK_SETTINGS_FILE ->
+                if (resultCode == Activity.RESULT_OK && data != null)
+                    onImport(data.data)
+            ACTIVITY_REQUEST_SAVE_SETTINGS_FILE ->
+                if (resultCode == Activity.RESULT_OK && data != null)
+                    onExport(data)
+            ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS -> {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    val returnValue = data.getStringArrayListExtra(ACCOUNTS_ID)
+                    if (returnValue!!.isNotEmpty()) {
+                        promptServerPasswords(returnValue)
+                    } else
+                        onImportFinished()
+                }else{
+                    onOpenAccount(Preferences.getPreferences(this).defaultAccount)
+                }
+            }
         }
     }
 

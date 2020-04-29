@@ -31,6 +31,8 @@ import javax.inject.Inject;
 
 import security.pEp.permissions.PermissionRequester;
 
+import static com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS;
+
 /**
  * Prompts the user for the email address and password.
  * Attempts to lookup default settings for the domain the user specified. If the
@@ -193,10 +195,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     @Override
-    protected void refresh() {
-    }
-
-    @Override
     public void onImport(Uri uri) {
         ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri);
         setNonConfigurationInstance(asyncTask);
@@ -227,9 +225,11 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
-        if(fragment != null && fragment.isAdded()) {
-            fragment.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+            if (fragment != null && fragment.isAdded()) {
+                fragment.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 

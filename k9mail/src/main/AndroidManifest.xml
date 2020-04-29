@@ -553,13 +553,19 @@
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true" />
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".pEp.importAccount.PasswordPrompt"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:theme="@style/OverlayTheme" />
 
         <activity android:name="security.pEp.ui.passphrase.PassphraseActivity"
             android:launchMode="singleTask"
             android:label="@string/passhphrase_title"
-            android:theme="@style/OverlayTheme"
-        />
+            android:theme="@style/OverlayTheme" />
     </application>
 
 </manifest>

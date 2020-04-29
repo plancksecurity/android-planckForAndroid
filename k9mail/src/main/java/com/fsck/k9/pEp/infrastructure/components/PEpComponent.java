@@ -9,6 +9,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.pEp.filepicker.SelectPathFragment;
+import com.fsck.k9.pEp.importAccount.PasswordPrompt;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
@@ -101,4 +102,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(IntroFourthFragment frag);
 
     void inject(PassphraseActivity activity);
+
+    void inject(PasswordPrompt activity);
 }
