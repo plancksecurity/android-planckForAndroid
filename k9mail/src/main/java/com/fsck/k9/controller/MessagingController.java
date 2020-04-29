@@ -772,7 +772,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
      */
     @VisibleForTesting
     void synchronizeMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
-                                       Folder providedRemoteFolder) {
+                                        Folder providedRemoteFolder) {
+        if(!isAccountInPreferences(account)) return;
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -965,7 +966,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
              * Now we download the actual content of messages.
              */
             int newMessages = downloadMessages(account, remoteFolder, localFolder, remoteMessages, false, true);
-
+            if(!isAccountInPreferences(account)) return;
             int unreadMessageCount = localFolder.getUnreadMessageCount();
             for (MessagingListener l : getListeners()) {
                 l.folderStatusChanged(account, folder, unreadMessageCount);
@@ -1009,6 +1010,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
             // failure conditions
+            if(!isAccountInPreferences(account)) return;
             String rootMessage = getRootCauseMessage(e);
             if (tLocalFolder != null) {
                 try {
@@ -1039,6 +1041,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
                                               Folder providedRemoteFolder) {
+        if(!isAccountInPreferences(account)) return;
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -1269,6 +1272,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
         } catch (Exception e) {
             Timber.e(e, "synchronizeMailbox");
+            if(!isAccountInPreferences(account)) return;
             // If we don't set the last checked, it can try too often during
             // failure conditions
             String rootMessage = getRootCauseMessage(e);
@@ -1359,6 +1363,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                  final LocalFolder localFolder, List<Message> inputMessages,
                                  boolean flagSyncOnly, boolean purgeToVisibleLimit) throws MessagingException {
 
+        if(!isAccountInPreferences(account)) return -1;
         final Date earliestDate = account.getEarliestPollDate();
         Date downloadStarted = new Date(); // now
 
@@ -1481,7 +1486,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             });
         }
-
+        if(!isAccountInPreferences(account)) return -1;
         // If the oldest message seen on this sync is newer than
         // the oldest message seen on the previous sync, then
         // we want to move our high-water mark forward
@@ -1647,6 +1652,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
+                        if(!isAccountInPreferences(account)) return;
                         try {
                             long time = System.currentTimeMillis();
 
@@ -1708,6 +1714,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(ratingToSave));
 
                                 // Store the updated message locally
+                                if(!isAccountInPreferences(account)) return;
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
                                         @Override
                                         public void run() {
@@ -1909,7 +1916,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                           final AtomicInteger progress,
                                           final int todo
     ) throws MessagingException {
-
+        if(!isAccountInPreferences(account)) return;
         final String folder = remoteFolder.getName();
         if (remoteFolder.supportsFetchingFlags()) {
             Timber.d("SYNC: About to sync flags for %d remote messages for folder %s", syncFlagMessages.size(), folder);
@@ -2008,6 +2015,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         putBackground("processPendingCommands", null, new Runnable() {
             @Override
             public void run() {
+                if(!isAccountInPreferences(account)) return;
                 try {
                     processPendingCommandsSynchronous(account);
                 } catch (UnavailableStorageException e) {
@@ -2027,6 +2035,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void processPendingCommandsSynchronous(Account account) throws MessagingException {
+        if(!isAccountInPreferences(account)) return;
         LocalStore localStore = account.getLocalStore();
         List<PendingCommand> commands = localStore.getPendingCommands();
 
@@ -2044,6 +2053,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         PendingCommand processingCommand = null;
         try {
             for (PendingCommand command : commands) {
+                if(!isAccountInPreferences(account)) return;
                 processingCommand = command;
                 Timber.d("Processing pending command '%s'", command);
 
@@ -2394,6 +2404,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         putBackground("queueExpunge " + account.getDescription() + ":" + folderName, null, new Runnable() {
             @Override
             public void run() {
+                if(!isAccountInPreferences(account)) return;
                 PendingCommand command = PendingExpunge.create(folderName);
                 queuePendingCommand(account, command);
                 processPendingCommands(account);
@@ -4159,6 +4170,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         put("sync" + folder.getName(), null, new Runnable() {
                     @Override
                     public void run() {
+                        if(!isAccountInPreferences(account)) return;
                         LocalFolder tLocalFolder = null;
                         try {
                             // In case multiple Commands get enqueued, don't run more than
@@ -4609,6 +4621,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     public void messagesArrived(final Account account, final Folder remoteFolder, final List<Message> messages,
                                 final boolean flagSyncOnly) {
+        if(!isAccountInPreferences(account)) return;
         Timber.i("Got new pushed email messages for account %s, folder %s",
                 account.getDescription(), remoteFolder.getName());
 
@@ -4617,6 +4630,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 + ", folder " + remoteFolder.getName(), null, new Runnable() {
             @Override
             public void run() {
+                if(!isAccountInPreferences(account)) return;
                 LocalFolder localFolder = null;
                 try {
                     LocalStore localStore = account.getLocalStore();
@@ -4789,6 +4803,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
         return localMessage;
     }
+    
+    private boolean isAccountInPreferences(Account account) {
+        return Preferences.getPreferences(context).getAccounts().contains(account);
+    }
 
     @Override
     public void messageToSend(foundation.pEp.jniadapter.Message pEpMessage) {
@@ -4797,7 +4815,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         threadPool.execute(() -> {
             try {
                 Account fromAccount = loadAddressAccount(pEpMessage.getFrom().address);
-                if (fromAccount == null) {
+                if (fromAccount == null ||!isAccountInPreferences(fromAccount)) {
                     Timber.e("messageToSend: %s account not found", pEpMessage.getFrom().address);
                     return;
                 }
@@ -4831,7 +4849,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
                 //}
-
+                if(!isAccountInPreferences(fromAccount)) return;
                 checkpEpSyncMailForAccount(fromAccount, null);
 
             } catch (pEpException | MessagingException e) {
