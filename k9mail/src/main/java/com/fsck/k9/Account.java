@@ -255,6 +255,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     private boolean pEpUntrustedServer;
     private boolean pEpPrivacyProtectected;
+    private volatile boolean isDeleted;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -366,6 +367,14 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     /*

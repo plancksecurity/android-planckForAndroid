@@ -583,8 +583,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             if (selectedContextAccount is Account) {
                 val realAccount = selectedContextAccount as Account?
+                realAccount!!.isDeleted = true
                 try {
-                    realAccount!!.localStore.delete()
+                    realAccount.localStore.delete()
                 } catch (e: Exception) {
                     // Ignore, this may lead to localStores on sd-cards that
                     // are currently not inserted to be left
