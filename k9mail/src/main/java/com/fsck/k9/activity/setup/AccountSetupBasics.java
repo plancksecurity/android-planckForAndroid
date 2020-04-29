@@ -15,6 +15,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
+import com.fsck.k9.pEp.AccountRemover;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
@@ -215,7 +216,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     protected void onDestroy() {
-        if (accountSetupNavigator.shouldDeleteAccount() && isManualSetupRequired && isGoingBack) {
+        if (isGoingBack) {
             deleteAccount();
         }
         isGoingBack = false;
@@ -223,7 +224,8 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     private void deleteAccount() {
-        Preferences.getPreferences(getApplicationContext()).deleteAccount(accountSetupNavigator.getAccount());
+        AccountRemover.launchRemoveAccount(accountSetupNavigator.getAccount(), this);
+        accountSetupNavigator.discardAccount();
     }
 
     public boolean isManualSetupRequired() {

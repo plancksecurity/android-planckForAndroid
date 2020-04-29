@@ -26,6 +26,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.Utility;
+import com.fsck.k9.pEp.AccountRemover;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
@@ -195,7 +196,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     public void onBackPressed() {
         super.onBackPressed();
         if(!isManualSetup) {
-            // delete account
+            AccountRemover.launchRemoveAccount(mAccount, this);
         }
         finish();
     }
