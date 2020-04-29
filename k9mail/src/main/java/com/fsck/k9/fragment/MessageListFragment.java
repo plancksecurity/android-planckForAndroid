@@ -50,7 +50,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.MessageActions;
@@ -422,7 +421,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (view == footerView) {
             if (currentFolder != null && !search.isManualSearch() && currentFolder.moreMessages) {
 
-                messagingController.loadMoreMessages(account, folderName, null);
+                messagingController.loadMoreMessagesBackground(account, folderName, null);
 
             } else if (currentFolder != null && isRemoteSearch() &&
                     extraSearchResults != null && extraSearchResults.size() > 0) {

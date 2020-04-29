@@ -22,9 +22,8 @@ object MlfUtils {
     fun getOpenFolder(folderName: String, account: Account): LocalFolder {
         val localStore = account.localStore
         val localFolder = localStore.getFolder(folderName)
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        scope.launch {
-            open(localFolder)
+        runBlocking {
+                open(localFolder)
         }
         return localFolder
     }

@@ -32,8 +32,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
@@ -53,7 +51,6 @@ import com.fsck.k9.K9.Intents;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
-import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
@@ -738,7 +735,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
-    public void loadMoreMessages(Account account, String folder, MessagingListener listener) {
+    public void loadMoreMessagesBackground(Account account, String folder, MessagingListener listener){
+        threadPool.execute(() -> loadMoreMessages( account, folder, listener));
+    }
+
+    private void loadMoreMessages(Account account, String folder, MessagingListener listener) {
         try {
             LocalStore localStore = account.getLocalStore();
             LocalFolder localFolder = localStore.getFolder(folder);
