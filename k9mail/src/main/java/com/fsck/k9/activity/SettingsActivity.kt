@@ -25,6 +25,7 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
+import com.fsck.k9.pEp.AccountRemover
 import com.fsck.k9.pEp.PEpImporterActivity
 import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
@@ -46,6 +47,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
+import org.jsoup.select.Evaluator
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
@@ -583,20 +585,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             if (selectedContextAccount is Account) {
                 val realAccount = selectedContextAccount as Account?
-                realAccount!!.isDeleted = true
-                try {
-                    realAccount.localStore.delete()
-                } catch (e: Exception) {
-                    // Ignore, this may lead to localStores on sd-cards that
-                    // are currently not inserted to be left
-                }
-
-                MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
-                Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
-                K9.setServicesEnabled(this@SettingsActivity)
-
+                AccountRemover.removeAccount(realAccount, this@SettingsActivity)
                 anyAccountWasDeleted = true
 
                 refresh()
