@@ -21,6 +21,7 @@ import com.fsck.k9.BuildConfig;
  * @author Daniel I. Applebaum
  *
  */
+@Deprecated
 public class K9RemoteControl {
     /**
      * Permission that every application sending a broadcast to K-9 for Remote Control purposes should send on every broadcast.

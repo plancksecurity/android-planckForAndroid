@@ -58,6 +58,7 @@ import static com.fsck.k9.mail.K9MailLib.DEBUG_PROTOCOL_SMTP;
 public class SmtpTransport extends Transport {
     public static final int SMTP_CONTINUE_REQUEST = 334;
     public static final int SMTP_AUTHENTICATION_FAILURE_ERROR_CODE = 535;
+    private static final int SMTP_SOCKET_TAG = 443;
 
     private TrustedSocketFactory mTrustedSocketFactory;
     private OAuth2TokenProvider oauthTokenProvider;
@@ -236,6 +237,7 @@ public class SmtpTransport extends Transport {
         mClientCertificateAlias = settings.clientCertificateAlias;
         mTrustedSocketFactory = trustedSocketFactory;
         oauthTokenProvider = oauth2TokenProvider;
+        TrafficStats.setThreadStatsTag(SMTP_SOCKET_TAG);
     }
 
     @Override

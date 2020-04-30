@@ -83,6 +83,11 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import com.google.android.material.navigation.NavigationView;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
@@ -95,6 +100,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
@@ -359,6 +365,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private RendererBuilder<Account> rendererAccountBuilder;
     private RVRendererAdapter<Account> accountAdapter;
 
+    @Inject
+    PermissionChecker permissionChecker;
+
+    private void askForContactPermission() {
+        if (permissionChecker.doesntHaveContactsPermission()) {
+            permissionRequester.requestContactsPermission(getRootView());
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -386,7 +401,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
 
         permissionRequester.requestBatteryOptimizationPermission();
-
+        askForContactPermission();
         findFragments();
         initializeDisplayMode(savedInstanceState);
         initializeLayout();
@@ -2345,9 +2360,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else {
                 finish();
             }
-
-        } else if (isThreadDisplayed) {
-            actionDisplaySearch(this, mSearch, false, false);
         } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {
             if(isBackstackClear()) {
                 LocalSearch search = new LocalSearch(mAccount.getAutoExpandFolderName());

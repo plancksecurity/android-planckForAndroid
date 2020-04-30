@@ -18,6 +18,9 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.mailstore.LocalMessage;
 
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.ui.permissions.PEpPermissionChecker;
+
 public class MessageHelper {
     /**
      * If the number of addresses exceeds this value the addresses aren't
@@ -45,16 +48,19 @@ public class MessageHelper {
     }
 
     private Context mContext;
+    private PermissionChecker permissionChecker;
 
     private MessageHelper(final Context context) {
         mContext = context;
+        this.permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
     }
 
     public void populate(final MessageInfoHolder target,
                          final LocalMessage message,
                          final FolderInfoHolder folder,
                          Account account) {
-        final Contacts contactHelper = K9.showContactName() ? Contacts.getInstance(mContext) : null;
+        final Contacts contactHelper = permissionChecker.hasContactsPermission() &&
+                K9.showContactName() ? Contacts.getInstance(mContext) : null;
 
         target.message = message;
         target.compareArrival = message.getInternalDate();
@@ -94,7 +100,8 @@ public class MessageHelper {
     }
 
     public CharSequence getDisplayName(Account account, Address[] fromAddrs, Address[] toAddrs) {
-        final Contacts contactHelper = K9.showContactName() ? Contacts.getInstance(mContext) : null;
+        final Contacts contactHelper = permissionChecker.hasContactsPermission() &&
+                K9.showContactName() ? Contacts.getInstance(mContext) : null;
 
         CharSequence displayName;
         if (fromAddrs.length > 0 && account.isAnIdentity(fromAddrs[0])) {

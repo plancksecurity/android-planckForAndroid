@@ -1044,22 +1044,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void createPermissionListeners() {
         if(permissionChecker.doesntHaveWriteExternalPermission()) {
-            permissionRequester.requestStoragePermission(getRootView(), new PermissionListener() {
-                @Override
-                public void onPermissionGranted(PermissionGrantedResponse response) {
-
-                }
-
-                @Override
-                public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                }
-
-                @Override
-                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                }
-            });
+            permissionRequester.requestStoragePermission(getRootView());
         }
     }
 }

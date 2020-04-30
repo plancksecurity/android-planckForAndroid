@@ -272,5 +272,5 @@
     <string name="global_settings_blacklist_summary">Blacklist a key of an OpenPGP communication partner not to use it anymore</string>
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
-
+    <string name="blacklist_title">Blacklist</string>
 </resources>

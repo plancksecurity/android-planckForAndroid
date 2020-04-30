@@ -92,6 +92,14 @@ public class ImportWizardPresenter implements Presenter {
         this.state = state;
     }
 
+    public void restoreState(SyncState state, String trustWords) {
+        this.state = state;
+        if (!trustWords.isEmpty()) {
+            this.trustWords = trustWords;
+        }
+        processState();
+    }
+
 
     public void init(ImportWizardFrompEp view,
                      Identity myself,

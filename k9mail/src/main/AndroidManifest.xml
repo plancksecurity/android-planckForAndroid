@@ -44,15 +44,6 @@
     <uses-permission android:name="${applicationId}.permission.READ_ATTACHMENT" />
 
     <permission
-        android:name="${applicationId}.permission.REMOTE_CONTROL"
-        android:description="@string/remote_control_desc"
-        android:label="@string/remote_control_label"
-        android:permissionGroup="android.permission-group.MESSAGES"
-        android:protectionLevel="dangerous" />
-
-    <uses-permission android:name="${applicationId}.permission.REMOTE_CONTROL" />
-
-    <permission
         android:name="${applicationId}.permission.READ_MESSAGES"
         android:description="@string/read_messages_desc"
         android:label="@string/read_messages_label"
@@ -483,7 +474,7 @@
             android:label="@string/pep_title_activity_privacy_status" />
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
-            android:label="Blacklist"
+            android:label="@string/blacklist_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name=".pEp.ui.privacy.status.PEpTrustwords"
@@ -561,8 +552,7 @@
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:screenOrientation="portrait"/>
+            android:excludeFromRecents="true" />
     </application>
 
 </manifest>

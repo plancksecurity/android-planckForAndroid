@@ -28,6 +28,7 @@ import java.util.zip.InflaterInputStream;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.TrafficStats;
 
 import com.fsck.k9.mail.Authentication;
 import com.fsck.k9.mail.AuthenticationFailedException;
@@ -61,6 +62,7 @@ import static com.fsck.k9.mail.store.imap.ImapResponseParser.equalsIgnoreCase;
  */
 class ImapConnection {
     private static final int BUFFER_SIZE = 1024;
+    private static final int IMAP_SOCKET_TAG = 993;
 
 
     private final ConnectivityManager connectivityManager;
@@ -89,6 +91,7 @@ class ImapConnection {
         this.oauthTokenProvider = oauthTokenProvider;
         this.socketConnectTimeout = SOCKET_CONNECT_TIMEOUT;
         this.socketReadTimeout = SOCKET_READ_TIMEOUT;
+        TrafficStats.setThreadStatsTag(IMAP_SOCKET_TAG);
     }
 
     ImapConnection(ImapSettings settings, TrustedSocketFactory socketFactory,
@@ -100,6 +103,8 @@ class ImapConnection {
         this.oauthTokenProvider = oauthTokenProvider;
         this.socketConnectTimeout = socketConnectTimeout;
         this.socketReadTimeout = socketReadTimeout;
+        TrafficStats.setThreadStatsTag(IMAP_SOCKET_TAG);
+
     }
 
     public void open() throws IOException, MessagingException {
@@ -224,7 +229,6 @@ class ImapConnection {
         } else {
             socket = new Socket();
         }
-
         socket.connect(socketAddress, socketConnectTimeout);
 
         return socket;

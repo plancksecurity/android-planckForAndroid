@@ -23,8 +23,11 @@ import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
+import security.pEp.permissions.PermissionChecker
+import security.pEp.ui.permissions.PEpPermissionChecker
 
-abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
+abstract class PEpStatusBaseRenderer(
+        private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -41,7 +44,10 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
+    protected lateinit var permissionChecker: PermissionChecker
+
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
+        permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
         val view : View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
         return view
@@ -69,7 +75,8 @@ abstract class PEpStatusBaseRenderer(private val resetClickListener: PEpStatusRe
             mContactsPictureLoader.loadContactPicture(realAddress, badge)
             badge.setPepRating(identity.rating, true)
         }
-        val contacts = if (K9.showContactName()) Contacts.getInstance(context) else null
+        val contacts = if (permissionChecker.hasContactsPermission() &&
+                K9.showContactName()) Contacts.getInstance(context) else null
         renderContact(realAddress, contacts)
     }
 
