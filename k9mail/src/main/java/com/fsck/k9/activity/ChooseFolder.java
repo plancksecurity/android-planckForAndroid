@@ -25,7 +25,6 @@ import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.folderlist.FolderListFilter;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
@@ -68,7 +67,7 @@ public class ChooseFolder extends K9ListActivity {
      * Created on the fly and invalidated if a new
      * set of folders is chosen via {@link #onOptionsItemSelected(MenuItem)}
      */
-    private FolderListFilter<String> mMyFilter = null;
+    private ChooseFolderFilter<String> mMyFilter = null;
 
 
     @Override
@@ -108,7 +107,7 @@ public class ChooseFolder extends K9ListActivity {
             @Override
             public Filter getFilter() {
                 if (myFilter == null) {
-                    myFilter = new FolderListFilter<String>(this);
+                    myFilter = new ChooseFolderFilter<String>(this);
                 }
                 return myFilter;
             }
@@ -374,7 +373,7 @@ public class ChooseFolder extends K9ListActivity {
                         /*
                          * Only enable the text filter after the list has been
                          * populated to avoid possible race conditions because our
-                         * FolderListFilter isn't really thread-safe.
+                         * ChooseFolderFilter isn't really thread-safe.
                          */
                         getListView().setTextFilterEnabled(true);
                     }

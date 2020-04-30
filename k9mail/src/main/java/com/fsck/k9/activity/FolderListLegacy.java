@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.folderlist;
+package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -42,12 +42,6 @@ import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.ActivityListener;
-import com.fsck.k9.activity.FolderInfoHolder;
-import com.fsck.k9.activity.K9ListActivity;
-import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.activity.SettingsActivity;
-import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSettings;
 import com.fsck.k9.activity.setup.FolderSettings;
@@ -145,46 +139,38 @@ public class FolderListLegacy extends K9ListActivity {
 
 
         public void newFolders(final List<FolderInfoHolder> newFolders) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mAdapter.mFolders.clear();
-                    mAdapter.mFolders.addAll(newFolders);
-                    mAdapter.mFilteredFolders = mAdapter.mFolders;
-                    mHandler.dataChanged();
-                }
+            runOnUiThread(() -> {
+                mAdapter.mFolders.clear();
+                mAdapter.mFolders.addAll(newFolders);
+                mAdapter.mFilteredFolders = mAdapter.mFolders;
+                mHandler.dataChanged();
             });
         }
 
         public void workingAccount(final int res) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    String toastText = getString(res, mAccount.getDescription());
-                    FeedbackTools.showShortFeedback(getListView(), toastText);
-                }
+            runOnUiThread(() -> {
+                String toastText = getString(res, mAccount.getDescription());
+                FeedbackTools.showShortFeedback(getListView(), toastText);
             });
         }
 
         public void accountSizeChanged(final long oldSize, final long newSize) {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    String toastText = getString(R.string.account_size_changed, mAccount.getDescription(), SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
+            runOnUiThread(() -> {
+                String toastText = getString(R.string.account_size_changed, mAccount.getDescription(), SizeFormatter.formatSize(getApplication(), oldSize), SizeFormatter.formatSize(getApplication(), newSize));
 
-                    FeedbackTools.showLongFeedback(getListView(), toastText);
-                }
+                FeedbackTools.showLongFeedback(getListView(), toastText);
             });
         }
 
         public void folderLoading(final String folder, final boolean loading) {
-            runOnUiThread(new Runnable() {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    public void run() {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        FolderInfoHolder folderHolder = mAdapter.getFolder(folder);
+            runOnUiThread(() -> {
+                FolderInfoHolder folderHolder = mAdapter.getFolder(folder);
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        if (folderHolder != null) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            folderHolder.loading = loading;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        }
+                if (folderHolder != null) {
+                    folderHolder.loading = loading;
+                }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
             });
         }
 
@@ -195,24 +181,17 @@ public class FolderListLegacy extends K9ListActivity {
                 return;
             }
 
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    if (progress) {
-                        mRefreshMenuItem.setActionView(mActionBarProgressView);
-                    } else {
-                        mRefreshMenuItem.setActionView(null);
-                    }
+            runOnUiThread(() -> {
+                if (progress) {
+                    mRefreshMenuItem.setActionView(mActionBarProgressView);
+                } else {
+                    mRefreshMenuItem.setActionView(null);
                 }
             });
-
         }
 
         public void dataChanged() {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
+            runOnUiThread(() -> mAdapter.notifyDataSetChanged());
         }
     }
 
