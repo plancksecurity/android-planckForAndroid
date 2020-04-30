@@ -606,7 +606,7 @@ public class TestUtils {
         }
     }
 
-    public void selectAccount (int accountToSelect) {
+    /*public void selectAccount (int accountToSelect) {
         while (true) {
             try {
                 device.waitForIdle();
@@ -639,7 +639,7 @@ public class TestUtils {
                     }
                     device.waitForIdle();
                     openHamburgerMenu();
-                    clickView(R.id.nav_header_accounts);
+                    clickView(R.id.nav_header);
                     device.waitForIdle();
                     onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
                     device.waitForIdle();
@@ -657,7 +657,7 @@ public class TestUtils {
                 Timber.i("View not found. Start test: " + ex);
             }
         }
-    }
+    }*/
 
     public void clickSearch() {
         device.waitForIdle();

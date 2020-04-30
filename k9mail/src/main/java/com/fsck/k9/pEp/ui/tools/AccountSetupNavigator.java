@@ -129,6 +129,10 @@ public class AccountSetupNavigator {
         return account;
     }
 
+    public void discardAccount() {
+        account = null;
+    }
+
     public Step getCurrentStep() {
         return currentStep;
     }
