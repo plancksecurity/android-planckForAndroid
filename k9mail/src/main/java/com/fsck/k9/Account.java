@@ -32,7 +32,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.larswerkman.colorpicker.ColorPicker;
 
 import java.security.cert.CertificateException;
@@ -844,7 +844,7 @@ public class Account implements BaseAccount, StoreConfig {
         StringBuilder query = new StringBuilder();
         List<String> queryArgs = new ArrayList<>();
         ConditionsTreeNode conditions = search.getConditions();
-        SqlQueryBuilder.buildWhereClause(this, conditions, query, queryArgs);
+        SqlQueryBuilderInvoker.buildWhereClause(this, conditions, query, queryArgs);
 
         String selection = query.toString();
         String[] selectionArgs = queryArgs.toArray(new String[0]);
