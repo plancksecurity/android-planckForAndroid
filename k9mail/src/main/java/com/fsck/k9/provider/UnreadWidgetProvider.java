@@ -7,7 +7,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.UnreadWidgetConfiguration;
-import com.fsck.k9.activity.FolderList;
+import com.fsck.k9.activity.folderlist.FolderList;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;

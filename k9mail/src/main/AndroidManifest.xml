@@ -206,7 +206,7 @@
             />
 
         <activity
-            android:name=".activity.FolderList"
+            android:name=".activity.folderlist.FolderList"
             android:configChanges="locale"
             android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>

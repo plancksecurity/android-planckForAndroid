@@ -6,7 +6,7 @@ import android.util.Log;
 import com.fsck.k9.Account;
 import com.fsck.k9.BaseAccount;
 import com.fsck.k9.K9;
-import com.fsck.k9.activity.FolderList;
+import com.fsck.k9.activity.folderlist.FolderList;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;

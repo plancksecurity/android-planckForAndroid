@@ -1,4 +1,4 @@
-package com.fsck.k9.activity;
+package com.fsck.k9.activity.folderlist;
 
 import java.util.ArrayList;
 import java.util.List;

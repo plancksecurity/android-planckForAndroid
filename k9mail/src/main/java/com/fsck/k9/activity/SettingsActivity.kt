@@ -19,6 +19,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
+import com.fsck.k9.activity.folderlist.FolderList
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
