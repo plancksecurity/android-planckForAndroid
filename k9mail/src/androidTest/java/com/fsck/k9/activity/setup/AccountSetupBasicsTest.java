@@ -1,12 +1,19 @@
 package com.fsck.k9.activity.setup;
 
+import android.app.Activity;
 import android.content.Intent;
+
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.core.internal.deps.guava.collect.Iterables;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.appcompat.widget.Toolbar;
 import androidx.test.runner.AndroidJUnit4;
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
+import androidx.test.runner.lifecycle.Stage;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +31,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+
+import timber.log.Timber;
+
 import static androidx.test.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -32,18 +43,21 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static java.lang.Thread.sleep;
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class AccountSetupBasicsTest {
-
+    private String currentUuid;
     @Rule
     public ActivityTestRule<AccountSetupBasics> mActivityRule =
             new ActivityTestRule<>(AccountSetupBasics.class);
@@ -78,6 +92,62 @@ public class AccountSetupBasicsTest {
     }
 
     @Test
+    public void deletedAccountFilesAreNotLeft() {
+        // setup account
+        startActivity();
+        setupEmailAndPassword();
+        for(int i = 0; i < 5; i ++) {
+            onView(withId(R.id.next)).perform(click());
+            doWait(3000L);
+            checkWeArrivedToSetupNames();
+            Activity activity = getActivityInstance();
+            AccountSetupNames setupNames = (AccountSetupNames)activity;
+            currentUuid = setupNames.getIntent().getExtras().getString("account");
+            Timber.d("==== account uuid is " + currentUuid);
+            checkAccountDbIsCreated();
+            goBackFromNamesToBasics();
+            checkAccountDbIsDeleted();
+        }
+    }
+
+    private void checkAccountDbIsCreated() {
+        String route = "/data/user/0/security.pEp.debug/databases/"+currentUuid+".db";
+        File file = new File(route);
+        Timber.d("==== db path: " + route);
+
+    }
+
+    private void checkAccountDbIsDeleted() {
+
+        String route = "/data/user/0/security.pEp.debug/databases/"+currentUuid+".db";
+        File file = new File(route);
+        Timber.d("==== db path: " + route);
+
+        assertFalse(file.exists());
+    }
+
+    private Activity getActivityInstance(){
+        final Activity[] activity = {null};
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable(){
+            public void run(){
+                java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
+                activity[0] = Iterables.getOnlyElement(activities);
+            }
+        });
+
+        return activity[0];
+    }
+
+    private void goBackFromNamesToBasics() {
+        onView(isRoot()).perform(ViewActions.pressBack());
+        onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class))))
+                .check(matches(withText(R.string.account_setup_basics_title)));
+    }
+
+
+    @Test
     public void testImportAccount() {
         startActivity();
         //openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
@@ -105,6 +175,21 @@ public class AccountSetupBasicsTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private void doWait(Long millis) {
+        try {
+            sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkWeArrivedToSetupNames() {
+        onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class))))
+                .check(matches(withText(R.string.account_setup_names_title)));
+
     }
 
     private void accountSetupName() {
@@ -148,8 +233,8 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
-        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        String email = "android06@peptest.ch";
+        String pass = "leakyc0ffee";
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
     }

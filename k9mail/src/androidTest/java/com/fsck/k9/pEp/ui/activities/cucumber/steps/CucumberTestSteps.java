@@ -136,7 +136,7 @@ public class CucumberTestSteps {
     }
 
     // TODO FIX TEST
-    @After
+   /* @After
     public void tearDown() {
         try {
             IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
@@ -149,7 +149,7 @@ public class CucumberTestSteps {
             device.waitForIdle();
         }
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
-            /*
+
             while (exists(onView(withId(R.id.reply))) || exists(onView(withId(R.id.reply_message))) || exists(onView(withId(R.id.attachment_container)))) {
                 device.waitForIdle();
                 if (exists(onView(withText(R.string.discard_action)))) {
@@ -160,7 +160,7 @@ public class CucumberTestSteps {
                 device.waitForIdle();
             }
 
-             */
+
             if (exists(onView(withId(R.id.fab_button_compose_message)))
                     && (exists(onView(withId(R.id.actionbar_title_first))) &&
                     !getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox)))) {
@@ -194,7 +194,7 @@ public class CucumberTestSteps {
         } catch (Exception backException) {
             Timber.i("Cannot pressBackUnconditionally: " + backException.getMessage());
         }
-    }
+    }*/
 
     @When(value = "^I created an account$")
     public void I_create_account() {
@@ -213,7 +213,7 @@ public class CucumberTestSteps {
                 if (accounts[0] == 0) {
                     testUtils.createNAccounts(testUtils.getTotalAccounts());
                 } else {
-                    testUtils.selectAccount(0);
+                    //testUtils.selectAccount(0);
                 }
             }
         }
@@ -1025,7 +1025,7 @@ public class CucumberTestSteps {
             }
         }
         bot = testUtils.botList;
-        testUtils.selectAccount(accountToStart);
+        //testUtils.selectAccount(accountToStart);
     }
 
     @And("^I click view (\\S+)$")
