@@ -382,21 +382,10 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
 
         FolderViewHolder holder = (FolderViewHolder) view.getTag();
 
+
         if (holder == null) {
             holder = new FolderViewHolder();
-            holder.folderName = view.findViewById(R.id.folder_name);
-            holder.newMessageCount = view.findViewById(R.id.new_message_count);
-            holder.flaggedMessageCount = view.findViewById(R.id.flagged_message_count);
-            holder.newMessageCountWrapper = view.findViewById(R.id.new_message_count_wrapper);
-            holder.flaggedMessageCountWrapper = view.findViewById(R.id.flagged_message_count_wrapper);
-            holder.newMessageCountIcon = view.findViewById(R.id.new_message_count_icon);
-            holder.flaggedMessageCountIcon = view.findViewById(R.id.flagged_message_count_icon);
-
-            holder.folderStatus = view.findViewById(R.id.folder_status);
-            holder.activeIcons = view.findViewById(R.id.active_icons);
-            holder.folderListItemLayout = view.findViewById(R.id.folder_list_item_layout);
-            holder.rawFolderName = folder.name;
-
+            holder.startView(view, mFontSizes, account, resourcesProvider);
             view.setTag(holder);
         }
 
@@ -404,12 +393,12 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
             return view;
         }
 
-        final String folderStatus;
+        final String folderStatusText;
 
         if (folder.loading) {
-            folderStatus = activity.getString(R.string.status_loading);
+            folderStatusText = activity.getString(R.string.status_loading);
         } else if (folder.status != null) {
-            folderStatus = folder.status;
+            folderStatusText = folder.status;
         } else if (folder.lastChecked != 0) {
             long now = System.currentTimeMillis();
             int flags = DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR;
@@ -423,76 +412,20 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
                         now, DateUtils.MINUTE_IN_MILLIS, flags);
             }
 
-            folderStatus = activity.getString(folder.pushActive
+            folderStatusText = activity.getString(folder.pushActive
                             ? R.string.last_refresh_time_format_with_push
                             : R.string.last_refresh_time_format,
                     formattedDate);
         } else {
-            folderStatus = null;
+            folderStatusText = null;
         }
 
-        holder.folderName.setText(folder.displayName);
-        if (folderStatus != null) {
-            holder.folderStatus.setText(folderStatus);
-            holder.folderStatus.setVisibility(View.VISIBLE);
-        } else {
-            holder.folderStatus.setVisibility(View.GONE);
-        }
-
-        if (folder.unreadMessageCount == -1) {
-            folder.unreadMessageCount = 0;
-            try {
-                folder.unreadMessageCount = folder.folder.getUnreadMessageCount();
-            } catch (Exception e) {
-                Timber.e("Unable to get unreadMessageCount for %s:%s", account.getDescription(), folder.name);
-            }
-        }
-        if (folder.unreadMessageCount > 0) {
-            holder.newMessageCount.setText(String.format("%d", folder.unreadMessageCount));
-            holder.newMessageCountWrapper.setOnClickListener(
-                    createUnreadSearch(account, folder));
-        } else {
-            holder.newMessageCountWrapper.setVisibility(View.GONE);
-        }
-
-        if (folder.flaggedMessageCount == -1) {
-            folder.flaggedMessageCount = 0;
-            try {
-                folder.flaggedMessageCount = folder.folder.getFlaggedMessageCount();
-            } catch (Exception e) {
-                Timber.e("Unable to get flaggedMessageCount for %s:%s", account.getDescription(), folder.name);
-            }
-        }
-
-        if (K9.messageListStars() && folder.flaggedMessageCount > 0) {
-            holder.flaggedMessageCount.setText(String.format("%d", folder.flaggedMessageCount));
-            holder.flaggedMessageCountWrapper.setOnClickListener(
-                    createFlaggedSearch(account, folder));
-            holder.flaggedMessageCountWrapper.setVisibility(View.VISIBLE);
-            holder.flaggedMessageCountIcon.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconActionFlag));
-        } else {
-            holder.flaggedMessageCountWrapper.setVisibility(View.GONE);
-        }
-
-        holder.activeIcons.setOnClickListener(v ->
-                FeedbackTools.showShortFeedback(activity.getListView(), R.string.tap_hint)
-        );
-
-        mFontSizes.setViewTextSize(holder.folderName, mFontSizes.getFolderName());
-
-        if (K9.wrapFolderNames()) {
-            holder.folderName.setEllipsize(null);
-            holder.folderName.setSingleLine(false);
-        } else {
-            holder.folderName.setEllipsize(TruncateAt.START);
-            holder.folderName.setSingleLine(true);
-        }
-        mFontSizes.setViewTextSize(holder.folderStatus, mFontSizes.getFolderStatus());
+        holder.bindView(this, folderStatusText, folder);
 
         return view;
     }
 
-    private OnClickListener createFlaggedSearch(Account account, FolderInfoHolder folder) {
+    OnClickListener createFlaggedSearch(Account account, FolderInfoHolder folder) {
         String searchTitle =
                 activity.getString(R.string.search_title,
                         activity.getString(R.string.message_list_title, account.getDescription(), folder.displayName),
@@ -507,7 +440,7 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
         return new FolderClickListener(search);
     }
 
-    private OnClickListener createUnreadSearch(Account account, FolderInfoHolder folder) {
+    OnClickListener createUnreadSearch(Account account, FolderInfoHolder folder) {
         String searchTitle =
                 activity.getString(R.string.search_title,
                         activity.getString(R.string.message_list_title, account.getDescription(), folder.displayName),
