@@ -472,10 +472,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
     void refreshRemoteSynchronous(final Account account, final MessagingListener listener) {
         List<LocalFolder> localFolders = null;
         try {
+            if(account.isDeleted()) return;
             Store store = account.getRemoteStore();
 
             List<? extends Folder> remoteFolders = store.getPersonalNamespaces(false);
-
+            if(account.isDeleted()) return;
             LocalStore localStore = account.getLocalStore();
             Set<String> remoteFolderNames = new HashSet<>();
             List<LocalFolder> foldersToCreate = new LinkedList<>();
@@ -1374,6 +1375,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         int unreadBeforeStart = 0;
         try {
+            if(account.isDeleted()) return -1;
             AccountStats stats = account.getStats(context);
             unreadBeforeStart = stats.unreadMessageCount;
 
@@ -2930,6 +2932,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private boolean messagesPendingSend(final Account account) {
+        if(account.isDeleted()) return false;
         Folder localFolder = null;
         try {
             localFolder = account.getLocalStore().getFolder(
@@ -3345,6 +3348,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     public boolean isMoveCapable(final Account account) {
         try {
+            if(account.isDeleted()) return false;
             Store localStore = account.getLocalStore();
             Store remoteStore = account.getRemoteStore();
             return localStore.isMoveCapable() && remoteStore.isMoveCapable();
@@ -3667,6 +3671,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     l.messageDeleted(account, folder, message);
                 }
             }
+            if(account.isDeleted()) return;
             Store localStore = account.getLocalStore();
             localFolder = localStore.getFolder(folder);
             Map<String, String> uidMap = null;
