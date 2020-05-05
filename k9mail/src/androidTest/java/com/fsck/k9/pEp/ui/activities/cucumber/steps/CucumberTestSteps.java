@@ -905,9 +905,6 @@ public class CucumberTestSteps {
         testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
         testUtils.pressBack();
-        //testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
-        //testUtils.selectSwitchButton(testUtils.stringToID("pep_sync"));
-        //testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_subject_unprotected"));
         testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
         testUtils.pressBack();
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
