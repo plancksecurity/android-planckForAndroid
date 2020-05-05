@@ -384,8 +384,7 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
 
 
         if (holder == null) {
-            holder = new FolderViewHolder();
-            holder.startView(view, mFontSizes, account, resourcesProvider);
+            holder = new FolderViewHolder(view, mFontSizes, account, resourcesProvider);
             view.setTag(holder);
         }
 
