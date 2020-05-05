@@ -3,6 +3,7 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.preference.CheckBoxPreference
@@ -147,7 +148,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         //2 If we are disabling (which means it is checked)
         if (preference.isChecked) {
-            AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                R.style.SyncDisableDialog
+            }
+            else {
+                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+            }
+            AlertDialog.Builder(view?.context, theme)
                     .setTitle(R.string.keysync_disable_warning_title)
                     .setMessage(R.string.keysync_disable_warning_explanation)
                     .setCancelable(false)
