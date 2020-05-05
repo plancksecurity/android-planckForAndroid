@@ -187,6 +187,7 @@ android {
     productFlavors {
         withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
+            versionName "${buildConfig.versionName}"
             dimension "playStore"
 
         }
