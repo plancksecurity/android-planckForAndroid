@@ -53,6 +53,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
 
     @Inject PEpStatusPresenter presenter;
+    @Inject PEpStatusRendererBuilder rendererBuilder;
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
@@ -61,7 +62,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     TextView itsOwnMessageTV;
 
     RecyclerView.LayoutManager recipientsLayoutManager;
-    private RVRendererAdapter<PEpIdentity> recipientsAdapter;
+    private PEpStatusRvRAdapter recipientsAdapter;
 
     String sender = "";
     private MessageReference messageReference;
@@ -172,14 +173,15 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
-        RendererBuilder<PEpIdentity> rendererBuilder =
-                new PEpStatusRendererBuilder(
-                        getOnResetClickListener(),
-                        getOnHandshakeResultListener(),
-                        myself
-                );
+
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
-        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
+        recipientsAdapter = new PEpStatusRvRAdapter(
+                rendererBuilder,
+                adapteeCollection,
+                getOnResetClickListener(),
+                getOnHandshakeResultListener(),
+                myself
+        );
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));

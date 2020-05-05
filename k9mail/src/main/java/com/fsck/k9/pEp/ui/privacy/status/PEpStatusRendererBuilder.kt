@@ -9,12 +9,14 @@ import com.fsck.k9.pEp.ui.renderers.pepstatus.PEpStatusUnsecureRenderer
 import com.pedrogomez.renderers.Renderer
 import com.pedrogomez.renderers.RendererBuilder
 import foundation.pEp.jniadapter.Rating
+import javax.inject.Inject
 
-class PEpStatusRendererBuilder(
-        private val resetClickListener: ResetClickListener,
-        private val handshakeResultListener: HandshakeResultListener,
-        private val myself: String
-) : RendererBuilder<PEpIdentity>() {
+class PEpStatusRendererBuilder @Inject constructor(
+        var pEpStatusSecureRenderer: PEpStatusSecureRenderer,
+        var pEpStatusPGPIdentityRenderer: PEpStatusPGPIdentityRenderer,
+        var pEpStatusUnsecureRenderer: PEpStatusUnsecureRenderer,
+        var pEpStatusTrustedRenderer: PEpStatusTrustedRenderer
+): RendererBuilder<PEpIdentity>() {
 
     init {
         val prototypes = getPepIdentityRendererTypes()
@@ -44,18 +46,10 @@ class PEpStatusRendererBuilder(
 
     private fun getPepIdentityRendererTypes(): List<Renderer<PEpIdentity>> {
         return listOf(
-                PEpStatusPGPIdentityRenderer(
-                        resetClickListener,
-                        handshakeResultListener,
-                        myself
-                ),
-                PEpStatusTrustedRenderer(resetClickListener),
-                PEpStatusSecureRenderer(
-                        resetClickListener,
-                        handshakeResultListener,
-                        myself
-                ),
-                PEpStatusUnsecureRenderer(resetClickListener)
+                pEpStatusPGPIdentityRenderer,
+                pEpStatusTrustedRenderer,
+                pEpStatusSecureRenderer,
+                pEpStatusUnsecureRenderer
         )
     }
 

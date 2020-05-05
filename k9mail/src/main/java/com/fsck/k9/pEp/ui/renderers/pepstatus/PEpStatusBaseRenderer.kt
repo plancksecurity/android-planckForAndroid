@@ -25,9 +25,14 @@ import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
 import security.pEp.permissions.PermissionChecker
 import security.pEp.ui.permissions.PEpPermissionChecker
+import timber.log.Timber
+import javax.inject.Inject
 
-abstract class PEpStatusBaseRenderer(
-        private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
+abstract class PEpStatusBaseRenderer (
+        var permissionChecker: PermissionChecker
+) : Renderer<PEpIdentity>() {
+
+    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -44,10 +49,7 @@ abstract class PEpStatusBaseRenderer(
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
-    protected lateinit var permissionChecker: PermissionChecker
-
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
-        permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
         val view : View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
         return view
@@ -75,6 +77,7 @@ abstract class PEpStatusBaseRenderer(
             mContactsPictureLoader.loadContactPicture(realAddress, badge)
             badge.setPepRating(identity.rating, true)
         }
+        Timber.d("==== permissionchecker is $permissionChecker")
         val contacts = if (permissionChecker.hasContactsPermission() &&
                 K9.showContactName()) Contacts.getInstance(context) else null
         renderContact(realAddress, contacts)
@@ -96,5 +99,9 @@ abstract class PEpStatusBaseRenderer(
 
     override fun setUpView(rootView: View?) {
         ButterKnife.bind(this, rootView)
+    }
+
+    fun setMyContent(content: PEpIdentity) {
+        setContent(content)
     }
 }

@@ -10,14 +10,22 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPGPIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import security.pEp.permissions.PermissionChecker
+import javax.inject.Inject
 
 
-class PEpStatusPGPIdentityRenderer(
-        resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
-        private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
-        private val myself: String
+class PEpStatusPGPIdentityRenderer @Inject constructor(
+        permissionChecker: PermissionChecker
 )
-    : PEpStatusBaseRenderer(resetClickListener), PEpStatusPGPIdentityView {
+    : PEpStatusBaseRenderer(permissionChecker), PEpStatusPGPIdentityView {
+
+    var myself: String = ""
+        set(value) {
+            field = value
+            trustwordsPresenter = PEpStatusTrustwordsPresenter(value, context, this, permissionChecker)
+        }
+
+    lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
 
     override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
 
@@ -47,10 +55,6 @@ class PEpStatusPGPIdentityRenderer(
         doLoadFingerPrints(content)
         myselfLabel.text = myself
         partnerLabel.text = content.address
-    }
-
-    override fun setUpView(rootView: View?) {
-        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context, this, permissionChecker)
     }
 
     private fun doLoadFingerPrints(identity: PEpIdentity) {

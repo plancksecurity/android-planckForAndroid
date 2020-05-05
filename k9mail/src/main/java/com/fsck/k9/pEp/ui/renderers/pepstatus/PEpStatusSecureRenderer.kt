@@ -13,14 +13,22 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPEpIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import security.pEp.permissions.PermissionChecker
+import javax.inject.Inject
 
 
-class PEpStatusSecureRenderer(
-        resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
-        private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
-        private val myself: String
+class PEpStatusSecureRenderer @Inject constructor(
+        permissionChecker: PermissionChecker
 )
-    : PEpStatusBaseRenderer(resetClickListener), PEpStatusPEpIdentityView {
+    : PEpStatusBaseRenderer(permissionChecker), PEpStatusPEpIdentityView {
+
+    var myself: String = ""
+    set(value) {
+        field = value
+        trustwordsPresenter = PEpStatusTrustwordsPresenter(value, context, this, permissionChecker)
+    }
+
+    lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
@@ -47,10 +55,6 @@ class PEpStatusSecureRenderer(
     override fun render() {
         super.render()
         doLoadTrustWords(content)
-    }
-
-    override fun setUpView(rootView: View?) {
-        trustwordsPresenter = PEpStatusTrustwordsPresenter(myself,context, this, permissionChecker)
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
