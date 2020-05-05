@@ -12,14 +12,14 @@ import com.fsck.k9.pEp.ui.HandshakeData
 import foundation.pEp.jniadapter.Identity
 import security.pEp.permissions.PermissionChecker
 import java.util.*
+import javax.inject.Inject
 
-class PEpStatusTrustwordsPresenter(
-        myselfAddress: String, private val context: Context,
-        private val identityView: PEpStatusIdentityView,
+class PEpStatusTrustwordsPresenter @Inject constructor(
         private val permissionChecker: PermissionChecker
 ) {
-
-    private var myself: Identity = PEpUtils.createIdentity(Address(myselfAddress), context)
+    private lateinit var context: Context
+    private lateinit var identityView: PEpStatusIdentityView
+    private lateinit var myself: Identity
     private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
     private var areTrustwordsShort: Boolean = true
     private var currentLanguage: String = getLanguageForTrustwords()
@@ -27,6 +27,10 @@ class PEpStatusTrustwordsPresenter(
 
     companion object {
         const val PEP_DEFAULT_LANGUAGE = "en"
+    }
+
+    fun initialize(context: Context, myselfAddress: String) {
+        myself = PEpUtils.createIdentity(Address(myselfAddress), context)
     }
 
     private fun getLocalesMapFromPep() : Map<String, String> {
