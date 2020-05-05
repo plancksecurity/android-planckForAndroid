@@ -3,6 +3,7 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.preference.CheckBoxPreference
