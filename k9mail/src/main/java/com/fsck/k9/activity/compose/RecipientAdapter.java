@@ -21,11 +21,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
 import com.fsck.k9.view.ThemeUtils;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 public class RecipientAdapter extends BaseAdapter implements Filterable {
@@ -35,10 +37,12 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
 
     private ContactPictureLoader contactPictureLoader;
 
-    public RecipientAdapter(Context context) {
+    @Inject
+    public RecipientAdapter(@Named("AppContext") Context context,
+                            ContactPictureLoader contactPictureLoader) {
         super();
         this.context = context;
-        this.contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
+        this.contactPictureLoader = contactPictureLoader;
     }
 
     public void setRecipients(List<Recipient> recipients) {

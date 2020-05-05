@@ -17,19 +17,17 @@ import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PePUIArtefactCache
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
-import javax.inject.Inject
 import security.pEp.permissions.PermissionChecker
 import security.pEp.ui.permissions.PEpPermissionChecker
 
-abstract class PEpStatusBaseRenderer(
-        private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
+abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLoader) : Renderer<PEpIdentity>() {
+    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -46,13 +44,14 @@ abstract class PEpStatusBaseRenderer(
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
-    private lateinit var contactsPictureLoader: ContactPictureLoader
 
     override fun onCreate(content: PEpIdentity?, layoutInflater: LayoutInflater?, parent: ViewGroup?) {
         super.onCreate(content, layoutInflater, parent)
-        contactsPictureLoader = ContactLoaderModule(context).provideContactPictureLoader()
     }
 
+     fun setUp(resetClickListener: PEpStatusRendererBuilder.ResetClickListener) {
+        this.resetClickListener = resetClickListener
+    }
     protected lateinit var permissionChecker: PermissionChecker
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {

@@ -5,8 +5,10 @@ import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import javax.inject.Inject
+import javax.inject.Named
 
-class ContactLetterBitmapConfig(context: Context) {
+class ContactLetterBitmapConfig  @Inject constructor(@Named("AppContext") context: Context) {
     val hasDefaultBackgroundColor: Boolean = !K9.isColorizeMissingContactPictures()
     private val appThemeResourceId =
             if (K9.getK9Theme() == K9.Theme.LIGHT)

@@ -8,11 +8,12 @@ import com.bumptech.glide.load.Key
 import com.bumptech.glide.signature.StringSignature
 import com.fsck.k9.mail.Address
 import com.fsck.k9.ui.helper.MaterialColors
+import javax.inject.Inject
 
 /**
  * Draw a `Bitmap` containing the "contact letter" obtained by [ContactLetterExtractor].
  */
-class ContactLetterBitmapCreator(
+class ContactLetterBitmapCreator @Inject constructor(
         private val letterExtractor: ContactLetterExtractor,
         val config: ContactLetterBitmapConfig
 ) {
@@ -48,12 +49,12 @@ class ContactLetterBitmapCreator(
         }
 
         val hash = address.hashCode()
-        if (config.useDarkTheme) {
+        return if (config.useDarkTheme) {
             val colorIndex = (hash and Integer.MAX_VALUE) % BACKGROUND_COLORS_DARK.size
-            return BACKGROUND_COLORS_DARK[colorIndex]
+            BACKGROUND_COLORS_DARK[colorIndex]
         } else {
             val colorIndex = (hash and Integer.MAX_VALUE) % BACKGROUND_COLORS_LIGHT.size
-            return BACKGROUND_COLORS_LIGHT[colorIndex]
+            BACKGROUND_COLORS_LIGHT[colorIndex]
         }
     }
 

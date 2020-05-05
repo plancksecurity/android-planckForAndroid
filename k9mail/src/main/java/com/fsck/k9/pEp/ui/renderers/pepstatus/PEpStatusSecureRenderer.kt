@@ -13,18 +13,17 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPEpIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.ui.contacts.ContactPictureLoader
+import javax.inject.Inject
 
 
-class PEpStatusSecureRenderer(
-        resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
-        private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
-        private val myself: String
-)
-    : PEpStatusBaseRenderer(resetClickListener), PEpStatusPEpIdentityView {
+class PEpStatusSecureRenderer  @Inject constructor(contactsPictureLoader: ContactPictureLoader)
+    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusPEpIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
-
+    private lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
+    private lateinit var myself: String
     private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.trustwords)
@@ -38,6 +37,14 @@ class PEpStatusSecureRenderer(
 
     @Bind(R.id.confirmHandshake)
     lateinit var confirmTrustwordsButton: Button
+
+    fun setUp(resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
+              handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
+              myself: String) {
+        setUp(resetClickListener)
+        this.myself = myself
+        this.handshakeResultListener = handshakeResultListener
+    }
 
     override fun hookListeners(rootView: View?) {
         trustwordsTv.setInAnimation(context, android.R.anim.fade_in)

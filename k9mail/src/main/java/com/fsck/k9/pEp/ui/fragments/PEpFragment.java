@@ -12,7 +12,6 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 public abstract class PEpFragment extends Fragment {
@@ -42,7 +41,6 @@ public abstract class PEpFragment extends Fragment {
                 .applicationComponent(applicationComponent)
                 .pEpModule(new PEpModule(getActivity(), LoaderManager.getInstance(this), getFragmentManager()))
                 .activityModule(new ActivityModule(getActivity()))
-                .contactLoaderModule(new ContactLoaderModule(getContext()))
                 .build();
     }
 

@@ -35,7 +35,7 @@ import com.fsck.k9.activity.compose.RecipientLoader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
@@ -49,6 +49,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -71,7 +73,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private LoaderManager loaderManager;
 
     private ListPopupWindow alternatesPopup;
-    private AlternateRecipientAdapter alternatesAdapter;
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
     private PEpProvider pEp;
@@ -79,7 +80,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PePUIArtefactCache uiCache;
 
-    ContactPictureLoader contactPictureLoader;
+    @Inject ContactPictureLoader contactPictureLoader;
+    @Inject AlternateRecipientAdapter alternatesAdapter;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -99,11 +101,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void initView(Context context) {
         // TODO: validator?
         this.context = context;
-        contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
+        getApplicationComponent(context).inject(this);
+
         uiCache = PePUIArtefactCache.getInstance(context);
         account = uiCache.getComposingAccount();
         alternatesPopup = new ListPopupWindow(context);
-        alternatesAdapter = new AlternateRecipientAdapter(context, this, account);
+        alternatesAdapter.setUp(this, account);
         alternatesPopup.setAdapter(alternatesAdapter);
 
         // don't allow duplicates, based on equality of recipient objects, which is e-mail addresses
@@ -113,7 +116,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         // Note that we override performCompletion, so this doesn't actually do anything
         performBestGuess(true);
 
-        adapter = new RecipientAdapter(context);
+        adapter = new RecipientAdapter(context, contactPictureLoader);
         setAdapter(adapter);
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
@@ -697,5 +700,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 photoThumbnailUri = Uri.parse(uriString);
             }
         }
+    }
+
+
+    private ApplicationComponent getApplicationComponent(Context context) {
+        return ((K9) context.getApplicationContext()).getComponent();
     }
 }

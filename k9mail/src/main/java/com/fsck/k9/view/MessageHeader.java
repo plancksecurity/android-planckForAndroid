@@ -22,7 +22,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
@@ -47,9 +47,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
 import timber.log.Timber;
 
 
@@ -76,7 +77,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private SavedState mSavedState;
 
     private MessageHelper mMessageHelper;
-    private ContactPictureLoader contactsPictureLoader;
     private PEpContactBadge mContactBadge;
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
@@ -86,7 +86,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnMessageOptionsListener onMessageOptionsListener;
     private ImageView moreOptions;
-    private PermissionChecker permissionChecker;
+    @Inject PermissionChecker permissionChecker;
+    @Inject ContactPictureLoader contactsPictureLoader;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
         this.onMessageOptionsListener = onMessageOptionsListener;
@@ -110,8 +111,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        contactsPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
-        permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
+        getApplicationComponent().inject(this);
+
     }
 
     @Override
@@ -626,5 +627,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setPrivacyProtected(boolean enabled) {
         mContactBadge.setPepRating(pEpRating, enabled);
+    }
+
+    private ApplicationComponent getApplicationComponent() {
+        return ((K9) mContext.getApplicationContext()).getComponent();
     }
 }

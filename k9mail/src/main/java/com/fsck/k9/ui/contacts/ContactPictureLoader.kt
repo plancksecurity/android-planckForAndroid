@@ -21,11 +21,13 @@ import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
 import com.fsck.k9.view.RecipientSelectView.Recipient
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Named
 import kotlin.math.max
 
 
-class ContactPictureLoader(
-        private val context: Context,
+class ContactPictureLoader @Inject constructor(
+        @Named("AppContext") private val context: Context,
         private val contactLetterBitmapCreator: ContactLetterBitmapCreator) {
 
     private val contactsHelper: Contacts = Contacts.getInstance(context)

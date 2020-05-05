@@ -18,16 +18,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.infrastructure.modules.ContactLoaderModule;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.ThemeUtils;
 
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 public class AlternateRecipientAdapter extends BaseAdapter {
@@ -37,21 +38,29 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
 
     private final Context context;
-    private final AlternateRecipientListener listener;
-    private final Account account;
+    private final ContactPictureLoader contactPictureLoader;
+    private AlternateRecipientListener listener;
+    private Account account;
     private List<Recipient> recipients;
     private Recipient currentRecipient;
     private final PEpProvider pEp;
-    private ContactPictureLoader contactPictureLoader;
 
 
-    public AlternateRecipientAdapter(Context context, AlternateRecipientListener listener, Account account) {
+    @Inject
+    public AlternateRecipientAdapter(@Named("AppContext") Context context,
+                                     @Named("MainUI") PEpProvider pEp,
+                                     ContactPictureLoader contactPictureLoader
+    ) {
         super();
         this.context = context;
+        this.pEp = pEp;
+        this.contactPictureLoader = contactPictureLoader;
+    }
+
+    public void setUp(AlternateRecipientListener listener, Account account) {
         this.listener = listener;
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
         this.account = account;
-        contactPictureLoader = new ContactLoaderModule(context).provideContactPictureLoader();
+
     }
 
     public void setCurrentRecipient(Recipient currentRecipient) {
@@ -113,7 +122,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     }
 
     public View newView(ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.recipient_alternate_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recipient_alternate_item, parent, false);
 
         RecipientTokenHolder holder = new RecipientTokenHolder(view);
         view.setTag(holder);
