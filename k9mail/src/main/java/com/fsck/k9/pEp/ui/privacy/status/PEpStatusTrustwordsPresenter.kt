@@ -13,14 +13,16 @@ import foundation.pEp.jniadapter.Identity
 import security.pEp.permissions.PermissionChecker
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class PEpStatusTrustwordsPresenter @Inject constructor(
-        private val permissionChecker: PermissionChecker
+        val permissionChecker: PermissionChecker,
+        @Named("MainUI") val pep: PEpProvider
 ) {
     private lateinit var context: Context
     private lateinit var identityView: PEpStatusIdentityView
     private lateinit var myself: Identity
-    private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
+    //private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
     private var areTrustwordsShort: Boolean = true
     private var currentLanguage: String = getLanguageForTrustwords()
     private lateinit var localesMap: Map<String, String>
@@ -29,8 +31,10 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
         const val PEP_DEFAULT_LANGUAGE = "en"
     }
 
-    fun initialize(context: Context, myselfAddress: String) {
+    fun initialize(context: Context, myselfAddress: String, identityView: PEpStatusIdentityView) {
+        this.context = context
         myself = PEpUtils.createIdentity(Address(myselfAddress), context)
+        this.identityView = identityView
     }
 
     private fun getLocalesMapFromPep() : Map<String, String> {
@@ -89,10 +93,10 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
             val fullTrustwords = handshakeData.fullTrustwords
             val shortTrustwords = handshakeData.shortTrustwords
             if (areTrustwordsShort) {
-                identityView.setShortTrustwords(shortTrustwords)
+                (identityView as PEpStatusPEpIdentityView).setShortTrustwords(shortTrustwords)
 
             } else {
-                identityView.setLongTrustwords(fullTrustwords)
+                (identityView as PEpStatusPEpIdentityView).setLongTrustwords(fullTrustwords)
             }
             identityView.enableButtons(true)
         }
@@ -104,7 +108,7 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
             val myselfLabelText = getToFriendly(myself, contacts)
             val partnerLabelText = getToFriendly(partner, contacts)
 
-            identityView.setLabelTexts(
+            (identityView as PEpStatusPGPIdentityView).setLabelTexts(
                     if(myselfLabelText == myself.address) {
                         String.format(context.getString(R.string.pep_myself_format), myself.address)
                     }
@@ -120,7 +124,7 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
                     }
             )
 
-            identityView.setFingerPrintTexts(PEpUtils.formatFpr(myself.fpr), PEpUtils.formatFpr(partner.fpr))
+            (identityView as PEpStatusPGPIdentityView).setFingerPrintTexts(PEpUtils.formatFpr(myself.fpr), PEpUtils.formatFpr(partner.fpr))
             identityView.enableButtons(true)
         }
     }

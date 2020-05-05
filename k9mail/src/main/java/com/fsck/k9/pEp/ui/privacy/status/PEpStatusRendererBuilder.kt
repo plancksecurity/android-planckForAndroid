@@ -52,12 +52,4 @@ class PEpStatusRendererBuilder @Inject constructor(
                 pEpStatusUnsecureRenderer
         )
     }
-
-    interface ResetClickListener {
-        fun keyReset(identity: PEpIdentity)
-    }
-
-    interface HandshakeResultListener {
-        fun onHandshakeResult(id: PEpIdentity, trust: Boolean)
-    }
 }

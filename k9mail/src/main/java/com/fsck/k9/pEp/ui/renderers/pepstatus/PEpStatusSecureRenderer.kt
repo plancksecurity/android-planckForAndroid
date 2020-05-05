@@ -18,22 +18,13 @@ import javax.inject.Inject
 
 
 class PEpStatusSecureRenderer @Inject constructor(
-        permissionChecker: PermissionChecker
+        permissionChecker: PermissionChecker,
+        trustwordsPresenter: PEpStatusTrustwordsPresenter
 )
-    : PEpStatusBaseRenderer(permissionChecker), PEpStatusPEpIdentityView {
-
-    var myself: String = ""
-    set(value) {
-        field = value
-        trustwordsPresenter = PEpStatusTrustwordsPresenter(value, context, this, permissionChecker)
-    }
-
-    lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
+    : PEpStatusHandshakeRenderer(permissionChecker, trustwordsPresenter), PEpStatusPEpIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
-
-    private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.trustwords)
     lateinit var trustwordsTv: TextSwitcher

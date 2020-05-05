@@ -189,12 +189,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @NonNull
-    private PEpStatusRendererBuilder.ResetClickListener getOnResetClickListener() {
+    private PEpStatusRvRAdapter.ResetClickListener getOnResetClickListener() {
         return identity -> presenter.resetpEpData(identity);
     }
 
     @NonNull
-    private PEpStatusRendererBuilder.HandshakeResultListener getOnHandshakeResultListener() {
+    private PEpStatusRvRAdapter.HandshakeResultListener getOnHandshakeResultListener() {
         return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
     }
 

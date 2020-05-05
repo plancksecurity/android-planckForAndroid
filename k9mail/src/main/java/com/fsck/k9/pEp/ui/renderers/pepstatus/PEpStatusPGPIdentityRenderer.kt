@@ -15,22 +15,12 @@ import javax.inject.Inject
 
 
 class PEpStatusPGPIdentityRenderer @Inject constructor(
-        permissionChecker: PermissionChecker
+        permissionChecker: PermissionChecker,
+        trustwordsPresenter: PEpStatusTrustwordsPresenter
 )
-    : PEpStatusBaseRenderer(permissionChecker), PEpStatusPGPIdentityView {
-
-    var myself: String = ""
-        set(value) {
-            field = value
-            trustwordsPresenter = PEpStatusTrustwordsPresenter(value, context, this, permissionChecker)
-        }
-
-    lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
+    : PEpStatusHandshakeRenderer(permissionChecker, trustwordsPresenter), PEpStatusPGPIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
-
-
-    private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.rejectHandshake)
     lateinit var rejectFingerPrintsButton: Button

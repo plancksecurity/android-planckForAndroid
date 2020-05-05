@@ -12,8 +12,8 @@ import com.pedrogomez.renderers.exception.NullRendererBuiltException
 class PEpStatusRvRAdapter(
         rendererBuilder: PEpStatusRendererBuilder,
         identityList: AdapteeCollection<PEpIdentity>,
-        var resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
-        var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
+        var resetClickListener: ResetClickListener,
+        var handshakeResultListener: HandshakeResultListener,
         var myself: String
 ): RVRendererAdapter<PEpIdentity>(rendererBuilder, identityList) {
 
@@ -26,15 +26,8 @@ class PEpStatusRvRAdapter(
 
     private fun setRendererParameters(renderer: Renderer<*>) {
         when(renderer) {
-            is PEpStatusPGPIdentityRenderer -> {
-                renderer.myself = myself
-                renderer.resetClickListener = resetClickListener
-                renderer.handshakeResultListener = handshakeResultListener
-            }
-            is PEpStatusSecureRenderer-> {
-                renderer.myself = myself
-                renderer.resetClickListener = resetClickListener
-                renderer.handshakeResultListener = handshakeResultListener
+            is PEpStatusHandshakeRenderer -> {
+                renderer.initialize(myself, resetClickListener, handshakeResultListener)
             }
             is PEpStatusUnsecureRenderer -> {
                 renderer.resetClickListener = resetClickListener
@@ -44,5 +37,13 @@ class PEpStatusRvRAdapter(
             }
             else -> throw(IllegalArgumentException("Wrong Renderer class in adapter: ${renderer.javaClass.simpleName}"))
         }
+    }
+
+    interface ResetClickListener {
+        fun keyReset(identity: PEpIdentity)
+    }
+
+    interface HandshakeResultListener {
+        fun onHandshakeResult(id: PEpIdentity, trust: Boolean)
     }
 }
