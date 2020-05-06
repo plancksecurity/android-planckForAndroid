@@ -454,6 +454,21 @@ public class TestUtils {
                             case "smtp_port3":
                                 testConfig.setSmtp_port(line[1], 2);
                                 break;
+                            case "keysync_account_1":
+                                testConfig.setKeySync_account(line[1], 0);
+                                break;
+                            case "keysync_password_1":
+                                testConfig.setKeySync_password(line[1], 0);
+                                break;
+                            case "keysync_account_2":
+                                testConfig.setKeySync_account(line[1], 1);
+                                break;
+                            case "keysync_password_2":
+                                testConfig.setKeySync_password(line[1], 1);
+                                break;
+                            case "keysync_number":
+                                testConfig.setKeySync_number(Integer.parseInt(line[1]));
+                                break;
                             default:
                                 break;
                         }
