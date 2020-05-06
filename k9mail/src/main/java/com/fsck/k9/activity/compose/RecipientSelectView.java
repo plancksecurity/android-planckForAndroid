@@ -122,7 +122,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         View view = inflateLayout();
 
-        RecipientTokenViewHolder holder = new RecipientTokenViewHolder(view);
+        RecipientTokenViewHolder holder =
+                new RecipientTokenViewHolder(view, contactPictureLoader, account, cryptoProvider);
         view.setTag(holder);
 
         bindObjectView(recipient, view);
@@ -139,45 +140,21 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void bindObjectView(Recipient recipient, View view) {
         RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
 
-        holder.vName.setText(recipient.getDisplayNameOrAddress());
-
-        contactPictureLoader.setContactPicture(holder.vContactPhoto, recipient);
+        holder.bind(recipient);
 
         pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
-                updateRating(rating, holder, recipient);
+                holder.updateRating(rating);
+                postInvalidateDelayed(100);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                updateRating(Rating.pEpRatingUndefined, holder, recipient);
+                holder.updateRating(Rating.pEpRatingUndefined);
+                postInvalidateDelayed(100);
             }
         });
-    }
-
-    private void updateRating(Rating rating, RecipientTokenViewHolder holder, Recipient recipient) {
-        holder.vContactPhoto.setPepRating(rating, account.ispEpPrivacyProtected());
-
-        boolean hasCryptoProvider = cryptoProvider != null;
-        if (!hasCryptoProvider) {
-            holder.cryptoStatusRed.setVisibility(View.GONE);
-            holder.cryptoStatusOrange.setVisibility(View.GONE);
-            holder.cryptoStatusGreen.setVisibility(View.GONE);
-        } else if (recipient.getCryptoStatus() == RecipientCryptoStatus.UNAVAILABLE) {
-            holder.cryptoStatusRed.setVisibility(View.VISIBLE);
-            holder.cryptoStatusOrange.setVisibility(View.GONE);
-            holder.cryptoStatusGreen.setVisibility(View.GONE);
-        } else if (recipient.getCryptoStatus() == RecipientCryptoStatus.AVAILABLE_UNTRUSTED) {
-            holder.cryptoStatusRed.setVisibility(View.GONE);
-            holder.cryptoStatusOrange.setVisibility(View.VISIBLE);
-            holder.cryptoStatusGreen.setVisibility(View.GONE);
-        } else if (recipient.getCryptoStatus() == RecipientCryptoStatus.AVAILABLE_TRUSTED) {
-            holder.cryptoStatusRed.setVisibility(View.GONE);
-            holder.cryptoStatusOrange.setVisibility(View.GONE);
-            holder.cryptoStatusGreen.setVisibility(View.VISIBLE);
-        }
-        invalidate();
     }
 
     @Override
@@ -477,8 +454,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         if (listener != null) {
             listener.onTokenChanged(currentRecipient);
         }
-
-        invalidate();
     }
 
     /**
@@ -554,26 +529,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             this.view = view;
         }
     }
-
-    private static class RecipientTokenViewHolder {
-        public final TextView vName;
-        public final PEpContactBadge vContactPhoto;
-        public final View cryptoStatusRed;
-        public final View cryptoStatusOrange;
-        public final View cryptoStatusGreen;
-
-
-        RecipientTokenViewHolder(View view) {
-            vName = view.findViewById(android.R.id.text1);
-            vContactPhoto = view.findViewById(R.id.contact_photo);
-            cryptoStatusRed = view.findViewById(R.id.contact_crypto_status_red);
-            cryptoStatusOrange = view.findViewById(R.id.contact_crypto_status_orange);
-            cryptoStatusGreen = view.findViewById(R.id.contact_crypto_status_green);
-        }
-    }
-
-
-
 
     private ApplicationComponent getApplicationComponent(Context context) {
         return ((K9) context.getApplicationContext()).getComponent();

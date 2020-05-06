@@ -31,7 +31,6 @@ class ContactPictureLoader @Inject constructor(
         private val contactLetterBitmapCreator: ContactLetterBitmapCreator) {
 
     private val contactsHelper: Contacts = Contacts.getInstance(context)
-    private val pictureSizeInPx: Int = PICTURE_SIZE.toDip(context)
     private val backgroundCacheId: String = with(contactLetterBitmapCreator.config) {
         if (hasDefaultBackgroundColor) defaultBackgroundColor.toString() else "*"
     }
@@ -48,77 +47,6 @@ class ContactPictureLoader @Inject constructor(
                 .dontAnimate()
                 .transform(CircleTransform(imageView.context))
                 .into(imageView)
-    }
-
-    fun setContactPicture(imageView: ImageView, recipient: Recipient) {
-        val contactPictureUri = recipient.photoThumbnailUri
-        if (contactPictureUri != null) {
-            setContactPicture(imageView, contactPictureUri)
-        } else {
-            setFallbackPicture(imageView, recipient.address)
-        }
-    }
-
-    private fun setContactPicture(imageView: ImageView, contactPictureUri: Uri) {
-        Glide.with(imageView.context)
-                .load(contactPictureUri)
-                .error(R.drawable.ic_contact_picture)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .dontAnimate()
-                .transform(CircleTransform(imageView.context))
-                .into(imageView)
-    }
-
-    private fun setFallbackPicture(imageView: ImageView, address: Address) {
-        Glide.with(imageView.context)
-                .using(AddressModelLoader(backgroundCacheId), Address::class.java)
-                .from(Address::class.java)
-                .`as`(Bitmap::class.java)
-                .decoder(ContactImageBitmapDecoder(contactLetterOnly = true))
-                .signature(contactLetterBitmapCreator.signatureOf(address))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .load(address)
-                .dontAnimate()
-                .transform(CircleTransform(imageView.context))
-                .into(imageView)
-    }
-
-    @WorkerThread
-    fun getContactPicture(recipient: Recipient): Bitmap? {
-        val contactPictureUri = recipient.photoThumbnailUri
-        val address = recipient.address
-
-        return if (contactPictureUri != null) {
-            getContactPicture(contactPictureUri)
-        } else {
-            getFallbackPicture(address)
-        }
-    }
-
-    private fun getContactPicture(contactPictureUri: Uri): Bitmap? {
-        return Glide.with(context)
-                .load(contactPictureUri)
-                .asBitmap()
-                .error(R.drawable.ic_contact_picture)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .dontAnimate()
-                .transform(CircleTransform(context))
-                .into(pictureSizeInPx, pictureSizeInPx)
-                .getOrNull()
-    }
-
-    private fun getFallbackPicture(address: Address): Bitmap? {
-        return Glide.with(context)
-                .using(AddressModelLoader(backgroundCacheId), Address::class.java)
-                .from(Address::class.java)
-                .`as`(Bitmap::class.java)
-                .decoder(ContactImageBitmapDecoder(contactLetterOnly = true))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .load(address)
-                .dontAnimate()
-                .transform(CircleTransform(context))
-                .into(pictureSizeInPx, pictureSizeInPx)
-                .getOrNull()
     }
 
     private inner class ContactImageBitmapDecoder(

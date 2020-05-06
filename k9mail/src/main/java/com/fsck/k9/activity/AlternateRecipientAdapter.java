@@ -147,7 +147,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             holder.headerAddressLabel.setVisibility(View.GONE);
         }
 
-        contactPictureLoader.setContactPicture(holder.headerPhoto, recipient);
+        contactPictureLoader.setContactPicture(holder.headerPhoto, recipient.getAddress());
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
         if (account != null) {
             holder.headerPhoto.setPepRating(pEp.getRating(recipient.getAddress()), account.ispEpPrivacyProtected());

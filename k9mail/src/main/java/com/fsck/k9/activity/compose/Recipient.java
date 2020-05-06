@@ -26,10 +26,6 @@ public class Recipient implements Serializable {
 
     private String addressLabel;
 
-    @Nullable
-    // null if the contact has no photo. transient because we serialize this manually, see below.
-    private transient Uri photoThumbnailUri;
-
     @NonNull
     private RecipientSelectView.RecipientCryptoStatus cryptoStatus;
 
@@ -53,25 +49,16 @@ public class Recipient implements Serializable {
         return address;
     }
 
-    public String getAddressLabel() {
-        return addressLabel;
-    }
-
-    @Nullable
-    public Uri getPhotoThumbnailUri() {
-        return photoThumbnailUri;
-    }
-
     public void setAddress(@NonNull Address address) {
         this.address = address;
     }
 
-    void setAddressLabel(String addressLabel) {
-        this.addressLabel = addressLabel;
+    public String getAddressLabel() {
+        return addressLabel;
     }
 
-    void setPhotoThumbnailUri(@Nullable Uri photoThumbnailUri) {
-        this.photoThumbnailUri = photoThumbnailUri;
+    void setAddressLabel(String addressLabel) {
+        this.addressLabel = addressLabel;
     }
 
     String getDisplayNameOrAddress() {
@@ -144,23 +131,9 @@ public class Recipient implements Serializable {
 
     private void writeObject(ObjectOutputStream oos) throws IOException {
         oos.defaultWriteObject();
-
-        // custom serialization, Android's Uri class is not serializable
-        if (photoThumbnailUri != null) {
-            oos.writeInt(1);
-            oos.writeUTF(photoThumbnailUri.toString());
-        } else {
-            oos.writeInt(0);
-        }
     }
 
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
         ois.defaultReadObject();
-
-        // custom deserialization, Android's Uri class is not serializable
-        if (ois.readInt() != 0) {
-            String uriString = ois.readUTF();
-            photoThumbnailUri = Uri.parse(uriString);
-        }
     }
 }

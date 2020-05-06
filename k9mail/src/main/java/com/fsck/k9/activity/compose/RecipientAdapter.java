@@ -97,7 +97,7 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
         String address = recipient.getAddress().getAddress();
         holder.email.setText(highlightText(address));
 
-        contactPictureLoader.setContactPicture(holder.photo, recipient);
+        contactPictureLoader.setContactPicture(holder.photo, recipient.getAddress());
 
         Integer cryptoStatusRes = null, cryptoStatusColor = null;
         RecipientCryptoStatus cryptoStatus = recipient.getCryptoStatus();
