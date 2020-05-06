@@ -2523,6 +2523,9 @@ public class TestUtils {
         String[] imap_port;
         String[] smtp_port;
         int total = 3;
+        String[] keySync_account;
+        String[] keySync_password;
+        int keySync_number;
 
         TestConfig(){
             this.mail = new String[total];
@@ -2533,9 +2536,12 @@ public class TestUtils {
             this.smtp_server = new String[total];
             this.imap_port = new String[total];
             this.smtp_port = new String[total];
+            this.keySync_account = new String[2];
+            this.keySync_password = new String[2];
+            keySync_number = 0;
         }
 
-        public void setMail(String mail, int account) { this.mail[account] = mail;}
+        void setMail(String mail, int account) { this.mail[account] = mail;}
         void setPassword(String password, int account) { this.password[account] = password;}
         void setUsername(String username, int account) { this.username[account] = username;}
         void setTrusted_server(boolean trusted_server, int account) { this.trusted_server[account] = trusted_server;}
@@ -2543,6 +2549,9 @@ public class TestUtils {
         void setSmtp_server(String smtp_server, int account) { this.smtp_server[account] = smtp_server;}
         void setImap_port(String imap_port, int account) { this.imap_port[account] = imap_port;}
         void setSmtp_port(String smtp_port, int account) { this.smtp_port[account] = smtp_port;}
+        void setKeySync_account(String mail, int account) { this.keySync_account[account] = mail;}
+        void setKeySync_password(String password, int account) { this.keySync_password[account] = password;}
+        void setKeySync_number(int number) { this.keySync_number = number;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
@@ -2552,5 +2561,8 @@ public class TestUtils {
         String getSmtp_server(int account) { return smtp_server[account];}
         String getImap_port(int account) { return imap_port[account];}
         String getSmtp_port(int account) { return smtp_port[account];}
+        String getKeySync_account(int account) { return keySync_account[account];}
+        String getKeySync_password(int account) { return keySync_password[account];}
+        int getKeySync_number() { return keySync_number;}
     }
 }
