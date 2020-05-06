@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -27,8 +26,6 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.pedrogomez.renderers.ListAdapteeCollection;
-import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +37,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import security.pEp.ui.PEpUIUtils;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -62,7 +58,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     TextView itsOwnMessageTV;
 
     RecyclerView.LayoutManager recipientsLayoutManager;
-    private PEpStatusRvRAdapter recipientsAdapter;
+    private PEpStatusRendererAdapter recipientsAdapter;
 
     String sender = "";
     private MessageReference messageReference;
@@ -175,7 +171,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsView.setLayoutManager(recipientsLayoutManager);
 
         ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
-        recipientsAdapter = new PEpStatusRvRAdapter(
+        recipientsAdapter = new PEpStatusRendererAdapter(
                 rendererBuilder,
                 adapteeCollection,
                 getOnResetClickListener(),
@@ -189,12 +185,12 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     @NonNull
-    private PEpStatusRvRAdapter.ResetClickListener getOnResetClickListener() {
+    private PEpStatusRendererAdapter.ResetClickListener getOnResetClickListener() {
         return identity -> presenter.resetpEpData(identity);
     }
 
     @NonNull
-    private PEpStatusRvRAdapter.HandshakeResultListener getOnHandshakeResultListener() {
+    private PEpStatusRendererAdapter.HandshakeResultListener getOnHandshakeResultListener() {
         return (identity, trust) -> presenter.onHandshakeResult(identity, trust);
     }
 

@@ -20,19 +20,16 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererAdapter
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
 import security.pEp.permissions.PermissionChecker
-import security.pEp.ui.permissions.PEpPermissionChecker
-import timber.log.Timber
-import javax.inject.Inject
 
 abstract class PEpStatusBaseRenderer (
         var permissionChecker: PermissionChecker
 ) : Renderer<PEpIdentity>() {
 
-    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
+    lateinit var resetClickListener: PEpStatusRendererAdapter.ResetClickListener
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -77,7 +74,6 @@ abstract class PEpStatusBaseRenderer (
             mContactsPictureLoader.loadContactPicture(realAddress, badge)
             badge.setPepRating(identity.rating, true)
         }
-        Timber.d("==== permissionchecker is $permissionChecker")
         val contacts = if (permissionChecker.hasContactsPermission() &&
                 K9.showContactName()) Contacts.getInstance(context) else null
         renderContact(realAddress, contacts)
@@ -101,7 +97,7 @@ abstract class PEpStatusBaseRenderer (
         ButterKnife.bind(this, rootView)
     }
 
-    fun setMyContent(content: PEpIdentity) {
-        setContent(content)
+    fun initialize(resetClickListener: PEpStatusRendererAdapter.ResetClickListener) {
+        this.resetClickListener = resetClickListener
     }
 }

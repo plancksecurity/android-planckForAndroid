@@ -9,7 +9,7 @@ import com.pedrogomez.renderers.Renderer
 import com.pedrogomez.renderers.RendererViewHolder
 import com.pedrogomez.renderers.exception.NullRendererBuiltException
 
-class PEpStatusRvRAdapter(
+class PEpStatusRendererAdapter(
         rendererBuilder: PEpStatusRendererBuilder,
         identityList: AdapteeCollection<PEpIdentity>,
         var resetClickListener: ResetClickListener,
@@ -30,10 +30,10 @@ class PEpStatusRvRAdapter(
                 renderer.initialize(myself, resetClickListener, handshakeResultListener)
             }
             is PEpStatusUnsecureRenderer -> {
-                renderer.resetClickListener = resetClickListener
+                renderer.initialize(resetClickListener)
             }
             is PEpStatusTrustedRenderer -> {
-                renderer.resetClickListener = resetClickListener
+                renderer.initialize(resetClickListener)
             }
             else -> throw(IllegalArgumentException("Wrong Renderer class in adapter: ${renderer.javaClass.simpleName}"))
         }

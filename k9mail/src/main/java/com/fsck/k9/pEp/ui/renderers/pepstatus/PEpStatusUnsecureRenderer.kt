@@ -12,4 +12,5 @@ class PEpStatusUnsecureRenderer @Inject constructor(
     : PEpStatusBaseRenderer(permissionChecker) {
     override fun getLayout() = R.layout.pep_recipient_row_only_text_and_reset
 
+
 }

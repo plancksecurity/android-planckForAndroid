@@ -17,12 +17,11 @@ import javax.inject.Named
 
 class PEpStatusTrustwordsPresenter @Inject constructor(
         val permissionChecker: PermissionChecker,
-        @Named("MainUI") val pep: PEpProvider
+        @Named("MainUI") val pep: PEpProvider,
+        @Named("AppContext") val context: Context
 ) {
-    private lateinit var context: Context
     private lateinit var identityView: PEpStatusIdentityView
     private lateinit var myself: Identity
-    //private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
     private var areTrustwordsShort: Boolean = true
     private var currentLanguage: String = getLanguageForTrustwords()
     private lateinit var localesMap: Map<String, String>
@@ -32,7 +31,6 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
     }
 
     fun initialize(context: Context, myselfAddress: String, identityView: PEpStatusIdentityView) {
-        this.context = context
         myself = PEpUtils.createIdentity(Address(myselfAddress), context)
         this.identityView = identityView
     }
@@ -98,7 +96,6 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
             } else {
                 (identityView as PEpStatusPEpIdentityView).setLongTrustwords(fullTrustwords)
             }
-            identityView.enableButtons(true)
         }
         else if(identityView is PEpStatusPGPIdentityView) {
             myself = handshakeData.myself
@@ -107,26 +104,10 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
                     K9.showContactName()) Contacts.getInstance(context) else null
             val myselfLabelText = getToFriendly(myself, contacts)
             val partnerLabelText = getToFriendly(partner, contacts)
-
-            (identityView as PEpStatusPGPIdentityView).setLabelTexts(
-                    if(myselfLabelText == myself.address) {
-                        String.format(context.getString(R.string.pep_myself_format), myself.address)
-                    }
-                    else {
-                        String.format(context.getString(R.string.pep_complete_myself_format), myselfLabelText, myself.address)
-                    },
-
-                    if(partnerLabelText == partner.address) {
-                        String.format(context.getString(R.string.pep_myself_format), partner.address)
-                    }
-                    else {
-                        String.format(context.getString(R.string.pep_complete_partner_format), partnerLabelText, partner.address)
-                    }
-            )
-
+            (identityView as PEpStatusPGPIdentityView).setLabelTexts(myself.address, myselfLabelText, partner.address, partnerLabelText)
             (identityView as PEpStatusPGPIdentityView).setFingerPrintTexts(PEpUtils.formatFpr(myself.fpr), PEpUtils.formatFpr(partner.fpr))
-            identityView.enableButtons(true)
         }
+        identityView.enableButtons(true)
     }
 
     private fun getToFriendly(identity: Identity, contacts: Contacts?) : CharSequence {

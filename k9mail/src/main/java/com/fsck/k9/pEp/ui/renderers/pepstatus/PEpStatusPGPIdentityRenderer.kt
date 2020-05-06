@@ -79,8 +79,22 @@ class PEpStatusPGPIdentityRenderer @Inject constructor(
         partnerFpr.text = partnerFprText
     }
 
-    override fun setLabelTexts(myselfLabelText: String, partnerLabelText: String) {
-        myselfLabel.text = myselfLabelText
-        partnerLabel.text = partnerLabelText
+    override fun setLabelTexts(
+            myselfAddress: String, myselfLabelText: CharSequence, partnerAddress: String, partnerLabelText: CharSequence) {
+        myselfLabel.text =
+        if(myselfLabelText == myselfAddress) {
+            String.format(context.getString(R.string.pep_myself_format), myselfAddress)
+        }
+        else {
+            String.format(context.getString(R.string.pep_complete_myself_format), myselfLabelText, myselfAddress)
+        }
+
+        partnerLabel.text =
+        if(partnerLabelText == partnerAddress) {
+            String.format(context.getString(R.string.pep_myself_format), partnerAddress)
+        }
+        else {
+            String.format(context.getString(R.string.pep_complete_partner_format), partnerLabelText, partnerAddress)
+        }
     }
 }

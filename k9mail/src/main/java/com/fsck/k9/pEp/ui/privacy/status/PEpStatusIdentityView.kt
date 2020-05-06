@@ -11,6 +11,7 @@ interface PEpStatusPEpIdentityView : PEpStatusIdentityView {
 }
 
 interface PEpStatusPGPIdentityView : PEpStatusIdentityView {
-    fun setLabelTexts(myselfLabelText: String, partnerLabelText: String)
+    fun setLabelTexts(
+            myselfAddress: String, myselfLabelText: CharSequence, partnerAddress: String, partnerLabelText: CharSequence)
     fun setFingerPrintTexts(myselfFprText: String, partnerFprText: String)
 }
