@@ -648,6 +648,28 @@ public class CucumberTestSteps {
         device.waitForIdle();
         testUtils.pressBack();
     }
+
+
+    @When("^I keysync devices A and B$")
+    public void I_keysync_devices_A_B() {
+
+    }
+
+    @When("^I keysync device C$")
+    public void I_keysync_devices_C() {
+
+    }
+
+    @When("^I setup second account for devices A and B$")
+    public void I_setup_second_account_for_devices_A_B() {
+
+    }
+
+    @When("^I remove from keysync device C$")
+    public void I_remove_from_keysync_device_C() {
+
+    }
+
     @When("^I reject trust words$")
     public void I_reject_trust_words() {
         timeRequiredForThisMethod(10);
