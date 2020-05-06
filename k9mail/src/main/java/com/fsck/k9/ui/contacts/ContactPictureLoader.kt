@@ -17,9 +17,9 @@ import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.request.FutureTarget
 import com.fsck.k9.R
+import com.fsck.k9.activity.compose.Recipient
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
-import com.fsck.k9.view.RecipientSelectView.Recipient
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named

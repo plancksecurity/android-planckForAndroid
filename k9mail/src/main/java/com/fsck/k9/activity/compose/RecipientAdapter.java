@@ -22,8 +22,7 @@ import android.widget.TextView;
 
 import com.fsck.k9.R;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
-import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
+import com.fsck.k9.activity.compose.RecipientSelectView.RecipientCryptoStatus;
 import com.fsck.k9.view.ThemeUtils;
 
 import javax.inject.Inject;
@@ -95,7 +94,7 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
 
         holder.name.setText(highlightText(recipient.getDisplayNameOrUnknown(context)));
 
-        String address = recipient.address.getAddress();
+        String address = recipient.getAddress().getAddress();
         holder.email.setText(highlightText(address));
 
         contactPictureLoader.setContactPicture(holder.photo, recipient);

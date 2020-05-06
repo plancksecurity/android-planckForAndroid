@@ -19,10 +19,10 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.compose.Recipient;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.fsck.k9.view.ThemeUtils;
 
 import java.util.List;
@@ -140,8 +140,8 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         holder.setShowAsHeader(true);
 
         holder.headerName.setText(recipient.getNameOrUnknown(context));
-        if (!TextUtils.isEmpty(recipient.addressLabel)) {
-            holder.headerAddressLabel.setText(recipient.addressLabel);
+        if (!TextUtils.isEmpty(recipient.getAddressLabel())) {
+            holder.headerAddressLabel.setText(recipient.getAddressLabel());
             holder.headerAddressLabel.setVisibility(View.VISIBLE);
         } else {
             holder.headerAddressLabel.setVisibility(View.GONE);
@@ -150,7 +150,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         contactPictureLoader.setContactPicture(holder.headerPhoto, recipient);
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
         if (account != null) {
-            holder.headerPhoto.setPepRating(pEp.getRating(recipient.address), account.ispEpPrivacyProtected());
+            holder.headerPhoto.setPepRating(pEp.getRating(recipient.getAddress()), account.ispEpPrivacyProtected());
         }
 
         holder.headerRemove.setOnClickListener(new OnClickListener() {
@@ -165,10 +165,10 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         RecipientTokenHolder holder = (RecipientTokenHolder) view.getTag();
         holder.setShowAsHeader(false);
 
-        String address = recipient.address.getAddress();
+        String address = recipient.getAddress().getAddress();
         holder.itemAddress.setText(address);
-        if (!TextUtils.isEmpty(recipient.addressLabel)) {
-            holder.itemAddressLabel.setText(recipient.addressLabel);
+        if (!TextUtils.isEmpty(recipient.getAddressLabel())) {
+            holder.itemAddressLabel.setText(recipient.getAddressLabel());
             holder.itemAddressLabel.setVisibility(View.VISIBLE);
         } else {
             holder.itemAddressLabel.setVisibility(View.GONE);

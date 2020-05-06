@@ -10,7 +10,7 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.view.MessageHeader;
-import com.fsck.k9.view.RecipientSelectView;
+import com.fsck.k9.activity.compose.RecipientSelectView;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
