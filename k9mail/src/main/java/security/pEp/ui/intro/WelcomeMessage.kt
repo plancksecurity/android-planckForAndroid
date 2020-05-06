@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,7 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
+import com.fsck.k9.pEp.ui.fragments.PEpFragment
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
@@ -94,11 +94,14 @@ class WelcomeMessage : AppIntro() {
     }
 
 }
-
-class IntroFirstFragment : Fragment() {
+class IntroFirstFragment : PEpFragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
+
+    override fun inject() {
+        getpEpComponent().inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
@@ -138,10 +141,14 @@ class IntroThirdFragment : Fragment() {
 
 }
 
-class IntroFourthFragment : Fragment() {
+class IntroFourthFragment : PEpFragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
+
+    override fun inject() {
+        getpEpComponent().inject(this)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
