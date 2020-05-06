@@ -1,17 +1,15 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusHandshakeView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererAdapter
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
-import security.pEp.permissions.PermissionChecker
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityPresenter
 
 abstract class PEpStatusHandshakeRenderer constructor(
-        permissionChecker: PermissionChecker,
-        val trustwordsPresenter: PEpStatusTrustwordsPresenter
-): PEpStatusBaseRenderer(permissionChecker), PEpStatusIdentityView {
-    lateinit var myself: String
+        identityPresenter: PEpStatusIdentityPresenter
+): PEpStatusBaseRenderer(identityPresenter), PEpStatusHandshakeView {
 
     lateinit var handshakeResultListener: PEpStatusRendererAdapter.HandshakeResultListener
+    lateinit var myself: String
 
     fun initialize(
             myself: String,
@@ -19,8 +17,8 @@ abstract class PEpStatusHandshakeRenderer constructor(
             handshakeResultListener: PEpStatusRendererAdapter.HandshakeResultListener
     ) {
         initialize(resetClickListener)
-        this.myself = myself
         this.handshakeResultListener = handshakeResultListener
-        trustwordsPresenter.initialize(myself, this)
+        this.myself = myself
+        identityPresenter.initializeHandshakeView(myself, this)
     }
 }

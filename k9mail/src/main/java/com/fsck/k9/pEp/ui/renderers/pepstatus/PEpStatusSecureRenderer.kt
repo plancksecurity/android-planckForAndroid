@@ -8,20 +8,16 @@ import butterknife.OnClick
 import butterknife.OnLongClick
 import com.fsck.k9.R
 import com.fsck.k9.pEp.models.PEpIdentity
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPEpIdentityView
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import security.pEp.permissions.PermissionChecker
 import javax.inject.Inject
 
 
 class PEpStatusSecureRenderer @Inject constructor(
-        permissionChecker: PermissionChecker,
-        trustwordsPresenter: PEpStatusTrustwordsPresenter
+        identityPresenter: PEpStatusIdentityPresenter
 )
-    : PEpStatusHandshakeRenderer(permissionChecker, trustwordsPresenter), PEpStatusPEpIdentityView {
+    : PEpStatusHandshakeRenderer(identityPresenter), PEpStatusPEpIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
@@ -49,18 +45,18 @@ class PEpStatusSecureRenderer @Inject constructor(
     }
 
     private fun doLoadTrustWords(identity: PEpIdentity) {
-        trustwordsPresenter.loadHandshakeData(identity)
+        identityPresenter.loadHandshakeData(identity)
     }
 
     @OnClick(R.id.trustwords)
     fun doShowFullTrustwords() {
-        trustwordsPresenter.changeTrustwordsSize(content, false)
+        identityPresenter.changeTrustwordsSize(content, false)
     }
 
 
     @OnLongClick(R.id.trustwords)
     fun doShowShortTrustwords() : Boolean {
-        trustwordsPresenter.changeTrustwordsSize(content, true)
+        identityPresenter.changeTrustwordsSize(content, true)
         return true
     }
 
@@ -71,24 +67,24 @@ class PEpStatusSecureRenderer @Inject constructor(
 
     @OnClick(R.id.rejectHandshake)
     fun onRejectTrustwordsClicked() {
-        trustwordsPresenter.rejectHandshake(content)
+        identityPresenter.rejectHandshake(content)
         handshakeResultListener.onHandshakeResult(content, false)
     }
 
     @OnClick(R.id.confirmHandshake)
     fun onConfirmTrustwordsClicked() {
-        trustwordsPresenter.confirmHandshake(content)
+        identityPresenter.confirmHandshake(content)
         handshakeResultListener.onHandshakeResult(content, true)
     }
 
     private fun showLanguageSelectionPopup(v: View) {
         val popup = PopupMenu(context, v)
-        val langArray = trustwordsPresenter.getLanguageList()
+        val langArray = identityPresenter.getLanguageList()
         for(language in langArray) {
             popup.menu.add(language)
         }
         popup.setOnMenuItemClickListener {
-            item -> trustwordsPresenter.changeTrustwordsLanguage(content, item.title.toString())
+            item -> identityPresenter.changeTrustwordsLanguage(content, item.title.toString())
             true
         }
         popup.show()

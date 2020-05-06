@@ -1,24 +1,20 @@
 package com.fsck.k9.pEp.ui.renderers.pepstatus
 
-import android.view.View
 import android.widget.*
 import butterknife.Bind
 import butterknife.OnClick
 import com.fsck.k9.R
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPGPIdentityView
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import security.pEp.permissions.PermissionChecker
 import javax.inject.Inject
 
 
 class PEpStatusPGPIdentityRenderer @Inject constructor(
-        permissionChecker: PermissionChecker,
-        trustwordsPresenter: PEpStatusTrustwordsPresenter
+        identityPresenter: PEpStatusIdentityPresenter
 )
-    : PEpStatusHandshakeRenderer(permissionChecker, trustwordsPresenter), PEpStatusPGPIdentityView {
+    : PEpStatusHandshakeRenderer(identityPresenter), PEpStatusPGPIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
 
@@ -48,18 +44,18 @@ class PEpStatusPGPIdentityRenderer @Inject constructor(
     }
 
     private fun doLoadFingerPrints(identity: PEpIdentity) {
-        trustwordsPresenter.loadHandshakeData(identity)
+        identityPresenter.loadHandshakeData(identity)
     }
 
     @OnClick(R.id.rejectHandshake)
     fun onRejectTrustwordsClicked() {
-        trustwordsPresenter.rejectHandshake(content)
+        identityPresenter.rejectHandshake(content)
         handshakeResultListener.onHandshakeResult(content, false)
     }
 
     @OnClick(R.id.confirmHandshake)
     fun onConfirmTrustwordsClicked() {
-        trustwordsPresenter.confirmHandshake(content)
+        identityPresenter.confirmHandshake(content)
         handshakeResultListener.onHandshakeResult(content, true)
     }
 

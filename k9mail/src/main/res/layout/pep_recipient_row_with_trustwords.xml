@@ -69,6 +69,7 @@
         android:paddingRight="8dp">
 
         <TextView
+            android:id="@+id/status_explanation_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/pep_ask_trustwords"/>

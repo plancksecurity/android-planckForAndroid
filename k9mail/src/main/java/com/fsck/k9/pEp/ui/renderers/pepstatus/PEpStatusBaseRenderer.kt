@@ -10,24 +10,17 @@ import androidx.annotation.Nullable
 import butterknife.Bind
 import butterknife.ButterKnife
 import butterknife.OnClick
-import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.helper.ContactPicture
-import com.fsck.k9.helper.Contacts
-import com.fsck.k9.helper.MessageHelper
-import com.fsck.k9.helper.Utility
-import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererAdapter
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityPresenter
 import com.pedrogomez.renderers.Renderer
-import foundation.pEp.jniadapter.Rating
-import security.pEp.permissions.PermissionChecker
 
 abstract class PEpStatusBaseRenderer (
-        var permissionChecker: PermissionChecker
-) : Renderer<PEpIdentity>() {
+        val identityPresenter: PEpStatusIdentityPresenter
+) : Renderer<PEpIdentity>(), PEpStatusIdentityView {
 
     lateinit var resetClickListener: PEpStatusRendererAdapter.ResetClickListener
 
@@ -37,7 +30,7 @@ abstract class PEpStatusBaseRenderer (
     @Bind(R.id.tvRatingStatus)
     lateinit var ratingStatusTV: TextView
 
-    @Nullable @Bind(R.id.status_explanation_text)
+    @Bind(R.id.status_explanation_text)
     lateinit var statusExplanationTV: TextView
 
     @Bind(R.id.status_badge)
@@ -55,33 +48,19 @@ abstract class PEpStatusBaseRenderer (
     @LayoutRes abstract fun getLayout(): Int
 
     override fun render() {
-        val identity: PEpIdentity = content
-        renderRating(identity.rating)
-        renderBadge(identity)
+        identityPresenter.initialize(content, badge, this)
     }
 
-    private fun renderRating(rating: Rating) {
-        val artefactCache = PePUIArtefactCache.getInstance(context)
-        ratingStatusTV.text = artefactCache.getTitle(rating)
-        if(::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
+    override fun showRatingStatus(status: String) {
+        ratingStatusTV.text = status
     }
 
-    private fun renderBadge(identity: PEpIdentity) {
-        val realAddress = Address(identity.address, identity.username)
-        if (K9.showContactPicture()) {
-            Utility.setContactForBadge(badge, realAddress)
-            val mContactsPictureLoader = ContactPicture.getContactPictureLoader(context)
-            mContactsPictureLoader.loadContactPicture(realAddress, badge)
-            badge.setPepRating(identity.rating, true)
-        }
-        val contacts = if (permissionChecker.hasContactsPermission() &&
-                K9.showContactName()) Contacts.getInstance(context) else null
-        renderContact(realAddress, contacts)
+    override fun showSuggestion(suggestion: String) {
+        statusExplanationTV.text = suggestion
     }
 
-    private fun renderContact(realAddress: Address, contacts: Contacts?) {
-        val partner = MessageHelper.toFriendly(realAddress, contacts)
-        identityUserName.text = partner
+    override fun showPartnerIdentity(partnerInfoToShow: CharSequence?) {
+        identityUserName.text = partnerInfoToShow
     }
 
     @Nullable @OnClick(R.id.button_identity_key_reset)
