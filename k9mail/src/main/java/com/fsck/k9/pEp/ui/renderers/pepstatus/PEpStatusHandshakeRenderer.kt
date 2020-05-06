@@ -21,6 +21,6 @@ abstract class PEpStatusHandshakeRenderer constructor(
         initialize(resetClickListener)
         this.myself = myself
         this.handshakeResultListener = handshakeResultListener
-        trustwordsPresenter.initialize(context, myself, this)
+        trustwordsPresenter.initialize(myself, this)
     }
 }

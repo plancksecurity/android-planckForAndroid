@@ -30,7 +30,7 @@ class PEpStatusTrustwordsPresenter @Inject constructor(
         const val PEP_DEFAULT_LANGUAGE = "en"
     }
 
-    fun initialize(context: Context, myselfAddress: String, identityView: PEpStatusIdentityView) {
+    fun initialize(myselfAddress: String, identityView: PEpStatusIdentityView) {
         myself = PEpUtils.createIdentity(Address(myselfAddress), context)
         this.identityView = identityView
     }
