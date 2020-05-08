@@ -25,7 +25,6 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.uiautomator.By;
@@ -501,7 +500,7 @@ public class TestUtils {
         onView(withId(R.id.afirmativeActionButton)).perform(click());
     }
 
-    public String KeySync_number () { return testConfig.getKeySync_number();}
+    public String keySync_number() { return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
@@ -563,7 +562,7 @@ public class TestUtils {
             }
             allowPermissions();
             readConfigFile();
-            if (keySyncAccountsExist() && !KeySync_number().equals("0")) {
+            if (keySyncAccountsExist() && !keySync_number().equals("0")) {
                 isKeySync = true;
             }
                 while (exists(onView(withId(R.id.action_continue)))) {
