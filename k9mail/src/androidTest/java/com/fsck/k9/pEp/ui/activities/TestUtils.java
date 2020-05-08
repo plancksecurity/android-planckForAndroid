@@ -484,6 +484,23 @@ public class TestUtils {
         }
     }
 
+    public void syncDevices () {
+        while (!viewIsDisplayed(R.id.main_container)) {
+            device.waitForIdle();
+            Espresso.onIdle();
+        }
+        onView(withId(R.id.afirmativeActionButton)).perform(click());
+        device.waitForIdle();
+        Espresso.onIdle();
+        String trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+        onView(withId(R.id.afirmativeActionButton)).perform(click());
+        while (!viewIsDisplayed(R.id.loading)) {
+            device.waitForIdle();
+            Espresso.onIdle();
+        }
+        onView(withId(R.id.afirmativeActionButton)).perform(click());
+    }
+
     public String KeySync_number () { return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
