@@ -79,7 +79,7 @@ public class YellowStatusEmailFromBotTest {
     }
     // TODO FIX TEST
     public void sendMessageAndAssertYellowStatusMessage() {
-        testUtils.createAccount();
+        //testUtils.createAccount();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);

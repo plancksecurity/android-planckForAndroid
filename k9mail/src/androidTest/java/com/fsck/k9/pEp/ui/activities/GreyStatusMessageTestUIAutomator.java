@@ -52,7 +52,7 @@ public class GreyStatusMessageTestUIAutomator {
 
     public void greyStatusMessageTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount();
+        //testUtils.createAccount();
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
         testUtils.testStatusMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),

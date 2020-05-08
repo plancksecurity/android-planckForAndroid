@@ -68,7 +68,7 @@ public class StatusIncomingMessageTest {
 
     // TODO FIX TEST
     private void assertPartnerStatusIsTrusted() {
-        testUtils.createAccount();
+        //testUtils.createAccount();
         testUtils.composeMessageButton();
         device.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
