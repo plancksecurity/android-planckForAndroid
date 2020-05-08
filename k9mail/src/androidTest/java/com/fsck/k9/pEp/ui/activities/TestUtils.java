@@ -210,13 +210,13 @@ public class TestUtils {
         }
     }
 
-    private void fillAccountAddress() {
+    private void fillAccountAddress(String accountAddress) {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.account_email)).perform(click());
                 device.waitForIdle();
-                onView(withId(R.id.account_email)).perform(typeText(testConfig.getMail(account)), closeSoftKeyboard());
+                onView(withId(R.id.account_email)).perform(typeText(accountAddress), closeSoftKeyboard());
             } catch (Exception ex) {
                 Timber.i("Cannot fill account email: " + ex.getMessage());
             }
@@ -456,6 +456,9 @@ public class TestUtils {
                                 break;
                             case "keysync_account_1":
                                 testConfig.setKeySync_account(line[1], 0);
+                                if (!testConfig.getKeySync_account(0).equals("")) {
+                                    totalAccounts = 1;
+                                }
                                 break;
                             case "keysync_password_1":
                                 testConfig.setKeySync_password(line[1], 0);
@@ -467,7 +470,7 @@ public class TestUtils {
                                 testConfig.setKeySync_password(line[1], 1);
                                 break;
                             case "keysync_number":
-                                testConfig.setKeySync_number(Integer.parseInt(line[1]));
+                                testConfig.setKeySync_number(line[1]);
                                 break;
                             default:
                                 break;
@@ -479,6 +482,15 @@ public class TestUtils {
                 Timber.i("Error reading config file, trying again");
             }
         }
+    }
+
+    public String KeySync_number () { return testConfig.getKeySync_number();}
+
+    public boolean keySyncAccountsExist () {
+        return testConfig.getKeySync_password(0) != null
+                && testConfig.getKeySync_password(0) != null
+                && testConfig.getKeySync_account(1) != null
+                && testConfig.getKeySync_password(1) != null;
     }
 
     public static void assertFailWithMessage(String message) {
@@ -513,10 +525,11 @@ public class TestUtils {
     }
 
     private void createNewAccountWithPermissions(){
+        testReset = false;
+        boolean isKeySync = false;
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
-            testReset = false;
             try {
                 device.waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
@@ -533,6 +546,9 @@ public class TestUtils {
             }
             allowPermissions();
             readConfigFile();
+            if (keySyncAccountsExist() && !KeySync_number().equals("0")) {
+                isKeySync = true;
+            }
                 while (exists(onView(withId(R.id.action_continue)))) {
                     try {
                         onView(withId(R.id.action_continue)).perform(click());
@@ -542,7 +558,7 @@ public class TestUtils {
                     }
                 }
                 Timber.i("Cuentas: " +getTotalAccounts());
-                createNAccounts(getTotalAccounts());
+                createNAccounts(getTotalAccounts(), isKeySync);
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
@@ -583,7 +599,7 @@ public class TestUtils {
         }
     }
 
-    public void createNAccounts (int n) {
+    public void createNAccounts (int n, boolean isKeySync) {
         try {
             for (; account < n; account++) {
                 device.waitForIdle();
@@ -593,8 +609,13 @@ public class TestUtils {
                     device.waitForIdle();
                 }
                 addAccount();
-                fillAccountAddress();
-                fillAccountPassword();
+                if (isKeySync) {
+                    fillAccountAddress(testConfig.getKeySync_account(Integer.parseInt(testConfig.keySync_number) - 1));
+                    fillAccountPassword(testConfig.getKeySync_password(Integer.parseInt(testConfig.keySync_number) - 1));
+                } else {
+                    fillAccountAddress(testConfig.getMail(account));
+                    fillAccountPassword(testConfig.getPassword(account));
+                }
                 if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
                     manualAccount();
                 } else {
@@ -736,11 +757,11 @@ public class TestUtils {
         device.waitForIdle();
     }
 
-    private void fillAccountPassword() {
+    private void fillAccountPassword(String accountPassword) {
         while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
             try {
                 device.waitForIdle();
-                onView(withId(R.id.account_password)).perform(typeText(testConfig.getPassword(account)), closeSoftKeyboard());
+                onView(withId(R.id.account_password)).perform(typeText(accountPassword), closeSoftKeyboard());
                 device.waitForIdle();
                 if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
                     pressBack();
@@ -2540,7 +2561,7 @@ public class TestUtils {
         int total = 3;
         String[] keySync_account;
         String[] keySync_password;
-        int keySync_number;
+        String keySync_number;
 
         TestConfig(){
             this.mail = new String[total];
@@ -2553,7 +2574,7 @@ public class TestUtils {
             this.smtp_port = new String[total];
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
-            keySync_number = 0;
+            keySync_number = "0";
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
@@ -2566,7 +2587,7 @@ public class TestUtils {
         void setSmtp_port(String smtp_port, int account) { this.smtp_port[account] = smtp_port;}
         void setKeySync_account(String mail, int account) { this.keySync_account[account] = mail;}
         void setKeySync_password(String password, int account) { this.keySync_password[account] = password;}
-        void setKeySync_number(int number) { this.keySync_number = number;}
+        void setKeySync_number(String number) { this.keySync_number = number;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
@@ -2578,6 +2599,6 @@ public class TestUtils {
         String getSmtp_port(int account) { return smtp_port[account];}
         String getKeySync_account(int account) { return keySync_account[account];}
         String getKeySync_password(int account) { return keySync_password[account];}
-        int getKeySync_number() { return keySync_number;}
+        String getKeySync_number() { return keySync_number;}
     }
 }
