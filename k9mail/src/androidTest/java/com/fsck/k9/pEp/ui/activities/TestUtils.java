@@ -2408,6 +2408,10 @@ public class TestUtils {
         }
     }
 
+    public String getKeySyncAccount (int account) {
+        return testConfig.getKeySync_account(account);
+    }
+
     public static void getJSONObject(String object) {
         switch (object) {
             case "keys":
