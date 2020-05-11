@@ -144,6 +144,7 @@ dependencies {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
+    compileOnly 'com.github.pengrad:jdk9-deps:1.0'
 }
 
 android {
