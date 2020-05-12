@@ -335,7 +335,9 @@ public class TestUtils {
 
     public void createAccount() {
         createNewAccountWithPermissions();
-        getMessageListSize();
+        if (keySync_number().equals("0")) {
+            getMessageListSize();
+        }
     }
 
     public void readConfigFile() {
