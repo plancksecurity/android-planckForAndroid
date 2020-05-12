@@ -6,11 +6,11 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Layout.JUSTIFICATION_MODE_INTER_WORD
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
-import kotlinx.android.synthetic.main.activity_license.*
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
 
@@ -27,10 +27,14 @@ class LicenseActivity : PepActivity() {
 
         toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         initializeToolbar(true, getString(R.string.license))
-        licenseText.text = HtmlCompat.fromHtml(getString(R.string.gpl_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+        findViewById<TextView>(R.id.licenseText1).text = HtmlCompat.fromHtml(getString(R.string.gpl_license_1), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        findViewById<TextView>(R.id.licenseText2).text = HtmlCompat.fromHtml(getString(R.string.gpl_license_2), HtmlCompat.FROM_HTML_MODE_LEGACY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            licenseText.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+            findViewById<TextView>(R.id.licenseText1).justificationMode = JUSTIFICATION_MODE_INTER_WORD
+            findViewById<TextView>(R.id.licenseText2).justificationMode = JUSTIFICATION_MODE_INTER_WORD
         }
+
     }
 
     override fun inject() {

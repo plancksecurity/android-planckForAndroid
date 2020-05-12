@@ -16,6 +16,6 @@
   <string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd vanp≡p.</string>
   <string name="account_recreate_dlg_instructions_fmt">Alle data voor \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van p≡p, maar account instellingen blijven behouden.</string>
 
-  <string name="pep_app_license">Gelicentieerd onder pEp security EULA</string>
+  <string name="pep_app_license">Gelicentieerd onder pEp security GPLv3</string>
 
 </resources>

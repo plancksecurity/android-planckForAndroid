@@ -79,7 +79,6 @@
     <string name="pep_enable_privacy_protection">p≡p privacybescherming</string>
     <string name="pep_explanation">Uitleg</string>
     <string name="pep_suggestion">Suggestie</string>
-    <string name="pep_app_license">Gelicentieerd onder pEp security EULA</string>
     <string name="pep_trust_server_description">Bewaar mails aan de serverzijde in een veilige vorm.</string>
     <string name="pep_account_privacy_protection_explanation">Schakel p≡p-privacybescherming in voor dit account</string>
     <string name="pep_forward_warning">Onveilige antwoordwaarschuwing</string>

@@ -18,6 +18,5 @@
   <string name="account_delete_dlg_instructions_fmt">Hesap \"<xliff:g id="account">%s</xliff:g>\" K-9 Mail\'den kaldırılacak.</string>
   <string name="account_recreate_dlg_instructions_fmt">Bütün bilgi \"<xliff:g id="account">%s</xliff:g>\" için p≡p\'den kaldırılacak, fakat hesap ayarları korunacak.</string>
 
-  <string name="pep_app_license">EULA altında Lisanslı</string>
-
+  <string name="pep_app_license">GPLv3 altında Lisanslı</string>
 </resources>
