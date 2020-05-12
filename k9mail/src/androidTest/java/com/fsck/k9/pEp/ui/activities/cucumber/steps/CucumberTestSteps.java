@@ -689,6 +689,20 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I reset sync$")
+    public void I_reset_sync() {
+        switch (testUtils.keySync_number()) {
+            case "1":
+            case "2":
+
+                break;
+            case "3":
+            default:
+                break;
+        }
+        testUtils.getMessageListSize();
+    }
+
     @When("^I keysync device C$")
     public void I_keysync_devices_C() {
 
