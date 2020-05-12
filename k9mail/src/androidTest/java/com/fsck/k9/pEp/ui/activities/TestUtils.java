@@ -484,7 +484,7 @@ public class TestUtils {
     }
 
     public void syncDevices () {
-        while (!viewIsDisplayed(R.id.main_container)) {
+        while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
             device.waitForIdle();
             Espresso.onIdle();
         }
