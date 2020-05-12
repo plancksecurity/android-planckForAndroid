@@ -652,7 +652,41 @@ public class CucumberTestSteps {
 
     @When("^I keysync devices A and B$")
     public void I_keysync_devices_A_B() {
+        switch (testUtils.keySync_number()) {
+            case "1":
+            case "2":
+                testUtils.syncDevices();
+                break;
+            case "3":
+            default:
+                break;
+        }
+        testUtils.getMessageListSize();
+    }
 
+    @When("^I check devices A and B are sync$")
+    public void I_check_A_B_sync() {
+        Timber.i("Estoy en check: " + testUtils.keySync_number());
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.composeMessageButton();
+                testUtils.fillMessage(new TestUtils.BasicMessage("",
+                                "SyncDeviceA",
+                        testUtils.trustWords,
+                                testUtils.getKeySyncAccount(0)),
+                        false);
+                while (exists(onView(withId(R.id.send)))) {
+                    testUtils.clickView(R.id.send);
+                }
+                testUtils.waitForNewMessage();
+                testUtils.waitForMessageAndClickIt();
+                I_compare_body(testUtils.trustWords);
+                break;
+            case "2":
+                break;
+            default:
+                break;
+        }
     }
 
     @When("^I keysync device C$")
