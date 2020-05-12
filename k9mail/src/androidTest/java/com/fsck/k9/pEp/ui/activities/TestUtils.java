@@ -497,7 +497,15 @@ public class TestUtils {
             device.waitForIdle();
             Espresso.onIdle();
         }
-        onView(withId(R.id.afirmativeActionButton)).perform(click());
+        while (viewIsDisplayed(R.id.loading)) {
+            device.waitForIdle();
+            Espresso.onIdle();
+        }
+        if (!viewIsDisplayed(R.id.afirmativeActionButton)) {
+            assertFailWithMessage("Cannot sync devices");
+        } else {
+            onView(withId(R.id.afirmativeActionButton)).perform(click());
+        }
     }
 
     public String keySync_number() { return testConfig.getKeySync_number();}
