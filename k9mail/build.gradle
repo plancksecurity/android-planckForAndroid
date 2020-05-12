@@ -168,7 +168,8 @@ android {
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+        //testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
