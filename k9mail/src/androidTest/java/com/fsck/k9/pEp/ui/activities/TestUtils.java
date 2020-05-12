@@ -135,6 +135,7 @@ public class TestUtils {
     public static JSONObject json;
     public static JSONArray jsonArray;
     public static String rating;
+    public String trustWords = "nothing";
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -491,7 +492,7 @@ public class TestUtils {
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         device.waitForIdle();
         Espresso.onIdle();
-        String trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+        trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         while (!viewIsDisplayed(R.id.loading)) {
             device.waitForIdle();
