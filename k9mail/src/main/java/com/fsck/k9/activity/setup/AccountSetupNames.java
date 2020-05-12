@@ -1,6 +1,7 @@
 
 package com.fsck.k9.activity.setup;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,8 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.activity.misc.ExtendedAsyncTask;
+import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -33,6 +36,7 @@ import com.fsck.k9.pEp.PepActivity;
 import javax.inject.Inject;
 
 import security.pEp.ui.toolbar.ToolBarCustomizer;
+import timber.log.Timber;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
@@ -46,9 +50,19 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     private Button mDoneButton;
     private SwitchCompat pepSyncAccount;
     private PePUIArtefactCache pePUIArtefactCache;
+    private NonConfigurationInstance nonConfigurationInstance;
 
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Object retain = null;
+        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
+            retain = nonConfigurationInstance;
+        }
+        return retain;
+    }
 
 
     public static void actionSetNames(Context context, Account account) {
@@ -109,6 +123,15 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pePUIArtefactCache.removeCredentialsInPreferences();
+
+        restoreNonConfigurationInstance();
+    }
+
+    private void restoreNonConfigurationInstance() {
+        nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
+        if (nonConfigurationInstance != null) {
+            nonConfigurationInstance.restore(this);
+        }
     }
 
     @Override
@@ -147,7 +170,10 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         mAccount.setName(mName.getText().toString());
         mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
         mAccount.save(Preferences.getPreferences(this));
-        new pEpGenerateAccountKeysTask().execute();
+
+        pEpGenerateAccountKeysTask accountGenerationTask = new pEpGenerateAccountKeysTask(this, mAccount);
+        nonConfigurationInstance = accountGenerationTask;
+        accountGenerationTask.execute();
     }
 
     public void onClick(View v) {
@@ -159,15 +185,21 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     }
 
 
-    private class pEpGenerateAccountKeysTask extends AsyncTask <Void, Void, Void> {
+    private static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Void, Void, Void> {
         ProgressDialog dialog;
+        Account account;
+
+        protected pEpGenerateAccountKeysTask(Activity activity, Account account) {
+            super(activity);
+            this.account = account;
+        }
+
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(AccountSetupNames.this);
+        protected void showProgressDialog() {
+            dialog = new ProgressDialog(mActivity);
             dialog.setIndeterminate(true);
             dialog.setCancelable(false);
-            dialog.setMessage(getString(R.string.pep_account_setup_generating_keys));
+            dialog.setMessage(mContext.getString(R.string.pep_account_setup_generating_keys));
             dialog.show();
         }
 
@@ -175,16 +207,16 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             if ((dialog != null) && dialog.isShowing()
-                    && !AccountSetupNames.this.isDestroyed()){
+                    && (mActivity != null) && !mActivity.isDestroyed()){
                 dialog.dismiss();
             }
-            SettingsActivity.Companion.listAccountsOnStartup(AccountSetupNames.this);
+            SettingsActivity.Companion.listAccountsOnStartup(mContext);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            PEpUtils.pEpGenerateAccountKeys(getApplicationContext(), mAccount);
-            K9.setServicesEnabled(getApplicationContext());
+            PEpUtils.pEpGenerateAccountKeys(mContext, account);
+            K9.setServicesEnabled(mContext);
             return null;
         }
     }
