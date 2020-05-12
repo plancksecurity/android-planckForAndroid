@@ -61,7 +61,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     @Test (timeout = TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
-        testUtils.createAccount();
+        //testUtils.createAccount();
         sendMessages(3);
         device.waitForIdle();
         testUtils.waitForMessageAndClickIt();

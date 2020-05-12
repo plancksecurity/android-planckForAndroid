@@ -1,23 +1,14 @@
 Feature: Test
   Background:
     Given I created an account
-  @TM-01
-  Scenario Outline: Cucumber Click on Search button
+   @QA-sync
+  Scenario Outline: Cucumber KeySync
 
     When I select account <account>
-    Then I remove account 0
-
+     And I keysync devices A and B
+     And I keysync device C
+     And I setup second account for devices A and B
+     Then I remove from keysync device C
     Examples:
       |account|
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
-      |  0    |
       |  0    |

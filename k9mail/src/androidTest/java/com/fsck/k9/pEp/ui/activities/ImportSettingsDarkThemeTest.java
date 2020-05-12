@@ -51,7 +51,7 @@ public class ImportSettingsDarkThemeTest {
 
     @Test (timeout = TIMEOUT_TEST)
     public void importSettingDarkTheme() {
-        testUtils.createAccount();
+        //testUtils.createAccount();
         testUtils.pressBack();
         testUtils.openOptionsMenu();
         device.waitForIdle();
