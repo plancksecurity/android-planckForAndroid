@@ -2,18 +2,16 @@ package security.pEp.ui.about
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.text.Layout.JUSTIFICATION_MODE_INTER_WORD
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
+import com.fsck.k9.view.MessageWebView
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
 
+const val GPL_LICENSE = "https://pep-security.lu/gitlab/android/pep/-/raw/develop/LICENSE"
 
 class LicenseActivity : PepActivity() {
 
@@ -28,13 +26,8 @@ class LicenseActivity : PepActivity() {
         toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         initializeToolbar(true, getString(R.string.license))
 
-        findViewById<TextView>(R.id.licenseText1).text = HtmlCompat.fromHtml(getString(R.string.gpl_license_1), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        findViewById<TextView>(R.id.licenseText2).text = HtmlCompat.fromHtml(getString(R.string.gpl_license_2), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            findViewById<TextView>(R.id.licenseText1).justificationMode = JUSTIFICATION_MODE_INTER_WORD
-            findViewById<TextView>(R.id.licenseText2).justificationMode = JUSTIFICATION_MODE_INTER_WORD
-        }
-
+        findViewById<MessageWebView>(R.id.license_webview).blockNetworkData(false)
+        findViewById<MessageWebView>(R.id.license_webview).loadUrl(GPL_LICENSE)
     }
 
     override fun inject() {
