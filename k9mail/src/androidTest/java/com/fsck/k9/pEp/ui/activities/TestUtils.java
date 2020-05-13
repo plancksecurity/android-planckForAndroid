@@ -1715,6 +1715,63 @@ public class TestUtils {
             }
         }
     }
+    public void clickTextOnScreen(int resource) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(resources.getString(resource))) {
+                        try {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            object.longClick();
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void selectButtonFromScreen(int resource) {
+        BySelector selector = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(resources.getString(resource).toUpperCase())) {
+                        try {
+                            while (object.getText().equals(resources.getString(resource).toUpperCase())) {
+                                device.waitForIdle();
+                                Espresso.onIdle();
+                                object.longClick();
+                                device.waitForIdle();
+                                Espresso.onIdle();
+                            }
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    device.waitForIdle();
+                    Espresso.onIdle();
+                    Timber.i("Cannot find button on screen: " + ex);
+                }
+            }
+        }
+    }
 
     void doWait(String viewId) {
         UiObject2 waitForView = device
