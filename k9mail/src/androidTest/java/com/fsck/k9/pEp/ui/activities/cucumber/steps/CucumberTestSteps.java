@@ -680,7 +680,8 @@ public class CucumberTestSteps {
                 }
                 testUtils.waitForNewMessage();
                 testUtils.waitForMessageAndClickIt();
-                I_compare_body(testUtils.trustWords);
+                I_compare_body("a");
+                testUtils.pressBack();
                 break;
             case "2":
                 break;
@@ -693,12 +694,15 @@ public class CucumberTestSteps {
     public void I_reset_sync() {
         switch (testUtils.keySync_number()) {
             case "1":
+                testUtils.resetKeySync();
             case "2":
-
                 break;
             case "3":
             default:
                 break;
+        }
+        while (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.pressBack();
         }
         testUtils.getMessageListSize();
     }
