@@ -50,7 +50,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             getWindow().getDecorView().setSystemUiVisibility(
                     FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             );
