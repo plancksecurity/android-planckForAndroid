@@ -29,7 +29,7 @@ class AboutActivity : PepActivity() {
             try {
                 val pi = packageManager.getPackageInfo(packageName, 0)
                 version = pi.versionName
-            } catch (e: PackageManager.NameNotFoundException) {
+            } catch (ignore: Exception) {
             }
 
             return version
