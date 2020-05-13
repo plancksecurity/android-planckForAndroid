@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gpl_license" translatable="false">
+    <string name="eula_license" translatable="false">
 
         <![CDATA[
         <b>p≡p APPLICATION END USER LICENSE AGREEMENT (EULA)</b>

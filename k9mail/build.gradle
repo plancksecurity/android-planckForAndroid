@@ -182,7 +182,7 @@ android {
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
-    flavorDimensions "playStore", "none", "fDroid"
+    flavorDimensions "playStore", "store", "fDroid"
 
     productFlavors {
 
@@ -205,11 +205,11 @@ android {
         }
 
         playStore {
-            dimension "none"
+            dimension "store"
         }
 
         fDroid {
-            dimension "none"
+            dimension "store"
         }
 
     }

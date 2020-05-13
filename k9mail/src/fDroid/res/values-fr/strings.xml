@@ -18,6 +18,6 @@
   <!--General strings that include the app name-->
   <string name="account_delete_dlg_instructions_fmt">Le compte «\u00A0<xliff:g id="account">%s</xliff:g>\u00A0» sera enlevé de Courriel p≡p.</string>
 
-  <string name="pep_app_license">Sous licence pEp security EULA</string>
+  <string name="pep_app_license">Sous licence pEp security GPLv3</string>
 
 </resources>
