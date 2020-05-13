@@ -511,6 +511,15 @@ public class TestUtils {
         }
     }
 
+    public void resetKeySync () {
+        selectFromMenu(R.string.prefs_title);
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        selectFromScreen(stringToID("pep_sync"));
+        selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
+        clickTextOnScreen(stringToID("pep_sync"));
+    }
+
     public String keySync_number() { return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
