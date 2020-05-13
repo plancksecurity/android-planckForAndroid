@@ -193,6 +193,23 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     public static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Void, Void, Void> {
         Account account;
 
+        @VisibleForTesting public AccountKeysGenerator accountKeysGenerator = new AccountKeysGenerator() {
+            @Override
+            public void generateAccountKeys() {
+                PEpUtils.pEpGenerateAccountKeys(mContext, account);
+                K9.setServicesEnabled(mContext);
+            }
+
+            @Override
+            public void onAccountKeysGenerationFinished() {
+                if ((mProgressDialog != null) && mProgressDialog.isShowing()
+                        && (mActivity != null) && !mActivity.isDestroyed()){
+                    mProgressDialog.dismiss();
+                }
+                SettingsActivity.Companion.listAccountsOnStartup(mContext);
+            }
+        };
+
         protected pEpGenerateAccountKeysTask(Activity activity, Account account) {
             super(activity);
             this.account = account;
@@ -210,18 +227,18 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if ((mProgressDialog != null) && mProgressDialog.isShowing()
-                    && (mActivity != null) && !mActivity.isDestroyed()){
-                mProgressDialog.dismiss();
-            }
-            SettingsActivity.Companion.listAccountsOnStartup(mContext);
+            accountKeysGenerator.onAccountKeysGenerationFinished();
         }
 
         @Override
         public Void doInBackground(Void... params) {
-            PEpUtils.pEpGenerateAccountKeys(mContext, account);
-            K9.setServicesEnabled(mContext);
+            accountKeysGenerator.generateAccountKeys();
             return null;
         }
+    }
+
+    interface AccountKeysGenerator {
+        void generateAccountKeys();
+        void onAccountKeysGenerationFinished();
     }
 }

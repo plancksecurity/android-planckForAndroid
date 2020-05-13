@@ -129,6 +129,9 @@ dependencies {
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
+    androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
+    androidTestImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
+
     // Cucumber
 /*    androidTestImplementation('info.cukes:cucumber-android:1.2.4') {
         exclude module: 'cucumber-jvm-deps'
