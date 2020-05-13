@@ -82,6 +82,7 @@ public class MessageWebView extends RigidWebView {
         webSettings.setUseWideViewPort(true);
         if (K9.autofitWidth()) {
             webSettings.setLoadWithOverviewMode(true);
+            setInitialScale((int) getScale());
         }
 
         disableDisplayZoomControls();
