@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.fsck.k9.Account;
@@ -36,10 +37,9 @@ import com.fsck.k9.pEp.PepActivity;
 import javax.inject.Inject;
 
 import security.pEp.ui.toolbar.ToolBarCustomizer;
-import timber.log.Timber;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
-    private static final String EXTRA_ACCOUNT = "account";
+    public static final String EXTRA_ACCOUNT = "account";
 
     private EditText mDescription;
 
@@ -172,6 +172,11 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         mAccount.save(Preferences.getPreferences(this));
 
         pEpGenerateAccountKeysTask accountGenerationTask = new pEpGenerateAccountKeysTask(this, mAccount);
+        launchGenerateAccountKeysTask(accountGenerationTask);
+    }
+
+    @VisibleForTesting
+    public void launchGenerateAccountKeysTask(pEpGenerateAccountKeysTask accountGenerationTask) {
         nonConfigurationInstance = accountGenerationTask;
         accountGenerationTask.execute();
     }
@@ -184,9 +189,8 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         }
     }
 
-
-    private static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Void, Void, Void> {
-        ProgressDialog dialog;
+    @VisibleForTesting
+    public static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Void, Void, Void> {
         Account account;
 
         protected pEpGenerateAccountKeysTask(Activity activity, Account account) {
@@ -195,26 +199,26 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         }
 
         @Override
-        protected void showProgressDialog() {
-            dialog = new ProgressDialog(mActivity);
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(false);
-            dialog.setMessage(mContext.getString(R.string.pep_account_setup_generating_keys));
-            dialog.show();
+        public void showProgressDialog() {
+            mProgressDialog = new ProgressDialog(mActivity);
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setMessage(mContext.getString(R.string.pep_account_setup_generating_keys));
+            mProgressDialog.show();
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if ((dialog != null) && dialog.isShowing()
+            if ((mProgressDialog != null) && mProgressDialog.isShowing()
                     && (mActivity != null) && !mActivity.isDestroyed()){
-                dialog.dismiss();
+                mProgressDialog.dismiss();
             }
             SettingsActivity.Companion.listAccountsOnStartup(mContext);
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        public Void doInBackground(Void... params) {
             PEpUtils.pEpGenerateAccountKeys(mContext, account);
             K9.setServicesEnabled(mContext);
             return null;
