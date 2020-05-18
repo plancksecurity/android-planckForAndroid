@@ -1713,7 +1713,7 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(@NotNull Activity activity) {
             --activityCount;
             if (activityCount == 0) {
-                MessagingController.getInstance().deleteConsumedMessages();
+                KeySyncCleaner.queueAutoConsumeMessages();
                 pEpSyncProvider.stopSync();
                 pEpProvider.close();
                 pEpProvider = null;

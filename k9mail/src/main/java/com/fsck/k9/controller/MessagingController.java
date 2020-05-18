@@ -797,7 +797,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.d("SYNC: About to process pending commands for account %s", account.getDescription());
 
             try {
-                consumeMessages(context);
+                consumeMessages(account);
                 processPendingCommandsSynchronous(account);
             } catch (Exception e) {
                 Timber.e(e, "Failure processing command, but allow message sync attempt");
@@ -4002,8 +4002,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         account.setRingNotified(false);
 
-        deleteConsumedMessages();
-
         sendPendingMessages(account, listener);
 
         try {
@@ -4937,15 +4935,38 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @WorkerThread
     public void consumeMessages(final Context context) throws MessagingException {
-        Timber.e("Delete pEp-auto-consume messages older than 10min");
+        Timber.e("Delete pEp-auto-consume messages older than %d min for All accounts",
+                PEpProvider.TIMEOUT / (60 * 1000));
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
         for (Account account : accounts) {
-            List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
-            deleteMessages(refs, null);
-            expunge(account, account.getInboxFolderName());
+            consumeMessages(account);
         }
     }
 
+    @WorkerThread
+    private void consumeMessages(Account account) throws MessagingException {
+        Timber.e("Delete pEp-auto-consume messages for account %s::%s", account.getName(), account.getEmail());
+        List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
+
+        actOnMessagesGroupedByAccountAndFolder(
+                refs, (account1, messageFolder, accountMessages) -> {
+                    for (LocalMessage accountMessage : accountMessages) {
+                        try {
+                            String folderName = accountMessage.getFolder().getName();
+                            deleteMessage(accountMessage, account1, folderName, accountMessage.getFolder());
+
+                            Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(folderName);
+                            remoteFolder.expunge();
+                        } catch (MessagingException e) {
+                            Timber.e(e, "Could not clean pEpEngine sync message");
+                        }
+                    }
+
+                });
+
+    }
+
+    //FIXME: check if really needed
     public void deleteConsumedMessages() {
         putBackground("deleteConsumedMessages", null, () -> {
             try {
