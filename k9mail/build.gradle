@@ -182,26 +182,20 @@ android {
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
-    flavorDimensions "playStore", "store", "fDroid"
+    flavorDimensions "sync", "store"
 
     productFlavors {
 
 
-        withkeysyncPlayStore {
+        withkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "true"
             versionName "${buildConfig.versionName}"
-            dimension "playStore"
+            dimension "sync"
         }
-        withoutkeysyncPlayStore {
+        withoutkeysync {
             buildConfigField "boolean", "WITH_KEY_SYNC", "false"
             versionName "${buildConfig.versionName}" + ".withoutKeysync"
-            dimension "playStore"
-        }
-
-        withkeysyncFdroid {
-            buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${buildConfig.versionName}"
-            dimension "fDroid"
+            dimension "sync"
         }
 
         playStore {
