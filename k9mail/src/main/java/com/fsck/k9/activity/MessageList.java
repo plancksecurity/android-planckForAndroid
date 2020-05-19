@@ -1044,9 +1044,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         folderModels = PEpUIUtils.orderFolderLists(mAccount, folderModels);
 
         ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
-
-        folderAdapter.setCollection(adapteeCollection);
-        folderAdapter.notifyDataSetChanged();
+        runOnUiThread(() -> {
+            folderAdapter.setCollection(adapteeCollection);
+            folderAdapter.notifyDataSetChanged();
+        });
         setupMainFolders();
     }
 
