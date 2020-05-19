@@ -710,11 +710,10 @@ class ImapFolder extends Folder<ImapMessage> {
 
         String spaceSeparatedFetchFields = combine(fetchFields.toArray(new String[fetchFields.size()]), ' ');
 
-        for (int windowStart = 0; windowStart < messages.size(); windowStart += (FETCH_WINDOW_SIZE)) {
-            int windowEnd = Math.min(windowStart + FETCH_WINDOW_SIZE, messages.size());
-            List<String> uidWindow = uids.subList(windowStart, windowEnd);
-
-            try {
+        try {
+            for (int windowStart = 0; windowStart < messages.size(); windowStart += (FETCH_WINDOW_SIZE)) {
+                int windowEnd = Math.min(windowStart + FETCH_WINDOW_SIZE, messages.size());
+                List<String> uidWindow = uids.subList(windowStart, windowEnd);
                 String commaSeparatedUids = combine(uidWindow.toArray(new String[uidWindow.size()]), ',');
                 String command = String.format("UID FETCH %s (%s)", commaSeparatedUids, spaceSeparatedFetchFields);
                 connection.sendCommand(command, false);
@@ -784,12 +783,13 @@ class ImapFolder extends Folder<ImapMessage> {
                     }
 
                 } while (response.getTag() == null);
-            } catch (IOException ioe) {
-                throw ioExceptionHandler(connection, ioe);
+
             }
-        }
-        if (listener != null) {
-            listener.messagesFinished(messages.size());
+            if (listener != null) {
+                listener.messagesFinished(messages.size());
+            }
+        } catch (IOException ioe) {
+            throw ioExceptionHandler(connection, ioe);
         }
     }
 
