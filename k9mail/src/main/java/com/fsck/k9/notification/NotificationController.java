@@ -15,6 +15,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.LocalMessage;
 
+import java.util.List;
 
 public class NotificationController {
     private static final int NOTIFICATION_LED_ON_TIME = 500;
@@ -104,8 +105,10 @@ public class NotificationController {
         syncNotifications.clearFetchingMailNotification(account);
     }
 
-    public void addNewMailNotification(Account account, LocalMessage message, int previousUnreadMessageCount) {
-        newMailNotifications.addNewMailNotification(account, message, previousUnreadMessageCount);
+    public void addNewMailsNotification(Account account, List<LocalMessage> messages, int previousUnreadMessageCount) {
+        for (LocalMessage message : messages) {
+            newMailNotifications.addNewMailNotification(account, message, previousUnreadMessageCount);
+        }
     }
 
     public void removeNewMailNotification(Account account, MessageReference messageReference) {

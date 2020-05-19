@@ -1643,6 +1643,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         Timber.d("SYNC: Fetching %d small messages for folder %s", smallMessages.size(), folder);
 
+        List<LocalMessage> messagesToNotify = new ArrayList<>();
         remoteFolder.fetch(smallMessages,
                 fp, new MessageRetrievalListener<T>() {
                     @Override
@@ -1737,7 +1738,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                                     if (shouldNotifyForMessage(account, localFolder, message)) {
                                         // Notify with the localMessage so that we don't have to recalculate the content preview.
-                                        notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
+                                    messagesToNotify.add(localMessage);
                                     }
                             }
                         } catch (MessagingException | RuntimeException me) {
@@ -1751,6 +1752,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     @Override
                     public void messagesFinished(int total) {
+                        notificationController.addNewMailsNotification(account, messagesToNotify, unreadBeforeStart);
                     }
                 });
 
@@ -1788,6 +1790,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Fetching large messages for folder %s", folder);
 
         remoteFolder.fetch(largeMessages, fp, null);
+        List<LocalMessage> messagesToNotify = new ArrayList<>();
         for (T message : largeMessages) {
 
             if (!shouldImportMessage(account, message, earliestDate)) {
@@ -1822,9 +1825,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
             // Send a notification of this message
             if (shouldNotifyForMessage(account, localFolder, message)) {
                 // Notify with the localMessage so that we don't have to recalculate the content preview.
-                notificationController.addNewMailNotification(account, localMessage, unreadBeforeStart);
+                messagesToNotify.add(localMessage);
             }
         }
+        notificationController.addNewMailsNotification(account,messagesToNotify,unreadBeforeStart);
 
         Timber.d("SYNC: Done fetching large messages for folder %s", folder);
     }
