@@ -21,6 +21,10 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 public class MessageWebView extends RigidWebView {
 
+    private static final String WORDS_BREAK = "<body style=\"overflow-wrap: break-word; word-wrap: " +
+            "break-word; word-break: break-all; word-break: break-word; -webkit-hyphens: auto; hyphens: auto; ";
+    private static final String BODY_CLOSE = " </body>";
+
     public MessageWebView(Context context) {
         super(context);
     }
@@ -115,8 +119,10 @@ public class MessageWebView extends RigidWebView {
         getSettings().setDisplayZoomControls(!supportsMultiTouch);
     }
 
-    public void displayHtmlContentWithInlineAttachments(@NonNull String htmlText,
-            @Nullable AttachmentResolver attachmentResolver, @Nullable OnPageFinishedListener onPageFinishedListener) {
+    public void displayHtmlContentWithInlineAttachments(
+            @NonNull String htmlText,
+            @Nullable AttachmentResolver attachmentResolver,
+            @Nullable OnPageFinishedListener onPageFinishedListener) {
         setWebViewClient(attachmentResolver, onPageFinishedListener);
         setHtmlContent(htmlText);
     }
@@ -130,8 +136,13 @@ public class MessageWebView extends RigidWebView {
         setWebViewClient(webViewClient);
     }
 
+    private String forceBreakWordsHeader(String htmlText) {
+        return WORDS_BREAK + htmlText + BODY_CLOSE;
+    }
+
     private void setHtmlContent(@NonNull String htmlText) {
-        loadDataWithBaseURL("about:blank", htmlText, "text/html", "utf-8", null);
+        String html = forceBreakWordsHeader(htmlText);
+        loadDataWithBaseURL("about:blank", html, "text/html", "utf-8", null);
         resumeTimers();
     }
 
