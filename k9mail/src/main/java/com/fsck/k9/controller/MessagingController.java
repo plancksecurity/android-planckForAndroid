@@ -1737,8 +1737,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     // Send a notification of this message
 
                                     if (shouldNotifyForMessage(account, localFolder, message)) {
-                                        // Notify with the localMessage so that we don't have to recalculate the content preview.
-                                    messagesToNotify.add(localMessage);
+                                        messagesToNotify.add(localMessage);
                                     }
                             }
                         } catch (MessagingException | RuntimeException me) {
@@ -1752,6 +1751,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     @Override
                     public void messagesFinished(int total) {
+                        // Notify with the localMessages so that we don't have to recalculate the content preview.
                         notificationController.addNewMailsNotification(account, messagesToNotify, unreadBeforeStart);
                     }
                 });
@@ -1824,11 +1824,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
             // Send a notification of this message
             if (shouldNotifyForMessage(account, localFolder, message)) {
-                // Notify with the localMessage so that we don't have to recalculate the content preview.
                 messagesToNotify.add(localMessage);
             }
         }
-        notificationController.addNewMailsNotification(account,messagesToNotify,unreadBeforeStart);
+        // Notify with the localMessages so that we don't have to recalculate the content preview.
+        notificationController.addNewMailsNotification(account, messagesToNotify, unreadBeforeStart);
 
         Timber.d("SYNC: Done fetching large messages for folder %s", folder);
     }

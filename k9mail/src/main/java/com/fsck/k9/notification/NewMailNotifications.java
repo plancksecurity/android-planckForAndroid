@@ -25,6 +25,7 @@ import java.util.List;
  * </p>
  */
 class NewMailNotifications {
+    private static final int FIRST_POSITION = 0;
     private final NotificationController controller;
     private final NotificationContentCreator contentCreator;
     private final DeviceNotifications deviceNotifications;
@@ -55,9 +56,9 @@ class NewMailNotifications {
     }
 
     void addNewMailsNotification(Account account, List<LocalMessage> messages, int unreadMessageCount) {
-        for (int i = 0; i < messages.size(); i++) {
-            LocalMessage message = messages.get(i);
-            addNewMailNotification(account, message, unreadMessageCount, i != 0);
+        for (int position = 0; position < messages.size(); position++) {
+            LocalMessage message = messages.get(position);
+            addNewMailNotification(account, message, unreadMessageCount, position != FIRST_POSITION);
         }
     }
 
