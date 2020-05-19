@@ -28,7 +28,7 @@ class LicenseActivity : PepActivity() {
         toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         initializeToolbar(true, getString(R.string.license))
 
-        findViewById<TextView>(R.id.licenseText).text = HtmlCompat.fromHtml(getString(R.string.gpl_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        findViewById<TextView>(R.id.licenseText).text = HtmlCompat.fromHtml(getString(R.string.eula_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             findViewById<TextView>(R.id.licenseText).justificationMode = JUSTIFICATION_MODE_INTER_WORD
         }

@@ -48,6 +48,6 @@ Please submit bug reports, contribute new features and ask questions at
     <string name="account_delete_dlg_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p.</string>
     <string name="account_recreate_dlg_instructions_fmt">All local data for \\\"<xliff:g id="account">%s</xliff:g>\\\" will be removed. Account settings will be retained.</string>
 
-    <string name="pep_app_license">Licenced under pEp security EULA</string>
+    <string name="pep_app_license">Licenced under p≡p security EULA</string>
 
 </resources>
