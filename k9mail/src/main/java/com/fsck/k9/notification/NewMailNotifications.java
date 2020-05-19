@@ -11,6 +11,8 @@ import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mailstore.LocalMessage;
 
+import java.util.List;
+
 
 /**
  * Handle notifications for new messages.
@@ -48,7 +50,18 @@ class NewMailNotifications {
         return new NewMailNotifications(controller, contentCreator, deviceNotifications, wearNotifications);
     }
 
-    public void addNewMailNotification(Account account, LocalMessage message, int unreadMessageCount) {
+    void addNewMailNotification(Account account, LocalMessage message, int unreadMessageCount) {
+        addNewMailNotification(account, message, unreadMessageCount, false);
+    }
+
+    void addNewMailsNotification(Account account, List<LocalMessage> messages, int unreadMessageCount) {
+        for (int i = 0; i < messages.size(); i++) {
+            LocalMessage message = messages.get(i);
+            addNewMailNotification(account, message, unreadMessageCount, i != 0);
+        }
+    }
+
+    private void addNewMailNotification(Account account, LocalMessage message, int unreadMessageCount, boolean silent) {
         NotificationContent content = contentCreator.createFromMessage(account, message);
 
         synchronized (lock) {
@@ -61,7 +74,7 @@ class NewMailNotifications {
             }
 
             createStackedNotification(account, result.getNotificationHolder());
-            createSummaryNotification(account, notificationData, false);
+            createSummaryNotification(account, notificationData, silent);
         }
     }
 
