@@ -107,10 +107,6 @@ public class NotificationController {
 
     public void addNewMailsNotification(Account account, List<LocalMessage> messages, int previousUnreadMessageCount) {
         newMailNotifications.addNewMailsNotification(account, messages, previousUnreadMessageCount);
-
-        for (LocalMessage message : messages) {
-            newMailNotifications.addNewMailNotification(account, message, previousUnreadMessageCount);
-        }
     }
 
     public void removeNewMailNotification(Account account, MessageReference messageReference) {
