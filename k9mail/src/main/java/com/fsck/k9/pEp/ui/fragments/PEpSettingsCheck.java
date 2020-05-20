@@ -25,9 +25,11 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpMessagingException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import timber.log.Timber;
 
+@Singleton
 public class PEpSettingsCheck implements PEpSettingsChecker {
     public static final String INCOMING = "INCOMING";
     public static final String OUTGOING = "OUTGOING";
@@ -45,8 +47,9 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     private PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection> callback;
     private Boolean isEditing;
 
-    @Inject public PEpSettingsCheck(Context context) {
+    @Inject public PEpSettingsCheck(Context context, ThreadExecutor threadExecutor) {
         this.context = context;
+        this.threadExecutor = threadExecutor;
     }
 
     @Override
@@ -54,7 +57,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                               AccountSetupCheckSettings.CheckDirection checkDirection,
                               Boolean makeDefault, String procedence, Boolean isEditing,
                               ResultCallback<Redirection> callback) {
-        this.threadExecutor = new JobExecutor();
         this.postExecutionThread = new UIThread();
         this.account = account;
         this.direction = checkDirection;

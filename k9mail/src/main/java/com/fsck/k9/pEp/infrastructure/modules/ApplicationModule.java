@@ -11,6 +11,8 @@ import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -48,6 +50,11 @@ public class ApplicationModule {
         return uiThread;
     }
 
+    @Provides @Singleton
+    public PEpSettingsChecker providepEpSettingsCheck(ThreadExecutor jobExecutor) {
+        return new PEpSettingsCheck(application, jobExecutor);
+    }
+
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
     @Provides
     public PermissionChecker providepEpPermissionChecker() {
@@ -64,5 +71,4 @@ public class ApplicationModule {
     public PEpProvider providepEpProvider() {
         return application.getpEpProvider();
     }
-
 }

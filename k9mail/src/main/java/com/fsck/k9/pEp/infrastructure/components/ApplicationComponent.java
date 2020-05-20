@@ -9,9 +9,11 @@ import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.activity.compose.RecipientSelectView;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
+
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -32,6 +34,7 @@ public interface ApplicationComponent {
 
     PostExecutionThread getPostExecutionThread();
 
+    PEpSettingsChecker settingsChecker();
     AccountSetupNavigator accountSetupNavigator();
 
     @Named("AppContext")
