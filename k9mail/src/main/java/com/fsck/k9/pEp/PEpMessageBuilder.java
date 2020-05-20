@@ -78,7 +78,7 @@ class PEpMessageBuilder {
                  //   return;
                 }
 
-            String charset = getMessageCharset();
+            String charset = getMessagePartCharset(mm);
             String text = new String(PEpUtils.extractBodyContent(b), charset);
             if(mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
@@ -94,8 +94,12 @@ class PEpMessageBuilder {
         pEpMsg.setAttachments(attachments);
     }
 
-    private String getMessageCharset() {
-        String charset =  MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
+    private String getMessagePartCharset(Part part) {
+        String charset =  MimeUtility.getHeaderParameter(part.getContentType(), "charset");
+
+        if (charset == null) {
+            charset = MimeUtility.getHeaderParameter(mm.getContentType(), "charset");
+        }
 
         if (charset == null || !Charset.isSupported(charset)) {
             // failback when the header doesn't have charset parameter or it is invalid, defaults to UTF-8
@@ -123,7 +127,7 @@ class PEpMessageBuilder {
 
             boolean plain = mbp.isMimeType("text/plain");
             if (!isAnAttachment(mbp) && (plain || mbp.isMimeType("text/html"))) {
-                String charset = getMessageCharset();
+                String charset = getMessagePartCharset(mbp);
                 String text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
 
                 if (plain) {
