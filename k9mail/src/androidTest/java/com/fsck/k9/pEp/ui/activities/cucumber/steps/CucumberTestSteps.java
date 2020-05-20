@@ -655,15 +655,26 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I keySync devices A and B$")
-    public void I_keySync_devices_A_B() {
+    @When("^I keySync devices (\\S+) and (\\S+)$")
+    public void I_keySync_devices(String device1, String device2) {
         switch (testUtils.keySync_number()) {
             case "1":
+                if (device1.equals("A") || device2.equals("A")) {
+                    testUtils.syncDevices();
+                }
+                break;
             case "2":
-                testUtils.syncDevices();
+                if (device1.equals("B") || device2.equals("B")) {
+                    testUtils.syncDevices();
+                }
                 break;
             case "3":
+                if (device1.equals("C") || device2.equals("C")) {
+                    testUtils.syncDevices();
+                }
+                break;
             default:
+                Timber.i("Cannot sync this device");
                 break;
         }
         testUtils.getMessageListSize();
