@@ -637,28 +637,21 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void checkSettings() {
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setNonConfigurationInstance(basicsSettingsCheckCallback);
         pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
-                false,
-                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                    @Override
-                    public void onError(PEpSetupException exception) {
-                        handleErrorCheckingSettings(exception);
-                    }
-
-                    @Override
-                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        goForward();
-                    }
-                });
+                false, basicsSettingsCheckCallback);
     }
 
-    private void goForward() {
-        if (editSettings) {
-            if (getActivity() != null) {
-                getActivity().finish();
+    public void goForward() {
+        if(this.isResumed()) {
+            if (editSettings) {
+                if (getActivity() != null) {
+                    getActivity().finish();
+                }
+            } else {
+                accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
             }
-        } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
         }
     }
 
@@ -818,17 +811,19 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
     }
 
-    private void handleErrorCheckingSettings(PEpSetupException exception) {
-        if (exception.isCertificateAcceptanceNeeded()) {
-            handleCertificateValidationException(exception);
-        } else {
-            showErrorDialog(
-                    exception.getTitleResource(),
-                    exception.getMessage() == null ? "" : exception.getMessage());
+    public void handleErrorCheckingSettings(PEpSetupException exception) {
+        if(this.isResumed()) {
+            if (exception.isCertificateAcceptanceNeeded()) {
+                handleCertificateValidationException(exception);
+            } else {
+                showErrorDialog(
+                        exception.getTitleResource(),
+                        exception.getMessage() == null ? "" : exception.getMessage());
+            }
+            nextProgressBar.hide();
+            mNextButton.setVisibility(View.VISIBLE);
+            enableViewGroup(true, (ViewGroup) rootView);
         }
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
-        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {

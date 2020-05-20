@@ -443,7 +443,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            launchSettingsCheck();
+            checkSettings();
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -453,7 +453,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
-    private void launchSettingsCheck() {
+    private void checkSettings() {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setNonConfigurationInstance(basicsSettingsCheckCallback);
         pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
@@ -810,17 +810,19 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     public void handleErrorCheckingSettings(PEpSetupException exception) {
-        if (exception.isCertificateAcceptanceNeeded()) {
-            handleCertificateValidationException(exception);
-        } else {
-            showErrorDialog(
-                    exception.getTitleResource(),
-                    exception.getMessage() == null ? "" : exception.getMessage());
-            Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+        if(this.isResumed()) {
+            if (exception.isCertificateAcceptanceNeeded()) {
+                handleCertificateValidationException(exception);
+            } else {
+                showErrorDialog(
+                        exception.getTitleResource(),
+                        exception.getMessage() == null ? "" : exception.getMessage());
+                Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
+            }
+            nextProgressBar.hide();
+            mNextButton.setVisibility(View.VISIBLE);
+            enableViewGroup(true, (ViewGroup) rootView);
         }
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
-        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     private void showErrorDialog(int stringResource, String message) {

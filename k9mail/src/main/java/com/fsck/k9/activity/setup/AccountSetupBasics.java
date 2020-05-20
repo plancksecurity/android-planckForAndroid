@@ -159,7 +159,12 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
         @Override
         public void restore(Activity activity) {
-            fragment = ((AccountSetupBasics)activity).getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+            Fragment newFragment = ((AccountSetupBasics)activity).getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+            if(newFragment == null) return;
+            if(fragment != null && !fragment.getClass().equals(newFragment.getClass())) {
+                throw new IllegalStateException(fragment.getClass().getSimpleName() + " was expected but got " + newFragment.getClass().getSimpleName());
+            }
+            fragment = newFragment;
         }
 
         @Override
@@ -167,14 +172,22 @@ public class AccountSetupBasics extends PEpImporterActivity {
             if(fragment instanceof AccountSetupBasicsFragment) {
                 ((AccountSetupBasicsFragment)fragment).handleErrorCheckingSettings(exception);
             }
+            else if(fragment instanceof AccountSetupIncomingFragment) {
+                ((AccountSetupIncomingFragment)fragment).handleErrorCheckingSettings(exception);
+            }
         }
 
         @Override
         public void onLoaded(PEpSettingsChecker.Redirection redirection) {
             if(fragment instanceof AccountSetupBasicsFragment) {
-                AccountSetupNames.actionSetNames(fragment.requireActivity(),
-                        ((AccountSetupBasics) (fragment.requireActivity())).accountSetupNavigator.getAccount());
-                fragment.requireActivity().finish();
+                if(fragment.isResumed()) {
+                    AccountSetupNames.actionSetNames(fragment.requireActivity(),
+                            ((AccountSetupBasics) (fragment.requireActivity())).accountSetupNavigator.getAccount());
+                    fragment.requireActivity().finish();
+                }
+            }
+            else if(fragment instanceof AccountSetupIncomingFragment) {
+                ((AccountSetupIncomingFragment) fragment).goForward();
             }
         }
     }
@@ -250,6 +263,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
             deleteAccount();
         }
         accountSetupNavigator.goBack(this, getSupportFragmentManager());
+        isGoingBack = false;
     }
 
     @Override
