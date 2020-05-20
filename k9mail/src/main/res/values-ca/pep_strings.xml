@@ -175,8 +175,8 @@
 \n 1. té la clau PGP pública adjunta i
 \n 2. està xifrat i signat amb la clau p≡p que acabeu d’importar</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si heu iniciat una importació de clau per al compte següent:% s, feu clic a Inicia.</string>
-    <string name="key_import_failure">No s\'ha pogut importar i utilitzar cap clau de% 1 $ s amb l\'identificador de clau:% 2 $ s</string>
-    <string name="key_import_success">% 1 $ s Clau importada amb èxit de% 2 $ s</string>
+    <string name="key_import_failure">No s\'ha pogut importar i utilitzar cap clau de %1$s amb l\'identificador de clau: %2$s</string>
+    <string name="key_import_success">%1$s Clau importada amb èxit de %2$s</string>
     <string name="key_import_from_fs_input_fpr">Introduïu l\'ID de clau o l\'empremta digital de la clau.</string>
     <string name="reset_all">Restableix-ho tot</string>
     <string name="key_reset_for_identity_context_title">Restabliu totes les dades de p≡p d\'aquest soci de comunicació:</string>

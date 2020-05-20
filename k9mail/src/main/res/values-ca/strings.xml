@@ -874,7 +874,7 @@
         <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> nou missatge</item>
         <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> nous missatges</item>
     </plurals>
-    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%$d</xliff:g> més a <xliff:g id="account">%2$s</xliff:g></string>
+    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> més a <xliff:g id="account">%2$s</xliff:g></string>
     <string name="notification_action_delete_all">Eliminar tots</string>
     <string name="notification_action_archive_all">Arxivar tot</string>
     <string name="notification_authentication_error_title">L\'autenticació ha fallat</string>
@@ -906,7 +906,7 @@
     <string name="compose_error_incomplete_recipient">El camp del destinatari conté una entrada incompleta.</string>
     <string name="message_view_status_no_space">No s\'ha pogut desar el fitxer adjunt ja que no hi ha prou espai.</string>
     <string name="message_view_toast_unable_to_display_message">No es pot mostrar el missatge</string>
-    <string name="message_view_sender_label">via% 1 $ s</string>
+    <string name="message_view_sender_label">via %1$s</string>
     <string name="debug_delete_local_body">Depuració / elimina el cos del missatge</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Comportament del missatge suprimit</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marca tots els missatges com a llegits</string>
