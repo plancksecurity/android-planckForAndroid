@@ -24,7 +24,7 @@ class KeySyncCleaner {
             .setRequiresStorageNotLow(false)
             .build()
 
-    private fun autoConsumeRequest(): WorkRequest {
+    private fun autoConsumeRequest(): PeriodicWorkRequest {
         return PeriodicWorkRequestBuilder<CleanWorker>(15, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .addTag(AUTO_CONSUME_CLEAN_TAG)
@@ -36,7 +36,10 @@ class KeySyncCleaner {
 
         @JvmStatic
         fun queueAutoConsumeMessages() {
-            WorkManager.getInstance().enqueue(KeySyncCleaner().autoConsumeRequest())
+            // Just have one cleanup job enqueued
+            WorkManager.getInstance().enqueueUniquePeriodicWork(AUTO_CONSUME_CLEAN_TAG,
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    KeySyncCleaner().autoConsumeRequest())
         }
     }
 }
