@@ -4,18 +4,13 @@
     <!--This should make it easier for forks to change the branding-->
     <!--Used in AndroidManifest.xml-->
     <!--<string name="app_name">K-9 Mail/pEp</string>-->
-    <!--<string name="shortcuts_title">K-9 Konten</string>
-  <string name="unread_widget_label">K-9 Ungelesen</string>
-  <string name="remote_control_label">K-9 Mail Fernsteuerung</string>
-  <string name="remote_control_desc">Erlaubt dieser Anwendung den Ablauf und die Einstellungen von K-9 Mail zu kontrollieren.</string>
-  &lt;!&ndash;Used in the about dialog&ndash;&gt;
-  <string name="app_authors">Google, das K-9-Team und viele Weitere.</string>
-  <string name="app_copyright_fmt">\u00a9 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers.
-Teile \u00a9 2006-<xliff:g>%2$s</xliff:g> Android Open Source Project.</string>
-  <string name="app_license">Lizenziert unter der Apache-Lizenz, Version 2.0.</string>
-  &lt;!&ndash;Welcome message&ndash;&gt;
-  <string name="welcome_message_title">Willkommen bei K-9 Mail</string>
-  <string name="accounts_welcome"><![CDATA[
+    <string name="shortcuts_title">p≡p Konten</string>
+    <string name="unread_widget_label">p≡p Ungelesen</string>
+    <string name="remote_control_label">p≡p Fernsteuerung</string>
+    <string name="remote_control_desc">Erlaubt dieser Anwendung den Ablauf und die Einstellungen von p≡p zu kontrollieren.</string>
+  <!--Welcome message-->
+    <string name="welcome_message_title">Willkommen bei p≡p</string>
+  <!--string name="accounts_welcome"><![CDATA[
 <p>
 K-9 Mail ist ein leistungsstarker, freier E-Mail-Client für Android.
 </p><p>
@@ -44,12 +39,13 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
 <a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>.
 </p>
     ]]></string>
-  &lt;!&ndash;Default signature&ndash;&gt;
-  <string name="default_signature">&#45;&#45; \nGesendet mit pEp für Android.</string>
-  &lt;!&ndash;General strings that include the app name&ndash;&gt;
-  <string name="account_delete_dlg_instructions_fmt">Das Konto \"<xliff:g id="account">%s</xliff:g>\" wird aus K-9 Mail entfernt.</string>
-  <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten des Kontos \"<xliff:g id="account">%s</xliff:g>\" werden entfernt. Kontoeinstellungen werden beibehalten.</string>
-  <string name="account_clear_dlg_instructions_fmt">Lokale Kopien von Nachrichten in \"<xliff:g id="account">%s</xliff:g>\" werden entfernt. Kontoeinstellungen werden beibehalten.</string>-->
+  &lt;!&ndash;Default signature&ndash;&gt; -->
+  <string name="default_signature">-- \nGesendet mit pEp für Android.</string>
+    <!--General strings that include the app name-->
+    <string name="account_delete_dlg_instructions_fmt">Das Konto \"<xliff:g id="account">%s</xliff:g>\" wird aus p≡p entfernt.</string>
+    <!--<string name="account_delete_dlg_instructions_fmt">Das Konto \"<xliff:g id="account">%s</xliff:g>\" wird aus K-9 Mail entfernt.</string>
+    <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten des Kontos \"<xliff:g id="account">%s</xliff:g>\" werden entfernt. Kontoeinstellungen werden beibehalten.</string>
+    <string name="account_clear_dlg_instructions_fmt">Lokale Kopien von Nachrichten in \"<xliff:g id="account">%s</xliff:g>\" werden entfernt. Kontoeinstellungen werden beibehalten.</string>-->
     <!--=== App Store-specific strings =======================================================-->
     <string name="import_dialog_error_message">Es wurde keine geeignete Anwendung gefunden, um den Import durchzuführen. Bitte installieren Sie einen Dateimanager aus dem Play Store.</string>
     <string name="open_market">Play Store öffnen</string>

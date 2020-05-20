@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gpl_license">
+    <string name="eula_license" translatable="false">
 
         <![CDATA[
         <b>p≡p APPLICATION END USER LICENSE AGREEMENT (EULA)</b>
@@ -78,9 +78,7 @@
         <br><br> <b>13.7 Assignment.</b> Except as permitted in Section 4, You shall not assign this License or any rights or obligations herein without the prior written consent of pEp Security SA and any attempted assignment in contravention of this provision shall be null and void and of no force or effect.
 
         <br><br> <b>13.8 Entire Agreement.</b> This License including the documents incorporated herein by reference constitute the entire agreement with respect to the use of the p≡p Application licensed hereunder and supersedes all prior or contemporaneous understandings regarding such subject matter.
-]]>
 
-
-</string>
+    ]]></string>
 
 </resources>
