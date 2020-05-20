@@ -145,6 +145,11 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
+        if (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.selectFromMenu(R.string.action_settings);
+            device.waitForIdle();
+            Espresso.onIdle();
+        }
         while (!exists(onView(withId(R.id.available_accounts_title)))) {
             device.waitForIdle();
             if (exists(onView(withText(R.string.discard_action)))) {
@@ -650,8 +655,8 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I keysync devices A and B$")
-    public void I_keysync_devices_A_B() {
+    @When("^I keySync devices A and B$")
+    public void I_keySync_devices_A_B() {
         switch (testUtils.keySync_number()) {
             case "1":
             case "2":
@@ -666,13 +671,13 @@ public class CucumberTestSteps {
 
     @When("^I check devices A and B are sync$")
     public void I_check_A_B_sync() {
-        Timber.i("Estoy en check: " + testUtils.keySync_number());
         switch (testUtils.keySync_number()) {
             case "1":
+                testUtils.getMessageListSize();
                 testUtils.composeMessageButton();
                 testUtils.fillMessage(new TestUtils.BasicMessage("",
                                 "SyncDeviceA",
-                        testUtils.trustWords,
+                                testUtils.trustWords,
                                 testUtils.getKeySyncAccount(0)),
                         false);
                 while (exists(onView(withId(R.id.send)))) {
@@ -680,8 +685,49 @@ public class CucumberTestSteps {
                 }
                 testUtils.waitForNewMessage();
                 testUtils.waitForMessageAndClickIt();
-                I_compare_body("a");
+                I_compare_body(testUtils.trustWords);
                 testUtils.pressBack();
+                break;
+            case "2":
+                testUtils.getMessageListSize();
+                testUtils.waitForMessageAndClickIt();
+                I_compare_body(testUtils.trustWords);
+                testUtils.pressBack();
+                testUtils.fillMessage(new TestUtils.BasicMessage("",
+                                "SyncDeviceA",
+                                testUtils.trustWords,
+                                testUtils.getKeySyncAccount(0)),
+                        false);
+                while (exists(onView(withId(R.id.send)))) {
+                    testUtils.clickView(R.id.send);
+                }
+                testUtils.waitForNewMessage();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @When("^I check devices A and B are not sync$")
+    public void I_check_A_B_not_sync() {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.getMessageListSize();
+                testUtils.composeMessageButton();
+                testUtils.fillMessage(new TestUtils.BasicMessage("",
+                                "NotSyncDeviceA",
+                                "This should be encrypted",
+                                testUtils.getKeySyncAccount(0)),
+                        false);
+                while (exists(onView(withId(R.id.send)))) {
+                    testUtils.clickView(R.id.send);
+                }
+                testUtils.waitForNewMessage();
+                if (testUtils.waitForMessageAndClickIt()) {
+                    testUtils.pressBack();
+                } else {
+                    TestUtils.assertFailWithMessage("Message is not encrypted");
+                }
                 break;
             case "2":
                 break;
@@ -690,21 +736,44 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I reset sync$")
-    public void I_reset_sync() {
+    @When("^I disable sync on device (\\S+)$")
+    public void I_disable_sync(String device) {
         switch (testUtils.keySync_number()) {
             case "1":
-                testUtils.resetKeySync();
+                if (device.equals("A")) {
+                    testUtils.disableKeySync();
+                }
             case "2":
+                if (device.equals("B")) {
+                    testUtils.disableKeySync();
+                }
                 break;
             case "3":
+                if (device.equals("C")) {
+                    testUtils.disableKeySync();
+                }
             default:
+                Timber.i("Unknown Device to disable sync");
                 break;
         }
         while (!exists(onView(withId(R.id.message_list)))) {
             testUtils.pressBack();
         }
         testUtils.getMessageListSize();
+    }
+
+    @When("^I enable sync$")
+    public void I_enable_sync() {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.enableKeySync();
+            case "2":
+                break;
+            case "3":
+            default:
+                break;
+        }
+        testUtils.pressBack();
     }
 
     @When("^I keysync device C$")
