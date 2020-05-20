@@ -443,21 +443,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
-                    false,
-                    new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-
-                        @Override
-                        public void onError(PEpSetupException exception) {
-                            handleErrorCheckingSettings(exception);
-                        }
-
-                        @Override
-                        public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                            AccountSetupNames.actionSetNames(getActivity(), mAccount);
-                            getActivity().finish();
-                        }
-                    });
+            launchSettingsCheck();
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -465,6 +451,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
              */
             onManualSetup();
         }
+    }
+
+    private void launchSettingsCheck() {
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setNonConfigurationInstance(basicsSettingsCheckCallback);
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                false, basicsSettingsCheckCallback);
     }
 
     private void saveCredentialsInPreferences() {
@@ -816,7 +809,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         validateFields();
     }
 
-    private void handleErrorCheckingSettings(PEpSetupException exception) {
+    public void handleErrorCheckingSettings(PEpSetupException exception) {
         if (exception.isCertificateAcceptanceNeeded()) {
             handleCertificateValidationException(exception);
         } else {

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
@@ -19,6 +20,8 @@ import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Inject;
@@ -49,6 +52,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Inject
     AccountSetupNavigator accountSetupNavigator;
     private boolean isGoingBack = false;
+    private BasicsSettingsCheckCallback basicsFragmentSettingsCallback;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -126,9 +130,52 @@ public class AccountSetupBasics extends PEpImporterActivity {
         permissionRequester.requestBatteryOptimizationPermission();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
+        restoreNonConfigurationInstance();
+    }
+
+    private void restoreNonConfigurationInstance() {
         nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         if (nonConfigurationInstance != null) {
             nonConfigurationInstance.restore(this);
+            if(nonConfigurationInstance instanceof BasicsSettingsCheckCallback) {
+                basicsFragmentSettingsCallback = (BasicsSettingsCheckCallback) nonConfigurationInstance;
+            }
+        }
+    }
+
+    public static class BasicsSettingsCheckCallback implements
+            PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>, NonConfigurationInstance {
+        private Fragment fragment;
+
+        public BasicsSettingsCheckCallback(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public boolean retain() {
+            fragment = null;
+            return true;
+        }
+
+        @Override
+        public void restore(Activity activity) {
+            fragment = ((AccountSetupBasics)activity).getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        }
+
+        @Override
+        public void onError(PEpSetupException exception) {
+            if(fragment instanceof AccountSetupBasicsFragment) {
+                ((AccountSetupBasicsFragment)fragment).handleErrorCheckingSettings(exception);
+            }
+        }
+
+        @Override
+        public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+            if(fragment instanceof AccountSetupBasicsFragment) {
+                AccountSetupNames.actionSetNames(fragment.requireActivity(),
+                        ((AccountSetupBasics) (fragment.requireActivity())).accountSetupNavigator.getAccount());
+                fragment.requireActivity().finish();
+            }
         }
     }
 
@@ -234,5 +281,14 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     public void setManualSetupRequired(boolean manualSetupRequired) {
         isManualSetupRequired = manualSetupRequired;
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Object retain = null;
+        if(nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
+            retain = nonConfigurationInstance;
+        }
+        return retain;
     }
 }
