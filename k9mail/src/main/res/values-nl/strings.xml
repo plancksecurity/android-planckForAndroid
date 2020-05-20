@@ -4,16 +4,16 @@
     <!--This should make it easier for forks to change the branding-->
     <!--Used in AndroidManifest.xml-->
     <!--<string name="app_name">K-9 Mail/pEp</string>-->
-    <!--<string name="shortcuts_title">K-9 Accounts</string>-->
-    <!--<string name="unread_widget_label">K-9 Ongelezen</string>-->
-    <!--<string name="remote_control_label">K-9 Mail bediening op afstand</string>-->
-    <!--<string name="remote_control_desc">Sta deze applicatie toe om activiteiten en instellingen van K-9 Mail aan te passen.</string>-->
+    <string name="shortcuts_title">p≡p Accounts</string>
+    <string name="unread_widget_label">p≡p Ongelezen</string>
+    <string name="remote_control_label">p≡p bediening op afstand</string>
+    <string name="remote_control_desc">Sta deze applicatie toe om activiteiten en instellingen van p≡p aan te passen.</string>
     <!--&lt;!&ndash;Used in the about dialog&ndash;&gt;-->
     <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
     <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%s</xliff:g> the Android Open Source Project.</string>-->
     <!--<string name="app_license">Licensed under the Apache License, Version 2.0.</string>-->
-    <!--&lt;!&ndash;Welcome message&ndash;&gt;-->
-    <!--<string name="welcome_message_title">Welkom bij K-9 Mail</string>-->
+    <!--Welcome message-->
+    <string name="welcome_message_title">Welkom bij p≡p</string>
     <!--<string name="accounts_welcome"><![CDATA[ <p> K-9 Mail is een krachtige e-mail cliënt voor Android. </p><p> De verbeterde mogelijkheden bestaan uit ondermeer:-->
     <!--</p>-->
     <!--<ul>-->
@@ -39,11 +39,11 @@
     <!--<a href=\"https://github.com/k9mail/k-9/\">https://github.com/k9mail/k-9/</a>. -->
     <!--</p> -->
     <!--]]></string>-->
-    <!--&lt;!&ndash;Default signature&ndash;&gt;-->
-    <!--<string name="default_signature">&#45;&#45; \nVerstuurd vanaf mijn Android apparaat met K-9 Mail. Excuseer mijn beknoptheid.</string>-->
-    <!--&lt;!&ndash;General strings that include the app name&ndash;&gt;-->
-    <!--<string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail.</string>-->
-    <!--<string name="account_recreate_dlg_instructions_fmt">Alle data voor \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van K-9 Mail, maar account instellingen blijven behouden.</string>-->
+    <!--Default signature-->
+    <string name="default_signature">-- \nVerstuurd vanaf mijn Android apparaat met p≡p. Excuseer mijn beknoptheid.</string>
+    <!--General strings that include the app name-->
+    <string name="account_delete_dlg_instructions_fmt">De account \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd vanp≡p.</string>
+    <string name="account_recreate_dlg_instructions_fmt">Alle lokale gegevens voor \"<xliff:g id="account">%s</xliff:g>\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
     <!--<string name="account_clear_dlg_instructions_fmt">Alle berichten in \"<xliff:g id="account">%s</xliff:g>\" wordt verwijderd van  K-9 Mail, maar account instellingen blijven behouden.</string>-->
     <!--=== App Store-specific strings =======================================================-->
     <string name="import_dialog_error_message">Installeer een bestandsbeheer-app om verder te gaan met deze import.</string>
@@ -950,7 +950,6 @@
     <string name="status_syncing_blocked">Synchroniseren geblokkeerd</string>
     <string name="status_poll_and_push_disabled">Polling en pushing uitgeschakeld</string>
     <string name="status_no_network">Sync uitgeschakeld - Geen netwerk</string>
-    <string name="account_recreate_dlg_instructions_fmt">Alle lokale gegevens voor \"<xliff:g id="account">%s</xliff:g>\" worden verwijderd. Accountinstellingen blijven behouden.<xliff:g id="account">%s</xliff:g>\" will be removed. Account settings will be retained.</string>
     <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <string name="app_authors">The K-9 Dog Walkers, p≡p Security S.A.</string>
     <string name="switch_off">Uit</string>
