@@ -1058,7 +1058,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="global_settings_confirm_menu_mark_all_read">Alle Nachrichten als gelesen markieren</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Verhalten nach dem Löschen der Nachricht</string>
     <string name="debug_delete_local_body">Nachrichtentext debuggen / löschen</string>
-    <string name="message_view_sender_label">über% 1 $ s</string>
+    <string name="message_view_sender_label">über %1$s</string>
     <string name="message_view_status_no_space">Der Anhang konnte nicht gespeichert werden, da nicht genügend Speicherplatz vorhanden ist.</string>
     <string name="status_syncing">Nachrichten synchronisieren</string>
     <string name="status_syncing_blocked">Synchronisierung blockiert</string>
