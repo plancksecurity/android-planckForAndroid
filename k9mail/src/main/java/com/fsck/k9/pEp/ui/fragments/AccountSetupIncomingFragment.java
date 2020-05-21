@@ -85,6 +85,9 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject ToolBarCustomizer toolBarCustomizer;
@@ -122,6 +125,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
+    private androidx.appcompat.app.AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
 
 
     private final K9JobManager jobManager = K9.jobManager;
@@ -363,7 +370,16 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         if (editSettings) {
             mNextButton.setText(R.string.done_action);
         }
+        if(savedInstanceState != null) {
+            restoreErrorDialogState(savedInstanceState);
+        }
         return rootView;
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     @Override
@@ -446,6 +462,13 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
+        saveErrorDialogState(outState);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     /**
@@ -807,6 +830,28 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
+        restoreErrorDialogIfNeeded();
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
     }
 
     private void handleErrorCheckingSettings(PEpSetupException exception) {
@@ -835,9 +880,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        String title = extractErrorDialogTitle(stringResource);
-        new AlertDialog.Builder(getActivity())
-                .setTitle(title)
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
+                .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
     }

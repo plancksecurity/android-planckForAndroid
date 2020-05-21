@@ -95,6 +95,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private final static String STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming";
     public static final String GMAIL = "gmail";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -119,6 +122,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public boolean ismCheckedIncoming() {
         return mCheckedIncoming;
     }
+
+    private AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
 
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
@@ -194,6 +202,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
             outState.putSerializable(STATE_KEY_PROVIDER, mProvider);
         }
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming);
+        saveErrorDialogState(outState);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     @Override
@@ -212,7 +227,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING);
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
+            restoreErrorDialogState(savedInstanceState);
         }
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     public void afterTextChanged(Editable s) {
@@ -478,6 +500,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mNextButton.setVisibility(View.VISIBLE);
         nextProgressBar.hide();
         validateFields();
+        restoreErrorDialogIfNeeded();
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
     }
 
     private void onNext() {
@@ -825,11 +855,28 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        new AlertDialog.Builder(getActivity())
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
+    }
+
 
     private void handleCertificateValidationException(PEpSetupException cve) {
         PEpCertificateException certificateException = (PEpCertificateException) cve;

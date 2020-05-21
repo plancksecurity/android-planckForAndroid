@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -74,6 +75,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
     private static String EXTRA_BACK = "back";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -105,6 +109,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean mBack;
+    private androidx.appcompat.app.AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -280,7 +288,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         if (mBack) {
             ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+        if(savedInstanceState != null) {
+            restoreErrorDialogState(savedInstanceState);
+        }
         return rootView;
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     @Override
@@ -437,6 +454,13 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
+        saveErrorDialogState(outState);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     /**
@@ -680,6 +704,14 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
+        restoreErrorDialogIfNeeded();
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
     }
 
     private void handleCertificateValidationException(PEpSetupException cve) {
@@ -699,11 +731,26 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        String title = extractErrorDialogTitle(stringResource);
-        new AlertDialog.Builder(getActivity())
-                .setTitle(title)
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new Builder(getActivity())
+                .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
     }
 
     private void handleCertificateValidationException(CertificateValidationException cve) {
