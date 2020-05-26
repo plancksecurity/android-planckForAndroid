@@ -680,8 +680,8 @@ public class CucumberTestSteps {
         testUtils.getMessageListSize();
     }
 
-    @When("^I check devices A and B are sync$")
-    public void I_check_A_B_sync() {
+    @When("^I check devices (\\S+) and (\\S+) are sync$")
+    public void I_check_1_and_2_sync(String device1, String device2) {
         switch (testUtils.keySync_number()) {
             case "1":
                 testUtils.getMessageListSize();
@@ -702,8 +702,9 @@ public class CucumberTestSteps {
             case "2":
                 testUtils.getMessageListSize();
                 testUtils.waitForMessageAndClickIt();
-                I_compare_body(testUtils.trustWords);
+                I_compare_body("A");
                 testUtils.pressBack();
+                testUtils.composeMessageButton();
                 testUtils.fillMessage(new TestUtils.BasicMessage("",
                                 "SyncDeviceA",
                                 testUtils.trustWords,
@@ -741,6 +742,22 @@ public class CucumberTestSteps {
                 }
                 break;
             case "2":
+                if (testUtils.waitForMessageAndClickIt()) {
+                    testUtils.pressBack();
+                } else {
+                    TestUtils.assertFailWithMessage("Message is not encrypted");
+                }
+                testUtils.getMessageListSize();
+                testUtils.composeMessageButton();
+                testUtils.fillMessage(new TestUtils.BasicMessage("",
+                                "NotSyncDeviceA",
+                                "This should be encrypted",
+                                testUtils.getKeySyncAccount(0)),
+                        false);
+                while (exists(onView(withId(R.id.send)))) {
+                    testUtils.clickView(R.id.send);
+                }
+                testUtils.waitForNewMessage();
                 break;
             default:
                 break;
@@ -778,13 +795,13 @@ public class CucumberTestSteps {
         switch (testUtils.keySync_number()) {
             case "1":
                 testUtils.enableKeySync();
+                testUtils.pressBack();
             case "2":
                 break;
             case "3":
             default:
                 break;
         }
-        testUtils.pressBack();
     }
 
     @When("^I keysync device C$")
