@@ -1903,11 +1903,11 @@ public class TestUtils {
         } while (!textIsOk);
     }
 
-    public void waitForMessageAndClickIt() {
+    public boolean waitForMessageAndClickIt() {
         Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
         waitForNewMessage();
         Timber.i("MessageList despues: " + messageListSize[0] + " " + messageListSize[1]);
-        clickLastMessage();
+        return clickLastMessage();
     }
 
     public String longText() {
@@ -1915,8 +1915,9 @@ public class TestUtils {
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
-    public void clickLastMessage() {
+    public boolean clickLastMessage() {
         boolean messageClicked = false;
+        boolean encrypted = false;
         while (!messageClicked) {
             device.waitForIdle();
             if (!viewIsDisplayed(R.id.openCloseButton)) {
@@ -1947,23 +1948,13 @@ public class TestUtils {
         }
         try {
             onView(withText(R.string.cancel_action)).perform(click());
+            encrypted = true;
         } catch (NoMatchingViewException ignoredException) {
             Timber.i("Ignored exception. Email is not encrypted");
         }
-        try {
-            readAttachedJSONFile();
-        } catch (Exception noJSON) {
-            Timber.i("There are no JSON files attached");
-        }
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-        device.waitForIdle();
-        try {
-            onView(withId(R.id.message_list)).perform(swipeUp());
-        } catch (Exception noSwipe) {
-            Timber.i("Cannot SwipeUp");
-        }
-        device.waitForIdle();
+        Espresso.onIdle();
+        return encrypted;
     }
 
     public void clickMessageAtPosition(int position) {
