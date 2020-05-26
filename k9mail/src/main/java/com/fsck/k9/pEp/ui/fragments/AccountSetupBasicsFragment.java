@@ -98,6 +98,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
+    private static final String NEXT_BUTTON_WAS_VISIBLE = "buttonWasVisible";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -127,6 +128,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private int errorDialogTitle;
     private String errorDialogMessage;
     private boolean errorDialogWasShowing;
+    private boolean nextButtonWasVisible = true;
 
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
@@ -203,6 +205,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming);
         saveErrorDialogState(outState);
+        outState.putBoolean(NEXT_BUTTON_WAS_VISIBLE, nextButtonWasVisible);
     }
 
     private void saveErrorDialogState(Bundle outState) {
@@ -228,6 +231,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
             restoreErrorDialogState(savedInstanceState);
+            nextButtonWasVisible = savedInstanceState.getBoolean(NEXT_BUTTON_WAS_VISIBLE);
         }
     }
 
@@ -492,15 +496,27 @@ public class AccountSetupBasicsFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
-        enableViewGroup(true, (ViewGroup) rootView);
         accountTokenStore = K9.oAuth2TokenStore;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
         mAccountSpinner.setAdapter(adapter);
-        mNextButton.setVisibility(View.VISIBLE);
-        nextProgressBar.hide();
         validateFields();
         restoreErrorDialogIfNeeded();
+        restoreViewsEnabledState();
+    }
+
+    private void restoreViewsEnabledState() {
+        mNextButton.setVisibility(nextButtonWasVisible ? View.VISIBLE : View.GONE);
+        mManualSetupButton.setEnabled(nextButtonWasVisible);
+        enableViewGroup(nextButtonWasVisible, (ViewGroup)rootView);
+        if(!nextButtonWasVisible) {
+            nextProgressBar.setVisibility(View.VISIBLE);
+            nextProgressBar.show();
+            nextButtonWasVisible = true;
+        }
+        else {
+            nextProgressBar.hide();
+        }
     }
 
     private void restoreErrorDialogIfNeeded() {
@@ -867,6 +883,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public void onPause() {
         super.onPause();
         dismissErrorDialogIfNeeded();
+        nextButtonWasVisible = mNextButton.getVisibility() == View.VISIBLE;
+        nextProgressBar.hide();
     }
 
     private void dismissErrorDialogIfNeeded() {

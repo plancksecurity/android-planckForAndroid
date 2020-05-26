@@ -78,6 +78,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
+    private static final String BUTTON_WAS_VISIBLE = "buttonWasVisible";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -113,6 +114,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private int errorDialogTitle;
     private String errorDialogMessage;
     private boolean errorDialogWasShowing;
+    private boolean buttonWasVisible = true;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -290,6 +292,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         }
         if(savedInstanceState != null) {
             restoreErrorDialogState(savedInstanceState);
+            buttonWasVisible = savedInstanceState.getBoolean(BUTTON_WAS_VISIBLE);
         }
         return rootView;
     }
@@ -455,6 +458,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
         saveErrorDialogState(outState);
+        outState.putBoolean(BUTTON_WAS_VISIBLE, buttonWasVisible);
     }
 
     private void saveErrorDialogState(Bundle outState) {
@@ -618,6 +622,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     }
 
     private void goForward() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        rootView.setEnabled(true);
         if (mEdit) {
             if (getActivity() != null)  {
                 getActivity().finish();
@@ -629,8 +636,8 @@ public class AccountSetupOutgoingFragment extends PEpFragment
 
     protected void onNext() {
         nextProgressBar.show();
-        mNextButton.setVisibility(View.GONE);
-        rootView.setEnabled(false);
+        mNextButton.setVisibility(View.INVISIBLE);
+        enableViewGroup(false, (ViewGroup) rootView);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
         String username = null;
@@ -705,6 +712,21 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
         restoreErrorDialogIfNeeded();
+        restoreViewsEnabledState();
+    }
+
+    private void restoreViewsEnabledState() {
+        mNextButton.setVisibility(buttonWasVisible ? View.VISIBLE : View.INVISIBLE);
+        enableViewGroup(buttonWasVisible, (ViewGroup)rootView);
+
+        if(!buttonWasVisible) {
+            nextProgressBar.setVisibility(View.VISIBLE);
+            nextProgressBar.show();
+            buttonWasVisible = true;
+        }
+        else {
+            nextProgressBar.hide();
+        }
     }
 
     private void restoreErrorDialogIfNeeded() {
@@ -743,6 +765,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     public void onPause() {
         super.onPause();
         dismissErrorDialogIfNeeded();
+        buttonWasVisible = mNextButton.getVisibility() == View.VISIBLE;
     }
 
     private void dismissErrorDialogIfNeeded() {
