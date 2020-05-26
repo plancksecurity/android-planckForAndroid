@@ -804,8 +804,8 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I keysync device C$")
-    public void I_keysync_devices_C() {
+    @When("^I keySync device C$")
+    public void I_keySync_devices_C() {
 
     }
 
@@ -814,8 +814,8 @@ public class CucumberTestSteps {
 
     }
 
-    @When("^I remove from keysync device C$")
-    public void I_remove_from_keysync_device_C() {
+    @When("^I remove from keySync device C$")
+    public void I_remove_from_keySync_device_C() {
 
     }
 
