@@ -509,9 +509,12 @@ public class TestUtils {
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
         }
+        if (exists(onView(withId(R.id.available_accounts_title)))) {
+            selectAccount(0);
+        }
     }
 
-    public void resetKeySync () {
+    public void disableKeySync() {
         selectFromMenu(R.string.prefs_title);
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
@@ -646,8 +649,12 @@ public class TestUtils {
                 }
                 addAccount();
                 if (isKeySync) {
-                    fillAccountAddress(testConfig.getKeySync_account(Integer.parseInt(testConfig.keySync_number) - 1));
-                    fillAccountPassword(testConfig.getKeySync_password(Integer.parseInt(testConfig.keySync_number) - 1));
+                    int account = 0;
+                    if (testConfig.keySync_number.equals("3")) {
+                        account = 1;
+                    }
+                    fillAccountAddress(testConfig.getKeySync_account(account));
+                    fillAccountPassword(testConfig.getKeySync_password(account));
                 } else {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
