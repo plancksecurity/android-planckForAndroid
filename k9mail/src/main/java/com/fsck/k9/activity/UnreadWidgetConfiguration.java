@@ -81,7 +81,7 @@ public class UnreadWidgetConfiguration extends AccountList {
         SharedPreferences.Editor editor =
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
         editor.putString(PREF_PREFIX_KEY + appWidgetId, accountUuid);
-        editor.commit();
+        editor.apply();
     }
 
     public static String getAccountUuid(Context context, int appWidgetId) {
@@ -93,6 +93,6 @@ public class UnreadWidgetConfiguration extends AccountList {
     public static void deleteWidgetConfiguration(Context context, int appWidgetId) {
         Editor editor = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit();
         editor.remove(PREF_PREFIX_KEY + appWidgetId);
-        editor.commit();
+        editor.apply();
     }
 }
