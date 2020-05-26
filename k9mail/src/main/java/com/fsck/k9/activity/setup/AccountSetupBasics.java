@@ -169,26 +169,18 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
         @Override
         public void onError(PEpSetupException exception) {
-            if(fragment instanceof AccountSetupBasicsFragment) {
-                ((AccountSetupBasicsFragment)fragment).handleErrorCheckingSettings(exception);
+            if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
+                return;
             }
-            else if(fragment instanceof AccountSetupIncomingFragment) {
-                ((AccountSetupIncomingFragment)fragment).handleErrorCheckingSettings(exception);
-            }
+            ((AccountSetupSettingsCheckerFragment) fragment).onError(exception);
         }
 
         @Override
         public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-            if(fragment instanceof AccountSetupBasicsFragment) {
-                if(fragment.isResumed()) {
-                    AccountSetupNames.actionSetNames(fragment.requireActivity(),
-                            ((AccountSetupBasics) (fragment.requireActivity())).accountSetupNavigator.getAccount());
-                    fragment.requireActivity().finish();
-                }
+            if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
+                return;
             }
-            else if(fragment instanceof AccountSetupIncomingFragment) {
-                ((AccountSetupIncomingFragment) fragment).goForward();
-            }
+            ((AccountSetupSettingsCheckerFragment) fragment).onLoaded(redirection);
         }
     }
 
@@ -304,5 +296,10 @@ public class AccountSetupBasics extends PEpImporterActivity {
             retain = nonConfigurationInstance;
         }
         return retain;
+    }
+
+    public interface AccountSetupSettingsCheckerFragment {
+        void onError(PEpSetupException exception);
+        void onLoaded(PEpSettingsChecker.Redirection redirection);
     }
 }

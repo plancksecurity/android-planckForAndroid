@@ -64,7 +64,8 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupOutgoingFragment extends PEpFragment {
+public class AccountSetupOutgoingFragment extends PEpFragment
+        implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
 
@@ -288,19 +289,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void checkSettings() {
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
-                false,
-                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                    @Override
-                    public void onError(PEpSetupException exception) {
-                        handleErrorCheckingSettings(exception);
-                    }
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setNonConfigurationInstance(basicsSettingsCheckCallback);
 
-                    @Override
-                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        goForward();
-                    }
-                });
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
+                false, basicsSettingsCheckCallback);
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
@@ -892,6 +885,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
                     e.getMessage() == null ? "" : e.getMessage());
         }
+        goForward();
+    }
+
+    @Override
+    public void onError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
         goForward();
     }
 }

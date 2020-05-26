@@ -85,7 +85,8 @@ import static android.app.Activity.RESULT_OK;
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 
 public class AccountSetupBasicsFragment extends PEpFragment
-        implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
+        implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener,
+        ClientCertificateSpinner.OnClientCertificateChangedListener, AccountSetupBasics.AccountSetupSettingsCheckerFragment {
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
@@ -809,20 +810,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
         validateFields();
     }
 
-    public void handleErrorCheckingSettings(PEpSetupException exception) {
-        if(this.isResumed()) {
-            if (exception.isCertificateAcceptanceNeeded()) {
-                handleCertificateValidationException(exception);
-            } else {
-                showErrorDialog(
-                        exception.getTitleResource(),
-                        exception.getMessage() == null ? "" : exception.getMessage());
-                Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
-            }
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-            enableViewGroup(true, (ViewGroup) rootView);
+    private void handleErrorCheckingSettings(PEpSetupException exception) {
+        if (exception.isCertificateAcceptanceNeeded()) {
+            handleCertificateValidationException(exception);
+        } else {
+            showErrorDialog(
+                    exception.getTitleResource(),
+                    exception.getMessage() == null ? "" : exception.getMessage());
+            Preferences.getPreferences(getActivity()).deleteAccount(mAccount);
         }
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     private void showErrorDialog(int stringResource, String message) {
@@ -1023,6 +1022,17 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
                 .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                 .commit();
+    }
+
+    @Override
+    public void onError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+        AccountSetupNames.actionSetNames(requireActivity(), mAccount);
+        requireActivity().finish();
     }
 
     static class Provider implements Serializable {

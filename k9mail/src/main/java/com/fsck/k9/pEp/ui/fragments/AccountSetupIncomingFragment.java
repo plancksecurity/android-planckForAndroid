@@ -77,7 +77,7 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupIncomingFragment extends PEpFragment {
+public class AccountSetupIncomingFragment extends PEpFragment implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -643,15 +643,13 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 false, basicsSettingsCheckCallback);
     }
 
-    public void goForward() {
-        if(this.isResumed()) {
-            if (editSettings) {
-                if (getActivity() != null) {
-                    getActivity().finish();
-                }
-            } else {
-                accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+    private void goForward() {
+        if (editSettings) {
+            if (getActivity() != null) {
+                getActivity().finish();
             }
+        } else {
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
         }
     }
 
@@ -811,19 +809,17 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
     }
 
-    public void handleErrorCheckingSettings(PEpSetupException exception) {
-        if(this.isResumed()) {
-            if (exception.isCertificateAcceptanceNeeded()) {
-                handleCertificateValidationException(exception);
-            } else {
-                showErrorDialog(
-                        exception.getTitleResource(),
-                        exception.getMessage() == null ? "" : exception.getMessage());
-            }
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-            enableViewGroup(true, (ViewGroup) rootView);
+    private void handleErrorCheckingSettings(PEpSetupException exception) {
+        if (exception.isCertificateAcceptanceNeeded()) {
+            handleCertificateValidationException(exception);
+        } else {
+            showErrorDialog(
+                    exception.getTitleResource(),
+                    exception.getMessage() == null ? "" : exception.getMessage());
         }
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
@@ -1026,6 +1022,16 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
                     e.getMessage() == null ? "" : e.getMessage());
         }
+        goForward();
+    }
+
+    @Override
+    public void onError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
         goForward();
     }
 }
