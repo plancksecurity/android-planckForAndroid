@@ -521,6 +521,7 @@ public class TestUtils {
         selectFromScreen(stringToID("pep_sync"));
         selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
         clickTextOnScreen(stringToID("pep_sync"));
+
     }
 
     public String keySync_number() { return testConfig.getKeySync_number();}
@@ -2294,14 +2295,14 @@ public class TestUtils {
                     body[1] = "Decoded Rating | PEP_rating_reliable";
                 } else {
                     body = new String[1];
-                    body[0] = cucumberBody;
+                    body[0] = cucumberBody.substring(0, cucumberBody.length() - 1);
                 }
                 compareTextWithWebViewText(body[0]);
                 return;
             } else if (exists(onView(withId(R.id.message_content)))) {
                 onView(withId(R.id.message_content)).check(matches(isDisplayed()));
                 String[] text = getTextFromView(onView(withId(R.id.message_content))).split("--");
-                if (text[0].equals(cucumberBody)) {
+                if (text[0].contains(cucumberBody)) {
                     return;
                 } else {
                     device.waitForIdle();
@@ -2351,7 +2352,7 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
-            if (webViewText[0].equals(textToCompare)) {
+            if (webViewText[0].contains(textToCompare)) {
                 device.waitForIdle();
                 return;
             } else {
