@@ -59,13 +59,13 @@
     <string name="pep_wrong_fingerprint">Verkeerde vingerafdruk</string>
     <string name="pep_ask_trustwords">Vraag uw partner persoonlijk of telefonisch: wat zijn uw vertrouwenswoorden\? Vergelijk dan met het juiste antwoord hieronder.</string>
     <string name="pep_complete_partner_format">Partner
-\n% 1 $ s &lt;% 2 $ s&gt;</string>
+\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner
-\n% 1 $ s</string>
+\n%1$s</string>
     <string name="pep_complete_myself_format">Mezelf
-\n% 1 $ s &lt;% 2 $ s&gt;</string>
+\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Mezelf
-\n% 1 $ s</string>
+\n%1$s</string>
     <string name="pep_force_unprotected">Schakel beveiliging uit</string>
     <string name="pep_force_protected">Beveiliging inschakelen</string>
     <string name="pep_receivedSecretKey">Deze geheime sleutel ontvangen:</string>
@@ -73,13 +73,12 @@
     <string name="pep_userAddress">Gebruikersadres</string>
     <string name="pep_secret_key_detected">Geheime sleutel gedetecteerd</string>
     <string name="pep_received_this_secret_key" translatable="false">De volgende geheime sleutel is ontvangen. Weet je zeker dat je het wilt gebruiken\?</string>
-    <string name="pep_from_format">van afzender% 1 $ s</string>
+    <string name="pep_from_format">van afzender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Vertrouw server en bewaar e-mails onbeschermd</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Bewaar berichten veilig</string>
     <string name="pep_enable_privacy_protection">p≡p privacybescherming</string>
     <string name="pep_explanation">Uitleg</string>
     <string name="pep_suggestion">Suggestie</string>
-    <string name="pep_app_license">Gelicentieerd onder pEp security EULA</string>
     <string name="pep_trust_server_description">Bewaar mails aan de serverzijde in een veilige vorm.</string>
     <string name="pep_account_privacy_protection_explanation">Schakel p≡p-privacybescherming in voor dit account</string>
     <string name="pep_forward_warning">Onveilige antwoordwaarschuwing</string>
@@ -203,8 +202,8 @@
 \n 1. heeft uw openbare PGP-sleutel bijgevoegd en
 \n 2. is gecodeerd en ondertekend met de p≡p-sleutel die u zojuist hebt geïmporteerd</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Als u een sleutelimport hebt gestart voor het volgende account:% s, klikt u op Start.</string>
-    <string name="key_import_failure">Kan sleutel van% 1 $ s met sleutel-id:% 2 $ s niet importeren en gebruiken</string>
-    <string name="key_import_success">Sleutel% 1 $ s geïmporteerd uit% 2 $ s</string>
+    <string name="key_import_failure">Kan sleutel van %1$s met sleutel-id: %2$s niet importeren en gebruiken</string>
+    <string name="key_import_success">Sleutel %1$s geïmporteerd uit %2$s</string>
     <string name="key_import_from_fs_input_fpr">Voer de sleutel-ID of de vingerafdruk van de sleutel in.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Alles resetten</string>

@@ -4,20 +4,20 @@
     <!--This should make it easier for forks to change the branding-->
     <!--Used in AndroidManifest.xml-->
     <!--<string name="app_name">K-9 Mail/pEp</string>-->
-    <!--<string name="remote_control_label">Control remot del Correu K-9 Mail</string>-->
-    <!--<string name="remote_control_desc">Permet a aquesta aplicació controlar les activitats i la configuració de K-9 Mail.</string>-->
+    <string name="remote_control_label">Control remot del Correu p≡p</string>
+    <string name="remote_control_desc">Permet a aquesta aplicació controlar les activitats i la configuració de p≡p.</string>
     <!--Used in the about dialog-->
     <!--<string name="app_authors">Google, The K-9 Dog Walkers.</string>-->
     <!--<string name="app_copyright_fmt">Copyright 2008-<xliff:g>%s</xliff:g> The K-9 Dog Walkers. Porcions de Copyright 2006-<xliff:g>%s</xliff:g> Projecte de codi obert d\'Android.</string>-->
     <!--<string name="app_license">Llicenciat sota Llicència Apache, Versió 2.0.</string>-->
     <!--Welcome message-->
-    <!--<string name="welcome_message_title">Us donem la benvinguda a K-9 Mail</string>-->
+    <string name="welcome_message_title">Us donem la benvinguda a p≡p</string>
     <!--Default signature-->
+    <string name="default_signature">"--  Enviat des del  meu p≡p per Android. "</string>
     <!--General strings that include the app name-->
-    <!--<string name="account_delete_dlg_instructions_fmt">El compte \"<xliff:g id="account">%s</xliff:g>\" serà esborrat de K-9 Mail.</string>-->
-    <!--<string name="account_recreate_dlg_instructions_fmt">Totes les dades de \"<xliff:g id="account">%s</xliff:g>\" seran esborrades de K-9 Mail, però la configuració del compte romandrà.</string>-->
-    <!--<string name="account_clear_dlg_instructions_fmt">Tots els missatges a \"<xliff:g id="account">%s</xliff:g>\" seran esborrats de K-9 Mail, però la configuració del compte romandrà.</string>-->
-    <!--=== App Store-specific strings =======================================================-->
+    <string name="account_delete_dlg_instructions_fmt">El compte \"<xliff:g id="account">%s</xliff:g>\" serà esborrat de p≡p.</string>
+    <string name="account_recreate_dlg_instructions_fmt">S\'eliminaran totes les dades locals de \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>
+    <string name="account_clear_dlg_instructions_fmt">S\'eliminaran còpies locals de missatges a \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>    <!--=== App Store-specific strings =======================================================-->
     <string name="import_dialog_error_message">No s\'a trobat cap aplicació per realitzar la importació. Instal·leu un gestor d\'arxius des de Google Play Store.</string>
     <string name="open_market">Obre la Play Store</string>
     <!--=== General strings ==================================================================-->
@@ -835,9 +835,6 @@
     <string name="openpgp_enabled_error_back">Back</string>
     <string name="openpgp_sign_only_disable">Disable</string>
     <string name="openpgp_inline_disable">Disable</string>
-    <string name="app_name">p≡p</string>
-    <string name="account_recreate_dlg_instructions_fmt">S\'eliminaran totes les dades locals de \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>
-    <string name="account_clear_dlg_instructions_fmt">S\'eliminaran còpies locals de missatges a \"<xliff:g id="account">%s</xliff:g>\". La configuració del compte es conservarà.</string>
     <string name="status_no_network">Sincronització desactivada: sense xarxa</string>
     <string name="status_no_background">Sincronització desactivada: no hi ha cap activitat de fons</string>
     <string name="status_poll_and_push_disabled">Polling i empenta discapacitats</string>
@@ -874,7 +871,7 @@
         <item quantity="one"><xliff:g id="new_message_count">%d</xliff:g> nou missatge</item>
         <item quantity="other"><xliff:g id="new_message_count">%d</xliff:g> nous missatges</item>
     </plurals>
-    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%$d</xliff:g> més a <xliff:g id="account">%2$s</xliff:g></string>
+    <string name="notification_additional_messages">+ <xliff:g id="additional_messages">%1$d</xliff:g> més a <xliff:g id="account">%2$s</xliff:g></string>
     <string name="notification_action_delete_all">Eliminar tots</string>
     <string name="notification_action_archive_all">Arxivar tot</string>
     <string name="notification_authentication_error_title">L\'autenticació ha fallat</string>
@@ -906,7 +903,7 @@
     <string name="compose_error_incomplete_recipient">El camp del destinatari conté una entrada incompleta.</string>
     <string name="message_view_status_no_space">No s\'ha pogut desar el fitxer adjunt ja que no hi ha prou espai.</string>
     <string name="message_view_toast_unable_to_display_message">No es pot mostrar el missatge</string>
-    <string name="message_view_sender_label">via% 1 $ s</string>
+    <string name="message_view_sender_label">via %1$s</string>
     <string name="debug_delete_local_body">Depuració / elimina el cos del missatge</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Comportament del missatge suprimit</string>
     <string name="global_settings_confirm_menu_mark_all_read">Marca tots els missatges com a llegits</string>

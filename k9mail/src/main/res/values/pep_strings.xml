@@ -76,7 +76,6 @@
     <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
-    <string name="pep_app_license">Licenced under pEp security EULA</string>
     <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure reply warning</string>

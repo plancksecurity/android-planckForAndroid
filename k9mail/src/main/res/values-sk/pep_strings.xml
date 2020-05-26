@@ -79,7 +79,6 @@
     <string name="pep_enable_privacy_protection">p≡p ochrana súkromia</string>
     <string name="pep_explanation">Vysvetlenie</string>
     <string name="pep_suggestion">Návrh</string>
-    <string name="pep_app_license">Licencované pod licenciou pEp security EULA</string>
     <string name="pep_trust_server_description">Uchovávajte e-maily na serveri v bezpečnej forme.</string>
     <string name="pep_account_privacy_protection_explanation">Povoľte p≡p ochrana súkromia pre tento účet</string>
     <string name="pep_forward_warning">Varovanie nezabezpečenej odpovede</string>
@@ -203,7 +202,7 @@
 \n 1. má pripojený váš verejný kľúč PGP a 
 \n 2. je šifrovaný a podpísaný pomocou kľúča p≡p, ktorý ste práve importovali</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Ak ste iniciovali import kľúčov pre nasledujúci účet:% s, kliknite na tlačidlo Štart.</string>
-    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z% 1 $ s s identifikátorom kľúča:% 2 $ s</string>
+    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z %1$s s identifikátorom kľúča: %2$s</string>
     <string name="key_import_success">Kľúč %1$ s bol úspešne importovaný z %2$s</string>
     <string name="key_import_from_fs_input_fpr">Zadajte ID kľúča alebo odtlačok kľúča.</string>
     <string name="reset">Obnoviť</string>
