@@ -458,7 +458,7 @@ public class TestUtils {
                                 break;
                             case "keysync_account_1":
                                 testConfig.setKeySync_account(line[1], 0);
-                                if (!testConfig.getKeySync_account(0).equals("")) {
+                                if (!testConfig.getKeySync_number().equals("0")) {
                                     totalAccounts = 1;
                                 }
                                 break;
