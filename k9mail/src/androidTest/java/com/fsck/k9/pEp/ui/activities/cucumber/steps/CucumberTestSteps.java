@@ -1192,6 +1192,9 @@ public class CucumberTestSteps {
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
         accountSelected = Integer.parseInt(account);
+        while (testUtils.getTotalAccounts() == -1) {
+            testUtils.readConfigFile();
+        }
         if (!(accountSelected < testUtils.getTotalAccounts())) {
             skipTest("No more accounts");
         }
