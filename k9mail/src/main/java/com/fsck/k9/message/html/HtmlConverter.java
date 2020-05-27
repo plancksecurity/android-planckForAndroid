@@ -1271,6 +1271,10 @@ public class HtmlConverter {
         }
     }
 
+    static String cssStyleWrap() {
+        return "<style type=\"text/css\">body { overflow-wrap: break-word; word-wrap: break-word;} </style>";
+    }
+
     /**
      * Dynamically generate a CSS style for {@code <pre>} elements.
      *
