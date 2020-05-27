@@ -21,7 +21,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 public class MessageWebView extends RigidWebView {
 
-    private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; word-break: break-word; -webkit-hyphens: auto; hyphens: auto;\">";
+    private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
 
     public MessageWebView(Context context) {
         super(context);
