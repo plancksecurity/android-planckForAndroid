@@ -1964,6 +1964,11 @@ public class TestUtils {
         } catch (NoMatchingViewException ignoredException) {
             Timber.i("Ignored exception. Email is not encrypted");
         }
+        try {
+            readAttachedJSONFile();
+        } catch (Exception noJSON) {
+            Timber.i("There are no JSON files attached");
+        }
         device.waitForIdle();
         Espresso.onIdle();
         return encrypted;
