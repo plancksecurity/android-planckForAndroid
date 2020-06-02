@@ -145,7 +145,7 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
-        if (!exists(onView(withId(R.id.message_list)))) {
+        if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
             testUtils.selectFromMenu(R.string.action_settings);
             device.waitForIdle();
             Espresso.onIdle();
