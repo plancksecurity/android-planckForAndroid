@@ -5,11 +5,7 @@
     android:layout_width="@dimen/floating_width"
     android:layout_height="@dimen/floating_height"
     android:layout_gravity="center"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingLeft="24dp"
-    android:paddingTop="24dp"
-    android:paddingRight="24dp">
+    android:padding="24dp">
 
     <TextView
         android:id="@+id/title"
@@ -51,9 +47,8 @@
         android:id="@+id/cancelButton"
         style="@style/TransparentButton.Gray"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:text="@string/cancel_action"
         android:textColor="@color/dark_gray"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -63,8 +58,7 @@
         android:id="@+id/acceptButton"
         style="@style/TransparentButton.Green"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_height="48dp"
         android:text="@string/pgp_key_import_dialog_accept_button"
         android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
