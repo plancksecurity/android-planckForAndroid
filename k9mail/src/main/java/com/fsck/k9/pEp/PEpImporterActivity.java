@@ -61,11 +61,12 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
 
+import static security.pEp.ui.keyimport.KeyImportActivityKt.ACTIVITY_REQUEST_PICK_KEY_FILE;
+import static security.pEp.ui.keyimport.KeyImportActivityKt.DIALOG_NO_FILE_MANAGER;
+
 public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
-    private static final int DIALOG_NO_FILE_MANAGER = 4;
-    protected static final int ACTIVITY_REQUEST_PICK_KEY_FILE = 8;
 
     protected static final String CURRENT_ACCOUNT = "currentAccount";
     protected static final String FPR = "fpr";

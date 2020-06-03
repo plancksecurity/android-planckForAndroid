@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/fingerPrintEditText"
+            android:id="@+id/fingerprintEditText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fontFamily="@font/monospace_font_family"

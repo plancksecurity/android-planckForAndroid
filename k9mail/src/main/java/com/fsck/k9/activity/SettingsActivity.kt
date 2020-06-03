@@ -50,6 +50,7 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
+import security.pEp.ui.keyimport.ACTIVITY_REQUEST_PICK_KEY_FILE
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*

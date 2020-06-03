@@ -2,11 +2,9 @@ package security.pEp.ui.keyimport
 
 interface KeyImportView {
 
-    fun renderDialog()
+    fun openFileChooser()
 
-    fun showPositiveFeedback()
-
-    fun showNegativeFeedback()
+    fun showNegativeFeedback(message: String)
 
     fun finish()
 
