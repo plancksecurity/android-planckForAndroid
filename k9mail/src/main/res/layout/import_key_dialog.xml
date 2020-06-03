@@ -10,16 +10,14 @@
     android:orientation="vertical"
     android:paddingTop="24dp"
     android:paddingRight="24dp"
-    android:paddingLeft="24dp"
-
-    >
+    android:paddingLeft="24dp">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/pep_secret_key_detected"
+        android:text="qwerqwer"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:paddingBottom="16dp"
-        android:text="@string/pep_received_this_secret_key"
+        android:text="asdfsadf"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/title" />

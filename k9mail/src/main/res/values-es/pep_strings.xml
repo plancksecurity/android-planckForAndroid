@@ -27,9 +27,6 @@
     <string name="pep_receivedSecretKey">Se ha recibido esta Clave Secreta:</string>
     <string name="pep_username">Usuario</string>
     <string name="pep_userAddress">Dirección del Usuario</string>
-    <string name="pep_secret_key_detected">Detectada clave secreta</string>
-    <string name="pep_received_this_secret_key">Se ha recibido la siguiente clave secreta. ¿Está seguro de que quiere utilizarla\?</string>
-    <string name="pep_from_format">del remitente %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Confiar en el servidor y guardar los mensajes sin proteger</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Guardar los mensajes de forma segura</string>
     <string name="pep_enable_privacy_protection">p≡p protección de privacidad</string>
@@ -132,8 +129,6 @@
     <string name="mistrust_identity_feedback">%s ahora ya no es de confianza</string>
     <string name="key_import_success">La Clave %1$s se ha importado correctamente de %2$s</string>
     <string name="message_loading_error">La calificación del mensaje aún se está cargando, vuelva a intentarlo</string>
-    <string name="key_import_reject_feedback">Clave rechazada</string>
-    <string name="key_import_accept_feedback">Clave reemplazada</string>
     <string name="nnf_filename">Nombre del archivo</string>
     <string name="nnf_select_something_first">Por favor, primero seleccione algo</string>
     <string name="nnf_create_folder_error">Error al crear la carpeta</string>
@@ -210,7 +205,6 @@
     <string name="account_already_exists">La cuenta ya existe</string>
     <string name="add_account_title">Agregue su cuenta</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
-    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>

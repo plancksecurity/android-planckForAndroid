@@ -26,9 +26,6 @@
     <string name="pep_receivedSecretKey">Bu gizli anahtarı aldım:</string>
     <string name="pep_username">Kullanıcı Adı</string>
     <string name="pep_userAddress">Kullanıcı Adresi</string>
-    <string name="pep_secret_key_detected">Gizli anahtar bulundu</string>
-    <string name="pep_received_this_secret_key">Aşağıdaki gizli anahtar alındı</string>
-    <string name="pep_from_format">göndericiden %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Sunucuya güven ve e-postaları korumadan sakla</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Sunucu üzerindeki e-postalar korunmalı</string>
     <string name="pep_enable_privacy_protection">Gizlilik koruması</string>
@@ -164,8 +161,6 @@
     <string name="nnf_filename">Dosya adı</string>
     <string name="key_import_accept">Kabul etmek</string>
     <string name="key_import_reject">reddetmek</string>
-    <string name="key_import_accept_feedback">Anahtar değiştirildi</string>
-    <string name="key_import_reject_feedback">Anahtar reddedildi</string>
     <string name="message_loading_error">Mesaj derecelendirmesi hala yükleniyor, tekrar deneyin</string>
     <string name="pep_sync">p≡p senkronizasyonu</string>
     <string name="pep_sync_is_enabled_global">p≡p senkronizasyonu etkin</string>

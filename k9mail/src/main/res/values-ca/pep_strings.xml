@@ -24,9 +24,6 @@
     <string name="pep_receivedSecretKey">S\'ha rebut aquesta clau privada:</string>
     <string name="pep_username">Usuari</string>
     <string name="pep_userAddress">Adreça</string>
-    <string name="pep_secret_key_detected">Detectada clau privada</string>
-    <string name="pep_received_this_secret_key">S\'ha rebut la següent clau</string>
-    <string name="pep_from_format">Rebut de %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Confiar en el servidor i desar els missatges desprotegits</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Els correus que es troben al servidor estan protegits</string>
     <string name="pep_enable_privacy_protection">Protegir privacitat</string>
@@ -153,8 +150,6 @@
     <string name="nnf_need_valid_filename">Introduïu o seleccioneu un nom de fitxer vàlid</string>
     <string name="nnf_filename">Nom de l\'arxiu</string>
     <string name="key_import_accept">Accepta</string>
-    <string name="key_import_accept_feedback">S\'ha substituït la clau</string>
-    <string name="key_import_reject_feedback">Ha rebutjat la clau</string>
     <string name="message_loading_error">Encara s\'està carregant la qualificació de missatges, torna-ho a provar</string>
     <string name="pep_sync_is_enabled_global">La sincronització p≡p està habilitada</string>
     <string name="pep_sync_is_disabled_global">La sincronització p≡p està desactivada</string>

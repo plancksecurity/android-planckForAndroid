@@ -8,7 +8,6 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
@@ -71,9 +70,6 @@
     <string name="pep_receivedSecretKey">Deze geheime sleutel ontvangen:</string>
     <string name="pep_username">Gebruikersnaam</string>
     <string name="pep_userAddress">Gebruikersadres</string>
-    <string name="pep_secret_key_detected">Geheime sleutel gedetecteerd</string>
-    <string name="pep_received_this_secret_key" translatable="false">De volgende geheime sleutel is ontvangen. Weet je zeker dat je het wilt gebruiken\?</string>
-    <string name="pep_from_format">van afzender %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Vertrouw server en bewaar e-mails onbeschermd</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Bewaar berichten veilig</string>
     <string name="pep_enable_privacy_protection">p≡p privacybescherming</string>
@@ -177,8 +173,6 @@
     <string name="nnf_filename">Bestandsnaam</string>
     <string name="key_import_accept">Aanvaarden</string>
     <string name="key_import_reject">Afwijzen</string>
-    <string name="key_import_accept_feedback">Sleutel vervangen</string>
-    <string name="key_import_reject_feedback">Sleutel afgewezen</string>
     <string name="message_loading_error">Berichtclassificatie wordt nog steeds geladen, probeer het opnieuw</string>
     <string name="pep_sync">p≡p synchronisatie</string>
     <string name="pep_sync_enable_account">Synchroniseer dit account</string>

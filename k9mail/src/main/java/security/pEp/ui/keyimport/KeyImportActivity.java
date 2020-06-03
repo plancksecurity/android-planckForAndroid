@@ -19,14 +19,9 @@ import butterknife.OnClick;
 
 
 public class KeyImportActivity extends PepActivity implements KeyImportView {
+
     @Inject
     KeyImportPresenter presenter;
-    @Bind(R.id.tvFpr)
-    TextView tvFpr;
-    @Bind(R.id.tvAddress)
-    TextView tvAddress;
-    @Bind(R.id.tvFrom)
-    TextView tvFrom;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,20 +51,14 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
 
     @Override
     public void showPositiveFeedback() {
-        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_accept_feedback));
     }
 
     @Override
     public void renderDialog(PEpProvider.KeyDetail keyDetail, String from) {
-        tvFrom.setText(String.format(getString(R.string.pep_from_format), from));
-        tvFpr.setText(presenter.formatFingerprint(keyDetail.getFpr()));
-        tvAddress.setText(String.format(getString(R.string.pep_user_address_format), keyDetail.getUsername(), keyDetail.getStringAddress()));
-
     }
 
     @Override
     public void showNegativeFeedback() {
-        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_import_reject_feedback));
     }
 
     private void setupFloatingWindow() {

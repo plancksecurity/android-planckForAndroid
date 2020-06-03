@@ -27,9 +27,6 @@
     <!--<string name="pep_receivedSecretKey">Received this Secret Key:</string>-->
     <!--<string name="pep_username">User Name</string>-->
     <!--<string name="pep_userAddress">User Address</string>-->
-    <!--<string name="pep_secret_key_detected">Secret key detected</string>-->
-    <!--<string name="pep_received_this_secret_key">The following secret key was received</string>-->
-    <!--<string name="pep_from_format">from sender %1$s</string>-->
     <!--<string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>-->
     <!--<string name="pep_mistrust_server_and_store_mails_encrypted">E-Mails on server are protected</string>-->
     <!--<string name="pep_enable_privacy_protection">Privacy protection</string>-->
@@ -111,8 +108,6 @@
     <string name="pep_receivedSecretKey">Cette clef secrète à été reçue :</string>
     <string name="pep_username">Nom de l\'utilisateur</string>
     <string name="pep_userAddress">Adresse de l\'utilisateur</string>
-    <string name="pep_secret_key_detected">Clef secrète détectée</string>
-    <string name="pep_from_format">de l’expéditeur %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Faire confiance au serveur et stocker les messages sans protection</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Protéger les messages stockés</string>
     <string name="pep_enable_privacy_protection">protection de la vie privée p≡p</string>
@@ -182,13 +177,10 @@
     <string name="pep_sync_leave_device_group">Quitter le groupe de dispositifs</string>
     <string name="pep_sync">Sync p≡p</string>
     <string name="message_loading_error">L’évaluation du message est en cours de chargement, veuillez réessayer</string>
-    <string name="key_import_reject_feedback">Clef refusée</string>
-    <string name="key_import_accept_feedback">Clef remplacée</string>
     <string name="nnf_select_something_first">Veuillez tout d’abord sélectionner quelque chose</string>
     <string name="nnf_create_folder_error">Erreur de création du dossier</string>
     <string name="add_account_message">Afin de pouvoir utiliser ce compte, vous devez l’ajouter à votre dispositif</string>
     <string name="add_account_title">Ajouter votre compte</string>
-    <string name="pep_received_this_secret_key" translatable="false">La clé secrète suivante a été reçue. Êtes-vous sûr de vouloir l\'utiliser \?</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
@@ -232,7 +224,6 @@
     <string name="nnf_new_folder">Nouveau dossier</string>
     <string name="permissions_needed_message">Ne pas accorder les autorisations nécessaires peut entraîner des comportements inattendus. Appuyez sur OK pour nous les accorder.</string>
     <string name="account_already_exists">Le compte existe déjà</string>
-    <string name="pep_user_address_format" translatable="false">%1$s&lt;% 2$s&gt;</string>
     <string name="pep_rating_none">" "</string>
     <string name="pep_subject_protection">Protéger le sujet des messages</string>
     <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
