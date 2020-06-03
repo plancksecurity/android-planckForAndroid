@@ -267,5 +267,10 @@
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
     <string name="blacklist_title">Blacklist</string>
+
     <string name="pgp_key_import_title">PGP Key import from filesystem</string>
+    <string name="pgp_key_import_dialog_title">PGP Key import</string>
+    <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
+    <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
+    <string name="pgp_key_import_dialog_empty_edittext">Fingerprint is mandatory</string>
 </resources>
