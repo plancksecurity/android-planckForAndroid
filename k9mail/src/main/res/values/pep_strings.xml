@@ -272,4 +272,5 @@
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
     <string name="blacklist_title">Blacklist</string>
+    <string name="pgp_key_import_title">PGP Key import from filesystem</string>
 </resources>

@@ -440,7 +440,7 @@
                 android:defaultValue="true"
                 app:dependency="pep_disable_privacy_protection"
                 />
-    </PreferenceCategory>
+        </PreferenceCategory>
         <PreferenceCategory
             app:key="pep_related_settings"
             app:allowDividerAbove="false"
@@ -453,14 +453,22 @@
                 <SwitchPreferenceCompat
                     android:key="pep_enable_sync_account"
                     android:title="@string/pep_sync_enable_account"
-                    android:defaultValue="true"
-                    />
+                    android:defaultValue="true" />
 
                 <Preference
                     android:key="pep_key_reset_account"
                     android:title="@string/reset" />
 
             </PreferenceCategory>
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:key="pep_gpg_compatibility"
+            android:title="@string/pep_gpg_compatibility">
+
+            <Preference
+                android:key="pgp_key_import"
+                android:title="@string/pgp_key_import_title"/>
+
         </PreferenceCategory>
     </PreferenceScreen>
 
