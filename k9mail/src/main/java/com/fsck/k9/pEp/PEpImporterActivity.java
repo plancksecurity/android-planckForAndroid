@@ -101,17 +101,17 @@ public abstract class PEpImporterActivity extends PepActivity {
         EditText editFpr = content.findViewById(R.id.fpr);
 
         alertDialogBuilder
-                .setTitle("PGP Key import")
+                .setTitle(R.string.pgp_key_import_title)
                 .setView(content)
                 .setCancelable(false)
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {
+                .setNegativeButton(R.string.cancel_action, (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                     showingImportDialog = false;
                 })
-                .setPositiveButton("Select and import key", (dialogInterface, i) -> {
+                .setPositiveButton(R.string.pgp_key_import_dialog_accept_button, (dialogInterface, i) -> {
                     //nop
                     if (editFpr.getText().toString().isEmpty()) {
-                        FeedbackTools.showLongFeedback(content, "Fingerprint is mandatory");
+                        FeedbackTools.showLongFeedback(content, getString(R.string.pgp_key_import_dialog_empty_edittext));
                     } else {
                         fpr = editFpr.getText().toString().replace(" ", "");
                         onOpenFileChooser();
