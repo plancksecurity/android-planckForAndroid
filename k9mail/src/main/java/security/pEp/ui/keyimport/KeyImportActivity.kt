@@ -1,6 +1,6 @@
 package security.pEp.ui.keyimport
 
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
@@ -21,8 +21,7 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_key_dialog)
         setupFloatingWindow()
-        val intent = intent
-        if (isValidIntent(intent)) {
+        if (isValidKeyImportIntent(intent)) {
             val account: String = intent.getStringExtra(ACCOUNT_EXTRA) ?: ""
             presenter.initialize(this, account)
         }
@@ -60,20 +59,16 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         presenter.onReject()
     }
 
-    companion object {
-        fun showImportKeyDialog(context: Context, intent: Intent) {
-            isValidIntent(intent)
-            val dialogIntent = Intent(context, KeyImportActivity::class.java)
-            dialogIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            dialogIntent.putExtras(intent)
-            context.startActivity(dialogIntent)
-        }
+    private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
+        intent.hasExtra(ACCOUNT_EXTRA) -> true
+        else -> throw IllegalArgumentException("The provided intent does not contain the required extras")
 
-        private fun isValidIntent(intent: Intent): Boolean {
-            check(!intent.hasExtra(ACCOUNT_EXTRA)) {
-                "The provided intent does not contain the required extras"
-            }
-            return true
-        }
     }
 }
+
+fun Activity.showImportKeyDialog(account: String) {
+    val intent = Intent(this, KeyImportActivity::class.java)
+    intent.putExtra(ACCOUNT_EXTRA, account)
+    startActivity(intent)
+}
+

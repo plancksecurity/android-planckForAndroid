@@ -31,6 +31,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
+import security.pEp.ui.keyimport.showImportKeyDialog
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -176,7 +177,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onKeyImportClicked() {
-        // TODO
+        activity?.showImportKeyDialog(accountUuid)
     }
 
     private fun hideKeySyncOptions() {
