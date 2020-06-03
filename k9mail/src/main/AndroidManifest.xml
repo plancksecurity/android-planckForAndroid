@@ -543,7 +543,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pEp.ui.keys.keyimport.KeyImportActivity"
+            android:name="security.pEp.ui.keyimport.KeyImportActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"

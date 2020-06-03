@@ -11,12 +11,10 @@ import android.content.res.TypedArray;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
 
 import java.util.Locale;
 
@@ -73,18 +71,11 @@ public class K9ActivityCommon {
     private Activity mActivity;
     private GestureDetector mGestureDetector;
 
-    private BroadcastReceiver receiver;
-    private IntentFilter filter;
 
     private K9ActivityCommon(Activity activity) {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(K9.getK9ThemeResourceId());
-        filter = new IntentFilter();
-        filter.addAction("PRIVATE_KEY");
-        filter.setPriority(1);
-        receiver = new PrivateKeyReceiver();
-        mActivity.registerReceiver(receiver, filter);
     }
 
     /**
@@ -124,21 +115,7 @@ public class K9ActivityCommon {
                 new SwipeGestureDetector(mActivity, listener));
     }
 
-
-    public static class PrivateKeyReceiver extends BroadcastReceiver {
-        public PrivateKeyReceiver() {
-        }
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            abortBroadcast();
-            KeyImportActivity.actionShowImportDialog(context, intent);
-        }
-    }
-
-
     public void onDestroy() {
-        mActivity.unregisterReceiver(receiver);
     }
 
 }

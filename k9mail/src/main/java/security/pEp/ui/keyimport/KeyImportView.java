@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.keys.keyimport;
+package security.pEp.ui.keyimport;
 
 import com.fsck.k9.pEp.PEpProvider;
 
