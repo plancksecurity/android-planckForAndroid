@@ -23,11 +23,11 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
     @Inject
     KeyImportPresenter presenter;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_key_dialog);
-        ButterKnife.bind(this);
         setupFloatingWindow();
         Intent intent = getIntent();
         if (isValidIntent(intent)) {
@@ -71,12 +71,10 @@ public class KeyImportActivity extends PepActivity implements KeyImportView {
         getWindow().setAttributes(params);
     }
 
-    @OnClick(R.id.bAccept)
     void onAccept() {
         presenter.onAccept(this.getApplicationContext());
     }
 
-    @OnClick(R.id.bReject)
     void onReject() {
         presenter.onReject();
     }
