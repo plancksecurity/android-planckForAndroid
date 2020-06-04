@@ -770,7 +770,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun onImport(uri: Uri?) {
-        val asyncTask = ListImportContentsAsyncTask(this, uri, currentAccount, false, null)
+        val asyncTask = ListImportContentsAsyncTask(this, uri)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
     }
