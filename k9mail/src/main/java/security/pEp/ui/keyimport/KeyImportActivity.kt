@@ -2,7 +2,6 @@ package security.pEp.ui.keyimport
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,7 +11,10 @@ import android.widget.EditText
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
 import kotlinx.android.synthetic.main.import_key_dialog.*
+import security.pEp.ui.dialog.PEpProgressDialog
+import security.pEp.ui.dialog.showProgressDialog
 import javax.inject.Inject
+
 
 const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
 const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
@@ -24,7 +26,7 @@ class KeyImportActivity : PepActivity(), KeyImportView {
     @Inject
     internal lateinit var presenter: KeyImportPresenter
 
-    private var progressDialog: ProgressDialog? = null
+    private var progressDialog: PEpProgressDialog? = null
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -105,14 +107,12 @@ class KeyImportActivity : PepActivity(), KeyImportView {
     override fun showDialog() {
         val title = getString(R.string.settings_import_dialog_title)
         val message = getString(R.string.settings_import_scanning_file)
-        progressDialog = ProgressDialog.show(this, title, message, true)
+        progressDialog = showProgressDialog(title, message, true)
+        //   progressDialog = ProgressDialog.show(this, title, message, true)
     }
 
     override fun removeDialog() {
-        if (progressDialog != null && progressDialog!!.isShowing) {
-            progressDialog!!.dismiss()
-        }
-        progressDialog = null
+        progressDialog?.closeDialog()
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {

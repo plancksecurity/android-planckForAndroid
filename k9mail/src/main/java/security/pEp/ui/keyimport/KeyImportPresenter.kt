@@ -8,6 +8,7 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.pEpException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.IOUtils
@@ -52,7 +53,8 @@ class KeyImportPresenter @Inject constructor() {
         runBlocking {
             view.showDialog()
             val success = importKey(uri)
-            onPostExecute(success, uri)
+            replyResult(success, uri)
+            view.removeDialog()
         }
 
     }
@@ -96,8 +98,7 @@ class KeyImportPresenter @Inject constructor() {
         result
     }
 
-    private fun onPostExecute(success: Boolean, uri: Uri) {
-        view.removeDialog()
+    private fun replyResult(success: Boolean, uri: Uri) {
         val filename = uri.path
         when {
             success -> view.showCorrectKeyImport(fingerprint, filename)
