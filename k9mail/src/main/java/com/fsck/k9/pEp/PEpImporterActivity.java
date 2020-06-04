@@ -51,11 +51,10 @@ import java.util.Set;
 
 import timber.log.Timber;
 
-import static security.pEp.ui.keyimport.KeyImportActivityKt.DIALOG_NO_FILE_MANAGER;
-
 public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    protected static final int DIALOG_NO_FILE_MANAGER = 4;
 
     protected static final String CURRENT_ACCOUNT = "currentAccount";
 

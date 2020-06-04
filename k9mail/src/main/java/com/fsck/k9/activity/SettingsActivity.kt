@@ -50,6 +50,7 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
+import security.pEp.ui.keyimport.ANDROID_MARKET_URL
 import security.pEp.ui.keyimport.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
@@ -997,7 +998,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         /**
          * URL used to open Android Market application
          */
-        private const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
         /**
          * Number of special accounts ('Unified Inbox' and 'All Messages')

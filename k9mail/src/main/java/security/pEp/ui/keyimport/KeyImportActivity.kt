@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
 const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
-const val DIALOG_NO_FILE_MANAGER = 4
+const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
 
 class KeyImportActivity : PepActivity(), KeyImportView {
@@ -57,9 +58,24 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         if (infos.isNotEmpty()) {
             startActivityForResult(Intent.createChooser(i, null), ACTIVITY_REQUEST_PICK_KEY_FILE)
         } else {
-            showDialog(DIALOG_NO_FILE_MANAGER)
+            showNoFileManager()
         }
     }
+
+    private fun showNoFileManager() {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.import_dialog_error_title)
+                .setMessage(R.string.import_dialog_error_message)
+                .setCancelable(false)
+                .setNegativeButton(R.string.close) { dialogInterface, _ -> dialogInterface.dismiss() }
+                .setPositiveButton(R.string.open_market) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                    openMarketIntent()
+                }
+                .create()
+                .show()
+    }
+
 
     override fun showEmptyInputError() {
         fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
@@ -108,6 +124,13 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         super.onActivityResult(requestCode, resultCode, data)
         presenter.onActivityResult(requestCode, resultCode, data)
     }
+}
+
+
+private fun Activity.openMarketIntent() {
+    val uri = Uri.parse(ANDROID_MARKET_URL)
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    startActivity(intent)
 }
 
 fun Activity.showImportKeyDialog(account: String) {
