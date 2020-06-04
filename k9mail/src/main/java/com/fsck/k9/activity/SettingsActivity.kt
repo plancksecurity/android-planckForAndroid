@@ -50,6 +50,7 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
+import security.pEp.ui.keyimport.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
@@ -318,9 +319,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false)
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS)
         currentAccount = state.getString(CURRENT_ACCOUNT)
-        if (state.getBoolean(SHOWING_IMPORT_DIALOG)) {
-            onKeyImport()
-        }
     }
 
     public override fun onResume() {
@@ -655,7 +653,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun onImportPGPKeyFromFileSystem(realAccount: Account) {
         currentAccount = realAccount.email
-        onKeyImport()
+        showImportKeyDialog(currentAccount)
+
     }
 
     private fun onClear(account: Account) {

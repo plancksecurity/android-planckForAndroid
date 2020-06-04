@@ -58,7 +58,6 @@ public abstract class PEpImporterActivity extends PepActivity {
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
 
     protected static final String CURRENT_ACCOUNT = "currentAccount";
-    protected static final String SHOWING_IMPORT_DIALOG = "showingDialog";
 
     protected abstract void refresh();
 
