@@ -13,7 +13,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -38,7 +37,6 @@ import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
@@ -53,7 +51,6 @@ import java.util.Set;
 
 import timber.log.Timber;
 
-import static security.pEp.ui.keyimport.KeyImportActivityKt.ACTIVITY_REQUEST_PICK_KEY_FILE;
 import static security.pEp.ui.keyimport.KeyImportActivityKt.DIALOG_NO_FILE_MANAGER;
 
 public abstract class PEpImporterActivity extends PepActivity {
@@ -61,14 +58,11 @@ public abstract class PEpImporterActivity extends PepActivity {
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
 
     protected static final String CURRENT_ACCOUNT = "currentAccount";
-    protected static final String FPR = "fpr";
     protected static final String SHOWING_IMPORT_DIALOG = "showingDialog";
 
     protected abstract void refresh();
 
     protected String currentAccount;
-    protected String fpr;
-    protected boolean showingImportDialog = false;
 
     public void onSettingsImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -81,77 +75,6 @@ public abstract class PEpImporterActivity extends PepActivity {
         if (infos.size() > 0) {
             startActivityForResult(Intent.createChooser(i, null),
                     ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
-        } else {
-            showDialog(DIALOG_NO_FILE_MANAGER);
-        }
-    }
-
-    public void onKeyImport() {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        View content = getLayoutInflater().inflate(R.layout.dialog_import_pgp_from_fs,
-                null);
-        // set dialog message
-        EditText editFpr = content.findViewById(R.id.fpr);
-
-        alertDialogBuilder
-                .setTitle(R.string.pgp_key_import_title)
-                .setView(content)
-                .setCancelable(false)
-                .setNegativeButton(R.string.cancel_action, (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                    showingImportDialog = false;
-                })
-                .setPositiveButton(R.string.pgp_key_import_dialog_accept_button, (dialogInterface, i) -> {
-                    //nop
-                    if (editFpr.getText().toString().isEmpty()) {
-                        FeedbackTools.showLongFeedback(content, getString(R.string.pgp_key_import_dialog_empty_edittext));
-                    } else {
-                        fpr = editFpr.getText().toString().replace(" ", "");
-                        onOpenFileChooser();
-                    }
-                    showingImportDialog = false;
-                });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.setOnShowListener(dialogInterface -> {
-            final AlertDialog dialog = (AlertDialog)dialogInterface;
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-            editFpr.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before,
-                                          int count) {}
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (TextUtils.isEmpty(s)) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                    } else {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                    }
-                }
-            });
-        });
-
-        alertDialog.show();
-        showingImportDialog = true;
-
-        //onOpenFileChooser();
-    }
-
-    public void onOpenFileChooser() {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
-
-        if (infos.size() > 0) {
-            startActivityForResult(Intent.createChooser(i, null),
-                    ACTIVITY_REQUEST_PICK_KEY_FILE);
         } else {
             showDialog(DIALOG_NO_FILE_MANAGER);
         }
