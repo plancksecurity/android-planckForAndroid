@@ -1,11 +1,22 @@
 package security.pEp.ui.keyimport
 
+import android.content.Context
+
 interface KeyImportView {
 
     fun openFileChooser()
 
-    fun showNegativeFeedback(message: String)
+    fun showEmptyInputError()
+
+    fun showCorrectKeyImport(fingerprint: String, filename: String?)
+
+    fun showFailedKeyImport(fingerprint: String, filename: String?)
 
     fun finish()
 
+    fun getApplicationContext(): Context
+
+    fun showDialog()
+
+    fun removeDialog()
 }

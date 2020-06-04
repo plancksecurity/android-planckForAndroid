@@ -1,15 +1,15 @@
 package security.pEp.ui.keyimport
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PEpImporterActivity
 import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import javax.inject.Inject
 
@@ -22,6 +22,8 @@ class KeyImportActivity : PepActivity(), KeyImportView {
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter
+
+    private var progressDialog: ProgressDialog? = null
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -41,6 +43,7 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         cancelButton.setOnClickListener { presenter.onReject() }
         acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
         fingerprintEditText.afterTextChanged { text ->
+            fingerprintEditText.error = null
             acceptButton.isEnabled = text.isNotEmpty()
         }
     }
@@ -58,16 +61,48 @@ class KeyImportActivity : PepActivity(), KeyImportView {
         }
     }
 
-    override fun showNegativeFeedback(message: String) {
-        FeedbackTools.showLongFeedback(rootView, getString(R.string.pgp_key_import_dialog_empty_edittext))
+    override fun showEmptyInputError() {
+        fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
+    }
+
+    override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.settings_import_success_header)
+                .setMessage(getString(R.string.key_import_success, fingerprint, filename))
+                .setCancelable(false)
+                .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
+                .create()
+                .show()
+    }
+
+    override fun showFailedKeyImport(fingerprint: String, filename: String?) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.settings_import_failed_header)
+                .setMessage(getString(R.string.key_import_failure, filename, fingerprint))
+                .setCancelable(false)
+                .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
+                .create()
+                .show()
+
+    }
+
+    override fun showDialog() {
+        val title = getString(R.string.settings_import_dialog_title)
+        val message = getString(R.string.settings_import_scanning_file)
+        progressDialog = ProgressDialog.show(this, title, message, true)
+    }
+
+    override fun removeDialog() {
+        if (progressDialog != null && progressDialog!!.isShowing) {
+            progressDialog!!.dismiss()
+        }
+        progressDialog = null
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
         intent.hasExtra(ACCOUNT_EXTRA) -> true
         else -> throw IllegalArgumentException("The provided intent does not contain the required extras")
-
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
