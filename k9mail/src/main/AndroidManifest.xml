@@ -544,8 +544,6 @@
         </activity>
         <activity
             android:name="security.pEp.ui.keyimport.KeyImportActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
