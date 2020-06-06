@@ -2774,7 +2774,7 @@ public class TestUtils {
             this.smtp_port = new String[total];
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
-            keySync_number = "0";
+            keySync_number = "-10";
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
