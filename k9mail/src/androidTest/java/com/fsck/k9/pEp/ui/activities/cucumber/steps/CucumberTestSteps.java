@@ -681,85 +681,61 @@ public class CucumberTestSteps {
     }
 
     @When("^I check devices (\\S+) and (\\S+) are sync$")
-    public void I_check_1_and_2_sync(String device1, String device2) {
+    public void I_check_1_and_2_sync(String firstDevice, String secondDevice) {
         switch (testUtils.keySync_number()) {
             case "1":
-                testUtils.getMessageListSize();
-                testUtils.composeMessageButton();
-                testUtils.fillMessage(new TestUtils.BasicMessage("",
-                                "SyncDeviceA",
-                                testUtils.trustWords,
-                                testUtils.getKeySyncAccount(0)),
-                        false);
-                while (exists(onView(withId(R.id.send)))) {
-                    testUtils.clickView(R.id.send);
+                if (firstDevice.equals("A")) {
+                    testUtils.checkSyncIsWorking_FirstDevice();
+                } else if (secondDevice.equals("A")) {
+                    testUtils.checkSyncIsWorking_SecondDevice();
                 }
-                testUtils.waitForNewMessage();
-                testUtils.waitForMessageAndClickIt();
-                I_compare_body(testUtils.trustWords);
-                testUtils.pressBack();
                 break;
             case "2":
-                testUtils.getMessageListSize();
-                testUtils.waitForMessageAndClickIt();
-                I_compare_body("A");
-                testUtils.pressBack();
-                testUtils.composeMessageButton();
-                testUtils.fillMessage(new TestUtils.BasicMessage("",
-                                "SyncDeviceA",
-                                testUtils.trustWords,
-                                testUtils.getKeySyncAccount(0)),
-                        false);
-                while (exists(onView(withId(R.id.send)))) {
-                    testUtils.clickView(R.id.send);
+                if (firstDevice.equals("B")) {
+                    testUtils.checkSyncIsWorking_FirstDevice();
+                } else if (secondDevice.equals("B")) {
+                    testUtils.checkSyncIsWorking_SecondDevice();
                 }
-                testUtils.waitForNewMessage();
+                break;
+            case "3":
+                if (firstDevice.equals("C")) {
+                    testUtils.checkSyncIsWorking_FirstDevice();
+                } else if (secondDevice.equals("C")) {
+                    testUtils.checkSyncIsWorking_SecondDevice();
+                }
                 break;
             default:
+                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are sync");
                 break;
         }
     }
 
-    @When("^I check devices A and B are not sync$")
-    public void I_check_A_B_not_sync() {
+    @When("^I check devices (\\S+) and (\\S+) are not sync$")
+    public void I_check_A_B_not_sync(String firstDevice, String secondDevice) {
         switch (testUtils.keySync_number()) {
             case "1":
-                testUtils.getMessageListSize();
-                testUtils.composeMessageButton();
-                testUtils.fillMessage(new TestUtils.BasicMessage("",
-                                "NotSyncDeviceA",
-                                "This should be encrypted",
-                                testUtils.getKeySyncAccount(0)),
-                        false);
-                while (exists(onView(withId(R.id.send)))) {
-                    testUtils.clickView(R.id.send);
-                }
-                testUtils.waitForNewMessage();
-                if (testUtils.waitForMessageAndClickIt()) {
-                    testUtils.pressBack();
-                } else {
-                    TestUtils.assertFailWithMessage("Message is not encrypted");
+                if (firstDevice.equals("A")) {
+                    testUtils.checkSyncIsNotWorking_FirstDevice();
+                } else if (secondDevice.equals("A")) {
+                    testUtils.checkSyncIsNotWorking_SecondDevice();
                 }
                 break;
             case "2":
-                if (testUtils.waitForMessageAndClickIt()) {
-                    testUtils.pressBack();
-                } else {
-                    TestUtils.assertFailWithMessage("Message is not encrypted");
+                if (firstDevice.equals("B")) {
+                    testUtils.checkSyncIsNotWorking_FirstDevice();
+                } else if (secondDevice.equals("B")) {
+                    testUtils.checkSyncIsNotWorking_SecondDevice();
                 }
-                testUtils.getMessageListSize();
-                testUtils.composeMessageButton();
-                testUtils.fillMessage(new TestUtils.BasicMessage("",
-                                "NotSyncDeviceA",
-                                "This should be encrypted",
-                                testUtils.getKeySyncAccount(0)),
-                        false);
-                while (exists(onView(withId(R.id.send)))) {
-                    testUtils.clickView(R.id.send);
+                break;
+            case "3":
+                if (firstDevice.equals("C")) {
+                    testUtils.checkSyncIsNotWorking_FirstDevice();
+                } else if (secondDevice.equals("C")) {
+                    testUtils.checkSyncIsNotWorking_SecondDevice();
                 }
-                testUtils.waitForNewMessage();
                 break;
             default:
+                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are not sync");
                 break;
         }
     }
