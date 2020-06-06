@@ -458,9 +458,6 @@ public class TestUtils {
                                 break;
                             case "keysync_account_1":
                                 testConfig.setKeySync_account(line[1], 0);
-                                if (!testConfig.getKeySync_number().equals("0")) {
-                                    totalAccounts = 1;
-                                }
                                 break;
                             case "keysync_password_1":
                                 testConfig.setKeySync_password(line[1], 0);
@@ -514,6 +511,78 @@ public class TestUtils {
         }
     }
 
+    public void checkSyncIsWorking_FirstDevice () {
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SyncFirstDevice",
+                        trustWords,
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText(trustWords);
+        pressBack();
+    }
+
+    public void checkSyncIsWorking_SecondDevice () {
+        getMessageListSize();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText(trustWords);
+        pressBack();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SyncSecondDevice",
+                        trustWords,
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
+    public void checkSyncIsNotWorking_FirstDevice () {
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "NotSync_FirstDevice",
+                        "This should be encrypted",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        if (waitForMessageAndClickIt()) {
+            pressBack();
+        } else {
+            TestUtils.assertFailWithMessage("Message is not encrypted");
+        }
+    }
+
+    public void checkSyncIsNotWorking_SecondDevice () {
+        if (waitForMessageAndClickIt()) {
+            pressBack();
+        } else {
+            TestUtils.assertFailWithMessage("Message is not encrypted");
+        }
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "NotSync_SecondDevice",
+                        "This should be encrypted",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
     public void disableKeySync() {
         selectFromMenu(R.string.prefs_title);
         selectFromScreen(stringToID("privacy_preferences"));
@@ -535,13 +604,32 @@ public class TestUtils {
 
     }
 
-    public String keySync_number() { return testConfig.getKeySync_number();}
+    public String keySync_number() {
+        if (Integer.parseInt(keySync_number()) < 0) {
+            readConfigFile();
+        } return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_account(1) != null
                 && testConfig.getKeySync_password(1) != null;
+    }
+
+    public void compareMessageBodyWithText (String cucumberBody) {
+        switch (cucumberBody) {
+            case "empty":
+                compareMessageBody("");
+                break;
+            case "longText":
+                device.waitForIdle();
+                cucumberBody = longText();
+                compareMessageBodyLongText(cucumberBody);
+                break;
+            default:
+                compareMessageBody(cucumberBody);
+                break;
+        }
     }
 
     public static void assertFailWithMessage(String message) {
