@@ -470,6 +470,9 @@ public class TestUtils {
                                 break;
                             case "keysync_number":
                                 testConfig.setKeySync_number(line[1]);
+                                if (!testConfig.getKeySync_number().equals("0")) {
+                                    totalAccounts = 1;
+                                }
                                 break;
                             default:
                                 break;
