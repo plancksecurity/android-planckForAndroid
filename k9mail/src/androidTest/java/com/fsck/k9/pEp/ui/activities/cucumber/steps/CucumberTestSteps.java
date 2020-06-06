@@ -374,19 +374,7 @@ public class CucumberTestSteps {
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         timeRequiredForThisMethod(10);
-        switch (cucumberBody) {
-            case "empty":
-                testUtils.compareMessageBody("");
-                break;
-            case "longText":
-                device.waitForIdle();
-                cucumberBody = testUtils.longText();
-                testUtils.compareMessageBodyLongText(cucumberBody);
-                break;
-            default:
-                testUtils.compareMessageBody(cucumberBody);
-                break;
-        }
+        testUtils.compareMessageBodyWithText(cucumberBody);
     }
 
 
