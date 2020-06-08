@@ -608,9 +608,10 @@ public class TestUtils {
     }
 
     public String keySync_number() {
-        if (Integer.parseInt(keySync_number()) < 0) {
+        if (testConfig.getKeySync_number().equals("-10")) {
             readConfigFile();
-        } return testConfig.getKeySync_number();}
+        }
+        return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
