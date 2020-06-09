@@ -643,8 +643,8 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I keySync devices (\\S+) and (\\S+)$")
-    public void I_keySync_devices(String device1, String device2) {
+    @When("^I sync devices (\\S+) and (\\S+)$")
+    public void I_sync_devices(String device1, String device2) {
         switch (testUtils.keySync_number()) {
             case "1":
                 if (device1.equals("A") || device2.equals("A")) {
