@@ -771,7 +771,7 @@ public class CucumberTestSteps {
                     testUtils.enableKeySync();
                 }
             default:
-                Timber.i("Unknown Device to disable sync");
+                Timber.i("Unknown Device to enable sync");
                 break;
         }
         while (!exists(onView(withId(R.id.message_list)))) {
