@@ -35,7 +35,7 @@ import org.xmlpull.v1.XmlSerializer;
 
 
 public class SettingsExporter {
-    public static final String EXPORT_FILENAME_PREFIX = "k9_settings_export";
+    public static final String EXPORT_FILENAME_PREFIX = "pEp_settings_export";
     public static final String EXPORT_FILENAME_SUFFIX = "k9s";
 
     /**
