@@ -27,6 +27,7 @@ import androidx.multidex.MultiDexApplication;
 import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
+import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
@@ -41,6 +42,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -1078,12 +1080,10 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getK9CurrentLanguage() {
-        return language.isEmpty()
-            ?
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? Resources.getSystem().getConfiguration().getLocales().get(0).getLanguage()
-                : Resources.getSystem().getConfiguration().locale.getLanguage()
-            : language;
+        if(language.isEmpty()) {
+           return LangUtils.getDefaultLocale().getLanguage();
+        }
+        else return language;
     }
 
     public static void setK9Language(String nlanguage) {

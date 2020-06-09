@@ -1,10 +1,12 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 
 import foundation.pEp.jniadapter.Identity;
@@ -12,6 +14,7 @@ import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Cache for texts and icons.
@@ -46,6 +49,13 @@ public class PePUIArtefactCache
         if (instance == null) {
             instance = new PePUIArtefactCache(context);
         }
+        else if(!instance.getCurrentLanguage().equals(K9.getK9CurrentLanguage())) {
+            Resources resources = context.getResources();
+            Configuration config = resources.getConfiguration();
+            config.locale = new Locale(K9.getK9CurrentLanguage());
+            context.getResources().updateConfiguration(config, resources.getDisplayMetrics());
+            instance = new PePUIArtefactCache(context);
+        }
         return instance;
     }
 
@@ -65,6 +75,10 @@ public class PePUIArtefactCache
             color[idx] = colors.getColor(idx, 0);
         colors.recycle();
 
+    }
+
+    private String getCurrentLanguage() {
+        return resources.getConfiguration().locale.getLanguage();
     }
 
     private void fillIndexMapping(Resources resources) {
