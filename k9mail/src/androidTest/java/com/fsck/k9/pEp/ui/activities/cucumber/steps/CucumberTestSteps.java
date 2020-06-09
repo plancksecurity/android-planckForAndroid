@@ -754,18 +754,30 @@ public class CucumberTestSteps {
         testUtils.getMessageListSize();
     }
 
-    @When("^I enable sync$")
-    public void I_enable_sync() {
+    @When("^I enable sync on device (\\S+)$")
+    public void I_enable_sync(String device) {
         switch (testUtils.keySync_number()) {
             case "1":
-                testUtils.enableKeySync();
-                testUtils.pressBack();
+                if (device.equals("A")) {
+                    testUtils.enableKeySync();
+                }
             case "2":
+                if (device.equals("B")) {
+                    testUtils.enableKeySync();
+                }
                 break;
             case "3":
+                if (device.equals("C")) {
+                    testUtils.enableKeySync();
+                }
             default:
+                Timber.i("Unknown Device to disable sync");
                 break;
         }
+        while (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.pressBack();
+        }
+        testUtils.getMessageListSize();
     }
 
     @When("^I keySync device C$")
