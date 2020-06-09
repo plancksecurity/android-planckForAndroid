@@ -2,6 +2,7 @@ package com.fsck.k9.activity.compose;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcelable;
 
 import com.fsck.k9.Account;
@@ -12,6 +13,14 @@ import com.fsck.k9.activity.MessageReference;
 import foundation.pEp.jniadapter.Rating;
 
 public class MessageActions {
+
+    public static void actionCompose(Context context, String emailAddress) {
+        Intent i = new Intent(context, MessageCompose.class);
+        i.setAction(Intent.ACTION_SENDTO);
+        i.setData(Uri.parse(emailAddress));
+        context.startActivity(i);
+    }
+
     /**
      * Compose a new message using the given account. If account is null the default account
      * will be used.

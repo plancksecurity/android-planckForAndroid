@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
+import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.pEp.PepActivity
 import kotlinx.android.synthetic.main.activity_about.*
 import security.pEp.ui.toolbar.ToolBarCustomizer
@@ -47,6 +48,17 @@ class AboutActivity : PepActivity() {
         aboutText.movementMethod = LinkMovementMethod.getInstance()
         aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
+        contact_button.setOnClickListener {
+            MessageActions.actionCompose(this, "mailto:" + getString(R.string.support_email))
+        }
+        contact_button.paintFlags = contact_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+
+        val librariesString = buildLibrariesHtml()
+        librariesText.movementMethod = LinkMovementMethod.getInstance()
+        librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+
+
         license_button.setOnClickListener { openLicenseActivity(this) }
         license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
     }
@@ -63,11 +75,6 @@ class AboutActivity : PepActivity() {
                 .append("<p>${String.format(getString(R.string.app_authors_fmt), getString(R.string.app_authors))}</p>")
                 .append(String.format(getString(R.string.app_copyright_fmt), year, year))
 
-
-        val libs = buildLibrariesHtml()
-        html.append("<p>${getString(R.string.app_libraries)}</p>")
-        html.append(libs)
-
         return html.toString()
     }
 
@@ -77,7 +84,11 @@ class AboutActivity : PepActivity() {
                 .forEach { entry ->
                     libs.append("<p>&emsp;<a href=\"${entry.value}\"><b>${entry.key}</b></a></p>")
                 }
-        return libs.toString()
+
+        val html = StringBuilder()
+                .append("<p>${getString(R.string.app_libraries)}</p>")
+                .append(libs)
+        return html.toString()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
