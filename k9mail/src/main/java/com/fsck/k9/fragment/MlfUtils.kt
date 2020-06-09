@@ -23,14 +23,27 @@ object MlfUtils {
         val localStore = account.localStore
         val localFolder = localStore.getFolder(folderName)
         runBlocking {
-                open(localFolder)
+            open(localFolder)
         }
         return localFolder
     }
 
-    private suspend fun open(localFolder: LocalFolder) = withContext(Dispatchers.IO) {
-        localFolder.open(Folder.OPEN_MODE_RO)
+    @Throws(MessagingException::class)
+    @JvmStatic
+    fun getOpenFolderWithCallback(folderName: String, account: Account, which: OpenFolderCase, callback: GetOpenFolderCallback?) {
+        callback?.let {theCallback ->
+            val localStore = account.localStore
+            val localFolder = localStore.getFolder(folderName)
+            val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+            coroutineScope.launch {
+                open(localFolder)
+                theCallback.onOpenFolderRetrieved(localFolder, which)
+            }
+        }
     }
+
+    private suspend fun open(localFolder: LocalFolder) = withContext(Dispatchers.IO) { localFolder.open(Folder.OPEN_MODE_RO) }
+
 
     @JvmStatic
     fun setLastSelectedFolderName(preferences: Preferences,
@@ -75,5 +88,12 @@ object MlfUtils {
         }
     }
 
+    enum class OpenFolderCase {
+        DECODE_ARGUMENTS, ACTIVITY_CREATED, LOAD_MORE
+    }
+
+    interface GetOpenFolderCallback {
+        fun onOpenFolderRetrieved(localFolder: LocalFolder, openFolderCase: OpenFolderCase)
+    }
 
 }

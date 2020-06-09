@@ -34,6 +34,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -92,6 +93,8 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
+
+import org.jetbrains.annotations.NotNull;
 
 import foundation.pEp.jniadapter.Rating;
 
@@ -252,7 +255,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private Context context;
     private final ActivityListener activityListener = new MessageListActivityListener();
     private Preferences preferences;
-    private boolean loaderJustInitializedForTheFirstTime;
     MessageReference activeMessage;
     /**
      * {@code true} after {@link #onCreate(Bundle)} was executed. Used in {@link #updateTitle()} to
@@ -275,7 +277,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      */
     private long contextMenuUniqueId = 0;
 
-
+    private List<GetOpenFolderCallbackImpl> getOpenFolderCallbacks;
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
     @Inject
     ToolBarCustomizer toolBarCustomizer;
@@ -565,10 +567,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
-        if(!anyAccountWasDeleted()) {
-            loaderJustInitializedForTheFirstTime = true;
-            initializeLoaders();
-        }
     }
 
     private void initializeLoaders() {
@@ -579,15 +577,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         for (int i = 0; i < len; i++) {
             loaderManager.initLoader(i, null, this);
             cursorValid[i] = false;
-        }
-    }
-
-    private void initializeLoadersIfNeeded() {
-        if(!loaderJustInitializedForTheFirstTime && !anyAccountWasDeleted()) {
-            initializeLoaders();
-        }
-        else {
-            loaderJustInitializedForTheFirstTime = false;
         }
     }
 
@@ -697,13 +686,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (accountUuids.length == 1 && !search.searchAllAccounts()) {
             singleAccountMode = true;
             account = preferences.getAccount(accountUuids[0]);
+            if(account == null) {
+                account = preferences.getDefaultAccount();
+            }
         }
 
         singleFolderMode = false;
         if (singleAccountMode && (search.getFolderNames().size() == 1)) {
             singleFolderMode = true;
             folderName = search.getFolderNames().get(0);
-            currentFolder = getFolderInfoHolder(folderName, account);
+            getFolderInfoHolder(folderName, account, MlfUtils.OpenFolderCase.DECODE_ARGUMENTS);
         }
 
         allAccounts = false;
@@ -735,7 +727,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         adapter = new MessageListAdapter(this);
 
         if (folderName != null) {
-            currentFolder = getFolderInfoHolder(folderName, account);
+            getFolderInfoHolder(folderName, account, MlfUtils.OpenFolderCase.ACTIVITY_CREATED);
         }
 
         if (singleFolderMode) {
@@ -744,7 +736,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
 
         listView.setAdapter(adapter);
-        hideLoadingMessages();
     }
 
     private void createCacheBroadcastReceiver(Context appContext) {
@@ -760,10 +751,15 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         cacheIntentFilter = new IntentFilter(EmailProviderCache.ACTION_CACHE_UPDATED);
     }
 
-    private FolderInfoHolder getFolderInfoHolder(String folderName, Account account) {
+    private void getFolderInfoHolder(String folderName, Account account, MlfUtils.OpenFolderCase whichCase) {
+        callMlfUtilsGetOpenFolderWithCallback(folderName, account, whichCase);
+    }
+
+    private void callMlfUtilsGetOpenFolderWithCallback(String folderName, Account account, MlfUtils.OpenFolderCase whichCase) {
         try {
-            LocalFolder localFolder = MlfUtils.getOpenFolder(folderName, account);
-            return new FolderInfoHolder(context, localFolder, account);
+            GetOpenFolderCallbackImpl callback = new GetOpenFolderCallbackImpl(this);
+            addGetOpenFolderCallbackToList(callback);
+            MlfUtils.getOpenFolderWithCallback(folderName, account, whichCase, callback);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
@@ -777,6 +773,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
         destroyLoaders();
+        detachCallbacks();
     }
 
     /**
@@ -787,8 +784,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
-
-        initializeLoadersIfNeeded();
+        showLoadingMessages();
+        if(folderName == null) {
+            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(!LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders() && !anyAccountWasDeleted()) {
+                        initializeLoaders();
+                    }
+                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -3002,6 +3009,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
             fragmentListener.updateMenu();
         }
+        hideLoadingMessages();
     }
 
     private void updateToolbarColor(Cursor cursor) {
@@ -3024,12 +3032,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     private void updateMoreMessagesOfCurrentFolder() {
         if (folderName != null) {
-            try {
-                LocalFolder folder = MlfUtils.getOpenFolder(folderName, account);
-                currentFolder.setMoreMessagesFromFolder(folder);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
+            callMlfUtilsGetOpenFolderWithCallback(folderName, account, MlfUtils.OpenFolderCase.LOAD_MORE);
         }
     }
 
@@ -3440,6 +3443,73 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             throw new RuntimeException(e);
         }
     }
+
+    private static class GetOpenFolderCallbackImpl implements MlfUtils.GetOpenFolderCallback {
+        private MessageListFragment fragment;
+
+        private GetOpenFolderCallbackImpl(MessageListFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        private void setFragment(MessageListFragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public void onOpenFolderRetrieved(@NotNull LocalFolder localFolder, @NotNull MlfUtils.OpenFolderCase openFolderCase) {
+            if(fragment != null && fragment.isResumed()) {
+                if(fragment.folderName != null) {
+                    switch (openFolderCase) {
+                        case DECODE_ARGUMENTS:
+                        case ACTIVITY_CREATED: {
+                            fragment.currentFolder = new FolderInfoHolder(fragment.context, localFolder, fragment.account);
+                            break;
+                        }
+                        case LOAD_MORE: {
+                            if(fragment.currentFolder != null) {
+                                fragment.currentFolder.setMoreMessagesFromFolder(localFolder);
+                            }
+                            break;
+                        }
+                    }
+
+                    // we wanna init loaders here, after Fragment successfully resumed, so that the heavy buildWhereClause on ui
+                    // starts after we could at least load our initial ui, so that we can show a spinner or similar.
+                    if(!LoaderManager.getInstance(fragment).hasRunningLoaders()) {
+                        fragment.initializeLoaders();
+                    }
+                }
+            }
+            if(fragment != null) {
+                fragment.removeGetOpenFolderCallbackFromList(this);
+                fragment = null;
+            }
+        }
+    }
+
+    private void addGetOpenFolderCallbackToList(GetOpenFolderCallbackImpl callback) {
+        if(getOpenFolderCallbacks == null) {
+            getOpenFolderCallbacks = new ArrayList<>();
+        }
+        getOpenFolderCallbacks.add(callback);
+    }
+
+    private void removeGetOpenFolderCallbackFromList(GetOpenFolderCallbackImpl callback) {
+        getOpenFolderCallbacks.remove(callback);
+        if(getOpenFolderCallbacks.isEmpty()) {
+            getOpenFolderCallbacks = null;
+        }
+    }
+
+    private void detachCallbacks() {
+        if(getOpenFolderCallbacks != null) {
+            for(GetOpenFolderCallbackImpl callback: getOpenFolderCallbacks) {
+                callback.setFragment(null);
+            }
+            getOpenFolderCallbacks = null;
+        }
+    }
+
 //    @Override
 //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     // TODO: 13/06/17 compare with onMessageClick
