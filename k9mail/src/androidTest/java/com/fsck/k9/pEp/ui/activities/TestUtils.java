@@ -598,11 +598,6 @@ public class TestUtils {
         selectFromMenu(R.string.prefs_title);
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
-        try {
-            Thread.sleep(60000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         clickTextOnScreen(stringToID("pep_sync"));
 
     }
