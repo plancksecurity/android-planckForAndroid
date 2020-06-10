@@ -774,10 +774,9 @@ public class CucumberTestSteps {
                 Timber.i("Unknown Device to enable sync");
                 break;
         }
-        while (!exists(onView(withId(R.id.message_list)))) {
+        if (!exists(onView(withId(R.id.message_list)))) {
             testUtils.pressBack();
         }
-        testUtils.getMessageListSize();
     }
 
     @When("^I keySync device C$")
