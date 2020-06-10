@@ -112,7 +112,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         setAdapter(adapter);
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
-        setLongClickable(true);
+        setLongClickable(false);
     }
 
     @Override
