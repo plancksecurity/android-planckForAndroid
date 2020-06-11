@@ -30,15 +30,13 @@ object MlfUtils {
 
     @Throws(MessagingException::class)
     @JvmStatic
-    fun getOpenFolderWithCallback(folderName: String, account: Account, which: OpenFolderCase, callback: GetOpenFolderCallback?) {
-        callback?.let {theCallback ->
-            val localStore = account.localStore
-            val localFolder = localStore.getFolder(folderName)
-            val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-            coroutineScope.launch {
-                open(localFolder)
-                theCallback.onOpenFolderRetrieved(localFolder, which)
-            }
+    fun getOpenFolderWithCallback(folderName: String, account: Account, callback: (localFolder: LocalFolder) -> Unit?) {
+        val localStore = account.localStore
+        val localFolder = localStore.getFolder(folderName)
+        val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        coroutineScope.launch {
+            open(localFolder)
+            callback.invoke(localFolder)
         }
     }
 
@@ -87,13 +85,4 @@ object MlfUtils {
             throw RuntimeException(e)
         }
     }
-
-    enum class OpenFolderCase {
-        DECODE_ARGUMENTS, ACTIVITY_CREATED, LOAD_MORE
-    }
-
-    interface GetOpenFolderCallback {
-        fun onOpenFolderRetrieved(localFolder: LocalFolder, openFolderCase: OpenFolderCase)
-    }
-
 }

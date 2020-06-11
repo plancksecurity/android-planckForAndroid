@@ -95,6 +95,7 @@ import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import foundation.pEp.jniadapter.Rating;
 
@@ -109,9 +110,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.FunctionN;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -277,7 +282,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      */
     private long contextMenuUniqueId = 0;
 
-    private List<GetOpenFolderCallbackImpl> getOpenFolderCallbacks;
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
     @Inject
     ToolBarCustomizer toolBarCustomizer;
@@ -695,7 +699,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (singleAccountMode && (search.getFolderNames().size() == 1)) {
             singleFolderMode = true;
             folderName = search.getFolderNames().get(0);
-            getFolderInfoHolder(folderName, account, MlfUtils.OpenFolderCase.DECODE_ARGUMENTS);
+            getFolderInfoHolder(folderName, account, localFolder -> {
+                if(isResumed()) {
+                    currentFolder = new FolderInfoHolder(context, localFolder, account);
+                    initializeLoadersIfNeeded();
+                }
+                return null;
+            });
         }
 
         allAccounts = false;
@@ -727,7 +737,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         adapter = new MessageListAdapter(this);
 
         if (folderName != null) {
-            getFolderInfoHolder(folderName, account, MlfUtils.OpenFolderCase.ACTIVITY_CREATED);
+            getFolderInfoHolder(folderName, account, localFolder -> {
+                if(isResumed()) {
+                    currentFolder = new FolderInfoHolder(context, localFolder, account);
+                    initializeLoadersIfNeeded();
+                }
+                return null;
+            });
         }
 
         if (singleFolderMode) {
@@ -751,15 +767,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         cacheIntentFilter = new IntentFilter(EmailProviderCache.ACTION_CACHE_UPDATED);
     }
 
-    private void getFolderInfoHolder(String folderName, Account account, MlfUtils.OpenFolderCase whichCase) {
-        callMlfUtilsGetOpenFolderWithCallback(folderName, account, whichCase);
-    }
-
-    private void callMlfUtilsGetOpenFolderWithCallback(String folderName, Account account, MlfUtils.OpenFolderCase whichCase) {
+    private void getFolderInfoHolder(String folderName, Account account, Function1<LocalFolder, Unit> callback) {
         try {
-            GetOpenFolderCallbackImpl callback = new GetOpenFolderCallbackImpl(this);
-            addGetOpenFolderCallbackToList(callback);
-            MlfUtils.getOpenFolderWithCallback(folderName, account, whichCase, callback);
+            MlfUtils.getOpenFolderWithCallback(folderName, account, callback);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
@@ -773,7 +783,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
         destroyLoaders();
-        detachCallbacks();
     }
 
     /**
@@ -3032,7 +3041,27 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     private void updateMoreMessagesOfCurrentFolder() {
         if (folderName != null) {
-            callMlfUtilsGetOpenFolderWithCallback(folderName, account, MlfUtils.OpenFolderCase.LOAD_MORE);
+            try {
+                MlfUtils.getOpenFolderWithCallback(folderName, account,
+                    localFolder -> {
+                        if(isResumed()) {
+                            if(currentFolder != null) {
+                                currentFolder.setMoreMessagesFromFolder(localFolder);
+                            }
+                            initializeLoadersIfNeeded();
+                        }
+                        return null;
+                    }
+                );
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void initializeLoadersIfNeeded() {
+        if (!LoaderManager.getInstance(this).hasRunningLoaders()) {
+            initializeLoaders();
         }
     }
 
@@ -3441,72 +3470,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             return folder.getMessage(uid);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private static class GetOpenFolderCallbackImpl implements MlfUtils.GetOpenFolderCallback {
-        private MessageListFragment fragment;
-
-        private GetOpenFolderCallbackImpl(MessageListFragment fragment) {
-            this.fragment = fragment;
-        }
-
-        private void setFragment(MessageListFragment fragment) {
-            this.fragment = fragment;
-        }
-
-        @Override
-        public void onOpenFolderRetrieved(@NotNull LocalFolder localFolder, @NotNull MlfUtils.OpenFolderCase openFolderCase) {
-            if(fragment != null && fragment.isResumed()) {
-                if(fragment.folderName != null) {
-                    switch (openFolderCase) {
-                        case DECODE_ARGUMENTS:
-                        case ACTIVITY_CREATED: {
-                            fragment.currentFolder = new FolderInfoHolder(fragment.context, localFolder, fragment.account);
-                            break;
-                        }
-                        case LOAD_MORE: {
-                            if(fragment.currentFolder != null) {
-                                fragment.currentFolder.setMoreMessagesFromFolder(localFolder);
-                            }
-                            break;
-                        }
-                    }
-
-                    // we wanna init loaders here, after Fragment successfully resumed, so that the heavy buildWhereClause on ui
-                    // starts after we could at least load our initial ui, so that we can show a spinner or similar.
-                    if(!LoaderManager.getInstance(fragment).hasRunningLoaders()) {
-                        fragment.initializeLoaders();
-                    }
-                }
-            }
-            if(fragment != null) {
-                fragment.removeGetOpenFolderCallbackFromList(this);
-                fragment = null;
-            }
-        }
-    }
-
-    private void addGetOpenFolderCallbackToList(GetOpenFolderCallbackImpl callback) {
-        if(getOpenFolderCallbacks == null) {
-            getOpenFolderCallbacks = new ArrayList<>();
-        }
-        getOpenFolderCallbacks.add(callback);
-    }
-
-    private void removeGetOpenFolderCallbackFromList(GetOpenFolderCallbackImpl callback) {
-        getOpenFolderCallbacks.remove(callback);
-        if(getOpenFolderCallbacks.isEmpty()) {
-            getOpenFolderCallbacks = null;
-        }
-    }
-
-    private void detachCallbacks() {
-        if(getOpenFolderCallbacks != null) {
-            for(GetOpenFolderCallbackImpl callback: getOpenFolderCallbacks) {
-                callback.setFragment(null);
-            }
-            getOpenFolderCallbacks = null;
         }
     }
 
