@@ -168,7 +168,6 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        boolean isKeySync = false;
         device.waitForIdle();
         if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
             testUtils.createAccount();
@@ -181,7 +180,7 @@ public class CucumberTestSteps {
                     Timber.i("Cannot get accounts list size: " + ex.getMessage());
                 }
                 if (accounts[0] == 0) {
-                    testUtils.createNAccounts(testUtils.getTotalAccounts(), isKeySync);
+                    testUtils.createNAccounts(testUtils.getTotalAccounts(), false, false);
                 }
             }
         }
