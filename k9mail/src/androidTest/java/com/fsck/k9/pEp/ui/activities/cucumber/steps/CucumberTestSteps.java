@@ -667,6 +667,28 @@ public class CucumberTestSteps {
         }
         testUtils.getMessageListSize();
     }
+    @When("^I create an account for sync on device C$")
+    public void I_create_an_account_for_C() {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                I_send_message_to_address(1, testUtils.getKeySyncAccount(1), "C creates account", "ready");
+                break;
+            case "2":
+                for (int waitMessage = 0; waitMessage < 4; waitMessage++){
+                    testUtils.waitForNewMessage();
+                }
+                break;
+            case "3":
+                testUtils.waitForNewMessage();
+                testUtils.createNAccounts(1, false, true);
+                I_select_account("1");
+                break;
+            default:
+                Timber.i("Cannot create");
+                break;
+        }
+        testUtils.getMessageListSize();
+    }
 
     @When("^I check devices (\\S+) and (\\S+) are sync$")
     public void I_check_1_and_2_sync(String firstDevice, String secondDevice) {
