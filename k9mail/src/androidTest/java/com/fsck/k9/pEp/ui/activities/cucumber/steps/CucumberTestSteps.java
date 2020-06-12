@@ -1324,7 +1324,7 @@ public class CucumberTestSteps {
     }
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
-    public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
+    public void I_send_message_to_address(int totalMessages,String botName, String subject, String body) {
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
