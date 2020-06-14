@@ -233,7 +233,7 @@ public class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    private void accountDescription(String description, String userName) {
+    private void accountDescription(String description, String userName, boolean isThirdSync) {
         doWaitForResource(R.id.account_description);
         while (!viewIsDisplayed(R.id.account_description)) {
             device.waitForIdle();
@@ -267,6 +267,9 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Cannot find account name field");
             }
+        }
+        if (testConfig.keySync_number.equals("3") && isThirdSync) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
         onView(withId(R.id.done)).perform(click());
     }
@@ -472,6 +475,9 @@ public class TestUtils {
                                 testConfig.setKeySync_number(line[1]);
                                 if (!testConfig.getKeySync_number().equals("0")) {
                                     totalAccounts = 1;
+                                    if(testConfig.getKeySync_number().equals("3")) {
+                                        totalAccounts = 2;
+                                    }
                                 }
                                 break;
                             default:
@@ -698,7 +704,7 @@ public class TestUtils {
                     }
                 }
                 Timber.i("Cuentas: " +getTotalAccounts());
-                createNAccounts(getTotalAccounts(), isKeySync);
+                createNAccounts(getTotalAccounts(), isKeySync, false);
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
@@ -739,7 +745,7 @@ public class TestUtils {
         }
     }
 
-    public void createNAccounts (int n, boolean isKeySync) {
+    public void createNAccounts (int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
                 device.waitForIdle();
@@ -751,7 +757,7 @@ public class TestUtils {
                 addAccount();
                 if (isKeySync) {
                     int account = 0;
-                    if (testConfig.keySync_number.equals("3")) {
+                    if (testConfig.keySync_number.equals("3") && !isThirdSync) {
                         account = 1;
                     }
                     fillAccountAddress(testConfig.getKeySync_account(account));
@@ -767,7 +773,7 @@ public class TestUtils {
                 }
                 try {
                     device.waitForIdle();
-                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account));
+                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), isThirdSync);
                 } catch (Exception e) {
                     Timber.i("Can not fill account description");
                 }

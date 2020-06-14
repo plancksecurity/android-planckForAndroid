@@ -679,7 +679,7 @@ public class CucumberTestSteps {
                 break;
             case "3":
                 testUtils.waitForNewMessage();
-                testUtils.createNAccounts(1, false, true);
+                testUtils.createNAccounts(2, true, true);
                 I_select_account("1");
                 break;
             default:
