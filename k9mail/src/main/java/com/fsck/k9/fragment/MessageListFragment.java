@@ -699,13 +699,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (singleAccountMode && (search.getFolderNames().size() == 1)) {
             singleFolderMode = true;
             folderName = search.getFolderNames().get(0);
-            getFolderInfoHolder(folderName, account, localFolder -> {
-                if(isResumed()) {
-                    currentFolder = new FolderInfoHolder(context, localFolder, account);
-                    initializeLoadersIfNeeded();
-                }
-                return null;
-            });
+            getFolderInfoHolder(folderName, account);
         }
 
         allAccounts = false;
@@ -737,13 +731,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         adapter = new MessageListAdapter(this);
 
         if (folderName != null) {
-            getFolderInfoHolder(folderName, account, localFolder -> {
-                if(isResumed()) {
-                    currentFolder = new FolderInfoHolder(context, localFolder, account);
-                    initializeLoadersIfNeeded();
-                }
-                return null;
-            });
+            getFolderInfoHolder(folderName, account);
         }
 
         if (singleFolderMode) {
@@ -767,9 +755,15 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         cacheIntentFilter = new IntentFilter(EmailProviderCache.ACTION_CACHE_UPDATED);
     }
 
-    private void getFolderInfoHolder(String folderName, Account account, Function1<LocalFolder, Unit> callback) {
+    private void getFolderInfoHolder(String folderName, Account account) {
         try {
-            MlfUtils.getOpenFolderWithCallback(folderName, account, callback);
+            MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
+                if(isResumed()) {
+                    currentFolder = new FolderInfoHolder(context, localFolder, account);
+                    initializeLoadersIfNeeded();
+                }
+                return null;
+            });
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
