@@ -233,7 +233,7 @@ public class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    private void accountDescription(String description, String userName, boolean isThirdSync) {
+    private void accountDescription(String description, String userName) {
         doWaitForResource(R.id.account_description);
         while (!viewIsDisplayed(R.id.account_description)) {
             device.waitForIdle();
@@ -268,7 +268,7 @@ public class TestUtils {
                 Timber.i("Cannot find account name field");
             }
         }
-        if (testConfig.keySync_number.equals("3") && isThirdSync) {
+        if (testConfig.keySync_number.equals("3")) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
         onView(withId(R.id.done)).perform(click());
@@ -704,7 +704,11 @@ public class TestUtils {
                     }
                 }
                 Timber.i("Cuentas: " +getTotalAccounts());
-                createNAccounts(getTotalAccounts(), isKeySync, false);
+                if (keySync_number().equals("3")) {
+                createNAccounts(1, isKeySync, false);
+            } else {
+                    createNAccounts(getTotalAccounts(), isKeySync, false);
+                }
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
@@ -773,7 +777,7 @@ public class TestUtils {
                 }
                 try {
                     device.waitForIdle();
-                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), isThirdSync);
+                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account));
                 } catch (Exception e) {
                     Timber.i("Can not fill account description");
                 }
