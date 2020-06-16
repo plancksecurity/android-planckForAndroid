@@ -48,7 +48,7 @@ public class ImportSettingsCancelFromAccountTest {
 
     public void importSettingsCancelTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
-        testUtils.createAccount();
+        //testUtils.createAccount();
         device.waitForIdle();
         testUtils.pressBack();
         device.waitForIdle();

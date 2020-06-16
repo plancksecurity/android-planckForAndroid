@@ -788,6 +788,9 @@ class ImapFolder extends Folder<ImapMessage> {
                 throw ioExceptionHandler(connection, ioe);
             }
         }
+        if (listener != null) {
+            listener.messagesFinished(messages.size());
+        }
     }
 
     @Override

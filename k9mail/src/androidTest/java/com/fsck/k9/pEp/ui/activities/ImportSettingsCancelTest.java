@@ -55,7 +55,7 @@ public class ImportSettingsCancelTest {
     private void importSettingsTest(boolean isGmail) {
         testUtils.increaseTimeoutWait();
         testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
-        testUtils.createAccount();
+        //testUtils.createAccount();
         testUtils.pressBack();
         device.waitForIdle();
         testUtils.pressBack();
