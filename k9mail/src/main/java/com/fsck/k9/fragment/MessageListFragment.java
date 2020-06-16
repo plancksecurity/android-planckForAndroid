@@ -759,14 +759,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         try {
             MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
                 if(isResumed()) {
-                    currentFolder = new FolderInfoHolder(context, localFolder, account);
-                    initializeLoadersIfNeeded();
+                    onFolderRetrievedGetFolderInfoHolder(localFolder);
                 }
                 return null;
             });
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void onFolderRetrievedGetFolderInfoHolder(LocalFolder localFolder) {
+        currentFolder = new FolderInfoHolder(context, localFolder, account);
+        initializeLoadersIfNeeded();
     }
 
     @Override
@@ -3039,10 +3043,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 MlfUtils.getOpenFolderWithCallback(folderName, account,
                     localFolder -> {
                         if(isResumed()) {
-                            if(currentFolder != null) {
-                                currentFolder.setMoreMessagesFromFolder(localFolder);
-                            }
-                            initializeLoadersIfNeeded();
+                            onLocalFolderRetrievedUpdateMessagesOfFolder(localFolder);
                         }
                         return null;
                     }
@@ -3051,6 +3052,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void onLocalFolderRetrievedUpdateMessagesOfFolder(LocalFolder localFolder) {
+        if(currentFolder != null) {
+            currentFolder.setMoreMessagesFromFolder(localFolder);
+        }
+        initializeLoadersIfNeeded();
     }
 
     private void initializeLoadersIfNeeded() {
