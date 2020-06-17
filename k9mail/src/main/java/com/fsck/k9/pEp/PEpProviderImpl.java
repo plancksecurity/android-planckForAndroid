@@ -29,6 +29,7 @@ import foundation.pEp.jniadapter.Pair;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeResult;
+import foundation.pEp.jniadapter.pEpCannotCreateKey;
 import foundation.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
@@ -737,7 +738,13 @@ public class PEpProviderImpl implements PEpProvider {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
         myId.me = true;
-        return engine.myself(myId);
+        try {
+            return engine.myself(myId);
+        }
+        catch( pEpCannotCreateKey exception) {
+            Timber.e(exception, "%s %s", TAG, "could not create key in PEpProviderImpl.myself");
+            return myId;
+        }
     }
 
     @Override
