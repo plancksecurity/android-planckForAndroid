@@ -958,11 +958,28 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(15);
         testUtils.openOptionsMenu();
         testUtils.selectFromScreen(testUtils.stringToID("action_settings"));
+        aboutMenu();
         walkThroughDisplay();
         walkThroughInteraction();
         walkThroughNotifications();
         walkThroughPrivacy();
         walkThroughAdvanced();
+    }
+
+    private void aboutMenu () {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromScreen(testUtils.stringToID("about_action"));
+        String aboutText = getTextFromView(onView(withId(R.id.aboutText)));
+        String[][] shortTextInAbout = new String[3][2];
+        shortTextInAbout[0] = resources.getString(testUtils.stringToID("app_authors_fmt")).split("%");
+        shortTextInAbout[1] = resources.getString(testUtils.stringToID("app_libraries")).split("%");
+        shortTextInAbout[2] = resources.getString(testUtils.stringToID("app_copyright_fmt")).split("%");
+        if (!aboutText.contains(shortTextInAbout[0][0])
+                || !aboutText.contains(shortTextInAbout[1][0])
+                || !aboutText.contains(shortTextInAbout[2][0])) {
+            TestUtils.assertFailWithMessage("Wrong text in About");
+        }
+        testUtils.pressBack();
     }
 
     private void walkThroughDisplay () {
