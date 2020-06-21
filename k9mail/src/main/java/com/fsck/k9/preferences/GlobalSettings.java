@@ -304,6 +304,9 @@ public class GlobalSettings {
         s.put("pEpSubjectProtection", Settings.versions(
                 new V(50, new BooleanSetting(true))
         ));
+        s.put("pEpSyncFolder", Settings.versions(
+                new V(51, new BooleanSetting(true))
+        ));
         SETTINGS = Collections.unmodifiableMap(s);
 
         Map<Integer, SettingsUpgrader> u = new HashMap<>();

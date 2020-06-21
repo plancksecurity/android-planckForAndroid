@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import androidx.multidex.MultiDexApplication;
 import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
-import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
@@ -73,7 +71,6 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -339,6 +336,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpForwardWarningEnabled = false;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
+    private static boolean usingpEpSyncFolder = true;
 
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
@@ -611,6 +609,8 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpForwardWarningEnabled", pEpForwardWarningEnabled);
         editor.putBoolean("pEpEnableSync", pEpSyncEnabled);
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
+
+        editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
 
         fontSizes.save(editor);
     }
@@ -971,7 +971,7 @@ public class K9 extends MultiDexApplication {
         pEpSubjectProtection = getValuePEpSubjectProtection(storage);
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
-
+        usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1626,6 +1626,14 @@ public class K9 extends MultiDexApplication {
 
     public static void setPgpSignOnlyDialogCounter(int pgpSignOnlyDialogCounter) {
         K9.sPgpSignOnlyDialogCounter = pgpSignOnlyDialogCounter;
+    }
+
+    public static boolean isUsingpEpSyncFolder() {
+        return usingpEpSyncFolder;
+    }
+
+    public static void setUsingpEpSyncFolder(boolean usingpEpSyncFolder) {
+        K9.usingpEpSyncFolder = usingpEpSyncFolder;
     }
 
     /**
