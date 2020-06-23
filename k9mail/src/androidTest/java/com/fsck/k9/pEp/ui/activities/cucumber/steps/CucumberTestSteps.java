@@ -792,7 +792,7 @@ public class CucumberTestSteps {
                 break;
             case "3":
                 if (device.equals("C")) {
-                    testUtils.enableKeySync();
+                    testUtils.enableAccountGlobalKeySync("test004@peptest.ch");
                 }
                 break;
             default:
