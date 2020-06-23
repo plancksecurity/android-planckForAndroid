@@ -7,7 +7,6 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.TwoStatePreference
 import android.util.AttributeSet
 import com.fsck.k9.R
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
 
 @SuppressLint("RestrictedApi")
 class AutocryptPreferEncryptPreference
