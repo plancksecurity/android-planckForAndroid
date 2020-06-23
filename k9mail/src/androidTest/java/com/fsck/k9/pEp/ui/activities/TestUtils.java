@@ -1845,12 +1845,21 @@ public class TestUtils {
             }
         }
     }
+
+    public void clickTextOnScreen(String text) {
+        clickText(text);
+    }
+
     public void clickTextOnScreen(int resource) {
+        clickText(resources.getString(resource));
+    }
+
+    public void clickText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().equals(resources.getString(resource))) {
+                    if (object.getText().equals(text)) {
                         try {
                             device.waitForIdle();
                             Espresso.onIdle();
