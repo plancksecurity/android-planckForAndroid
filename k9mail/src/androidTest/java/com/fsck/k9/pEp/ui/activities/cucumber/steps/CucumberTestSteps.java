@@ -756,6 +756,7 @@ public class CucumberTestSteps {
                 if (device.equals("A")) {
                     testUtils.disableKeySync();
                 }
+                break;
             case "2":
                 if (device.equals("B")) {
                     testUtils.disableKeySync();
@@ -765,6 +766,7 @@ public class CucumberTestSteps {
                 if (device.equals("C")) {
                     testUtils.disableKeySync();
                 }
+                break;
             default:
                 Timber.i("Unknown Device to disable sync");
                 break;
@@ -782,6 +784,7 @@ public class CucumberTestSteps {
                 if (device.equals("A")) {
                     testUtils.enableKeySync();
                 }
+                break;
             case "2":
                 if (device.equals("B")) {
                     testUtils.enableKeySync();
@@ -791,6 +794,7 @@ public class CucumberTestSteps {
                 if (device.equals("C")) {
                     testUtils.enableKeySync();
                 }
+                break;
             default:
                 Timber.i("Unknown Device to enable sync");
                 break;
