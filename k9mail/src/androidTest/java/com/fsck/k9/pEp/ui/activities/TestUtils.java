@@ -605,6 +605,19 @@ public class TestUtils {
         selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
     }
 
+    public void enableAccountGlobalKeySync(String account){
+        selectFromMenu(R.string.prefs_title);
+        clickTextOnScreen(account);
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        clickTextOnScreen(stringToID("pep_sync_enable_account"));
+        pressBack();
+        pressBack();
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        clickTextOnScreen(stringToID("pep_sync"));
+    }
+
     public void enableKeySync() {
         selectFromMenu(R.string.prefs_title);
         selectFromScreen(stringToID("privacy_preferences"));
