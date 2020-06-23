@@ -493,12 +493,7 @@ public class TestUtils {
     }
 
     public void syncDevices () {
-        device.waitForIdle();
-        Espresso.onIdle();
-        while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
-            device.waitForIdle();
-            Espresso.onIdle();
-        }
+        waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         device.waitForIdle();
         Espresso.onIdle();
@@ -521,6 +516,14 @@ public class TestUtils {
             selectAccount(0);
         }
     }
+
+    public void waitForSyncPopUp () {
+        device.waitForIdle();
+        Espresso.onIdle();
+        while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
+            device.waitForIdle();
+            Espresso.onIdle();
+        }}
 
     public void checkSyncIsWorking_FirstDevice () {
         getMessageListSize();
