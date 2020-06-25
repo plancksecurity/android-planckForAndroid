@@ -2300,11 +2300,11 @@ public class TestUtils {
     public void swipeDownMessageList() {
         while (true) {
             try {
+                Thread.sleep(2000);
                 device.waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
                 device.waitForIdle();
-                onView(withId(R.id.message_list)).perform(swipeDown());
-                device.waitForIdle();
+                Thread.sleep(2000);
                 return;
             } catch (Exception e) {
                 Timber.i("Cannot swipe down");
