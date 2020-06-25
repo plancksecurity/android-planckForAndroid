@@ -670,7 +670,16 @@ public class CucumberTestSteps {
     public void I_create_an_account_for_C() {
         switch (testUtils.keySync_number()) {
             case "1":
-                I_send_message_to_address(1, testUtils.getKeySyncAccount(1), "C creates account", "ready");
+                testUtils.getMessageListSize();
+                testUtils.composeMessageButton();
+                testUtils.fillMessage(new TestUtils.BasicMessage("",
+                                "C creates account",
+                                "ready",
+                                testUtils.getKeySyncAccount(1)),
+                        false);
+                while (exists(onView(withId(R.id.send)))) {
+                    testUtils.clickView(R.id.send);
+                }
                 break;
             case "2":
                 for (int waitMessage = 0; waitMessage < 4; waitMessage++){
