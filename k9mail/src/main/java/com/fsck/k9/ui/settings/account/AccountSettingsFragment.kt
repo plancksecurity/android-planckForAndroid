@@ -73,31 +73,31 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeIncomingServer() {
-        findPreference(PREFERENCE_INCOMING_SERVER)?.onClick {
+        findPreference<Preference>(PREFERENCE_INCOMING_SERVER)?.onClick {
             AccountSetupBasics.actionEditIncomingSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeComposition() {
-        findPreference(PREFERENCE_COMPOSITION)?.onClick {
+        findPreference<Preference>(PREFERENCE_COMPOSITION)?.onClick {
             AccountSetupComposition.actionEditCompositionSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeManageIdentities() {
-        findPreference(PREFERENCE_MANAGE_IDENTITIES)?.onClick {
+        findPreference<Preference>(PREFERENCE_MANAGE_IDENTITIES)?.onClick {
             ManageIdentities.start(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeOutgoingServer() {
-        findPreference(PREFERENCE_OUTGOING_SERVER)?.onClick {
+        findPreference<Preference>(PREFERENCE_OUTGOING_SERVER)?.onClick {
             AccountSetupBasics.actionEditOutgoingSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeQuoteStyle() {
-        findPreference(PREFERENCE_QUOTE_STYLE)?.apply {
+        findPreference<Preference>(PREFERENCE_QUOTE_STYLE)?.apply {
             setOnPreferenceChangeListener { _, newValue ->
                 val quoteStyle = Account.QuoteStyle.valueOf(newValue.toString())
                 notifyDependencyChange(quoteStyle == Account.QuoteStyle.HEADER)
@@ -115,7 +115,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeExpungePolicy(account: Account) {
-        findPreference(PREFERENCE_EXPUNGE_POLICY)?.apply {
+        findPreference<Preference>(PREFERENCE_EXPUNGE_POLICY)?.apply {
             if (!account.remoteStore.isExpungeCapable) {
                 remove()
             }
@@ -123,7 +123,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeMessageAge(account: Account) {
-        findPreference(PREFERENCE_MESSAGE_AGE)?.apply {
+        findPreference<Preference>(PREFERENCE_MESSAGE_AGE)?.apply {
             if (!account.isSearchByDateCapable) {
                 remove()
             }
@@ -132,9 +132,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeAdvancedPushSettings(account: Account) {
         if (!account.remoteStore.isPushCapable) {
-            findPreference(PREFERENCE_PUSH_MODE)?.remove()
-            findPreference(PREFERENCE_ADVANCED_PUSH_SETTINGS)?.remove()
-            findPreference(PREFERENCE_REMOTE_SEARCH)?.remove()
+            findPreference<Preference>(PREFERENCE_PUSH_MODE)?.remove()
+            findPreference<Preference>(PREFERENCE_ADVANCED_PUSH_SETTINGS)?.remove()
+            findPreference<Preference>(PREFERENCE_REMOTE_SEARCH)?.remove()
         }
     }
 
@@ -147,13 +147,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeCryptoSettings(account: Account) {
-        findPreference(PREFERENCE_OPENPGP)?.let {
+        findPreference<Preference>(PREFERENCE_OPENPGP)?.let {
             configureCryptoPreferences(account)
         }
     }
 
     private fun initializeAccountpEpKeyReset(account: Account) {
-        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
@@ -169,7 +169,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun hideKeySyncOptions() {
-        findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
+        findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
     }
 
     private fun initializeAccountpEpSync(account: Account) {
@@ -199,7 +199,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeNewRingtoneOptions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference(PREFERENCE_RINGTONE)?.remove()
+            findPreference<Preference>(PREFERENCE_RINGTONE)?.remove()
         }
     }
 
@@ -221,7 +221,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun disableKeyResetClickListener() {
-        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET).onPreferenceClickListener = null
+        findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.onPreferenceClickListener = null
     }
 
     private suspend fun keyReset(account: Account) = withContext(Dispatchers.Default) {
@@ -258,13 +258,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     private fun initializeFolderSettings(account: Account) {
-        findPreference(PREFERENCE_FOLDERS)?.let {
+        findPreference<Preference>(PREFERENCE_FOLDERS)?.let {
             if (!account.remoteStore.isMoveCapable) {
-                findPreference(PREFERENCE_ARCHIVE_FOLDER).remove()
-                findPreference(PREFERENCE_DRAFTS_FOLDER).remove()
-                findPreference(PREFERENCE_SENT_FOLDER).remove()
-                findPreference(PREFERENCE_SPAM_FOLDER).remove()
-                findPreference(PREFERENCE_TRASH_FOLDER).remove()
+                findPreference<Preference>(PREFERENCE_ARCHIVE_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_DRAFTS_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_SENT_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_SPAM_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_TRASH_FOLDER)?.remove()
             }
 
             loadFolders(account)

@@ -56,7 +56,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
-        findPreference(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
+        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
             attachmentDefaultPathPreference = this
 
             summary = attachmentDefaultPath()
@@ -87,19 +87,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeLockScreenNotificationVisibility() {
         val lockScreenNotificationsSupported = NotificationController.platformSupportsLockScreenNotifications()
         if (!lockScreenNotificationsSupported) {
-            findPreference(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
+            findPreference<Preference>(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
         }
     }
 
     private fun initializeNotificationQuickDelete() {
         val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
         if (!notificationActionsSupported) {
-            findPreference(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
+            findPreference<Preference>(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
         }
     }
 
     private fun initializeExtraKeysManagement() {
-        findPreference(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
                 PepExtraKeys.actionStart(context)
                 true
@@ -108,7 +108,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpKeyReset() {
-        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
@@ -129,7 +129,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeGlobalpEpSync() {
 
         if (!BuildConfig.WITH_KEY_SYNC) {
-            findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
+            findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
 
         } else {
             (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as TwoStatePreference?)?.apply {
@@ -197,7 +197,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun disableKeyResetClickListener() {
-        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET).onPreferenceClickListener = null
+        findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.onPreferenceClickListener = null
     }
 
     private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
