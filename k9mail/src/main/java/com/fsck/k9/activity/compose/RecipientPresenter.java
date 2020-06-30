@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -37,7 +36,6 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;

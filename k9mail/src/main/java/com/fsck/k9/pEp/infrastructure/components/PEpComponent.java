@@ -32,11 +32,13 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
+import security.pEp.ui.intro.IntroFirstFragment;
+import security.pEp.ui.intro.IntroFourthFragment;
 import security.pEp.ui.permissions.PermissionsActivity;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {
-        ActivityModule.class, PEpModule.class
+        ActivityModule.class, PEpModule.class,
 })
 public interface PEpComponent extends ActivityComponent {
 
@@ -95,4 +97,8 @@ public interface PEpComponent extends ActivityComponent {
     void inject(ChooseAccountTypeFragment fragment);
 
     void inject(SettingsActivity activity);
+
+    void inject(IntroFirstFragment frag);
+
+    void inject(IntroFourthFragment frag);
 }

@@ -231,12 +231,12 @@ public class MessageViewHolder implements View.OnClickListener {
     }
 
     private void updateContactBadge(Address counterpartyAddress) {
-        if (fragment.contactsPictureLoader == null) {
+        if (!K9.showContactPicture()) {
             contactBadge.setVisibility(GONE);
         } else if (counterpartyAddress != null) {
             Utility.setContactForBadge(contactBadge, counterpartyAddress);
             //   contactBadge.setPadding(0, 0, 0, 0);
-            fragment.contactsPictureLoader.loadContactPicture(counterpartyAddress, contactBadge);
+            fragment.contactsPictureLoader.setContactPicture(contactBadge, counterpartyAddress);
         } else {
             contactBadge.assignContactUri(null);
             contactBadge.setImageResource(R.drawable.ic_contact_picture);
