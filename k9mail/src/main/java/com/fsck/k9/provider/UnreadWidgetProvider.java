@@ -1,28 +1,30 @@
 package com.fsck.k9.provider;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.AccountStats;
-import com.fsck.k9.BaseAccount;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.activity.UnreadWidgetConfiguration;
-import com.fsck.k9.activity.FolderList;
-import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
-import com.fsck.k9.search.LocalSearch;
-import com.fsck.k9.search.SearchAccount;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import timber.log.Timber;
 import android.view.View;
 import android.widget.RemoteViews;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.AccountStats;
+import com.fsck.k9.BaseAccount;
+import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
+import com.fsck.k9.activity.FolderList;
+import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.activity.UnreadWidgetConfiguration;
+import com.fsck.k9.controller.MessagingController;
+import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.search.LocalSearch;
+import com.fsck.k9.search.SearchAccount;
+
+import timber.log.Timber;
 
 public class UnreadWidgetProvider extends AppWidgetProvider {
     private static final int MAX_COUNT = 9999;
@@ -48,61 +50,83 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
     }
 
     public static void updateWidget(Context context, AppWidgetManager appWidgetManager,
-            int appWidgetId, String accountUuid) {
-
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-                R.layout.unread_widget_layout);
-
-        int unreadCount = 0;
-        String accountName = context.getString(R.string.app_name);
-        Intent clickIntent = null;
+                                    int appWidgetId, String accountUuid) {
         try {
-            BaseAccount account = null;
-            AccountStats stats = null;
 
-            SearchAccount searchAccount = null;
+            final SearchAccount searchAccount;
             if (SearchAccount.UNIFIED_INBOX.equals(accountUuid)) {
                 searchAccount = SearchAccount.createUnifiedInboxAccount(context);
             } else if (SearchAccount.ALL_MESSAGES.equals(accountUuid)) {
                 searchAccount = SearchAccount.createAllMessagesAccount(context);
+            } else {
+                searchAccount = null;
             }
 
             if (searchAccount != null) {
-                account = searchAccount;
                 MessagingController controller = MessagingController.getInstance(context);
-                stats = controller.getSearchAccountStatsSynchronous(searchAccount, null);
-                clickIntent = MessageList.intentDisplaySearch(context,
-                        searchAccount.getRelatedSearch(), false, true, true);
+                controller.getSearchAccountStats(searchAccount, new SimpleMessagingListener() {
+
+                    @Override
+                    public void accountStatusChanged(BaseAccount account, AccountStats stats) {
+                        super.accountStatusChanged(account, stats);
+                        Intent clickIntent = MessageList.intentDisplaySearch(context,
+                                searchAccount.getRelatedSearch(), false, true, true);
+                        updateWidgetAfterStats(context, searchAccount, stats, clickIntent, appWidgetId, appWidgetManager);
+                    }
+
+                });
+
             } else {
                 Account realAccount = Preferences.getPreferences(context).getAccount(accountUuid);
                 if (realAccount != null) {
-                    account = realAccount;
-                    stats = realAccount.getStats(context);
+                    AccountStats stats = realAccount.getStats(context);
 
+                    Intent clickIntent;
                     if (K9.FOLDER_NONE.equals(realAccount.getAutoExpandFolderName())) {
                         clickIntent = FolderList.actionHandleAccountIntent(context, realAccount, false);
                     } else {
                         LocalSearch search = new LocalSearch(realAccount.getAutoExpandFolderName());
                         search.addAllowedFolder(realAccount.getAutoExpandFolderName());
-                        search.addAccountUuid(account.getUuid());
+                        search.addAccountUuid(((BaseAccount) realAccount).getUuid());
                         clickIntent = MessageList.intentDisplaySearch(context, search, false, true,
                                 true);
                     }
                     clickIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    updateWidgetAfterStats(context, realAccount, stats, clickIntent, appWidgetId, appWidgetManager);
                 }
+
             }
 
-            if (account != null) {
-                accountName = account.getDescription();
-            }
-
-            if (stats != null) {
-                unreadCount = stats.unreadMessageCount;
-            }
         } catch (Exception e) {
             Timber.e(e, "Error getting widget configuration");
         }
+    }
 
+    private static void updateWidgetAfterStats(
+            Context context,
+            BaseAccount account,
+            AccountStats stats,
+            Intent clickIntent,
+            int appWidgetId,
+            AppWidgetManager appWidgetManager) {
+
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.unread_widget_layout);
+
+        int unreadCount = stats != null ? stats.unreadMessageCount: 0;
+        String accountName = account != null ? account.getDescription() :context.getString(R.string.app_name);
+
+        setUnreadCount(unreadCount, remoteViews);
+
+        remoteViews.setTextViewText(R.id.account_name, accountName);
+
+        setClickIntent(context, clickIntent, appWidgetId);
+
+        setAvailableAccounts(context, remoteViews, clickIntent, appWidgetId);
+
+        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+    }
+
+    private static void setUnreadCount(int unreadCount, RemoteViews remoteViews) {
         if (unreadCount <= 0) {
             // Hide TextView for unread count if there are no unread messages.
             remoteViews.setViewVisibility(R.id.unread_count, View.GONE);
@@ -110,12 +134,13 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
             remoteViews.setViewVisibility(R.id.unread_count, View.VISIBLE);
 
             String displayCount = (unreadCount <= MAX_COUNT) ?
-                    String.valueOf(unreadCount) : String.valueOf(MAX_COUNT) + "+";
+                    String.valueOf(unreadCount) : MAX_COUNT + "+";
             remoteViews.setTextViewText(R.id.unread_count, displayCount);
         }
+    }
 
-        remoteViews.setTextViewText(R.id.account_name, accountName);
 
+    private static void setClickIntent(Context context, Intent clickIntent, int appWidgetId) {
         if (clickIntent == null) {
             // If the widget configuration couldn't be loaded we open the configuration
             // activity when the user clicks the widget.
@@ -124,6 +149,9 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
         }
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+    }
+
+    private static void setAvailableAccounts(Context context, RemoteViews remoteViews, Intent clickIntent, int appWidgetId) {
         boolean availableAccounts = Preferences.getPreferences(context).getAvailableAccounts().size() != 0;
 
         if (!availableAccounts) {
@@ -133,9 +161,6 @@ public class UnreadWidgetProvider extends AppWidgetProvider {
             PendingIntent pendingIntent = viewUnreadInboxPendingIntent(context, appWidgetId, clickIntent);
             remoteViews.setOnClickPendingIntent(R.id.unread_widget_layout, pendingIntent);
         }
-
-
-        appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
     }
 
     private static PendingIntent viewUnreadInboxPendingIntent(Context context, int appWidgetId, Intent clickIntent) {
