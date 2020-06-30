@@ -422,7 +422,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (view == footerView) {
             if (currentFolder != null && !search.isManualSearch() && currentFolder.moreMessages) {
 
-                messagingController.loadMoreMessages(account, folderName, null);
+                messagingController.loadMoreMessagesBackground(account, folderName, null);
 
             } else if (currentFolder != null && isRemoteSearch() &&
                     extraSearchResults != null && extraSearchResults.size() > 0) {
