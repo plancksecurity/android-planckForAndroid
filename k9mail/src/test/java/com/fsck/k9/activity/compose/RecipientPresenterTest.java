@@ -1,6 +1,37 @@
 package com.fsck.k9.activity.compose;
 
 
+import java.util.Arrays;
+import java.util.List;
+
+import android.content.Context;
+import androidx.loader.app.LoaderManager;
+import android.content.Intent;
+import android.os.ParcelFileDescriptor;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.K9RobolectricTest;
+import com.fsck.k9.activity.compose.RecipientMvpView.CryptoSpecialModeDisplayType;
+import com.fsck.k9.activity.compose.RecipientMvpView.CryptoStatusDisplayType;
+import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
+import com.fsck.k9.helper.ReplyToParser;
+import com.fsck.k9.helper.ReplyToParser.ReplyToAddresses;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.Message.RecipientType;
+import com.fsck.k9.message.ComposePgpInlineDecider;
+import com.fsck.k9.view.RecipientSelectView.Recipient;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.openintents.openpgp.IOpenPgpService2;
+import org.openintents.openpgp.util.OpenPgpApi;
+import org.openintents.openpgp.util.OpenPgpServiceConnection;
+import org.openintents.openpgp.util.ShadowOpenPgpAsyncTask;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowApplication;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -9,6 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @SuppressWarnings("ConstantConditions")

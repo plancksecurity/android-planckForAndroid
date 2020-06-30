@@ -54,8 +54,6 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Inject PEpStatusPresenter presenter;
 
-    @Inject PEpStatusRendererBuilder rendererBuilder;
-
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
 
@@ -174,7 +172,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
-        rendererBuilder.setUp(
+        RendererBuilder<PEpIdentity> rendererBuilder =
+                new PEpStatusRendererBuilder(
                         getOnResetClickListener(),
                         getOnHandshakeResultListener(),
                         myself

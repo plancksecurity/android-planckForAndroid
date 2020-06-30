@@ -16,16 +16,14 @@ import androidx.fragment.app.Fragment
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.helper.ContactPicture
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.ui.fragments.PEpFragment
-import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.*
 import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.permissions.PermissionsActivity
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import javax.inject.Inject
 
 
 private const val AUTOMATIC: String = "automatic"
@@ -100,14 +98,8 @@ class WelcomeMessage : AppIntro() {
     }
 
 }
-class IntroFirstFragment : PEpFragment() {
 
-    @Inject
-    lateinit var contactsPictureLoader: ContactPictureLoader
-
-    override fun inject() {
-        getpEpComponent().inject(this)
-    }
+class IntroFirstFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_first, container, false)
@@ -116,7 +108,7 @@ class IntroFirstFragment : PEpFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startImage()
-        startTexts()
+        startTexts();
     }
 
     private fun startTexts() {
@@ -127,7 +119,7 @@ class IntroFirstFragment : PEpFragment() {
     private fun startImage() {
         val address = Address("A")
         contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(contactBadge, address)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, contactBadge)
     }
 }
 
@@ -147,14 +139,7 @@ class IntroThirdFragment : Fragment() {
 
 }
 
-class IntroFourthFragment : PEpFragment() {
-
-    @Inject
-    lateinit var contactsPictureLoader: ContactPictureLoader
-
-    override fun inject() {
-        getpEpComponent().inject(this)
-    }
+class IntroFourthFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
@@ -168,10 +153,10 @@ class IntroFourthFragment : PEpFragment() {
     private fun startImage() {
         var address = Address("A")
         secureBadge.setPepRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(secureBadge, address)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureBadge)
         address = Address("B")
         secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
-        contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
+        ContactPicture.getGrayPictureLoader(context).loadContactPicture(address, secureTrustedBadge)
     }
 
 }

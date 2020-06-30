@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
-import com.fsck.k9.activity.compose.RecipientSelectView;
+import com.fsck.k9.view.RecipientSelectView;
 
 import org.jetbrains.annotations.NotNull;
 

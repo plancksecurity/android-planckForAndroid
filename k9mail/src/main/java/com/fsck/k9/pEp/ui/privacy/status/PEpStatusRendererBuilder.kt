@@ -9,30 +9,16 @@ import com.fsck.k9.pEp.ui.renderers.pepstatus.PEpStatusUnsecureRenderer
 import com.pedrogomez.renderers.Renderer
 import com.pedrogomez.renderers.RendererBuilder
 import foundation.pEp.jniadapter.Rating
-import javax.inject.Inject
 
-class PEpStatusRendererBuilder @Inject constructor(
-        private val pgpRenderer: PEpStatusPGPIdentityRenderer,
-        private val trustedRenderer: PEpStatusTrustedRenderer,
-        private val secureRenderer: PEpStatusSecureRenderer,
-        private val unsecureRenderer: PEpStatusUnsecureRenderer
+class PEpStatusRendererBuilder(
+        private val resetClickListener: ResetClickListener,
+        private val handshakeResultListener: HandshakeResultListener,
+        private val myself: String
 ) : RendererBuilder<PEpIdentity>() {
-
-    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
-    private lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
-    private lateinit var myself: String
 
     init {
         val prototypes = getPepIdentityRendererTypes()
         setPrototypes(prototypes)
-    }
-
-    fun setUp(resetClickListener: ResetClickListener,
-              handshakeResultListener: HandshakeResultListener,
-              myself: String) {
-        this.resetClickListener = resetClickListener
-        this.myself = myself
-        this.handshakeResultListener = handshakeResultListener
     }
 
     // 24/02/2020: Since values for red color are never returned from engine, we do not need a renderer for red communication channels.
@@ -57,16 +43,19 @@ class PEpStatusRendererBuilder @Inject constructor(
     }
 
     private fun getPepIdentityRendererTypes(): List<Renderer<PEpIdentity>> {
-        pgpRenderer.setUp(resetClickListener, handshakeResultListener, myself)
-        secureRenderer.setUp(resetClickListener, handshakeResultListener, myself)
-        unsecureRenderer.setUp(resetClickListener)
-        trustedRenderer.setUp(resetClickListener)
-
         return listOf(
-                pgpRenderer,
-                trustedRenderer,
-                secureRenderer,
-                unsecureRenderer
+                PEpStatusPGPIdentityRenderer(
+                        resetClickListener,
+                        handshakeResultListener,
+                        myself
+                ),
+                PEpStatusTrustedRenderer(resetClickListener),
+                PEpStatusSecureRenderer(
+                        resetClickListener,
+                        handshakeResultListener,
+                        myself
+                ),
+                PEpStatusUnsecureRenderer(resetClickListener)
         )
     }
 

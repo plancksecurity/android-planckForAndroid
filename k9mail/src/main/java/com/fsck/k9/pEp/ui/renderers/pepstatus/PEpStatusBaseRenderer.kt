@@ -12,6 +12,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.helper.ContactPicture
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.helper.Utility
@@ -20,14 +21,13 @@ import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.models.PEpIdentity
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
-import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
 import security.pEp.permissions.PermissionChecker
 import security.pEp.ui.permissions.PEpPermissionChecker
 
-abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLoader) : Renderer<PEpIdentity>() {
-    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
+abstract class PEpStatusBaseRenderer(
+        private val resetClickListener: PEpStatusRendererBuilder.ResetClickListener) : Renderer<PEpIdentity>() {
 
     @Bind(R.id.tvUsername)
     lateinit var identityUserName: TextView
@@ -44,19 +44,11 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
-
-    override fun onCreate(content: PEpIdentity?, layoutInflater: LayoutInflater?, parent: ViewGroup?) {
-        super.onCreate(content, layoutInflater, parent)
-    }
-
-     fun setUp(resetClickListener: PEpStatusRendererBuilder.ResetClickListener) {
-        this.resetClickListener = resetClickListener
-    }
     protected lateinit var permissionChecker: PermissionChecker
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
         permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
-        val view: View = inflater!!.inflate(getLayout(), parent, false)
+        val view : View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
         return view
     }
@@ -72,14 +64,15 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
     private fun renderRating(rating: Rating) {
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
-        if (::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
+        if(::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
     }
 
     private fun renderBadge(identity: PEpIdentity) {
         val realAddress = Address(identity.address, identity.username)
         if (K9.showContactPicture()) {
             Utility.setContactForBadge(badge, realAddress)
-            contactsPictureLoader.setContactPicture(badge, realAddress)
+            val mContactsPictureLoader = ContactPicture.getContactPictureLoader(context)
+            mContactsPictureLoader.loadContactPicture(realAddress, badge)
             badge.setPepRating(identity.rating, true)
         }
         val contacts = if (permissionChecker.hasContactsPermission() &&

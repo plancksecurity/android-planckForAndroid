@@ -5,8 +5,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
@@ -17,8 +15,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
 
 @Module
 public class ApplicationModule {
@@ -36,33 +32,13 @@ public class ApplicationModule {
         return application.getApplicationContext();
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     ThreadExecutor provideThreadExecutor(JobExecutor jobExecutor) {
         return jobExecutor;
     }
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     PostExecutionThread providePostExecutionThread(UIThread uiThread) {
         return uiThread;
     }
-
-    //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
-    @Provides
-    public PermissionChecker providepEpPermissionChecker() {
-        return new PEpPermissionChecker(application.getApplicationContext());
-    }
-
-    @Provides
-    public Preferences providePreferences() {
-        return Preferences.getPreferences(application);
-    }
-
-    @Provides
-    @Named("MainUI")
-    public PEpProvider providepEpProvider() {
-        return application.getpEpProvider();
-    }
-
 }

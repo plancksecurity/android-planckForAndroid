@@ -10,18 +10,18 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPGPIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.ui.contacts.ContactPictureLoader
-import javax.inject.Inject
 
 
-class PEpStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader: ContactPictureLoader)
-    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusPGPIdentityView {
+class PEpStatusPGPIdentityRenderer(
+        resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
+        private val handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
+        private val myself: String
+)
+    : PEpStatusBaseRenderer(resetClickListener), PEpStatusPGPIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
-    //FIXME Abstract between this and PEPStatusSecureRenderer
 
-    private lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
-    private lateinit var myself: String
+
     private lateinit var trustwordsPresenter: PEpStatusTrustwordsPresenter
 
     @Bind(R.id.rejectHandshake)
@@ -41,16 +41,6 @@ class PEpStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader: Co
 
     @Bind(R.id.myselfFpr)
     internal lateinit var myselfFpr: TextView
-
-
-    fun setUp(resetClickListener: PEpStatusRendererBuilder.ResetClickListener,
-             handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener,
-             myself: String
-    ) {
-        setUp(resetClickListener)
-        this.myself = myself
-        this.handshakeResultListener = handshakeResultListener
-    }
 
     override fun render() {
         super.render()

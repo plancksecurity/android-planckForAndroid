@@ -26,7 +26,8 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.activity.compose.RecipientSelectView.TokenListener;
+import com.fsck.k9.view.RecipientSelectView.Recipient;
+import com.fsck.k9.view.RecipientSelectView.TokenListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;

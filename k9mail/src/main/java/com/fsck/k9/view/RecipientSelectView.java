@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.compose;
+package com.fsck.k9.view;
 
 
 import android.annotation.SuppressLint;
@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract.Contacts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.loader.app.LoaderManager;
@@ -29,20 +30,23 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
+import com.fsck.k9.activity.compose.RecipientAdapter;
+import com.fsck.k9.activity.compose.RecipientLoader;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
-import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.fsck.k9.view.RecipientSelectView.Recipient;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
 import foundation.pEp.jniadapter.Rating;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -65,6 +69,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private LoaderManager loaderManager;
 
     private ListPopupWindow alternatesPopup;
+    private AlternateRecipientAdapter alternatesAdapter;
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
     private PEpProvider pEp;
@@ -72,8 +77,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PePUIArtefactCache uiCache;
 
-    @Inject ContactPictureLoader contactPictureLoader;
-    @Inject AlternateRecipientAdapter alternatesAdapter;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -93,12 +96,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void initView(Context context) {
         // TODO: validator?
         this.context = context;
-        getApplicationComponent(context).inject(this);
-
         uiCache = PePUIArtefactCache.getInstance(context);
         account = uiCache.getComposingAccount();
         alternatesPopup = new ListPopupWindow(context);
-        alternatesAdapter.setUp(this, account);
+        alternatesAdapter = new AlternateRecipientAdapter(context, this, account);
         alternatesPopup.setAdapter(alternatesAdapter);
 
         // don't allow duplicates, based on equality of recipient objects, which is e-mail addresses
@@ -108,7 +109,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         // Note that we override performCompletion, so this doesn't actually do anything
         performBestGuess(true);
 
-        adapter = new RecipientAdapter(context, contactPictureLoader);
+        adapter = new RecipientAdapter(context);
         setAdapter(adapter);
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
@@ -122,8 +123,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         View view = inflateLayout();
 
-        RecipientTokenViewHolder holder =
-                new RecipientTokenViewHolder(view, contactPictureLoader, account, cryptoProvider);
+        RecipientTokenViewHolder holder = new RecipientTokenViewHolder(view);
         view.setTag(holder);
 
         bindObjectView(recipient, view);
@@ -140,21 +140,45 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void bindObjectView(Recipient recipient, View view) {
         RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
 
-        holder.bind(recipient);
+        holder.vName.setText(recipient.getDisplayNameOrAddress());
 
-        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+        RecipientAdapter.setContactPhotoOrPlaceholder(getContext(), holder.vContactPhoto, recipient);
+
+        pEp.getRating(recipient.address, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
-                holder.updateRating(rating);
-                postInvalidateDelayed(100);
+                updateRating(rating, holder, recipient);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                holder.updateRating(Rating.pEpRatingUndefined);
-                postInvalidateDelayed(100);
+                updateRating(Rating.pEpRatingUndefined, holder, recipient);
             }
         });
+    }
+
+    private void updateRating(Rating rating, RecipientTokenViewHolder holder, Recipient recipient) {
+        holder.vContactPhoto.setPepRating(rating, account.ispEpPrivacyProtected());
+
+        boolean hasCryptoProvider = cryptoProvider != null;
+        if (!hasCryptoProvider) {
+            holder.cryptoStatusRed.setVisibility(View.GONE);
+            holder.cryptoStatusOrange.setVisibility(View.GONE);
+            holder.cryptoStatusGreen.setVisibility(View.GONE);
+        } else if (recipient.cryptoStatus == RecipientCryptoStatus.UNAVAILABLE) {
+            holder.cryptoStatusRed.setVisibility(View.VISIBLE);
+            holder.cryptoStatusOrange.setVisibility(View.GONE);
+            holder.cryptoStatusGreen.setVisibility(View.GONE);
+        } else if (recipient.cryptoStatus == RecipientCryptoStatus.AVAILABLE_UNTRUSTED) {
+            holder.cryptoStatusRed.setVisibility(View.GONE);
+            holder.cryptoStatusOrange.setVisibility(View.VISIBLE);
+            holder.cryptoStatusGreen.setVisibility(View.GONE);
+        } else if (recipient.cryptoStatus == RecipientCryptoStatus.AVAILABLE_TRUSTED) {
+            holder.cryptoStatusRed.setVisibility(View.GONE);
+            holder.cryptoStatusOrange.setVisibility(View.GONE);
+            holder.cryptoStatusGreen.setVisibility(View.VISIBLE);
+        }
+        invalidate();
     }
 
     @Override
@@ -279,7 +303,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         List<Recipient> recipients = getObjects();
         Address[] address = new Address[recipients.size()];
         for (int i = 0; i < address.length; i++) {
-            address[i] = recipients.get(i).getAddress();
+            address[i] = recipients.get(i).address;
         }
 
         return address;
@@ -295,7 +319,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         List<Recipient> recipients = getObjects();
         String[] address = new String[recipients.size()];
         for (int i = 0; i < address.length; i++) {
-            address[i] = recipients.get(i).getAddress().toString();
+            address[i] = recipients.get(i).address.toString();
         }
 
         return address;
@@ -361,7 +385,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 if (contactLookupUri != null) {
                     return new RecipientLoader(getContext(), cryptoProvider, contactLookupUri, true);
                 } else {
-                    return new RecipientLoader(getContext(), cryptoProvider, alternatesPopupRecipient.getAddress());
+                    return new RecipientLoader(getContext(), cryptoProvider, alternatesPopupRecipient.address);
                 }
             }
         }
@@ -439,9 +463,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
         Recipient currentRecipient = currentRecipients.get(indexOfRecipient);
 
-        currentRecipient.setAddress(alternateAddress.getAddress());
-        currentRecipient.setAddressLabel(alternateAddress.getAddressLabel());
-        currentRecipient.setCryptoStatus(alternateAddress.getCryptoStatus());
+        currentRecipient.address = alternateAddress.address;
+        currentRecipient.addressLabel = alternateAddress.addressLabel;
+        currentRecipient.cryptoStatus = alternateAddress.cryptoStatus;
 
         View recipientTokenView = getTokenViewForRecipient(currentRecipient);
         if (recipientTokenView == null) {
@@ -454,6 +478,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         if (listener != null) {
             listener.onTokenChanged(currentRecipient);
         }
+
+        invalidate();
     }
 
     /**
@@ -530,7 +556,142 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
     }
 
-    private ApplicationComponent getApplicationComponent(Context context) {
-        return ((K9) context.getApplicationContext()).getComponent();
+    private static class RecipientTokenViewHolder {
+        public final TextView vName;
+        public final PEpContactBadge vContactPhoto;
+        public final View cryptoStatusRed;
+        public final View cryptoStatusOrange;
+        public final View cryptoStatusGreen;
+
+
+        RecipientTokenViewHolder(View view) {
+            vName = (TextView) view.findViewById(android.R.id.text1);
+            vContactPhoto = (PEpContactBadge) view.findViewById(R.id.contact_photo);
+            cryptoStatusRed = view.findViewById(R.id.contact_crypto_status_red);
+            cryptoStatusOrange = view.findViewById(R.id.contact_crypto_status_orange);
+            cryptoStatusGreen = view.findViewById(R.id.contact_crypto_status_green);
+        }
+    }
+
+    public static class Recipient implements Serializable {
+        @Nullable // null means the address is not associated with a contact
+        public final Long contactId;
+        public final String contactLookupKey;
+
+        @NonNull
+        public Address address;
+
+        public String addressLabel;
+
+        @Nullable // null if the contact has no photo. transient because we serialize this manually, see below.
+        public transient Uri photoThumbnailUri;
+
+        @NonNull
+        private RecipientCryptoStatus cryptoStatus;
+
+        public Recipient(@NonNull Address address) {
+            this.address = address;
+            this.contactId = null;
+            this.cryptoStatus = RecipientCryptoStatus.UNDEFINED;
+            this.contactLookupKey = null;
+        }
+
+        public Recipient(String name, String email, String addressLabel, long contactId, String lookupKey) {
+            this.address = new Address(email, name);
+            this.contactId = contactId;
+            this.addressLabel = addressLabel;
+            this.cryptoStatus = RecipientCryptoStatus.UNDEFINED;
+            this.contactLookupKey = lookupKey;
+        }
+
+        public String getDisplayNameOrAddress() {
+            String displayName = getDisplayName();
+            if (displayName != null) {
+                return displayName;
+            }
+
+            return address.getAddress();
+        }
+
+        public boolean isValidEmailAddress() {
+            return (address.getAddress() != null);
+        }
+
+        public String getDisplayNameOrUnknown(Context context) {
+            String displayName = getDisplayName();
+            if (displayName != null) {
+                return displayName;
+            }
+
+            return context.getString(R.string.unknown_recipient);
+        }
+
+        public String getNameOrUnknown(Context context) {
+            String name = address.getPersonal();
+            if (name != null) {
+                return name;
+            }
+
+            return context.getString(R.string.unknown_recipient);
+        }
+
+        private String getDisplayName() {
+            if (TextUtils.isEmpty(address.getPersonal())) {
+                return null;
+            }
+
+            String displayName = address.getPersonal();
+            if (addressLabel != null) {
+                displayName += " (" + addressLabel + ")";
+            }
+
+            return displayName;
+        }
+
+        @NonNull
+        public RecipientCryptoStatus getCryptoStatus() {
+            return cryptoStatus;
+        }
+
+        public void setCryptoStatus(@NonNull RecipientCryptoStatus cryptoStatus) {
+            this.cryptoStatus = cryptoStatus;
+        }
+
+        @Nullable
+        public Uri getContactLookupUri() {
+            if (contactId == null) {
+                return null;
+            }
+
+            return Contacts.getLookupUri(contactId, contactLookupKey);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            // Equality is entirely up to the address
+            return o instanceof Recipient && address.equals(((Recipient) o).address);
+        }
+
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+            oos.defaultWriteObject();
+
+            // custom serialization, Android's Uri class is not serializable
+            if (photoThumbnailUri != null) {
+                oos.writeInt(1);
+                oos.writeUTF(photoThumbnailUri.toString());
+            } else {
+                oos.writeInt(0);
+            }
+        }
+
+        private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+            ois.defaultReadObject();
+
+            // custom deserialization, Android's Uri class is not serializable
+            if (ois.readInt() != 0) {
+                String uriString = ois.readUTF();
+                photoThumbnailUri = Uri.parse(uriString);
+            }
+        }
     }
 }

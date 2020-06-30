@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -52,9 +51,11 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.FolderInfoHolder;
+import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.MessageActions;
+import com.fsck.k9.activity.misc.ContactPictureLoader;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
@@ -68,6 +69,7 @@ import com.fsck.k9.fragment.MessageListFragmentComparators.ReverseIdComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.SenderComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.SubjectComparator;
 import com.fsck.k9.fragment.MessageListFragmentComparators.UnreadComparator;
+import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.MergeCursorWithUniqueId;
 import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.helper.Utility;
@@ -265,7 +267,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * make sure we don't access member variables before initialization is complete.
      */
     private boolean initialized = false;
-
+    ContactPictureLoader contactsPictureLoader;
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver cacheBroadcastReceiver;
     private IntentFilter cacheIntentFilter;
@@ -282,8 +284,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private long contextMenuUniqueId = 0;
 
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
-    @Inject
-    ContactPictureLoader contactsPictureLoader;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
     @Inject
@@ -502,6 +502,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         checkboxes = K9.messageListCheckboxes();
 
+        if (K9.showContactPicture()) {
+            contactsPictureLoader = ContactPicture.getContactPictureLoader(getActivity());
+        }
 
         restoreInstanceState(savedInstanceState);
         decodeArguments();
