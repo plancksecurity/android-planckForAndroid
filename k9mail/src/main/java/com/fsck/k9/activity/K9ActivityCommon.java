@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
 
 import java.util.Locale;
@@ -47,9 +48,7 @@ public class K9ActivityCommon {
         invalidateChromeLocaleForWebView(context);
         Locale locale;
         if (TextUtils.isEmpty(language)) {
-            locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                ? Resources.getSystem().getConfiguration().getLocales().get(0)
-                : Resources.getSystem().getConfiguration().locale;
+            locale = LangUtils.getDefaultLocale();
         } else if (language.length() == 5 && language.charAt(2) == '_') {
             // language is in the form: en_US
             locale = new Locale(language.substring(0, 2), language.substring(3));
@@ -60,7 +59,13 @@ public class K9ActivityCommon {
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.locale = locale;
-        Locale.setDefault(locale);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Locale.setDefault(locale);
+        else {
+            Configuration systemConfig = Resources.getSystem().getConfiguration();
+            systemConfig.setLocale(locale);
+            Resources.getSystem().updateConfiguration(systemConfig, null);
+        }
+
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
