@@ -252,11 +252,6 @@ public class MessageListAdapter extends CursorAdapter {
 
             @Override
             public void onStartClose(SwipeLayout layout) {
-
-            }
-
-            @Override
-            public void onClose(SwipeLayout layout) {
                 if (swipe[0].equals(Swipe.LEFT)) {
                     int position = fragment.listView.getPositionForView(layout);
                     MessageReference messageReference = fragment.getMessageAtPosition(position);
@@ -267,6 +262,11 @@ public class MessageListAdapter extends CursorAdapter {
                     MessageReference messageReference = fragment.getMessageAtPosition(position);
                     fragment.onArchive(messageReference);
                 }
+            }
+
+            @Override
+            public void onClose(SwipeLayout layout) {
+
             }
 
             @Override
