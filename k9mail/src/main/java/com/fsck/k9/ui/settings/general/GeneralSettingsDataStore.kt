@@ -5,6 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
+import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 
 class GeneralSettingsDataStore(
@@ -131,9 +132,12 @@ class GeneralSettingsDataStore(
 
     override fun putString(key: String, value: String?) {
         if (value == null) return
+        else if(key == "language") {
+            showChangeLanguageDialog(value)
+            return
+        }
 
         when (key) {
-            "language" -> setLanguage(value)
             "theme" -> setTheme(value)
             "fixed_message_view_theme" -> K9.setK9MessageViewThemeSetting(stringToTheme(value))
             "message_compose_theme" -> K9.setK9ComposerThemeSetting(stringToTheme(value))
@@ -224,14 +228,21 @@ class GeneralSettingsDataStore(
         }
     }
 
+    suspend fun saveLanguageSettings() {
+        val editor = preferences.storage.edit()
+        K9.save(editor)
+        withContext(Dispatchers.IO) {
+            editor.commit()
+        }
+    }
+
     private fun setTheme(value: String?) {
         K9.setK9Theme(stringToTheme(value))
         recreateActivity()
     }
 
-    private fun setLanguage(language: String?) {
-        K9.setK9Language(language)
-        recreateActivity()
+    private fun showChangeLanguageDialog(language: String?) {
+        (activity!! as GeneralSettingsActivity).showLanguageChangeDialog(language)
     }
 
     private fun themeToString(theme: Theme) = when (theme) {

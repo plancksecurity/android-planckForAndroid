@@ -8,10 +8,12 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
@@ -42,9 +44,12 @@ public class K9ActivityCommon {
     }
 
     public static void setLanguage(Context context, String language) {
+        invalidateChromeLocaleForWebView(context);
         Locale locale;
         if (TextUtils.isEmpty(language)) {
-            locale = Locale.getDefault();
+            locale = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? Resources.getSystem().getConfiguration().getLocales().get(0)
+                : Resources.getSystem().getConfiguration().locale;
         } else if (language.length() == 5 && language.charAt(2) == '_') {
             // language is in the form: en_US
             locale = new Locale(language.substring(0, 2), language.substring(3));
@@ -55,9 +60,15 @@ public class K9ActivityCommon {
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.locale = locale;
+        Locale.setDefault(locale);
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
+    private static void invalidateChromeLocaleForWebView(Context context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            new WebView(context).destroy();
+        }
+    }
 
     /**
      * Base activities need to implement this interface.
