@@ -31,9 +31,10 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     private var previewTV: TextView? = null
     private var flaggedCB: CheckBox? = null
     private var attachment: ImageView? = null
-    var position = -1
+    private var position = -1
     private var isSelected = false
     private var read = false
+
     private fun bindViews() {
         securityBadge = view.findViewById(R.id.securityBadge)
         selectedCheckBox = view.findViewById(R.id.selectedCheckbox)
@@ -65,7 +66,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
              isFlagged: Boolean,
              isSelected: Boolean,
              read: Boolean,
-             statusHolder: Drawable,
+             statusHolder: Drawable?,
              subjectText: String,
              threadCount: Int) {
         position = cursor.position
@@ -84,25 +85,25 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         updateBackgroundColor()
     }
 
-    private fun updateNameAndSubject(displayName: CharSequence, statusHolder: Drawable, subjectText: String) {
+    private fun updateNameAndSubject(displayName: CharSequence, statusHolder: Drawable?, subjectText: String) {
         if (K9.messageListSenderAboveSubject()) {
             fontSizes.setViewTextSize(senderTV, fontSizes.messageListSender)
             fontSizes.setViewTextSize(subjectTV, fontSizes.messageListSubject)
-            senderTV!!.text = displayName
-            senderTV!!.setCompoundDrawablesWithIntrinsicBounds(statusHolder, null, null, null)
-            subjectTV!!.text = subjectText
+            senderTV?.text = displayName
+            senderTV?.setCompoundDrawablesWithIntrinsicBounds(statusHolder, null, null, null)
+            subjectTV?.text = subjectText
         } else {
             fontSizes.setViewTextSize(senderTV, fontSizes.messageListSubject)
             fontSizes.setViewTextSize(subjectTV, fontSizes.messageListSender)
-            subjectTV!!.text = displayName
-            subjectTV!!.setCompoundDrawablesWithIntrinsicBounds(statusHolder, null, null, null)
-            senderTV!!.text = subjectText
+            subjectTV?.text = displayName
+            subjectTV?.setCompoundDrawablesWithIntrinsicBounds(statusHolder, null, null, null)
+            senderTV?.text = subjectText
         }
     }
 
     private fun updateDate(displayDate: CharSequence) {
         fontSizes.setViewTextSize(dateTV, fontSizes.messageListDate)
-        dateTV!!.text = displayDate
+        dateTV?.text = displayDate
     }
 
     private fun changeBackgroundColorIfActiveMessage(cursor: Cursor, account: Account) {
@@ -119,8 +120,8 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     private fun updatePreviewText(cursor: Cursor) {
         fontSizes.setViewTextSize(previewTV, fontSizes.messageListPreview)
         val preview = getPreview(cursor)
-        previewTV!!.text = preview
-        previewTV!!.maxLines = Math.max(K9.messageListPreviewLines(), 1)
+        previewTV?.text = preview
+        previewTV?.maxLines = Math.max(K9.messageListPreviewLines(), 1)
     }
 
     private fun updateBackgroundColor() {
@@ -131,55 +132,55 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
 
     private fun updateAttachment(cursor: Cursor) {
         val hasAttachments = cursor.getInt(MLFProjectionInfo.ATTACHMENT_COUNT_COLUMN) > 0
-        if (hasAttachments) attachment!!.visibility = View.VISIBLE
+        if (hasAttachments) attachment?.visibility = View.VISIBLE
     }
 
     private fun updateFlagCheckbox(isFlagged: Boolean) {
-        flaggedCB!!.visibility = if (K9.messageListStars()) View.VISIBLE else View.GONE
-        flaggedCB!!.setOnClickListener(this)
-        flaggedCB!!.isChecked = isFlagged
+        flaggedCB?.visibility = if (K9.messageListStars()) View.VISIBLE else View.GONE
+        flaggedCB?.setOnClickListener(this)
+        flaggedCB?.isChecked = isFlagged
     }
 
     private fun updateSelectedCheckbox(cursor: Cursor) {
         if (fragment.checkboxes) {
-            selectedCheckBox!!.visibility = View.VISIBLE
-            selectedCheckBox!!.setOnClickListener(this)
+            selectedCheckBox?.visibility = View.VISIBLE
+            selectedCheckBox?.setOnClickListener(this)
             val uniqueId = cursor.getLong(fragment.uniqueIdColumn)
             val isSelected = fragment.selected.contains(uniqueId)
-            selectedCheckBox!!.isChecked = isSelected
+            selectedCheckBox?.isChecked = isSelected
         } else {
-            selectedCheckBox!!.visibility = View.GONE
+            selectedCheckBox?.visibility = View.GONE
         }
     }
 
     private fun updateSecurityBadge(pEpRating: Rating) {
         if (fragment.context != null) {
             val pepSecurityBadge = getDrawableForMessageList(fragment.context!!, pEpRating)
-            securityBadge!!.visibility = if (pepSecurityBadge != null) View.VISIBLE else View.GONE
-            if (pepSecurityBadge != null) securityBadge!!.setImageDrawable(pepSecurityBadge)
+            securityBadge?.visibility = if (pepSecurityBadge != null) View.VISIBLE else View.GONE
+            if (pepSecurityBadge != null) securityBadge?.setImageDrawable(pepSecurityBadge)
         }
     }
 
     private fun updateThreadCount(count: Int) {
         fontSizes.setViewTextSize(threadCountTV, fontSizes.messageListSubject)
         if (count > 1) {
-            threadCountTV!!.text = String.format(Locale.getDefault(), "%d", count)
-            threadCountTV!!.visibility = View.VISIBLE
+            threadCountTV?.text = String.format(Locale.getDefault(), "%d", count)
+            threadCountTV?.visibility = View.VISIBLE
         } else {
-            threadCountTV!!.visibility = View.GONE
+            threadCountTV?.visibility = View.GONE
         }
     }
 
     private fun updateContactBadge(counterpartyAddress: Address?) {
         if (fragment.contactsPictureLoader == null) {
-            contactBadge!!.visibility = View.GONE
+            contactBadge?.visibility = View.GONE
         } else if (counterpartyAddress != null) {
             Utility.setContactForBadge(contactBadge, counterpartyAddress)
             //   contactBadge.setPadding(0, 0, 0, 0);
             fragment.contactsPictureLoader.loadContactPicture(counterpartyAddress, contactBadge)
         } else {
-            contactBadge!!.assignContactUri(null)
-            contactBadge!!.setImageResource(R.drawable.ic_contact_picture)
+            contactBadge?.assignContactUri(null)
+            contactBadge?.setImageResource(R.drawable.ic_contact_picture)
         }
     }
 
