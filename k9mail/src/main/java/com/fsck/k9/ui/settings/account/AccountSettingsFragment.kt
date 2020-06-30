@@ -173,7 +173,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePgpImportKey(account: Account) {
-        findPreference(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
     }
 
     private fun onKeyImportClicked() {
