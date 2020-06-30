@@ -155,8 +155,7 @@
         <activity
             android:name=".activity.setup.AccountSetupNames"
             android:configChanges="locale"
-            android:label="@string/account_setup_names_title"
-            android:screenOrientation="portrait" />
+            android:label="@string/account_setup_names_title"/>
         <activity
             android:name=".activity.ChooseFolder"
             android:configChanges="locale"
