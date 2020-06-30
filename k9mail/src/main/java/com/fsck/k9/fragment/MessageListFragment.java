@@ -35,6 +35,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -92,6 +93,9 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
@@ -105,9 +109,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.FunctionN;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -251,7 +259,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private Context context;
     private final ActivityListener activityListener = new MessageListActivityListener();
     private Preferences preferences;
-    private boolean loaderJustInitializedForTheFirstTime;
     MessageReference activeMessage;
     /**
      * {@code true} after {@link #onCreate(Bundle)} was executed. Used in {@link #updateTitle()} to
@@ -273,7 +280,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * The value of this field is {@code 0} when no context menu is currently open.
      */
     private long contextMenuUniqueId = 0;
-
 
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
     @Inject
@@ -563,10 +569,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         // This needs to be done before initializing the cursor loader below
         initializeSortSettings();
-        if(!anyAccountWasDeleted()) {
-            loaderJustInitializedForTheFirstTime = true;
-            initializeLoaders();
-        }
     }
 
     private void initializeLoaders() {
@@ -577,15 +579,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         for (int i = 0; i < len; i++) {
             loaderManager.initLoader(i, null, this);
             cursorValid[i] = false;
-        }
-    }
-
-    private void initializeLoadersIfNeeded() {
-        if(!loaderJustInitializedForTheFirstTime && !anyAccountWasDeleted()) {
-            initializeLoaders();
-        }
-        else {
-            loaderJustInitializedForTheFirstTime = false;
         }
     }
 
@@ -695,13 +688,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (accountUuids.length == 1 && !search.searchAllAccounts()) {
             singleAccountMode = true;
             account = preferences.getAccount(accountUuids[0]);
+            if(account == null) {
+                account = preferences.getDefaultAccount();
+            }
         }
 
         singleFolderMode = false;
         if (singleAccountMode && (search.getFolderNames().size() == 1)) {
             singleFolderMode = true;
             folderName = search.getFolderNames().get(0);
-            currentFolder = getFolderInfoHolder(folderName, account);
+            getFolderInfoHolder(folderName, account);
         }
 
         allAccounts = false;
@@ -733,7 +729,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         adapter = new MessageListAdapter(this);
 
         if (folderName != null) {
-            currentFolder = getFolderInfoHolder(folderName, account);
+            getFolderInfoHolder(folderName, account);
         }
 
         if (singleFolderMode) {
@@ -742,7 +738,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
 
         listView.setAdapter(adapter);
-        hideLoadingMessages();
     }
 
     private void createCacheBroadcastReceiver(Context appContext) {
@@ -758,13 +753,22 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         cacheIntentFilter = new IntentFilter(EmailProviderCache.ACTION_CACHE_UPDATED);
     }
 
-    private FolderInfoHolder getFolderInfoHolder(String folderName, Account account) {
+    private void getFolderInfoHolder(String folderName, Account account) {
         try {
-            LocalFolder localFolder = MlfUtils.getOpenFolder(folderName, account);
-            return new FolderInfoHolder(context, localFolder, account);
+            MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
+                if(isResumed()) {
+                    onFolderRetrievedGetFolderInfoHolder(localFolder);
+                }
+                return null;
+            });
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void onFolderRetrievedGetFolderInfoHolder(LocalFolder localFolder) {
+        currentFolder = new FolderInfoHolder(context, localFolder, account);
+        initializeLoadersIfNeeded();
     }
 
     @Override
@@ -785,8 +789,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
-
-        initializeLoadersIfNeeded();
+        showLoadingMessages();
+        if(folderName == null) {
+            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(!LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders() && !anyAccountWasDeleted()) {
+                        initializeLoaders();
+                    }
+                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -3000,6 +3014,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
             fragmentListener.updateMenu();
         }
+        hideLoadingMessages();
     }
 
     private void updateToolbarColor(Cursor cursor) {
@@ -3023,11 +3038,30 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private void updateMoreMessagesOfCurrentFolder() {
         if (folderName != null) {
             try {
-                LocalFolder folder = MlfUtils.getOpenFolder(folderName, account);
-                currentFolder.setMoreMessagesFromFolder(folder);
+                MlfUtils.getOpenFolderWithCallback(folderName, account,
+                    localFolder -> {
+                        if(isResumed()) {
+                            onLocalFolderRetrievedUpdateMessagesOfFolder(localFolder);
+                        }
+                        return null;
+                    }
+                );
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private void onLocalFolderRetrievedUpdateMessagesOfFolder(LocalFolder localFolder) {
+        if(currentFolder != null) {
+            currentFolder.setMoreMessagesFromFolder(localFolder);
+        }
+        initializeLoadersIfNeeded();
+    }
+
+    private void initializeLoadersIfNeeded() {
+        if (!LoaderManager.getInstance(this).hasRunningLoaders()) {
+            initializeLoaders();
         }
     }
 
@@ -3438,6 +3472,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             throw new RuntimeException(e);
         }
     }
+
 //    @Override
 //    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     // TODO: 13/06/17 compare with onMessageClick

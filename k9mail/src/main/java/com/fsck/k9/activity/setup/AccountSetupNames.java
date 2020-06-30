@@ -33,6 +33,7 @@ import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import javax.inject.Inject;
 
@@ -164,6 +165,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     }
 
     protected void onNext() {
+        KeyboardUtils.hideKeyboard(AccountSetupNames.this);
         if (Utility.requiredFieldValid(mDescription)) {
             mAccount.setDescription(mDescription.getText().toString());
         }
