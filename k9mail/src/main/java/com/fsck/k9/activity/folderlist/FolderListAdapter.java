@@ -27,6 +27,8 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -470,7 +472,7 @@ public class FolderListAdapter extends BaseAdapter implements Filterable, Folder
     }
 
     @Override
-    public void publishResults(List<FolderInfoHolder> filteredFolders) {
+    public void publishResults(@NotNull List<FolderInfoHolder> filteredFolders) {
         setFilteredFolders(filteredFolders);
         notifyDataSetChanged();
     }
