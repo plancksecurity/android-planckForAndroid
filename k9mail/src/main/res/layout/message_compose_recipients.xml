@@ -284,7 +284,8 @@
             android:paddingStart="0dp"
             android:paddingEnd="4dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Recipient" />
+            tools:text="Recipient"
+            android:completionThreshold="1"/>
 
         <ViewAnimator
             android:id="@+id/recipient_expander_container"
@@ -346,7 +347,8 @@
             android:dropDownAnchor="@id/cc_wrapper"
             android:dropDownWidth="wrap_content"
             android:imeOptions="actionNext"
-            android:inputType="textEmailAddress|textMultiLine" />
+            android:inputType="textEmailAddress|textMultiLine"
+            android:completionThreshold="1"/>
 
     </LinearLayout>
 
@@ -390,7 +392,8 @@
             android:dropDownAnchor="@id/bcc_wrapper"
             android:dropDownWidth="wrap_content"
             android:imeOptions="actionNext"
-            android:inputType="textEmailAddress|textMultiLine" />
+            android:inputType="textEmailAddress|textMultiLine"
+            android:completionThreshold="1"/>
 
     </LinearLayout>
 
