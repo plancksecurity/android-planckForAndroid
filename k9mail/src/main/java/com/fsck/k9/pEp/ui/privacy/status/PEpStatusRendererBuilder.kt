@@ -18,14 +18,9 @@ class PEpStatusRendererBuilder @Inject constructor(
         private val unsecureRenderer: PEpStatusUnsecureRenderer
 ) : RendererBuilder<PEpIdentity>() {
 
-    lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
-    private lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener
+    lateinit var resetClickListener: ResetClickListener
+    private lateinit var handshakeResultListener: HandshakeResultListener
     private lateinit var myself: String
-
-    init {
-        val prototypes = getPepIdentityRendererTypes()
-        setPrototypes(prototypes)
-    }
 
     fun setUp(resetClickListener: ResetClickListener,
               handshakeResultListener: HandshakeResultListener,
@@ -33,6 +28,9 @@ class PEpStatusRendererBuilder @Inject constructor(
         this.resetClickListener = resetClickListener
         this.myself = myself
         this.handshakeResultListener = handshakeResultListener
+
+        val prototypes = getPepIdentityRendererTypes()
+        setPrototypes(prototypes)
     }
 
     // 24/02/2020: Since values for red color are never returned from engine, we do not need a renderer for red communication channels.
