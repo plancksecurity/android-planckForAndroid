@@ -15,8 +15,7 @@ import androidx.loader.content.AsyncTaskLoader;
 
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
-import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
+import com.fsck.k9.activity.compose.RecipientSelectView.RecipientCryptoStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -335,9 +334,6 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
 
             Recipient recipient = new Recipient(name, email, addressLabel, contactId, lookupKey);
             if (recipient.isValidEmailAddress()) {
-                Uri photoUri = cursor.isNull(INDEX_PHOTO_URI) ? null : Uri.parse(cursor.getString(INDEX_PHOTO_URI));
-
-                recipient.photoThumbnailUri = photoUri;
                 recipientMap.put(email, recipient);
                 recipients.add(recipient);
             }
