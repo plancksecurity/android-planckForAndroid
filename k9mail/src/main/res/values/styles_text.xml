@@ -5,6 +5,10 @@
         <item name="android:textColor">?attr/grayScaleColorOnBackground1</item>
     </style>
 
+    <style name="LightBlackText.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="GrayScaleColorText3">
         <item name="android:textColor">?attr/grayScaleColorOnBackground3</item>
     </style>
