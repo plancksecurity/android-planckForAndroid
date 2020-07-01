@@ -3,4 +3,13 @@
     <style name="TextAppearance.StatusBar.EventContent.Emphasized" parent="@android:style/TextAppearance.StatusBar.EventContent">
         <item name="android:textColor">?android:textColorPrimaryInverse</item>
     </style>
+
+    <style name="SyncDisableDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColorPrimary">@color/light_black</item>
+        <item name="android:layout_height">@dimen/key_import_floating_height</item>
+        <item name="android:layout_width">@dimen/key_import_floating_width</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>
