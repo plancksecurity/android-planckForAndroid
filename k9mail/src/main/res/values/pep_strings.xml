@@ -278,4 +278,6 @@
     <string name="change_language_title">Change Language</string>
     <string name="change_language_explanation">App will return to main screen to change language</string>
 
+    <string name="about_contact">Contact:</string>
+    <string name="about_documentation">Documentation:</string>
 </resources>
