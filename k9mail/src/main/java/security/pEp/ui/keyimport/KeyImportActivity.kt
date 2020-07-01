@@ -9,7 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PepActivity
+import com.fsck.k9.pEp.manualsync.WizardActivity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import security.pEp.ui.dialog.PEpProgressDialog
 import security.pEp.ui.dialog.showProgressDialog
@@ -21,7 +21,7 @@ const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
 const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
 
-class KeyImportActivity : PepActivity(), KeyImportView {
+class KeyImportActivity : WizardActivity(), KeyImportView {
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter

@@ -5,7 +5,10 @@
     android:layout_width="@dimen/floating_width"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:padding="24dp">
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/title"
@@ -26,8 +29,8 @@
         android:orientation="vertical"
         app:helperText="@string/key_import_from_fs_input_fpr"
         app:helperTextEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/cancelButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title">
 
@@ -42,24 +45,23 @@
 
     <Button
         android:id="@+id/cancelButton"
-        style="@style/TransparentButton.Gray"
+        style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:text="@string/cancel_action"
         android:textAllCaps="true"
-        android:textColor="@color/dark_gray"
+        android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/acceptButton" />
 
     <Button
         android:id="@+id/acceptButton"
-        style="@style/TransparentButton.Green"
+        style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
         android:text="@string/pgp_key_import_dialog_accept_button"
-        android:textAllCaps="true"
-        android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

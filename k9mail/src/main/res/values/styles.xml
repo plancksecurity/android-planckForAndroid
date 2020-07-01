@@ -111,24 +111,6 @@
         <item name="colorButtonNormal">@color/pep_no_color</item>
     </style>
 
-    <style name="TransparentButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="backgroundTint">@android:color/transparent</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
-
-    <style name="TransparentButton.Green">
-        <item name="rippleColor">@color/colorAccent</item>
-        <item name="android:textColor">@color/colorPrimary</item>
-    </style>
-
-    <style name="TransparentButton.Gray" >
-        <item name="rippleColor">@color/colorAccent</item>
-        <item name="android:textColor">@color/gray</item>
-    </style>
-
-
-
     <style name="PEpThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
     </style>
 
