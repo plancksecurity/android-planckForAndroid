@@ -5,9 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.EditText
+import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import kotlinx.android.synthetic.main.import_key_dialog.*
@@ -39,26 +37,26 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val account: String = intent.getStringExtra(ACCOUNT_EXTRA) ?: ""
             presenter.initialize(this, account)
         }
-        setView()
+        startLayoutViews()
     }
 
-    private fun setView() {
+    private fun startLayoutViews() {
         cancelButton.setOnClickListener { presenter.onReject() }
         acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
-        fingerprintEditText.afterTextChanged { text ->
+        fingerprintEditText.doAfterTextChanged { text ->
             fingerprintEditText.error = null
-            acceptButton.isEnabled = text.isNotEmpty()
+            acceptButton.isEnabled = text.toString().isNotEmpty()
         }
     }
 
     override fun openFileChooser() {
-        val i = Intent(Intent.ACTION_GET_CONTENT)
-        i.addCategory(Intent.CATEGORY_OPENABLE)
-        i.type = "*/*"
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "*/*"
         val packageManager = packageManager
-        val infos = packageManager.queryIntentActivities(i, 0)
+        val infos = packageManager.queryIntentActivities(intent, 0)
         if (infos.isNotEmpty()) {
-            startActivityForResult(Intent.createChooser(i, null), ACTIVITY_REQUEST_PICK_KEY_FILE)
+            startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_PICK_KEY_FILE)
         } else {
             showNoFileManager()
         }
@@ -108,7 +106,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         val title = getString(R.string.settings_import_dialog_title)
         val message = getString(R.string.settings_import_scanning_file)
         progressDialog = showProgressDialog(title, message, true)
-        //   progressDialog = ProgressDialog.show(this, title, message, true)
     }
 
     override fun removeDialog() {
@@ -137,19 +134,5 @@ fun Activity.showImportKeyDialog(account: String) {
     val intent = Intent(this, KeyImportActivity::class.java)
     intent.putExtra(ACCOUNT_EXTRA, account)
     startActivity(intent)
-}
-
-fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
-    this.addTextChangedListener(object : TextWatcher {
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        }
-
-        override fun afterTextChanged(editable: Editable?) {
-            afterTextChanged.invoke(editable.toString())
-        }
-    })
 }
 
