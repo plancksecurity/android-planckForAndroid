@@ -39,6 +39,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -92,6 +93,7 @@ import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
+import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -161,10 +163,22 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         loadingView.setVisibility(View.VISIBLE);
     }
 
-    public void hideLoadingMessages() {
-        listView.setVisibility(View.VISIBLE);
+    public void hideLoadingMessages(int messageCount) {
+
+        if(isManualSearch()) {
+            if(messageCount == 0) {
+                noResultsFound.setVisibility(View.VISIBLE);
+                // show empty search
+            }
+            else {
+                listView.setVisibility(View.VISIBLE);
+            }
+        }
+        else {
+            listView.setVisibility(View.VISIBLE);
 //        fab.setVisibility(View.VISIBLE);
-        fab.show();
+            fab.show();
+        }
         loadingView.setVisibility(View.GONE);
     }
 
@@ -205,6 +219,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     ListView listView;
     private SwipeRefreshLayout swipeRefreshLayout;
     Parcelable savedListState;
+
+    private MaterialTextView noResultsFound;
 
     private MessageListAdapter adapter;
     private View footerView;
@@ -544,6 +560,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         listView = (ListView) rootView.findViewById(R.id.message_list);
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.message_swipe);
         loadingView = (ProgressBar) rootView.findViewById(R.id.loading_view);
+        noResultsFound = rootView.findViewById(R.id.no_results_found_layout);
 
 
         initializeFabButton(rootView);
@@ -842,7 +859,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             toolBarCustomizer.setToolbarColor(worstThreadRating);
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
-        if (isThreadDisplay) {
+        if (isThreadDisplay || isManualSearch()) {
             fab.hide();
         } else {
             fab.show();
@@ -3024,7 +3041,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
             fragmentListener.updateMenu();
         }
-        hideLoadingMessages();
+        hideLoadingMessages(cursor.getCount());
     }
 
     private void updateToolbarColor(Cursor cursor) {
