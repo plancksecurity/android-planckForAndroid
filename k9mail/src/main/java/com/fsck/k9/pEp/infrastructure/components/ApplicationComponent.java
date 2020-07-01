@@ -11,6 +11,7 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
+import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -30,6 +31,8 @@ public interface ApplicationComponent {
     ThreadExecutor getThreadExecutor();
 
     PostExecutionThread getPostExecutionThread();
+
+    AccountSetupNavigator accountSetupNavigator();
 
     @Named("AppContext")
     Context getContext();
