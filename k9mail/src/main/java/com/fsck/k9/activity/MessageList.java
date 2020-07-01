@@ -1200,10 +1200,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (!hasMessageListFragment) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
             if(mSearch.searchAllAccounts() && specialAccountUuid != null) {
-                if(specialAccountUuid.equals(SearchAccount.UNIFIED_INBOX)) {
-                    mMessageListFragment = MessageListFragment.newInstance(mSearch, false, false);
-                }
-                else if(specialAccountUuid.equals(SearchAccount.ALL_MESSAGES)) {
+                if(specialAccountUuid.equals(SearchAccount.UNIFIED_INBOX) || specialAccountUuid.equals(SearchAccount.ALL_MESSAGES)) {
                     mMessageListFragment = MessageListFragment.newInstance(mSearch, false, false);
                 }
                 specialAccountUuid = null;
