@@ -310,6 +310,7 @@ class ImapFolder extends Folder<ImapMessage> {
             String encodedFolderName = folderNameCodec.encode(getPrefixedName());
             String escapedFolderName = ImapUtility.encodeString(encodedFolderName);
             connection.executeSimpleCommand(String.format("CREATE %s", escapedFolderName));
+            connection.executeSimpleCommand(String.format("SUBSCRIBE %s", escapedFolderName));
 
             return true;
         } catch (NegativeImapResponseException e) {
