@@ -37,17 +37,17 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val account: String = intent.getStringExtra(ACCOUNT_EXTRA) ?: ""
             presenter.initialize(this, account)
         }
-        startLayoutViews()
+        openFileChooser()
     }
 
-    private fun startLayoutViews() {
+    /*private fun startLayoutViews() {
         cancelButton.setOnClickListener { presenter.onReject() }
         acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
         fingerprintEditText.doAfterTextChanged { text ->
             fingerprintEditText.error = null
             acceptButton.isEnabled = text.toString().isNotEmpty()
         }
-    }
+    }*/
 
     override fun openFileChooser() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -91,10 +91,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showFailedKeyImport(fingerprint: String, filename: String?) {
+    override fun showFailedKeyImport(filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
-                .setMessage(getString(R.string.key_import_failure, filename, fingerprint))
+                .setMessage(getString(R.string.key_import_failure, filename))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()

@@ -6,15 +6,16 @@ import android.net.Uri
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
+import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.pEpException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.IOUtils
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.*
 import javax.inject.Inject
 
 class KeyImportPresenter @Inject constructor() {
@@ -26,20 +27,6 @@ class KeyImportPresenter @Inject constructor() {
     fun initialize(view: KeyImportView, account: String) {
         this.view = view
         this.account = account
-    }
-
-    fun onAccept(fingerprint: String) {
-        val trimmedFingerprint = fingerprint.replace(" ", "")
-        if (trimmedFingerprint.isEmpty()) {
-            view.showEmptyInputError()
-        } else {
-            this.fingerprint = trimmedFingerprint
-            view.openFileChooser()
-        }
-    }
-
-    fun onReject() {
-        view.finish()
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -71,7 +58,12 @@ class KeyImportPresenter @Inject constructor() {
             val currentFpr = pEp.myself(accountIdentity).fpr
             try {
                 val key = IOUtils.toByteArray(inputStream)
-                pEp.importKey(key)
+
+                val importedIdentities = pEp.importKey(key)
+                if (importedIdentities.isEmpty()) { // This means that the file contains a key, but not a proper private key which we need.
+                    return@withContext false
+                }
+                fingerprint = (importedIdentities[0] as Identity).fpr
                 val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
                 if (id == null || !pEp.canEncrypt(account)) {
                     Timber.w("Couldn't set own key: %s", key)
@@ -81,7 +73,7 @@ class KeyImportPresenter @Inject constructor() {
             } catch (e: IOException) {
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()
-            } catch (e: pEpException) {
+            } catch (e: pEpException) {  // this means there was no right formatted key in the file.
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
                 result = false
             } finally {
@@ -102,7 +94,7 @@ class KeyImportPresenter @Inject constructor() {
         val filename = uri.path
         when {
             success -> view.showCorrectKeyImport(fingerprint, filename)
-            else -> view.showFailedKeyImport(fingerprint, filename)
+            else -> view.showFailedKeyImport(filename)
         }
     }
 

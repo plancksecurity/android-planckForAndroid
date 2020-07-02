@@ -14,6 +14,7 @@ import foundation.pEp.jniadapter.pEpException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created by dietz on 01.07.15.
@@ -224,7 +225,7 @@ public interface PEpProvider extends AutoCloseable {
 
     boolean canEncrypt(String address);
 
-    void importKey(byte[] key);
+    Vector<Identity> importKey(byte[] key);
 
     void keyResetIdentity(Identity ident, String fpr);
 

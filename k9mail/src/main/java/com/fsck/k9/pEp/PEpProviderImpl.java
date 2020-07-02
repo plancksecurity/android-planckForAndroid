@@ -1156,9 +1156,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void importKey(byte[] key) {
+    public Vector<Identity> importKey(byte[] key) {
         createEngineInstanceIfNeeded();
-        engine.importKey(key);
+        return engine.importKey(key);
     }
 
     @Override
