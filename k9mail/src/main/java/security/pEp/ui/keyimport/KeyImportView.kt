@@ -10,7 +10,7 @@ interface KeyImportView {
 
     fun showCorrectKeyImport(fingerprint: String, filename: String?)
 
-    fun showFailedKeyImport(fingerprint: String, filename: String?)
+    fun showFailedKeyImport(filename: String?)
 
     fun finish()
 

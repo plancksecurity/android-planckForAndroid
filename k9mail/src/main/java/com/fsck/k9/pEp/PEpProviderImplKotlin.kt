@@ -624,9 +624,9 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread // TODO: 20/07/2020 move to suspend
-    override fun importKey(key: ByteArray) {
+    override fun importKey(key: ByteArray): Vector<Identity> {
         createEngineInstanceIfNeeded()
-        engine.importKey(key)
+        return engine.importKey(key)
     }
 
     @WorkerThread // TODO: 29/07/2020 move to suspend
