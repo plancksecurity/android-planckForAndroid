@@ -1729,6 +1729,11 @@ public class TestUtils {
         }
     }
 
+    public void waitForIdle() {
+        device.waitForIdle();
+        Espresso.onIdle();
+    }
+
     String getTextFromTextViewThatContainsText(String text) {
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selector)) {
