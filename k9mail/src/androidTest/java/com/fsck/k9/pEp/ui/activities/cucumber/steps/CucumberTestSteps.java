@@ -808,6 +808,7 @@ public class CucumberTestSteps {
                 Timber.i("Unknown Device to enable sync");
                 break;
         }
+        testUtils.waitForIdle();
         if (!exists(onView(withId(R.id.message_list)))) {
             testUtils.pressBack();
         }
