@@ -607,7 +607,9 @@ public class TestUtils {
 
     public void enableAccountGlobalKeySync(String account){
         selectFromMenu(R.string.prefs_title);
-        clickTextOnScreen(account);
+        while (textExistsOnScreen(account)) {
+            clickTextOnScreen(account);
+        }
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         clickTextOnScreen(stringToID("pep_sync_enable_account"));
