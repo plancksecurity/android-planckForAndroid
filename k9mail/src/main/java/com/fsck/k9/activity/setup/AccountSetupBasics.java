@@ -172,6 +172,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
             if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
                 return;
             }
+            ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
             ((AccountSetupSettingsCheckerFragment) fragment).onError(exception);
         }
 
@@ -180,6 +181,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
             if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
                 return;
             }
+            ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
             ((AccountSetupSettingsCheckerFragment) fragment).onLoaded(redirection);
         }
     }

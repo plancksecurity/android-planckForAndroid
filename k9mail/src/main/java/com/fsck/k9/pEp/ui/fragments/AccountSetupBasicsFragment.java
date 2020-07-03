@@ -529,6 +529,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void onNext() {
         nextProgressBar.show();
         mNextButton.setVisibility(View.GONE);
+        accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
 
         String email;
