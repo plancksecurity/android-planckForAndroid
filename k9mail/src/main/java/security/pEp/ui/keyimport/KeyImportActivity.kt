@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
 const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
-const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
+const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
 
 class KeyImportActivity : WizardActivity(), KeyImportView {
@@ -125,7 +125,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
 
 private fun Activity.openMarketIntent() {
-    val uri = Uri.parse(ANDROID_MARKET_URL)
+    val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
     val intent = Intent(Intent.ACTION_VIEW, uri)
     startActivity(intent)
 }

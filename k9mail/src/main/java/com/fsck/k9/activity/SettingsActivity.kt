@@ -50,7 +50,7 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
-import security.pEp.ui.keyimport.ANDROID_MARKET_URL
+import security.pEp.ui.keyimport.ANDROID_FILE_MANAGER_MARKET_URL
 import security.pEp.ui.keyimport.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
@@ -562,7 +562,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                         R.string.open_market,
                         R.string.close
                 ) {
-                    val uri = Uri.parse(ANDROID_MARKET_URL)
+                    val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
                     val intent = Intent(Intent.ACTION_VIEW, uri)
                     startActivity(intent)
                     selectedContextAccount = null
