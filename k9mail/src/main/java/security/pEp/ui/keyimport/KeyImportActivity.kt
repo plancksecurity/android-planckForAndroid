@@ -14,11 +14,6 @@ import security.pEp.ui.dialog.showProgressDialog
 import javax.inject.Inject
 
 
-const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
-const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
-const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
-
-
 class KeyImportActivity : WizardActivity(), KeyImportView {
 
     @Inject
@@ -70,7 +65,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .setNegativeButton(R.string.close) { dialogInterface, _ -> dialogInterface.dismiss() }
                 .setPositiveButton(R.string.open_market) { dialogInterface, _ ->
                     dialogInterface.dismiss()
-                    openMarketIntent()
+                    openMarketIntent(this@KeyImportActivity)
                 }
                 .create()
                 .show()
@@ -121,18 +116,25 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         super.onActivityResult(requestCode, resultCode, data)
         presenter.onActivityResult(requestCode, resultCode, data)
     }
+
+    companion object {
+        const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+        const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
+        const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
+
+        private fun openMarketIntent(activity: Activity) {
+            val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            activity.startActivity(intent)
+        }
+
+        fun showImportKeyDialog(activity: Activity?, account: String) {
+            val intent = Intent(activity, KeyImportActivity::class.java)
+            intent.putExtra(ACCOUNT_EXTRA, account)
+            activity?.startActivity(intent)
+        }
+    }
 }
 
 
-private fun Activity.openMarketIntent() {
-    val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
-    val intent = Intent(Intent.ACTION_VIEW, uri)
-    startActivity(intent)
-}
-
-fun Activity.showImportKeyDialog(account: String) {
-    val intent = Intent(this, KeyImportActivity::class.java)
-    intent.putExtra(ACCOUNT_EXTRA, account)
-    startActivity(intent)
-}
 
