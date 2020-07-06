@@ -136,8 +136,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     public void onImport(Uri uri) {
-        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri,
-                null, false, null);
+        ListImportContentsAsyncTask asyncTask = new ListImportContentsAsyncTask(this, uri);
         setNonConfigurationInstance(asyncTask);
         asyncTask.execute();
     }

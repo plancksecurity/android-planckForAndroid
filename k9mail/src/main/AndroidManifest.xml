@@ -542,9 +542,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pEp.ui.keys.keyimport.KeyImportActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
+            android:name="security.pEp.ui.keyimport.KeyImportActivity"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"

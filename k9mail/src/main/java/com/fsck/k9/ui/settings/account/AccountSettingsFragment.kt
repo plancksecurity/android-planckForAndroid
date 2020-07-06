@@ -1,7 +1,9 @@
 package com.fsck.k9.ui.settings.account
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -29,6 +31,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
+import security.pEp.ui.keyimport.showImportKeyDialog
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -65,6 +68,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpKeyReset(account)
         initializeNewRingtoneOptions()
         initializeAccountpEpSync(account)
+        initializePgpImportKey(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -166,6 +170,14 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         }
+    }
+
+    private fun initializePgpImportKey(account: Account) {
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+    }
+
+    private fun onKeyImportClicked() {
+        activity?.showImportKeyDialog(accountUuid)
     }
 
     private fun hideKeySyncOptions() {
@@ -284,11 +296,22 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreference
-        if (openPgpKeyPreference?.handleOnActivityResult(requestCode, resultCode, data) == true) {
-            return
-        }*/
-        super.onActivityResult(requestCode, resultCode, data)
+        return when {
+            resultCode != Activity.RESULT_OK || data == null ->
+                super.onActivityResult(requestCode, resultCode, data)
+            else ->
+                when (requestCode) {
+                  //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
+                       // onKeyImport(data.data, accountUuid)
+                    else ->
+                        super.onActivityResult(requestCode, resultCode, data)
+
+                }
+        }
+    }
+
+    private fun onKeyImport(uri: Uri?, currentAccount: String) {
+        // TODO
     }
 
     private fun getAccount(): Account {
@@ -319,6 +342,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
         private const val PREFERENCE_RINGTONE = "account_ringtone"
+        private const val PREFERENCE_PGP_KEY_IMPORT = "pgp_key_import"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
