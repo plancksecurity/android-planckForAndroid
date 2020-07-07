@@ -643,6 +643,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     protected void onNext() {
         nextProgressBar.show();
         mNextButton.setVisibility(View.INVISIBLE);
+        accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
@@ -975,6 +976,8 @@ public class AccountSetupOutgoingFragment extends PEpFragment
 
     @Override
     public void onSettingsCheckCancelled() {
-
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 }

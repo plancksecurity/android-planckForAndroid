@@ -692,6 +692,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     protected void onNext() {
         nextProgressBar.show();
         mNextButton.setVisibility(View.INVISIBLE);
+        accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
         AuthType authType = getSelectedAuthType();
         if (authType == AuthType.XOAUTH2) {
@@ -1110,6 +1111,8 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
 
     @Override
     public void onSettingsCheckCancelled() {
-
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 }
