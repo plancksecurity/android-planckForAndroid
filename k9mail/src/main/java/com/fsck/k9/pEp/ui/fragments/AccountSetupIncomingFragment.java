@@ -219,8 +219,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
          */
         mPortView.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
+        editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
+
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -229,10 +231,8 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = preferences.getAccount(accountUuid);
+            mAccount = getAccountFromPreferences(accountUuid);
         }
-
-        editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
 
         try {
             Log.i(K9.LOG_TAG, "Setting up based on settings: " + mAccount.getStoreUri());
@@ -377,6 +377,12 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
             buttonWasVisible = savedInstanceState.getBoolean(BUTTON_WAS_VISIBLE);
         }
         return rootView;
+    }
+
+    private Account getAccountFromPreferences(String accountUuid) {
+        return editSettings
+                ? preferences.getAccount(accountUuid)
+                : preferences.getAccountAllowingIncomplete(accountUuid);
     }
 
     private void restoreErrorDialogState(Bundle savedInstanceState) {
@@ -774,8 +780,6 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         mAccount.setCompression(NetworkType.MOBILE, mCompressionMobile.isChecked());
         mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
         mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
-        mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
-        mAccount.save(preferences);
     }
 
     public void onClick(View v) {

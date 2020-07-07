@@ -146,6 +146,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public static class BasicsSettingsCheckCallback implements
             PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>, NonConfigurationInstance {
         private Fragment fragment;
+        private boolean cancelled;
 
         public BasicsSettingsCheckCallback(Fragment fragment) {
             this.fragment = fragment;
@@ -169,6 +170,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
         @Override
         public void onError(PEpSetupException exception) {
+            if(cancelled) return;
             if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
                 return;
             }
@@ -178,6 +180,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
         @Override
         public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+            if(cancelled) return;
             if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
                 return;
             }
@@ -256,6 +259,10 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if (accountSetupNavigator.shouldDeleteAccount() && !isEditingIncomingSettings && !isEditingOutgoingSettings) {
             deleteAccount();
         }
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        if(accountSetupNavigator.isLoading() && fragment instanceof AccountSetupSettingsCheckerFragment) {
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckCancelled();
+        }
         accountSetupNavigator.goBack(this, getSupportFragmentManager());
         isGoingBack = false;
     }
@@ -281,6 +288,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     private void deleteAccount() {
         Preferences.getPreferences(getApplicationContext()).deleteAccount(accountSetupNavigator.getAccount());
+        // TODO: 07/07/2020 Review all Account deletion logic in AccountSetup workflow after we delay Account creation to AccountSetupNames.
     }
 
     public boolean isManualSetupRequired() {

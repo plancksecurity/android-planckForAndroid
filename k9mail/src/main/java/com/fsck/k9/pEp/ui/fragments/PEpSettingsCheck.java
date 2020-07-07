@@ -139,10 +139,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     private void checkIncoming() throws MessagingException {
         Store store = account.getRemoteStore();
         store.checkSettings();
-
-        //MessagingController.getInstance(context).listFoldersSynchronous(account, true, null);
-        /*MessagingController.getInstance(context)
-                .synchronizeMailbox(account, account.getInboxFolderName(), null, null);*/
     }
 
     private void savePreferences() {

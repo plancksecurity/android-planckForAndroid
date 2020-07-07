@@ -163,7 +163,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
         mBack = getArguments().getBoolean(EXTRA_BACK);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
                 mAccount.setTransportUri(mAccount.getStoreUri());
@@ -208,7 +208,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
 
         //FIXME: get Account object again?
         accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -217,7 +217,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = preferences.getAccount(accountUuid);
+            mAccount = getAccountFromPreferences(accountUuid);
         }
 
         try {
@@ -295,6 +295,12 @@ public class AccountSetupOutgoingFragment extends PEpFragment
             buttonWasVisible = savedInstanceState.getBoolean(BUTTON_WAS_VISIBLE);
         }
         return rootView;
+    }
+
+    private Account getAccountFromPreferences(String accountUuid) {
+         return mEdit
+                ? preferences.getAccount(accountUuid)
+                : preferences.getAccountAllowingIncomplete(accountUuid);
     }
 
     private void restoreErrorDialogState(Bundle savedInstanceState) {
@@ -662,7 +668,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         uri = Transport.createTransportUri(server);
         mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
         mAccount.setTransportUri(uri);
-        mAccount.save(preferences);
         checkSettings();
     }
 

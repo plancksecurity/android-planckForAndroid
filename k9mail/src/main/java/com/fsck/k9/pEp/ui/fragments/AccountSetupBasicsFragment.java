@@ -220,7 +220,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
                 String accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-                mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+                mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
             }
 
             if (savedInstanceState.containsKey(STATE_KEY_PROVIDER)) {
@@ -623,7 +623,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @NonNull
     private boolean accountAlreadyExists(String email) {
         Preferences preferences = Preferences.getPreferences(getActivity());
-        List<Account> accounts = preferences.getAccounts();
+        List<Account> accounts = preferences.getAccountsAllowingIncomplete();
         for (Account account : accounts) {
             if (account.getEmail().equalsIgnoreCase(email)) {
                 return true;
@@ -751,7 +751,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void initializeAccount() {
-        if (mAccount == null || Preferences.getPreferences(getActivity()).getAccount(mAccount.getUuid()) == null) {
+        if (mAccount == null || Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(mAccount.getUuid()) == null) {
             mAccount = Preferences.getPreferences(getActivity()).newAccount();
         }
     }
