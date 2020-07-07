@@ -78,7 +78,7 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                 } else if (this.procedence.equals(INCOMING)) {
                     notifyLoaded(PEpSettingsChecker.Redirection.OUTGOING);
                 } else if (this.procedence.equals(OUTGOING) || this.procedence.equals(LOGIN) ){
-                    savePreferences();
+                    account.setDescription(account.getEmail());
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
                 }
             } catch (AuthenticationFailedException exception) {
@@ -140,9 +140,9 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
         Store store = account.getRemoteStore();
         store.checkSettings();
 
-        MessagingController.getInstance(context).listFoldersSynchronous(account, true, null);
-        MessagingController.getInstance(context)
-                .synchronizeMailbox(account, account.getInboxFolderName(), null, null);
+        //MessagingController.getInstance(context).listFoldersSynchronous(account, true, null);
+        /*MessagingController.getInstance(context)
+                .synchronizeMailbox(account, account.getInboxFolderName(), null, null);*/
     }
 
     private void savePreferences() {

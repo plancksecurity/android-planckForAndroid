@@ -87,6 +87,21 @@ public class Account implements BaseAccount, StoreConfig {
         EXPUNGE_ON_POLL
     }
 
+    public enum InstallState {
+        INITIAL,
+        SETUP,
+        READY
+    }
+    private InstallState installState = InstallState.INITIAL;
+
+    public InstallState getInstallState() {
+        return installState;
+    }
+
+    public void setInstallState(InstallState installState) {
+        this.installState = installState;
+    }
+
     public enum DeletePolicy {
         NEVER(0),
         SEVEN_DAYS(1),
@@ -495,6 +510,7 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
+        installState = InstallState.valueOf(storage.getString(accountUuid + ".installState", InstallState.INITIAL.toString()));
 
         // Use email address as account description if necessary
         if (description == null) {
@@ -781,6 +797,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
+        editor.putString(accountUuid + ".installState", installState.toString());
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);

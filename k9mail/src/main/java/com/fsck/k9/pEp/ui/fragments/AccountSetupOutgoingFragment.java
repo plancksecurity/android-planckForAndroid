@@ -967,4 +967,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
         goForward();
     }
+
+    @Override
+    public void onSettingsCheckCancelled() {
+
+    }
 }

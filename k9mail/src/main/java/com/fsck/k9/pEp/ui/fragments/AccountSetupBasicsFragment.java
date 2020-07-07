@@ -1101,6 +1101,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
         requireActivity().finish();
     }
 
+    @Override
+    public void onSettingsCheckCancelled() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
+    }
+
     static class Provider implements Serializable {
         private static final long serialVersionUID = 8511656164616538989L;
 

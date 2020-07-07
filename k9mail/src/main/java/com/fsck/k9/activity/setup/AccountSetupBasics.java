@@ -303,5 +303,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public interface AccountSetupSettingsCheckerFragment {
         void onError(PEpSetupException exception);
         void onLoaded(PEpSettingsChecker.Redirection redirection);
+        void onSettingsCheckCancelled();
     }
 }

@@ -1103,4 +1103,9 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     public void onLoaded(PEpSettingsChecker.Redirection redirection) {
         goForward();
     }
+
+    @Override
+    public void onSettingsCheckCancelled() {
+
+    }
 }

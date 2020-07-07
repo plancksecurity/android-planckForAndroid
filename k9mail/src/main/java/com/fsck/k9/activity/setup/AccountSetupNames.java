@@ -29,6 +29,7 @@ import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
+import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -103,7 +104,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         mName.setKeyListener(TextKeyListener.getInstance(false, Capitalize.WORDS));
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+        mAccount = Preferences.getPreferences(this).getAccountAllowingIncomplete(accountUuid);
 
         /*
          * Since this field is considered optional, we don't set this here. If
@@ -234,6 +235,11 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
         @Override
         public Void doInBackground(Void... params) {
+            account.setInstallState(Account.InstallState.READY);
+            MessagingController.getInstance(mActivity).listFoldersSynchronous(account, true, null);
+            MessagingController.getInstance(mActivity)
+                    .synchronizeMailbox(account, account.getInboxFolderName(), null, null);
+            account.save(Preferences.getPreferences(mActivity));
             accountKeysGenerator.generateAccountKeys();
             return null;
         }
