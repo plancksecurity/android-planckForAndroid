@@ -607,9 +607,7 @@ public class TestUtils {
 
     public void enableAccountGlobalKeySync(String account){
         selectFromMenu(R.string.prefs_title);
-        while (textExistsOnScreen(account)) {
-            clickTextOnScreen(account);
-        }
+        goToTheAccountSettings(1);
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         clickTextOnScreen(stringToID("pep_sync_enable_account"));
@@ -899,6 +897,23 @@ public class TestUtils {
                 wb = device.findObject(By.clazz("android.widget.ListView"));
                 device.waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(1).click();
+                clickInbox();
+                return;
+            } catch (Exception e) {
+                Timber.i("Cannot click account from list: " + e.getMessage());
+            }
+            device.waitForIdle();
+        }
+    }
+
+    private void goToTheAccountSettings (int accountToSelect){
+        while (true) {
+            device.waitForIdle();
+            try {
+                UiObject2 wb;
+                wb = device.findObject(By.clazz("android.widget.ListView"));
+                device.waitForIdle();
+                wb.getChildren().get(accountToSelect).getChildren().get(0).click();
                 clickInbox();
                 return;
             } catch (Exception e) {
