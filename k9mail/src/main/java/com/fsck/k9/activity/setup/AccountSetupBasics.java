@@ -260,6 +260,12 @@ public class AccountSetupBasics extends PEpImporterActivity {
             deleteAccount();
         }
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        if(basicsFragmentSettingsCallback != null) {
+            basicsFragmentSettingsCallback.cancelled = true;
+        }
+        else if(nonConfigurationInstance instanceof BasicsSettingsCheckCallback) {
+            ((BasicsSettingsCheckCallback)nonConfigurationInstance).cancelled = true;
+        }
         if(accountSetupNavigator.isLoading() && fragment instanceof AccountSetupSettingsCheckerFragment) {
             ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckCancelled();
         }

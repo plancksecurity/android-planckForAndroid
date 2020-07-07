@@ -623,7 +623,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @NonNull
     private boolean accountAlreadyExists(String email) {
         Preferences preferences = Preferences.getPreferences(getActivity());
-        List<Account> accounts = preferences.getAccountsAllowingIncomplete();
+        List<Account> accounts = preferences.getAccounts();
         for (Account account : accounts) {
             if (account.getEmail().equalsIgnoreCase(email)) {
                 return true;
