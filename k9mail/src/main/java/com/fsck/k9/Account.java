@@ -89,7 +89,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public enum InstallState {
         INITIAL,
-        SETUP,
         READY
     }
     private InstallState installState = InstallState.INITIAL;
@@ -1021,6 +1020,12 @@ public class Account implements BaseAccount, StoreConfig {
         } else {
             this.displayCount = K9.DEFAULT_VISIBLE_LIMIT;
         }
+        if(installState == InstallState.READY) {
+            resetVisibleLimits();
+        }
+    }
+
+    public void setOptionsOnInstall() {
         resetVisibleLimits();
     }
 

@@ -591,7 +591,7 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
         if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
             getActivity().finish();
         } else {
-            AccountSetupNames.actionSetNames(getActivity(), mAccount);
+            AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
         }
     }
 }

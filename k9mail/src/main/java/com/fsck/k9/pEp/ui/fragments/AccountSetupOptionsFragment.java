@@ -172,7 +172,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
                 getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false)) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);
         }
-        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+        AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
     }
 
     public void onClick(View v) {
