@@ -88,7 +88,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
-    private static final String BUTTON_WAS_VISIBLE = "buttonWasVisible";
+    private static final String WAS_LOADING = "wasLoading";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject ToolBarCustomizer toolBarCustomizer;
@@ -130,7 +130,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private int errorDialogTitle;
     private String errorDialogMessage;
     private boolean errorDialogWasShowing;
-    private boolean buttonWasVisible = true;
+    private boolean wasLoading;
 
 
     private final K9JobManager jobManager = K9.jobManager;
@@ -374,7 +374,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         }
         if(savedInstanceState != null) {
             restoreErrorDialogState(savedInstanceState);
-            buttonWasVisible = savedInstanceState.getBoolean(BUTTON_WAS_VISIBLE);
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
         }
         return rootView;
     }
@@ -468,11 +468,13 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        if(mAccount != null) {
+            outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
         saveErrorDialogState(outState);
-        outState.putBoolean(BUTTON_WAS_VISIBLE, buttonWasVisible);
+        outState.putBoolean(WAS_LOADING, wasLoading);
     }
 
     private void saveErrorDialogState(Bundle outState) {
@@ -847,13 +849,13 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     }
 
     private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(buttonWasVisible ? View.VISIBLE : View.INVISIBLE);
-        enableViewGroup(buttonWasVisible, (ViewGroup)rootView);
+        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
+        enableViewGroup(!wasLoading, (ViewGroup)rootView);
 
-        if(!buttonWasVisible) {
+        if(wasLoading) {
             nextProgressBar.setVisibility(View.VISIBLE);
             nextProgressBar.show();
-            buttonWasVisible = true;
+            wasLoading = false;
         }
         else {
             nextProgressBar.hide();
@@ -871,7 +873,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     public void onPause() {
         super.onPause();
         dismissErrorDialogIfNeeded();
-        buttonWasVisible = mNextButton.getVisibility() == View.VISIBLE;
+        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
     }
 
     private void dismissErrorDialogIfNeeded() {

@@ -98,7 +98,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
-    private static final String NEXT_BUTTON_WAS_VISIBLE = "buttonWasVisible";
+    private static final String WAS_LOADING = "wasLoading";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -128,7 +128,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private int errorDialogTitle;
     private String errorDialogMessage;
     private boolean errorDialogWasShowing;
-    private boolean nextButtonWasVisible = true;
+    private boolean wasLoading;
 
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
@@ -205,7 +205,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming);
         saveErrorDialogState(outState);
-        outState.putBoolean(NEXT_BUTTON_WAS_VISIBLE, nextButtonWasVisible);
+        outState.putBoolean(WAS_LOADING, wasLoading);
     }
 
     private void saveErrorDialogState(Bundle outState) {
@@ -231,7 +231,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
             restoreErrorDialogState(savedInstanceState);
-            nextButtonWasVisible = savedInstanceState.getBoolean(NEXT_BUTTON_WAS_VISIBLE);
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
         }
     }
 
@@ -506,13 +506,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(nextButtonWasVisible ? View.VISIBLE : View.GONE);
-        mManualSetupButton.setEnabled(nextButtonWasVisible);
-        enableViewGroup(nextButtonWasVisible, (ViewGroup)rootView);
-        if(!nextButtonWasVisible) {
+        mNextButton.setVisibility(wasLoading ? View.GONE : View.VISIBLE);
+        mManualSetupButton.setEnabled(!wasLoading);
+        enableViewGroup(!wasLoading, (ViewGroup)rootView);
+        if(wasLoading) {
             nextProgressBar.setVisibility(View.VISIBLE);
             nextProgressBar.show();
-            nextButtonWasVisible = true;
+            wasLoading = false;
         }
         else {
             nextProgressBar.hide();
@@ -884,7 +884,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     public void onPause() {
         super.onPause();
         dismissErrorDialogIfNeeded();
-        nextButtonWasVisible = mNextButton.getVisibility() == View.VISIBLE;
+        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
         nextProgressBar.hide();
     }
 
