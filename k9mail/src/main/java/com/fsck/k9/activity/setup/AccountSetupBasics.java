@@ -263,14 +263,16 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if(basicsFragmentSettingsCallback != null) {
             basicsFragmentSettingsCallback.cancelled = true;
         }
-        else if(nonConfigurationInstance instanceof BasicsSettingsCheckCallback) {
-            ((BasicsSettingsCheckCallback)nonConfigurationInstance).cancelled = true;
-        }
         if(accountSetupNavigator.isLoading() && fragment instanceof AccountSetupSettingsCheckerFragment) {
             ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckCancelled();
         }
         accountSetupNavigator.goBack(this, getSupportFragmentManager());
         isGoingBack = false;
+    }
+
+    public void setBasicsFragmentSettingsCallback(BasicsSettingsCheckCallback callback) {
+        basicsFragmentSettingsCallback = callback;
+        nonConfigurationInstance = basicsFragmentSettingsCallback;
     }
 
     @Override
