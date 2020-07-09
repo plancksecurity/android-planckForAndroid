@@ -602,7 +602,7 @@ public class TestUtils {
         selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
     }
 
-    public void enableAccountGlobalKeySync(String account){
+    public void enableAccountGlobalKeySync(){
         selectFromMenu(R.string.prefs_title);
         goToTheAccountSettings(1);
         selectFromScreen(stringToID("privacy_preferences"));
