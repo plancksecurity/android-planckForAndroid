@@ -624,7 +624,7 @@ public class TestUtils {
     }
 
     public String keySync_number() {
-        if (testConfig.getKeySync_number().equals("-10")) {
+        if (testConfig.getKeySync_number() == null || testConfig.getKeySync_number().equals("-10")) {
             readConfigFile();
         }
         return testConfig.getKeySync_number();}
