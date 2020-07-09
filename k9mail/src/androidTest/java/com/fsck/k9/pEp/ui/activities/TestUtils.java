@@ -512,9 +512,6 @@ public class TestUtils {
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
         }
-        if (exists(onView(withId(R.id.available_accounts_title)))) {
-            selectAccount(0);
-        }
     }
 
     public void waitForSyncPopUp () {
