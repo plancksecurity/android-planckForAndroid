@@ -649,15 +649,24 @@ public class CucumberTestSteps {
                 if (device1.equals("A") || device2.equals("A")) {
                     testUtils.syncDevices();
                 }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    testUtils.selectAccount(0);
+                }
                 break;
             case "2":
                 if (device1.equals("B") || device2.equals("B")) {
                     testUtils.syncDevices();
                 }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    testUtils.selectAccount(0);
+                }
                 break;
             case "3":
                 if (device1.equals("C") || device2.equals("C")) {
                     testUtils.syncDevices();
+                }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    testUtils.selectAccount(1);
                 }
                 break;
             default:
