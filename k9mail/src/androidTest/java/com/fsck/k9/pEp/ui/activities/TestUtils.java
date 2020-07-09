@@ -914,12 +914,11 @@ public class TestUtils {
                 wb = device.findObject(By.clazz("android.widget.ListView"));
                 device.waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(0).click();
-                clickInbox();
                 return;
             } catch (Exception e) {
                 Timber.i("Cannot click account from list: " + e.getMessage());
             }
-            device.waitForIdle();
+            waitForIdle();
         }
     }
 
