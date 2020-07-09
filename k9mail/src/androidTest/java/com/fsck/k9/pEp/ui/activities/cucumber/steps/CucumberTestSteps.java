@@ -765,15 +765,36 @@ public class CucumberTestSteps {
                 if (device.equals("A")) {
                     testUtils.disableKeySync();
                 }
+                if (device.equals("C") || device.equals("B")) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case "2":
                 if (device.equals("B")) {
                     testUtils.disableKeySync();
                 }
+                if (device.equals("A") || device.equals("C")) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case "3":
                 if (device.equals("C")) {
                     testUtils.disableKeySync();
+                }
+                if (device.equals("A") || device.equals("B")) {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             default:
@@ -801,7 +822,7 @@ public class CucumberTestSteps {
                 break;
             case "3":
                 if (device.equals("C")) {
-                    testUtils.enableAccountGlobalKeySync("test004@peptest.ch");
+                    testUtils.enableAccountGlobalKeySync();
                 }
                 break;
             default:
