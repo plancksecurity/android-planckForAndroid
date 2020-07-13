@@ -171,7 +171,7 @@
     <string name="reset_all">Restablecer todo</string>
     <string name="reset">Restablecer</string>
     <string name="key_import_from_fs_input_fpr">Por favor ingrese el identificador o la huella digital de la clave.</string>
-    <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s con el identificador de clave: %2$s</string>
+    <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si ha iniciado una importación de la clave para la cuenta %s, por favor haga clic en Iniciar.</string>
     <string name="pgp_key_import_instructions">Para continuar con la Importación de la Clave, por favor importe la clave pública p≡p adjunta y responda con un mensaje que:
 \n
