@@ -30,7 +30,10 @@ class KeyImportPresenter @Inject constructor() {
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != Activity.RESULT_OK || data == null) return
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            view.finish()
+            return
+        }
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_KEY_FILE -> data.data?.let { onKeyImport(it) }
         }
