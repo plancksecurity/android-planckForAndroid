@@ -57,7 +57,7 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
         ioScope.launch {
             val provider = PEpProviderFactory.createAndSetupProvider(context)
             try {
-                (context.applicationContext as K9).shutdownSync(provider)
+               provider.stopSync()
             } catch (e: Exception) {
                 Timber.e(e, "pEpEngine")
             } finally {

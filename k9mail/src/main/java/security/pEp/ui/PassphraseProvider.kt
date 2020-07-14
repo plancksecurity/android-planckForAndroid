@@ -15,16 +15,29 @@ object PassphraseProvider {
     @Volatile
     @JvmStatic
     var passphrase = ""
+    @JvmStatic
+    fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
+        return PassphraseRequiredCallback {
+            Log.e("pEpEngine-passphrase", "Calling callback")
+            var pass = ""
+            pass = passphraseFromUser(context)
 
-    suspend fun passphraseFromUser(context: Context): String {
+            pass
+        }
+    }
+
+    fun passphraseFromUser(context: Context): String = runBlocking {
         Log.e("pEpEngine-passphrase", "passphraseFromUser 1")
         passphrase = ""
-        Handler(Looper.getMainLooper()).post {
-            PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
-        }
+        bla(context)
         wait()
         Log.e("pEpEngine-passphrase", "Prerereturn 1")
-        return passphrase
+        passphrase
+    }
+
+    private suspend fun bla(context: Context) = withContext(Dispatchers.Main) {
+        PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
+
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {
@@ -37,47 +50,7 @@ object PassphraseProvider {
         Timber.e("pEpEngine, return")
     }
 
-    /*
-    fun getPassphraseRequiredCallback(): PassphraseRequiredCallback {
-        return PassphraseRequiredCallback {
-            /* val handler: Handler = Handler()
-            Log.e("pEpEngine-passphrase", "start")
-            passphrase
-            Thread {
-                Thread.sleep(10000)
-                Log.e("pEpEngine-passphrase", "finish 2")
-                handler.post {
-                    Log.e("pEpEngine-passphrase", "finish thread UI")
-                }
-            }.start()
-//            Handler(Lo).postDelayed({
-//                Log.e("pEpEngine-passphrase", "finish 2")
-//            }, 10000)
-            Log.e("pEpEngine-passphrase", "finish 1")
-            //Log.e("pEpEngine", "Passphrase requiered")
-            //val passphrase = passphraseFromUser()
-            //Log.e("pEpEngine", "Passphrase obtained ::$passphrase")
-            //passphrase
-            // new Handler(Looper.getMainLooper()).post(() ->  PassphraseActivity.launch(K9.this, PassphraseRequirementType.MISSING_PASSPHRASE));
-            Log.e("pEpEngine-passphrase", "return")
-*/
-          //  return@PassphraseRequiredCallback "pEpdichauf";
-            return@PassphraseRequiredCallback passphraseFromUser();
-        }
 
 
-    }*/
-
-    @JvmStatic
-    fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
-        return PassphraseRequiredCallback {
-            Log.e("pEpEngine-passphrase", "Calling callback")
-            var pass = ""
-            GlobalScope.launch {
-                pass = passphraseFromUser(context)
-            }
-            pass
-        }
-    }
 }
 
