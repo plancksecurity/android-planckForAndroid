@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import security.pEp.ui.dialog.PEpProgressDialog
 import security.pEp.ui.dialog.showProgressDialog
@@ -79,6 +80,26 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     override fun showEmptyInputError() {
         fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
+    }
+
+    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNO: () -> Unit) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.pgp_key_import_dialog_title)
+                .setMessage("The fingerprint of the selected key is:\n " +
+                        "${firstIdentity.username}<${firstIdentity.address}>\n"+
+                        "${firstIdentity.fpr}\n\n" +
+                        "Are you sure you want to import and use this key?")
+                .setCancelable(false)
+                .setNegativeButton("No") { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                    onNO()
+                }
+                .setPositiveButton("Yes") { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                    onYes()
+                }
+                .create()
+                .show()
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {

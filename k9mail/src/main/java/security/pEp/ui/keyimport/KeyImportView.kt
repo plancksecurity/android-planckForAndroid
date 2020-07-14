@@ -1,6 +1,7 @@
 package security.pEp.ui.keyimport
 
 import android.content.Context
+import foundation.pEp.jniadapter.Identity
 
 interface KeyImportView {
 
@@ -19,4 +20,6 @@ interface KeyImportView {
     fun showDialog()
 
     fun removeDialog()
+
+    fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNO: () -> Unit)
 }
