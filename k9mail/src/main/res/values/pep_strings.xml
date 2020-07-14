@@ -273,4 +273,9 @@
     <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
     <string name="pgp_key_import_dialog_empty_edittext">Fingerprint is mandatory</string>
+    <string name="pgp_key_import_confirmation_dialog_message">
+        The fingerprint of the selected key is:\n%1$s\n
+                        %2$s\n\n
+                        "Are you sure you want to import and use this key?"
+    </string>
 </resources>
