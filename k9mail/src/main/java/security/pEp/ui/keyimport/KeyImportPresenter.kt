@@ -56,18 +56,19 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
 
         uiScope.launch {
             val firstIdentity = importKey(uri)
+            view.removeDialog()
             firstIdentity?.let {
                 showKeyImportConfirmationDialog(firstIdentity,
                     onYes = {
                         val result = onKeyImportConfirmed(uri)
                         replyResult(result, uri)
                     },
-                    onNo = {onKeyImportRejected()}
+                    onNo = {
+                        onKeyImportRejected()
+                    }
                 )
             } ?: replyResult(false, uri)
-            view.removeDialog()
         }
-
     }
 
     private fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {

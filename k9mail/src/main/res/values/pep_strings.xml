@@ -293,9 +293,9 @@
 
 
 
-    <string name="pgp_key_import_confirmation_dialog_message">
-        The fingerprint of the selected key is:\n%1$s\n
-                        %2$s\n\n
-                        "Are you sure you want to import and use this key?"
-    </string>
+    <string name="pgp_key_import_confirmation_fingerprint_label">The fingerprint of the selected key is:</string>
+    <string name="pgp_key_import_confirmation_dialog_fingerprint_format">%1$s\n%2$s</string>
+    <string name="pgp_key_import_confirmation_dialog_question">Are you sure you want to import and use this key?</string>
+    <string name="pgp_key_import_confirmation_confirm">Yes</string>
+    <string name="pgp_key_import_confirmation_reject">No</string>
 </resources>
