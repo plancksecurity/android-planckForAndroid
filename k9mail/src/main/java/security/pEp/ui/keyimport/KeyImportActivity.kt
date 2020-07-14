@@ -5,8 +5,9 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.core.widget.doAfterTextChanged
+import android.view.View
 import com.fsck.k9.R
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
@@ -41,15 +42,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         openFileChooser()
     }
 
-    /*private fun startLayoutViews() {
-        cancelButton.setOnClickListener { presenter.onReject() }
-        acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
-        fingerprintEditText.doAfterTextChanged { text ->
-            fingerprintEditText.error = null
-            acceptButton.isEnabled = text.toString().isNotEmpty()
-        }
-    }*/
-
     override fun openFileChooser() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -77,28 +69,18 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-
-    override fun showEmptyInputError() {
-        fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
-    }
-
-    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNO: () -> Unit) {
-        val userAddressFormat = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
-        AlertDialog.Builder(this)
-                .setTitle(R.string.pgp_key_import_dialog_title)
-                .setMessage(getString(R.string.pgp_key_import_confirmation_dialog_message,
-                        userAddressFormat, firstIdentity.fpr))
-                .setCancelable(false)
-                .setNegativeButton("No") { dialogInterface, _ ->
-                    dialogInterface.dismiss()
-                    onNO()
-                }
-                .setPositiveButton("Yes") { dialogInterface, _ ->
-                    dialogInterface.dismiss()
-                    onYes()
-                }
-                .create()
-                .show()
+    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {
+        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+        acceptButton.setOnClickListener {
+            layout.visibility = View.GONE
+            onYes()
+        }
+        cancelButton.setOnClickListener {
+            layout.visibility = View.GONE
+            onNo()
+        }
+        layout.visibility = View.VISIBLE
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {

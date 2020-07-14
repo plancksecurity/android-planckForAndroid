@@ -51,18 +51,19 @@ class KeyImportPresenter @Inject constructor() {
         runBlocking {
             view.showDialog()
             val firstIdentity = importKey(uri)
+            view.removeDialog()
             firstIdentity?.let {
                 showKeyImportConfirmationDialog(firstIdentity,
                     onYes = {
                         val result = onKeyImportConfirmed(uri)
                         replyResult(result, uri)
                     },
-                    onNo = {onKeyImportRejected()}
+                    onNo = {
+                        onKeyImportRejected()
+                    }
                 )
             } ?: replyResult(false, uri)
-            view.removeDialog()
         }
-
     }
 
     private fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {
