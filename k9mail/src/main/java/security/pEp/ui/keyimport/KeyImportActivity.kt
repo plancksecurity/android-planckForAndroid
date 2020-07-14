@@ -86,7 +86,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
-                .setMessage(getString(R.string.key_import_success, fingerprint, filename))
+                .setMessage(getString(R.string.key_import_success))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
@@ -96,7 +96,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showFailedKeyImport(filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
-                .setMessage(getString(R.string.key_import_failure, filename))
+                .setMessage(getString(R.string.key_import_failure))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()

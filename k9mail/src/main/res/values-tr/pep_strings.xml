@@ -98,8 +98,8 @@
 \n 1. genel PGP anahtarınız eklenmiş ve
 \n 2. yeni içe aktardığınız p≡p anahtarı ile şifrelenir ve imzalanır</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesap için bir anahtar içe aktarma başlattıysanız:% s, lütfen Başlat\'ı tıklayın.</string>
-    <string name="key_import_failure">%1$s anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı</string>
-    <string name="key_import_success">%1$s %2$s anahtarından başarıyla aktarıldı</string>
+    <string name="key_import_failure">anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı</string>
+    <string name="key_import_success">anahtarından başarıyla aktarıldı</string>
     <string name="key_import_from_fs_input_fpr">Lütfen Anahtar Kimliğini veya anahtarın parmak izini girin.</string>
     <string name="reset">Sıfırla</string>
     <string name="reset_all">Hepsini sıfırla</string>
