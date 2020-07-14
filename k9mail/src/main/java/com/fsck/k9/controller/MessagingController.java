@@ -101,6 +101,8 @@ import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -115,6 +117,8 @@ import foundation.pEp.jniadapter.Sync;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import foundation.pEp.jniadapter.pEpException;
+import security.pEp.ui.passphrase.PassphraseActivity;
+import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -1741,6 +1745,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         messagesToNotify.add(localMessage);
                                     }
                             }
+                        } catch (AuthFailurePassphraseNeeded e) {
+
+                            //Notify passphrase problem
+                            PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE);
+                            Timber.e(e, "Passphrase issue");
+                        } catch (AuthFailureWrongPassphrase e) {
+                            //Notify passphrase problem
+                            PassphraseActivity.launch(context, PassphraseRequirementType.WRONG_PASSPHRASE);
+                            Timber.e(e, "Passphrase issue");
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
                         }
@@ -3058,9 +3071,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }  catch (AppDidntEncryptMessageException e) {
+                        // TODO: 06/07/2020 Check if this catch branch is really needed.
                         lastFailure = e;
                         wasPermanentFailure = true;
 
+                        handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+                    } catch (AuthFailurePassphraseNeeded e) {
+                        lastFailure = e;
+                        wasPermanentFailure = false;
+                        //Notify passphrase problem
+                        PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE);
+                        handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+                    } catch (AuthFailureWrongPassphrase e) {
+                        lastFailure = e;
+                        wasPermanentFailure = false;
+                        //Notify passphrase problem
+                        PassphraseActivity.launch(context, PassphraseRequirementType.WRONG_PASSPHRASE);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (Exception e) {
                         lastFailure = e;
@@ -4956,17 +4982,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         actOnMessagesGroupedByAccountAndFolder(
                 refs, (account1, messageFolder, accountMessages) -> {
-                    for (LocalMessage accountMessage : accountMessages) {
                         try {
-                            String folderName = accountMessage.getFolder().getName();
-                            deleteMessage(accountMessage, account1, folderName, accountMessage.getFolder());
-
+                            String folderName = account.getInboxFolderName();
                             Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(folderName);
+                            remoteFolder.delete(accountMessages, null);
                             remoteFolder.expunge();
                         } catch (MessagingException e) {
                             Timber.e(e, "Could not clean pEpEngine sync message");
                         }
-                    }
 
                 });
 

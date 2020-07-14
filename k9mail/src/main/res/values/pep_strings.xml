@@ -203,6 +203,7 @@
     <string name="key_reset_for_identity_context_title">Reset all p≡p data for this communication partner:</string>
     <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
     <string name="key_reset_own_identity_feedback">The account has been reset.</string>
+    <string name="key_reset_own_identity_feedback_error">The account has not been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
     <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
@@ -282,4 +283,14 @@
     <string name="pep_sync_folder">p≡p sync folder</string>
     <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
     <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
+
+    <string name="passhphrase_title">Passphrase</string>
+    <string name="passhphrase_input_hint">Passphrase</string>
+    <string name="passhphrase_body_insert_passphrase">Please enter your passphrase to continue</string>
+    <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase.\n Please enter the correct one to continue.</string>
+    <string name="passhphrase_body_sync_passphrase">Enter passphrase for p≡p Sync:</string>
+    <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
+
+
+
 </resources>

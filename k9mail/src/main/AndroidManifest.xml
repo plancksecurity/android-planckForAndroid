@@ -553,6 +553,12 @@
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
+
+        <activity android:name="security.pEp.ui.passphrase.PassphraseActivity"
+            android:launchMode="singleTask"
+            android:label="@string/passhphrase_title"
+            android:theme="@style/OverlayTheme"
+        />
     </application>
 
 </manifest>

@@ -78,6 +78,7 @@ class KeyImportPresenter @Inject constructor() {
                     pEp.setOwnIdentity(accountIdentity, currentFpr)
                     result = false
                 }
+                pEp.myself(id);
             } catch (e: IOException) {
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()

@@ -105,6 +105,7 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.nav_view.NavFolderAccountButton;
+import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;

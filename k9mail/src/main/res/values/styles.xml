@@ -215,6 +215,8 @@
 
     <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+
     </style>
 
     <style name="SyncDisableDialog" parent="Theme.AppCompat.Light.Dialog">

@@ -16,6 +16,8 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.HandshakeData;
@@ -45,6 +47,9 @@ import java.util.Vector;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.pEpPassphraseRequired;
+import foundation.pEp.jniadapter.pEpWrongPassphrase;
+import security.pEp.ui.PassphraseProvider;
 import timber.log.Timber;
 
 /**
@@ -107,6 +112,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
         engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
+        engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(context));
     }
 
     private Engine getNewEngineSession() throws pEpException {
@@ -398,6 +404,12 @@ public class PEpProviderImpl implements PEpProvider {
             }
             resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             return resultMessages;
+        } catch (pEpPassphraseRequired e) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:");
+            throw new AuthFailurePassphraseNeeded();
+        } catch (pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:");
+            throw new AuthFailureWrongPassphrase();
         } catch (AppDidntEncryptMessageException e) {
             throw e;
         } catch (Throwable t) {
@@ -832,6 +844,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public synchronized void configPassphrase(String passphrase) {
+        createEngineInstanceIfNeeded();
+        engine.config_passphrase(passphrase);
+    }
+
+    @Override
     public synchronized List<KeyListItem> getBlacklistInfo() {
         try {
             List<KeyListItem> identites = new ArrayList<>();
@@ -911,12 +929,14 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        try {
-            Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()");
-            engine.startSync();
-        } catch (pEpException exception) {
-            Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception);
-        }
+        threadExecutor.execute(() -> {
+            try {
+                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()");
+                engine.startSync();
+            } catch (pEpException exception) {
+                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception);
+            }
+        });
     }
 
     //FIXME: Implement sync use lists.
@@ -1172,20 +1192,31 @@ public class PEpProviderImpl implements PEpProvider {
     public void keyResetIdentity(Identity ident, String fpr) {
         createEngineInstanceIfNeeded();
         ident = updateIdentity(ident);
-        engine.key_reset_identity(ident,
-                fpr);
+        try {
+            engine.key_reset_identity(ident, fpr);
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:");
+        }
     }
 
     @Override
     public void keyResetUser(String userId, String fpr) {
         createEngineInstanceIfNeeded();
-        engine.key_reset_user(userId, fpr);
+        try {
+            engine.key_reset_user(userId, fpr);
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:");
+        }
     }
 
     @Override
     public void keyResetAllOwnKeys() {
         createEngineInstanceIfNeeded();
-        engine.key_reset_all_own_keys();
+        try {
+            engine.key_reset_all_own_keys();
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:");
+        }
     }
 
     @Override
