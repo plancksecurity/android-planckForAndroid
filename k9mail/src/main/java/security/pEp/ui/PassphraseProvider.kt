@@ -16,13 +16,13 @@ object PassphraseProvider {
     @JvmStatic
     var passphrase = ""
 
-    fun passphraseFromUser(context: Context): String {
+    suspend fun passphraseFromUser(context: Context): String {
         Log.e("pEpEngine-passphrase", "passphraseFromUser 1")
         passphrase = ""
         Handler(Looper.getMainLooper()).post {
             PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
         }
-        //runBlocking { wait() }
+        wait()
         Log.e("pEpEngine-passphrase", "Prerereturn 1")
         return passphrase
     }
@@ -72,7 +72,11 @@ object PassphraseProvider {
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback {
             Log.e("pEpEngine-passphrase", "Calling callback")
-            passphraseFromUser(context)
+            var pass = ""
+            GlobalScope.launch {
+                pass = passphraseFromUser(context)
+            }
+            pass
         }
     }
 }
