@@ -83,12 +83,11 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNO: () -> Unit) {
+        val userAddressFormat = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         AlertDialog.Builder(this)
                 .setTitle(R.string.pgp_key_import_dialog_title)
-                .setMessage("The fingerprint of the selected key is:\n " +
-                        "${firstIdentity.username}<${firstIdentity.address}>\n"+
-                        "${firstIdentity.fpr}\n\n" +
-                        "Are you sure you want to import and use this key?")
+                .setMessage(getString(R.string.pgp_key_import_confirmation_dialog_message,
+                        userAddressFormat, firstIdentity.fpr))
                 .setCancelable(false)
                 .setNegativeButton("No") { dialogInterface, _ ->
                     dialogInterface.dismiss()
