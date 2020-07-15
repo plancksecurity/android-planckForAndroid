@@ -189,7 +189,7 @@
     <string name="pep_key_reset_own_id_warning_title">Restableix el compte% s</string>
     <string name="search_empty_error">Escriviu el text per cercar-lo</string>
     <string name="intro_frag_first_text_1"><![CDATA[Benvingut al <font color="#4caf50"> p≡p </font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Podeu tancar aquest tutorial en qualsevol moment.\n\n<font color="#4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.\n\nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[Podeu tancar aquest tutorial en qualsevol moment.\n\n<font color="#4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.\n\nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari.]]></string>
     <string name="intro_frag_first_text_3">I a la barra superior quan obriu o escriviu un correu electrònic:</string>
     <string name="intro_frag_second_text_1">Amb aquest estat de privacitat, tota comunicació és segura, però per confirmar que el vostre contacte és realment la persona que coneixeu, haureu de confegir les paraules de confiança amb aquest contacte.</string>
     <string name="intro_frag_second_text_2">Quan es confirmi que les paraules de confiança són correctes i es fa el cop de mà, la comunicació serà completament segura i de confiança.</string>

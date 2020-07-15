@@ -218,7 +218,7 @@
     <string name="search_empty_error">Schrijf tekst om te zoeken</string>
     <!-- Welcome/Tutorial-->
     <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Je kunt deze tutorial op elk moment sluiten.\n\n<font color="#4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.\n\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[Je kunt deze tutorial op elk moment sluiten.\n\n<font color="#4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.\n\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker.]]></string>
     <string name="intro_frag_first_text_3">En in de bovenste balk wanneer u een e-mail opent of schrijft:</string>
     <string name="intro_frag_second_header_1">Veilig</string>
     <string name="intro_frag_second_header_2">Veilig en vertrouwd</string>

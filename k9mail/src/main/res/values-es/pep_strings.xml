@@ -155,7 +155,7 @@
     <string name="intro_frag_second_header_2">Seguro y de confianza</string>
     <string name="intro_frag_second_header_1">Seguro</string>
     <string name="intro_frag_first_text_3">Y también en la barra superior, cuando abre o redacta un correo electrónico:</string>
-    <string name="intro_frag_first_text_2"><![CDATA[Puedes cerrar este tutorial en cualquier momento.\n\n<font color="#4caf50">p≡p</font> utiliza un Estado de Privacidad para indicar qué tan segura es su comunicación.\n\nEste Estado de Privacidad se muestra como un icono en el avatar del usuario]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[Puedes cerrar este tutorial en cualquier momento.\n\n<font color="#4caf50">p≡p</font> utiliza un Estado de Privacidad para indicar qué tan segura es su comunicación.\n\nEste Estado de Privacidad se muestra como un icono en el avatar del usuario.]]></string>
     <string name="intro_frag_first_text_1"><![CDATA[Bienvenidos al tutorial <font color="#4caf50">p≡p</font>]]></string>
     <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
     <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta. 
