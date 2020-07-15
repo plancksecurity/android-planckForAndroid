@@ -145,7 +145,7 @@
     <string name="intro_frag_fourth_text_3">En este caso el Estado de Privacidad es \"Seguro\", ya que éste es el mínimo común denominador de los dos interlocutores.</string>
     <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el Estado de Privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje, por ejemplo:</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
-    <string name="intro_frag_third_text_4">Complete un handshake con su interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación Segura y de Confianza.</string>
+    <string name="intro_frag_third_text_4">Complete un Handshake con su interlocutor. Un Handshake se necesita solo una vez por interlocutor y garantiza una comunicación Segura y de Confianza.</string>
     <string name="intro_frag_third_text_3">"DISYUNTIVO    ESTALINIANO    POSTOPERATORIO    IRRÍTAME    CALIMA    …"</string>
     <string name="intro_frag_third_text_2">Al hacer clic en el ícono Estado de Privacidad en la barra superior, accederá al Handshake, donde podrá verificar a su interlocutor.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
