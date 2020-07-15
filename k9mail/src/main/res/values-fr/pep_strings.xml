@@ -196,7 +196,7 @@
     <string name="pep_rating_secure">Sécurisé</string>
     <string name="intro_frag_fourth_text_3">Dans ce cas-ci, le statut de confidentialité du message est sûr, car c’est le plus petit dénominateur commun des deux partenaires de communication.</string>
     <string name="intro_frag_fourth_text_2">L’icône dans la barre supérieure indique le statut de confidentialité du message, qui est le plus petit dénominateur commun entre tous les partenaires de ce message, par exemple :</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
     <string name="intro_frag_second_text_2">Lorsque les Trustwords sont confirmés correctement et que la poignée de main a été faite, la communication sera complètement sécurisée et de confiance.</string>
     <string name="intro_frag_second_text_1">Avec ce statut de confidentialité, toutes les communications sont sécurisées, mais pour confirmer que votre contact est vraiment la personne que vous connaissez, vous devez Trustwords avec ce contact.</string>
     <string name="intro_frag_second_header_3">Méfiant</string>

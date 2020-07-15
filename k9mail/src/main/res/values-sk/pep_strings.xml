@@ -228,7 +228,7 @@
     <string name="intro_frag_second_text_3">Ak Trustwords nie sú správne, váš komunikačný partner je nedôveryhodný.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">Po kliknutí na ikonu stavu súkromia na hornom paneli sa dostanete na stránku Handshake, kde môžete overiť svojho komunikačného partnera.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža Stav súkromia správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
