@@ -8,15 +8,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
 class PassphrasePresenter @Inject constructor(@Named("AppContext") private val context: Context) {
     lateinit var view: PassphraseInputView
-
+    lateinit var type: PassphraseRequirementType
     fun init(view: PassphraseInputView, type: PassphraseRequirementType) {
         this.view = view
+        this.type = type
         view.init()
         view.initAffirmativeListeners()
         when (type) {
@@ -37,13 +39,21 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
     }
 
     fun cancel() {
+        PassphraseProvider.stop()
         view.finish();
     }
 
     fun deliverPassphrase(passphrase: String) {
-        val provider = PEpProviderFactory.createAndSetupProvider(context)
-        provider.configPassphrase(passphrase)
-        provider.close()
+        when (type) {
+            PassphraseRequirementType.SYNC_PASSPHRASE -> {
+                val provider = PEpProviderFactory.createAndSetupProvider(context)
+                provider.configPassphrase(passphrase)
+                provider.close()
+            }
+            else -> PassphraseProvider.passphrase = passphrase
+        }
+
+
         view.finish()
 
     }

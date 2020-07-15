@@ -112,7 +112,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
         engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
-        engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(context));
+        engine.setPassphraseRequiredCallback(PassphraseProvider.INSTANCE.getPassphraseRequiredCallback(context));
     }
 
     private Engine getNewEngineSession() throws pEpException {
