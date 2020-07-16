@@ -496,7 +496,7 @@ public class TestUtils {
         waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
-        trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+        setTrustWords(getTextFromView(onView(withId(R.id.trustwords))));
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
         while (!viewIsDisplayed(R.id.loading)) {
@@ -2647,7 +2647,7 @@ public class TestUtils {
         }
     }
 
-    public void cleanTrustWords(String text) {
+    public void setTrustWords(String text) {
         trustWords = text;
     }
 

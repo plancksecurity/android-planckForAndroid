@@ -747,7 +747,7 @@ public class CucumberTestSteps {
     @When("^I disable sync on device (\\S+)$")
     public void I_disable_sync(String device) {
         if (device.equals("C")) {
-            testUtils.cleanTrustWords("Disabled sync on device C");
+            testUtils.setTrustWords("Disabled sync on device C");
         }
         switch (testUtils.keySync_number()) {
             case "1":
