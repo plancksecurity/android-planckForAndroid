@@ -2647,6 +2647,10 @@ public class TestUtils {
         }
     }
 
+    public void cleanTrustWords(String text) {
+        trustWords = text;
+    }
+
     public void checkDeviceIsSync(String deviceName, String firstDevice,
                                      String secondDevice, boolean syncThirdDevice) {
         if (firstDevice.equals(deviceName)) {
