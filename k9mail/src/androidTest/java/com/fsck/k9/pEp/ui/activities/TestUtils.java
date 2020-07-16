@@ -2265,6 +2265,12 @@ public class TestUtils {
         return json;
     }
 
+    public void waitForNewMessages(int totalMessages) {
+        for (int waitMessage = 0; waitMessage < totalMessages; waitMessage++){
+            waitForNewMessage();
+        }
+    }
+
     public void waitForNewMessage() {
         boolean newEmail = false;
         waitForIdle();
