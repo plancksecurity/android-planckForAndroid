@@ -570,7 +570,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Message is not encrypted");
+            TestUtils.assertFailWithMessage("Failed checking 1st devices is not sync");
         }
     }
 
@@ -579,7 +579,7 @@ public class TestUtils {
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
-            TestUtils.assertFailWithMessage("Message is not encrypted");
+            TestUtils.assertFailWithMessage("Failed checking 2nd devices is not sync");
         }
         getMessageListSize();
         composeMessageButton();
