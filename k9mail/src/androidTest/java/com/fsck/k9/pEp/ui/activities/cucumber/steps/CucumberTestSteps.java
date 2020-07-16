@@ -711,25 +711,13 @@ public class CucumberTestSteps {
     public void I_check_1_and_2_sync(String firstDevice, String secondDevice) {
         switch (testUtils.keySync_number()) {
             case "1":
-                if (firstDevice.equals("A")) {
-                    testUtils.checkSyncIsWorking_FirstDevice();
-                } else if (secondDevice.equals("A")) {
-                    testUtils.checkSyncIsWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsSync("A", firstDevice, secondDevice, syncThirdDevice);
                 break;
             case "2":
-                if (firstDevice.equals("B")) {
-                    testUtils.checkSyncIsWorking_FirstDevice();
-                } else if (secondDevice.equals("B")) {
-                    testUtils.checkSyncIsWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsSync("B", firstDevice, secondDevice, syncThirdDevice);
                 break;
             case "3":
-                if (firstDevice.equals("C")) {
-                    testUtils.checkSyncIsWorking_FirstDevice();
-                } else if (secondDevice.equals("C")) {
-                    testUtils.checkSyncIsWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
                 TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are sync");
@@ -738,28 +726,16 @@ public class CucumberTestSteps {
     }
 
     @When("^I check devices (\\S+) and (\\S+) are not sync$")
-    public void I_check_A_B_not_sync(String firstDevice, String secondDevice) {
+    public void I_check_A_B_are_not_sync(String firstDevice, String secondDevice) {
         switch (testUtils.keySync_number()) {
             case "1":
-                if (firstDevice.equals("A")) {
-                    testUtils.checkSyncIsNotWorking_FirstDevice();
-                } else if (secondDevice.equals("A")) {
-                    testUtils.checkSyncIsNotWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsNotSync("A", firstDevice, secondDevice, syncThirdDevice);
                 break;
             case "2":
-                if (firstDevice.equals("B")) {
-                    testUtils.checkSyncIsNotWorking_FirstDevice();
-                } else if (secondDevice.equals("B")) {
-                    testUtils.checkSyncIsNotWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsNotSync("B", firstDevice, secondDevice, syncThirdDevice);
                 break;
             case "3":
-                if (firstDevice.equals("C")) {
-                    testUtils.checkSyncIsNotWorking_FirstDevice();
-                } else if (secondDevice.equals("C")) {
-                    testUtils.checkSyncIsNotWorking_SecondDevice();
-                }
+                testUtils.checkDeviceIsNotSync("C", firstDevice, secondDevice, syncThirdDevice);
                 break;
             default:
                 TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are not sync");
