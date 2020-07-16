@@ -2267,9 +2267,9 @@ public class TestUtils {
 
     public void waitForNewMessage() {
         boolean newEmail = false;
-        device.waitForIdle();
+        waitForIdle();
         while (!exists(onView(withId(R.id.message_list)))){
-            device.waitForIdle();
+            waitForIdle();
         }
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
