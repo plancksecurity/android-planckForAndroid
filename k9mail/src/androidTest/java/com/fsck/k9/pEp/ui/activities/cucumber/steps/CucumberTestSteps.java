@@ -94,6 +94,8 @@ public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
 
+    private boolean syncThirdDevice = false;
+
     private String[] bot;
     private int accounts = 3;
     private int accountSelected = 0;
@@ -703,6 +705,7 @@ public class CucumberTestSteps {
                 break;
         }
         testUtils.getMessageListSize();
+        syncThirdDevice = true;
     }
 
     @When("^I check devices (\\S+) and (\\S+) are sync$")
