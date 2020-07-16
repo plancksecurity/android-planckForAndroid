@@ -691,9 +691,7 @@ public class CucumberTestSteps {
                 }
                 break;
             case "2":
-                for (int waitMessage = 0; waitMessage < 4; waitMessage++){
-                    testUtils.waitForNewMessage();
-                }
+
                 break;
             case "3":
                 testUtils.waitForNewMessage();
