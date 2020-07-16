@@ -2641,6 +2641,28 @@ public class TestUtils {
         }
     }
 
+    public void checkDeviceIsSync(String deviceName, String firstDevice,
+                                     String secondDevice, boolean syncThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkSyncIsWorking_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkSyncIsWorking_SecondDevice();
+        } else if (syncThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
+    public void checkDeviceIsNotSync(String deviceName, String firstDevice,
+                                     String secondDevice, boolean syncThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkSyncIsNotWorking_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkSyncIsNotWorking_SecondDevice();
+        } else if (syncThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
     public String getKeySyncAccount (int account) {
         return testConfig.getKeySync_account(account);
     }
