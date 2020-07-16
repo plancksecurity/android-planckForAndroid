@@ -48,7 +48,6 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
     }
 
-    @Synchronized
     private fun createEngineInstanceIfNeeded() {
         if (!this::engine.isInitialized) {
             try {
@@ -172,11 +171,15 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun decryptMessage(source: MimeMessage): DecryptResult {
+    override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
         Timber.d(TAG, "decryptMessage() enter")
+        decryptMessageSuspend(source)
+    }
+
+    private suspend fun decryptMessageSuspend(source: MimeMessage): DecryptResult = withContext(Dispatchers.IO) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
-        return try {
+        try {
             createEngineInstanceIfNeeded()
 
             srcMsg = PEpMessageBuilder(source).createMessage(context)
