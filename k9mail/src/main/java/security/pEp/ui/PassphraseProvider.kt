@@ -1,10 +1,7 @@
 package security.pEp.ui
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import androidx.annotation.WorkerThread
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import kotlinx.coroutines.*
 import security.pEp.ui.passphrase.PassphraseActivity
@@ -29,15 +26,14 @@ object PassphraseProvider {
     fun passphraseFromUser(context: Context): String = runBlocking {
         Log.e("pEpEngine-passphrase", "passphraseFromUser 1")
         passphrase = ""
-        bla(context)
+        launchPassphraseActivity(context)
         wait()
         Log.e("pEpEngine-passphrase", "Prerereturn 1")
         passphrase
     }
 
-    private suspend fun bla(context: Context) = withContext(Dispatchers.Main) {
+    private suspend fun launchPassphraseActivity(context: Context) = withContext(Dispatchers.Main) {
         PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
-
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {

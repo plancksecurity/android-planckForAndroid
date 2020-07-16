@@ -39,7 +39,6 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
     }
 
     fun cancel() {
-        PassphraseProvider.stop()
         view.finish();
     }
 

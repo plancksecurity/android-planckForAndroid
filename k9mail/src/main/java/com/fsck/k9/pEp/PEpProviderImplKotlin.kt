@@ -1,14 +1,12 @@
 package com.fsck.k9.pEp
 
+
 import android.content.Context
 import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
-import foundation.pEp.jniadapter.Message
-
-
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
@@ -25,6 +23,9 @@ import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Engine.decrypt_message_Return
 import foundation.pEp.jniadapter.Sync.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
 import java.util.*
@@ -885,9 +886,10 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNeedsFastPollCallback(needsFastPollCallback)
     }
 
-    private fun  <RESULT> notifyLoaded(privacyState: RESULT, callback: ResultCallback<RESULT>) {
+    private fun <RESULT> notifyLoaded(privacyState: RESULT, callback: ResultCallback<RESULT>) {
         postExecutionThread.post { callback.onLoaded(privacyState) }
     }
+
     private fun notifyCompleted(completedCallback: CompletedCallback) {
         postExecutionThread.post { completedCallback.onComplete() }
     }
