@@ -495,22 +495,21 @@ public class TestUtils {
     public void syncDevices () {
         waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
-        device.waitForIdle();
-        Espresso.onIdle();
+        waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         onView(withId(R.id.afirmativeActionButton)).perform(click());
+        waitForIdle();
         while (!viewIsDisplayed(R.id.loading)) {
-            device.waitForIdle();
-            Espresso.onIdle();
+            waitForIdle();
         }
         while (viewIsDisplayed(R.id.loading)) {
-            device.waitForIdle();
-            Espresso.onIdle();
+            waitForIdle();
         }
         if (!viewIsDisplayed(R.id.afirmativeActionButton)) {
             assertFailWithMessage("Cannot sync devices");
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
+            waitForIdle();
         }
     }
 
