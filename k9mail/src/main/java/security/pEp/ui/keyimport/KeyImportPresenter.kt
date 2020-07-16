@@ -15,15 +15,15 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
 
-class KeyImportPresenter @Inject constructor(val preferences: Preferences) {
+class KeyImportPresenter @Inject constructor(private val preferences: Preferences) {
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
-    private lateinit var account: String
+    private lateinit var accountUuid: String
 
-    fun initialize(view: KeyImportView, account: String) {
+    fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
-        this.account = account
+        this.accountUuid = accountUuid
     }
 
     fun onAccept(fingerprint: String) {
@@ -69,14 +69,14 @@ class KeyImportPresenter @Inject constructor(val preferences: Preferences) {
             val resolver = context.contentResolver
             val inputStream = resolver.openInputStream(uri)
             val pEp = PEpProviderFactory.createAndSetupProvider(context)
-            val address = Address(preferences.getAccount(account).email)
+            val address = Address(preferences.getAccount(accountUuid).email)
             val accountIdentity = PEpUtils.createIdentity(address, context)
             val currentFpr = pEp.myself(accountIdentity).fpr
             try {
                 val key = IOUtils.toByteArray(inputStream)
                 pEp.importKey(key)
                 val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                if (id == null || !pEp.canEncrypt(account)) {
+                if (id == null || !pEp.canEncrypt(accountUuid)) {
                     Timber.w("Couldn't set own key: %s", key)
                     pEp.setOwnIdentity(accountIdentity, currentFpr)
                     result = false

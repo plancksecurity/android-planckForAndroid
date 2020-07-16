@@ -14,7 +14,7 @@ import security.pEp.ui.dialog.showProgressDialog
 import javax.inject.Inject
 
 
-const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
 const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
 const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
@@ -34,8 +34,8 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_key_dialog)
         if (isValidKeyImportIntent(intent)) {
-            val account: String = intent.getStringExtra(ACCOUNT_EXTRA) ?: ""
-            presenter.initialize(this, account)
+            val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
+            presenter.initialize(this, accountUuid)
         }
         startLayoutViews()
     }
@@ -113,7 +113,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
-        intent.hasExtra(ACCOUNT_EXTRA) -> true
+        intent.hasExtra(ACCOUNT_UUID_EXTRA) -> true
         else -> throw IllegalArgumentException("The provided intent does not contain the required extras")
     }
 
@@ -130,9 +130,9 @@ private fun Activity.openMarketIntent() {
     startActivity(intent)
 }
 
-fun Activity.showImportKeyDialog(account: String) {
+fun Activity.showImportKeyDialog(accountUuid: String) {
     val intent = Intent(this, KeyImportActivity::class.java)
-    intent.putExtra(ACCOUNT_EXTRA, account)
+    intent.putExtra(ACCOUNT_UUID_EXTRA, accountUuid)
     startActivity(intent)
 }
 
