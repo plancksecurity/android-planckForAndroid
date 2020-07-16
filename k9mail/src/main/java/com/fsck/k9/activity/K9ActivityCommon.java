@@ -1,22 +1,20 @@
 package com.fsck.k9.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
+import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.ui.keys.keyimport.KeyImportActivity;
+import com.fsck.k9.pEp.LangUtils;
 
 import java.util.Locale;
 
@@ -42,9 +40,10 @@ public class K9ActivityCommon {
     }
 
     public static void setLanguage(Context context, String language) {
+        invalidateChromeLocaleForWebView(context);
         Locale locale;
         if (TextUtils.isEmpty(language)) {
-            locale = Locale.getDefault();
+            locale = LangUtils.getDefaultLocale();
         } else if (language.length() == 5 && language.charAt(2) == '_') {
             // language is in the form: en_US
             locale = new Locale(language.substring(0, 2), language.substring(3));
@@ -55,9 +54,21 @@ public class K9ActivityCommon {
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.locale = locale;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Locale.setDefault(locale);
+        else {
+            Configuration systemConfig = Resources.getSystem().getConfiguration();
+            systemConfig.setLocale(locale);
+            Resources.getSystem().updateConfiguration(systemConfig, null);
+        }
+
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
+    private static void invalidateChromeLocaleForWebView(Context context) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            new WebView(context).destroy();
+        }
+    }
 
     /**
      * Base activities need to implement this interface.
@@ -73,18 +84,11 @@ public class K9ActivityCommon {
     private Activity mActivity;
     private GestureDetector mGestureDetector;
 
-    private BroadcastReceiver receiver;
-    private IntentFilter filter;
 
     private K9ActivityCommon(Activity activity) {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(K9.getK9ThemeResourceId());
-        filter = new IntentFilter();
-        filter.addAction("PRIVATE_KEY");
-        filter.setPriority(1);
-        receiver = new PrivateKeyReceiver();
-        mActivity.registerReceiver(receiver, filter);
     }
 
     /**
@@ -124,21 +128,7 @@ public class K9ActivityCommon {
                 new SwipeGestureDetector(mActivity, listener));
     }
 
-
-    public static class PrivateKeyReceiver extends BroadcastReceiver {
-        public PrivateKeyReceiver() {
-        }
-
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            abortBroadcast();
-            KeyImportActivity.actionShowImportDialog(context, intent);
-        }
-    }
-
-
     public void onDestroy() {
-        mActivity.unregisterReceiver(receiver);
     }
 
 }

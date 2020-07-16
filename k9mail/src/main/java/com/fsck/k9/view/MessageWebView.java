@@ -21,6 +21,8 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
 public class MessageWebView extends RigidWebView {
 
+    private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
+
     public MessageWebView(Context context) {
         super(context);
     }
@@ -82,6 +84,7 @@ public class MessageWebView extends RigidWebView {
         webSettings.setUseWideViewPort(true);
         if (K9.autofitWidth()) {
             webSettings.setLoadWithOverviewMode(true);
+            setInitialScale((int) getScale());
         }
 
         disableDisplayZoomControls();
@@ -93,13 +96,11 @@ public class MessageWebView extends RigidWebView {
         // TODO:  Review alternatives.  NARROW_COLUMNS is deprecated on KITKAT
 //        webSettings.setLayoutAlgorithm(LayoutAlgorithm.NARROW_COLUMNS);
         webSettings.setUseWideViewPort(true);
-        webSettings.setLoadWithOverviewMode(true);
 
         setOverScrollMode(OVER_SCROLL_NEVER);
 
         webSettings.setTextZoom(K9.getFontSizes().getMessageViewContentAsPercent());
 
-        setInitialScale((int) getScale());
         // Disable network images by default.  This is overridden by preferences.
         blockNetworkData(true);
     }
@@ -116,8 +117,10 @@ public class MessageWebView extends RigidWebView {
         getSettings().setDisplayZoomControls(!supportsMultiTouch);
     }
 
-    public void displayHtmlContentWithInlineAttachments(@NonNull String htmlText,
-            @Nullable AttachmentResolver attachmentResolver, @Nullable OnPageFinishedListener onPageFinishedListener) {
+    public void displayHtmlContentWithInlineAttachments(
+            @NonNull String htmlText,
+            @Nullable AttachmentResolver attachmentResolver,
+            @Nullable OnPageFinishedListener onPageFinishedListener) {
         setWebViewClient(attachmentResolver, onPageFinishedListener);
         setHtmlContent(htmlText);
     }
@@ -131,8 +134,14 @@ public class MessageWebView extends RigidWebView {
         setWebViewClient(webViewClient);
     }
 
+    private String forceBreakWordsHeader(String htmlText) {
+        //change body start tag
+        return htmlText.replace("<body>", NEW_BODY_START);
+    }
+
     private void setHtmlContent(@NonNull String htmlText) {
-        loadDataWithBaseURL("about:blank", htmlText, "text/html", "utf-8", null);
+        String html = forceBreakWordsHeader(htmlText);
+        loadDataWithBaseURL("about:blank", html, "text/html", "utf-8", null);
         resumeTimers();
     }
 

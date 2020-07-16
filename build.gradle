@@ -4,20 +4,21 @@ buildscript {
                 'compileSdk'           : 29,
                 'targetSdk'            : 28,
                 'minSdk'               : 21,
-                'versionCode'          : 54,
+                'versionCode'          : 55,
                 'pEpEngineRevision'    : 4567,
                 'pEpJNIAdapterRevision': 699,
-                'versionName'          : '1.1.008',
+                'versionName'          : '1.1.009',
                 'libpEpAdapterRevision': 168
         ]
 
         versions = [
                 'kotlin'             : '1.3.61',
-                'ndk'                : '20.0',
 
                 'supportLibrary'     : '28.0.0',
-                'preferencesFix'     : '28.0.0.0',
-                'androidX'           : '1.0.0',
+                'preferencesFix'     : '1.1.0',
+                'androidX'           : '1.1.0',
+                'androidXLegacy'     : '1.0.0',
+                'androidXCardView'   : '1.0.0',
                 'constraintLayout'   : '1.1.3',
                 'lifecycleExtensions': '2.0.0',
                 'okio'               : '1.14.0',
@@ -79,7 +80,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
     }

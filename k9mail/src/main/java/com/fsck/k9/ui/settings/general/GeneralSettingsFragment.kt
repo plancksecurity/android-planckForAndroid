@@ -3,6 +3,7 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.preference.CheckBoxPreference
@@ -10,7 +11,9 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
@@ -21,7 +24,7 @@ import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
+import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
@@ -56,7 +59,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
-        findPreference(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
+        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
             attachmentDefaultPathPreference = this
 
             summary = attachmentDefaultPath()
@@ -87,19 +90,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeLockScreenNotificationVisibility() {
         val lockScreenNotificationsSupported = NotificationController.platformSupportsLockScreenNotifications()
         if (!lockScreenNotificationsSupported) {
-            findPreference(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
+            findPreference<Preference>(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
         }
     }
 
     private fun initializeNotificationQuickDelete() {
         val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
         if (!notificationActionsSupported) {
-            findPreference(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
+            findPreference<Preference>(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
         }
     }
 
     private fun initializeExtraKeysManagement() {
-        findPreference(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
                 PepExtraKeys.actionStart(context)
                 true
@@ -108,7 +111,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpKeyReset() {
-        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
@@ -129,7 +132,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeGlobalpEpSync() {
 
         if (!BuildConfig.WITH_KEY_SYNC) {
-            findPreference(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
+            findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
 
         } else {
             (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as TwoStatePreference?)?.apply {
@@ -147,7 +150,13 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         //2 If we are disabling (which means it is checked)
         if (preference.isChecked) {
-            AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                R.style.SyncDisableDialog
+            }
+            else {
+                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+            }
+            AlertDialog.Builder(view?.context, theme)
                     .setTitle(R.string.keysync_disable_warning_title)
                     .setMessage(R.string.keysync_disable_warning_explanation)
                     .setCancelable(false)
@@ -197,7 +206,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun disableKeyResetClickListener() {
-        findPreference(PREFERENCE_PEP_OWN_IDS_KEY_RESET).onPreferenceClickListener = null
+        findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.onPreferenceClickListener = null
     }
 
     private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
@@ -250,4 +259,19 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
                 PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to rootKey)
     }
+
+    fun setLanguage(newLanguage: String?) {
+        K9.setK9Language(newLanguage)
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            dataStore.saveLanguageSettings()
+            restartFromMainScreen()
+        }
+    }
+
+    private fun restartFromMainScreen() {
+        SettingsActivity.actionBasicStart(requireContext())
+        requireActivity().finishAffinity()
+    }
+
 }

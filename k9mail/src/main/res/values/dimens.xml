@@ -11,4 +11,10 @@
 
     <dimen name="key_import_floating_horizontal_margin">8dp</dimen>
     <dimen name="key_import_floating_vertical_margin">8dp</dimen>
+
+    <dimen name="progressbar_layout_width">240dp</dimen>
+    <dimen name="progressbar_layout_height">120dp</dimen>
+    <dimen name="progressbar_padding">16dp</dimen>
+    <dimen name="progressbar_size">48dp</dimen>
+
 </resources>

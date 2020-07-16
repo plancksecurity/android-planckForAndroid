@@ -1,102 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout3"
+    android:id="@+id/layout"
     android:layout_width="@dimen/floating_width"
-    android:layout_height="@dimen/floating_height"
+    android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:paddingTop="24dp"
-    android:paddingRight="24dp"
-    android:paddingLeft="24dp"
-
-    >
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/pep_secret_key_detected"
+        android:text="@string/pgp_key_import_dialog_title"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="16dp"
-        android:text="@string/pep_received_this_secret_key"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
-
-    <TextView
-        android:id="@+id/tvAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:fontFamily="@font/monospace_font_family"
-        android:paddingLeft="16dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical"
+        app:helperText="@string/key_import_from_fs_input_fpr"
+        app:helperTextEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/cancelButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:text="User Address: tosync@miau.xyz" />
+        app:layout_constraintTop_toBottomOf="@+id/title">
 
-    <TextView
-        android:id="@+id/tvFpr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:fontFamily="@font/monospace_font_family"
-        android:gravity="left"
-        android:padding="16dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvAddress"
-        tools:text="AAAA AAAA AAAA AAAA AAAA\nAAAA AAAA AAAA AAAA AAAA" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fingerprintEditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/monospace_font_family"
+            android:hint="@string/pep_pgp_fingerprint" />
 
-    <TextView
-        android:id="@+id/tvFrom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_constraintBottom_toTopOf="@+id/bReject"
-        app:layout_constraintStart_toStartOf="@+id/tvFpr"
-        app:layout_constraintTop_toBottomOf="@+id/tvFpr"
-        tools:text="From: tosync@miau.xyz" />
-
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/bReject"
+        android:id="@+id/cancelButton"
         style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/key_import_reject"
-        android:textColor="@color/dialog_color"
+        android:text="@string/cancel_action"
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/bAccept" />
+        app:layout_constraintEnd_toStartOf="@+id/acceptButton" />
 
     <Button
-        android:id="@+id/bAccept"
+        android:id="@+id/acceptButton"
         style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/key_import_accept"
-        android:textColor="@color/dialog_color"
+        android:enabled="false"
+        android:text="@string/pgp_key_import_dialog_accept_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

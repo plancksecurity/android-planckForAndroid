@@ -26,9 +26,6 @@
     <string name="pep_receivedSecretKey">Es wurde der folgende private Schlüssel empfangen:</string>
     <string name="pep_username">Benutzername</string>
     <string name="pep_userAddress">Benutzeradresse</string>
-    <string name="pep_secret_key_detected">Privater Schlüssel gefunden</string>
-    <string name="pep_received_this_secret_key">Der folgende private Schlüssel wurde empfangen. Wollen Sie diesen verwenden\?</string>
-    <string name="pep_from_format">von %1$s</string>
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Dem Server vertrauen und Nachrichten ungeschützt speichern</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Nachrichten geschützt speichern</string>
     <string name="pep_enable_privacy_protection">p≡p-Datenschutz</string>
@@ -124,7 +121,6 @@
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
     <string name="key_import_reject">Ablehnen</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
-    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
@@ -171,8 +167,6 @@
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
     <string name="pep_sync">p≡p Synchronisierung</string>
     <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen. Versuchen Sie es erneut</string>
-    <string name="key_import_reject_feedback">Schlüsselcode abgelehnt</string>
-    <string name="key_import_accept_feedback">Schlüsselcode ersetzt</string>
     <string name="key_import_accept">Bestätigen</string>
     <string name="nnf_filename">Dateiname</string>
     <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>

@@ -122,8 +122,7 @@
         <activity
             android:name="security.pEp.ui.intro.WelcomeMessage"
             android:configChanges="locale"
-            android:label="@string/welcome_message_title"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
+            android:label="@string/welcome_message_title" />
         <activity
             android:name=".activity.setup.FontSizeSettings"
             android:configChanges="locale"
@@ -156,8 +155,7 @@
         <activity
             android:name=".activity.setup.AccountSetupNames"
             android:configChanges="locale"
-            android:label="@string/account_setup_names_title"
-            android:screenOrientation="portrait" />
+            android:label="@string/account_setup_names_title"/>
         <activity
             android:name=".activity.ChooseFolder"
             android:configChanges="locale"
@@ -544,9 +542,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pEp.ui.keys.keyimport.KeyImportActivity"
-            android:excludeFromRecents="true"
-            android:launchMode="singleInstance"
+            android:name="security.pEp.ui.keyimport.KeyImportActivity"
             android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"

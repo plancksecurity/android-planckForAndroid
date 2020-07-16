@@ -12,10 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -25,7 +22,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -37,17 +33,13 @@ import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.store.RemoteStore;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
 import com.fsck.k9.preferences.SettingsImporter;
-
-import org.apache.commons.io.IOUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,25 +49,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
 
 public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
-    private static final int DIALOG_NO_FILE_MANAGER = 4;
-    protected static final int ACTIVITY_REQUEST_PICK_KEY_FILE = 8;
+    protected static final int DIALOG_NO_FILE_MANAGER = 4;
 
     protected static final String CURRENT_ACCOUNT = "currentAccount";
-    protected static final String FPR = "fpr";
-    protected static final String SHOWING_IMPORT_DIALOG = "showingDialog";
 
     protected abstract void refresh();
 
     protected String currentAccount;
-    protected String fpr;
-    protected boolean showingImportDialog = false;
 
     public void onSettingsImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -88,77 +73,6 @@ public abstract class PEpImporterActivity extends PepActivity {
         if (infos.size() > 0) {
             startActivityForResult(Intent.createChooser(i, null),
                     ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
-        } else {
-            showDialog(DIALOG_NO_FILE_MANAGER);
-        }
-    }
-
-    public void onKeyImport() {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        View content = getLayoutInflater().inflate(R.layout.dialog_import_pgp_from_fs,
-                null);
-        // set dialog message
-        EditText editFpr = content.findViewById(R.id.fpr);
-
-        alertDialogBuilder
-                .setTitle("PGP Key import")
-                .setView(content)
-                .setCancelable(false)
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                    showingImportDialog = false;
-                })
-                .setPositiveButton("Select and import key", (dialogInterface, i) -> {
-                    //nop
-                    if (editFpr.getText().toString().isEmpty()) {
-                        FeedbackTools.showLongFeedback(content, "Fingerprint is mandatory");
-                    } else {
-                        fpr = editFpr.getText().toString().replace(" ", "");
-                        onOpenFileChooser();
-                    }
-                    showingImportDialog = false;
-                });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.setOnShowListener(dialogInterface -> {
-            final AlertDialog dialog = (AlertDialog)dialogInterface;
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-            editFpr.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before,
-                                          int count) {}
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (TextUtils.isEmpty(s)) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                    } else {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                    }
-                }
-            });
-        });
-
-        alertDialog.show();
-        showingImportDialog = true;
-
-        //onOpenFileChooser();
-    }
-
-    public void onOpenFileChooser() {
-        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.addCategory(Intent.CATEGORY_OPENABLE);
-        i.setType("*/*");
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
-
-        if (infos.size() > 0) {
-            startActivityForResult(Intent.createChooser(i, null),
-                    ACTIVITY_REQUEST_PICK_KEY_FILE);
         } else {
             showDialog(DIALOG_NO_FILE_MANAGER);
         }
@@ -202,20 +116,12 @@ public abstract class PEpImporterActivity extends PepActivity {
     }
 
     public static class ListImportContentsAsyncTask extends ExtendedAsyncTask<Boolean, Void, Boolean> {
-        private final String currentAccount;
-        private final boolean isKeyImport;
-        private final String fpr;
         private Uri mUri;
         private SettingsImporter.ImportContents mImportContents;
 
-        public ListImportContentsAsyncTask(PEpImporterActivity activity, Uri uri,
-                                           String currentAccount, boolean isKeyImport, String fpr) {
+        public ListImportContentsAsyncTask(PEpImporterActivity activity, Uri uri) {
             super(activity);
-
             mUri = uri;
-            this.currentAccount = currentAccount;
-            this.isKeyImport = isKeyImport;
-            this.fpr = PEpUtils.sanitizeFpr(fpr);
         }
 
         @Override
@@ -227,11 +133,7 @@ public abstract class PEpImporterActivity extends PepActivity {
 
         @Override
         protected Boolean doInBackground(Boolean... booleans) {
-            if (isKeyImport) {
-                return importKeyFromFS(currentAccount);
-            } else {
-                return importSettings();
-            }
+            return importSettings();
         }
 
         @NonNull
@@ -258,55 +160,6 @@ public abstract class PEpImporterActivity extends PepActivity {
             return true;
         }
 
-        @NonNull
-        private Boolean importKeyFromFS(String currentAccount) {
-            try {
-                ContentResolver resolver = mContext.getContentResolver();
-                InputStream is = resolver.openInputStream(mUri);
-                PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(mContext);
-                Identity accountIdentity = PEpUtils.createIdentity(new Address(currentAccount), mContext);
-                String currentFpr = pEp.myself(accountIdentity).fpr;
-                try {
-                    //String key = IOUtils.toString(is);
-                    byte[] key = IOUtils.toByteArray(is);
-
-                    pEp.importKey(key);
-                    Identity id = pEp.setOwnIdentity(accountIdentity, fpr);
-
-
-                    if (id == null || !pEp.canEncrypt(currentAccount)) {
-                        Timber.w("Couldn't set ownkey: %s", key);
-                        pEp.setOwnIdentity(accountIdentity, currentFpr);
-                        new Handler(Looper.getMainLooper()).post(
-                                () -> Toast.makeText(mContext, "Could not use the imported key: Key not imported", Toast.LENGTH_LONG).show());
-                        return false;
-                    }
-                } catch (IOException e) {
-                    //We transform IOException to a semantic Exception, if we cannot read the
-                    //stream we assume we couldn't read the msg.
-                    pEp.setOwnIdentity(accountIdentity, currentFpr);
-                    throw new FileNotFoundException();
-                } catch (pEpException e) {
-                    pEp.setOwnIdentity(accountIdentity, currentFpr);
-                    return false;
-                }
-
-                finally {
-                    try {
-                        is.close();
-                        pEp.close();
-                    } catch (IOException e) {
-                        /* Ignore */
-                    }
-                }
-
-            } catch (FileNotFoundException e) {
-                Timber.w("Couldn't read content from URI %s", mUri);
-                return false;
-            }
-            return true;
-        }
-
         @Override
         protected void onPostExecute(Boolean success) {
             PEpImporterActivity activity = (PEpImporterActivity) mActivity;
@@ -316,11 +169,8 @@ public abstract class PEpImporterActivity extends PepActivity {
 
             removeProgressDialog();
 
-            if (isKeyImport) {
-                onPostExecuteKeyImport(activity, success);
-            } else {
-                onPostExecuteImportSettings(activity, success);
-            }
+            onPostExecuteImportSettings(activity, success);
+
             activity.currentAccount = "";
         }
 
@@ -332,18 +182,6 @@ public abstract class PEpImporterActivity extends PepActivity {
                 //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_import_failed_header,
                         R.string.settings_import_failure, filename);
-            }
-        }
-
-        private void onPostExecuteKeyImport(PEpImporterActivity activity, Boolean success) {
-            String filename = mUri.getPath();
-            if (success) {
-                activity.showSimpleDialog(R.string.settings_import_success_header,
-                        R.string.key_import_success , fpr, filename);
-            } else {
-                //TODO: better error messages
-                activity.showSimpleDialog(R.string.settings_import_failed_header,
-                        R.string.key_import_failure, filename, fpr);
             }
         }
     }

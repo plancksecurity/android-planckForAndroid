@@ -42,6 +42,39 @@
                 tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
 
             <TextView
+                android:id="@+id/contact_label"
+                style="@style/LightBlackText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/about_contact"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
+
+            <TextView
+                android:id="@+id/contact_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginStart="4dp"
+                android:text="@string/support_email"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintStart_toEndOf="@+id/contact_label"
+                app:layout_constraintTop_toTopOf="@+id/contact_label" />
+
+
+            <TextView
+                android:id="@+id/librariesText"
+                style="@style/LightBlackText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contact_button"
+                tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
+
+            <TextView
                 android:id="@+id/license_label"
                 style="@style/LightBlackText"
                 android:layout_width="0dp"
@@ -51,11 +84,11 @@
                 app:layout_constraintBottom_toBottomOf="@+id/license_button"
                 app:layout_constraintEnd_toStartOf="@+id/license_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
+                app:layout_constraintTop_toBottomOf="@+id/librariesText" />
 
             <Button
                 android:id="@+id/license_button"
-                style="@style/TransparentButton.Green"
+                style="?attr/buttonBarButtonStyle"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -64,7 +97,7 @@
                 android:text="@string/license"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
+                app:layout_constraintTop_toBottomOf="@+id/librariesText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

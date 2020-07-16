@@ -1,7 +1,9 @@
 package com.fsck.k9.ui.settings.account
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -22,13 +24,14 @@ import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
-import com.takisoft.fix.support.v7.preference.PreferenceFragmentCompat
+import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
+import security.pEp.ui.keyimport.showImportKeyDialog
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -65,6 +68,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpKeyReset(account)
         initializeNewRingtoneOptions()
         initializeAccountpEpSync(account)
+        initializePgpImportKey(account)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -73,31 +77,31 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeIncomingServer() {
-        findPreference(PREFERENCE_INCOMING_SERVER)?.onClick {
+        findPreference<Preference>(PREFERENCE_INCOMING_SERVER)?.onClick {
             AccountSetupBasics.actionEditIncomingSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeComposition() {
-        findPreference(PREFERENCE_COMPOSITION)?.onClick {
+        findPreference<Preference>(PREFERENCE_COMPOSITION)?.onClick {
             AccountSetupComposition.actionEditCompositionSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeManageIdentities() {
-        findPreference(PREFERENCE_MANAGE_IDENTITIES)?.onClick {
+        findPreference<Preference>(PREFERENCE_MANAGE_IDENTITIES)?.onClick {
             ManageIdentities.start(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeOutgoingServer() {
-        findPreference(PREFERENCE_OUTGOING_SERVER)?.onClick {
+        findPreference<Preference>(PREFERENCE_OUTGOING_SERVER)?.onClick {
             AccountSetupBasics.actionEditOutgoingSettings(requireActivity(), accountUuid)
         }
     }
 
     private fun initializeQuoteStyle() {
-        findPreference(PREFERENCE_QUOTE_STYLE)?.apply {
+        findPreference<Preference>(PREFERENCE_QUOTE_STYLE)?.apply {
             setOnPreferenceChangeListener { _, newValue ->
                 val quoteStyle = Account.QuoteStyle.valueOf(newValue.toString())
                 notifyDependencyChange(quoteStyle == Account.QuoteStyle.HEADER)
@@ -115,7 +119,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeExpungePolicy(account: Account) {
-        findPreference(PREFERENCE_EXPUNGE_POLICY)?.apply {
+        findPreference<Preference>(PREFERENCE_EXPUNGE_POLICY)?.apply {
             if (!account.remoteStore.isExpungeCapable) {
                 remove()
             }
@@ -123,7 +127,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeMessageAge(account: Account) {
-        findPreference(PREFERENCE_MESSAGE_AGE)?.apply {
+        findPreference<Preference>(PREFERENCE_MESSAGE_AGE)?.apply {
             if (!account.isSearchByDateCapable) {
                 remove()
             }
@@ -132,9 +136,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeAdvancedPushSettings(account: Account) {
         if (!account.remoteStore.isPushCapable) {
-            findPreference(PREFERENCE_PUSH_MODE)?.remove()
-            findPreference(PREFERENCE_ADVANCED_PUSH_SETTINGS)?.remove()
-            findPreference(PREFERENCE_REMOTE_SEARCH)?.remove()
+            findPreference<Preference>(PREFERENCE_PUSH_MODE)?.remove()
+            findPreference<Preference>(PREFERENCE_ADVANCED_PUSH_SETTINGS)?.remove()
+            findPreference<Preference>(PREFERENCE_REMOTE_SEARCH)?.remove()
         }
     }
 
@@ -147,13 +151,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeCryptoSettings(account: Account) {
-        findPreference(PREFERENCE_OPENPGP)?.let {
+        findPreference<Preference>(PREFERENCE_OPENPGP)?.let {
             configureCryptoPreferences(account)
         }
     }
 
     private fun initializeAccountpEpKeyReset(account: Account) {
-        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
+        findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
                 AlertDialog.Builder(view?.context)
@@ -168,8 +172,16 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializePgpImportKey(account: Account) {
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+    }
+
+    private fun onKeyImportClicked() {
+        activity?.showImportKeyDialog(accountUuid)
+    }
+
     private fun hideKeySyncOptions() {
-        findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
+        findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)?.remove()
     }
 
     private fun initializeAccountpEpSync(account: Account) {
@@ -199,7 +211,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeNewRingtoneOptions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference(PREFERENCE_RINGTONE)?.remove()
+            findPreference<Preference>(PREFERENCE_RINGTONE)?.remove()
         }
     }
 
@@ -221,7 +233,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun disableKeyResetClickListener() {
-        findPreference(PREFERENCE_PEP_ACCOUNT_KEY_RESET).onPreferenceClickListener = null
+        findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.onPreferenceClickListener = null
     }
 
     private suspend fun keyReset(account: Account) = withContext(Dispatchers.Default) {
@@ -258,13 +270,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     private fun initializeFolderSettings(account: Account) {
-        findPreference(PREFERENCE_FOLDERS)?.let {
+        findPreference<Preference>(PREFERENCE_FOLDERS)?.let {
             if (!account.remoteStore.isMoveCapable) {
-                findPreference(PREFERENCE_ARCHIVE_FOLDER).remove()
-                findPreference(PREFERENCE_DRAFTS_FOLDER).remove()
-                findPreference(PREFERENCE_SENT_FOLDER).remove()
-                findPreference(PREFERENCE_SPAM_FOLDER).remove()
-                findPreference(PREFERENCE_TRASH_FOLDER).remove()
+                findPreference<Preference>(PREFERENCE_ARCHIVE_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_DRAFTS_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_SENT_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_SPAM_FOLDER)?.remove()
+                findPreference<Preference>(PREFERENCE_TRASH_FOLDER)?.remove()
             }
 
             loadFolders(account)
@@ -284,11 +296,22 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        /*val openPgpKeyPreference = findPreference(PREFERENCE_OPENPGP_KEY) as? OpenPgpKeyPreference
-        if (openPgpKeyPreference?.handleOnActivityResult(requestCode, resultCode, data) == true) {
-            return
-        }*/
-        super.onActivityResult(requestCode, resultCode, data)
+        return when {
+            resultCode != Activity.RESULT_OK || data == null ->
+                super.onActivityResult(requestCode, resultCode, data)
+            else ->
+                when (requestCode) {
+                  //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
+                       // onKeyImport(data.data, accountUuid)
+                    else ->
+                        super.onActivityResult(requestCode, resultCode, data)
+
+                }
+        }
+    }
+
+    private fun onKeyImport(uri: Uri?, currentAccount: String) {
+        // TODO
     }
 
     private fun getAccount(): Account {
@@ -319,6 +342,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
         private const val PREFERENCE_RINGTONE = "account_ringtone"
+        private const val PREFERENCE_PGP_KEY_IMPORT = "pgp_key_import"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"

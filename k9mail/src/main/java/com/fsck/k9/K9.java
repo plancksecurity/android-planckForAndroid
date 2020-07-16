@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import androidx.multidex.MultiDexApplication;
 import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
+import com.fsck.k9.activity.K9ActivityCommon;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
@@ -40,6 +42,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
@@ -306,7 +309,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mStartIntegratedInbox = false;
     private static boolean mMeasureAccounts = true;
     private static boolean mCountSearchMessages = true;
-    private static boolean mAutofitWidth;
+    private static boolean mAutofitWidth = true;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
     private static String mQuietTimeStarts = null;
@@ -1077,7 +1080,10 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getK9CurrentLanguage() {
-        return language.isEmpty() ? Locale.getDefault().getLanguage() : language;
+        if(language.isEmpty()) {
+           return LangUtils.getDefaultLocale().getLanguage();
+        }
+        else return language;
     }
 
     public static void setK9Language(String nlanguage) {

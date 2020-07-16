@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -32,9 +33,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 
-import static android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-import static android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
@@ -50,9 +48,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             getWindow().getDecorView().setSystemUiVisibility(
-                    FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS | SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                            | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             );
         }
 
@@ -86,6 +85,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //        Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
 //        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
 //    }
+
 
     public void setUpToolbar(boolean showUpButton) {
         if (toolbar != null) {

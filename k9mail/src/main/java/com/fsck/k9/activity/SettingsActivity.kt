@@ -50,6 +50,8 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
+import security.pEp.ui.keyimport.ANDROID_MARKET_URL
+import security.pEp.ui.keyimport.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
@@ -310,8 +312,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings)
         outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids)
         outState.putString(CURRENT_ACCOUNT, currentAccount)
-        outState.putString(FPR, fpr)
-        outState.putBoolean(SHOWING_IMPORT_DIALOG, showingImportDialog)
     }
 
     override fun onRestoreInstanceState(state: Bundle) {
@@ -320,10 +320,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false)
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS)
         currentAccount = state.getString(CURRENT_ACCOUNT)
-        fpr = state.getString(FPR, "").replace(" ", "")
-        if (state.getBoolean(SHOWING_IMPORT_DIALOG)) {
-            onKeyImport()
-        }
     }
 
     public override fun onResume() {
@@ -658,7 +654,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun onImportPGPKeyFromFileSystem(realAccount: Account) {
         currentAccount = realAccount.email
-        onKeyImport()
+        showImportKeyDialog(currentAccount)
+
     }
 
     private fun onClear(account: Account) {
@@ -757,19 +754,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_SETTINGS_FILE -> onImport(data.data)
             ACTIVITY_REQUEST_SAVE_SETTINGS_FILE -> onExport(data)
-            ACTIVITY_REQUEST_PICK_KEY_FILE -> onKeyImport(data.data, currentAccount)
         }
     }
 
-
-    fun onKeyImport(uri: Uri?, currentAccount: String) {
-        val asyncTask = ListImportContentsAsyncTask(this, uri, currentAccount, true, fpr)
-        setNonConfigurationInstance(asyncTask)
-        asyncTask.execute()
-    }
-
     override fun onImport(uri: Uri?) {
-        val asyncTask = ListImportContentsAsyncTask(this, uri, currentAccount, false, null)
+        val asyncTask = ListImportContentsAsyncTask(this, uri)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
     }
@@ -1009,7 +998,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         /**
          * URL used to open Android Market application
          */
-        private const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
         /**
          * Number of special accounts ('Unified Inbox' and 'All Messages')
