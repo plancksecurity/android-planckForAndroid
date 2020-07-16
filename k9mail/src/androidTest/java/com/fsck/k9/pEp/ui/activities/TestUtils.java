@@ -575,6 +575,7 @@ public class TestUtils {
     }
 
     public void checkSyncIsNotWorking_SecondDevice () {
+        getMessageListSize();
         if (waitForMessageAndClickIt()) {
             pressBack();
         } else {
