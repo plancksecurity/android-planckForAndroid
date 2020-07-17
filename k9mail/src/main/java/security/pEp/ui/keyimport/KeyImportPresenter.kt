@@ -61,8 +61,6 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
 
 
     private suspend fun importKey(uri: Uri): Boolean = withContext(Dispatchers.IO) {
-
-
         var result = true
         try {
             val context = view.getApplicationContext()

@@ -503,17 +503,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return engine.myself(myId)
     }
 
-    @Synchronized
-    override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
-        createEngineInstanceIfNeeded()
-        return try {
-            val sanitizedFpr = PEpUtils.sanitizeFpr(fpr)
-            engine.setOwnKey(id, sanitizedFpr)
-        } catch (e: Exception) {
-            //TODO: Make pEpException a runtime one, and filter here
-            null
-        }
-    }
 
     @Synchronized
     override fun setPassiveModeEnabled(enable: Boolean) {
@@ -1103,6 +1092,22 @@ class PEpProviderImplKotlin @Inject constructor(
     private suspend fun importKeySuspend(key: ByteArray) = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.importKey(key)
+    }
+
+
+    override fun setOwnIdentity(id: Identity, fpr: String): Identity? = runBlocking {
+        setOwnIdentitySuspend(id,fpr)
+    }
+
+    private suspend fun setOwnIdentitySuspend(id: Identity, fpr: String): Identity? = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        return@withContext try {
+            val sanitizedFpr = PEpUtils.sanitizeFpr(fpr)
+            engine.setOwnKey(id, sanitizedFpr)
+        } catch (e: Exception) {
+            //TODO: Make pEpException a runtime one, and filter here
+            null
+        }
     }
 
     companion object {
