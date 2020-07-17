@@ -55,33 +55,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Synchronized
-    override fun getRating(message: com.fsck.k9.mail.Message): Rating {
-        val from = message.from[0] // FIXME: From is an array?!
-        val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
-        val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
-        val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
-        return getRating(from, to, cc, bcc)
-    }
-
-    override fun getRating(message: com.fsck.k9.mail.Message, callback: ResultCallback<Rating>) {
-        val from = message.from[0] // FIXME: From is an array?!
-        val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
-        val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
-        val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
-        getRating(from, to, cc, bcc, callback)
-    }
-
-    private fun getRating(message: Message): Rating {
-        try {
-            createEngineInstanceIfNeeded()
-            return engine.outgoing_message_rating(message)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "during getRating:")
-        }
-        return Rating.pEpRatingUndefined
-    }
-
     @Throws(pEpException::class)
     private fun createEngineSession() {
         engine = Engine()
@@ -109,47 +82,6 @@ class PEpProviderImplKotlin @Inject constructor(
         if (pEpUseKeyserver) startKeyserverLookup() else stopKeyserverLookup()
     }
 
-    //Don't instantiate a new engine
-    @Synchronized
-    override fun getRating(from: Address?, toAddresses: List<Address>, ccAddresses: List<Address>,
-                           bccAddresses: List<Address>): Rating {
-        if (bccAddresses.isNotEmpty()) {
-            return Rating.pEpRatingUnencrypted
-        }
-        val recipientsSize = toAddresses.size + ccAddresses.size + bccAddresses.size
-        if (from == null || recipientsSize == 0)
-            return Rating.pEpRatingUndefined
-
-        var testee: Message? = null
-        try {
-            createEngineInstanceIfNeeded()
-
-            testee = Message()
-            val idFrom = PEpUtils.createIdentity(from, context)
-            idFrom.user_id = PEP_OWN_USER_ID
-            idFrom.me = true
-            testee.from = idFrom
-            testee.to = PEpUtils.createIdentities(toAddresses, context)
-            testee.cc = PEpUtils.createIdentities(ccAddresses, context)
-            testee.bcc = PEpUtils.createIdentities(bccAddresses, context)
-            testee.shortmsg = "hello, world" // FIXME: do I need them?
-            testee.longmsg = "Lorem ipsum"
-            testee.dir = Message.Direction.Outgoing
-            val result = engine.outgoing_message_rating(testee) // stupid way to be able to patch the value in debugger
-            Timber.i(TAG, "getRating " + result.name)
-            return result
-        } catch (e: Throwable) {
-            Timber.e(e, "%s %s", TAG, "during color test:")
-        } finally {
-            testee?.close()
-        }
-        return Rating.pEpRatingUndefined
-    }
-
-    override fun getRating(from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
-                           bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
-        getRating(null, from, toAddresses, ccAddresses, bccAddresses, callback)
-    }
 
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
                                      bccAddresses: List<Address>): Boolean {
@@ -694,61 +626,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun loadOutgoingMessageRatingAfterResetTrust(
-            identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
-            bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
-        getRating(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
-    }
-
-    private fun getRating(identity: Identity?, from: Address?, toAddresses: List<Address>,
-                          ccAddresses: List<Address>, bccAddresses: List<Address>,
-                          callback: ResultCallback<Rating>) {
-        Timber.i("Counter of PEpProviderImpl +1")
-        EspressoTestingIdlingResource.increment()
-        threadExecutor.execute {
-            if (bccAddresses.isNotEmpty()) {
-                notifyLoaded(Rating.pEpRatingUnencrypted, callback)
-                return@execute
-            }
-            var testee: Message? = null
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                if (identity != null) {
-                    engine.keyResetTrust(identity)
-                }
-                val recipientsSize = toAddresses.size + ccAddresses.size + bccAddresses.size
-                if (from == null || recipientsSize == 0) notifyLoaded(Rating.pEpRatingUndefined, callback)
-
-                testee = Message()
-
-                val idFrom = PEpUtils.createIdentity(from, context)
-                idFrom.user_id = PEP_OWN_USER_ID
-                idFrom.me = true
-                testee.from = idFrom
-                testee.to = PEpUtils.createIdentities(toAddresses, context)
-                testee.cc = PEpUtils.createIdentities(ccAddresses, context)
-                testee.bcc = PEpUtils.createIdentities(bccAddresses, context)
-                testee.shortmsg = "hello, world" // FIXME: do I need them?
-                testee.longmsg = "Lorem ipsum"
-                testee.dir = Message.Direction.Outgoing
-
-                val result = engine.outgoing_message_rating(testee) // stupid way to be able to patch the value in debugger
-                Timber.i(TAG, "getRating " + result.name)
-
-                notifyLoaded(result, callback)
-            } catch (e: Throwable) {
-                Timber.e(e, "%s %s", TAG, "during color test:")
-                notifyError(e, callback)
-            } finally {
-                Timber.i("Counter of PEpProviderImpl  -1")
-                EspressoTestingIdlingResource.decrement()
-                testee?.close()
-                engine?.close()
-            }
-        }
-    }
-
     override fun obtainLanguages(): Map<String, PEpLanguage>? {
         return try {
             val languages: MutableMap<String, PEpLanguage> = HashMap()
@@ -780,7 +657,6 @@ class PEpProviderImplKotlin @Inject constructor(
             null
         }
     }
-
 
     override fun keyResetIdentity(ident: Identity, fpr: String) {
         createEngineInstanceIfNeeded()
@@ -964,8 +840,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return@runBlocking result
     }
 
-    //FIXME: Implement sync use lists.
-
     override fun acceptSync() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1110,6 +984,131 @@ class PEpProviderImplKotlin @Inject constructor(
         myId.user_id = PEP_OWN_USER_ID
         myId.me = true
         engine.myself(myId)
+    }
+
+    override fun loadOutgoingMessageRatingAfterResetTrust(
+            identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
+            bccAddresses: List<Address>, callback: ResultCallback<Rating>) = runBlocking {
+        getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
+    }
+
+    override fun getRating(message: com.fsck.k9.mail.Message): Rating {
+        val from = message.from[0]
+        val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
+        val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
+        val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
+        return getRating(from, to, cc, bcc)
+    }
+
+    override fun getRating(message: com.fsck.k9.mail.Message, callback: ResultCallback<Rating>) {
+        val from = message.from[0]
+        val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
+        val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
+        val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
+        getRating(from, to, cc, bcc, callback)
+    }
+
+    override fun getRating(from: Address,
+                           toAddresses: List<Address>,
+                           ccAddresses: List<Address>,
+                           bccAddresses: List<Address>,
+                           callback: ResultCallback<Rating>) = runBlocking {
+        getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
+    }
+
+    //Don't instantiate a new engine
+    override fun getRating(from: Address?,
+                           toAddresses: List<Address>,
+                           ccAddresses: List<Address>,
+                           bccAddresses: List<Address>): Rating = runBlocking {
+        getRatingSuspend(from, toAddresses, ccAddresses, bccAddresses)
+    }
+
+    private suspend fun getRatingSuspend(from: Address?,
+                                         toAddresses: List<Address>,
+                                         ccAddresses: List<Address>,
+                                         bccAddresses: List<Address>): Rating = withContext(Dispatchers.IO) {
+        if (bccAddresses.isNotEmpty()) return@withContext Rating.pEpRatingUnencrypted
+
+        val recipientsSize = toAddresses.size + ccAddresses.size + bccAddresses.size
+        if (from == null || recipientsSize == 0) return@withContext Rating.pEpRatingUndefined
+
+        var message: Message? = null
+        try {
+            createEngineInstanceIfNeeded()
+            message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
+
+            val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
+            Timber.i(TAG, "getRating " + result.name)
+            return@withContext result
+        } catch (e: Throwable) {
+            Timber.e(e, "%s %s", TAG, "during color test:")
+        } finally {
+            message?.close()
+        }
+        return@withContext Rating.pEpRatingUndefined
+    }
+
+    private suspend fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
+                                         ccAddresses: List<Address>, bccAddresses: List<Address>,
+                                         callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+        Timber.i("Counter of PEpProviderImpl +1")
+        EspressoTestingIdlingResource.increment()
+        when {
+            bccAddresses.isNotEmpty() -> notifyLoaded(Rating.pEpRatingUnencrypted, callback)
+            else -> {
+                var message: Message? = null
+                var engine: Engine? = null
+                try {
+                    engine = newEngineSession
+                    if (identity != null) engine.keyResetTrust(identity)
+                    val areRecipientsEmpty = toAddresses.isEmpty() && ccAddresses.isEmpty() && bccAddresses.isEmpty()
+                    if (from == null || areRecipientsEmpty) notifyLoaded(Rating.pEpRatingUndefined, callback)
+
+                    message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
+                    val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
+                    Timber.i(TAG, "getRating " + result.name)
+                    notifyLoaded(result, callback)
+                } catch (e: Throwable) {
+                    Timber.e(e, "%s %s", TAG, "during color test:")
+                    notifyError(e, callback)
+                } finally {
+                    Timber.i("Counter of PEpProviderImpl  -1")
+                    EspressoTestingIdlingResource.decrement()
+                    message?.close()
+                    engine?.close()
+                }
+            }
+        }
+    }
+
+    private suspend fun getRatingSuspend(message: Message): Rating = withContext(Dispatchers.IO) {
+        try {
+            createEngineInstanceIfNeeded()
+            engine.outgoing_message_rating(message)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "during getRating:")
+            Rating.pEpRatingUndefined
+        }
+    }
+
+    private fun createMessageForRating(from: Address?,
+                                       toAddresses: List<Address>,
+                                       ccAddresses: List<Address>,
+                                       bccAddresses: List<Address>): Message {
+        val idFrom = PEpUtils.createIdentity(from, context)
+        idFrom.user_id = PEP_OWN_USER_ID
+        idFrom.me = true
+
+        val message = Message()
+        message.from = idFrom
+        message.to = PEpUtils.createIdentities(toAddresses, context)
+        message.cc = PEpUtils.createIdentities(ccAddresses, context)
+        message.bcc = PEpUtils.createIdentities(bccAddresses, context)
+        message.shortmsg = "hello, world" // FIXME: do I need them?
+        message.longmsg = "Lorem ipsum"
+        message.dir = Message.Direction.Outgoing
+        return message
     }
 
     companion object {
