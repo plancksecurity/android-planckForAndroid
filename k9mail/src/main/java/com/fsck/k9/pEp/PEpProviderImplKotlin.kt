@@ -987,7 +987,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     //FIXME: Implement sync use lists.
-    @Synchronized
+
     override fun acceptSync() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -995,7 +995,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun rejectSync() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1003,7 +1002,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun cancelSync() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1043,7 +1041,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return@withContext true
     }
 
-    @Synchronized
     override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
         Timber.d(TAG, "decryptMessage() enter")
         decryptMessageSuspend(source)
