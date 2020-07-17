@@ -23,17 +23,12 @@ import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Engine.decrypt_message_Return
 import foundation.pEp.jniadapter.Sync.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-/**
- * pep provider implementation. Dietz is the culprit.
- */
 class PEpProviderImplKotlin @Inject constructor(
         private val threadExecutor: ThreadExecutor,
         private val postExecutionThread: PostExecutionThread,
@@ -170,62 +165,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return false
     }
 
-    @Synchronized
-    override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
-        Timber.d(TAG, "decryptMessage() enter")
-        decryptMessageSuspend(source)
-    }
-
-    private suspend fun decryptMessageSuspend(source: MimeMessage): DecryptResult = withContext(Dispatchers.IO) {
-        var srcMsg: Message? = null
-        var decReturn: decrypt_message_Return? = null
-        try {
-            createEngineInstanceIfNeeded()
-
-            srcMsg = PEpMessageBuilder(source).createMessage(context)
-            srcMsg.dir = Message.Direction.Incoming
-
-            Timber.d("%s %s", TAG, "pEpdecryptMessage() before decrypt")
-            decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
-            Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt")
-
-            Timber.d(TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
-            val message = decReturn.dst
-            val decMsg = getMimeMessage(source, message)
-
-            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
-                Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                if (K9.DEBUG) {
-                    //Not using Timber on purpose.
-                    Log.e(TAG, message.attachments[0].toString())
-                }
-            } else {
-                Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
-                Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
-            }
-            val neverUnprotected = (decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).isNotEmpty()
-                    && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0] == PEP_ALWAYS_SECURE_TRUE)
-            decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected)
-
-            extractpEpImportHeaderFromReplyTo(decMsg)
-            // TODO: 2020-02-20 Seem like this flags currently are not used on the engine,
-            //  this needs to be reviewed and probably removed
-            val flaggedResult = processKeyImportSyncMessages(decReturn, decMsg)
-            flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1)
-
-        } catch (t: Throwable) {
-            Timber.e(t, "%s %s", TAG, source.subject +
-                    "\n${source.from[0]}" +
-                    "\n${source.sentDate}" +
-                    "\n${source.messageId}")
-            throw AppCannotDecryptException("Could not decrypt", t)
-        } finally {
-            srcMsg?.close()
-            if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
-            Timber.d(TAG, "decryptMessage() exit")
-        }
-    }
-
     private fun processKeyImportSyncMessages(decReturn: decrypt_message_Return?, decryptedMimeMessage: MimeMessage): DecryptResult? {
         val flags: Int
         val lastValidDate = Date(System.currentTimeMillis() - TIMEOUT)
@@ -332,20 +271,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return result
     }
 
-    @Throws(pEpException::class, MessagingException::class)
-    private fun getEncryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
-        val messagesToEncrypt: MutableList<Message> = ArrayList()
-        val toEncryptMessage = stripUnencryptedRecipients(source)
-        messagesToEncrypt.add(toEncryptMessage)
-
-        if (toEncryptMessage.bcc != null) {
-            handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt)
-        }
-        val result: List<MimeMessage> = ArrayList(encryptMessages(source, extraKeys, messagesToEncrypt))
-        messagesToEncrypt.forEach { message -> message.close() }
-
-        return@runBlocking result
-    }
 
     private fun stripUnencryptedRecipients(source: MimeMessage): Message {
         return stripRecipients(source, false)
@@ -374,34 +299,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
-    private fun getEncryptedCopy(source: MimeMessage,
-                                 message: Message,
-                                 extraKeys: Array<String>): MimeMessage = runBlocking {
-        getEncryptedCopySuspend(source, message, extraKeys)
-    }
-
-    @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
-    private suspend fun getEncryptedCopySuspend(source: MimeMessage,
-                                                message: Message,
-                                                extraKeys: Array<String>): MimeMessage = withContext(Dispatchers.Default) {
-        message.dir = Message.Direction.Outgoing
-        Timber.d(TAG, "encryptMessage() before encrypt")
-        val from = message.from
-        from.user_id = PEP_OWN_USER_ID
-        from.me = true
-        message.from = from
-        var currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.encFormat)
-        source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null)
-        if (currentEnc == null) {
-            if (source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED)) {
-                throw AppDidntEncryptMessageException(source)
-            }
-            currentEnc = message
-        }
-        Timber.d(TAG, "encryptMessage() after encrypt")
-        return@withContext getMimeMessage(source, currentEnc)
-    }
 
     private fun stripRecipients(src: MimeMessage, encrypted: Boolean): Message {
         val message = PEpMessageBuilder(src).createMessage(context)
@@ -648,26 +545,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return null
     }
 
-    // TODO remove this?
-    //    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
-    //        StringBuilder stringBuilder = new StringBuilder();
-    //        String formattedFpr = PEpUtils.formatFpr(id.fpr);
-    //        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
-    //                .append("\n")
-    //                .append(context.getString(R.string.pep_username)).append(": ")
-    //                .append(id.username).append("\n")
-    //                .append(context.getString(R.string.pep_userAddress)).append(": ")
-    //                .append(id.address).append("\n")
-    //                .append("\n")
-    //                .append(formattedFpr.substring(0, formattedFpr.length()/2))
-    //                .append("\n")
-    //                .append(formattedFpr.substring(formattedFpr.length()/2))
-    //                .append("\n").append("\n")
-    //                .append(context.getString(R.string.recipient_from)).append(": ")
-    //                .append(fromAddress);
-    //        return stringBuilder.toString();
-    //    }
-
     @Synchronized
     override fun setSubjectProtection(isProtected: Boolean) {
         createEngineInstanceIfNeeded()
@@ -719,7 +596,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.blacklist_delete(fpr)
     }
 
-
     @Synchronized
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
         engine.setMessageToSendCallback(callback)
@@ -746,20 +622,10 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    //FIXME: Implement sync use lists.
-    @Synchronized
-    override fun acceptSync() {
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted, Vector())
-    }
-
-    @Synchronized
-    override fun rejectSync() {
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected, Vector())
-    }
-
-    @Synchronized
-    override fun cancelSync() {
-        engine.deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel, Vector())
+    override fun stopSync() {
+        Timber.d("%s %s", TAG, "stopSync")
+        createEngineInstanceIfNeeded()
+        engine.stopSync()
     }
 
     override fun loadOwnIdentities(callback: ResultCallback<List<Identity>>) {
@@ -935,121 +801,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Throws(pEpException::class)
-    override fun encryptMessage(result: Message): Message = runBlocking {
-        return@runBlocking encryptMessageSuspend(result)
-    }
-
-    @Throws(pEpException::class)
-    private suspend fun encryptMessageSuspend(result: Message): Message  = withContext(Dispatchers.Default){
-        createEngineInstanceIfNeeded()
-        return@withContext engine.encrypt_message(result, null, result.encFormat)
-    }
-
-    override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
-        encryptMessageSuspend(source, extraKeys)
-    }
-
-    private suspend fun encryptMessageSuspend(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = withContext(Dispatchers.IO) {
-        // TODO: 06/12/16 add unencrypted for some
-        Timber.d(TAG, "encryptMessage() enter")
-        val resultMessages: MutableList<MimeMessage> = ArrayList()
-        val message = PEpMessageBuilder(source).createMessage(context)
-        return@withContext try {
-            createEngineInstanceIfNeeded()
-            if (source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).isNotEmpty()) {
-                val key = source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)[0]
-                var replyTo = message.replyTo
-                if (replyTo == null) {
-                    replyTo = Vector()
-                }
-                replyTo.add(PEpUtils.createIdentity(Address(key + PEP_SIGNALING_BYPASS_DOMAIN, key), context))
-                message.replyTo = replyTo
-            }
-            resultMessages.add(getEncryptedCopy(source, message, extraKeys))
-            resultMessages
-        } catch (e: pEpPassphraseRequired) {
-            Timber.e(e, "%s %s", TAG, "while encrypting message:")
-            throw AuthFailurePassphraseNeeded()
-        } catch (e: pEpWrongPassphrase) {
-            Timber.e(e, "%s %s", TAG, "while encrypting message:")
-            throw AuthFailureWrongPassphrase()
-        } catch (e: AppDidntEncryptMessageException) {
-            throw e
-        } catch (t: Throwable) {
-            Timber.e(t, "%s %s", TAG, "while encrypting message:")
-            throw RuntimeException("Could not encrypt", t)
-        } finally {
-            Timber.d(TAG, "encryptMessage() exit")
-        }
-    }
-
-    override fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage? = runBlocking {
-        encryptMessageToSelfSuspend(source,keys)
-    }
-
-    private suspend fun encryptMessageToSelfSuspend(source: MimeMessage?, keys: Array<String>): MimeMessage? = withContext(Dispatchers.Default){
-        if (source == null) {
-            return@withContext null
-        }
-        createEngineInstanceIfNeeded()
-        var message: Message? = null
-        return@withContext try {
-            message = PEpMessageBuilder(source).createMessage(context)
-            message.dir = Message.Direction.Outgoing
-            Timber.d(TAG, "encryptMessage() before encrypt to self")
-            val from = message.from
-            from.user_id = PEP_OWN_USER_ID
-            from.me = true
-            message.from = from
-            var currentEnc = engine.encrypt_message_for_self(message.from, message, convertExtraKeys(keys))
-            if (currentEnc == null) currentEnc = message
-            Timber.d(TAG, "encryptMessage() after encrypt to self")
-            getMimeMessage(source, currentEnc)
-        } catch (e: Exception) {
-            Timber.e(e, "%s %s", TAG, "encryptMessageToSelf: ")
-            source
-        } finally {
-            message?.close()
-        }
-    }
-
-    @Throws(pEpException::class, MessagingException::class)
-    private suspend fun encryptMessages(source: MimeMessage, extraKeys: Array<String>,
-                                messagesToEncrypt: List<Message>): List<MimeMessage> = withContext(Dispatchers.IO) {
-        val messages: MutableList<MimeMessage> = ArrayList()
-        messagesToEncrypt.forEach { message -> messages.add(getEncryptedCopySuspend(source, message, extraKeys)) }
-        return@withContext messages
-    }
-
-    override fun canEncrypt(address: String): Boolean = runBlocking{
-        canEncryptSuspend(address)
-    }
-
-    private suspend fun canEncryptSuspend(address: String): Boolean = withContext(Dispatchers.IO) {
-        createEngineInstanceIfNeeded()
-
-        val msg = Message()
-        val id = myself(PEpUtils.createIdentity(Address(address), context))
-        msg.from = id
-
-        val to = Vector<Identity>()
-        to.add(id)
-        msg.to = to
-
-        msg.shortmsg = "hello, world"
-        msg.longmsg = "this is a test"
-        msg.dir = Message.Direction.Outgoing
-
-        try {
-            engine.encrypt_message(msg, null, Message.EncFormat.PEP)
-        } catch (e: pEpException) {
-            Timber.e(e)
-            return@withContext false
-        }
-        return@withContext true
-    }
-
     override fun importKey(key: ByteArray) {
         createEngineInstanceIfNeeded()
         engine.importKey(key)
@@ -1094,12 +845,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.leave_device_group()
     }
 
-    override fun stopSync() {
-        Timber.d("%s %s", TAG, "stopSync")
-        createEngineInstanceIfNeeded()
-        engine.stopSync()
-    }
-
     override fun isSyncRunning(): Boolean {
         createEngineInstanceIfNeeded()
         return engine.isSyncRunning
@@ -1107,6 +852,251 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private fun getElementAtPosition(chain: String): String {
         return chain.substring(1, chain.length - 1)
+    }
+
+    @Throws(pEpException::class)
+    override fun encryptMessage(result: Message): Message = runBlocking {
+        return@runBlocking encryptMessageSuspend(result)
+    }
+
+    @Throws(pEpException::class)
+    private suspend fun encryptMessageSuspend(result: Message): Message = withContext(Dispatchers.Default) {
+        createEngineInstanceIfNeeded()
+        return@withContext engine.encrypt_message(result, null, result.encFormat)
+    }
+
+    override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
+        encryptMessageSuspend(source, extraKeys)
+    }
+
+    private suspend fun encryptMessageSuspend(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = withContext(Dispatchers.IO) {
+        // TODO: 06/12/16 add unencrypted for some
+        Timber.d(TAG, "encryptMessage() enter")
+        val resultMessages: MutableList<MimeMessage> = ArrayList()
+        val message = PEpMessageBuilder(source).createMessage(context)
+        return@withContext try {
+            createEngineInstanceIfNeeded()
+            if (source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).isNotEmpty()) {
+                val key = source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)[0]
+                var replyTo = message.replyTo
+                if (replyTo == null) {
+                    replyTo = Vector()
+                }
+                replyTo.add(PEpUtils.createIdentity(Address(key + PEP_SIGNALING_BYPASS_DOMAIN, key), context))
+                message.replyTo = replyTo
+            }
+            resultMessages.add(getEncryptedCopy(source, message, extraKeys))
+            resultMessages
+        } catch (e: pEpPassphraseRequired) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:")
+            throw AuthFailurePassphraseNeeded()
+        } catch (e: pEpWrongPassphrase) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:")
+            throw AuthFailureWrongPassphrase()
+        } catch (e: AppDidntEncryptMessageException) {
+            throw e
+        } catch (t: Throwable) {
+            Timber.e(t, "%s %s", TAG, "while encrypting message:")
+            throw RuntimeException("Could not encrypt", t)
+        } finally {
+            Timber.d(TAG, "encryptMessage() exit")
+        }
+    }
+
+    override fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage? = runBlocking {
+        encryptMessageToSelfSuspend(source, keys)
+    }
+
+    private suspend fun encryptMessageToSelfSuspend(source: MimeMessage?, keys: Array<String>): MimeMessage? = withContext(Dispatchers.Default) {
+        if (source == null) {
+            return@withContext null
+        }
+        createEngineInstanceIfNeeded()
+        var message: Message? = null
+        return@withContext try {
+            message = PEpMessageBuilder(source).createMessage(context)
+            message.dir = Message.Direction.Outgoing
+            Timber.d(TAG, "encryptMessage() before encrypt to self")
+            val from = message.from
+            from.user_id = PEP_OWN_USER_ID
+            from.me = true
+            message.from = from
+            var currentEnc = engine.encrypt_message_for_self(message.from, message, convertExtraKeys(keys))
+            if (currentEnc == null) currentEnc = message
+            Timber.d(TAG, "encryptMessage() after encrypt to self")
+            getMimeMessage(source, currentEnc)
+        } catch (e: Exception) {
+            Timber.e(e, "%s %s", TAG, "encryptMessageToSelf: ")
+            source
+        } finally {
+            message?.close()
+        }
+    }
+
+    @Throws(pEpException::class, MessagingException::class)
+    private suspend fun encryptMessages(source: MimeMessage, extraKeys: Array<String>,
+                                        messagesToEncrypt: List<Message>): List<MimeMessage> = withContext(Dispatchers.IO) {
+        val messages: MutableList<MimeMessage> = ArrayList()
+        messagesToEncrypt.forEach { message -> messages.add(getEncryptedCopySuspend(source, message, extraKeys)) }
+        return@withContext messages
+    }
+
+
+    @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
+    private fun getEncryptedCopy(source: MimeMessage,
+                                 message: Message,
+                                 extraKeys: Array<String>): MimeMessage = runBlocking {
+        getEncryptedCopySuspend(source, message, extraKeys)
+    }
+
+    @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
+    private suspend fun getEncryptedCopySuspend(source: MimeMessage,
+                                                message: Message,
+                                                extraKeys: Array<String>): MimeMessage = withContext(Dispatchers.Default) {
+        message.dir = Message.Direction.Outgoing
+        Timber.d(TAG, "encryptMessage() before encrypt")
+        val from = message.from
+        from.user_id = PEP_OWN_USER_ID
+        from.me = true
+        message.from = from
+        var currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.encFormat)
+        source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null)
+        if (currentEnc == null) {
+            if (source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED)) {
+                throw AppDidntEncryptMessageException(source)
+            }
+            currentEnc = message
+        }
+        Timber.d(TAG, "encryptMessage() after encrypt")
+        return@withContext getMimeMessage(source, currentEnc)
+    }
+
+    @Throws(pEpException::class, MessagingException::class)
+    private fun getEncryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
+        val messagesToEncrypt: MutableList<Message> = ArrayList()
+        val toEncryptMessage = stripUnencryptedRecipients(source)
+        messagesToEncrypt.add(toEncryptMessage)
+
+        if (toEncryptMessage.bcc != null) {
+            handleEncryptedBCC(source, toEncryptMessage, messagesToEncrypt)
+        }
+        val result: List<MimeMessage> = ArrayList(encryptMessages(source, extraKeys, messagesToEncrypt))
+        messagesToEncrypt.forEach { message -> message.close() }
+
+        return@runBlocking result
+    }
+
+    //FIXME: Implement sync use lists.
+    @Synchronized
+    override fun acceptSync() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
+        }
+    }
+
+    @Synchronized
+    override fun rejectSync() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
+        }
+    }
+
+    @Synchronized
+    override fun cancelSync() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
+        }
+    }
+
+    private suspend fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = withContext(Dispatchers.IO) {
+        engine.deliverHandshakeResult(syncResult, Vector())
+    }
+
+    override fun canEncrypt(address: String): Boolean = runBlocking {
+        canEncryptSuspend(address)
+    }
+
+    private suspend fun canEncryptSuspend(address: String): Boolean = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+
+        val msg = Message()
+        val id = myself(PEpUtils.createIdentity(Address(address), context))
+        msg.from = id
+
+        val to = Vector<Identity>()
+        to.add(id)
+        msg.to = to
+
+        msg.shortmsg = "hello, world"
+        msg.longmsg = "this is a test"
+        msg.dir = Message.Direction.Outgoing
+
+        try {
+            engine.encrypt_message(msg, null, Message.EncFormat.PEP)
+        } catch (e: pEpException) {
+            Timber.e(e)
+            return@withContext false
+        }
+        return@withContext true
+    }
+
+    @Synchronized
+    override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
+        Timber.d(TAG, "decryptMessage() enter")
+        decryptMessageSuspend(source)
+    }
+
+    private suspend fun decryptMessageSuspend(source: MimeMessage): DecryptResult = withContext(Dispatchers.IO) {
+        var srcMsg: Message? = null
+        var decReturn: decrypt_message_Return? = null
+        try {
+            createEngineInstanceIfNeeded()
+
+            srcMsg = PEpMessageBuilder(source).createMessage(context)
+            srcMsg.dir = Message.Direction.Incoming
+
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() before decrypt")
+            decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt")
+
+            Timber.d(TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
+            val message = decReturn.dst
+            val decMsg = getMimeMessage(source, message)
+
+            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
+                Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
+                if (K9.DEBUG) {
+                    //Not using Timber on purpose.
+                    Log.e(TAG, message.attachments[0].toString())
+                }
+            } else {
+                Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
+                Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
+            }
+            val neverUnprotected = (decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).isNotEmpty()
+                    && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0] == PEP_ALWAYS_SECURE_TRUE)
+            decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected)
+
+            extractpEpImportHeaderFromReplyTo(decMsg)
+            // TODO: 2020-02-20 Seem like this flags currently are not used on the engine,
+            //  this needs to be reviewed and probably removed
+            val flaggedResult = processKeyImportSyncMessages(decReturn, decMsg)
+            flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1)
+
+        } catch (t: Throwable) {
+            Timber.e(t, "%s %s", TAG, source.subject +
+                    "\n${source.from[0]}" +
+                    "\n${source.sentDate}" +
+                    "\n${source.messageId}")
+            throw AppCannotDecryptException("Could not decrypt", t)
+        } finally {
+            srcMsg?.close()
+            if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
+            Timber.d(TAG, "decryptMessage() exit")
+        }
     }
 
     companion object {
