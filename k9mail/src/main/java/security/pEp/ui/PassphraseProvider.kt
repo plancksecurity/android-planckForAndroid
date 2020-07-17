@@ -12,40 +12,62 @@ object PassphraseProvider {
     @Volatile
     @JvmStatic
     var passphrase = ""
-    @JvmStatic
+    @Volatile
+    var running = false
+
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
         return PassphraseRequiredCallback {
-            Log.e("pEpEngine-passphrase", "Calling callback")
-            var pass = ""
-            pass = passphraseFromUser(context)
+            var result = ""
+            Log.e("pEpEngine-passphrase", "base 0")
 
-            pass
+            runBlocking {
+
+                Log.e("pEpEngine-passphrase", "base 1")
+
+                result = passphraseFromUser(context)
+                Log.e("pEpEngine-passphrase", "base 2")
+
+            }
+            Log.e("pEpEngine-passphrase", "base 3")
+
+            result
         }
     }
 
-    fun passphraseFromUser(context: Context): String = runBlocking {
-        Log.e("pEpEngine-passphrase", "passphraseFromUser 1")
-        passphrase = ""
-        launchPassphraseActivity(context)
+    suspend fun passphraseFromUser(context: Context): String {
+        prepareProvider()
+        launchUI(context)
         wait()
-        Log.e("pEpEngine-passphrase", "Prerereturn 1")
-        passphrase
+        Log.e("pEpEngine-passphrase", " Callback END UI")
+
+        Log.e("pEpEngine-passphrase", "Prerereturn   1")
+        return passphrase
+
     }
 
-    private suspend fun launchPassphraseActivity(context: Context) = withContext(Dispatchers.Main) {
+    private fun prepareProvider() {
+        passphrase = ""
+        running = true
+    }
+
+    private suspend fun launchUI(context: Context) = withContext(Dispatchers.Main) {
         PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
+
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {
-        var seconds = 0
-        while (passphrase == "" && seconds < 30) {
+        while (passphrase == "" && running) {
             Timber.e("pEpEngine, delay")
             delay(1000)
-            seconds += 1
         }
         Timber.e("pEpEngine, return")
+
+
     }
 
+    fun stop() {
+        running = false;
+    }
 
 
 }
