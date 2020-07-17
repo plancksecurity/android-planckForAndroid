@@ -135,45 +135,6 @@ class PEpProviderImplKotlin @Inject constructor(
         decMsg.replyTo = replyTo.toTypedArray()
     }
 
-    override fun decryptMessage(source: MimeMessage, callback: ResultCallback<DecryptResult>) {
-        threadExecutor.execute {
-            Timber.d(TAG, "decryptMessage() enter")
-            var srcMsg: Message? = null
-            var decReturn: decrypt_message_Return? = null
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-
-                srcMsg = PEpMessageBuilder(source).createMessage(context)
-                srcMsg.dir = Message.Direction.Incoming
-
-                Timber.d(TAG, "decryptMessage() before decrypt")
-                decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
-                Timber.d(TAG, "decryptMessage() after decrypt")
-
-                if (decReturn.rating == Rating.pEpRatingCannotDecrypt
-                        || decReturn.rating == Rating.pEpRatingHaveNoKey) {
-                    notifyError(AppCannotDecryptException(KEY_MIOSSING_ERORR_MESSAGE), callback)
-                    return@execute
-                }
-
-                val message = decReturn.dst
-                val decMsg = getMimeMessage(source, message)
-
-                notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback)
-
-            } catch (t: Throwable) {
-                Timber.e(t, "%s %s", TAG, "while decrypting message:")
-                notifyError(AppCannotDecryptException("Could not decrypt", t), callback)
-            } finally {
-                srcMsg?.close()
-                if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
-                engine?.close()
-                Timber.d(TAG, "decryptMessage() exit")
-            }
-        }
-    }
-
     private fun isUsablePrivateKey(result: decrypt_message_Return): Boolean {
         // TODO: 13/06/16 Check if it is necessary to check own id
         return (result.rating.value >= Rating.pEpRatingTrusted.value && result.flags == 0x01)
@@ -659,7 +620,15 @@ class PEpProviderImplKotlin @Inject constructor(
         return chain.substring(1, chain.length - 1)
     }
 
-    // Moved to coroutines
+    // ************************************************************************************
+    // ************************************************************************************
+    // ************************************************************************************
+    //
+    //                               Moved to coroutines
+    //
+    // ************************************************************************************
+    // ************************************************************************************
+    // ************************************************************************************
 
     @Throws(pEpException::class)
     override fun encryptMessage(result: Message): Message = runBlocking {
@@ -868,15 +837,15 @@ class PEpProviderImplKotlin @Inject constructor(
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
 
-            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
-                Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                if (K9.DEBUG) {
-                    //Not using Timber on purpose.
-                    Log.e(TAG, message.attachments[0].toString())
+            when {
+                PEpUtils.isAutoConsumeMessage(decMsg) -> {
+                    Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
+                    if (K9.DEBUG) Log.e(TAG, message.attachments[0].toString())
                 }
-            } else {
-                Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
-                Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
+                else -> {
+                    Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
+                    Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
+                }
             }
             val neverUnprotected = (decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).isNotEmpty()
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0] == PEP_ALWAYS_SECURE_TRUE)
@@ -897,6 +866,48 @@ class PEpProviderImplKotlin @Inject constructor(
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
+            Timber.d(TAG, "decryptMessage() exit")
+        }
+    }
+
+    override fun decryptMessage(source: MimeMessage, callback: ResultCallback<DecryptResult>) {
+        Timber.d(TAG, "decryptMessage() enter")
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            decryptMessageSuspend(source, callback)
+        }
+    }
+
+    private suspend fun decryptMessageSuspend(source: MimeMessage, callback: ResultCallback<DecryptResult>) = withContext(Dispatchers.Default) {
+        var srcMsg: Message? = null
+        var decReturn: decrypt_message_Return? = null
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+
+            srcMsg = PEpMessageBuilder(source).createMessage(context)
+            srcMsg.dir = Message.Direction.Incoming
+
+            Timber.d(TAG, "decryptMessage() before decrypt")
+            decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
+            Timber.d(TAG, "decryptMessage() after decrypt")
+
+            when (decReturn.rating) {
+                Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
+                    notifyError(AppCannotDecryptException(KEY_MIOSSING_ERORR_MESSAGE), callback)
+                else -> {
+                    val message = decReturn.dst
+                    val decMsg = getMimeMessage(source, message)
+                    notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback)
+                }
+            }
+        } catch (t: Throwable) {
+            Timber.e(t, "%s %s", TAG, "while decrypting message:")
+            notifyError(AppCannotDecryptException("Could not decrypt", t), callback)
+        } finally {
+            srcMsg?.close()
+            if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
+            engine?.close()
             Timber.d(TAG, "decryptMessage() exit")
         }
     }
