@@ -269,43 +269,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun getRating(address: Address): Rating {
-        val identity = PEpUtils.createIdentity(address, context)
-        return getRating(identity)
-    }
-
-    @Synchronized
-    override fun getRating(identity: Identity): Rating {
-        createEngineInstanceIfNeeded()
-        return try {
-            engine.identity_rating(identity)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getRating: ")
-            Rating.pEpRatingUndefined
-        }
-    }
-
-    override fun getRating(identity: Identity, callback: ResultCallback<Rating>) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = Engine()
-                val rating = engine.identity_rating(identity)
-                notifyLoaded(rating, callback)
-            } catch (e: Exception) {
-                notifyError(e, callback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
-    override fun getRating(address: Address, callback: ResultCallback<Rating>) {
-        val id = PEpUtils.createIdentity(address, context)
-        getRating(id, callback)
-    }
-
-    @Synchronized
     override fun trustwords(id: Identity, language: String): String {
         throw UnsupportedOperationException()
     }
@@ -614,16 +577,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private fun notifyError(throwable: Throwable, callback: Callback) {
         postExecutionThread.post { callback.onError(throwable) }
-    }
-
-    override fun incomingMessageRating(message: MimeMessage): Rating {
-        val pEpMessage = PEpMessageBuilder(message).createMessage(context)
-        return try {
-            engine.re_evaluate_message_rating(pEpMessage)
-        } catch (e: pEpException) {
-            Timber.e(e)
-            Rating.pEpRatingUndefined
-        }
     }
 
     override fun obtainLanguages(): Map<String, PEpLanguage>? {
@@ -992,6 +945,20 @@ class PEpProviderImplKotlin @Inject constructor(
         getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
     }
 
+    override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
+        incomingMessageRatingSuspend(message)
+    }
+
+    private suspend fun incomingMessageRatingSuspend(message: MimeMessage): Rating = withContext(Dispatchers.IO) {
+        try {
+            val pEpMessage = PEpMessageBuilder(message).createMessage(context)
+            engine.re_evaluate_message_rating(pEpMessage)
+        } catch (e: pEpException) {
+            Timber.e(e)
+            Rating.pEpRatingUndefined
+        }
+    }
+
     override fun getRating(message: com.fsck.k9.mail.Message): Rating {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
@@ -1110,6 +1077,48 @@ class PEpProviderImplKotlin @Inject constructor(
         message.dir = Message.Direction.Outgoing
         return message
     }
+
+    override fun getRating(address: Address): Rating = runBlocking {
+        val identity = PEpUtils.createIdentity(address, context)
+        getRatingSuspend(identity)
+    }
+
+    override fun getRating(identity: Identity): Rating = runBlocking {
+        getRatingSuspend(identity)
+    }
+
+    private suspend fun getRatingSuspend(identity: Identity): Rating = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        try {
+            engine.identity_rating(identity)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "getRating: ")
+            Rating.pEpRatingUndefined
+        }
+    }
+
+    override fun getRating(address: Address, callback: ResultCallback<Rating>) = runBlocking {
+        val identity = PEpUtils.createIdentity(address, context)
+        getRatingSuspend(identity, callback)
+    }
+
+    override fun getRating(identity: Identity, callback: ResultCallback<Rating>) = runBlocking {
+        getRatingSuspend(identity, callback)
+    }
+
+    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = Engine()
+            val rating = engine.identity_rating(identity)
+            notifyLoaded(rating, callback)
+        } catch (e: Exception) {
+            notifyError(e, callback)
+        } finally {
+            engine?.close()
+        }
+    }
+
 
     companion object {
         private const val TAG = "pEpEngine-provider"
