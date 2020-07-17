@@ -801,10 +801,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun importKey(key: ByteArray) {
-        createEngineInstanceIfNeeded()
-        engine.importKey(key)
-    }
 
     override fun keyResetIdentity(ident: Identity, fpr: String) {
         createEngineInstanceIfNeeded()
@@ -1094,6 +1090,19 @@ class PEpProviderImplKotlin @Inject constructor(
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
             Timber.d(TAG, "decryptMessage() exit")
         }
+    }
+
+
+    override fun importKey(key: ByteArray) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            importKeySuspend(key)
+        }
+    }
+
+    private suspend fun importKeySuspend(key: ByteArray) = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        engine.importKey(key)
     }
 
     companion object {
