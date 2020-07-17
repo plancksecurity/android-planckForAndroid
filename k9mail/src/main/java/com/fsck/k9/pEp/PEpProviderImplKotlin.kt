@@ -496,15 +496,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun myself(myId: Identity): Identity {
-        createEngineInstanceIfNeeded()
-        myId.user_id = PEP_OWN_USER_ID
-        myId.me = true
-        return engine.myself(myId)
-    }
-
-
-    @Synchronized
     override fun setPassiveModeEnabled(enable: Boolean) {
         createEngineInstanceIfNeeded()
         engine.config_passive_mode(enable)
@@ -839,6 +830,8 @@ class PEpProviderImplKotlin @Inject constructor(
         return chain.substring(1, chain.length - 1)
     }
 
+    // Moved to coroutines
+
     @Throws(pEpException::class)
     override fun encryptMessage(result: Message): Message = runBlocking {
         return@runBlocking encryptMessageSuspend(result)
@@ -1006,7 +999,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
 
         val msg = Message()
-        val id = myself(PEpUtils.createIdentity(Address(address), context))
+        val id = myselfSuspend(PEpUtils.createIdentity(Address(address), context))
         msg.from = id
 
         val to = Vector<Identity>()
@@ -1081,7 +1074,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-
     override fun importKey(key: ByteArray) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1094,9 +1086,8 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.importKey(key)
     }
 
-
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? = runBlocking {
-        setOwnIdentitySuspend(id,fpr)
+        setOwnIdentitySuspend(id, fpr)
     }
 
     private suspend fun setOwnIdentitySuspend(id: Identity, fpr: String): Identity? = withContext(Dispatchers.IO) {
@@ -1108,6 +1099,17 @@ class PEpProviderImplKotlin @Inject constructor(
             //TODO: Make pEpException a runtime one, and filter here
             null
         }
+    }
+
+    override fun myself(myId: Identity): Identity = runBlocking {
+        myselfSuspend(myId)
+    }
+
+    private suspend fun myselfSuspend(myId: Identity): Identity = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        myId.user_id = PEP_OWN_USER_ID
+        myId.me = true
+        engine.myself(myId)
     }
 
     companion object {
