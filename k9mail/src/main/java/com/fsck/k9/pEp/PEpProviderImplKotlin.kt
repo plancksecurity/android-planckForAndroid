@@ -313,33 +313,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.keyResetTrust(id)
     }
 
-    override fun loadMessageRatingAfterResetTrust(mimeMessage: MimeMessage?,
-                                                  isIncoming: Boolean,
-                                                  id: Identity,
-                                                  resultCallback: ResultCallback<Rating>) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                engine.keyResetTrust(id)
-                val pEpMessage = PEpMessageBuilder(mimeMessage).createMessage(context)
-                val rating: Rating
-                if (isIncoming) {
-                    pEpMessage.dir = Message.Direction.Incoming
-                    rating = engine.re_evaluate_message_rating(pEpMessage)
-                } else {
-                    pEpMessage.dir = Message.Direction.Outgoing
-                    rating = engine.outgoing_message_rating(pEpMessage)
-                }
-                notifyLoaded(rating, resultCallback)
-            } catch (e: pEpException) {
-                notifyError(e, resultCallback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
     @Synchronized
     override fun getLog(): String {
         return engine.getCrashdumpLog(100)
@@ -759,7 +732,7 @@ class PEpProviderImplKotlin @Inject constructor(
         val result: List<MimeMessage> = ArrayList(encryptMessages(source, extraKeys, messagesToEncrypt))
         messagesToEncrypt.forEach { message -> message.close() }
 
-        return@runBlocking result
+        result
     }
 
     override fun acceptSync() {
@@ -952,8 +925,43 @@ class PEpProviderImplKotlin @Inject constructor(
 
     override fun loadOutgoingMessageRatingAfterResetTrust(
             identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
-            bccAddresses: List<Address>, callback: ResultCallback<Rating>) = runBlocking {
-        getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
+            bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
+        }
+    }
+
+    override fun loadMessageRatingAfterResetTrust(
+            mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity, resultCallback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            loadMessageRatingAfterResetTrustSuspend(mimeMessage, isIncoming, id, resultCallback)
+        }
+    }
+
+    private suspend fun loadMessageRatingAfterResetTrustSuspend(
+            mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity,
+            resultCallback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+            engine.keyResetTrust(id)
+            val pEpMessage = PEpMessageBuilder(mimeMessage).createMessage(context)
+            val rating: Rating
+            if (isIncoming) {
+                pEpMessage.dir = Message.Direction.Incoming
+                rating = engine.re_evaluate_message_rating(pEpMessage)
+            } else {
+                pEpMessage.dir = Message.Direction.Outgoing
+                rating = engine.outgoing_message_rating(pEpMessage)
+            }
+            notifyLoaded(rating, resultCallback)
+        } catch (e: pEpException) {
+            notifyError(e, resultCallback)
+        } finally {
+            engine?.close()
+        }
     }
 
     override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
@@ -990,8 +998,11 @@ class PEpProviderImplKotlin @Inject constructor(
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>,
-                           callback: ResultCallback<Rating>) = runBlocking {
-        getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
+                           callback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
+        }
     }
 
     //Don't instantiate a new engine
@@ -1108,13 +1119,20 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun getRating(address: Address, callback: ResultCallback<Rating>) = runBlocking {
-        val identity = PEpUtils.createIdentity(address, context)
-        getRatingSuspend(identity, callback)
+    override fun getRating(address: Address, callback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            val identity = PEpUtils.createIdentity(address, context)
+            getRatingSuspend(identity, callback)
+        }
+
     }
 
-    override fun getRating(identity: Identity, callback: ResultCallback<Rating>) = runBlocking {
-        getRatingSuspend(identity, callback)
+    override fun getRating(identity: Identity, callback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            getRatingSuspend(identity, callback)
+        }
     }
 
     private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
