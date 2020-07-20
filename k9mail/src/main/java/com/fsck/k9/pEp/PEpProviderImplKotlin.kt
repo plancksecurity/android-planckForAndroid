@@ -419,24 +419,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback(activity)
     }
 
-    @Synchronized
-    override fun startSync() {
-        threadExecutor.execute {
-            try {
-                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
-                engine.startSync()
-            } catch (exception: pEpException) {
-                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
-            }
-        }
-    }
-
-    override fun stopSync() {
-        Timber.d("%s %s", TAG, "stopSync")
-        createEngineInstanceIfNeeded()
-        engine.stopSync()
-    }
-
     override fun loadOwnIdentities(callback: ResultCallback<List<Identity>>) {
         threadExecutor.execute {
             var engine: Engine? = null
@@ -1148,6 +1130,24 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @Synchronized
+    override fun startSync() {
+        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        uiScope.launch {
+            try {
+                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
+                engine.startSync()
+            } catch (exception: pEpException) {
+                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
+            }
+        }
+    }
+
+    override fun stopSync() {
+        Timber.d("%s %s", TAG, "stopSync")
+        createEngineInstanceIfNeeded()
+        engine.stopSync()
+    }
 
     companion object {
         private const val TAG = "pEpEngine-provider"
