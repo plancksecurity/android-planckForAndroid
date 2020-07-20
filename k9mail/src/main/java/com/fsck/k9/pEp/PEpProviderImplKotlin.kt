@@ -244,32 +244,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun trustPersonaKey(id: Identity) {
-        createEngineInstanceIfNeeded()
-        Timber.i(TAG, "Calling trust personal key")
-        engine.trustPersonalKey(id)
-    }
-
-    @Synchronized
-    override fun trustOwnKey(id: Identity) {
-        createEngineInstanceIfNeeded()
-        Timber.i(TAG, "Calling trust own key")
-        engine.trustOwnKey(id)
-    }
-
-    @Synchronized
-    override fun keyMistrusted(id: Identity) {
-        createEngineInstanceIfNeeded()
-        engine.keyMistrusted(id)
-    }
-
-    @Synchronized
-    override fun resetTrust(id: Identity) {
-        createEngineInstanceIfNeeded()
-        engine.keyResetTrust(id)
-    }
-
-    @Synchronized
     override fun getLog(): String {
         return engine.getCrashdumpLog(100)
     }
@@ -1157,6 +1131,56 @@ class PEpProviderImplKotlin @Inject constructor(
             engine?.close()
         }
 
+    }
+
+    override fun trustPersonaKey(id: Identity) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            trustPersonaKeySuspend(id)
+        }
+    }
+
+    private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        Timber.i(TAG, "Calling trust personal key")
+        engine.trustPersonalKey(id)
+    }
+
+    override fun trustOwnKey(id: Identity) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            trustOwnKeySuspend(id)
+        }
+    }
+
+    private suspend fun trustOwnKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        Timber.i(TAG, "Calling trust own key")
+        engine.trustOwnKey(id)
+    }
+
+    override fun keyMistrusted(id: Identity) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            keyMistrustedSuspend(id)
+        }
+    }
+
+    private suspend fun keyMistrustedSuspend(id: Identity) = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        engine.keyMistrusted(id)
+    }
+
+    override fun resetTrust(id: Identity) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            resetTrustSuspend(id)
+        }
+    }
+
+    private suspend fun resetTrustSuspend(id: Identity) = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        engine.keyResetTrust(id)
     }
 
     companion object {
