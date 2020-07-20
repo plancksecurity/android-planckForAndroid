@@ -3,6 +3,7 @@ package com.fsck.k9.pEp
 
 import android.content.Context
 import android.util.Log
+import androidx.annotation.WorkerThread
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
@@ -238,12 +239,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun updateIdentity(id: Identity): Identity {
-        createEngineInstanceIfNeeded()
-        return engine.updateIdentity(id)
-    }
-
-    @Synchronized
     override fun getLog(): String {
         return engine.getCrashdumpLog(100)
     }
@@ -454,40 +449,6 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "generatePrivateKeyMessage: ")
             null
-        }
-    }
-
-    override fun keyResetIdentity(ident: Identity, fpr: String) {
-        createEngineInstanceIfNeeded()
-        val identity = updateIdentity(ident)
-        try {
-            engine.key_reset_identity(identity, fpr)
-        } catch (e: pEpPassphraseRequired) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
-        } catch (e: pEpWrongPassphrase) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
-        }
-    }
-
-    override fun keyResetUser(userId: String, fpr: String) {
-        createEngineInstanceIfNeeded()
-        try {
-            engine.key_reset_user(userId, fpr)
-        } catch (e: pEpPassphraseRequired) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
-        } catch (e: pEpWrongPassphrase) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
-        }
-    }
-
-    override fun keyResetAllOwnKeys() {
-        createEngineInstanceIfNeeded()
-        try {
-            engine.key_reset_all_own_keys()
-        } catch (e: pEpPassphraseRequired) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")
-        } catch (e: pEpWrongPassphrase) {
-            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")
         }
     }
 
@@ -1181,6 +1142,48 @@ class PEpProviderImplKotlin @Inject constructor(
     private suspend fun resetTrustSuspend(id: Identity) = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.keyResetTrust(id)
+    }
+
+    @WorkerThread // TODO: 20/07/2020 move to suspend
+    override fun keyResetIdentity(ident: Identity, fpr: String) {
+        createEngineInstanceIfNeeded()
+        val identity = updateIdentity(ident)
+        try {
+            engine.key_reset_identity(identity, fpr)
+        } catch (e: pEpPassphraseRequired) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
+        } catch (e: pEpWrongPassphrase) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
+        }
+    }
+
+    @WorkerThread // TODO: 20/07/2020 move to suspend
+    override fun keyResetUser(userId: String, fpr: String) {
+        createEngineInstanceIfNeeded()
+        try {
+            engine.key_reset_user(userId, fpr)
+        } catch (e: pEpPassphraseRequired) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
+        } catch (e: pEpWrongPassphrase) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
+        }
+    }
+
+    @WorkerThread // TODO: 20/07/2020 move to suspend
+    override fun keyResetAllOwnKeys() {
+        createEngineInstanceIfNeeded()
+        try {
+            engine.key_reset_all_own_keys()
+        } catch (e: pEpPassphraseRequired) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")
+        } catch (e: pEpWrongPassphrase) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")
+        }
+    }
+
+    override fun updateIdentity(id: Identity): Identity {
+        createEngineInstanceIfNeeded()
+        return engine.updateIdentity(id)
     }
 
     companion object {
