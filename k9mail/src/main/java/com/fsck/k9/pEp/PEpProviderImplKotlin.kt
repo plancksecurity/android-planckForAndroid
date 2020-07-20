@@ -499,9 +499,9 @@ class PEpProviderImplKotlin @Inject constructor(
         return try {
             val languages: MutableMap<String, PEpLanguage> = HashMap()
             val languageList = engine._languagelist
-            val languageCharacters = languageList.split("\n".toRegex()).toTypedArray()
+            val languageCharacters = languageList.split("\n").filter { it.isNotBlank() }.toTypedArray()
             for (languageCharacter in languageCharacters) {
-                val split = languageCharacter.split(",".toRegex()).toTypedArray()
+                val split = languageCharacter.split(",").toTypedArray()
                 val pEpLanguage =
                         PEpLanguage(getElementAtPosition(split[0]),
                                 getElementAtPosition(split[1]),
