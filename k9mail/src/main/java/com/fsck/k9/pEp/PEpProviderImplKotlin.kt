@@ -267,18 +267,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.stopKeyserverLookup()
     }
 
-    @Deprecated("private key detection is not supported anymore, alternatives are pEp sync and import from FS")
-    @Synchronized
-    override fun getOwnKeyDetails(message: Message): KeyDetail? {
-        try {
-            val id = engine.own_message_private_key_details(message)
-            return KeyDetail(id.fpr, Address(id.address, id.username))
-        } catch (e: Exception) {
-            Timber.e(e, "%s %s", TAG, "getOwnKeyDetails: ")
-        }
-        return null
-    }
-
     @Synchronized
     override fun setSubjectProtection(isProtected: Boolean) {
         createEngineInstanceIfNeeded()
@@ -1201,6 +1189,17 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.blacklist_delete(fpr)
     }
 
+    @Deprecated("private key detection is not supported anymore, alternatives are pEp sync and import from FS")
+    @Synchronized
+    override fun getOwnKeyDetails(message: Message): KeyDetail? {
+        try {
+            val id = engine.own_message_private_key_details(message)
+            return KeyDetail(id.fpr, Address(id.address, id.username))
+        } catch (e: Exception) {
+            Timber.e(e, "%s %s", TAG, "getOwnKeyDetails: ")
+        }
+        return null
+    }
 
     companion object {
         private const val TAG = "pEpEngine-provider"
