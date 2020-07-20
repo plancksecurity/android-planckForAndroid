@@ -306,66 +306,6 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback(activity)
     }
 
-    override fun loadOwnIdentities(callback: ResultCallback<List<Identity>>) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                val identitiesVector: List<Identity> = engine.own_identities_retrieve()
-                notifyLoaded(identitiesVector, callback)
-            } catch (error: pEpException) {
-                notifyError(error, callback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
-    override fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                engine.set_identity_flags(identity, flags)
-                notifyCompleted(completedCallback)
-            } catch (e: pEpException) {
-                notifyError(e, completedCallback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
-    override fun unsetIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                engine.unset_identity_flags(identity, flags)
-                notifyCompleted(completedCallback)
-            } catch (e: pEpException) {
-                notifyError(e, completedCallback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
-    override fun setIdentityFlag(identity: Identity, sync: Boolean) = try {
-        when {
-            sync -> engine.enable_identity_for_sync(identity)
-            else -> engine.disable_identity_for_sync(identity)
-        }
-    } catch (e: pEpException) {
-        Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
-    }
-
-    override fun unsetIdentityFlag(identity: Identity, flags: Int) = try {
-        engine.unset_identity_flags(identity, flags)
-    } catch (e: pEpException) {
-        Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
-    }
-
     override fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback) {
         engine.setNeedsFastPollCallback(needsFastPollCallback)
     }
@@ -1199,6 +1139,103 @@ class PEpProviderImplKotlin @Inject constructor(
             Timber.e(e, "%s %s", TAG, "getOwnKeyDetails: ")
         }
         return null
+    }
+
+    override fun loadOwnIdentities(callback: ResultCallback<List<Identity>>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            loadOwnIdentitiesSuspend(callback)
+        }
+    }
+
+    private suspend fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+            val identitiesVector: List<Identity> = engine.own_identities_retrieve()
+            notifyLoaded(identitiesVector, callback)
+        } catch (error: pEpException) {
+            notifyError(error, callback)
+        } finally {
+            engine?.close()
+        }
+    }
+
+    override fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            setIdentityFlagSuspend(identity, flags, completedCallback)
+        }
+    }
+
+    private suspend fun setIdentityFlagSuspend(identity: Identity, flags: Int,
+                                               completedCallback: CompletedCallback) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+            engine.set_identity_flags(identity, flags)
+            notifyCompleted(completedCallback)
+        } catch (e: pEpException) {
+            notifyError(e, completedCallback)
+        } finally {
+            engine?.close()
+        }
+
+    }
+
+    override fun unsetIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            unsetIdentityFlagSuspend(identity, flags, completedCallback)
+        }
+    }
+
+    private suspend fun unsetIdentityFlagSuspend(identity: Identity, flags: Int,
+                                                 completedCallback: CompletedCallback) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+            engine.unset_identity_flags(identity, flags)
+            notifyCompleted(completedCallback)
+        } catch (e: pEpException) {
+            notifyError(e, completedCallback)
+        } finally {
+            engine?.close()
+        }
+
+    }
+
+    override fun setIdentityFlag(identity: Identity, sync: Boolean) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            setIdentityFlagSuspend(identity, sync)
+        }
+    }
+
+    private suspend fun setIdentityFlagSuspend(identity: Identity, sync: Boolean) = withContext(Dispatchers.IO) {
+        try {
+            when {
+                sync -> engine.enable_identity_for_sync(identity)
+                else -> engine.disable_identity_for_sync(identity)
+            }
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
+        }
+    }
+
+    override fun unsetIdentityFlag(identity: Identity, flags: Int) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            unsetIdentityFlagSuspend(identity, flags)
+        }
+    }
+
+    private suspend fun unsetIdentityFlagSuspend(identity: Identity, flags: Int) = withContext(Dispatchers.IO) {
+        try {
+            engine.unset_identity_flags(identity, flags)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
+        }
     }
 
     companion object {
