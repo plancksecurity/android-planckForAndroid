@@ -230,50 +230,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun trustwords(id: Identity, language: String): String {
-        throw UnsupportedOperationException()
-    }
-
-    @Synchronized
-    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? {
-        return try {
-            engine.get_trustwords(myself, partner, lang, !isShort)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "trustwords: ")
-            null
-        }
-    }
-
-    override fun obtainTrustwords(self: Identity, other: Identity, lang: String,
-                                  areKeysyncTrustwords: Boolean,
-                                  callback: ResultCallback<HandshakeData>) {
-        threadExecutor.execute {
-            var engine: Engine? = null
-            try {
-                engine = newEngineSession
-                val myself: Identity
-                val another: Identity
-                if (!areKeysyncTrustwords) {
-                    self.user_id = PEP_OWN_USER_ID
-                    self.me = true
-                    myself = engine.myself(self)
-                    another = engine.updateIdentity(other)
-                } else {
-                    myself = self
-                    another = other
-                }
-                val longTrustwords = engine.get_trustwords(myself, another, lang, true)
-                val shortTrustwords = engine.get_trustwords(myself, another, lang, false)
-                notifyLoaded(HandshakeData(longTrustwords, shortTrustwords, myself, another), callback)
-            } catch (e: Exception) {
-                notifyError(e, callback)
-            } finally {
-                engine?.close()
-            }
-        }
-    }
-
-    @Synchronized
     override fun close() {
         if (this::engine.isInitialized) {
             //engine.stopSync();
@@ -1130,7 +1086,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun startSync() {
         val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         uiScope.launch {
@@ -1147,6 +1102,61 @@ class PEpProviderImplKotlin @Inject constructor(
         Timber.d("%s %s", TAG, "stopSync")
         createEngineInstanceIfNeeded()
         engine.stopSync()
+    }
+
+    override fun trustwords(id: Identity, language: String): String {
+        throw UnsupportedOperationException()
+    }
+
+    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? = runBlocking {
+        trustwordsSuspend(myself, partner, lang, isShort)
+    }
+
+    private suspend fun trustwordsSuspend(myself: Identity, partner: Identity, lang: String,
+                                          isShort: Boolean): String? = withContext(Dispatchers.IO) {
+        try {
+            engine.get_trustwords(myself, partner, lang, !isShort)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "trustwords: ")
+            null
+        }
+    }
+
+    override fun obtainTrustwords(self: Identity, other: Identity, lang: String,
+                                  areKeysyncTrustwords: Boolean,
+                                  callback: ResultCallback<HandshakeData>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            obtainTrustwordsSuspend(self, other, lang, areKeysyncTrustwords, callback)
+        }
+    }
+
+    private suspend fun obtainTrustwordsSuspend(
+            self: Identity, other: Identity, lang: String, areKeysyncTrustwords: Boolean,
+            callback: ResultCallback<HandshakeData>) = withContext(Dispatchers.IO) {
+        var engine: Engine? = null
+        try {
+            engine = newEngineSession
+            val myself: Identity
+            val another: Identity
+            if (!areKeysyncTrustwords) {
+                self.user_id = PEP_OWN_USER_ID
+                self.me = true
+                myself = engine.myself(self)
+                another = engine.updateIdentity(other)
+            } else {
+                myself = self
+                another = other
+            }
+            val longTrustwords = engine.get_trustwords(myself, another, lang, true)
+            val shortTrustwords = engine.get_trustwords(myself, another, lang, false)
+            notifyLoaded(HandshakeData(longTrustwords, shortTrustwords, myself, another), callback)
+        } catch (e: Exception) {
+            notifyError(e, callback)
+        } finally {
+            engine?.close()
+        }
+
     }
 
     companion object {
