@@ -313,11 +313,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun leaveDeviceGroup() {
-        createEngineInstanceIfNeeded()
-        engine.leave_device_group()
-    }
-
     override fun isSyncRunning(): Boolean {
         createEngineInstanceIfNeeded()
         return engine.isSyncRunning
@@ -1042,6 +1037,11 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread // TODO: 20/07/2020 move to suspend
+    override fun leaveDeviceGroup() {
+        createEngineInstanceIfNeeded()
+        engine.leave_device_group()
+    }
     override fun updateIdentity(id: Identity): Identity {
         createEngineInstanceIfNeeded()
         return engine.updateIdentity(id)
