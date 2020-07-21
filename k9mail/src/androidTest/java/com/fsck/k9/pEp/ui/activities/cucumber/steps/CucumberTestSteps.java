@@ -25,9 +25,13 @@ import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
@@ -643,9 +647,33 @@ public class CucumberTestSteps {
         testUtils.pressBack();
     }
 
+    private int getListMessageSize () {
+        LocalStore localStore = null;
+        int size = 0;
+        try {
+            localStore = getLocalStore();
+            size = localStore.getAutoConsumeMessageReferences().size();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        return size;
+    }
+
+    private Account getAccount(String email) {
+        for (Account account : Preferences.getPreferences(K9.app).getAccounts()) {
+            if (account.getEmail().equalsIgnoreCase(email)) {
+                return account;
+            }
+        }
+        return null;
+    }
+    public LocalStore getLocalStore() throws MessagingException {
+        return LocalStore.getInstance(getAccount(testUtils.getEmailAccount(0)), K9.app);
+    }
 
     @When("^I sync devices (\\S+) and (\\S+)$")
     public void I_sync_devices(String device1, String device2) {
+        int messages = getListMessageSize();
         switch (testUtils.keySync_number()) {
             case "1":
                 if (device1.equals("A") || device2.equals("A")) {
@@ -674,6 +702,9 @@ public class CucumberTestSteps {
             default:
                 Timber.i("Cannot sync this device");
                 break;
+        }
+        if (messages >= getListMessageSize()) {
+            testUtils.assertFailWithMessage("No sync messages");
         }
         testUtils.getMessageListSize();
     }
@@ -754,7 +785,7 @@ public class CucumberTestSteps {
                 if (device.equals("A")) {
                     testUtils.disableKeySync();
                 }
-                if (device.equals("C") || device.equals("B")) {
+                else {
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
@@ -766,7 +797,7 @@ public class CucumberTestSteps {
                 if (device.equals("B")) {
                     testUtils.disableKeySync();
                 }
-                if (device.equals("A") || device.equals("C")) {
+                else {
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
@@ -778,7 +809,7 @@ public class CucumberTestSteps {
                 if (device.equals("C")) {
                     testUtils.disableKeySync();
                 }
-                if (device.equals("A") || device.equals("B")) {
+                else {
                     try {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
