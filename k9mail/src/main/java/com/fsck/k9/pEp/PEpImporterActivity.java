@@ -56,11 +56,11 @@ public abstract class PEpImporterActivity extends PepActivity {
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     protected static final int DIALOG_NO_FILE_MANAGER = 4;
 
-    protected static final String CURRENT_ACCOUNT = "currentAccount";
+    protected static final String CURRENT_ACCOUNT_UUID = "currentAccountUuid";
 
     protected abstract void refresh();
 
-    protected String currentAccount;
+    protected String currentAccountUuid;
 
     public void onSettingsImport() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
@@ -171,7 +171,7 @@ public abstract class PEpImporterActivity extends PepActivity {
 
             onPostExecuteImportSettings(activity, success);
 
-            activity.currentAccount = "";
+            activity.currentAccountUuid = "";
         }
 
         private void onPostExecuteImportSettings(PEpImporterActivity activity, Boolean success) {
