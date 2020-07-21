@@ -257,17 +257,16 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setMessageToSendCallback(callback)
     }
 
-    private fun areCallbackSet(): Boolean {
-        return sendMessageSet && showHandshakeSet
-    }
-
-    @Synchronized
     override fun setSyncHandshakeCallback(activity: NotifyHandshakeCallback) {
         engine.setNotifyHandshakeCallback(activity)
     }
 
     override fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback) {
         engine.setNeedsFastPollCallback(needsFastPollCallback)
+    }
+
+    private fun areCallbackSet(): Boolean {
+        return sendMessageSet && showHandshakeSet
     }
 
     private fun <RESULT> notifyLoaded(privacyState: RESULT, callback: ResultCallback<RESULT>) {
@@ -1224,6 +1223,14 @@ class PEpProviderImplKotlin @Inject constructor(
     private suspend fun stopKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.stopKeyserverLookup()
+    }
+
+    override fun getLog(): String = runBlocking {
+        getLogSuspend()
+    }
+
+    private suspend fun getLogSuspend(): String = withContext(Dispatchers.IO) {
+        engine.getCrashdumpLog(100)
     }
 
     companion object {
