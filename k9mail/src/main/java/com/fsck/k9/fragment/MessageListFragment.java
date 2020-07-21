@@ -141,6 +141,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
+    private static final long CLICK_THRESHOLD_MILLIS = 1000;
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
@@ -904,6 +905,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 //    }
 
     private boolean isLongClicked;
+    private long lastClicked = 0;
 
     private void initializeLayout() {
         listView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
@@ -928,8 +930,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!isLongClicked) {
+                if (!isLongClicked && (System.currentTimeMillis()-lastClicked) > CLICK_THRESHOLD_MILLIS) {
                     onMessageClick(parent, view, position, id);
+                    lastClicked = System.currentTimeMillis();
                 }
                 isLongClicked = false;
             }
