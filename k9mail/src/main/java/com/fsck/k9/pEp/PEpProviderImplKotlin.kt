@@ -245,7 +245,9 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @Synchronized
     override fun printLog() {
-        log.split("\n".toRegex()).toTypedArray()
+        log.split("\n")
+                .filter { it.isNotBlank() }
+                .toTypedArray()
                 .forEach { logLine -> Timber.i(TAG, logLine) }
     }
 
@@ -253,18 +255,6 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun setPassiveModeEnabled(enable: Boolean) {
         createEngineInstanceIfNeeded()
         engine.config_passive_mode(enable)
-    }
-
-    @Synchronized
-    override fun startKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.startKeyserverLookup()
-    }
-
-    @Synchronized
-    override fun stopKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.stopKeyserverLookup()
     }
 
     @Synchronized
@@ -1237,6 +1227,32 @@ class PEpProviderImplKotlin @Inject constructor(
             Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
     }
+
+    override fun startKeyserverLookup() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            startKeyserverLookupSuspend()
+        }
+    }
+
+    private suspend fun startKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        engine.startKeyserverLookup()
+    }
+
+    override fun stopKeyserverLookup() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            stopKeyserverLookupSuspend()
+        }
+
+    }
+
+    private suspend fun stopKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
+        createEngineInstanceIfNeeded()
+        engine.stopKeyserverLookup()
+    }
+
 
     companion object {
         private const val TAG = "pEpEngine-provider"
