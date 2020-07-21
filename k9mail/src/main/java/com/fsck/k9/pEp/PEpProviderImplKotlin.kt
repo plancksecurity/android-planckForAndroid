@@ -1001,7 +1001,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread // TODO: 20/07/2020 move to suspend
-    override fun keyResetIdentity(ident: Identity, fpr: String) {
+    override fun keyResetIdentity(ident: Identity, fpr: String?) {
         createEngineInstanceIfNeeded()
         val identity = updateIdentity(ident)
         try {
@@ -1014,7 +1014,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread // TODO: 20/07/2020 move to suspend
-    override fun keyResetUser(userId: String, fpr: String) {
+    override fun keyResetUser(userId: String, fpr: String?) {
         createEngineInstanceIfNeeded()
         try {
             engine.key_reset_user(userId, fpr)
