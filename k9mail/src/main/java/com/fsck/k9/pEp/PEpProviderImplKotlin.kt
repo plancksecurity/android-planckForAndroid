@@ -165,7 +165,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return result
     }
 
-
     private fun stripUnencryptedRecipients(source: MimeMessage): Message {
         return stripRecipients(source, false)
     }
@@ -230,26 +229,16 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Synchronized
     override fun close() {
-        if (this::engine.isInitialized) {
-            //engine.stopSync();
-            engine.close()
-        }
+        if (this::engine.isInitialized) engine.close()
     }
 
-    @Synchronized
-    override fun getLog(): String {
-        return engine.getCrashdumpLog(100)
-    }
+    override fun getLog(): String = engine.getCrashdumpLog(100)
 
-    @Synchronized
-    override fun printLog() {
-        log.split("\n")
-                .filter { it.isNotBlank() }
-                .toTypedArray()
-                .forEach { logLine -> Timber.i(TAG, logLine) }
-    }
+    override fun printLog() = log.split("\n")
+            .filter { it.isNotBlank() }
+            .toTypedArray()
+            .forEach { logLine -> Timber.i(TAG, logLine) }
 
     @Synchronized
     override fun setPassiveModeEnabled(enable: Boolean) {
