@@ -2677,6 +2677,8 @@ public class TestUtils {
         return testConfig.getKeySync_account(account);
     }
 
+    public String getEmailAccount (int account) { return testConfig.getMail(account)}
+
     public static void getJSONObject(String object) {
         switch (object) {
             case "keys":
