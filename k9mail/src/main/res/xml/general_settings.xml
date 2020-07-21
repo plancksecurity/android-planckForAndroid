@@ -350,6 +350,13 @@
                 android:summaryOn="@string/pep_sync_is_enabled_global"
                 android:title="@string/pep_sync" />
 
+            <SwitchPreferenceCompat
+                android:key="pep_sync_folder"
+                android:summaryOff="@string/pep_sync_folder_is_disabled"
+                android:summaryOn="@string/pep_sync_folder_is_enabled"
+                android:title="@string/pep_sync_folder"
+                app:dependency="pep_enable_sync"/>
+
             <PreferenceCategory
                 android:key="pep_gpg_compatibility"
                 android:title="@string/pep_gpg_compatibility">
