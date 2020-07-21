@@ -233,32 +233,26 @@ class PEpProviderImplKotlin @Inject constructor(
         if (this::engine.isInitialized) engine.close()
     }
 
-    override fun getLog(): String = engine.getCrashdumpLog(100)
-
     override fun printLog() = log.split("\n")
             .filter { it.isNotBlank() }
             .toTypedArray()
             .forEach { logLine -> Timber.i(TAG, logLine) }
 
-    @Synchronized
     override fun setPassiveModeEnabled(enable: Boolean) {
         createEngineInstanceIfNeeded()
         engine.config_passive_mode(enable)
     }
 
-    @Synchronized
     override fun setSubjectProtection(isProtected: Boolean) {
         createEngineInstanceIfNeeded()
         engine.config_unencrypted_subject(!isProtected)
     }
 
-    @Synchronized
     override fun configPassphrase(passphrase: String) {
         createEngineInstanceIfNeeded()
         engine.config_passphrase(passphrase)
     }
 
-    @Synchronized
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
         engine.setMessageToSendCallback(callback)
     }
