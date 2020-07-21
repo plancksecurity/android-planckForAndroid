@@ -259,19 +259,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Synchronized
-    override fun getMasterKeysInfo(): List<KeyListItem>? {
-        try {
-            val identities: MutableList<KeyListItem> = ArrayList()
-            val keys = engine.OpenPGP_list_keyinfo("")
-            keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
-            return identities
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
-        }
-        return null
-    }
-
-    @Synchronized
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
         engine.setMessageToSendCallback(callback)
     }
@@ -1106,6 +1093,22 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun deleteFromBlacklistSuspend(fpr: String) = withContext(Dispatchers.IO) {
         engine.blacklist_delete(fpr)
+    }
+
+    override fun getMasterKeysInfo(): List<KeyListItem>? = runBlocking {
+        getMasterKeysInfoSuspend()
+    }
+
+    private suspend fun getMasterKeysInfoSuspend(): List<KeyListItem>? = withContext(Dispatchers.IO) {
+        try {
+            val identities: MutableList<KeyListItem> = ArrayList()
+            val keys = engine.OpenPGP_list_keyinfo("")
+            keys?.forEach { key -> identities.add(KeyListItem(key.first, key.second)) }
+            return@withContext identities
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
+        }
+        return@withContext null
     }
 
     @Deprecated("private key detection is not supported anymore, alternatives are pEp sync and import from FS")
