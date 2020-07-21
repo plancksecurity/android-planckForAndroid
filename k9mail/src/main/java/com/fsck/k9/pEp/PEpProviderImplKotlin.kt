@@ -1195,14 +1195,8 @@ class PEpProviderImplKotlin @Inject constructor(
 
     }
 
+    @WorkerThread // TODO: 21/07/2020 move to suspend
     override fun setIdentityFlag(identity: Identity, sync: Boolean) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            setIdentityFlagSuspend(identity, sync)
-        }
-    }
-
-    private suspend fun setIdentityFlagSuspend(identity: Identity, sync: Boolean) = withContext(Dispatchers.IO) {
         try {
             when {
                 sync -> engine.enable_identity_for_sync(identity)
@@ -1213,14 +1207,8 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread // TODO: 21 /07/2020 move to suspend
     override fun unsetIdentityFlag(identity: Identity, flags: Int) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            unsetIdentityFlagSuspend(identity, flags)
-        }
-    }
-
-    private suspend fun unsetIdentityFlagSuspend(identity: Identity, flags: Int) = withContext(Dispatchers.IO) {
         try {
             engine.unset_identity_flags(identity, flags)
         } catch (e: pEpException) {
@@ -1245,14 +1233,12 @@ class PEpProviderImplKotlin @Inject constructor(
         uiScope.launch {
             stopKeyserverLookupSuspend()
         }
-
     }
 
     private suspend fun stopKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.stopKeyserverLookup()
     }
-
 
     companion object {
         private const val TAG = "pEpEngine-provider"
