@@ -974,7 +974,8 @@ public class LocalStore extends Store implements Serializable {
 
                         }
                         if (name.equalsIgnoreCase(mAccount.getInboxFolderName()) ||
-                                name.equalsIgnoreCase(mAccount.getDraftsFolderName())) {
+                                name.equalsIgnoreCase(mAccount.getDraftsFolderName()) ||
+                                name.equalsIgnoreCase(mAccount.getpEpSyncFolderName())) {
                             prefHolder.syncClass = LocalFolder.FolderClass.FIRST_CLASS;
                         } else {
                             prefHolder.syncClass = LocalFolder.FolderClass.NO_CLASS;

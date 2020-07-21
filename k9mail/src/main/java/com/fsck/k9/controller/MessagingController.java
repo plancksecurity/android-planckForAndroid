@@ -4084,6 +4084,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Account.FolderMode aSyncMode = account.getFolderSyncMode();
 
             Store localStore = account.getLocalStore();
+            // TODO: 22/06/2020 Improvement only check inbox and sync folder
             for (final Folder folder : localStore.getPersonalNamespaces(false)) {
                 folder.open(Folder.OPEN_MODE_RW);
 
@@ -4772,7 +4773,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Message localMessage = null;
         try {
             LocalStore localStore = account.getLocalStore();
-            LocalFolder localFolder = localStore.getFolder(account.getInboxFolderName());
+            LocalFolder localFolder = localStore.getFolder(account.getpEpSyncFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
 
 
@@ -4782,7 +4783,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             localMessage = localFolder.getMessage(message.getUid());
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
 
-            PendingCommand command = PendingAppend.create(localFolder.getName(), localMessage.getUid());
+            PendingCommand command = PendingAppend.create(account.getpEpSyncFolderName(), localMessage.getUid());
             queuePendingCommand(account, command);
             processPendingCommands(account);
 
@@ -4820,7 +4821,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 recipients.addAll(ccRecipients);
 
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
-                /*if (accountsToAppend != null) {
+                if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
                         Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
                         appendToInboxpEpSyncMessage(account, message);
@@ -4828,12 +4829,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     }
 
-                } else {*/
+                } else {
                     Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
                     Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
 
-                //}
+                }
 
                 checkpEpSyncMailForAccount(fromAccount, null);
 

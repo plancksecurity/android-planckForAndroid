@@ -278,4 +278,8 @@
     <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
     <string name="pgp_key_import_dialog_empty_edittext">Fingerprint is mandatory</string>
+
+    <string name="pep_sync_folder">p≡p sync folder</string>
+    <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
+    <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
 </resources>

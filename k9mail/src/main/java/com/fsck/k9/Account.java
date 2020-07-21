@@ -59,6 +59,7 @@ public class Account implements BaseAccount, StoreConfig {
      * Default value for the inbox folder (never changes for POP3 and IMAP)
      */
     private static final String INBOX = "INBOX";
+    private static final String PEP_FOLDER = "pEp";
 
     /**
      * This local folder is used to store messages to be sent.
@@ -1054,7 +1055,17 @@ public class Account implements BaseAccount, StoreConfig {
                 folderName.equals(getArchiveFolderName()) ||
                 folderName.equals(getSpamFolderName()) ||
                 folderName.equals(getOutboxFolderName()) ||
-                folderName.equals(getSentFolderName())));
+                folderName.equals(getSentFolderName()) ||
+                folderName.equals(getpEpSyncFolderName())
+        ));
+    }
+
+    public String getpEpSyncFolderName() {
+        if (K9.isUsingpEpSyncFolder()) {
+            return PEP_FOLDER;
+        } else {
+            return inboxFolderName;
+        }
     }
 
     public synchronized String getDraftsFolderName() {
