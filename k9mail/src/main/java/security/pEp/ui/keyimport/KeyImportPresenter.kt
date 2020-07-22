@@ -124,8 +124,11 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
                     result = null
                 }
                 else {
-                    fingerprint = (importedIdentities[0] as Identity).fpr
-                    result = importedIdentities[0]
+                    result = importedIdentities.firstOrNull { identity -> identity.address == address }
+                    result?.let {
+                        fingerprint = (importedIdentities[0] as Identity).fpr
+                        result = importedIdentities[0]
+                    }
                 }
             } catch (e: IOException) {
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
