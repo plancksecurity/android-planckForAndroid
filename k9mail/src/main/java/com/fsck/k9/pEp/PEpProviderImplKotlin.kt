@@ -641,14 +641,14 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun myself(myId: Identity): Identity = runBlocking {
+    override fun myself(myId: Identity?): Identity? = runBlocking {
         myselfSuspend(myId)
     }
 
-    private suspend fun myselfSuspend(myId: Identity): Identity = withContext(Dispatchers.IO) {
+    private suspend fun myselfSuspend(myId: Identity?): Identity? = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
-        myId.user_id = PEP_OWN_USER_ID
-        myId.me = true
+        myId?.user_id = PEP_OWN_USER_ID
+        myId?.me = true
         engine.myself(myId)
     }
 
