@@ -34,7 +34,6 @@ import com.fsck.k9.helper.AppUpdater;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
-import com.fsck.k9.job.PusherRefreshJobManager;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
@@ -791,11 +790,10 @@ public class K9 extends MultiDexApplication {
         MessagingController messagingController = MessagingController.getInstance(this);
 
         MailSyncJobManager mailSyncJobManager = new MailSyncJobManager(messagingController, prefs);
-        PusherRefreshJobManager pusherRefreshJobManager = new PusherRefreshJobManager(this, messagingController, prefs);
-        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager);
+        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager);
 
         jobManager = new K9JobManager(jobCreator, JobManager.create(this), prefs,
-                mailSyncJobManager, pusherRefreshJobManager);
+                mailSyncJobManager);
     }
 
     public void pEpInitSyncEnvironment() {

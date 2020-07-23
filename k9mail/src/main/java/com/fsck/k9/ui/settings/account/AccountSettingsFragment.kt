@@ -152,11 +152,12 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAdvancedPushSettings(account: Account) {
+        /* Temporarily disabled. See GH-4253 https://github.com/k9mail/k-9/issues/4253
         if (!account.remoteStore.isPushCapable) {
             findPreference<Preference>(PREFERENCE_PUSH_MODE)?.remove()
             findPreference<Preference>(PREFERENCE_ADVANCED_PUSH_SETTINGS)?.remove()
             findPreference<Preference>(PREFERENCE_REMOTE_SEARCH)?.remove()
-        }
+        }*/
     }
 
     private fun initializeLocalStorageProvider() {

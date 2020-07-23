@@ -104,13 +104,14 @@
                 android:summary="%s"
                 android:title="@string/account_settings_folder_sync_mode_label" />
 
+            <!-- Temporarily disabled. See GH-4253 https://github.com/k9mail/k-9/issues/4253
             <ListPreference
                 android:dialogTitle="@string/account_settings_folder_push_mode_label"
                 android:entries="@array/folder_push_mode_entries"
                 android:entryValues="@array/folder_push_mode_values"
                 android:key="folder_push_mode"
                 android:summary="%s"
-                android:title="@string/account_settings_folder_push_mode_label" />
+                android:title="@string/account_settings_folder_push_mode_label" /> -->
 
             <CheckBoxPreference
                 android:defaultValue="true"
@@ -134,6 +135,7 @@
                 android:summary="%s"
                 android:title="@string/account_setup_expunge_policy_label" />
 
+            <!-- Temporarily disabled. See GH-4253 https://github.com/k9mail/k-9/issues/4253
             <CheckBoxPreference
                 android:key="push_poll_on_connect"
                 android:title="@string/push_poll_on_connect_label" />
@@ -150,7 +152,7 @@
                 android:entryValues="@array/idle_refresh_period_values"
                 android:key="idle_refresh_period"
                 android:summary="%s"
-                android:title="@string/idle_refresh_period_label" />
+                android:title="@string/idle_refresh_period_label" /> -->
 
 
         </PreferenceCategory>
