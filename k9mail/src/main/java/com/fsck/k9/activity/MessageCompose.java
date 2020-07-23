@@ -2,6 +2,7 @@ package com.fsck.k9.activity;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -64,6 +65,7 @@ import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
@@ -523,17 +525,29 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateMessageFormat();
 
         setTitle();
-
-        currentMessageBuilder = (MessageBuilder) getLastCustomNonConfigurationInstance();
-        if (currentMessageBuilder != null) {
-            setProgressBarIndeterminateVisibility(true);
-            currentMessageBuilder.reattachCallback(this);
-        }
+        restoreMessageComposeConfigurationInstance();
         Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
 
+    }
+
+    private void restoreMessageComposeConfigurationInstance() {
+        MessageComposeNonConfigInstance messageComposeNonConfigInstance =
+                (MessageComposeNonConfigInstance) getLastCustomNonConfigurationInstance();
+        if(messageComposeNonConfigInstance != null) {
+            Bundle retainedState = messageComposeNonConfigInstance.retainedState;
+            attachmentPresenter.onRestoreInstanceState(retainedState);
+            recipientPresenter.onRestoreInstanceState(retainedState);
+            quotedMessagePresenter.onRestoreInstanceState(retainedState);
+
+            if(messageComposeNonConfigInstance.messageBuilder != null) {
+                currentMessageBuilder = messageComposeNonConfigInstance.messageBuilder;
+                setProgressBarIndeterminateVisibility(true);
+                currentMessageBuilder.reattachCallback(this);
+            }
+        }
     }
 
     private void startToolbar() {
@@ -712,12 +726,28 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putBoolean(STATE_KEY_READ_RECEIPT, requestReadReceipt);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-
-        recipientPresenter.onSaveInstanceState(outState);
-        quotedMessagePresenter.onSaveInstanceState(outState);
-        attachmentPresenter.onSaveInstanceState(outState);
         // TODO: trigger pep?
 
+    }
+
+    public static class MessageComposeNonConfigInstance implements NonConfigurationInstance {
+        MessageBuilder messageBuilder;
+        Bundle retainedState;
+
+        MessageComposeNonConfigInstance(MessageBuilder messageBuilder, Bundle retainedState) {
+            this.messageBuilder = messageBuilder;
+            this.retainedState = retainedState;
+        }
+
+        @Override
+        public boolean retain() {
+            return true;
+        }
+
+        @Override
+        public void restore(Activity activity) {
+
+        }
     }
 
     @Override
@@ -725,7 +755,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (currentMessageBuilder != null) {
             currentMessageBuilder.detachCallback();
         }
-        return currentMessageBuilder;
+        Bundle retainedState = new Bundle();
+        if(quotedMessagePresenter != null) {
+            quotedMessagePresenter.onSaveInstanceState(retainedState);
+        }
+        if(recipientPresenter != null) {
+            recipientPresenter.onSaveInstanceState(retainedState);
+        }
+        if(attachmentPresenter != null) {
+            attachmentPresenter.onSaveInstanceState(retainedState);
+        }
+        MessageComposeNonConfigInstance messageComposeNonConfigInstance =
+                new MessageComposeNonConfigInstance(currentMessageBuilder, retainedState);
+        return messageComposeNonConfigInstance;
     }
 
     @Override
@@ -735,11 +777,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         attachmentsView.removeAllViews();
 
         requestReadReceipt = savedInstanceState.getBoolean(STATE_KEY_READ_RECEIPT);
-
-        recipientPresenter.onRestoreInstanceState(savedInstanceState);
-        quotedMessagePresenter.onRestoreInstanceState(savedInstanceState);
-        attachmentPresenter.onRestoreInstanceState(savedInstanceState);
-
         draftId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
         identity = (Identity) savedInstanceState.getSerializable(STATE_IDENTITY);
         identityChanged = savedInstanceState.getBoolean(STATE_IDENTITY_CHANGED);
