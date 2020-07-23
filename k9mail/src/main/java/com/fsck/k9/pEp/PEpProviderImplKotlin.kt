@@ -614,14 +614,8 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread // TODO: 20/07/2020 move to suspend
     override fun importKey(key: ByteArray) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            importKeySuspend(key)
-        }
-    }
-
-    private suspend fun importKeySuspend(key: ByteArray) = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.importKey(key)
     }
