@@ -929,14 +929,12 @@ public class PEpProviderImpl implements PEpProvider {
 
     @Override
     public synchronized void startSync() {
-        threadExecutor.execute(() -> {
-            try {
-                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()");
-                engine.startSync();
-            } catch (pEpException exception) {
-                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception);
-            }
-        });
+        try {
+            Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()");
+            engine.startSync();
+        } catch (pEpException exception) {
+            Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception);
+        }
     }
 
     //FIXME: Implement sync use lists.
