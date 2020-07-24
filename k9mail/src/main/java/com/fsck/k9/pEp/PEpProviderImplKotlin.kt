@@ -872,13 +872,11 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun startSync() {
-        runBlocking {
-            try {
-                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
-                engine.startSync()
-            } catch (exception: pEpException) {
-                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
-            }
+        try {
+            Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
+            engine.startSync()
+        } catch (exception: pEpException) {
+            Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
         }
     }
 
@@ -1035,6 +1033,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         engine.leave_device_group()
     }
+
     override fun updateIdentity(id: Identity): Identity {
         createEngineInstanceIfNeeded()
         return engine.updateIdentity(id)
