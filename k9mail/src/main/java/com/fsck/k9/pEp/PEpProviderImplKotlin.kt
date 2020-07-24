@@ -872,8 +872,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun startSync() {
-        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        uiScope.launch {
+        runBlocking {
             try {
                 Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
                 engine.startSync()
