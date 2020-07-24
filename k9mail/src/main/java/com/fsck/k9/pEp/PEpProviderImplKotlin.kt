@@ -1099,7 +1099,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Deprecated("private key detection is not supported anymore, alternatives are pEp sync and import from FS")
-    @Synchronized
     override fun getOwnKeyDetails(message: Message): KeyDetail? {
         try {
             val id = engine.own_message_private_key_details(message)
@@ -1196,25 +1195,11 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun startKeyserverLookup() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            startKeyserverLookupSuspend()
-        }
-    }
-
-    private suspend fun startKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.startKeyserverLookup()
     }
 
     override fun stopKeyserverLookup() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            stopKeyserverLookupSuspend()
-        }
-    }
-
-    private suspend fun stopKeyserverLookupSuspend() = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
         engine.stopKeyserverLookup()
     }
