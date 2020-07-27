@@ -4984,8 +4984,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 refs, (account1, messageFolder, accountMessages) -> {
                         try {
                             Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
+                            messageFolder.delete(accountMessages, null);
                             remoteFolder.delete(accountMessages, null);
                             remoteFolder.expunge();
+                            messageFolder.expunge();
                         } catch (MessagingException e) {
                             Timber.e(e, "Could not clean pEpEngine sync message");
                         }
