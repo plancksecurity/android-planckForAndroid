@@ -4983,8 +4983,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         actOnMessagesGroupedByAccountAndFolder(
                 refs, (account1, messageFolder, accountMessages) -> {
                         try {
-                            String folderName = account.getInboxFolderName();
-                            Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(folderName);
+                            Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
                             remoteFolder.delete(accountMessages, null);
                             remoteFolder.expunge();
                         } catch (MessagingException e) {
