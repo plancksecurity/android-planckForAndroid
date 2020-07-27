@@ -872,12 +872,17 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun startSync() {
-        try {
-            Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
-            engine.startSync()
-        } catch (exception: pEpException) {
-            Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
+        val ioScope =  CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        ioScope.launch {
+            try {
+                Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
+                engine.startSync()
+            } catch (exception: pEpException) {
+                Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
+            }
         }
+
     }
 
     override fun stopSync() {
