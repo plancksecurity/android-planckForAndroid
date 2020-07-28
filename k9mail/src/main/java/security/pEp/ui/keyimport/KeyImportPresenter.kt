@@ -74,7 +74,7 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
                 val key = IOUtils.toByteArray(inputStream)
                 pEp.importKey(key)
                 val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                if (id == null || !pEp.canEncrypt(accountUuid)) {
+                if (id == null || !pEp.canEncrypt(address.address)) {
                     Timber.w("Couldn't set own key: %s", key)
                     pEp.setOwnIdentity(accountIdentity, currentFpr)
                     result = false
