@@ -272,11 +272,6 @@
     </string-array>
 
     <string-array name="idle_refresh_period_entries">
-        <item>@string/idle_refresh_period_1min</item>
-        <item>@string/idle_refresh_period_2min</item>
-        <item>@string/idle_refresh_period_3min</item>
-        <item>@string/idle_refresh_period_6min</item>
-        <item>@string/idle_refresh_period_12min</item>
         <item>@string/idle_refresh_period_24min</item>
         <item>@string/idle_refresh_period_36min</item>
         <item>@string/idle_refresh_period_48min</item>
@@ -284,11 +279,6 @@
     </string-array>
 
     <string-array name="idle_refresh_period_values" translatable="false">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>6</item>
-        <item>12</item>
         <item>24</item>
         <item>36</item>
         <item>48</item>

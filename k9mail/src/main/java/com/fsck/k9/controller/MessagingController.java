@@ -4956,16 +4956,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         actOnMessagesGroupedByAccountAndFolder(
                 refs, (account1, messageFolder, accountMessages) -> {
-                    for (LocalMessage accountMessage : accountMessages) {
-                        try {
-                            String folderName = accountMessage.getFolder().getName();
-                            deleteMessage(accountMessage, account1, folderName, accountMessage.getFolder());
-
-                            Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(folderName);
-                            remoteFolder.expunge();
-                        } catch (MessagingException e) {
-                            Timber.e(e, "Could not clean pEpEngine sync message");
-                        }
+                    try {
+                        Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
+                        messageFolder.delete(accountMessages, null);
+                        remoteFolder.delete(accountMessages, null);
+                        remoteFolder.expunge();
+                        messageFolder.expunge();
+                    } catch (MessagingException e) {
+                        Timber.e(e, "Could not clean pEpEngine sync message");
                     }
 
                 });
