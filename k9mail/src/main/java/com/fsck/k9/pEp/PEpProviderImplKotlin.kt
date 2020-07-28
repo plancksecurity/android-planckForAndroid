@@ -83,7 +83,7 @@ class PEpProviderImplKotlin @Inject constructor(
         if (pEpUseKeyserver) startKeyserverLookup() else stopKeyserverLookup()
     }
 
-
+    @Deprecated ("unencrypted for some is not supported anymore")
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
                                      bccAddresses: List<Address>): Boolean {
         toAddresses.forEach { toAddress ->
@@ -136,11 +136,13 @@ class PEpProviderImplKotlin @Inject constructor(
         decMsg.replyTo = replyTo.toTypedArray()
     }
 
+    @Deprecated ("not needed with KeySync")
     private fun isUsablePrivateKey(result: decrypt_message_Return): Boolean {
         // TODO: 13/06/16 Check if it is necessary to check own id
         return (result.rating.value >= Rating.pEpRatingTrusted.value && result.flags == 0x01)
     }
 
+    @Deprecated ("unencrypted for some is not supported anymore")
     @Throws(MessagingException::class, pEpException::class)
     private fun getUnencryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> {
         val messages: MutableList<MimeMessage> = ArrayList()
@@ -173,8 +175,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return stripRecipients(source, true)
     }
 
-    private fun handleEncryptedBCC(source: MimeMessage,
-                                   pEpMessage: Message,
+    private fun handleEncryptedBCC(source: MimeMessage, pEpMessage: Message,
                                    outgoingMessageList: MutableList<Message>) {
         pEpMessage.bcc.forEach { identity ->
             val message = PEpMessageBuilder(source).createMessage(context)
@@ -191,7 +192,6 @@ class PEpProviderImplKotlin @Inject constructor(
             outgoingMessageList.removeAt(ENCRYPTED_MESSAGE_POSITION)
         }
     }
-
 
     private fun stripRecipients(src: MimeMessage, encrypted: Boolean): Message {
         val message = PEpMessageBuilder(src).createMessage(context)
@@ -301,6 +301,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @Deprecated ("not needed with KeySync")
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
             createEngineInstanceIfNeeded()
@@ -542,7 +543,7 @@ class PEpProviderImplKotlin @Inject constructor(
             when {
                 PEpUtils.isAutoConsumeMessage(decMsg) -> {
                     Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                    if (K9.DEBUG) Log.e(TAG, message.attachments[0].toString())
+                    if (K9.DEBUG) Timber.e(TAG, message.attachments[0].toString())
                 }
                 else -> {
                     Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
@@ -728,7 +729,9 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    //Don't instantiate a new engine
+    /*
+     *     Don't instantiate a new engine
+     */
     override fun getRating(from: Address?,
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
@@ -872,7 +875,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun startSync() {
-        val ioScope =  CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
         ioScope.launch {
             try {
@@ -1039,6 +1042,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.leave_device_group()
     }
 
+    @WorkerThread // TODO: 28/07/2020 move to suspend
     override fun updateIdentity(id: Identity): Identity {
         createEngineInstanceIfNeeded()
         return engine.updateIdentity(id)
