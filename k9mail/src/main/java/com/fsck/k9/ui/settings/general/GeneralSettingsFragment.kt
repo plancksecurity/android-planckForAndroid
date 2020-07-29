@@ -35,6 +35,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var attachmentDefaultPathPreference: Preference
 
+    private var syncSwitchDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -157,13 +158,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 } else {
                     com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
                 }
-                AlertDialog.Builder(view?.context, theme)
-                        .setTitle(R.string.keysync_disable_warning_title)
-                        .setMessage(R.string.keysync_disable_warning_explanation)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
-                        .setNegativeButton(R.string.cancel_action) { _, _ -> }
-                        .show()
+                if (syncSwitchDialog == null) {
+                    syncSwitchDialog = AlertDialog.Builder(view?.context, theme)
+                            .setTitle(R.string.keysync_disable_warning_title)
+                            .setMessage(R.string.keysync_disable_warning_explanation)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
+                            .setNegativeButton(R.string.cancel_action) { _, _ -> }
+                            .create()
+                }
+                syncSwitchDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
             } else {
                 preference.isChecked = true
             }
