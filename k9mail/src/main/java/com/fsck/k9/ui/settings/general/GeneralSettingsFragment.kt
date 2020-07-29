@@ -36,6 +36,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var attachmentDefaultPathPreference: Preference
 
+    private var syncSwitchDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -144,30 +145,30 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun processKeySyncSwitchClick(preference: TwoStatePreference): Boolean {
-        // IF we are disabling sync, warning, if not just set it.
-        // 1 uncheck to return to "current state
         preference.isChecked = !preference.isChecked
-
-        //2 If we are disabling (which means it is checked)
-        if (preference.isChecked) {
-            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                R.style.SyncDisableDialog
+        when {
+            preference.isChecked -> {
+                val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    R.style.SyncDisableDialog
+                } else {
+                    com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+                }
+                if (syncSwitchDialog == null) {
+                    syncSwitchDialog = AlertDialog.Builder(view?.context, theme)
+                            .setTitle(R.string.keysync_disable_warning_title)
+                            .setMessage(R.string.keysync_disable_warning_explanation)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
+                                preference.isChecked = false
+                            }
+                            .setNegativeButton(R.string.cancel_action) { _, _ ->
+                                preference.isChecked = true
+                            }
+                            .create()
+                }
+                syncSwitchDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
             }
-            else {
-                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
-            }
-            AlertDialog.Builder(view?.context, theme)
-                    .setTitle(R.string.keysync_disable_warning_title)
-                    .setMessage(R.string.keysync_disable_warning_explanation)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
-                        preference.isChecked = false
-                    }.setNegativeButton(R.string.cancel_action) { _, _ ->
-                        preference.isChecked = true
-                    }
-                    .show()
-        } else {
-            preference.isChecked = true
+            else -> preference.isChecked = true
         }
         return true
     }
