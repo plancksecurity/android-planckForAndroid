@@ -233,6 +233,7 @@ class PEpProviderImplKotlin @Inject constructor(
         if (this::engine.isInitialized) engine.close()
     }
 
+    @WorkerThread
     override fun printLog() = log.split("\n")
             .filter { it.isNotBlank() }
             .toTypedArray()
@@ -281,6 +282,7 @@ class PEpProviderImplKotlin @Inject constructor(
         postExecutionThread.post { callback.onError(throwable) }
     }
 
+    @WorkerThread
     override fun obtainLanguages(): Map<String, PEpLanguage>? {
         return try {
             val languages: MutableMap<String, PEpLanguage> = HashMap()
@@ -332,7 +334,7 @@ class PEpProviderImplKotlin @Inject constructor(
     // ************************************************************************************
     // ************************************************************************************
     // ************************************************************************************
-
+    @WorkerThread //Only in controller
     @Throws(pEpException::class)
     override fun encryptMessage(result: Message): Message = runBlocking {
         return@runBlocking encryptMessageSuspend(result)
@@ -343,7 +345,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         return@withContext engine.encrypt_message(result, null, result.encFormat)
     }
-
+    @WorkerThread
     override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
         encryptMessageSuspend(source, extraKeys)
     }
@@ -382,6 +384,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread //Only in controller
     override fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage? = runBlocking {
         encryptMessageToSelfSuspend(source, keys)
     }
@@ -518,6 +521,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return@withContext true
     }
 
+    @WorkerThread //Only in controller, already done
     override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
         Timber.d(TAG, "decryptMessage() enter")
         decryptMessageSuspend(source)
@@ -626,6 +630,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.importKey(key)
     }
 
+    @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? = runBlocking {
         setOwnIdentitySuspend(id, fpr)
     }
@@ -641,6 +646,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread
     override fun myself(myId: Identity?): Identity? = runBlocking {
         myselfSuspend(myId)
     }
@@ -693,6 +699,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread
     override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
         incomingMessageRatingSuspend(message)
     }
@@ -707,6 +714,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
+    @WorkerThread //Already done
     override fun getRating(message: com.fsck.k9.mail.Message): Rating {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
@@ -737,6 +745,7 @@ class PEpProviderImplKotlin @Inject constructor(
     /*
      *     Don't instantiate a new engine
      */
+    @WorkerThread //already done
     override fun getRating(from: Address?,
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
@@ -830,12 +839,13 @@ class PEpProviderImplKotlin @Inject constructor(
         message.dir = Message.Direction.Outgoing
         return message
     }
-
+    @WorkerThread //Already done
     override fun getRating(address: Address): Rating = runBlocking {
         val identity = PEpUtils.createIdentity(address, context)
         getRatingSuspend(identity)
     }
 
+    @WorkerThread //already done
     override fun getRating(identity: Identity): Rating = runBlocking {
         getRatingSuspend(identity)
     }
@@ -899,10 +909,12 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.stopSync()
     }
 
+    @WorkerThread
     override fun trustwords(id: Identity, language: String): String {
         throw UnsupportedOperationException()
     }
 
+    @WorkerThread
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? = runBlocking {
         trustwordsSuspend(myself, partner, lang, isShort)
     }
@@ -953,6 +965,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
 
     }
+
 
     override fun trustPersonaKey(id: Identity) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -1053,6 +1066,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return engine.updateIdentity(id)
     }
 
+    @WorkerThread
     override fun getBlacklistInfo(): List<KeyListItem>? = runBlocking {
         getBlacklistInfoSuspend()
     }
@@ -1072,6 +1086,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return@withContext null
     }
 
+    @WorkerThread
     override fun addToBlacklist(fpr: String) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1083,6 +1098,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.blacklist_add(fpr)
     }
 
+    @WorkerThread
     override fun deleteFromBlacklist(fpr: String) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -1094,6 +1110,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.blacklist_delete(fpr)
     }
 
+    @WorkerThread
     override fun getMasterKeysInfo(): List<KeyListItem>? = runBlocking {
         getMasterKeysInfoSuspend()
     }
@@ -1185,7 +1202,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     }
 
-    @WorkerThread // TODO: 21/07/2020 move to suspend
+    @WorkerThread // TODO: 21/07/2020 move to suspend //already done
     override fun setIdentityFlag(identity: Identity, sync: Boolean) {
         try {
             when {
@@ -1197,7 +1214,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 21 /07/2020 move to suspend
+    @WorkerThread // TODO: 21 /07/2020 move to suspend //already done
     override fun unsetIdentityFlag(identity: Identity, flags: Int) {
         try {
             engine.unset_identity_flags(identity, flags)
