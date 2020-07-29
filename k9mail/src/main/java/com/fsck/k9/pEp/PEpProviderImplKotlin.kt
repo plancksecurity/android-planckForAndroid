@@ -83,7 +83,7 @@ class PEpProviderImplKotlin @Inject constructor(
         if (pEpUseKeyserver) startKeyserverLookup() else stopKeyserverLookup()
     }
 
-    @Deprecated ("unencrypted for some is not supported anymore")
+    @Deprecated("unencrypted for some is not supported anymore")
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
                                      bccAddresses: List<Address>): Boolean {
         toAddresses.forEach { toAddress ->
@@ -136,13 +136,13 @@ class PEpProviderImplKotlin @Inject constructor(
         decMsg.replyTo = replyTo.toTypedArray()
     }
 
-    @Deprecated ("not needed with KeySync")
+    @Deprecated("not needed with KeySync")
     private fun isUsablePrivateKey(result: decrypt_message_Return): Boolean {
         // TODO: 13/06/16 Check if it is necessary to check own id
         return (result.rating.value >= Rating.pEpRatingTrusted.value && result.flags == 0x01)
     }
 
-    @Deprecated ("unencrypted for some is not supported anymore")
+    @Deprecated("unencrypted for some is not supported anymore")
     @Throws(MessagingException::class, pEpException::class)
     private fun getUnencryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> {
         val messages: MutableList<MimeMessage> = ArrayList()
@@ -233,12 +233,6 @@ class PEpProviderImplKotlin @Inject constructor(
         if (this::engine.isInitialized) engine.close()
     }
 
-    @WorkerThread
-    override fun printLog() = log.split("\n")
-            .filter { it.isNotBlank() }
-            .toTypedArray()
-            .forEach { logLine -> Timber.i(TAG, logLine) }
-
     override fun setPassiveModeEnabled(enable: Boolean) {
         createEngineInstanceIfNeeded()
         engine.config_passive_mode(enable)
@@ -303,7 +297,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @Deprecated ("not needed with KeySync")
+    @Deprecated("not needed with KeySync")
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
             createEngineInstanceIfNeeded()
@@ -345,6 +339,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         return@withContext engine.encrypt_message(result, null, result.encFormat)
     }
+
     @WorkerThread
     override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
         encryptMessageSuspend(source, extraKeys)
@@ -839,6 +834,7 @@ class PEpProviderImplKotlin @Inject constructor(
         message.dir = Message.Direction.Outgoing
         return message
     }
+
     @WorkerThread //Already done
     override fun getRating(address: Address): Rating = runBlocking {
         val identity = PEpUtils.createIdentity(address, context)
@@ -1233,8 +1229,36 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.stopKeyserverLookup()
     }
 
-    override fun getLog(): String = runBlocking {
-        getLogSuspend()
+    @WorkerThread // DONE
+    override fun printLog() {
+        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        uiScope.launch {
+            log.split("\n")
+                    .filter { it.isNotBlank() }
+                    .toTypedArray()
+                    .forEach { logLine -> Timber.i(TAG, logLine) }
+        }
+    }
+
+    // DONE
+    override fun getLog(callback: CompletedCallback): String {
+        var result = ""
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            result = getLogSuspend()
+            callback.onComplete()
+        }
+        return result
+    }
+
+    // DONE
+    override fun getLog(): String {
+        var result = ""
+        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        uiScope.launch {
+            result = getLogSuspend()
+        }
+        return result
     }
 
     private suspend fun getLogSuspend(): String = withContext(Dispatchers.IO) {

@@ -201,6 +201,8 @@ public interface PEpProvider extends AutoCloseable {
 
     String getLog();
 
+    String getLog(CompletedCallback callback);
+
     void printLog();
 
     void loadOwnIdentities(ResultCallback<List<Identity>> callback);
