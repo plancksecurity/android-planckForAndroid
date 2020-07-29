@@ -743,6 +743,13 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public String getLog(CompletedCallback callback) {
+        String result = engine.getCrashdumpLog(100);
+        callback.onComplete();
+        return result;
+    }
+
+    @Override
     public synchronized void printLog() {
         String[] logLines = getLog().split("\n");
         for (String logLine : logLines) {
