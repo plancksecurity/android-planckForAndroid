@@ -956,16 +956,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void decryptMessage(LocalMessage message) {
         PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
-        pEpProvider.decryptMessage(mMessage, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
+        pEpProvider.decryptMessage(mMessage, mAccount, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
             @Override
             public void onLoaded(PEpProvider.DecryptResult decryptResult) {
                 try {
 
                     MimeMessage decryptedMessage = decryptResult.msg;
-                    if (message.getFolder().getName().equals(mAccount.getSentFolderName())
-                            || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-                        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
-                    }
 
                     decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
 
@@ -974,6 +970,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                     LocalMessage localMessage;
 
                     localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
+                        //NOP
                     });
                     mMessage = localMessage;
                     refreshMessage();

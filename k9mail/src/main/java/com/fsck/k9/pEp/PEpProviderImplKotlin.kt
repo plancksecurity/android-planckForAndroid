@@ -2,8 +2,8 @@ package com.fsck.k9.pEp
 
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.WorkerThread
+import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
@@ -573,15 +573,15 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun decryptMessage(source: MimeMessage, callback: ResultCallback<DecryptResult>) {
+    override fun decryptMessage(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
         Timber.d(TAG, "decryptMessage() enter")
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-            decryptMessageSuspend(source, callback)
+            decryptMessageSuspend(source, account, callback)
         }
     }
 
-    private suspend fun decryptMessageSuspend(source: MimeMessage, callback: ResultCallback<DecryptResult>) = withContext(Dispatchers.Default) {
+    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) = withContext(Dispatchers.Default) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         var engine: Engine? = null
@@ -601,6 +601,11 @@ class PEpProviderImplKotlin @Inject constructor(
                 else -> {
                     val message = decReturn.dst
                     val decMsg = getMimeMessage(source, message)
+
+                    if (source.folder.name == account.sentFolderName || source.folder.name == account.draftsFolderName) {
+                        decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(getRating(source)))
+                    }
+
                     notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback)
                 }
             }

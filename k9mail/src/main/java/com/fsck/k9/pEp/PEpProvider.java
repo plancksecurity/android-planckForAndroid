@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
@@ -78,7 +79,7 @@ public interface PEpProvider extends AutoCloseable {
      * @return the decrypted message or error en case we cannot decrypt or engine fails
      * <p/>
      */
-    void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback);
+    void decryptMessage(MimeMessage source, Account account, ResultCallback<DecryptResult> callback);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real

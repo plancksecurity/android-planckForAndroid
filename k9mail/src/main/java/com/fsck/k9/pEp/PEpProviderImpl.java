@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.Address;
@@ -193,7 +194,6 @@ public class PEpProviderImpl implements PEpProvider {
         Engine.decrypt_message_Return decReturn = null;
         try {
             if (engine == null) createEngineSession();
-
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
@@ -280,7 +280,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback) {
+    public void decryptMessage(MimeMessage source, Account account, ResultCallback<DecryptResult> callback) {
         threadExecutor.execute(() -> {
             Timber.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
@@ -304,6 +304,11 @@ public class PEpProviderImpl implements PEpProvider {
 
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
+
+                if (source.getFolder().getName().equals(account.getSentFolderName())
+                        || source.getFolder().getName().equals(account.getDraftsFolderName())) {
+                    decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(getRating(source)));
+                }
 
                 notifyLoaded(new DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback);
 
