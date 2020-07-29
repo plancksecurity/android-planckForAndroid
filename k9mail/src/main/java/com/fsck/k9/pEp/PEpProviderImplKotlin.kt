@@ -625,14 +625,10 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.importKey(key)
     }
 
-    @WorkerThread
-    override fun setOwnIdentity(id: Identity, fpr: String): Identity? = runBlocking {
-        setOwnIdentitySuspend(id, fpr)
-    }
-
-    private suspend fun setOwnIdentitySuspend(id: Identity, fpr: String): Identity? = withContext(Dispatchers.IO) {
+    @WorkerThread // TODO: 29/07/2020 move to suspend
+    override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
         createEngineInstanceIfNeeded()
-        return@withContext try {
+        return try {
             val sanitizedFpr = PEpUtils.sanitizeFpr(fpr)
             engine.setOwnKey(id, sanitizedFpr)
         } catch (e: Exception) {
