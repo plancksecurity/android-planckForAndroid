@@ -1062,47 +1062,28 @@ class PEpProviderImplKotlin @Inject constructor(
         return engine.updateIdentity(id)
     }
 
-    @WorkerThread
-    override fun getBlacklistInfo(): List<KeyListItem>? = runBlocking {
-        getBlacklistInfoSuspend()
-    }
-
-    private suspend fun getBlacklistInfoSuspend(): List<KeyListItem>? = withContext(Dispatchers.IO) {
+    @WorkerThread // TODO: 29/07/2020 move to suspend
+    override fun getBlacklistInfo(): List<KeyListItem>? {
         try {
             val identities: MutableList<KeyListItem> = ArrayList()
             val keys = engine.OpenPGP_list_keyinfo("")
             keys?.forEach { key ->
                 identities.add(KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)))
             }
-
-            return@withContext identities
+            return identities
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
         }
-        return@withContext null
+        return null
     }
 
-    @WorkerThread
+    @WorkerThread // TODO: 29/07/2020 move to suspend
     override fun addToBlacklist(fpr: String) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            addToBlacklistSuspend(fpr)
-        }
-    }
-
-    private suspend fun addToBlacklistSuspend(fpr: String) = withContext(Dispatchers.IO) {
         engine.blacklist_add(fpr)
     }
 
-    @WorkerThread
+    @WorkerThread // TODO: 29/07/2020 move to suspend
     override fun deleteFromBlacklist(fpr: String) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deleteFromBlacklistSuspend(fpr)
-        }
-    }
-
-    private suspend fun deleteFromBlacklistSuspend(fpr: String) = withContext(Dispatchers.IO) {
         engine.blacklist_delete(fpr)
     }
 
