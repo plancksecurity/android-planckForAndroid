@@ -58,8 +58,6 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
         recipientsView.layoutManager = recipientsLayoutManager
         recipientsView.visibility = View.VISIBLE
 
-        toolbar
-
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             keys = getBlackListInfo()
