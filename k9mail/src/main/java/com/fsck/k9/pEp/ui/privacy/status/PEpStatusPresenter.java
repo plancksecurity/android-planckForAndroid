@@ -156,7 +156,6 @@ public class PEpStatusPresenter implements Presenter {
 
     void onHandshakeResult(Identity id, boolean trust) {
         latestHandshakeId = id;
-        updateIdentities();
         refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
@@ -166,9 +165,9 @@ public class PEpStatusPresenter implements Presenter {
                 } else {
                     view.showMistrustFeedback(latestHandshakeId.username);
                 }
+                updateIdentities();
             }
         });
-
     }
 
     public void resetpEpData(Identity id) {
@@ -181,7 +180,6 @@ public class PEpStatusPresenter implements Presenter {
                 view.showResetpEpDataFeedback();
             }
         });
-
     }
 
     private void refreshRating(PEpProvider.ResultCallback<Rating> callback) {
