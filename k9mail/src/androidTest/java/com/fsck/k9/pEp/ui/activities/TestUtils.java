@@ -826,7 +826,7 @@ public class TestUtils {
                     clickInbox();
                     return;
                 } else if (!exists(onView(withId(R.id.available_accounts_title)))){
-                    selectFromMenu(R.string.prefs_title);
+                    selectFromMenu(R.string.action_settings);
                     selectAccountFromList(accountToSelect);
                     getMessageListSize();
                     return;
