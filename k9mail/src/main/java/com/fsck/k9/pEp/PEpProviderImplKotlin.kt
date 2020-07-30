@@ -690,7 +690,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread
+    @WorkerThread // done
     override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
         incomingMessageRatingSuspend(message)
     }
