@@ -75,6 +75,7 @@
     <string name="pep_enable_privacy_protection">p≡p ochrana súkromia</string>
     <string name="pep_explanation">Vysvetlenie</string>
     <string name="pep_suggestion">Návrh</string>
+    <string name="pep_app_license">Licencované pod licenciou pEp security EULA</string>
     <string name="pep_trust_server_description">Uchovávajte e-maily na serveri v bezpečnej forme.</string>
     <string name="pep_account_privacy_protection_explanation">Povoľte p≡p ochrana súkromia pre tento účet</string>
     <string name="pep_forward_warning">Varovanie nezabezpečenej odpovede</string>
@@ -83,7 +84,7 @@
     <string name="message_list_item_removed">Odstránené</string>
     <string name="message_list_item_undo">VRÁTENIE SPÄŤ</string>
     <string name="available_accounts_title">Dostupné účty</string>
-    <string name="pep_app_description">K-9 / p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
     <string name="global_settings_title">Všeobecné nastavenia</string>
     <string name="configure_account_action">Správa účtov</string>
     <string name="pep_add_device_ask_trustwords">Chystáte sa pridať zariadenie do inej skupiny zariadení p≡p. Potvrďte úspešným overením nasledujúcich Trustwords.</string>
@@ -174,7 +175,7 @@
     <string name="key_import_accept">Súhlasiť</string>
     <string name="key_import_reject">Odmietnuť</string>
     <string name="message_loading_error">Hodnotenie správy sa stále načíta, skúste to znova</string>
-    <string name="pep_sync">p≡p sync</string>
+    <string name="pep_sync">p≡p Sync</string>
     <string name="pep_sync_enable_account">Synchronizujte tento účet</string>
     <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
     <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
@@ -196,10 +197,10 @@
 \n 1. má pripojený váš verejný kľúč PGP a 
 \n 2. je šifrovaný a podpísaný pomocou kľúča p≡p, ktorý ste práve importovali</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Ak ste iniciovali import kľúčov pre nasledujúci účet:% s, kliknite na tlačidlo Štart.</string>
-    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z %1$s s identifikátorom kľúča: %2$s</string>
+    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z% 1 $ s s identifikátorom kľúča:% 2 $ s</string>
     <string name="key_import_success">Kľúč %1$ s bol úspešne importovaný z %2$s</string>
     <string name="key_import_from_fs_input_fpr">Zadajte ID kľúča alebo odtlačok kľúča.</string>
-    <string name="reset">Obnoviť</string>
+    <string name="reset">Resetovať</string>
     <string name="reset_all">Resetovať všetko</string>
     <string name="key_reset_for_identity_context_title">Resetujte všetky dáta p≡p pre tohto komunikačného partnera:</string>
     <string name="key_reset_identity_feedback">Všetky dáta p≡p pre tohto komunikačného partnera boli resetované.</string>

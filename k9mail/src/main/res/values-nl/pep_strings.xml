@@ -75,6 +75,7 @@
     <string name="pep_enable_privacy_protection">p≡p privacybescherming</string>
     <string name="pep_explanation">Uitleg</string>
     <string name="pep_suggestion">Suggestie</string>
+    <string name="pep_app_license">Gelicentieerd onder pEp security EULA</string>
     <string name="pep_trust_server_description">Bewaar mails aan de serverzijde in een veilige vorm.</string>
     <string name="pep_account_privacy_protection_explanation">Schakel p≡p-privacybescherming in voor dit account</string>
     <string name="pep_forward_warning">Onveilige antwoordwaarschuwing</string>
@@ -259,5 +260,5 @@
     <string name="keysync_disable_warning_title">Schakel p≡p Sync uit</string>
     <string name="keysync_disable_warning_explanation">Als u p≡p Sync uitschakelt, worden uw accounts op uw apparaten niet meer gesynchroniseerd.
 \n<b>Weet je zeker dat je p≡p Sync wilt uitschakelen\?</b></string>
-    <string name="keysync_disable_warning_action_disable">Uitschakelen</string>
+    <string name="keysync_disable_warning_action_disable">Uitzetten</string>
 </resources>

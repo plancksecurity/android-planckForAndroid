@@ -31,6 +31,7 @@
     <string name="pep_enable_privacy_protection">Gizlilik koruması</string>
     <string name="pep_explanation">Açıklama</string>
     <string name="pep_suggestion">Öneri</string>
+    <string name="pep_app_license">GNU Genel Kamu Lisansı v3 altında Lisanslı</string>
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
     <string name="key_list_title">Available keys</string>
@@ -184,7 +185,7 @@
     <string name="intro_frag_second_text_3">Trustwords doğru değilse, iletişim ortağınıza güvenilmez.</string>
     <string name="intro_frag_third_text_1">Tokalaşma</string>
     <string name="intro_frag_third_text_2">Üst çubuktaki Gizlilik Durumu simgesini tıkladığınızda, iletişim ortağınızı doğrulayabileceğiniz El Sıkışma sayfasına gidersiniz.</string>
-    <string name="intro_frag_third_text_3">Geçmek Rahatlatıcı ETİYOPYA Hızlı Kovboy FLEECER ...</string>
+    <string name="intro_frag_third_text_3">Geçmek Corrina ETİYOPYA Hızlı Kovboy FLEECER…</string>
     <string name="intro_frag_third_text_4">İletişim ortağınızla bir el sıkışma tamamlayın. Ortak başına bir el sıkışma gereklidir ve Güvenli ve Güvenilir iletişim sağlar.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Üst çubuktaki simge, iletinin tüm iletişim ortaklarının en düşük ortak paydası olan iletinin Gizlilik Durumunu yansıtır, örneğin:</string>

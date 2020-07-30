@@ -32,6 +32,7 @@
     <string name="pep_enable_privacy_protection">p≡p protección de privacidad</string>
     <string name="pep_explanation">Explicación</string>
     <string name="pep_suggestion">Sugerencia</string>
+    <string name="pep_app_license">Licenciado bajo pEp security EULA</string>
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Habilitar p≡p protección de privacidad para esta cuenta</string>
     <string name="configure_account_action">Administrar cuentas</string>
@@ -136,7 +137,7 @@
     <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_title">No pudimos proteger este mensaje.</string>
     <string name="message_failed_to_encrypt">No pudimos proteger este mensaje.</string>
-    <string name="only_own_identities">Este es un mensaje propio, sin que participe ningun interlocutor.</string>
+    <string name="only_own_identities">Este es un mensaje propio, sin que participe ningún interlocutor.</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="pep_rating_forced_unencrypt">Deshabilitado</string>
     <string name="pep_rating_mistrusted">Sospechoso</string>
@@ -164,7 +165,7 @@
 \n¿Confirma que quiere restablecer\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
-    <string name="trust_identity_feedback">% s ahora es de confianza</string>
+    <string name="trust_identity_feedback">%s ahora es de confianza</string>
     <string name="key_reset_own_identity_feedback">La cuenta ha sido restablecida.</string>
     <string name="key_reset_identity_feedback">Todos los datos p≡p para este interlocutor se han restablecido.</string>
     <string name="key_reset_for_identity_context_title">Restablece todos los datos de p≡p relativos a este interlocutor:</string>
@@ -225,5 +226,5 @@
     <string name="keysync_disable_warning_title">Deshabilitar la sincronización de p≡p</string>
     <string name="keysync_disable_warning_explanation">Si desactiva p≡p Sync, sus cuentas en sus dispositivos ya no se sincronizarán.
 \n<b> ¿Está seguro de que desea desactivar la sincronización p≡p\? </b></string>
-    <string name="keysync_disable_warning_action_disable">Inhabilitar</string>
+    <string name="keysync_disable_warning_action_disable">Desactivar</string>
 </resources>
