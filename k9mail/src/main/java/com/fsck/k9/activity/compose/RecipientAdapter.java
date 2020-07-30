@@ -21,10 +21,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.helper.ContactPicture;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
-import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.fsck.k9.activity.compose.RecipientSelectView.RecipientCryptoStatus;
 import com.fsck.k9.view.ThemeUtils;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 
 public class RecipientAdapter extends BaseAdapter implements Filterable {
@@ -32,10 +34,14 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
     private List<Recipient> recipients;
     private String highlight;
 
+    private ContactPictureLoader contactPictureLoader;
 
-    public RecipientAdapter(Context context) {
+    @Inject
+    public RecipientAdapter(@Named("AppContext") Context context,
+                            ContactPictureLoader contactPictureLoader) {
         super();
         this.context = context;
+        this.contactPictureLoader = contactPictureLoader;
     }
 
     public void setRecipients(List<Recipient> recipients) {
@@ -88,10 +94,10 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
 
         holder.name.setText(highlightText(recipient.getDisplayNameOrUnknown(context)));
 
-        String address = recipient.address.getAddress();
+        String address = recipient.getAddress().getAddress();
         holder.email.setText(highlightText(address));
 
-        setContactPhotoOrPlaceholder(context, holder.photo, recipient);
+        contactPictureLoader.setContactPicture(holder.photo, recipient.getAddress());
 
         Integer cryptoStatusRes = null, cryptoStatusColor = null;
         RecipientCryptoStatus cryptoStatus = recipient.getCryptoStatus();
@@ -121,20 +127,6 @@ public class RecipientAdapter extends BaseAdapter implements Filterable {
             holder.cryptoStatus.setVisibility(View.VISIBLE);
         } else {
             holder.cryptoStatus.setVisibility(View.GONE);
-        }
-    }
-
-    public static void setContactPhotoOrPlaceholder(Context context, ImageView imageView, Recipient recipient) {
-        // TODO don't use two different mechanisms for loading!
-        if (recipient.photoThumbnailUri != null) {
-//            Glide.with(context).load(recipient.photoThumbnailUri)
-//                    // for some reason, this fixes loading issues.
-//                    .placeholder(null)
-//                    .dontAnimate()
-//                    .into(imageView);
-            imageView.setImageURI(recipient.photoThumbnailUri);
-        } else {
-            ContactPicture.getContactPictureLoader(context).loadContactPicture(recipient.address, imageView);
         }
     }
 
