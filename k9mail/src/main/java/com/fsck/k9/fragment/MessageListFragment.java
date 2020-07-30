@@ -755,6 +755,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void getFolderInfoHolder(String folderName, Account account) {
+        if(!preferences.getAccounts().contains(account)) {
+            Timber.e("Account is null in Preferences because we just deleted it, " +
+                    "this should only happen coming from FragmentManager.popBackStack from MessageList.onNewIntent");
+            return;
+        }
         try {
             MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
                 if(isResumed()) {
