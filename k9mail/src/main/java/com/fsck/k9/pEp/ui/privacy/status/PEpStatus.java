@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -40,7 +39,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import security.pEp.ui.PEpUIUtils;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -120,7 +118,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
+            presenter.initialize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
 

@@ -18,17 +18,19 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+
 public class PEpStatusPresenter implements Presenter {
 
+    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
+    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
     private final SimpleMessageLoaderHelper simpleMessageLoaderHelper;
     private final PEpIdentityMapper pEpIdentityMapper;
     private PEpStatusView view;
@@ -40,10 +42,6 @@ public class PEpStatusPresenter implements Presenter {
     private Address senderAddress;
     private Rating currentRating;
     private Identity latestHandshakeId;
-
-    private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
-    private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
-
     private boolean forceUnencrypted = false;
     private boolean isAlwaysSecure = false;
 
@@ -53,7 +51,7 @@ public class PEpStatusPresenter implements Presenter {
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    void initilize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, boolean forceUnencrypted, boolean alwaysSecure) {
+    void initialize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, boolean forceUnencrypted, boolean alwaysSecure) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
@@ -73,10 +71,9 @@ public class PEpStatusPresenter implements Presenter {
         List<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
 
-        if(!identities.isEmpty()) {
+        if (!identities.isEmpty()) {
             view.setupRecipients(identities);
-        }
-        else {
+        } else {
             view.showItsOnlyOwnMsg();
         }
     }
@@ -154,17 +151,45 @@ public class PEpStatusPresenter implements Presenter {
             localMessage.setpEpRating(rating);
         }
         view.setRating(rating);
-        view.setupBackIntent(rating,
-                forceUnencrypted, isAlwaysSecure);
+        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure);
     }
 
     void onHandshakeResult(Identity id, boolean trust) {
         latestHandshakeId = id;
         updateIdentities();
-        refreshRating();
-        if(trust) showUndoAction(PEpProvider.TrustAction.TRUST);
-        else {
-            view.showMistrustFeedback(latestHandshakeId.username);
+        refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                onRatingChanged(rating);
+                if (trust) {
+                    showUndoAction(PEpProvider.TrustAction.TRUST);
+                } else {
+                    view.showMistrustFeedback(latestHandshakeId.username);
+                }
+            }
+        });
+
+    }
+
+    public void resetpEpData(Identity id) {
+        pEpProvider.keyResetIdentity(id, null);
+        refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                onRatingChanged(rating);
+                onTrustReset(currentRating, id);
+                view.showResetpEpDataFeedback();
+            }
+        });
+
+    }
+
+    private void refreshRating(PEpProvider.ResultCallback<Rating> callback) {
+        if (isMessageIncoming) {
+            pEpProvider.incomingMessageRating(localMessage, callback);
+        } else {
+            setupOutgoingMessageRating();
+            callback.onLoaded(currentRating);
         }
     }
 
@@ -172,15 +197,6 @@ public class PEpStatusPresenter implements Presenter {
         ArrayList<Identity> recipients = cache.getRecipients();
         identities = pEpIdentityMapper.mapRecipients(recipients);
         view.updateIdentities(identities);
-    }
-
-    private void refreshRating() {
-        if (isMessageIncoming) {
-            Rating rating = pEpProvider.incomingMessageRating(localMessage);
-            onRatingChanged(rating);
-        } else {
-            setupOutgoingMessageRating();
-        }
     }
 
     private void showUndoAction(PEpProvider.TrustAction trustAction) {
@@ -263,13 +279,6 @@ public class PEpStatusPresenter implements Presenter {
         };
     }
 
-    public void resetpEpData(Identity id) {
-        pEpProvider.keyResetIdentity(id, null);
-        refreshRating();
-        onTrustReset(currentRating, id);
-        view.showResetpEpDataFeedback();
-    }
-
     public void undoTrust() {
         if (latestHandshakeId != null) {
             resetTrust(latestHandshakeId);
@@ -282,7 +291,7 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     public void restoreInstanceState(Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             forceUnencrypted = savedInstanceState.getBoolean(STATE_FORCE_UNENCRYPTED);
             isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
         }

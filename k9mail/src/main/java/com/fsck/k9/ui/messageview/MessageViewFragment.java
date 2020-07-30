@@ -45,7 +45,6 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalFolder;
@@ -68,11 +67,6 @@ import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -322,15 +316,25 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
             if (requestCode == PEpStatus.REQUEST_STATUS) {
-                pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+                Rating rating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+                refreshRating(rating);
             } else {
-                pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
+                ((K9) getApplicationContext()).getpEpProvider()
+                        .incomingMessageRating(mMessage, new PEpProvider.SimpleResultCallback<Rating>() {
+                            @Override
+                            public void onLoaded(Rating rating) {
+                                refreshRating(rating);
+                            }
+                        });
             }
-
-            setToolbar();
-            mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-            mMessageView.setHeaders(mMessage, mAccount);
         }
+    }
+
+    private void refreshRating(Rating rating) {
+        pEpRating = rating;
+        setToolbar();
+        mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+        mMessageView.setHeaders(mMessage, mAccount);
     }
 
     private void setToolbar() {

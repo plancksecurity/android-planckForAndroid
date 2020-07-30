@@ -695,7 +695,16 @@ class PEpProviderImplKotlin @Inject constructor(
         incomingMessageRatingSuspend(message)
     }
 
-    private suspend fun incomingMessageRatingSuspend(message: MimeMessage): Rating = withContext(Dispatchers.IO) {
+    // TODO: 30/07/2020 move to suspend
+    override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            val result = incomingMessageRatingSuspend(message)
+            callback.onLoaded(result)
+        }
+    }
+
+    private suspend fun incomingMessageRatingSuspend(message: MimeMessage) = withContext(Dispatchers.IO) {
         try {
             val pEpMessage = PEpMessageBuilder(message).createMessage(context)
             engine.re_evaluate_message_rating(pEpMessage)

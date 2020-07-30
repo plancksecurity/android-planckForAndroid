@@ -7,6 +7,9 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import java.util.List;
+import java.util.Map;
+
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
@@ -216,6 +219,8 @@ public interface PEpProvider extends AutoCloseable {
     void setFastPollingCallback(Sync.NeedsFastPollCallback needsFastPollCallback);
 
     Rating incomingMessageRating(MimeMessage message);
+
+    void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback);
 
     void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 

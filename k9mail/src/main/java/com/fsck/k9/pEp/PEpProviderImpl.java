@@ -829,26 +829,6 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-//    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
-//        StringBuilder stringBuilder = new StringBuilder();
-//        String formattedFpr = PEpUtils.formatFpr(id.fpr);
-//        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
-//                .append("\n")
-//                .append(context.getString(R.string.pep_username)).append(": ")
-//                .append(id.username).append("\n")
-//                .append(context.getString(R.string.pep_userAddress)).append(": ")
-//                .append(id.address).append("\n")
-//                .append("\n")
-//                .append(formattedFpr.substring(0, formattedFpr.length()/2))
-//                .append("\n")
-//                .append(formattedFpr.substring(formattedFpr.length()/2))
-//                .append("\n").append("\n")
-//                .append(context.getString(R.string.recipient_from)).append(": ")
-//                .append(fromAddress);
-//
-//        return stringBuilder.toString();
-//    }
-
     @Override
     public synchronized void setSubjectProtection(boolean isProtected) {
         createEngineInstanceIfNeeded();
@@ -1066,6 +1046,17 @@ public class PEpProviderImpl implements PEpProvider {
         } catch (pEpException e) {
             Timber.e(e);
             return Rating.pEpRatingUndefined;
+        }
+    }
+
+    @Override
+    public void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback) {
+        Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
+        try {
+            callback.onLoaded(engine.re_evaluate_message_rating(pEpMessage));
+        } catch (pEpException e) {
+            Timber.e(e);
+            callback.onLoaded(Rating.pEpRatingUndefined);
         }
     }
 
