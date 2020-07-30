@@ -3,6 +3,7 @@ package security.pEp.ui.about
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
@@ -53,6 +54,10 @@ class AboutActivity : PepActivity() {
         }
         contact_button.paintFlags = contact_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
+        documentation_button.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.pEp_documentation_url))))
+        }
+        documentation_button.paintFlags = documentation_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
         val librariesString = buildLibrariesHtml()
         librariesText.movementMethod = LinkMovementMethod.getInstance()

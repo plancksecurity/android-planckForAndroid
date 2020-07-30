@@ -64,6 +64,29 @@
 
 
             <TextView
+                android:id="@+id/documentation_label"
+                style="@style/LightBlackText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:text="@string/about_documentation"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contact_button" />
+
+            <TextView
+                android:id="@+id/documentation_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginStart="4dp"
+                android:text="@string/pEp_documentation_url"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintStart_toEndOf="@+id/documentation_label"
+                app:layout_constraintTop_toTopOf="@+id/documentation_label" />
+
+
+            <TextView
                 android:id="@+id/librariesText"
                 style="@style/LightBlackText"
                 android:layout_width="match_parent"
@@ -71,7 +94,7 @@
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact_button"
+                app:layout_constraintTop_toBottomOf="@+id/documentation_button"
                 tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
 
             <TextView
