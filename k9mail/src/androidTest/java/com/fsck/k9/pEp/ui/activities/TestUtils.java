@@ -1813,7 +1813,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
                 return;
