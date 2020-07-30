@@ -2321,6 +2321,10 @@ public class TestUtils {
         }
     }
 
+    public int getListSize() {
+        return messageListSize[0];
+    }
+
     public void swipeDownMessageList() {
         while (true) {
             try {
