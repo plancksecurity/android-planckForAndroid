@@ -12,9 +12,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.pEpException;
-
-import java.util.List;
-import java.util.Map;
+import timber.log.Timber;
 
 /**
  * Created by dietz on 01.07.15.
@@ -302,6 +300,13 @@ public interface PEpProvider extends AutoCloseable {
 
     interface ResultCallback<Result> extends Callback {
         void onLoaded(Result result);
+    }
+
+    abstract class SimpleResultCallback<Result> implements ResultCallback<Result> {
+        @Override
+        public void onError(Throwable throwable) {
+            Timber.e(throwable);
+        }
     }
 
     interface CompletedCallback extends Callback {
