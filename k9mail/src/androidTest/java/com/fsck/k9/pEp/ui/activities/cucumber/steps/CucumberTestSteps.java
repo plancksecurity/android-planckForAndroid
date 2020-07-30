@@ -647,19 +647,22 @@ public class CucumberTestSteps {
         testUtils.pressBack();
     }
 
-    private int getListMessageSize () {
-        LocalStore localStore = null;
-        int size = 0;
-        try {
-            localStore = getLocalStore();
-            size = localStore.getAutoConsumeMessageReferences().size();
-        } catch (MessagingException e) {
-            e.printStackTrace();
+    private int getTotalMessagesSize() {
+        LocalStore localStore;
+        int size = -1;
+        while (size == -1) {
+            try {
+                localStore = getLocalStore();
+                size = localStore.getMessageCount();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
         }
         return size;
     }
 
     private Account getAccount(String email) {
+        email = email.replaceAll("\\s+","");
         for (Account account : Preferences.getPreferences(K9.app).getAccounts()) {
             if (account.getEmail().equalsIgnoreCase(email)) {
                 return account;
@@ -668,12 +671,17 @@ public class CucumberTestSteps {
         return null;
     }
     public LocalStore getLocalStore() throws MessagingException {
-        return LocalStore.getInstance(getAccount(testUtils.getEmailAccount(0)), K9.app);
+        Account ac = null;
+        while (ac == null) {
+            ac = getAccount(testUtils.getKeySyncAccount(0));
+        }
+        return LocalStore.getInstance(ac, K9.app);
     }
 
     @When("^I sync devices (\\S+) and (\\S+)$")
     public void I_sync_devices(String device1, String device2) {
-        int messages = getListMessageSize();
+        int inboxMessages = testUtils.getListSize();
+        int totalMessages = getTotalMessagesSize();
         switch (testUtils.keySync_number()) {
             case "1":
                 if (device1.equals("A") || device2.equals("A")) {
@@ -703,8 +711,12 @@ public class CucumberTestSteps {
                 Timber.i("Cannot sync this device");
                 break;
         }
-        if (messages >= getListMessageSize()) {
-            testUtils.assertFailWithMessage("No sync messages");
+        testUtils.getMessageListSize();
+        if (totalMessages >= getTotalMessagesSize()) {
+            testUtils.assertFailWithMessage("There are more sync messages before sync than after sync");
+        }
+        if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
+            testUtils.assertFailWithMessage("Sync messages went to wrong folder");
         }
         testUtils.getMessageListSize();
     }
