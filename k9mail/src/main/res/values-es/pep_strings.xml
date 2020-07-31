@@ -133,7 +133,6 @@
     <string name="nnf_select_something_first">Por favor, primero seleccione algo</string>
     <string name="nnf_create_folder_error">Error al crear la carpeta</string>
     <string name="add_account_message">Para poder usar esta cuenta, deberia agregarla a su dispositivo</string>
-    <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_title">No pudimos proteger este mensaje.</string>
     <string name="message_failed_to_encrypt">No pudimos proteger este mensaje.</string>
     <string name="only_own_identities">Este es un mensaje propio, sin que participe ningún interlocutor.</string>
@@ -185,12 +184,9 @@
     <string name="key_import_wizard_from_pgp_create_handshake_request">En su dispositivo PGP, crea un mensaje de respuesta al que ha recibido de p≡p y adjunte su clave pública PGP.</string>
     <string name="key_import_wizard_from_pgp_key_sent">Se le ha enviado un mensaje con su clave pública p≡p. Abra este mensaje en su dispositivo PGP e importe su clave pública p≡p en su almacén de claves.</string>
     <string name="notification_failed_to_encrypt_text">No lo hemos enviado y en cambio lo hemos guardado en la carpeta de borradores.</string>
-    <string name="ellipsized_text" translatable="false">%s …</string>
     <string name="key_import_wizard_from_pgp_initial_text">Está a punto de iniciar el proceso de importación de la clave a partir de un cliente PGP</string>
     <string name="key_import_wizard_from_pep_initial_text">Vamos a iniciar el proceso de importación de la clave: Se importará y usará su clave p≡p de otro dispositivo, y se exportará su clave privada.</string>
     <string name="key_import_wizard_handshake_explanation">Por favor compare las siguientes Trustwords con las que se muestran en su otro dispositivo y confirme que coincidan.</string>
-    <string name="pgp">PGP</string>
-    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Salir del Grupo de dispositivos</string>
     <string name="pep_sync_is_disabled_global">La sincronización de p≡p está desactivada</string>
     <string name="pep_sync_is_enabled_global">La sincronización de p≡p está activada</string>
@@ -204,11 +200,6 @@
     <string name="device_offline_warning">Su dispositivo parece estar desconectado, por favor verifique su conexión antes de poder continuar</string>
     <string name="account_already_exists">La cuenta ya existe</string>
     <string name="add_account_title">Agregue su cuenta</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep" translatable="false">p≡p</string>
     <string name="keysync_wizard_group_creation_done_message">Hemos creado con éxito un grupo de dispositivos. Ahora toda tu privacidad está sincronizada.</string>
     <string name="keysync_wizard_create_group_first_message">Se ha encontrado un segundo dispositivo. Podemos formar un grupo de dispositivos para sincronizar toda tu privacidad en ambos. ¿Iniciamos la sincronización\?</string>
     <string name="keysync_wizard_error_message">Se ha producido un error al sincronizar los dispositivos. Inténtelo de nuevo.</string>

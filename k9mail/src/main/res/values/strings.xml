@@ -1000,7 +1000,7 @@
     <string name="account_settings_crypto_hide_sign_only" translatable="false">Hide unencrypted signatures</string>
     <string name="account_settings_crypto_hide_sign_only_on" translatable="false">Only encrypted signatures will be displayed</string>
     <string name="account_settings_crypto_hide_sign_only_off" translatable="false">All signatures will be displayed</string>
-    <string name="error_sign_only_no_encryption">Encryption unavailable in sign-only mode!</string>
+    <string name="error_sign_only_no_encryption" translatable="false">Encryption unavailable in sign-only mode!</string>
     <string name="unsigned_text_divider_label">Unsigned Text</string>
     <string name="openpgp_inline_title" translatable="false">PGP/INLINE Mode</string>
     <string name="openpgp_inline_text" translatable="false">The email is sent in PGP/INLINE format.\nThis should only be used for compatibility:</string>

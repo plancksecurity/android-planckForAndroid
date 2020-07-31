@@ -3,12 +3,7 @@
     <string name="navigation_drawer_open">Navigatielade openen</string>
     <string name="navigation_drawer_close">Navigatielade sluiten</string>
     <!-- Unstranslatable strings -->
-    <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -213,7 +208,6 @@
     <string name="pep_key_reset_own_id_warning">Met deze actie wordt uw account gereset.
 \n Weet je zeker dat je wilt resetten\?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset% s account</string>
-    <string name="ellipsized_text" translatable="false">%s  …</string>
     <!-- Folder list-->
     <string name="search_empty_error">Schrijf tekst om te zoeken</string>
     <!-- Welcome/Tutorial-->
@@ -237,7 +231,6 @@
     <string name="pep_rating_secure">Veilig</string>
     <string name="pep_rating_mistrusted">Wantrouwde</string>
     <string name="pep_rating_forced_unencrypt">Gehandicapt</string>
-    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Zelfstudie</string>
     <string name="only_own_identities">Dit is een eigen bericht, er is geen andere communicatiepartner bij betrokken.</string>
     <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>

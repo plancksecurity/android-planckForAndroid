@@ -120,15 +120,9 @@
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
     <string name="key_import_reject">Ablehnen</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep" translatable="false">p≡p</string>
     <string name="intro_frag_first_text_1"><![CDATA[Willkommen zur <font color="#4caf50">p≡p</font> Anleitung]]></string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
     <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
-    <string name="ellipsized_text" translatable="false">%s …</string>
     <string name="pep_key_reset_own_id_warning">Dies wird Ihr Konto zurücksetzen.
 \nSind Sie sicher, dass sie einen Reset wünschen\?</string>
     <string name="pep_key_reset_all_own_ids_warning">Dies wird alle Ihre Konten zurücksetzen.
@@ -160,8 +154,6 @@
     <string name="key_import_wizard_from_pgp_initial_text">Wir starten den Schlüsselimport vom Gerät mit PGP</string>
     <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dabei importieren wir Ihren p≡p-Schlüsselcode und verwenden ihn, um Ihren privaten Schlüsselcode von diesem Gerät zu exportieren.</string>
     <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
-    <string name="pgp">PGP</string>
-    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
@@ -180,7 +172,6 @@
     <string name="account_already_exists">Dieses Konto existiert bereits</string>
     <string name="add_account_message">Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können</string>
     <string name="add_account_title">Konto hinzufügen</string>
-    <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_text">Die Nachricht wurde nicht versendet und liegt im Ordner für Entwürfe.</string>
     <string name="notification_failed_to_encrypt_title">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="intro_frag_fourth_text_2">Das Symbol in der oberen Leiste spiegelt den Datenschutzstatus der Nachricht wieder, der für alle Kommunikationspartner dieser Nachricht den kleinsten gemeinsamen Nenner darstellt, z. B.:</string>

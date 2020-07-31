@@ -3,12 +3,7 @@
     <string name="navigation_drawer_open">Otvorte navigačný panel</string>
     <string name="navigation_drawer_close">Zatvorte navigačný panel</string>
     <!-- Unstranslatable strings -->
-    <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -179,8 +174,6 @@
     <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
     <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
     <string name="pep_sync_leave_device_group">Opustiť skupinu zariadení</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Porovnajte nasledujúce Trustwords s tými na vašom druhom zariadení a potvrďte, či sa zhodujú.</string>
     <string name="key_import_wizard_from_pep_initial_text">Chystáme sa začať proces importovania kľúča: Týmto sa importuje a použije váš kľúč p≡p z iného zariadenia a exportuje váš súkromný kľúč.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Chystáte sa začať proces importovania kľúča od klienta PGP</string>
@@ -213,7 +206,6 @@
     <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet. 
 \n Naozaj chcete resetovať\?</string>
     <string name="pep_key_reset_own_id_warning_title">Obnovte účet %s</string>
-    <string name="ellipsized_text" translatable="false">%s  …</string>
     <!-- Folder list-->
     <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
     <!-- Welcome/Tutorial-->
@@ -237,7 +229,6 @@
     <string name="pep_rating_secure">Zabezpečiť</string>
     <string name="pep_rating_mistrusted">Nedôveryhodne</string>
     <string name="pep_rating_forced_unencrypt">Vypnuté</string>
-    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Návod</string>
     <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
     <string name="message_failed_to_encrypt">Túto správu sme nemohli ochrániť.</string>
