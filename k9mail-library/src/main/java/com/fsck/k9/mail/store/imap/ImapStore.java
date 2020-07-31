@@ -164,9 +164,8 @@ public class ImapStore extends RemoteStore {
 
     private Set<String> listFolders(ImapConnection connection, boolean subscribedOnly) throws IOException,
             MessagingException {
-        String encodedListPrefix = ImapUtility.encodeString(getCombinedPrefix() + "*");
-
         String commandResponse = subscribedOnly ? "LSUB" : "LIST";
+        String encodedListPrefix = ImapUtility.encodeString(getCombinedPrefix() + "*");
 
         List<ImapResponse> responses = connection.
                 executeSimpleCommand(String.format("%s \"\" %s", commandResponse, encodedListPrefix));
