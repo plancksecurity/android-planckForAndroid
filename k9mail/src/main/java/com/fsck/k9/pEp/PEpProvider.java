@@ -123,6 +123,8 @@ public interface PEpProvider extends AutoCloseable {
 
     String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
 
+    void trustwords(Identity myself, Identity partner, String lang, boolean isShort,SimpleResultCallback<String> callback);
+
     void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
                           ResultCallback<HandshakeData> callback);
 

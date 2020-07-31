@@ -917,16 +917,33 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? = runBlocking {
-        trustwordsSuspend(myself, partner, lang, isShort)
+        withContext(Dispatchers.IO) {
+            try {
+                engine.get_trustwords(myself, partner, lang, !isShort)
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "trustwords: ")
+                null
+            }
+        }
     }
 
-    private suspend fun trustwordsSuspend(myself: Identity, partner: Identity, lang: String,
-                                          isShort: Boolean): String? = withContext(Dispatchers.IO) {
+    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,
+                            callback: SimpleResultCallback<String>) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            trustwordsSuspend(myself, partner, lang, isShort, callback)
+        }
+    }
+
+    private suspend fun trustwordsSuspend(
+            myself: Identity, partner: Identity, lang: String, isShort: Boolean,
+            callback: SimpleResultCallback<String>) = withContext(Dispatchers.IO) {
         try {
-            engine.get_trustwords(myself, partner, lang, !isShort)
+            val result = engine.get_trustwords(myself, partner, lang, !isShort)
+            notifyLoaded(result, callback)
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "trustwords: ")
-            null
+            notifyError(e, callback)
         }
     }
 

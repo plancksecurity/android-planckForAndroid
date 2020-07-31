@@ -640,6 +640,17 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void trustwords(Identity myself, Identity partner, String lang, boolean isShort, SimpleResultCallback<String> callback) {
+        try {
+            String result = engine.get_trustwords(myself, partner, lang, !isShort);
+            callback.onLoaded(result);
+        } catch (pEpException e) {
+            Timber.e(e, "%s %s", TAG, "trustwords: ");
+            callback.onError(e);
+        }
+    }
+
+    @Override
     public void obtainTrustwords(Identity self, Identity other, String lang,
                                  Boolean areKeysyncTrustwords,
                                  ResultCallback<HandshakeData> callback) {
