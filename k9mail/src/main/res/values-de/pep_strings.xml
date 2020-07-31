@@ -31,7 +31,6 @@
     <string name="pep_enable_privacy_protection">p≡p-Datenschutz</string>
     <string name="pep_explanation">Erklärung</string>
     <string name="pep_suggestion">Vorschlag</string>
-    <string name="pep_app_license">Lizenziert unter der pEp Security EULA</string>
     <string name="pep_trust_server_description">Nachrichten auf dem Server geschützt speichern.</string>
     <string name="pep_account_privacy_protection_explanation">p≡p-Datenschutz für dieses Konto aktivieren</string>
     <string name="key_list_title">Verfügbare Schlüssel</string>

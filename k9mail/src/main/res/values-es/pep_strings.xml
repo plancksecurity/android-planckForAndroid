@@ -32,7 +32,6 @@
     <string name="pep_enable_privacy_protection">p≡p protección de privacidad</string>
     <string name="pep_explanation">Explicación</string>
     <string name="pep_suggestion">Sugerencia</string>
-    <string name="pep_app_license">Licenciado bajo pEp security EULA</string>
     <string name="pep_trust_server_description">Guardar los correos en el servidor de forma segura.</string>
     <string name="pep_account_privacy_protection_explanation">Habilitar p≡p protección de privacidad para esta cuenta</string>
     <string name="configure_account_action">Administrar cuentas</string>

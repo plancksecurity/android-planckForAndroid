@@ -32,7 +32,6 @@
     <!--<string name="pep_enable_privacy_protection">Privacy protection</string>-->
     <string name="pep_explanation">Explication</string>
     <string name="pep_suggestion">Suggestion</string>
-    <!--<string name="pep_app_license">Licensed under the GNU General Public License v3</string>-->
     <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->
     <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
     <string name="key_list_title">Clefs disponibles</string>
@@ -111,7 +110,6 @@
     <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Faire confiance au serveur et stocker les messages sans protection</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Protéger les messages stockés</string>
     <string name="pep_enable_privacy_protection">protection de la vie privée p≡p</string>
-    <string name="pep_app_license">Sous licence pEp security EULA</string>
     <string name="pep_trust_server_description">Stocker les messages de façon sûr coté serveur.</string>
     <string name="pep_account_privacy_protection_explanation">Activer la protection de vie privée p≡p pour ce compte</string>
     <string name="pep_forward_warning">Avertissement de réponse non sécurisée</string>

@@ -31,7 +31,6 @@
     <string name="pep_enable_privacy_protection">Gizlilik koruması</string>
     <string name="pep_explanation">Açıklama</string>
     <string name="pep_suggestion">Öneri</string>
-    <string name="pep_app_license">GNU Genel Kamu Lisansı v3 altında Lisanslı</string>
     <string name="pep_trust_server_description">Server tarafındaki e-postaları güvenli bir biçimde saklayın.</string>
     <string name="pep_account_privacy_protection_explanation">Bu hesap için gizlilik korumasını etkinleştir </string>
     <string name="key_list_title">Available keys</string>
