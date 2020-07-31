@@ -177,7 +177,10 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         } else if (counterpartyAddress != null) {
             Utility.setContactForBadge(contactBadge, counterpartyAddress)
             //   contactBadge.setPadding(0, 0, 0, 0);
-            fragment.contactsPictureLoader.loadContactPicture(counterpartyAddress, contactBadge)
+            //   contactBadge.setPadding(0, 0, 0, 0);
+            contactBadge?.let {
+                fragment.contactsPictureLoader.setContactPicture(it, counterpartyAddress)
+            }
         } else {
             contactBadge?.assignContactUri(null)
             contactBadge?.setImageResource(R.drawable.ic_contact_picture)
