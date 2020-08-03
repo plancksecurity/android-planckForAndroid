@@ -32,7 +32,6 @@
     <!--<string name="pep_enable_privacy_protection">Privacy protection</string>-->
     <string name="pep_explanation">Explication</string>
     <string name="pep_suggestion">Suggestion</string>
-    <!--<string name="pep_app_license">Licensed under the GNU General Public License v3</string>-->
     <!--<string name="pep_trust_server_description">Store serverside mails in a safe form.</string>-->
     <!--<string name="pep_account_privacy_protection_explanation">Enable privacy protection for this account </string>-->
     <string name="key_list_title">Clefs disponibles</string>
@@ -156,7 +155,6 @@
     <string name="intro_frag_second_text_3">Si les \"Trustwords\" ne sont pas corrects, votre partenaire de communication n\'est pas digne de confiance.</string>
     <string name="intro_frag_first_text_2"><![CDATA[<font color="#4caf50">p≡p</font>Vous pouvez fermer ce didacticiel à tout moment.\n\n<font color="#4caf50">p≡p</font> utilise un statut de confidentialité pour indiquer le degré de sécurité de votre communication.\n\nCe statut de confidentialité est affiché sous forme d\'icône dans l\'avatar de l\'utilisateur.]]></string>
     <string name="intro_frag_first_text_1"><![CDATA[Bienvenue dans le tutoriel <font color="#4caf50">p≡p</font>]]></string>
-    <string name="ellipsized_text" translatable="false">%s …</string>
     <string name="key_reset_all_own_identitities_feedback">Tous les comptes p≡p ont été réinitialisés.</string>
     <string name="key_reset_own_identity_feedback">Le compte a été réinitialisé.</string>
     <string name="key_reset_identity_feedback">Toutes les données p≡p pour la communication avec ce partenaire ont été réinitialisées.</string>
@@ -173,7 +171,6 @@
     <string name="key_import_wizard_from_pgp_key_sent">Un message avec votre clef publique p≡p vous a été envoyé. Veuillez ouvrir ce message sur votre dispositif PGP et importer votre clef publique p≡p dans votre keychain.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Nous allons commencer le procédé d’importation de la clef depuis un client PGP</string>
     <string name="key_import_wizard_handshake_explanation">Veuillez comparer les Trustwords suivants avec ceux de votre dispositif et confirmer qu’ils coïncident.</string>
-    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Quitter le groupe de dispositifs</string>
     <string name="pep_sync">Sync p≡p</string>
     <string name="message_loading_error">L’évaluation du message est en cours de chargement, veuillez réessayer</string>
@@ -181,11 +178,6 @@
     <string name="nnf_create_folder_error">Erreur de création du dossier</string>
     <string name="add_account_message">Afin de pouvoir utiliser ce compte, vous devez l’ajouter à votre dispositif</string>
     <string name="add_account_title">Ajouter votre compte</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep" translatable="false">p≡p</string>
     <string name="notification_failed_to_encrypt_text">Nous ne l\'avons pas envoyé et enregistré à la place dans le dossier brouillon.</string>
     <string name="notification_failed_to_encrypt_title">Nous n\'avons pas pu protéger ce message.</string>
     <string name="message_failed_to_encrypt">Nous n\'avons pas pu protéger ce message.</string>
@@ -214,7 +206,6 @@
     <string name="reset_all">Tout réinitialiser</string>
     <string name="reset">Réinitialiser</string>
     <string name="key_import_wizard_from_pep_initial_text">Nous allons commencer le processus d’importation de la clef : Cela importera et utilisera votre clef p≡p depuis un autre dispositif, et exportera votre clef privée.</string>
-    <string name="pgp">PGP</string>
     <string name="key_import_reject">Rejeter</string>
     <string name="key_import_accept">Accepter</string>
     <string name="nnf_filename">Nom de fichier</string>
@@ -224,7 +215,6 @@
     <string name="nnf_new_folder">Nouveau dossier</string>
     <string name="permissions_needed_message">Ne pas accorder les autorisations nécessaires peut entraîner des comportements inattendus. Appuyez sur OK pour nous les accorder.</string>
     <string name="account_already_exists">Le compte existe déjà</string>
-    <string name="pep_rating_none">" "</string>
     <string name="pep_subject_protection">Protéger le sujet des messages</string>
     <string name="keysync_wizard_group_creation_done_message">Nous avons correctement créé un groupe de dispositifs. Toutes vos données confidentielles sont maintenant synchronisées.</string>
     <string name="keysync_wizard_create_group_first_message">Un deuxième appareil a été détecté. Nous pouvons former un groupe d\'appareils pour synchroniser toute votre confidentialité sur les deux appareils. Pouvons-nous commencer la synchronisation \?</string>

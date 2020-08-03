@@ -51,7 +51,7 @@
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
     <string name="pep_title_activity_privacy_status">Privacy Status</string>
-    <string name="pep_extra_addresses">Extra key ids:</string>
+    <string name="pep_extra_addresses">Extra key IDs:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
     <string name="pep_subject_protection">Protect Message subject</string>
@@ -75,7 +75,7 @@
     <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
-    <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
+    <string name="pep_trust_server_description">Store server-side mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure reply warning</string>
     <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
@@ -83,19 +83,19 @@
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_add_device_ask_move_trustwords">You are about to move a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">p≡p Device Group</string>
-    <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another handshake?</string>
+    <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another Handshake\?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
-    <string name="pep_keysync_timeout">p≡p sync timeout</string>
+    <string name="pep_keysync_timeout">p≡p Sync timeout</string>
     <string name="read_permission_first_explanation">We need your permission to read the contacts stored on your mobile phone</string>
     <string name="button_settings">Settings</string>
     <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
@@ -174,11 +174,11 @@
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
-    <string name="pep_sync">p≡p sync</string>
+    <string name="pep_sync">p≡p Sync</string>
     <string name="pep_sync_enable_account">Synchronize this account</string>
-    <string name="pep_sync_is_enabled_global">p≡p sync is enabled</string>
-    <string name="pep_sync_is_disabled_global"> p≡p sync is disabled</string>
-    <string name="pep_sync_leave_device_group">Leave Device group</string>
+    <string name="pep_sync_is_enabled_global">p≡p Sync is enabled</string>
+    <string name="pep_sync_is_disabled_global">p≡p Sync is disabled</string>
+    <string name="pep_sync_leave_device_group">Leave p≡p Device Group</string>
     <string name="open_pgp" translatable="false">OpenPGP</string>
     <string name="pgp" translatable="false">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
@@ -235,19 +235,19 @@
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none"/>
+    <string name="pep_rating_none" translatable="false">\"\"</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
-    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_handshake_message">Please make sure you have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device\?</string>
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
     <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
     <!-- Group creation -->
-    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
-    <string name="keysync_wizard_group_creation_done_message">We successfully created a device group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a p≡p Device Group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a p≡p Device Group. All your privacy is now synchronized.</string>
     <!-- Group extension -->
-    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing?</string>
-    <string name="keysync_wizard_group_joining_done_message">The device is now member of your device group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your p≡p Device Group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your p≡p Device Group. All your privacy is now synchronized.</string>
     <!-- Key sync dialog button texts -->
     <string name="keysync_wizard_action_cancel">Cancel</string>
     <string name="keysync_wizard_action_next">Next</string>
