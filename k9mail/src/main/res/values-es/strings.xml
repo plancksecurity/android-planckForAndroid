@@ -134,9 +134,6 @@
     <string name="message_view_theme_action_dark">Cambiar a tema oscuro</string>
     <string name="message_view_theme_action_light">Cambiar a tema claro</string>
     <string name="mark_as_unread_action">Marcar como no leído</string>
-    <string name="read_receipt">Confirmación de lectura</string>
-    <string name="read_receipt_enabled">Se solicitará confirmación de lectura</string>
-    <string name="read_receipt_disabled">No se solicitará confirmación de lectura</string>
     <string name="add_attachment_action">Añadir adjunto</string>
     <string name="empty_trash_action">Vaciar Papelera</string>
     <string name="expunge_action">Purgar</string>
@@ -470,8 +467,6 @@
     <string name="account_settings_message_format_html">HTML (se mantienen las imágenes y el formato)</string>
     <string name="account_settings_message_format_auto">Automático</string>
     <string name="account_settings_always_show_cc_bcc_label">Mostrar siempre Cc/Cco</string>
-    <string name="account_settings_message_read_receipt_label">Confirmación de lectura</string>
-    <string name="account_settings_message_read_receipt_summary">Solicitar siempre confirmación de lectura</string>
     <string name="account_settings_quote_style_label">Estilo de respuesta</string>
     <string name="account_settings_quote_style_prefix">Prefijo (como Gmail)</string>
     <string name="account_settings_quote_style_header">Cabecera (como Outlook)</string>

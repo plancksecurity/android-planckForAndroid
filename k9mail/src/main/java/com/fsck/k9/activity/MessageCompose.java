@@ -165,7 +165,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             "com.fsck.k9.activity.MessageCompose.identity";
     private static final String STATE_IN_REPLY_TO = "com.fsck.k9.activity.MessageCompose.inReplyTo";
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
-    private static final String STATE_KEY_READ_RECEIPT = "com.fsck.k9.activity.MessageCompose.messageReadReceipt";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
 
@@ -246,8 +245,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private long draftId = INVALID_DRAFT_ID;
 
     private Action action;
-
-    private boolean requestReadReceipt = false;
 
     private ComposeAccountRecipient accountRecipient;
     private EditText subjectView;
@@ -466,8 +463,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (!identity.getSignatureUse()) {
             signatureView.setVisibility(View.GONE);
         }
-
-        requestReadReceipt = account.isMessageReadReceiptAlways();
 
         updateFrom();
         Timber.e("P4A-941 showed from %d ", System.currentTimeMillis()-time);
@@ -709,7 +704,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putBoolean(STATE_IDENTITY_CHANGED, identityChanged);
         outState.putString(STATE_IN_REPLY_TO, repliedToMessageId);
         outState.putString(STATE_REFERENCES, referencedMessageIds);
-        outState.putBoolean(STATE_KEY_READ_RECEIPT, requestReadReceipt);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
 
@@ -733,8 +727,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onRestoreInstanceState(savedInstanceState);
 
         attachmentsView.removeAllViews();
-
-        requestReadReceipt = savedInstanceState.getBoolean(STATE_KEY_READ_RECEIPT);
 
         recipientPresenter.onRestoreInstanceState(savedInstanceState);
         quotedMessagePresenter.onRestoreInstanceState(savedInstanceState);
@@ -786,7 +778,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 .setBcc(recipientPresenter.getBccAddresses())
                 .setInReplyTo(repliedToMessageId)
                 .setReferences(referencedMessageIds)
-                .setRequestReadReceipt(requestReadReceipt)
                 .setIdentity(identity)
                 .setMessageFormat(currentMessageFormat)
                 .setText(messageContentView.getCharacters())
@@ -884,18 +875,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         internalMessageHandler.sendEmptyMessage(MSG_DISCARDED_DRAFT);
         changesMadeSinceLastSave = false;
         finish();
-    }
-
-    private void onReadReceipt() {
-        CharSequence txt;
-        if (!requestReadReceipt) {
-            txt = getString(R.string.read_receipt_enabled);
-            requestReadReceipt = true;
-        } else {
-            txt = getString(R.string.read_receipt_disabled);
-            requestReadReceipt = false;
-        }
-        FeedbackTools.showShortFeedback(getRootView(), String.valueOf(txt));
     }
 
     public void showContactPicker(int requestCode) {
@@ -1114,9 +1093,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             //    break;
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
-                break;
-            case R.id.read_receipt:
-                onReadReceipt();
                 break;
             case R.id.privacyStatus:
                 onPEpPrivacyStatus(true);

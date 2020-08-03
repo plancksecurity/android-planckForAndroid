@@ -119,7 +119,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final MessageFormat DEFAULT_MESSAGE_FORMAT = MessageFormat.HTML;
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
-    public static final boolean DEFAULT_MESSAGE_READ_RECEIPT = false;
     public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.PREFIX;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
     public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
@@ -237,7 +236,6 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean ringNotified;
     private MessageFormat messageFormat;
     private boolean messageFormatAuto;
-    private boolean messageReadReceipt;
     private QuoteStyle quoteStyle;
     private String quotePrefix;
     private boolean defaultQuotedTextShown;
@@ -331,7 +329,6 @@ public class Account implements BaseAccount, StoreConfig {
         maximumAutoDownloadMessageSize = 0;
         messageFormat = DEFAULT_MESSAGE_FORMAT;
         messageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
-        messageReadReceipt = DEFAULT_MESSAGE_READ_RECEIPT;
         quoteStyle = DEFAULT_QUOTE_STYLE;
         quotePrefix = DEFAULT_QUOTE_PREFIX;
         defaultQuotedTextShown = DEFAULT_QUOTED_TEXT_SHOWN;
@@ -443,7 +440,6 @@ public class Account implements BaseAccount, StoreConfig {
         if (messageFormatAuto && messageFormat == MessageFormat.TEXT) {
             messageFormat = MessageFormat.AUTO;
         }
-        messageReadReceipt = storage.getBoolean(accountUuid + ".messageReadReceipt", DEFAULT_MESSAGE_READ_RECEIPT);
         quoteStyle = getEnumStringPref(storage, accountUuid + ".quoteStyle", DEFAULT_QUOTE_STYLE);
         quotePrefix = storage.getString(accountUuid + ".quotePrefix", DEFAULT_QUOTE_PREFIX);
         defaultQuotedTextShown = storage.getBoolean(accountUuid + ".defaultQuotedTextShown", DEFAULT_QUOTED_TEXT_SHOWN);
@@ -762,7 +758,6 @@ public class Account implements BaseAccount, StoreConfig {
             messageFormatAuto = false;
         }
         editor.putBoolean(accountUuid + ".messageFormatAuto", messageFormatAuto);
-        editor.putBoolean(accountUuid + ".messageReadReceipt", messageReadReceipt);
         editor.putString(accountUuid + ".quoteStyle", quoteStyle.name());
         editor.putString(accountUuid + ".quotePrefix", quotePrefix);
         editor.putBoolean(accountUuid + ".defaultQuotedTextShown", defaultQuotedTextShown);
@@ -1567,14 +1562,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setMessageFormat(MessageFormat messageFormat) {
         this.messageFormat = messageFormat;
-    }
-
-    public synchronized boolean isMessageReadReceiptAlways() {
-        return messageReadReceipt;
-    }
-
-    public synchronized void setMessageReadReceipt(boolean messageReadReceipt) {
-        this.messageReadReceipt = messageReadReceipt;
     }
 
     public QuoteStyle getQuoteStyle() {

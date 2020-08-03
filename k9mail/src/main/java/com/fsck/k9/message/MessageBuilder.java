@@ -74,7 +74,6 @@ public abstract class MessageBuilder {
     private Address[] bcc;
     private String inReplyTo;
     private String references;
-    private boolean requestReadReceipt;
     private Identity identity;
     private SimpleMessageFormat messageFormat;
     private String text;
@@ -126,12 +125,6 @@ public abstract class MessageBuilder {
         message.setRecipients(RecipientType.CC, cc);
         message.setRecipients(RecipientType.BCC, bcc);
         message.setSubject(subject);
-
-        if (requestReadReceipt) {
-            message.setHeader("Disposition-Notification-To", from.toEncodedString());
-            message.setHeader("X-Confirm-Reading-To", from.toEncodedString());
-            message.setHeader("Return-Receipt-To", from.toEncodedString());
-        }
 
         if (!K9.hideUserAgent() && context != null) {       // if ctx not set, forget about user agent...
             message.setHeader("User-Agent", context.getString(R.string.message_header_mua));
@@ -403,11 +396,6 @@ public abstract class MessageBuilder {
 
     public MessageBuilder setReferences(String references) {
         this.references = references;
-        return this;
-    }
-
-    public MessageBuilder setRequestReadReceipt(boolean requestReadReceipt) {
-        this.requestReadReceipt = requestReadReceipt;
         return this;
     }
 

@@ -28,11 +28,6 @@
         android:alphabeticShortcut="q"
         android:icon="?attr/iconActionCancel"
         android:title="@string/discard_action" />
-    <item
-        android:id="@+id/read_receipt"
-        android:alphabeticShortcut="r"
-        android:icon="?attr/iconActionRequestReadReceipt"
-        android:title="@string/read_receipt" />
 
     <item
         android:id="@+id/privacyStatus"
