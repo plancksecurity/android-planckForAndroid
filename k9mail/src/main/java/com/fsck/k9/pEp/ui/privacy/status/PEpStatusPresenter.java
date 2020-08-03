@@ -121,19 +121,10 @@ public class PEpStatusPresenter implements Presenter {
         });
     }
 
-    private void setupOutgoingMessageRating() {
+    private void setupOutgoingMessageRating(PEpProvider.ResultCallback<Rating> callback) {
         List<Address> addresses = getRecipientAddresses();
-        pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(), Collections.emptyList(), new PEpProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                onRatingChanged(rating);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-        });
+        pEpProvider.getRating(senderAddress, addresses, Collections.emptyList(),
+                Collections.emptyList(), callback);
     }
 
     @NonNull
@@ -186,8 +177,7 @@ public class PEpStatusPresenter implements Presenter {
         if (isMessageIncoming) {
             pEpProvider.incomingMessageRating(localMessage, callback);
         } else {
-            setupOutgoingMessageRating();
-            callback.onLoaded(currentRating);
+            setupOutgoingMessageRating(callback);
         }
     }
 
