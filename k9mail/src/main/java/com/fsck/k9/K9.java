@@ -753,7 +753,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
-        pEpInitSyncEnvironment();
+        //pEpInitSyncEnvironment();
         setupFastPoller();
 
         notifyObservers();
@@ -777,8 +777,9 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
-
-        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        if (pEpSyncProvider == null) {
+            pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        }
 //        for (Account account : prefs.getAccounts()) {
 //            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
 //        }
@@ -1684,7 +1685,7 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                pEpInitSyncEnvironment();
+                //pEpInitSyncEnvironment();
             }
             ++activityCount;
         }

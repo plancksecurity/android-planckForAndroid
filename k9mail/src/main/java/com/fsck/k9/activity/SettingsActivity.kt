@@ -204,6 +204,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = Preferences.getPreferences(this).accounts
+
+        // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        scope.launch {
+            val app = application as K9
+            app.pEpInitSyncEnvironment()
+        }
+
         val intent = intent
         //onNewIntent(intent);
 
