@@ -3,14 +3,12 @@ package security.pEp.ui.keyimport
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.pEpException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.apache.commons.io.IOUtils
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PICK_KEY_FILE
 import timber.log.Timber
@@ -18,15 +16,15 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
 
-class KeyImportPresenter @Inject constructor() {
+class KeyImportPresenter @Inject constructor(private val preferences: Preferences) {
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
-    private lateinit var account: String
+    private lateinit var accountUuid: String
 
-    fun initialize(view: KeyImportView, account: String) {
+    fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
-        this.account = account
+        this.accountUuid = accountUuid
     }
 
     fun onAccept(fingerprint: String) {
@@ -51,8 +49,10 @@ class KeyImportPresenter @Inject constructor() {
     }
 
     private fun onKeyImport(uri: Uri) {
-        runBlocking {
-            view.showDialog()
+        view.showDialog()
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        uiScope.launch {
             val success = importKey(uri)
             replyResult(success, uri)
             view.removeDialog()
@@ -68,17 +68,19 @@ class KeyImportPresenter @Inject constructor() {
             val resolver = context.contentResolver
             val inputStream = resolver.openInputStream(uri)
             val pEp = PEpProviderFactory.createAndSetupProvider(context)
-            val accountIdentity = PEpUtils.createIdentity(Address(account), context)
+            val address = Address(preferences.getAccount(accountUuid).email)
+            val accountIdentity = PEpUtils.createIdentity(address, context)
             val currentFpr = pEp.myself(accountIdentity).fpr
             try {
                 val key = IOUtils.toByteArray(inputStream)
                 pEp.importKey(key)
                 val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                if (id == null || !pEp.canEncrypt(account)) {
+                if (id == null || !pEp.canEncrypt(address.address)) {
                     Timber.w("Couldn't set own key: %s", key)
                     pEp.setOwnIdentity(accountIdentity, currentFpr)
                     result = false
                 }
+                pEp.myself(id);
             } catch (e: IOException) {
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()

@@ -25,6 +25,7 @@ import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
+import foundation.pEp.jniadapter.pEpException
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
@@ -32,6 +33,7 @@ import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import timber.log.Timber
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -222,10 +224,17 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            keyReset(account)
-            context?.applicationContext?.let {
-                FeedbackTools.showLongFeedback(view,
-                        it.getString(R.string.key_reset_own_identity_feedback))
+            val keyReset = keyReset(account)
+            if (keyReset) {
+                context?.applicationContext?.let {
+                    FeedbackTools.showLongFeedback(view,
+                            it.getString(R.string.key_reset_own_identity_feedback))
+                }
+            } else {
+                context?.applicationContext?.let {
+                    FeedbackTools.showLongFeedback(view,
+                            it.getString(R.string.key_reset_own_identity_feedback_error))
+                }
             }
             initializeAccountpEpKeyReset(account)
             loading?.visibility = View.GONE
@@ -236,13 +245,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun keyReset(account: Account) = withContext(Dispatchers.Default) {
+    private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
         val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
-        val address = Address(account.email, account.name)
-        var id = PEpUtils.createIdentity(address, context);
-        id = pEpProvider.updateIdentity(id)
-        pEpProvider.keyResetIdentity(id, null)
-        pEpProvider.close()
+        try {
+            val address = Address(account.email, account.name)
+            var id = PEpUtils.createIdentity(address, context);
+            id = pEpProvider.updateIdentity(id)
+            pEpProvider.keyResetIdentity(id, null)
+            true
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", "pEpEngine", "Failed to reset identity")
+            false
+        } finally {
+            pEpProvider.close()
+        }
     }
 
     private fun configureCryptoPreferences(account: Account) {

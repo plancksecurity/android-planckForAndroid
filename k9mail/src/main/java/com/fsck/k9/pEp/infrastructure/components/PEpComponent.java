@@ -34,6 +34,7 @@ import com.fsck.k9.ui.messageview.MessageViewFragment;
 import dagger.Component;
 import security.pEp.ui.intro.IntroFirstFragment;
 import security.pEp.ui.intro.IntroFourthFragment;
+import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.permissions.PermissionsActivity;
 
 @PerActivity
@@ -101,4 +102,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(IntroFirstFragment frag);
 
     void inject(IntroFourthFragment frag);
+
+    void inject(PassphraseActivity activity);
 }

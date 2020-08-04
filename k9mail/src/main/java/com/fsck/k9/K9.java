@@ -81,6 +81,8 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.KeySyncCleaner;
+import security.pEp.ui.passphrase.PassphraseActivity;
+import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -128,6 +130,9 @@ public class K9 extends MultiDexApplication {
 
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+
+    public static String password = null;
+
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -748,11 +753,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
-        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        for (Account account : prefs.getAccounts()) {
-            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
-        }
-        pEpInitSyncEnvironment();
+        //pEpInitSyncEnvironment();
         setupFastPoller();
 
         notifyObservers();
@@ -776,6 +777,13 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
+        if (pEpSyncProvider == null) {
+            pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        }
+//        for (Account account : prefs.getAccounts()) {
+//            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
+//        }
+
         KeySyncCleaner.queueAutoConsumeMessages();
 
         if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
@@ -797,23 +805,7 @@ public class K9 extends MultiDexApplication {
 
     private void initSync() {
 
-        pEpSyncProvider.setSyncHandshakeCallback(notifyHandshakeCallback);
-
-        pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(K9.this));
-
-        pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
-            @Override
-            public void needsFastPollCallFromC(Boolean fast_poll_needed) {
-                needsFastPoll = fast_poll_needed;
-                if (needsFastPoll) {
-                    poller.startPolling();
-                } else {
-                    poller.stopPolling();
-                }
-            }
-        });
-//        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-        PEpUtils.updateSyncAccountsConfig(this, pEpSyncProvider);
+        PEpUtils.updateSyncAccountsConfig(this);
         if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
@@ -1693,7 +1685,7 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                pEpInitSyncEnvironment();
+                //pEpInitSyncEnvironment();
             }
             ++activityCount;
         }
@@ -1909,6 +1901,13 @@ public class K9 extends MultiDexApplication {
                     pEpSyncEnabled = true;
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
+                case SyncPassphraseRequired:
+                    needsFastPoll = false;
+                    Timber.e("Showing passphrase dialog for sync");
+                   // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
+                    new Handler(Looper.getMainLooper()).postDelayed(() ->
+                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                    break;
             }
 
 
@@ -1936,10 +1935,25 @@ public class K9 extends MultiDexApplication {
     }
 
     public void shutdownSync() {
-        if (pEpSyncProvider.isSyncRunning()) {
-            pEpSyncProvider.stopSync();
+        Log.e("pEpEngine", "shutdownSync: start" );
+        if (pEpProvider.isSyncRunning()) {
+            pEpProvider.stopSync();
         }
         pEpSyncEnabled = false;
+        Log.e("pEpEngine", "shutdownSync: end" );
+
+    }
+
+    public void shutdownSync(PEpProvider pEpProvider) {
+        Log.e("pEpEngine", "shutdownSync: start" );
+        if (pEpProvider.isSyncRunning()) {
+            Log.e("pEpEngine", "shutdownSync: stopping" );
+
+            pEpProvider.stopSync();
+        }
+        pEpSyncEnabled = false;
+        Log.e("pEpEngine", "shutdownSync: end" );
+
     }
 
     private void forceSaveAppSettings() {
