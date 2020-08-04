@@ -3,6 +3,8 @@ package com.fsck.k9.pEp.ui.privacy.status;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 
@@ -31,6 +33,7 @@ public class PEpStatusPresenter implements Presenter {
 
     private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
     private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
+    private static final int LOAD_RECIPIENTS = 1, ON_TRUST_RESET = 2, UPDATE_IDENTITIES = 3;
     private final SimpleMessageLoaderHelper simpleMessageLoaderHelper;
     private final PEpIdentityMapper pEpIdentityMapper;
     private PEpStatusView view;
@@ -44,6 +47,25 @@ public class PEpStatusPresenter implements Presenter {
     private Identity latestHandshakeId;
     private boolean forceUnencrypted = false;
     private boolean isAlwaysSecure = false;
+
+    private Handler mainThreadHandler = new Handler() {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            List<PEpIdentity> newIdentities = (List<PEpIdentity>) msg.obj;
+            switch (msg.what) {
+                case ON_TRUST_RESET:
+                    trustWasReset(newIdentities, Rating.getByInt(msg.arg1));
+                    break;
+                case UPDATE_IDENTITIES:
+                    identitiesUpdated(newIdentities);
+                    break;
+                case LOAD_RECIPIENTS:
+                    recipientsLoaded(newIdentities);
+                    break;
+            }
+        }
+    };
 
     @Inject
     PEpStatusPresenter(SimpleMessageLoaderHelper simpleMessageLoaderHelper, PEpIdentityMapper pEpIdentityMapper) {
@@ -69,8 +91,12 @@ public class PEpStatusPresenter implements Presenter {
 
     void loadRecipients() {
         List<Identity> recipients = cache.getRecipients();
-        identities = pEpIdentityMapper.mapRecipients(recipients);
+        WorkerThread workerThread = new WorkerThread(recipients, LOAD_RECIPIENTS);
+        workerThread.start();
+    }
 
+    private void recipientsLoaded(List<PEpIdentity> newIdentities) {
+        identities = newIdentities;
         if (!identities.isEmpty()) {
             view.setupRecipients(identities);
         } else {
@@ -102,9 +128,13 @@ public class PEpStatusPresenter implements Presenter {
     }
 
     private void onTrustReset(Rating rating, Identity id) {
-        List<PEpIdentity> updatedIdentities = updateRecipients(identities, id);
+        WorkerThread workerThread = new WorkerThread(identities, ON_TRUST_RESET, rating);
+        workerThread.start();
+    }
+
+    private void trustWasReset(List<PEpIdentity> newIdentities, Rating rating) {
         onRatingChanged(rating);
-        view.updateIdentities(updatedIdentities);
+        view.updateIdentities(newIdentities);
     }
 
     private void resetIncomingMessageTrust(Identity id) {
@@ -183,7 +213,12 @@ public class PEpStatusPresenter implements Presenter {
 
     private void updateIdentities() {
         ArrayList<Identity> recipients = cache.getRecipients();
-        identities = pEpIdentityMapper.mapRecipients(recipients);
+        WorkerThread workerThread = new WorkerThread(recipients, UPDATE_IDENTITIES);
+        workerThread.start();
+    }
+
+    private void identitiesUpdated(List<PEpIdentity> newIdentities) {
+        identities = newIdentities;
         view.updateIdentities(identities);
     }
 
@@ -196,20 +231,6 @@ public class PEpStatusPresenter implements Presenter {
                 view.showUndoMistrust(latestHandshakeId.username);
                 break;
         }
-    }
-
-    private List<PEpIdentity> updateRecipients(List<PEpIdentity> identities, Identity id) {
-        ArrayList<PEpIdentity> pEpIdentities = new ArrayList<>(identities.size());
-        for (Identity recipient : identities) {
-            pEpIdentities.add(updateRecipient(recipient, id));
-        }
-        return pEpIdentities;
-    }
-
-    private PEpIdentity updateRecipient(Identity recipient, Identity id) {
-        PEpIdentity pEpIdentity = pEpIdentityMapper.mapRecipient(recipient);
-        pEpIdentity.setRating(pEpProvider.getRating(recipient));
-        return pEpIdentity;
     }
 
     @Override
@@ -306,4 +327,35 @@ public class PEpStatusPresenter implements Presenter {
         isAlwaysSecure = alwaysSecure;
         view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure);
     }
+
+    private class WorkerThread extends Thread {
+
+        private List<Identity> identities;
+        private int what;
+        private Rating rating;
+
+        public WorkerThread(List<Identity> identities, int what) {
+            this.identities = identities;
+            this.what = what;
+        }
+
+        public WorkerThread(List<PEpIdentity> identities, int what, Rating rating) {
+            this.identities = new ArrayList<>(identities);
+            this.what = what;
+            this.rating = rating;
+        }
+
+        @Override
+        public void run() {
+            List<PEpIdentity> updatedIdentities = pEpIdentityMapper.mapRecipients(identities);
+            Message childThreadMessage = new Message();
+            childThreadMessage.what = what;
+            childThreadMessage.obj = updatedIdentities;
+            if (rating != null) {
+                childThreadMessage.arg1 = rating.value;
+            }
+            mainThreadHandler.sendMessage(childThreadMessage);
+        }
+    }
+
 }
