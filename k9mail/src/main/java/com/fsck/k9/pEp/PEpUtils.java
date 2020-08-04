@@ -596,6 +596,7 @@ public class PEpUtils {
         for (Account account : Preferences.getPreferences(context).getAccounts()) {
             Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
             //pEpSyncProvider.stopSync();
+            // TODO: 04/08/2020 Move to PepProvider.
             id = pEp.myself(id);
             pEp.setIdentityFlag(id, account.isPepSyncEnabled());
             //pEpSyncProvider.startSync();

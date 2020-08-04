@@ -1046,7 +1046,7 @@ class PEpProviderImplKotlin @Inject constructor(
         val identity = updateIdentity(ident)
         try {
             engine.key_reset_identity(identity, fpr)
-        } catch (e: pEpPassphraseRequired) {
+        } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
         } catch (e: pEpWrongPassphrase) {
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:")
@@ -1058,7 +1058,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         try {
             engine.key_reset_user(userId, fpr)
-        } catch (e: pEpPassphraseRequired) {
+        } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
         } catch (e: pEpWrongPassphrase) {
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:")
@@ -1070,7 +1070,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         try {
             engine.key_reset_all_own_keys()
-        } catch (e: pEpPassphraseRequired) {
+        } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")
         } catch (e: pEpWrongPassphrase) {
             Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:")

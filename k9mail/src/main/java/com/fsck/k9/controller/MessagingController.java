@@ -1745,15 +1745,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         messagesToNotify.add(localMessage);
                                     }
                             }
-                        } catch (AuthFailurePassphraseNeeded e) {
-
-                            //Notify passphrase problem
-                            PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE);
-                            Timber.e(e, "Passphrase issue");
-                        } catch (AuthFailureWrongPassphrase e) {
-                            //Notify passphrase problem
-                            PassphraseActivity.notifyRequest(context, PassphraseRequirementType.WRONG_PASSPHRASE);
-                            Timber.e(e, "Passphrase issue");
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
                         }
@@ -3080,13 +3071,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         lastFailure = e;
                         wasPermanentFailure = false;
                         //Notify passphrase problem
-                        PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE);
+                        // TODO: 04/08/2020 Cleanup this execption, no need to notifyRequest as we are covered by the callback.
+                        //PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (AuthFailureWrongPassphrase e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
                         //Notify passphrase problem
-                        PassphraseActivity.notifyRequest(context, PassphraseRequirementType.WRONG_PASSPHRASE);
+                        //PassphraseActivity.notifyRequest(context, PassphraseRequirementType.WRONG_PASSPHRASE);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (Exception e) {
                         lastFailure = e;
