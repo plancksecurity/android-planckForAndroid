@@ -8,9 +8,7 @@ import foundation.pEp.jniadapter.Identity
 import javax.inject.Inject
 import javax.inject.Named
 
-class PEpIdentityMapper @Inject
-constructor(@param:Named("MainUI") private val pEpProvider: PEpProvider) {
-
+class PEpIdentityMapper @Inject constructor(@param:Named("NewInstance") private val pEpProvider: PEpProvider) {
 
     fun mapRecipients(recipients: List<Identity>): List<PEpIdentity> {
         return recipients.map { recipient ->
