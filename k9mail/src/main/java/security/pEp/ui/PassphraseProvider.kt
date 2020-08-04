@@ -51,7 +51,7 @@ object PassphraseProvider {
     }
 
     private suspend fun launchUI(context: Context) = withContext(Dispatchers.Main) {
-        PassphraseActivity.launch(context, PassphraseRequirementType.MISSING_PASSPHRASE)
+        PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE)
 
     }
 

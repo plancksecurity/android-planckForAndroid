@@ -81,7 +81,6 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.KeySyncCleaner;
-import security.pEp.ui.PassphraseProvider;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
@@ -1906,7 +1905,7 @@ public class K9 extends MultiDexApplication {
                     Timber.e("Showing passphrase dialog for sync");
                    // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
                     new Handler(Looper.getMainLooper()).postDelayed(() ->
-                            PassphraseActivity.launch(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
                     break;
             }
 

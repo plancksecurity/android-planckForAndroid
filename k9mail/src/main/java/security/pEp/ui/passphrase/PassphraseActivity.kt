@@ -12,10 +12,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 const val REQUEST_TYPE_EXTRA: String = "requestTypeExtra"
-
+const val PASSPHRASE_REQUEST_ACTION: String = "PASSPHRASE_REQUEST"
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
@@ -78,11 +79,18 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
 
     companion object {
         @JvmStatic
-        fun launch(context: Context, type: PassphraseRequirementType) {
-
-            val intent = Intent(context, PassphraseActivity::class.java)
+        fun notifyRequest(context: Context, type: PassphraseRequirementType) {
+            Timber.e("pEpEngine-passphrase launch passphrase")
+            val intent = Intent(PASSPHRASE_REQUEST_ACTION)
             intent.putExtra(REQUEST_TYPE_EXTRA, type)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.sendBroadcast(intent)
+        }
+
+        @JvmStatic
+        fun launchIntent(context: Context, intent: Intent) {
+            intent.setClass(context, PassphraseActivity::class.java)
+            intent.action = null
             context.startActivity(intent)
         }
     }

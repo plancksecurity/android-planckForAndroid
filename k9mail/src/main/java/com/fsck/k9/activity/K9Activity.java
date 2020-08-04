@@ -225,4 +225,16 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public abstract void search(String query);
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mBase.registerPassphraseReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBase.unregisterPassphraseReceiver();
+    }
 }
