@@ -11,12 +11,10 @@ import javax.inject.Named
 class PEpIdentityMapper @Inject constructor(@param:Named("NewInstance") private val pEpProvider: PEpProvider) {
 
     fun mapRecipients(recipients: List<Identity>): List<PEpIdentity> {
-        return recipients.map { recipient ->
-            mapRecipient(pEpProvider.updateIdentity(recipient))
-        }
+        return recipients.map { recipient -> mapRecipient(pEpProvider.updateIdentity(recipient)) }
     }
 
-    fun mapRecipient(recipient: Identity): PEpIdentity {
+    private fun mapRecipient(recipient: Identity): PEpIdentity {
         return PEpIdentity().apply {
             address = recipient.address
             comm_type = recipient.comm_type
@@ -26,7 +24,7 @@ class PEpIdentityMapper @Inject constructor(@param:Named("NewInstance") private 
             user_id = recipient.user_id
             username = recipient.username
             me = recipient.me
-            rating = pEpProvider.getRating(recipient)
+            rating = recipient.rating
         }
     }
 }
