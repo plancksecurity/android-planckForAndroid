@@ -2,6 +2,7 @@ package com.fsck.k9.pEp
 
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -52,7 +53,7 @@ class PEpProviderImplKotlin @Inject constructor(
                 Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
             }
         } else {
-            Timber.d(TAG, "createIfNeeded " + Thread.currentThread().id)
+            Timber.d("%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
         }
     }
 
@@ -347,7 +348,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun encryptMessageSuspend(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = withContext(Dispatchers.IO) {
         // TODO: 06/12/16 add unencrypted for some
-        Timber.d(TAG, "encryptMessage() enter")
+        Timber.d("%s %s", TAG, "encryptMessage() enter")
         val resultMessages: MutableList<MimeMessage> = ArrayList()
         val message = PEpMessageBuilder(source).createMessage(context)
         return@withContext try {
@@ -375,7 +376,7 @@ class PEpProviderImplKotlin @Inject constructor(
             Timber.e(t, "%s %s", TAG, "while encrypting message:")
             throw RuntimeException("Could not encrypt", t)
         } finally {
-            Timber.d(TAG, "encryptMessage() exit")
+            Timber.d("%s %s", TAG, "encryptMessage() exit")
         }
     }
 
@@ -393,14 +394,14 @@ class PEpProviderImplKotlin @Inject constructor(
         return@withContext try {
             message = PEpMessageBuilder(source).createMessage(context)
             message.dir = Message.Direction.Outgoing
-            Timber.d(TAG, "encryptMessage() before encrypt to self")
+            Timber.d("%s %s", TAG, "encryptMessage() before encrypt to self")
             val from = message.from
             from.user_id = PEP_OWN_USER_ID
             from.me = true
             message.from = from
             var currentEnc = engine.encrypt_message_for_self(message.from, message, convertExtraKeys(keys))
             if (currentEnc == null) currentEnc = message
-            Timber.d(TAG, "encryptMessage() after encrypt to self")
+            Timber.d("%s %s", TAG, "encryptMessage() after encrypt to self")
             getMimeMessage(source, currentEnc)
         } catch (e: Exception) {
             Timber.e(e, "%s %s", TAG, "encryptMessageToSelf: ")
@@ -431,7 +432,7 @@ class PEpProviderImplKotlin @Inject constructor(
                                                 message: Message,
                                                 extraKeys: Array<String>): MimeMessage = withContext(Dispatchers.Default) {
         message.dir = Message.Direction.Outgoing
-        Timber.d(TAG, "encryptMessage() before encrypt")
+        Timber.d("%s %s", TAG, "encryptMessage() before encrypt")
         val from = message.from
         from.user_id = PEP_OWN_USER_ID
         from.me = true
@@ -444,7 +445,7 @@ class PEpProviderImplKotlin @Inject constructor(
             }
             currentEnc = message
         }
-        Timber.d(TAG, "encryptMessage() after encrypt")
+        Timber.d("%s %s", TAG, "encryptMessage() after encrypt")
         return@withContext getMimeMessage(source, currentEnc)
     }
 
@@ -518,7 +519,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread //Only in controller, already done
     override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
-        Timber.d(TAG, "decryptMessage() enter")
+        Timber.d("%s %s", TAG, "decryptMessage() enter")
         decryptMessageSuspend(source)
     }
 
@@ -535,14 +536,17 @@ class PEpProviderImplKotlin @Inject constructor(
             decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
             Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt")
 
-            Timber.d(TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
 
             when {
                 PEpUtils.isAutoConsumeMessage(decMsg) -> {
                     Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                    if (K9.DEBUG) Timber.e(TAG, message.attachments[0].toString())
+                    if (K9.DEBUG) {
+                        // Using Log.e on purpose
+                        Log.e(TAG, message.attachments[0].toString())
+                    }
                 }
                 else -> {
                     Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
@@ -568,12 +572,12 @@ class PEpProviderImplKotlin @Inject constructor(
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
-            Timber.d(TAG, "decryptMessage() exit")
+            Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
     }
 
     override fun decryptMessage(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
-        Timber.d(TAG, "decryptMessage() enter")
+        Timber.d("%s %s", TAG, "decryptMessage() enter")
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             decryptMessageSuspend(source, account, callback)
@@ -590,9 +594,9 @@ class PEpProviderImplKotlin @Inject constructor(
             srcMsg = PEpMessageBuilder(source).createMessage(context)
             srcMsg.dir = Message.Direction.Incoming
 
-            Timber.d(TAG, "decryptMessage() before decrypt")
+            Timber.d("%s %s", TAG, "decryptMessage() before decrypt")
             decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
-            Timber.d(TAG, "decryptMessage() after decrypt")
+            Timber.d("%s %s", TAG, "decryptMessage() after decrypt")
 
             when (decReturn.rating) {
                 Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
@@ -615,7 +619,7 @@ class PEpProviderImplKotlin @Inject constructor(
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
             engine?.close()
-            Timber.d(TAG, "decryptMessage() exit")
+            Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
     }
 
@@ -646,6 +650,7 @@ class PEpProviderImplKotlin @Inject constructor(
         createEngineInstanceIfNeeded()
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
+        Timber.e("%s %s", TAG, "calling myself")
         engine.myself(myId)
     }
 
@@ -768,7 +773,7 @@ class PEpProviderImplKotlin @Inject constructor(
             message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
 
             val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
-            Timber.i(TAG, "getRating " + result.name)
+            Timber.i("%s %s", TAG, "getRating " + result.name)
             return@withContext result
         } catch (e: Throwable) {
             Timber.e(e, "%s %s", TAG, "during color test:")
@@ -796,7 +801,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
                     message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
                     val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
-                    Timber.i(TAG, "getRating " + result.name)
+                    Timber.i("%s %s", TAG, "getRating " + result.name)
                     notifyLoaded(result, callback)
                 } catch (e: Throwable) {
                     Timber.e(e, "%s %s", TAG, "during color test:")
@@ -994,7 +999,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
-        Timber.i(TAG, "Calling trust personal key")
+        Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.trustPersonalKey(id)
     }
 
@@ -1007,7 +1012,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun trustOwnKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
         createEngineInstanceIfNeeded()
-        Timber.i(TAG, "Calling trust own key")
+        Timber.i("%s %s", TAG, "Calling trust own key")
         engine.trustOwnKey(id)
     }
 
@@ -1235,7 +1240,7 @@ class PEpProviderImplKotlin @Inject constructor(
             log.split("\n")
                     .filter { it.isNotBlank() }
                     .toTypedArray()
-                    .forEach { logLine -> Timber.i(TAG, logLine) }
+                    .forEach { logLine -> Timber.i("%s %s", TAG, logLine) }
         }
     }
 
