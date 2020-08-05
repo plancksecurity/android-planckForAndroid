@@ -117,8 +117,12 @@ public class ImportWizardPresenter implements Presenter {
         showInitialScreen(isFormingGroup);
 
         fixUnsupportedLanguage();
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
-
+        pEp.trustwords(myself, partner, trustwordsLanguage, true, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String newTrustwords) {
+                trustWords = newTrustwords;
+            }
+        });
     }
 
     private void fixUnsupportedLanguage() {
@@ -141,8 +145,7 @@ public class ImportWizardPresenter implements Presenter {
         } else {
             view.hideLongTrustwordsIndicator();
         }
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
-        view.showHandshake(trustWords);
+        refreshTrustWords();
     }
 
     private void showDebugInfo() {
@@ -163,10 +166,19 @@ public class ImportWizardPresenter implements Presenter {
 
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
-        view.showHandshake(trustWords);
+        refreshTrustWords();
     }
 
+    private void refreshTrustWords(){
+        pEp.trustwords(myself, partner, trustwordsLanguage, showingShort, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String newTrustwords) {
+                trustWords = newTrustwords;
+                view.showHandshake(trustWords);
+
+            }
+        });
+    }
     public void acceptHandshake() {
         pEp.acceptSync();
         next();

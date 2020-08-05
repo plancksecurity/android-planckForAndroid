@@ -1,7 +1,10 @@
 package com.fsck.k9.activity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -18,6 +21,10 @@ import com.fsck.k9.pEp.LangUtils;
 
 import java.util.Locale;
 
+import security.pEp.ui.passphrase.PassphraseActivity;
+import security.pEp.ui.passphrase.PassphraseActivityKt;
+import timber.log.Timber;
+
 
 /**
  * This class implements functionality common to most activities used in K-9 Mail.
@@ -26,6 +33,9 @@ import java.util.Locale;
  * @see K9ListActivity
  */
 public class K9ActivityCommon {
+    private PassphraseRequestReceiver passphraseReceiver;
+    private IntentFilter passphraseReceiverfilter;
+
     /**
      * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
      *
@@ -89,6 +99,7 @@ public class K9ActivityCommon {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(K9.getK9ThemeResourceId());
+        initPassphraseRequestReceiver();
     }
 
     /**
@@ -129,6 +140,31 @@ public class K9ActivityCommon {
     }
 
     public void onDestroy() {
+    }
+
+    private void initPassphraseRequestReceiver() {
+        passphraseReceiver = new PassphraseRequestReceiver();
+        passphraseReceiverfilter = new IntentFilter();
+        passphraseReceiverfilter.addAction(PassphraseActivityKt.PASSPHRASE_REQUEST_ACTION);
+        passphraseReceiverfilter.setPriority(1);
+    }
+
+    public void registerPassphraseReceiver() {
+        Timber.e("pEpEngine-passphrase register receiver");
+        mActivity.getApplicationContext()
+                .registerReceiver(passphraseReceiver, passphraseReceiverfilter);
+    }
+
+    public void unregisterPassphraseReceiver() {
+        mActivity.getApplicationContext().unregisterReceiver(passphraseReceiver);
+    }
+    public static class PassphraseRequestReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Timber.e("pEpEngine-passphrase, onReceive");
+            PassphraseActivity.launchIntent(context, intent);
+        }
     }
 
 }

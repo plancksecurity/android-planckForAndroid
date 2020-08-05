@@ -499,9 +499,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
+        <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY" />
+                <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
         <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver">
@@ -553,6 +553,12 @@
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
+
+        <activity android:name="security.pEp.ui.passphrase.PassphraseActivity"
+            android:launchMode="singleTask"
+            android:label="@string/passhphrase_title"
+            android:theme="@style/OverlayTheme"
+        />
     </application>
 
 </manifest>

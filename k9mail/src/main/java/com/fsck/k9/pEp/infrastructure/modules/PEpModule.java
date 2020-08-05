@@ -55,6 +55,12 @@ public class PEpModule {
     }
 
     @Provides
+    @Named("NewInstance")
+    public PEpProvider providepEpProviderNewInstance() {
+        return ((K9) context.getApplicationContext()).getpEpProvider();
+    }
+
+    @Provides
     @Named("Background")
     public PEpProvider providepEpProviderBackground() {
         return MessagingController.getInstance(context).getpEpProvider();

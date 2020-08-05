@@ -191,8 +191,8 @@
 \n 1. heeft uw openbare PGP-sleutel bijgevoegd en
 \n 2. is gecodeerd en ondertekend met de p≡p-sleutel die u zojuist hebt geïmporteerd</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Als u een sleutelimport hebt gestart voor het volgende account:% s, klikt u op Start.</string>
-    <string name="key_import_failure">Kan sleutel van %1$s met sleutel-id: %2$s niet importeren en gebruiken</string>
-    <string name="key_import_success">Sleutel %1$s geïmporteerd uit %2$s</string>
+    <string name="key_import_failure">Kan sleutel niet importeren en gebruiken</string>
+    <string name="key_import_success">Sleutel geïmporteerd</string>
     <string name="key_import_from_fs_input_fpr">Voer de sleutel-ID of de vingerafdruk van de sleutel in.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Alles resetten</string>

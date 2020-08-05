@@ -795,6 +795,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
         showLoadingMessages();
+        restartLoader();
+
         if(folderName == null) {
             loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override

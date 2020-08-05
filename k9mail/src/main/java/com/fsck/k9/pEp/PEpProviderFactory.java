@@ -21,6 +21,6 @@ public class PEpProviderFactory {
     static private PEpProvider createProvider(Context context) {
         ThreadExecutor threadExecutor = new JobExecutor();
         PostExecutionThread postExecutionThread = new UIThread();
-        return new PEpProviderImpl(threadExecutor, postExecutionThread, context);
+        return new PEpProviderImplKotlin(threadExecutor, postExecutionThread, context);
     }
 }

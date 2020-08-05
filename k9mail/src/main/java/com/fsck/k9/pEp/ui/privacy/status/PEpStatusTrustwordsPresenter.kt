@@ -10,6 +10,7 @@ import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.HandshakeData
 import foundation.pEp.jniadapter.Identity
+import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import java.util.*
 
@@ -20,7 +21,7 @@ class PEpStatusTrustwordsPresenter(
 ) {
 
     private var myself: Identity = PEpUtils.createIdentity(Address(myselfAddress), context)
-    private val pep: PEpProvider = (context.applicationContext as K9).getpEpProvider()
+    private val pEp: PEpProvider = (context.applicationContext as K9).getpEpProvider()
     private var areTrustwordsShort: Boolean = true
     private var currentLanguage: String = getLanguageForTrustwords()
     private lateinit var localesMap: Map<String, String>
@@ -30,7 +31,7 @@ class PEpStatusTrustwordsPresenter(
     }
 
     private fun getLocalesMapFromPep() : Map<String, String> {
-        return pep.obtainLanguages().asSequence().associate { Pair(it.value.language, it.value.locale) }
+        return pEp.obtainLanguages().asSequence().associate { Pair(it.value.language, it.value.locale) }
     }
 
     fun getLanguageList() : List<String> {
@@ -67,7 +68,7 @@ class PEpStatusTrustwordsPresenter(
     private fun retrieveTrustwords(partner: Identity, areShort: Boolean?, language: String?) {
         areTrustwordsShort = areShort?:areTrustwordsShort
         currentLanguage = language ?: currentLanguage
-        pep.obtainTrustwords(myself, partner, currentLanguage,
+        pEp.obtainTrustwords(myself, partner, currentLanguage,
             false,
             object : PEpProvider.ResultCallback<HandshakeData> {
                 override fun onLoaded(handshakeData: HandshakeData) {
@@ -128,17 +129,21 @@ class PEpStatusTrustwordsPresenter(
 
     fun rejectHandshake(partner: Identity) {
         identityView.enableButtons(false)
-        pep.keyMistrusted(partner)
+        pEp.keyMistrusted(partner)
     }
 
     fun confirmHandshake(partner: Identity) {
-        identityView.enableButtons(false)
-        var newpartner = partner
-        if (partner.user_id == null || partner.user_id.isEmpty()) {
-            val tempFpr = partner.fpr
-            newpartner = pep.updateIdentity(partner)
-            newpartner.fpr = tempFpr
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+        scope.launch {
+            identityView.enableButtons(false)
+            var newpartner = partner
+            if (partner.user_id == null || partner.user_id.isEmpty()) {
+                val tempFpr = partner.fpr
+                withContext(Dispatchers.IO) { newpartner = pEp.updateIdentity(partner) }
+                newpartner.fpr = tempFpr
+            }
+            withContext(Dispatchers.IO) { pEp.trustPersonaKey(newpartner) }
         }
-        pep.trustPersonaKey(newpartner)
     }
 }

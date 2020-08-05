@@ -204,6 +204,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = Preferences.getPreferences(this).accounts
+
+        // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        scope.launch {
+            val app = application as K9
+            app.pEpInitSyncEnvironment()
+        }
+
         val intent = intent
         //onNewIntent(intent);
 
@@ -311,7 +319,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings)
         outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids)
-        outState.putString(CURRENT_ACCOUNT, currentAccount)
+        outState.putString(CURRENT_ACCOUNT_UUID, currentAccountUuid)
     }
 
     override fun onRestoreInstanceState(state: Bundle) {
@@ -319,7 +327,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false)
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS)
-        currentAccount = state.getString(CURRENT_ACCOUNT)
+        currentAccountUuid = state.getString(CURRENT_ACCOUNT_UUID)
     }
 
     public override fun onResume() {
@@ -653,8 +661,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun onImportPGPKeyFromFileSystem(realAccount: Account) {
-        currentAccount = realAccount.email
-        showImportKeyDialog(this@SettingsActivity, currentAccount)
+        currentAccountUuid = realAccount.uuid
+        showImportKeyDialog(this, currentAccountUuid)
 
     }
 

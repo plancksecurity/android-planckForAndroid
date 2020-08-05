@@ -390,10 +390,25 @@ public class PEpTrustwords extends PepColoredActivity {
 
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
-        String trustwords = getpEp().trustwords(myself, partner, language, areTrustwordsShort);
-        shortTrustwords = getpEp().trustwords(myself, partner, language, true);
-        fullTrustwords = getpEp().trustwords(myself, partner, language, false);
-        tvTrustwords.setText(trustwords);
+        getpEp().trustwords(myself, partner, language, true, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String trustwords) {
+                shortTrustwords = trustwords;
+            }
+        });
+        getpEp().trustwords(myself, partner, language, false, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String trustwords) {
+                fullTrustwords = trustwords;
+            }
+        });
+
+        getpEp().trustwords(myself, partner, language, areTrustwordsShort, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String trustwords) {
+                tvTrustwords.setText(trustwords);
+            }
+        });
     }
 
     @OnClick(R.id.confirmTrustWords)

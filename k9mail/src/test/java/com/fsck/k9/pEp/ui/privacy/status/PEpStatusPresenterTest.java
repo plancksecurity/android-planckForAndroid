@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
-import android.content.Intent;
-
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -14,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
@@ -23,7 +20,7 @@ import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -52,7 +49,7 @@ public class PEpStatusPresenterTest {
     public void shouldStartMessageLoaderWhenLoadMessage() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadMessage(new MessageReference("","","", null));
 
@@ -66,7 +63,7 @@ public class PEpStatusPresenterTest {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
         when(uiCache.getRecipients()).thenReturn(emptyRecipients());
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRecipients();
         verify(pEpStatusView, never()).setupRecipients(anyList());
@@ -78,7 +75,7 @@ public class PEpStatusPresenterTest {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
         when(uiCache.getRecipients()).thenReturn(recipients());
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRecipients();
         verify(pEpStatusView).setupRecipients(anyList());
@@ -110,17 +107,18 @@ public class PEpStatusPresenterTest {
     public void shouldExtractRatingWhenOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initilize(pEpStatusView, uiCache, provider, true, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, true, senderAddress, forceUnencrypted, alwaysSecure);
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);
-        verify(provider).incomingMessageRating(any());
+        PEpProvider.SimpleResultCallback<Rating> callback = mock(PEpProvider.SimpleResultCallback.class);
+        verify(provider).incomingMessageRating(any(),callback);
     }
 
     @Test
     public void shouldGetRecipientsWhenOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);
 
@@ -131,7 +129,7 @@ public class PEpStatusPresenterTest {
     public void shouldUpdateViewOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initilize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);

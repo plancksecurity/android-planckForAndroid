@@ -38,21 +38,21 @@ public class AddDevicePresenterTest {
     public void shouldAcceptHandshakeOnEngineWhenAccepting() throws Exception {
         addDevicePresenter.acceptHandshake();
 
-        verify(pEpProvider).acceptHandshake(any(Identity.class));
+        verify(pEpProvider).acceptSync();
     }
 
     @Test
     public void shouldCancelHandshakeOnEngineWhenCancelling() throws Exception {
         addDevicePresenter.cancelHandshake();
 
-        verify(pEpProvider).cancelHandshake(any(Identity.class));
+        verify(pEpProvider).cancelSync();
     }
 
     @Test
     public void shouldRejectHandshakeOnEngineWhenRejecting() throws Exception {
         addDevicePresenter.rejectHandshake();
 
-        verify(pEpProvider).rejectHandshake(any(Identity.class));
+        verify(pEpProvider).rejectSync();
     }
 
     @Test
