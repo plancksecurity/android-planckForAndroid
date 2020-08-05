@@ -15,7 +15,9 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class AccountSetupNavigator {
 
     private Boolean isEditing = false;

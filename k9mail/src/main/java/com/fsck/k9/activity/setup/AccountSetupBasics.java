@@ -98,28 +98,30 @@ public class AccountSetupBasics extends PEpImporterActivity {
         isEditingIncomingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_INCOMING, false);
         isEditingOutgoingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_OUTGOING, false);
         isBackOutgoingSettings = getIntent().getBooleanExtra(EXTRA_BACK_OUTGOING, false);
-        if (isEditingIncomingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditing(true);
-        } else if (isEditingOutgoingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditing(true);
-        } else if (isBackOutgoingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
-        } else if (savedInstanceState == null) {
-            accountSetupBasicsFragment = new AccountSetupBasicsFragment();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupBasicsFragment");
-            ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+        if (savedInstanceState == null) {
+            if (isEditingIncomingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
+                accountSetupNavigator.setIsEditing(true);
+            } else if (isEditingOutgoingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
+                accountSetupNavigator.setIsEditing(true);
+            } else if (isBackOutgoingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
+            } else {
+                accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupBasicsFragment");
+                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+            }
         }
         permissionRequester.requestBatteryOptimizationPermission();
 

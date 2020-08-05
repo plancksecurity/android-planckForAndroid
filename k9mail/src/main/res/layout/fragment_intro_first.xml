@@ -6,66 +6,71 @@
     android:background="@color/white"
     android:padding="@dimen/intro_fragment_padding">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFirstFragment">
+        android:layout_centerInParent="true">
 
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/headerText"
-            style="@style/IntroHeaderText"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="start"
-            tools:text="@string/intro_frag_first_text_1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFirstFragment">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/secondText"
-            style="@style/IntroText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:gravity="start"
-            tools:text="@string/intro_frag_first_text_2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerText" />
 
-        <com.fsck.k9.pEp.ui.PEpContactBadge
-            android:id="@+id/contactBadge"
-            android:layout_width="@dimen/intro_contact_badge_width_height"
-            android:layout_height="@dimen/intro_contact_badge_width_height"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/secondText" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/headerText"
+                style="@style/IntroHeaderText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                tools:text="@string/intro_frag_first_text_1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/third_text"
-            style="@style/IntroText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:gravity="start"
-            android:text="@string/intro_frag_first_text_3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/contactBadge" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/secondText"
+                style="@style/IntroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:gravity="start"
+                tools:text="@string/intro_frag_first_text_2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/headerText" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:adjustViewBounds="true"
-            android:src="@drawable/intro_actionbar_screenshot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/third_text" />
+            <com.fsck.k9.pEp.ui.PEpContactBadge
+                android:id="@+id/contactBadge"
+                android:layout_width="@dimen/intro_contact_badge_width_height"
+                android:layout_height="@dimen/intro_contact_badge_width_height"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/secondText" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/third_text"
+                style="@style/IntroText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:gravity="start"
+                android:text="@string/intro_frag_first_text_3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contactBadge" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:adjustViewBounds="true"
+                android:src="@drawable/intro_actionbar_screenshot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/third_text" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </RelativeLayout>

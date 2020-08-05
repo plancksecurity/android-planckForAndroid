@@ -117,7 +117,7 @@
     <string name="pep_key_reset_own_id_warning_title">%s hesabını sıfırla</string>
     <string name="search_empty_error">Lütfen aramak için metin yazın</string>
     <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> eğitimine hoş geldiniz<font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2"><![CDATA[Bu öğreticiyi istediğiniz zaman kapatabilirsiniz.\n\n<font color="#4caf50"> p≡p </font> iletişiminizin ne kadar güvenli olduğunu belirtmek için bir Gizlilik Durumu kullanır.\n\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[Bu öğreticiyi istediğiniz zaman kapatabilirsiniz.\n\n<font color="#4caf50"> p≡p </font> iletişiminizin ne kadar güvenli olduğunu belirtmek için bir Gizlilik Durumu kullanır.\n\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir.]]></string>
     <string name="pep_force_protected">Korumayı etkinleştir</string>
     <string name="navigation_drawer_close">Gezinme çekmecesini kapat</string>
     <string name="message_list_item_removed">Kaldırılan</string>
@@ -184,7 +184,7 @@
     <string name="intro_frag_second_text_3">Trustwords doğru değilse, iletişim ortağınıza güvenilmez.</string>
     <string name="intro_frag_third_text_1">Tokalaşma</string>
     <string name="intro_frag_third_text_2">Üst çubuktaki Gizlilik Durumu simgesini tıkladığınızda, iletişim ortağınızı doğrulayabileceğiniz El Sıkışma sayfasına gidersiniz.</string>
-    <string name="intro_frag_third_text_3">Geçmek Corrina ETİYOPYA Hızlı Kovboy FLEECER ...</string>
+    <string name="intro_frag_third_text_3">Geçmek Corrina ETİYOPYA Hızlı Kovboy FLEECER…</string>
     <string name="intro_frag_third_text_4">İletişim ortağınızla bir el sıkışma tamamlayın. Ortak başına bir el sıkışma gereklidir ve Güvenli ve Güvenilir iletişim sağlar.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Üst çubuktaki simge, iletinin tüm iletişim ortaklarının en düşük ortak paydası olan iletinin Gizlilik Durumunu yansıtır, örneğin:</string>

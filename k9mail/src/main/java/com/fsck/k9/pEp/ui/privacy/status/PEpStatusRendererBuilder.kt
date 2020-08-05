@@ -9,14 +9,26 @@ import com.fsck.k9.pEp.ui.renderers.pepstatus.PEpStatusUnsecureRenderer
 import com.pedrogomez.renderers.Renderer
 import com.pedrogomez.renderers.RendererBuilder
 import foundation.pEp.jniadapter.Rating
+import javax.inject.Inject
 
-class PEpStatusRendererBuilder(
-        private val resetClickListener: ResetClickListener,
-        private val handshakeResultListener: HandshakeResultListener,
-        private val myself: String
+class PEpStatusRendererBuilder @Inject constructor(
+        private val pgpRenderer: PEpStatusPGPIdentityRenderer,
+        private val trustedRenderer: PEpStatusTrustedRenderer,
+        private val secureRenderer: PEpStatusSecureRenderer,
+        private val unsecureRenderer: PEpStatusUnsecureRenderer
 ) : RendererBuilder<PEpIdentity>() {
 
-    init {
+    lateinit var resetClickListener: ResetClickListener
+    private lateinit var handshakeResultListener: HandshakeResultListener
+    private lateinit var myself: String
+
+    fun setUp(resetClickListener: ResetClickListener,
+              handshakeResultListener: HandshakeResultListener,
+              myself: String) {
+        this.resetClickListener = resetClickListener
+        this.myself = myself
+        this.handshakeResultListener = handshakeResultListener
+
         val prototypes = getPepIdentityRendererTypes()
         setPrototypes(prototypes)
     }
@@ -43,19 +55,16 @@ class PEpStatusRendererBuilder(
     }
 
     private fun getPepIdentityRendererTypes(): List<Renderer<PEpIdentity>> {
+        pgpRenderer.setUp(resetClickListener, handshakeResultListener, myself)
+        secureRenderer.setUp(resetClickListener, handshakeResultListener, myself)
+        unsecureRenderer.setUp(resetClickListener)
+        trustedRenderer.setUp(resetClickListener)
+
         return listOf(
-                PEpStatusPGPIdentityRenderer(
-                        resetClickListener,
-                        handshakeResultListener,
-                        myself
-                ),
-                PEpStatusTrustedRenderer(resetClickListener),
-                PEpStatusSecureRenderer(
-                        resetClickListener,
-                        handshakeResultListener,
-                        myself
-                ),
-                PEpStatusUnsecureRenderer(resetClickListener)
+                pgpRenderer,
+                trustedRenderer,
+                secureRenderer,
+                unsecureRenderer
         )
     }
 

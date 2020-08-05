@@ -3,12 +3,7 @@
     <string name="navigation_drawer_open">Otvorte navigačný panel</string>
     <string name="navigation_drawer_close">Zatvorte navigačný panel</string>
     <!-- Unstranslatable strings -->
-    <string name="pep" translatable="false">p≡p</string>
-    <string name="pep_long" translatable="false">pretty Easy privacy</string>
-    <string name="pep_handshake" translatable="false">Handshake</string>
-    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
-    <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -83,7 +78,7 @@
     <string name="message_list_item_removed">Odstránené</string>
     <string name="message_list_item_undo">VRÁTENIE SPÄŤ</string>
     <string name="available_accounts_title">Dostupné účty</string>
-    <string name="pep_app_description">K-9 / p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p je výkonný bezplatný e-mailový klient pre Android s technológiou pretty Easy privacy.</string>
     <string name="global_settings_title">Všeobecné nastavenia</string>
     <string name="configure_account_action">Správa účtov</string>
     <string name="pep_add_device_ask_trustwords">Chystáte sa pridať zariadenie do inej skupiny zariadení p≡p. Potvrďte úspešným overením nasledujúcich Trustwords.</string>
@@ -174,13 +169,11 @@
     <string name="key_import_accept">Súhlasiť</string>
     <string name="key_import_reject">Odmietnuť</string>
     <string name="message_loading_error">Hodnotenie správy sa stále načíta, skúste to znova</string>
-    <string name="pep_sync">p≡p sync</string>
+    <string name="pep_sync">p≡p Sync</string>
     <string name="pep_sync_enable_account">Synchronizujte tento účet</string>
     <string name="pep_sync_is_enabled_global">p≡p synchronizácia je povolená</string>
     <string name="pep_sync_is_disabled_global">p≡p synchronizácia je zakázaná</string>
     <string name="pep_sync_leave_device_group">Opustiť skupinu zariadení</string>
-    <string name="open_pgp">OpenPGP</string>
-    <string name="pgp">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Porovnajte nasledujúce Trustwords s tými na vašom druhom zariadení a potvrďte, či sa zhodujú.</string>
     <string name="key_import_wizard_from_pep_initial_text">Chystáme sa začať proces importovania kľúča: Týmto sa importuje a použije váš kľúč p≡p z iného zariadenia a exportuje váš súkromný kľúč.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Chystáte sa začať proces importovania kľúča od klienta PGP</string>
@@ -196,10 +189,10 @@
 \n 1. má pripojený váš verejný kľúč PGP a 
 \n 2. je šifrovaný a podpísaný pomocou kľúča p≡p, ktorý ste práve importovali</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Ak ste iniciovali import kľúčov pre nasledujúci účet:% s, kliknite na tlačidlo Štart.</string>
-    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z %1$s s identifikátorom kľúča: %2$s</string>
+    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z% 1 $ s s identifikátorom kľúča:% 2 $ s</string>
     <string name="key_import_success">Kľúč %1$ s bol úspešne importovaný z %2$s</string>
     <string name="key_import_from_fs_input_fpr">Zadajte ID kľúča alebo odtlačok kľúča.</string>
-    <string name="reset">Obnoviť</string>
+    <string name="reset">Resetovať</string>
     <string name="reset_all">Resetovať všetko</string>
     <string name="key_reset_for_identity_context_title">Resetujte všetky dáta p≡p pre tohto komunikačného partnera:</string>
     <string name="key_reset_identity_feedback">Všetky dáta p≡p pre tohto komunikačného partnera boli resetované.</string>
@@ -213,12 +206,11 @@
     <string name="pep_key_reset_own_id_warning">Táto akcia resetuje váš účet. 
 \n Naozaj chcete resetovať\?</string>
     <string name="pep_key_reset_own_id_warning_title">Obnovte účet %s</string>
-    <string name="ellipsized_text" translatable="false">%s  …</string>
     <!-- Folder list-->
     <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
     <!-- Welcome/Tutorial-->
     <string name="intro_frag_first_text_1"><![CDATA[Vitajte v tutoriále <font color="#4caf50">p≡p</font>]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Túto príručku môžete kedykoľvek zavrieť.\n\n<font color="#4caf50">p≡p</font> používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie.\n\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[Túto príručku môžete kedykoľvek zavrieť.\n\n<font color="#4caf50">p≡p</font> používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie.\n\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa.]]></string>
     <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>
@@ -228,7 +220,7 @@
     <string name="intro_frag_second_text_3">Ak Trustwords nie sú správne, váš komunikačný partner je nedôveryhodný.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">Po kliknutí na ikonu stavu súkromia na hornom paneli sa dostanete na stránku Handshake, kde môžete overiť svojho komunikačného partnera.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
     <string name="intro_frag_third_text_4">Vyplňte handshake s vašim komunikačným partnerom. Handshake je potrebný iba raz pre partnera a zabezpečí bezpečnú a dôveryhodnú komunikáciu.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Ikona v hornom paneli odráža Stav súkromia správy, ktorá je najnižším spoločným menovateľom všetkých komunikačných partnerov tejto správy, napríklad:</string>
@@ -237,7 +229,6 @@
     <string name="pep_rating_secure">Zabezpečiť</string>
     <string name="pep_rating_mistrusted">Nedôveryhodne</string>
     <string name="pep_rating_forced_unencrypt">Vypnuté</string>
-    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Návod</string>
     <string name="only_own_identities">Je to vlastná správa, bez zapojeného komunikačného partnera.</string>
     <string name="message_failed_to_encrypt">Túto správu sme nemohli ochrániť.</string>

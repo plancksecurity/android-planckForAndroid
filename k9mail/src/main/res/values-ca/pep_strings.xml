@@ -10,8 +10,8 @@
     <string name="pep_extra_addresses">Extra key ids:</string>
     <string name="pep_use_keyserver">Consultar les claus al servidor de claus</string>
     <string name="pep_passive_mode">Mode passiu</string>
-    <string name="pep_add_key_to_blacklist">Add a key to blacklist</string>
-    <string name="pep_remove_key_from_blacklist">Remove a key from blacklist</string>
+    <string name="pep_add_key_to_blacklist">Afegiu una clau a la llista negra</string>
+    <string name="pep_remove_key_from_blacklist">Elimineu una clau de la llista negra</string>
     <string name="pep_confirm_trustwords">Acceptar</string>
     <string name="pep_wrong_trustwords">Rebutjar</string>
     <string name="pep_wrong_fingerprint">Empremta incorrecte</string>
@@ -33,16 +33,16 @@
     <string name="pep_account_privacy_protection_explanation">Protegeix la privacitat d\'aquest compte</string>
     <string name="pep_account_setup_generating_keys">Configurant la seva privacitat</string>
     <string name="pEp_trustwords">Trustwords pEp</string>
-    <string name="key_list_title">Available keys</string>
+    <string name="key_list_title">Claus disponibles</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to your pEp device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">Grup de dispositius de p≡p</string>
     <string name="handshake_reset_dialog_message">Avís: Aquesta comunicació s\'havia marcat prèviament com a no confiable. Desitges realitzar un nou Handshake?</string>
     <string name="pep_gpg_compatibility">Compatibilitat amb OpenPGP</string>
-    <string name="crash_toast_text">Oops, something went wrong</string>
-    <string name="advanced_options">Advanced options</string>
-    <string name="basic_options">Basic options</string>
+    <string name="crash_toast_text">Ui! Quelcom ha fallat</string>
+    <string name="advanced_options">Opcions avançades</string>
+    <string name="basic_options">Opcions bàsiques</string>
     <string name="pep_sync_enable_account">Sincronitza aquest compte</string>
-    <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
+    <string name="synchronize_these_accounts_between_my_devices">Sincronitzar aquests comptes entre els meus dispositius</string>
     <string-array name="pep_title">
         <item>Desconegut<!--pEpRatingUndefined--></item>
         <item>No es pot desxifrar<!--pEpRatingCannotDecrypt--></item>
@@ -101,7 +101,7 @@
     <string name="download_permission_rationale_title">Descarrèga fitxers</string>
     <string name="global_settings_title">Configuració global</string>
     <string name="read_permission_first_explanation">Necessitem el seu permis per llegir els seus contactes</string>
-    <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
+    <string name="read_snackbar_permission_rationale">Necessitem el vostre permís per llegir els contactes emmagatzemats al vostre telèfon mòbil</string>
     <string name="read_snackbar_permission_permanently_denied">Denegant la lectura dels seus contactes podria produïr comportaments inesperats</string>
     <string name="read_permission_rationale_title">Llegint contactes</string>
     <string name="download_permission_first_explanation">Necesitem el seu permís per descarragar fitxers al seu dispositiu</string>
@@ -130,7 +130,7 @@
     <string name="pep_rating_mistrusted">No confiable</string>
     <string name="pep_rating_forced_unencrypt">Desactivat</string>
     <string name="action_tutorial">Tutorial</string>
-    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Es va detectar un altre dispositiu. Podem afegir-lo al grup de dispositius per sincronitzar tota la vostra privadesa en tots els dispositius. Començarem a sincronitzar\?</string>
     <string name="keysync_wizard_group_joining_done_message">El dispositiu és ara membre del teu grup de dispositius. Tota la teva privacitat s\'ha sincronitzat.</string>
     <string name="keysync_wizard_error_message">Hi ha hagut un problema amb la sincronització dels dispositius. Torna-ho a provar.</string>
     <string name="keysync_wizard_waiting_message">Espera un moment mentre sincronitzem els teus dispositius. Aquest procés pot tardar un minut o més.</string>
@@ -138,7 +138,7 @@
     <string name="keysync_wizard_action_next">Següent</string>
     <string name="keysync_wizard_action_leave">Surt</string>
     <string name="keysync_wizard_action_cancel">Cancel·lar</string>
-    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_create_group_first_message">Es va detectar un segon dispositiu. Podem formar un grup de dispositius per sincronitzar tota la vostra privadesa als dos dispositius. Començarem a sincronitzar\?</string>
     <string name="download_snackbar_permission_permanently_denied">No permetre’ns descarregar fitxers pot provocar un comportament inesperat</string>
     <string name="add_account_title">Afegiu el vostre compte</string>
     <string name="add_account_message">Per poder utilitzar aquest compte, heu d\'afegir-lo al dispositiu</string>
@@ -169,8 +169,8 @@
 \n 1. té la clau PGP pública adjunta i
 \n 2. està xifrat i signat amb la clau p≡p que acabeu d’importar</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si heu iniciat una importació de clau per al compte següent:% s, feu clic a Inicia.</string>
-    <string name="key_import_failure">No s\'ha pogut importar i utilitzar cap clau de %1$s amb l\'identificador de clau: %2$s</string>
-    <string name="key_import_success">%1$s Clau importada amb èxit de %2$s</string>
+    <string name="key_import_failure">No s\'ha pogut importar i utilitzar cap clau de% 1 $ s amb l\'identificador de clau:% 2 $ s</string>
+    <string name="key_import_success">% 1 $ s Clau importada amb èxit de% 2 $ s</string>
     <string name="key_import_from_fs_input_fpr">Introduïu l\'ID de clau o l\'empremta digital de la clau.</string>
     <string name="reset_all">Restableix-ho tot</string>
     <string name="key_reset_for_identity_context_title">Restabliu totes les dades de p≡p d\'aquest soci de comunicació:</string>
@@ -188,16 +188,20 @@
 \n Esteu segur que voleu reiniciar-lo\?</string>
     <string name="pep_key_reset_own_id_warning_title">Restableix el compte% s</string>
     <string name="search_empty_error">Escriviu el text per cercar-lo</string>
-    <string name="intro_frag_first_text_1"><![CDATA[Benvingut al <font color="#4caf50"> p≡p </font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Podeu tancar aquest tutorial en qualsevol moment.\n\n<font color="#4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.\n\nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari]]></string>
+    <string name="intro_frag_first_text_1">Benvingut al <font color="# 4caf50"> p≡p </font> tutorial</string>
+    <string name="intro_frag_first_text_2">Podeu tancar aquest tutorial en qualsevol moment.
+\n
+\n<font color="# 4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.
+\n
+\nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari</string>
     <string name="intro_frag_first_text_3">I a la barra superior quan obriu o escriviu un correu electrònic:</string>
     <string name="intro_frag_second_text_1">Amb aquest estat de privacitat, tota comunicació és segura, però per confirmar que el vostre contacte és realment la persona que coneixeu, haureu de confegir les paraules de confiança amb aquest contacte.</string>
     <string name="intro_frag_second_text_2">Quan es confirmi que les paraules de confiança són correctes i es fa el cop de mà, la comunicació serà completament segura i de confiança.</string>
     <string name="intro_frag_second_text_3">Si les paraules clau de confiança no són correctes, el seu soci de comunicació no té cap confiança.</string>
     <string name="intro_frag_third_text_2">Quan feu clic a la icona de l\'estat de privadesa de la barra superior, arribareu al cop de mà, on podreu verificar el vostre soci de comunicació.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE CORRINA ETHIOPIA EXTERIOR FLEECER ...</string>
+    <string name="intro_frag_third_text_3">OUTDISTANCE CORRINA ETHIOPIA EXTERIOR FLEECER…</string>
     <string name="intro_frag_third_text_4">Completa un cop de mà amb el teu company de comunicació. Un cop de mà només es necessita una vegada per part i s’assegurarà una comunicació segura i de confiança.</string>
-    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_1">\@ string / pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">La icona de la barra superior reflecteix l\'estat de privadesa del missatge, que és el denominador comú més baix de tots els socis de comunicació d\'aquest missatge, per exemple:</string>
     <string name="intro_frag_fourth_text_3">En aquest cas, l’estat de privadesa del missatge és segur, perquè aquest és el denominador més baix comú dels dos socis de comunicació.</string>
     <string name="keysync_wizard_handshake_message">Assegureu-vos que teniu tots dos dispositius junts, de manera que podeu comparar els mots de confiança dels dos dispositius. Les paraules clau de confiança que apareixen a continuació són iguals a les de confiança de l’altre dispositiu\?</string>

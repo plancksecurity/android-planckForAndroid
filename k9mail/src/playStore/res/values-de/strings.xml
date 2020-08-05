@@ -1,5 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="pep_app_license">Lizenziert unter der pEp Security EULA</string>
-
+  <string name="pep_app_license">Lizenziert unter der p≡p Security EULA</string>
 </resources>
