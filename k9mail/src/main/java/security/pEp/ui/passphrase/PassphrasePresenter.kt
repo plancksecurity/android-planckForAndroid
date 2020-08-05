@@ -2,7 +2,7 @@ package security.pEp.ui.passphrase
 
 import android.content.Context
 import com.fsck.k9.K9
-import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProviderFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +35,10 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
                 view.enableSyncDismiss()
                 view.showSyncPasswordRequest()
             }
+            PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                view.enableNonSyncDismiss()
+                view.showNewKeysPassphrase()
+            }
         }
     }
 
@@ -50,12 +54,18 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
                 provider.configPassphrase(passphrase)
                 provider.close()
             }
+            PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+                scope.launch {
+                    K9.setpEpNewKeysPassphrase(passphrase)
+                    val editor = Preferences.getPreferences(context).storage.edit()
+                    K9.save(editor)
+                    editor.commit()
+                }
+            }
             else -> PassphraseProvider.passphrase = passphrase
         }
-
-
         view.finish()
-
     }
 
     fun validateInput(passphrase: String) {
@@ -83,5 +93,6 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
 enum class PassphraseRequirementType {
     MISSING_PASSPHRASE,
     WRONG_PASSPHRASE,
-    SYNC_PASSPHRASE
+    SYNC_PASSPHRASE,
+    NEW_KEYS_PASSPHRASE
 }

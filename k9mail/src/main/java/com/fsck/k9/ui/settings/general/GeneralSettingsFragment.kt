@@ -28,6 +28,8 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import security.pEp.ui.passphrase.PassphraseActivity
+import security.pEp.ui.passphrase.PassphraseRequirementType
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
@@ -50,12 +52,21 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
+        initializeNewKeysPassphrase()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeNewKeysPassphrase() {
+        findPreference<Preference>(NEW_KEYS_PASSPHRASE)?.onClick {
+            context?.let {
+                PassphraseActivity.notifyRequest(it, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
+            }
+        }
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
@@ -254,6 +265,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
+        private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

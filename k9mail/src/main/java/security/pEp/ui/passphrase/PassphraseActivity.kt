@@ -33,7 +33,12 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     }
 
     override fun init() {
-        setUpFloatingWindow()
+        when (presenter.type) {
+            PassphraseRequirementType.NEW_KEYS_PASSPHRASE ->
+                setUpFloatingWindow(R.dimen.floating_height)
+            else ->
+                setUpFloatingWindow()
+        }
         afirmativeActionButton.isEnabled = false
     }
 
@@ -75,6 +80,10 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
 
     override fun showSyncPasswordRequest() {
         description.setText(R.string.passhphrase_body_sync_passphrase)
+    }
+
+    override fun showNewKeysPassphrase() {
+        description.setText(R.string.passhphrase_body_new_keys_passphrase)
     }
 
     companion object {

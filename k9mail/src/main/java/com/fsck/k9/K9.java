@@ -37,6 +37,7 @@ import com.fsck.k9.job.PusherRefreshJobManager;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
@@ -350,6 +351,7 @@ public class K9 extends MultiDexApplication {
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
+    private static String pEpNewKeysPassphrase;
 
     /**
      * @see #areDatabasesUpToDate()
@@ -616,6 +618,8 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putString("pEpNewKeysPassphrase", Base64.encode(pEpNewKeysPassphrase));
 
         fontSizes.save(editor);
     }
@@ -1008,6 +1012,8 @@ public class K9 extends MultiDexApplication {
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+
+        pEpNewKeysPassphrase = Base64.decode(storage.getString("pEpNewKeysPassphrase", null));
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
@@ -1505,6 +1511,14 @@ public class K9 extends MultiDexApplication {
         K9.mAttachmentDefaultPath = attachmentDefaultPath;
     }
 
+    public static String getpEpNewKeysPassphrase(){
+        return pEpNewKeysPassphrase;
+    }
+
+    public static void setpEpNewKeysPassphrase(String passphrase){
+        K9.pEpNewKeysPassphrase = passphrase;
+    }
+
     public static synchronized SortType getSortType() {
         return mSortType;
     }
@@ -1754,7 +1768,6 @@ public class K9 extends MultiDexApplication {
         // return pEpUseKeyserver;
         return false;
     }
-
 
     public static boolean getPEpPassiveMode() {
         return pEpPassiveMode;
