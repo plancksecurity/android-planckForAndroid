@@ -5,7 +5,6 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
-import com.fsck.k9.mail.filter.Base64
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 
@@ -129,7 +128,6 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.getAttachmentDefaultPath()
             "quiet_time_starts" -> K9.getQuietTimeStarts()
             "quiet_time_ends" -> K9.getQuietTimeEnds()
-            "pEpNewKeysPassphrase" -> Base64.decode(K9.getpEpNewKeysPassphrase())
             else -> defValue
         }
     }
@@ -155,7 +153,6 @@ class GeneralSettingsDataStore(
             "attachment_default_path" -> K9.setAttachmentDefaultPath(value)
             "quiet_time_starts" -> K9.setQuietTimeStarts(value)
             "quiet_time_ends" -> K9.setQuietTimeEnds(value)
-            "pEpNewKeysPassphrase" -> K9.setpEpNewKeysPassphrase(Base64.encode(value))
             else -> return
         }
 
