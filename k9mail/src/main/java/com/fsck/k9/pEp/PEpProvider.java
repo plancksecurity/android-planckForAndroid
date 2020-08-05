@@ -16,6 +16,7 @@ import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.pEpException;
 import timber.log.Timber;
+import java.util.Vector;
 
 /**
  * Created by dietz on 01.07.15.
@@ -234,7 +235,7 @@ public interface PEpProvider extends AutoCloseable {
 
     boolean canEncrypt(String address);
 
-    void importKey(byte[] key);
+    Vector<Identity> importKey(byte[] key);
 
     void keyResetIdentity(Identity ident, String fpr);
 

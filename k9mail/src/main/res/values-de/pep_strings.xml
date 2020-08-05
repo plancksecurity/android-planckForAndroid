@@ -136,9 +136,9 @@
     <string name="key_reset_for_identity_context_title">Alle p≡p Daten für diesen Kommunikationspartner zurücksetzen:</string>
     <string name="reset_all">Alles zurücksetzen</string>
     <string name="reset">Zurücksetzen</string>
-    <string name="key_import_success">%1$s Schlüsselcode erfolgreich aus %2$s importiert</string>
+    <string name="key_import_success">Schlüsselcode erfolgreich importiert</string>
     <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüsselcodes ein.</string>
-    <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes von %1$s mit der ID %2$s</string>
+    <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Falls Sie einen Schlüsselimport für das Konto %s ausgelöst haben, clicken Sie bitte Start.</string>
     <string name="pgp_key_import_instructions">Um mit dem Schlüsselimport fortzufahren, importieren Sie bitte den angehängten öffentlichen p≡p Schlüssel und antworten Sie mit einer Nachricht, die: 
 \n

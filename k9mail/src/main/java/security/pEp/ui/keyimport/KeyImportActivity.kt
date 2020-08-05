@@ -5,9 +5,11 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.core.widget.doAfterTextChanged
+import android.view.View
 import com.fsck.k9.R
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import security.pEp.ui.dialog.PEpProgressDialog
 import security.pEp.ui.dialog.showProgressDialog
@@ -37,16 +39,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
         }
-        startLayoutViews()
-    }
-
-    private fun startLayoutViews() {
-        cancelButton.setOnClickListener { presenter.onReject() }
-        acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
-        fingerprintEditText.doAfterTextChanged { text ->
-            fingerprintEditText.error = null
-            acceptButton.isEnabled = text.toString().isNotEmpty()
-        }
+        openFileChooser()
     }
 
     override fun openFileChooser() {
@@ -76,25 +69,34 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-
-    override fun showEmptyInputError() {
-        fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
+    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {
+        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+        acceptButton.setOnClickListener {
+            layout.visibility = View.GONE
+            onYes()
+        }
+        cancelButton.setOnClickListener {
+            layout.visibility = View.GONE
+            onNo()
+        }
+        layout.visibility = View.VISIBLE
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
-                .setMessage(getString(R.string.key_import_success, fingerprint, filename))
+                .setMessage(getString(R.string.key_import_success))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
                 .show()
     }
 
-    override fun showFailedKeyImport(fingerprint: String, filename: String?) {
+    override fun showFailedKeyImport(filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
-                .setMessage(getString(R.string.key_import_failure, filename, fingerprint))
+                .setMessage(getString(R.string.key_import_failure))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()

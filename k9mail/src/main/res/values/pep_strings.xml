@@ -196,8 +196,8 @@
     2. is encrypted and signed with the p≡p key you just imported
 </string>
     <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
-    <string name="key_import_failure">Failed to import and use any key from %1$s with key id: %2$s</string>
-    <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
+    <string name="key_import_failure">Error occurred. No key imported.</string>
+    <string name="key_import_success">Private key successfully imported.</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Reset all</string>
@@ -294,4 +294,10 @@
     <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase.\n Please enter the correct one to continue.</string>
     <string name="passhphrase_body_sync_passphrase">Enter passphrase for p≡p Sync:</string>
     <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
+
+    <string name="pgp_key_import_confirmation_fingerprint_label">The fingerprint of the selected key is:</string>
+    <string name="pgp_key_import_confirmation_dialog_fingerprint_format">%1$s\n%2$s</string>
+    <string name="pgp_key_import_confirmation_dialog_question">Are you sure you want to import and use this key?</string>
+    <string name="pgp_key_import_confirmation_confirm">Yes</string>
+    <string name="pgp_key_import_confirmation_reject">No</string>
 </resources>

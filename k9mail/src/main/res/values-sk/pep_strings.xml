@@ -189,8 +189,8 @@
 \n 1. má pripojený váš verejný kľúč PGP a 
 \n 2. je šifrovaný a podpísaný pomocou kľúča p≡p, ktorý ste práve importovali</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Ak ste iniciovali import kľúčov pre nasledujúci účet:% s, kliknite na tlačidlo Štart.</string>
-    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč z% 1 $ s s identifikátorom kľúča:% 2 $ s</string>
-    <string name="key_import_success">Kľúč %1$ s bol úspešne importovaný z %2$s</string>
+    <string name="key_import_failure">Nepodarilo sa importovať a použiť žiadny kľúč</string>
+    <string name="key_import_success">Kľúč s bol úspešne importovaný</string>
     <string name="key_import_from_fs_input_fpr">Zadajte ID kľúča alebo odtlačok kľúča.</string>
     <string name="reset">Resetovať</string>
     <string name="reset_all">Resetovať všetko</string>
