@@ -31,13 +31,16 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
     private lateinit var address: String
 
     fun initialize(view: KeyImportView, accountUuid: String) {
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         this.view = view
         this.accountUuid = accountUuid
-        context = view.getApplicationContext()
-        pEp = PEpProviderFactory.createAndSetupProvider(context)
-        address = preferences.getAccount(accountUuid).email
-        accountIdentity = PEpUtils.createIdentity(Address(address), context)
-        currentFpr = pEp.myself(accountIdentity).fpr
+        scope.launch {
+            context = view.getApplicationContext()
+            pEp = PEpProviderFactory.createAndSetupProvider(context)
+            address = preferences.getAccount(accountUuid).email
+            accountIdentity = PEpUtils.createIdentity(Address(address), context)
+            withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
+        }
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -60,8 +63,11 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
             firstIdentity?.let {
                 showKeyImportConfirmationDialog(firstIdentity,
                     onYes = {
-                        val result = onKeyImportConfirmed(uri)
-                        replyResult(result, uri)
+                        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+                        scope.launch {
+                            val result = onKeyImportConfirmed(uri)
+                            replyResult(result, uri)
+                        }
                     },
                     onNo = {
                         onKeyImportRejected()
@@ -79,10 +85,10 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
         view.finish()
     }
 
-    private fun onKeyImportConfirmed(uri: Uri): Boolean {
-        return runBlocking {
+    private suspend fun onKeyImportConfirmed(uri: Uri): Boolean {
+        return withContext(Dispatchers.IO) {
             var result = false
-            withContext(Dispatchers.IO) {
+            runBlocking {
                 try {
                     val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
                     if (id == null || !pEp.canEncrypt(address)) {
@@ -102,9 +108,6 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
                 } catch (e: pEpException) {  // this means there was no right formatted key in the file.
                     result = true
                     pEp.setOwnIdentity(accountIdentity, currentFpr)
-                }
-                finally {
-                    pEp.close()
                 }
             }
             result
