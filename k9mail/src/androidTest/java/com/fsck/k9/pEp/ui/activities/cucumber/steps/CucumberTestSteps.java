@@ -867,18 +867,8 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I keySync device C$")
-    public void I_keySync_devices_C() {
-
-    }
-
     @When("^I setup second account for devices A and B$")
     public void I_setup_second_account_for_devices_A_B() {
-
-    }
-
-    @When("^I remove from keySync device C$")
-    public void I_remove_from_keySync_device_C() {
 
     }
 
