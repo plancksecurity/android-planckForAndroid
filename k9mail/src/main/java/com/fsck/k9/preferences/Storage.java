@@ -37,6 +37,7 @@ public class Storage {
 
 
     private Context context = null;
+    private PassphraseStorage passphraseStorage;
 
     private SQLiteDatabase openDB() {
         SQLiteDatabase mDb = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
@@ -185,6 +186,7 @@ public class Storage {
 
     private Storage(Context context) {
         this.context = context;
+        passphraseStorage = new PassphraseStorage(context);
         loadValues();
     }
 
@@ -262,7 +264,7 @@ public class Storage {
     }
 
     public StorageEditor edit() {
-        return new StorageEditor(this);
+        return new StorageEditor(this, passphraseStorage);
     }
 
     public Map<String, String> getAll() {
@@ -345,5 +347,9 @@ public class Storage {
         if (result == -1) {
             Timber.e("Error writing key '%s', value = '%s'", key, value);
         }
+    }
+
+    public String getPassphrase() {
+        return passphraseStorage.getPassphrase();
     }
 }

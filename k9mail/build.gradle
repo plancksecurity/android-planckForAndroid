@@ -82,6 +82,7 @@ dependencies {
 
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
+    implementation "androidx.security:security-crypto:${versions.crypto}"
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"

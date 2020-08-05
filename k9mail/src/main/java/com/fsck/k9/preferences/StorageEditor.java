@@ -14,14 +14,17 @@ import timber.log.Timber;
 
 public class StorageEditor {
     private Storage storage;
+    private PassphraseStorage passphraseStorage;
+
     private Map<String, String> changes = new HashMap<String, String>();
     private List<String> removals = new ArrayList<String>();
 
     Map<String, String> snapshot = new HashMap<String, String>();
 
 
-    StorageEditor(Storage storage) {
+    StorageEditor(Storage storage,PassphraseStorage passphraseStorage) {
         this.storage = storage;
+        this.passphraseStorage = passphraseStorage;
         snapshot.putAll(storage.getAll());
     }
 
@@ -88,6 +91,11 @@ public class StorageEditor {
 
     public StorageEditor putLong(String key, long value) {
         changes.put(key, "" + value);
+        return this;
+    }
+
+    public StorageEditor putPassphrase(String passphrase){
+        passphraseStorage.putPassphrase(passphrase);
         return this;
     }
 

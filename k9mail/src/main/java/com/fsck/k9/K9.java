@@ -619,7 +619,7 @@ public class K9 extends MultiDexApplication {
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
-        editor.putString("pEpNewKeysPassphrase", Base64.encode(pEpNewKeysPassphrase));
+        editor.putPassphrase(pEpNewKeysPassphrase);
 
         fontSizes.save(editor);
     }
@@ -1012,8 +1012,7 @@ public class K9 extends MultiDexApplication {
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-
-        pEpNewKeysPassphrase = Base64.decode(storage.getString("pEpNewKeysPassphrase", null));
+        pEpNewKeysPassphrase = storage.getPassphrase();
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
