@@ -496,6 +496,8 @@ public class TestUtils {
         waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
+        onView(withId(R.id.show_long_trustwords)).perform(click());
+        waitForIdle();
         setTrustWords(getTextFromView(onView(withId(R.id.trustwords))));
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
