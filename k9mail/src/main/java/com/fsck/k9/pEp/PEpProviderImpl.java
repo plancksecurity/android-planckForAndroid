@@ -111,7 +111,7 @@ public class PEpProviderImpl implements PEpProvider {
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection());
-        engine.config_passphrase_for_new_keys(K9.ispEpPassphraseSupported(), K9.getpEpNewKeysPassphrase());
+        engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
         engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
         engine.setPassphraseRequiredCallback(PassphraseProvider.INSTANCE.getPassphraseRequiredCallback(context));

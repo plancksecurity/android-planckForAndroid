@@ -21,13 +21,13 @@ class PassphraseStorage(context: Context) {
     )
 
 
-    fun putPassphrase(passphrase: String) {
+    fun putPassphrase(passphrase: String?) {
         val editor: SharedPreferences.Editor = preferences.edit()
         editor.putString(NEW_KEYS_PASSPHRASE_KEY, passphrase)
         editor.apply()
     }
 
-    fun getPassphrase() = preferences.getString(NEW_KEYS_PASSPHRASE_KEY, null)
+    fun getPassphrase() = preferences.getString(NEW_KEYS_PASSPHRASE_KEY, "")
 
     companion object {
         private const val SECRET_SHARED_PREFS_FILENAME = "secret_preferences"

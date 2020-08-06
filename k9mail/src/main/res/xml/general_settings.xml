@@ -345,10 +345,7 @@
 
             <Preference
                 android:key="new_keys_passphrase"
-                android:title="@string/passhphrase_new_keys_settings_title">
-
-            </Preference>
-
+                android:title="@string/passhphrase_new_keys_settings_title" />
             <SwitchPreferenceCompat
                 android:key="pep_enable_sync"
                 android:summaryOff="@string/pep_sync_is_disabled_global"

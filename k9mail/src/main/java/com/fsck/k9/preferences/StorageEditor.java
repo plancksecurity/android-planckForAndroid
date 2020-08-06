@@ -103,7 +103,7 @@ public class StorageEditor {
         return this;
     }
 
-    public void putPassphrase(@NonNull String passphrase){
+    public void putPassphrase(String passphrase){
         passphraseStorage.putPassphrase(passphrase);
     }
 

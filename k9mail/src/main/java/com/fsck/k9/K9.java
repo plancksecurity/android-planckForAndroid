@@ -1517,6 +1517,10 @@ public class K9 extends MultiDexApplication {
         K9.pEpNewKeysPassphrase = passphrase;
     }
 
+    public static boolean ispEpUsingPassphraseForNewKey() {
+        return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
+    }
+
     public static synchronized SortType getSortType() {
         return mSortType;
     }
