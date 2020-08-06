@@ -65,7 +65,7 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
                     onYes = {
                         val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
                         scope.launch {
-                            val result = onKeyImportConfirmed(uri)
+                            val result = onKeyImportConfirmed()
                             replyResult(result, uri)
                         }
                     },
@@ -85,7 +85,7 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
         view.finish()
     }
 
-    private suspend fun onKeyImportConfirmed(uri: Uri): Boolean {
+    private suspend fun onKeyImportConfirmed(): Boolean {
         return withContext(Dispatchers.IO) {
             var result = false
             runBlocking {
@@ -115,7 +115,7 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
     }
 
     private suspend fun importKey(uri: Uri): Identity?  = withContext(Dispatchers.IO){
-        var result: Identity? = null
+        var result: Identity?
         try {
             val resolver = context.contentResolver
             val inputStream = resolver.openInputStream(uri)
