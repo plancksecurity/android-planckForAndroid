@@ -54,6 +54,7 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
     }
 
     private fun onKeyImport(uri: Uri) {
+        val filename = uri.path.toString()
         view.showDialog()
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -61,24 +62,9 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
             val firstIdentity = importKey(uri)
             view.removeDialog()
             firstIdentity?.let {
-                showKeyImportConfirmationDialog(firstIdentity,
-                    onYes = {
-                        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-                        scope.launch {
-                            val result = onKeyImportConfirmed()
-                            replyResult(result, uri)
-                        }
-                    },
-                    onNo = {
-                        onKeyImportRejected()
-                    }
-                )
-            } ?: replyResult(false, uri)
+                view.showKeyImportConfirmationDialog(firstIdentity, filename)
+            } ?: replyResult(false, filename)
         }
-    }
-
-    private fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {
-        view.showKeyImportConfirmationDialog(firstIdentity, onYes, onNo)
     }
 
     fun onKeyImportRejected() {
@@ -91,18 +77,13 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
             runBlocking {
                 try {
                     val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                    if (id == null || !pEp.canEncrypt(address)) {
-                        //Timber.w("Couldn't set own key: %s", key)
+                    result = if (id == null || !pEp.canEncrypt(address)) {
+                        Timber.w("Couldn't set own key: %s", fingerprint)
                         pEp.setOwnIdentity(accountIdentity, currentFpr)
-                        // report bad
-                        result = false
-                        //replyResult(false, uri)
-                    }
-                    else {
-                        // report all good
+                        false
+                    } else {
                         pEp.myself(id)
-                        result = true
-                        //replyResult(true, uri)
+                        true
                     }
 
                 } catch (e: pEpException) {  // this means there was no right formatted key in the file.
@@ -153,11 +134,18 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
         result
     }
 
-    private fun replyResult(success: Boolean, uri: Uri) {
-        val filename = uri.path
+    private fun replyResult(success: Boolean, filename: String) {
         when {
             success -> view.showCorrectKeyImport(fingerprint, filename)
             else -> view.showFailedKeyImport(filename)
+        }
+    }
+
+    fun onKeyImportAccepted(filename: String) {
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        scope.launch {
+            val result = onKeyImportConfirmed()
+            replyResult(result, filename)
         }
     }
 

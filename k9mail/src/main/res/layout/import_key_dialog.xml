@@ -11,7 +11,8 @@
     android:paddingEnd="24dp"
     android:paddingBottom="8dp"
     android:visibility="gone"
-    tools:visibility="visible">
+    tools:visibility="visible"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/title"

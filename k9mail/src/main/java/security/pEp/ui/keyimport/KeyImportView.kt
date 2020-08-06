@@ -19,5 +19,5 @@ interface KeyImportView {
 
     fun removeDialog()
 
-    fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit)
+    fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String)
 }
