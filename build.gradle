@@ -6,7 +6,7 @@ buildscript {
                 'minSdk'               : 21,
                 'versionCode'          : 56,
                 'pEpEngineRevision'    : 'Release_2.1.0-RC25',
-                'pEpJNIAdapterRevision': 'Release_2.1.0-RC11',
+                'pEpJNIAdapterRevision': 'JNI-114',
                 'versionName'          : '1.1.010',
                 'libpEpAdapterRevision': 'Release_2.1.0-RC22'
         ]
