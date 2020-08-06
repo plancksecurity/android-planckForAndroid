@@ -37,7 +37,6 @@ import com.fsck.k9.job.PusherRefreshJobManager;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
@@ -1732,9 +1731,12 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(@NotNull Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
                 KeySyncCleaner.queueAutoConsumeMessages();
-                pEpSyncProvider.stopSync();
+                if (provider.isSyncRunning()) provider.stopSync();
+                provider.close();
                 pEpProvider.close();
+                provider = null;
                 pEpProvider = null;
             }
         }
