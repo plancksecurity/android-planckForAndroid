@@ -96,11 +96,11 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
                         pEp.setOwnIdentity(accountIdentity, currentFpr)
                         // report bad
                         result = false
-                        pEp.myself(id)
                         //replyResult(false, uri)
                     }
                     else {
                         // report all good
+                        pEp.myself(id)
                         result = true
                         //replyResult(true, uri)
                     }
