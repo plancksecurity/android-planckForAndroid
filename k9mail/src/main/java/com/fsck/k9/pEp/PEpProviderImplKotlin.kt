@@ -249,6 +249,11 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.config_passphrase(passphrase)
     }
 
+    override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {
+        createEngineInstanceIfNeeded()
+        engine.config_passphrase_for_new_keys(enable, passphrase)
+    }
+
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
         engine.setMessageToSendCallback(callback)
     }
