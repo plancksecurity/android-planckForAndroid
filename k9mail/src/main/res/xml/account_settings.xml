@@ -360,6 +360,11 @@
             android:summary="@string/account_settings_led_color_summary"
             android:title="@string/account_settings_led_color_label" />
 
+        <com.fsck.k9.ui.settings.account.NotificationsPreference
+            android:key="open_notification_settings"
+            android:summary="@string/account_settings_notification_open_system_notifications_summary"
+            android:title="@string/account_settings_notification_open_system_notifications_label" />
+
         <PreferenceCategory
             android:key="advanced_accounts_notifications"
             app:initialExpandedChildrenCount="0">
@@ -390,6 +395,8 @@
                 android:key="notification_opens_unread"
                 android:summary="@string/account_settings_notification_opens_unread_summary"
                 android:title="@string/account_settings_notification_opens_unread_label" />
+
+
 
         </PreferenceCategory>
 

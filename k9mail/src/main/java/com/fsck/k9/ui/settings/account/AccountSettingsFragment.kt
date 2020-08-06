@@ -68,9 +68,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
-        initializeNewRingtoneOptions()
         initializeAccountpEpSync(account)
         initializePgpImportKey()
+        initializeNotifications()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -219,9 +219,14 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         return !account.isPepSyncEnabled || enabledSyncAccount != 1
     }
 
-    private fun initializeNewRingtoneOptions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference<Preference>(PREFERENCE_RINGTONE)?.remove()
+    private fun initializeNotifications() {
+        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let { preference ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PRE_SDK26_NOTIFICATION_PREFERENCES
+                        .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
+            } else {
+                preference.remove()
+            }
         }
     }
 
@@ -318,15 +323,14 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         return when {
             resultCode != Activity.RESULT_OK || data == null ->
                 super.onActivityResult(requestCode, resultCode, data)
             else ->
                 when (requestCode) {
-                  //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
-                       // onKeyImport(data.data, accountUuid)
+                    //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
+                    // onKeyImport(data.data, accountUuid)
                     else ->
                         super.onActivityResult(requestCode, resultCode, data)
 
@@ -361,8 +365,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
-        private const val PREFERENCE_RINGTONE = "account_ringtone"
         private const val PREFERENCE_PGP_KEY_IMPORT = "pgp_key_import"
+        private const val PREFERENCE_OPEN_NOTIFICATION_SETTINGS = "open_notification_settings"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
@@ -375,6 +379,15 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 PREFERENCE_SENT_FOLDER,
                 PREFERENCE_SPAM_FOLDER,
                 PREFERENCE_TRASH_FOLDER
+        )
+
+        private val PRE_SDK26_NOTIFICATION_PREFERENCES = arrayOf(
+                "account_ringtone",
+                "account_vibrate",
+                "account_vibrate_pattern",
+                "account_vibrate_times",
+                "account_led",
+                "led_color"
         )
 
         fun create(accountUuid: String, rootKey: String?) = AccountSettingsFragment().withArguments(
