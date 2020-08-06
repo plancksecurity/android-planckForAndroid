@@ -7,7 +7,6 @@ import android.net.Uri
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.pEpException
@@ -17,26 +16,29 @@ import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Named
 
-class KeyImportPresenter @Inject constructor(private val preferences: Preferences) {
+class KeyImportPresenter @Inject constructor(
+        private val preferences: Preferences,
+        @Named("NewInstance") private val pEp: PEpProvider
+) {
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
     private lateinit var accountUuid: String
 
-    private lateinit var pEp: PEpProvider
     private lateinit var context: Context
     private lateinit var accountIdentity: Identity
     private lateinit var currentFpr: String
     private lateinit var address: String
 
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     fun initialize(view: KeyImportView, accountUuid: String) {
-        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         this.view = view
         this.accountUuid = accountUuid
         scope.launch {
             context = view.getApplicationContext()
-            pEp = PEpProviderFactory.createAndSetupProvider(context)
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PEpUtils.createIdentity(Address(address), context)
             withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
@@ -56,9 +58,8 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
     private fun onKeyImport(uri: Uri) {
         val filename = uri.path.toString()
         view.showDialog()
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-        uiScope.launch {
+        scope.launch {
             val firstIdentity = importKey(uri)
             view.removeDialog()
             firstIdentity?.let {
@@ -142,7 +143,6 @@ class KeyImportPresenter @Inject constructor(private val preferences: Preference
     }
 
     fun onKeyImportAccepted(filename: String) {
-        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         scope.launch {
             val result = onKeyImportConfirmed()
             replyResult(result, filename)
