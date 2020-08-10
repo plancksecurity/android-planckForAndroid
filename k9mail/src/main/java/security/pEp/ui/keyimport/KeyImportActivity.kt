@@ -69,16 +69,16 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, onYes: () -> Unit, onNo: () -> Unit) {
+    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
         acceptButton.setOnClickListener {
             layout.visibility = View.GONE
-            onYes()
+            presenter.onKeyImportAccepted(filename)
         }
         cancelButton.setOnClickListener {
             layout.visibility = View.GONE
-            onNo()
+            presenter.onKeyImportRejected()
         }
         layout.visibility = View.VISIBLE
     }

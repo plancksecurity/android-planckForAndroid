@@ -2,6 +2,7 @@ package security.pEp.ui
 
 import android.content.Context
 import android.util.Log
+import foundation.pEp.jniadapter.PassphraseType
 import foundation.pEp.jniadapter.Sync.PassphraseRequiredCallback
 import kotlinx.coroutines.*
 import security.pEp.ui.passphrase.PassphraseActivity
@@ -16,7 +17,7 @@ object PassphraseProvider {
     var running = false
 
     fun getPassphraseRequiredCallback(context: Context): PassphraseRequiredCallback {
-        return PassphraseRequiredCallback {
+        return PassphraseRequiredCallback {passphraseType ->
             var result = ""
             Log.e("pEpEngine-passphrase", "base 0")
 
@@ -24,7 +25,7 @@ object PassphraseProvider {
 
                 Log.e("pEpEngine-passphrase", "base 1")
 
-                result = passphraseFromUser(context)
+                result = passphraseFromUser(context, passphraseType)
                 Log.e("pEpEngine-passphrase", "base 2")
 
             }
@@ -34,9 +35,9 @@ object PassphraseProvider {
         }
     }
 
-    suspend fun passphraseFromUser(context: Context): String {
+    suspend fun passphraseFromUser(context: Context, passphraseType: PassphraseType): String {
         prepareProvider()
-        launchUI(context)
+        launchUI(context, passphraseType)
         wait()
         Log.e("pEpEngine-passphrase", " Callback END UI")
 
@@ -50,9 +51,14 @@ object PassphraseProvider {
         running = true
     }
 
-    private suspend fun launchUI(context: Context) = withContext(Dispatchers.Main) {
-        PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE)
+    private suspend fun launchUI(context: Context, passphraseType: PassphraseType) = withContext(Dispatchers.Main) {
+        val type = when (passphraseType) {
+            PassphraseType.pEpPassphraseRequired -> PassphraseRequirementType.MISSING_PASSPHRASE
+            PassphraseType.pEpWrongPassphrase -> PassphraseRequirementType.WRONG_PASSPHRASE
+            PassphraseType.pEpPassphraseForNewKeysRequired -> PassphraseRequirementType.NEW_KEYS_PASSPHRASE
+        }
 
+        PassphraseActivity.notifyRequest(context, type)
     }
 
     private suspend fun wait() = withContext(Dispatchers.IO) {

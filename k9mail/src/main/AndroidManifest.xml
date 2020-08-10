@@ -547,7 +547,7 @@
         </activity>
         <activity
             android:name="security.pEp.ui.keyimport.KeyImportActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:theme="@style/OverlayTheme"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"

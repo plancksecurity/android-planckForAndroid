@@ -2,6 +2,7 @@ package security.pEp.ui.passphrase
 
 import android.content.Context
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpProviderFactory
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +14,10 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
 
-class PassphrasePresenter @Inject constructor(@Named("AppContext") private val context: Context) {
+class PassphrasePresenter @Inject constructor(
+        @Named("AppContext") private val context: Context,
+        @Named("NewInstance") private val pEp: PEpProvider
+) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
     fun init(view: PassphraseInputView, type: PassphraseRequirementType) {
@@ -21,6 +25,7 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
         this.type = type
         view.init()
         view.initAffirmativeListeners()
+
         when (type) {
             PassphraseRequirementType.MISSING_PASSPHRASE -> {
                 view.showPasswordRequest()
@@ -35,27 +40,39 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
                 view.enableSyncDismiss()
                 view.showSyncPasswordRequest()
             }
+            PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                view.enableNonSyncDismiss()
+                view.showNewKeysPassphrase()
+            }
         }
     }
 
     fun cancel() {
         PassphraseProvider.stop()
-        view.finish();
+        view.finish()
     }
 
     fun deliverPassphrase(passphrase: String) {
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
         when (type) {
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
-                val provider = PEpProviderFactory.createAndSetupProvider(context)
-                provider.configPassphrase(passphrase)
-                provider.close()
+                scope.launch {
+                    pEp.configPassphrase(passphrase)
+                }
+            }
+            PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
+                scope.launch {
+                    K9.setpEpNewKeysPassphrase(passphrase)
+                    val editor = Preferences.getPreferences(context).storage.edit()
+                    K9.save(editor)
+                    editor.commit()
+                    pEp.configPassphraseForNewKeys(true, passphrase)
+                }
             }
             else -> PassphraseProvider.passphrase = passphrase
         }
-
-
         view.finish()
-
     }
 
     fun validateInput(passphrase: String) {
@@ -83,5 +100,6 @@ class PassphrasePresenter @Inject constructor(@Named("AppContext") private val c
 enum class PassphraseRequirementType {
     MISSING_PASSPHRASE,
     WRONG_PASSPHRASE,
-    SYNC_PASSPHRASE
+    SYNC_PASSPHRASE,
+    NEW_KEYS_PASSPHRASE
 }

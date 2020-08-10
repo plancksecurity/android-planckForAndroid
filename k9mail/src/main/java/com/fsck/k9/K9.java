@@ -350,6 +350,7 @@ public class K9 extends MultiDexApplication {
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
+    private static String pEpNewKeysPassphrase;
 
     /**
      * @see #areDatabasesUpToDate()
@@ -616,6 +617,8 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putPassphrase(pEpNewKeysPassphrase);
 
         fontSizes.save(editor);
     }
@@ -1008,6 +1011,7 @@ public class K9 extends MultiDexApplication {
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        pEpNewKeysPassphrase = storage.getPassphrase();
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
@@ -1505,6 +1509,18 @@ public class K9 extends MultiDexApplication {
         K9.mAttachmentDefaultPath = attachmentDefaultPath;
     }
 
+    public static String getpEpNewKeysPassphrase(){
+        return pEpNewKeysPassphrase;
+    }
+
+    public static void setpEpNewKeysPassphrase(String passphrase){
+        K9.pEpNewKeysPassphrase = passphrase;
+    }
+
+    public static boolean ispEpUsingPassphraseForNewKey() {
+        return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
+    }
+
     public static synchronized SortType getSortType() {
         return mSortType;
     }
@@ -1719,9 +1735,12 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(@NotNull Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
                 KeySyncCleaner.queueAutoConsumeMessages();
-                pEpSyncProvider.stopSync();
+                if (provider.isSyncRunning()) provider.stopSync();
+                provider.close();
                 pEpProvider.close();
+                provider = null;
                 pEpProvider = null;
             }
         }
@@ -1754,7 +1773,6 @@ public class K9 extends MultiDexApplication {
         // return pEpUseKeyserver;
         return false;
     }
-
 
     public static boolean getPEpPassiveMode() {
         return pEpPassiveMode;
