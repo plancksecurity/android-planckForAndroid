@@ -471,27 +471,18 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun acceptSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
     }
 
     override fun rejectSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
     }
 
     override fun cancelSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
     }
 
-    private suspend fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = withContext(Dispatchers.IO) {
+    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) {
         engine.deliverHandshakeResult(syncResult, Vector())
     }
 
