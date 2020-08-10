@@ -895,14 +895,20 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onDownloadErrorMessageNotFound() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
+                    }
+            );
         }
 
         @Override
         public void onDownloadErrorNetworkError() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
+                    }
+            );
         }
 
         @Override
