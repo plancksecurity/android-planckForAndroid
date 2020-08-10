@@ -15,6 +15,7 @@ public enum AuthType {
     PLAIN,
     CRAM_MD5,
     EXTERNAL,
+    EXTERNAL_PLAIN,
 
     /**
      * XOAUTH2 is an OAuth2.0 protocol designed/used by GMail.
@@ -30,5 +31,9 @@ public enum AuthType {
      * when importing settings.
      */
     AUTOMATIC,
-    LOGIN
+    LOGIN;
+
+    public boolean isExternalAuth() {
+        return this == EXTERNAL || this == EXTERNAL_PLAIN;
+    }
 }

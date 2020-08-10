@@ -119,8 +119,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         return mCheckedIncoming;
     }
 
-    private CheckBox mShowPasswordCheckBox;
-
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
     @Inject
@@ -145,7 +143,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mNextButton = rootView.findViewById(R.id.next);
         nextProgressBar = rootView.findViewById(R.id.next_progressbar);
         mManualSetupButton = rootView.findViewById(R.id.manual_setup);
-        mShowPasswordCheckBox = rootView.findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
         mAccountSpinner = rootView.findViewById(R.id.account_spinner);
@@ -184,14 +181,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mClientCertificateSpinner.setOnClientCertificateChangedListener(this);
 
         mOAuth2CheckBox.setOnCheckedChangeListener(this);
-
-        mShowPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showPassword(isChecked);
-            }
-        });
-
     }
 
     @Override
@@ -222,8 +211,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING);
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-
-            showPassword(mShowPasswordCheckBox.isChecked());
         }
     }
 
@@ -280,37 +267,22 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
         if (usingCertificates) {
-            // hide password fields, show client certificate spinner
-            mPasswordView.setVisibility(View.GONE);
-            mShowPasswordCheckBox.setVisibility(View.GONE);
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
             mOAuth2CheckBox.setEnabled(false);
         } else if (usingXoauth) {
             // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.GONE);
             mAccountSpinner.setVisibility(View.VISIBLE);
-            mShowPasswordCheckBox.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
             mEmailView.setVisibility(View.VISIBLE);
             mAccountSpinner.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.VISIBLE);
-            mShowPasswordCheckBox.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
             mOAuth2CheckBox.setEnabled(true);
         }
-    }
-
-    private void showPassword(boolean show) {
-        int cursorPosition = mPasswordView.getSelectionStart();
-        if (show) {
-            mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        } else {
-            mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        }
-        mPasswordView.setSelection(cursorPosition);
     }
 
     private void validateFields() {
@@ -699,7 +671,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
         String smtpHost = "mail." + domain;
 
         if (mClientCertificateCheckBox.isChecked()) {
-            authenticationType = AuthType.EXTERNAL;
+            if (mPasswordView.getText().toString().trim().isEmpty()) {
+                authenticationType = AuthType.EXTERNAL;
+            } else {
+                authenticationType = AuthType.EXTERNAL_PLAIN;
+                password = mPasswordView.getText().toString();
+            }
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         } else if (mOAuth2CheckBox.isChecked()) {
             authenticationType = AuthType.XOAUTH2;

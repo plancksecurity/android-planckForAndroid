@@ -141,6 +141,11 @@ public class SmtpTransport extends Transport {
                 } else {
                     password = decodeUtf8(userInfoParts[1]);
                 }
+            } else if (userInfoParts.length == 4) {
+                authType = AuthType.valueOf(userInfoParts[3]);
+                username = decodeUtf8(userInfoParts[0]);
+                password = decodeUtf8(userInfoParts[1]);
+                clientCertificateAlias = decodeUtf8(userInfoParts[2]);
             }
         }
 
@@ -187,6 +192,9 @@ public class SmtpTransport extends Transport {
         if (authType != null) {
             if (AuthType.EXTERNAL == authType) {
                 userInfo = userEnc + ":" + clientCertificateAliasEnc + ":" + authType.name();
+            } else if (AuthType.EXTERNAL_PLAIN == authType) {
+                userInfo = userEnc + ":" + passwordEnc + ":" + clientCertificateAliasEnc +
+                        ":" + authType.name();
             } else {
                 userInfo = userEnc + ":" + passwordEnc + ":" + authType.name();
             }
@@ -243,9 +251,12 @@ public class SmtpTransport extends Transport {
     @Override
     public void open() throws MessagingException {
         try {
+            Timber.e("Open");
             boolean secureConnection = false;
             InetAddress[] addresses = InetAddress.getAllByName(mHost);
             for (int i = 0; i < addresses.length; i++) {
+                Timber.e("Open: " + addresses[i] + " " + addresses.length);
+
                 try {
                     SocketAddress socketAddress = new InetSocketAddress(addresses[i], mPort);
                     if (mConnectionSecurity == ConnectionSecurity.SSL_TLS_REQUIRED) {
@@ -360,6 +371,7 @@ public class SmtpTransport extends Transport {
                  * version, or it may have been imported.
                  */
                     case LOGIN:
+                    case EXTERNAL_PLAIN:
                     case PLAIN:
                         // try saslAuthPlain first, because it supports UTF-8 explicitly
                         if (authPlainSupported) {
