@@ -10,6 +10,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
@@ -57,7 +58,7 @@ public class PEpModule {
     @Provides
     @Named("NewInstance")
     public PEpProvider providepEpProviderNewInstance() {
-        return ((K9) context.getApplicationContext()).getpEpProvider();
+        return (PEpProviderFactory.createAndSetupProvider(context));
     }
 
     @Provides
