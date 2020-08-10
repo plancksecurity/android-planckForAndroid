@@ -111,6 +111,14 @@ class ImapStoreUriDecoder {
                 } else {
                     password = decodeUtf8(userInfoParts[2]);
                 }
+            } else if (userInfoParts.length == 4) {
+                // External & plain encoding
+                // EXTERNAL_PLAIN:username:password:certAlias
+                authenticationType = AuthType.valueOf(userInfoParts[0]);
+                username = decodeUtf8(userInfoParts[1]);
+                password = decodeUtf8(userInfoParts[2]);
+                clientCertificateAlias = decodeUtf8(userInfoParts[3]);
+
             }
         }
 

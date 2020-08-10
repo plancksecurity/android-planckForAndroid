@@ -357,6 +357,7 @@ class ImapConnection {
                     throw new MessagingException("Server doesn't support encrypted passwords using CRAM-MD5.");
                 }
             }
+            case EXTERNAL_PLAIN:
             case PLAIN: {
                 if (hasCapability(Capabilities.AUTH_PLAIN)) {
                     return saslAuthPlainWithLoginFallback();
