@@ -6,10 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.preference.CheckBoxPreference
-import androidx.preference.MultiSelectListPreference
-import androidx.preference.Preference
-import androidx.preference.TwoStatePreference
+import androidx.preference.*
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -141,30 +138,27 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpSync() {
-
         if (!BuildConfig.WITH_KEY_SYNC) {
             findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
-
         } else {
-            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as TwoStatePreference?)?.apply {
-                onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
-                    processKeySyncSwitchClick(preference as TwoStatePreference)
+            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processKeySyncSwitchClick(preference, newValue)
                 }
             }
         }
     }
 
-    private fun processKeySyncSwitchClick(preference: TwoStatePreference): Boolean {
-        // IF we are disabling sync, warning, if not just set it.
-        // 1 uncheck to return to "current state
-        preference.isChecked = !preference.isChecked
-
-        //2 If we are disabling (which means it is checked)
-        if (preference.isChecked) {
-            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+    private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
+        if (preference !is SwitchPreferenceCompat && newValue !is Boolean) {
+            return false
+        }
+        val switchPreferenceCompat = preference as SwitchPreferenceCompat
+        val value = newValue as Boolean
+        if (!value) {
+            val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                 R.style.SyncDisableDialog
-            }
-            else {
+            } else {
                 com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
             }
             AlertDialog.Builder(view?.context, theme)
@@ -172,15 +166,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                     .setMessage(R.string.keysync_disable_warning_explanation)
                     .setCancelable(false)
                     .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
-                        preference.isChecked = false
+                        switchPreferenceCompat.isChecked = false
                     }.setNegativeButton(R.string.cancel_action) { _, _ ->
-                        preference.isChecked = true
                     }
                     .show()
         } else {
-            preference.isChecked = true
+            switchPreferenceCompat.isChecked = true
         }
-        return true
+        return false
     }
 
     private fun initializeAfterMessageDeleteBehavior() {
