@@ -510,31 +510,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     }
 
-    private fun onDeleteAccount(account: Account) {
-        selectedContextAccount = account
-        showDialog(DIALOG_REMOVE_ACCOUNT)
-    }
-
     private fun onEditAccount(account: Account) {
         AccountSettingsActivity.start(this, account.uuid)
         selectedContextAccount = null
     }
 
+    @SuppressLint("StringFormatMatches")
     public override fun onCreateDialog(id: Int): Dialog? {
         // Android recreates our dialogs on configuration changes even when they have been
         // dismissed. Make sure we have all information necessary before creating a new dialog.
         when (id) {
-            DIALOG_REMOVE_ACCOUNT -> {
-                return if (selectedContextAccount == null) {
-                    null
-                } else ConfirmationDialog.create(
-                        this, id, R.string.account_delete_dlg_title,
-                        getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description),
-                        R.string.okay_action,
-                        R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
-
-            }
             DIALOG_CLEAR_ACCOUNT -> {
                 return if (selectedContextAccount == null) {
                     null
@@ -600,41 +585,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         return super.onCreateDialog(id)
     }
 
-    private fun deleteAccountWork() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-
-            if (selectedContextAccount is Account) {
-                val realAccount = selectedContextAccount as Account?
-                try {
-                    realAccount!!.localStore.delete()
-                } catch (e: Exception) {
-                    // Ignore, this may lead to localStores on sd-cards that
-                    // are currently not inserted to be left
-                }
-
-                MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
-                Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
-                K9.setServicesEnabled(this@SettingsActivity)
-
-                anyAccountWasDeleted = true
-
-                refresh()
-
-            }
-            selectedContextAccount = null
-        }
-    }
-
+    @SuppressLint("StringFormatMatches")
     public override fun onPrepareDialog(id: Int, d: Dialog) {
         val alert = d as AlertDialog
         when (id) {
-            DIALOG_REMOVE_ACCOUNT -> {
-                alert.setMessage(getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description))
-            }
             DIALOG_CLEAR_ACCOUNT -> {
                 alert.setMessage(getString(R.string.account_clear_dlg_instructions_fmt,
                         selectedContextAccount!!.description))
@@ -661,7 +615,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             val realAccount = selectedContextAccount as Account?
             realAccount?.let {
                 when (item.itemId) {
-                    R.id.delete_account -> onDeleteAccount(it)
                     R.id.account_settings -> onEditAccount(it)
                     R.id.activate -> onActivateAccount(it)
                     R.id.clear_pending -> onClearCommands(it)
@@ -1036,7 +989,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
          */
         private const val SPECIAL_ACCOUNTS_COUNT = 2
 
-        private const val DIALOG_REMOVE_ACCOUNT = 1
         private const val DIALOG_CLEAR_ACCOUNT = 2
         private const val DIALOG_RECREATE_ACCOUNT = 3
         private const val DIALOG_NO_FILE_MANAGER = 4

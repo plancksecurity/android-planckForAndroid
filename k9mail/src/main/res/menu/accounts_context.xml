@@ -8,9 +8,6 @@
         android:title="@string/empty_trash_action" />
     <item android:id="@+id/account_settings"
         android:title="@string/account_settings_action" />
-    <item android:id="@+id/delete_account"
-        android:title="@string/remove_account_action" />
-
     <item android:id="@+id/export"
         android:title="@string/settings_export_account" />
     <item
