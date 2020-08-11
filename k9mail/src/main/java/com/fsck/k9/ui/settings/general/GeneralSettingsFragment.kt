@@ -161,13 +161,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         //2 If we are disabling (which means it is checked)
         if (preference.isChecked) {
-            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                R.style.SyncDisableDialog
-            }
-            else {
-                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
-            }
-            AlertDialog.Builder(view?.context, theme)
+            AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
                     .setTitle(R.string.keysync_disable_warning_title)
                     .setMessage(R.string.keysync_disable_warning_explanation)
                     .setCancelable(false)
