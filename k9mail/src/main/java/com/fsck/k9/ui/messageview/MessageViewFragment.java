@@ -1013,13 +1013,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onViewAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
+        currentAttachmentViewInfo = attachment;
         getAttachmentController(attachment).viewAttachment();
     }
 
     @Override
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
+        currentAttachmentViewInfo = attachment;
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();
