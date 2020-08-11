@@ -967,12 +967,12 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     }
 
     @Override
-    public void onError(PEpSetupException exception) {
+    public void onSettingsCheckError(PEpSetupException exception) {
         handleErrorCheckingSettings(exception);
     }
 
     @Override
-    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+    public void onSettingsCheckLoaded(PEpSettingsChecker.Redirection redirection) {
         goForward();
     }
 

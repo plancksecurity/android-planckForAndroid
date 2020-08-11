@@ -175,7 +175,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 return;
             }
             ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
-            ((AccountSetupSettingsCheckerFragment) fragment).onError(exception);
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckError(exception);
         }
 
         @Override
@@ -185,7 +185,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 return;
             }
             ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
-            ((AccountSetupSettingsCheckerFragment) fragment).onLoaded(redirection);
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckLoaded(redirection);
         }
     }
 
@@ -317,8 +317,8 @@ public class AccountSetupBasics extends PEpImporterActivity {
     }
 
     public interface AccountSetupSettingsCheckerFragment {
-        void onError(PEpSetupException exception);
-        void onLoaded(PEpSettingsChecker.Redirection redirection);
+        void onSettingsCheckError(PEpSetupException exception);
+        void onSettingsCheckLoaded(PEpSettingsChecker.Redirection redirection);
         void onSettingsCheckCancelled();
     }
 }
