@@ -51,8 +51,8 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PEpSettingsChecker providepEpSettingsCheck(ThreadExecutor jobExecutor) {
-        return new PEpSettingsCheck(application, jobExecutor);
+    public PEpSettingsChecker providepEpSettingsCheck(ThreadExecutor jobExecutor, UIThread uiThread) {
+        return new PEpSettingsCheck(application, jobExecutor, uiThread);
     }
 
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule

@@ -47,9 +47,10 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     private PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection> callback;
     private Boolean isEditing;
 
-    @Inject public PEpSettingsCheck(Context context, ThreadExecutor threadExecutor) {
+    @Inject public PEpSettingsCheck(Context context, ThreadExecutor threadExecutor, UIThread uiThread) {
         this.context = context;
         this.threadExecutor = threadExecutor;
+        this.postExecutionThread = uiThread;
     }
 
     @Override
@@ -57,7 +58,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                               AccountSetupCheckSettings.CheckDirection checkDirection,
                               Boolean makeDefault, String procedence, Boolean isEditing,
                               ResultCallback<Redirection> callback) {
-        this.postExecutionThread = new UIThread();
         this.account = account;
         this.direction = checkDirection;
         this.makeDefault = makeDefault;
