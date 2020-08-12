@@ -11,7 +11,6 @@ import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 
 import org.junit.After;
 import org.junit.Before;
@@ -157,7 +156,6 @@ public class YellowStatusEmailFromBotTest {
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
      //   onView(withId(R.id.pEp_indicator)).perform(click());
         onView(withId(R.id.my_recycler_view)).check(doesNotExist());
-        assertCurrentActivityIsInstanceOf(PEpTrustwords.class);
 
     }
 

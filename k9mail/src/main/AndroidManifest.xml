@@ -479,14 +479,6 @@
             android:label="@string/blacklist_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name=".pEp.ui.privacy.status.PEpTrustwords"
-            android:label="@string/pep_handshake"
-            android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pEp.ui.privacy.status.PEpStatus" />
-        </activity>
-        <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"
