@@ -9,7 +9,7 @@
 
     <include layout="@layout/simple_toolbar_layout" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -86,12 +86,13 @@
                     android:text="@string/available_accounts_title"
                     android:textColor="?attr/colorAccent" />
 
-                <com.fsck.k9.pEp.ui.tools.NestedListView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/accounts_list"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/available_accounts_title" />
+                    android:layout_below="@id/available_accounts_title"
+                    android:nestedScrollingEnabled="false" />
                 </RelativeLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

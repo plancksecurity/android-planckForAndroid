@@ -209,6 +209,10 @@ public class Preferences {
 
     public void setAccounts(List<Account> reorderedAccounts) {
         accountsInOrder = reorderedAccounts;
+        reorderAccounts(reorderedAccounts);
+    }
+
+    public void reorderAccounts(List<Account> reorderedAccounts) {
         List<String> uuids = new ArrayList<>(reorderedAccounts.size());
         for (Account account : reorderedAccounts) {
             uuids.add(account.getUuid());
@@ -218,6 +222,7 @@ public class Preferences {
         StorageEditor editor = getStorage().edit();
         editor.putString("accountUuids", accountUuids);
         editor.commit();
+        loadAccounts();
     }
 
     /*public synchronized List<String> getMasterKeys(String uid) {

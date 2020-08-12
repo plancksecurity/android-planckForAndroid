@@ -16,13 +16,15 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.*
 import android.view.ContextMenu.ContextMenuInfo
-import android.view.View.OnClickListener
-import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.*
 import com.fsck.k9.activity.compose.MessageActions
+import com.fsck.k9.activity.accountlist.AccountListAdapter
+import com.fsck.k9.activity.accountlist.DragAndDropProvider
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
@@ -32,8 +34,8 @@ import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
+import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.NestedListView
 import com.fsck.k9.preferences.SettingsExporter
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
@@ -100,15 +102,24 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
-    private var accountsList: NestedListView? = null
-    private var addAccountButton: View? = null
+    private lateinit var accountsList: RecyclerView
+    private lateinit var addAccountButton: View
 
     @Inject
     lateinit var permissionRequester: PermissionRequester
+
     @Inject
     lateinit var permissionChecker: PermissionChecker
+
     @Inject
     lateinit var resourcesProvider: ResourcesProvider
+
+    @Inject
+    lateinit var preferences: Preferences
+
+    @Inject
+    lateinit var dragAndDropProvider: DragAndDropProvider
+
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -133,8 +144,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         return retain
     }
 
-    private val accounts = ArrayList<BaseAccount>()
-
+    private val accounts = ArrayList<Account>()
 
     internal inner class AccountsHandler : Handler() {
         internal fun setViewTitle() {
@@ -204,12 +214,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         controller = MessagingController.getInstance(applicationContext)
 
         bindViews(R.layout.accounts)
-        accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
+        accountsList = findViewById(R.id.accounts_list)
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
 
-        val accounts = Preferences.getPreferences(this).accounts
+        val accounts = preferences.accounts
         if(accounts.size > 0) {
             createComposeDynamicShortcut()
         }
@@ -246,7 +256,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             finish()
             return
         } else if (startup && accounts.size > 0
-                && onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
+                && onOpenAccount(preferences.defaultAccount)) {
             finish()
             return
         }
@@ -264,7 +274,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             val accountUuid = savedInstanceState.getString("selectedContextAccount")
-            selectedContextAccount = Preferences.getPreferences(this).getAccount(accountUuid)
+            selectedContextAccount = preferences.getAccount(accountUuid)
         }
 
         restoreAccountStats(savedInstanceState)
@@ -289,7 +299,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
-        addAccountButton!!.setOnClickListener { onAddNewAccount() }
+        addAccountButton.setOnClickListener { onAddNewAccount() }
     }
 
     private fun initializeActionBar() {
@@ -341,7 +351,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     public override fun onResume() {
         super.onResume()
-
         refresh()
         StorageManager.getInstance(application).addListener(storageListener)
     }
@@ -349,6 +358,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     public override fun onPause() {
         super.onPause()
         StorageManager.getInstance(application).removeListener(storageListener)
+        dragAndDropProvider.onPause()
+        preferences.reorderAccounts(accounts)
     }
 
     private enum class ACCOUNT_LOCATION {
@@ -372,7 +383,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     public override fun refresh() {
         accounts.clear()
-        accounts.addAll(Preferences.getPreferences(this).accounts)
+        accounts.addAll(preferences.accounts)
 
         if (accounts.size < 1) {
             removeComposeDynamicShortcut()
@@ -396,13 +407,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         newAccounts.addAll(accounts)
 
-        adapter = AccountListAdapter(accounts,
-            indexedFolderClickListener { position ->
-                val account = accountsList!!.getItemAtPosition(position) as BaseAccount
-                onEditAccount(account as Account)
-            }
-        )
-        accountsList!!.adapter = adapter
+        initList();
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -422,6 +427,19 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         }
 
+    }
+
+    private fun initList() {
+        adapter = AccountListAdapter(accounts,
+                indexedFolderClickListener { position ->
+                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    onEditAccount(account as Account)
+                }
+        )
+        val layoutManager = LinearLayoutManager(this);
+        accountsList.layoutManager = layoutManager;
+        accountsList.adapter = adapter
+        dragAndDropProvider.initialize(accountsList, accounts)
     }
 
     private fun onAddNewAccount() {
@@ -615,7 +633,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
-            selectedContextAccount = accountsList!!.getItemAtPosition(menuInfo.position) as BaseAccount
+            selectedContextAccount = adapter?.getItem(menuInfo.position)
         }
         if (selectedContextAccount is Account) {
             val realAccount = selectedContextAccount as Account?
@@ -628,8 +646,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     R.id.clear -> onClear(it)
                     R.id.recreate -> onRecreate(it)
                     R.id.export -> onExport(false, it)
-                    R.id.move_up -> onMove(it, true)
-                    R.id.move_down -> onMove(it, false)
                     R.id.import_PGP_key_from_SD -> onImportPGPKeyFromFileSystem(it)
                 }
             }
@@ -651,34 +667,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun onRecreate(account: Account) {
         showDialog(DIALOG_RECREATE_ACCOUNT)
-    }
-
-
-    private suspend fun moveAccount(account: Account, up: Boolean) = withContext(Dispatchers.IO) {
-        launch(Dispatchers.IO) {
-            account.move(Preferences.getPreferences(applicationContext), up)
-        }
-        delay(600)
-    }
-
-
-    private fun onMove(account: Account, up: Boolean) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
-
-        uiScope.launch {
-            // Show loading
-            loading?.visibility = View.VISIBLE
-            accounts_list?.alpha = 0.2f
-            //Move account
-            moveAccount(account, up)
-            refresh()
-
-            //Hide loading
-            loading?.visibility = View.GONE
-            accounts_list?.alpha = 1f
-
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -765,14 +753,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      */
     override fun setNonConfigurationInstance(inst: NonConfigurationInstance?) {
         nonConfigurationInstance = inst
-    }
-
-    private inner class AccountClickListener internal constructor(internal val search: LocalSearch) : OnClickListener {
-
-        override fun onClick(v: View) {
-            MessageList.actionDisplaySearch(this@SettingsActivity, search, true, false)
-        }
-
     }
 
     fun onExport(includeGlobals: Boolean, account: Account?) {
@@ -1034,6 +1014,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             context.startActivity(intent)
         }
 
+        @SuppressLint("StringFormatInvalid")
         fun createUnreadSearch(context: Context, account: BaseAccount): LocalSearch {
             val searchTitle = context.getString(R.string.search_title, account.description,
                     context.getString(R.string.unread_modifier))
@@ -1084,7 +1065,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 finishAffinity()
                 openSearchAccount(unifiedInboxAccount)
             } else {
-                val defaultAccount = Preferences.getPreferences(this@SettingsActivity).defaultAccount
+                val defaultAccount = preferences.defaultAccount
                 if(accountWasOpenable(defaultAccount)) {
                     finishAffinity()
                     openAccount(defaultAccount)
@@ -1118,3 +1099,4 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
     }
 }
+
