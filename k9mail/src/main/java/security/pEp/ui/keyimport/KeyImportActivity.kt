@@ -6,13 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
-import security.pEp.ui.dialog.PEpProgressDialog
-import security.pEp.ui.dialog.showProgressDialog
 import javax.inject.Inject
 
 
@@ -25,8 +25,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter
-
-    private var progressDialog: PEpProgressDialog? = null
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -107,11 +105,14 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showDialog() {
         val title = getString(R.string.settings_import_dialog_title)
         val message = getString(R.string.settings_import_scanning_file)
-        progressDialog = showProgressDialog(title, message, true)
+
+        findViewById<ConstraintLayout>(R.id.confirmationLayout).visibility = View.INVISIBLE
+        findViewById<LinearLayout>(R.id.keyImportLoadingLayout).visibility = View.VISIBLE
     }
 
-    override fun removeDialog() {
-        progressDialog?.closeDialog()
+    override fun hideDialog() {
+        findViewById<LinearLayout>(R.id.keyImportLoadingLayout).visibility = View.GONE
+        findViewById<ConstraintLayout>(R.id.confirmationLayout).visibility = View.VISIBLE
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
