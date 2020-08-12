@@ -769,6 +769,24 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I check account devices (\\S+) and (\\S+) are not protected$")
+    public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "2":
+                testUtils.checkAccountIsNotProtected("B", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "3":
+                testUtils.checkAccountIsNotProtected("C", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            default:
+                TestUtils.assertFailWithMessage("Unknown Account to assert is not protected");
+                break;
+        }
+    }
+
     @When("^I check devices (\\S+) and (\\S+) are not sync$")
     public void I_check_A_B_are_not_sync(String firstDevice, String secondDevice) {
         switch (testUtils.keySync_number()) {
