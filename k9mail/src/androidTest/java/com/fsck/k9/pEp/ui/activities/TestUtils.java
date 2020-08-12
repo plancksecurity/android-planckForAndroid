@@ -540,6 +540,23 @@ public class TestUtils {
         pressBack();
     }
 
+    public void checkIsNotProtected_FirstDevice () {
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "FirstDevice",
+                        "Account is not protected",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText("Account is not protected");
+        pressBack();
+    }
+
     public void checkSyncIsWorking_SecondDevice () {
         getMessageListSize();
         waitForMessageAndClickIt();
@@ -549,6 +566,23 @@ public class TestUtils {
         fillMessage(new TestUtils.BasicMessage("",
                         "SyncSecondDevice",
                         trustWords,
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
+    public void checkIsNotProtected_SecondDevice () {
+        getMessageListSize();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText("Account is not protected");
+        pressBack();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SecondDevice",
+                        "Account is not protected",
                         getKeySyncAccount(0)),
                 false);
         while (exists(onView(withId(R.id.send)))) {
@@ -2668,12 +2702,23 @@ public class TestUtils {
     }
 
     public void checkDeviceIsSync(String deviceName, String firstDevice,
-                                     String secondDevice, boolean syncThirdDevice) {
+                                  String secondDevice, boolean syncThirdDevice) {
         if (firstDevice.equals(deviceName)) {
             checkSyncIsWorking_FirstDevice();
         } else if (secondDevice.equals(deviceName)) {
             checkSyncIsWorking_SecondDevice();
         } else if (syncThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
+    public void checkAccountIsNotProtected(String deviceName, String firstDevice,
+                                  String secondDevice, boolean ThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkIsNotProtected_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkIsNotProtected_SecondDevice();
+        } else if (ThirdDevice) {
             waitForNewMessages(2);
         }
     }
