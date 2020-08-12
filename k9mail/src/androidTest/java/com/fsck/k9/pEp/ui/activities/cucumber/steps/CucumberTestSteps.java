@@ -1276,35 +1276,17 @@ public class CucumberTestSteps {
         switch (testUtils.keySync_number()) {
             case "1":
                 if (device.equals("A")) {
-                    testUtils.selectAccount(1);
-                    testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
-                    testUtils.selectFromScreen(testUtils.stringToID("pep_enable_privacy_protection"));
-                    while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                        testUtils.pressBack();
-                        testUtils.waitForIdle();
-                    }
+                    testUtils.disableProtection(0);
                 }
                 break;
             case "2":
                 if (device.equals("B")) {
-                    testUtils.selectAccount(1);
-                    testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
-                    testUtils.selectFromScreen(testUtils.stringToID("pep_enable_privacy_protection"));
-                    while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                        testUtils.pressBack();
-                        testUtils.waitForIdle();
-                    }
+                    testUtils.disableProtection(0);
                 }
                 break;
             case "3":
                 if (device.equals("C")) {
-                    testUtils.selectAccount(1);
-                    testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
-                    testUtils.selectFromScreen(testUtils.stringToID("pep_enable_privacy_protection"));
-                    while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                        testUtils.pressBack();
-                        testUtils.waitForIdle();
-                    }
+                    testUtils.disableProtection(0);
                 }
                 break;
             default:
