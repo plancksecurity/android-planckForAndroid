@@ -150,29 +150,25 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
-        if (preference !is SwitchPreferenceCompat && newValue !is Boolean) {
-            return false
-        }
-        val switchPreferenceCompat = preference as SwitchPreferenceCompat
-        val value = newValue as Boolean
-        if (!value) {
-            val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                R.style.SyncDisableDialog
+        if (preference is SwitchPreferenceCompat && newValue is Boolean) {
+            if (!newValue) {
+                val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    R.style.SyncDisableDialog
+                } else {
+                    com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+                }
+                AlertDialog.Builder(view?.context, theme)
+                        .setTitle(R.string.keysync_disable_warning_title)
+                        .setMessage(R.string.keysync_disable_warning_explanation)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
+                        .setNegativeButton(R.string.cancel_action) { _, _ -> }
+                        .show()
             } else {
-                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+                preference.isChecked = true
             }
-            AlertDialog.Builder(view?.context, theme)
-                    .setTitle(R.string.keysync_disable_warning_title)
-                    .setMessage(R.string.keysync_disable_warning_explanation)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
-                        switchPreferenceCompat.isChecked = false
-                    }.setNegativeButton(R.string.cancel_action) { _, _ ->
-                    }
-                    .show()
-        } else {
-            switchPreferenceCompat.isChecked = true
         }
+
         return false
     }
 
