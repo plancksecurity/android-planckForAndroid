@@ -231,6 +231,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
+        ((MessageList) getActivity()).setMessageViewVisible(true);
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
@@ -857,9 +858,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
             recoverRating(message);
-
-
-            ((MessageList) getActivity()).setMessageViewVisible(true);
 
             boolean hasToBeDecrypted = hasToBeDecrypted(message);
             if (hasToBeDecrypted) {
