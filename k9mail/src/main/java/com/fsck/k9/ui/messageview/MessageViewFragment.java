@@ -60,7 +60,6 @@ import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
@@ -314,7 +313,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
 
-        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             if (requestCode == PEpStatus.REQUEST_STATUS) {
                 Rating rating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
                 refreshRating(rating);
