@@ -83,7 +83,7 @@ public class Preferences {
         }
         List<Account> theAccounts = new ArrayList<>();
         for(Account account : accountsInOrder) {
-            if(account.getInstallState() == Account.InstallState.READY) {
+            if(account.getSetupState() == Account.SetupState.READY) {
                 theAccounts.add(account);
             }
         }
@@ -120,8 +120,8 @@ public class Preferences {
             loadAccounts();
         }
         Account account = accounts.get(uuid);
-        if(account != null && account.getInstallState() == Account.InstallState.READY) {
-            return accounts.get(uuid);
+        if(account != null && account.getSetupState() == Account.SetupState.READY) {
+            return account;
         }
         else return null;
     }

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,7 +25,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
@@ -237,7 +235,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
 
         @Override
         public Void doInBackground(Boolean... params) {
-            account.setInstallState(Account.InstallState.READY);
+            account.setSetupState(Account.SetupState.READY);
             boolean manualSetup = params[0];
             if(manualSetup) {
                 account.setOptionsOnInstall();

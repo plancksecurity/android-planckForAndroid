@@ -1096,7 +1096,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     @Override
-    public void onSettingsCheckLoaded(PEpSettingsChecker.Redirection redirection) {
+    public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
         AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
         requireActivity().finish();
     }

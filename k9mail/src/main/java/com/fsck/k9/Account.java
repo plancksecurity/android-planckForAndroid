@@ -87,18 +87,18 @@ public class Account implements BaseAccount, StoreConfig {
         EXPUNGE_ON_POLL
     }
 
-    public enum InstallState {
+    public enum SetupState {
         INITIAL,
         READY
     }
-    private InstallState installState = InstallState.INITIAL;
+    private SetupState setupState = SetupState.INITIAL;
 
-    public InstallState getInstallState() {
-        return installState;
+    public SetupState getSetupState() {
+        return setupState;
     }
 
-    public void setInstallState(InstallState installState) {
-        this.installState = installState;
+    public void setSetupState(SetupState setupState) {
+        this.setupState = setupState;
     }
 
     public enum DeletePolicy {
@@ -509,7 +509,7 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
-        installState = InstallState.valueOf(storage.getString(accountUuid + ".installState", InstallState.INITIAL.toString()));
+        setupState = SetupState.valueOf(storage.getString(accountUuid + ".installState", SetupState.INITIAL.toString()));
 
         // Use email address as account description if necessary
         if (description == null) {
@@ -796,7 +796,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
-        editor.putString(accountUuid + ".installState", installState.toString());
+        editor.putString(accountUuid + ".installState", setupState.toString());
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
@@ -1020,7 +1020,7 @@ public class Account implements BaseAccount, StoreConfig {
         } else {
             this.displayCount = K9.DEFAULT_VISIBLE_LIMIT;
         }
-        if(installState == InstallState.READY) {
+        if(setupState == SetupState.READY) {
             resetVisibleLimits();
         }
     }
