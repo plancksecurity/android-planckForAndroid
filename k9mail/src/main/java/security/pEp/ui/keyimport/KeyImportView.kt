@@ -15,9 +15,9 @@ interface KeyImportView {
 
     fun getApplicationContext(): Context
 
-    fun showDialog()
+    fun showLoading()
 
-    fun hideDialog()
+    fun hideLoading()
 
     fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String)
 }

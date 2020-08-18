@@ -13,6 +13,7 @@ import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
+import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
 
@@ -102,17 +103,17 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     }
 
-    override fun showDialog() {
+    override fun showLoading() {
         val title = getString(R.string.settings_import_dialog_title)
         val message = getString(R.string.settings_import_scanning_file)
 
-        findViewById<ConstraintLayout>(R.id.confirmationLayout).visibility = View.INVISIBLE
-        findViewById<LinearLayout>(R.id.keyImportLoadingLayout).visibility = View.VISIBLE
+        confirmationLayout.visibility = View.INVISIBLE
+        keyImportLoadingLayout.visibility = View.VISIBLE
     }
 
-    override fun hideDialog() {
-        findViewById<LinearLayout>(R.id.keyImportLoadingLayout).visibility = View.GONE
-        findViewById<ConstraintLayout>(R.id.confirmationLayout).visibility = View.VISIBLE
+    override fun hideLoading() {
+        keyImportLoadingLayout.visibility = View.GONE
+        confirmationLayout.visibility = View.VISIBLE
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
