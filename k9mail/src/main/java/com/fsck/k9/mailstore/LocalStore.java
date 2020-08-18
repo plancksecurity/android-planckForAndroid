@@ -961,7 +961,7 @@ public class LocalStore extends Store implements Serializable {
 
                     // When created, special folders should always be displayed
                     // inbox should be integrated
-                    // and the inbox and drafts folders should be syncced by default
+                    // and the inbox,  drafts and pEp folders should be synced by default
                     if (mAccount.isSpecialFolder(name)) {
                         prefHolder.inTopGroup = true;
                         prefHolder.displayClass = LocalFolder.FolderClass.FIRST_CLASS;
@@ -975,7 +975,7 @@ public class LocalStore extends Store implements Serializable {
                         }
                         if (name.equalsIgnoreCase(mAccount.getInboxFolderName()) ||
                                 name.equalsIgnoreCase(mAccount.getDraftsFolderName()) ||
-                                name.equalsIgnoreCase(mAccount.getpEpSyncFolderName())) {
+                                name.equalsIgnoreCase(mAccount.getCurrentpEpSyncFolderName())) {
                             prefHolder.syncClass = LocalFolder.FolderClass.FIRST_CLASS;
                         } else {
                             prefHolder.syncClass = LocalFolder.FolderClass.NO_CLASS;
