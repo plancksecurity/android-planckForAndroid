@@ -21,6 +21,8 @@ interface ImportWizardFromPGPView {
 
     void disableSync();
 
+    void leaveDeviceGroup();
+
     void showLongTrustwordsIndicator();
 
     void hideLongTrustwordsIndicator();

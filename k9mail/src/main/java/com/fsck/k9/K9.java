@@ -21,6 +21,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.WorkerThread;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -1959,7 +1960,11 @@ public class K9 extends MultiDexApplication {
         }
         pEpSyncEnabled = false;
         Log.e("pEpEngine", "shutdownSync: end" );
+    }
 
+    public void persistentShutDown() {
+        shutdownSync();
+        forceSaveAppSettings();
     }
 
     public void shutdownSync(PEpProvider pEpProvider) {
