@@ -1042,26 +1042,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    private void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
-                                              Folder providedRemoteFolder) {
+    private void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder) {
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
         Timber.i("pEp Synchronizing folder %s:%s", account.getDescription(), folder);
-
-//        for (MessagingListener l : getListeners(listener)) {
-//            l.synchronizeMailboxStarted(account, folder);
-//        }
-        /*
-         * We don't ever sync the Outbox or errors folder
-         */
-        if (folder.equals(account.getOutboxFolderName())) {
-            for (MessagingListener l : getListeners(listener)) {
-                l.synchronizeMailboxFinished(account, folder, 0, 0);
-            }
-
-            return;
-        }
 
         Exception commandException = null;
         try {
@@ -1092,16 +1077,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 localUidMap.put(message.getUid(), message);
             }
 
-            if (providedRemoteFolder != null) {
-                Timber.v("pEp SYNC: using providedRemoteFolder %s", folder);
-                remoteFolder = providedRemoteFolder;
-            } else {
                 Store remoteStore = account.getRemoteStore();
 
                 Timber.v("pEp SYNC: About to get remote folder %s", folder);
                 remoteFolder = remoteStore.getFolder(folder);
 
-                if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, listener)) {
+                if (!verifyOrCreateRemoteSpecialFolder(account, folder, remoteFolder, null)) {
                     return;
                 }
 
@@ -1136,7 +1117,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     remoteFolder.expunge();
                 }
 
-            }
 
             notificationController.clearAuthenticationErrorNotification(account, true);
 
@@ -1172,10 +1152,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         remoteStart, remoteMessageCount, folder);
 
                 final AtomicInteger headerProgress = new AtomicInteger(0);
-                for (MessagingListener l : getListeners(listener)) {
-                    l.synchronizeMailboxHeadersStarted(account, folder);
-                }
-
 
                 List<? extends Message> remoteMessageArray = remoteFolder.getMessages(remoteStart, remoteMessageCount, earliestDate, null);
 
@@ -1183,9 +1159,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                 for (Message thisMess : remoteMessageArray) {
                     headerProgress.incrementAndGet();
-                    for (MessagingListener l : getListeners(listener)) {
-                        l.synchronizeMailboxHeadersProgress(account, folder, headerProgress.get(), messageCount);
-                    }
                     Message localMessage = localUidMap.get(thisMess.getUid());
                     if (localMessage == null || !localMessage.olderThan(earliestDate)) {
                         remoteMessages.add(thisMess);
@@ -1194,10 +1167,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
                 Timber.v("pEp SYNC: Got %d messages for folder %s",
                         remoteUidMap.size(), folder);
-
-                for (MessagingListener l : getListeners(listener)) {
-                    l.synchronizeMailboxHeadersFinished(account, folder, headerProgress.get(), remoteUidMap.size());
-                }
 
             } else if (remoteMessageCount < 0) {
                 throw new Exception("Message count " + remoteMessageCount + " for folder " + folder);
@@ -1219,12 +1188,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     moreMessages = MoreMessages.UNKNOWN;
 
                     localFolder.destroyMessages(destroyMessages);
-
-                    for (Message destroyMessage : destroyMessages) {
-                        for (MessagingListener l : getListeners(listener)) {
-                            l.synchronizeMailboxRemovedMessage(account, folder, destroyMessage);
-                        }
-                    }
                 }
             }
             // noinspection UnusedAssignment, free memory early? (better break up the method!)
@@ -1248,19 +1211,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.d("pEp Done synchronizing folder %s:%s @ %s with %d new messages",
                     account.getDescription(), folder, new Date(), newMessages);
 
-            for (MessagingListener l : getListeners(listener)) {
-                l.synchronizeMailboxFinished(account, folder, remoteMessageCount, newMessages);
-            }
-
 
             if (commandException != null) {
                 String rootMessage = getRootCauseMessage(commandException);
                 Timber.e(commandException, "pEp Root cause failure in %s:%s was '%s'",
                         account.getDescription(), tLocalFolder.getName(), rootMessage);
                 localFolder.setStatus(rootMessage);
-                for (MessagingListener l : getListeners(listener)) {
-                    l.synchronizeMailboxFailed(account, folder, rootMessage);
-                }
             }
 
             Timber.i("pEp Done synchronizing folder %s:%s",
@@ -1268,10 +1224,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         } catch (AuthenticationFailedException e) {
             handleAuthenticationFailure(account, true);
-
-            for (MessagingListener l : getListeners(listener)) {
-                l.synchronizeMailboxFailed(account, folder, "Authentication failure");
-            }
         } catch (Exception e) {
             Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
@@ -1287,18 +1239,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
             }
 
-            for (MessagingListener l : getListeners(listener)) {
-                l.synchronizeMailboxFailed(account, folder, rootMessage);
-            }
             notifyUserIfCertificateProblem(account, e, true);
             Timber.e(e, "pEp Failed synchronizing folder %s:%s @ %s",
                     account.getDescription(), folder, new Date());
 
         } finally {
-            if (providedRemoteFolder == null) {
-                closeFolder(remoteFolder);
-            }
-
             closeFolder(tLocalFolder);
         }
 
@@ -1664,11 +1609,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             }
                             if (message.getBody() == null) {
                                 // we can't do anything atm....
-                                Timber.e("pep", "message not complete in downloadSmall (msgid=" + message.getId() + ")");
+                                Timber.e("pep  message not complete in downloadSmall (msgid= %s)", message.getId());
                                 return;
                             }
 
-                            Timber.d("pep", "in download loop (nr=" + number + ") pre pep");
+                            Timber.d("pep in download loop (nr= + %s ) pre", number);
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                             final PEpProvider.DecryptResult result;
                             //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
@@ -3987,7 +3932,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Collection<Account> accounts = prefs.getAvailableAccounts();
 
                     for (final Account account : accounts) {
-                        checkpEpSyncMailForAccount(account, null);
+                        checkpEpSyncMailForAccount(account);
                     }
 
                 } catch (Exception e) {
@@ -4088,127 +4033,39 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    private void checkpEpSyncMailForAccount(final Account account,
-                                            final MessagingListener listener) {
-
-        final long accountInterval = account.getAutomaticCheckIntervalMinutes() * 60 * 1000;
+    private void checkpEpSyncMailForAccount(final Account account) {
 
         Timber.i("pEp Synchronizing account %s", account.getEmail());
 
         account.setRingNotified(false);
 
         try {
-            Account.FolderMode aDisplayMode = account.getFolderDisplayMode();
-            Account.FolderMode aSyncMode = account.getFolderSyncMode();
 
             Store localStore = account.getLocalStore();
-            // TODO: 22/06/2020 Improvement only check inbox and sync folder
-            for (final Folder folder : localStore.getPersonalNamespaces(false)) {
-                folder.open(Folder.OPEN_MODE_RW);
+            //Check only folders where sync messages can land
+            synchronizepEpSyncFolder(account, localStore.getFolder(account.getInboxFolderName()));
+            synchronizepEpSyncFolder(account, localStore.getFolder(account.getDefaultpEpSyncFolderName()));
 
-                Folder.FolderClass fDisplayClass = folder.getDisplayClass();
-                Folder.FolderClass fSyncClass = folder.getSyncClass();
-
-                if (modeMismatch(aDisplayMode, fDisplayClass)) {
-                    // Never sync a folder that isn't displayed
-                    /*
-                    if (K9.isDebug())
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
-                              " which is in display mode " + fDisplayClass + " while account is in display mode " + aDisplayMode);
-                    */
-
-                    continue;
-                }
-
-                if (modeMismatch(aSyncMode, fSyncClass)) {
-                    // Do not sync folders in the wrong class
-                    /*
-                    if (K9.isDebug())
-                        Timber.v(K9.LOG_TAG, "Not syncing folder " + folder.getName() +
-                              " which is in sync mode " + fSyncClass + " while account is in sync mode " + aSyncMode);
-                    */
-
-                    continue;
-                }
-                if (!folder.getName().equals(account.getDraftsFolderName())
-                        && !folder.getName().equals(account.getOutboxFolderName())) {
-                    synchronizepEpSyncFolder(account, folder, true, accountInterval, listener);
-                }
-            }
         } catch (MessagingException e) {
-            Timber.e(e, "pEp Unable to synchronize account %s", account.getName());
-        } finally {
-            //pEpSync should be silent without notification
-//            putBackground("clear notification flag for " + account.getDescription(), null, new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (K9.isDebug())
-//                                Timber.v(K9.LOG_TAG, "Clearing notification flag for " + account.getDescription());
-//                            account.setRingNotified(false);
-//                            try {
-//                                AccountStats stats = account.getStats(context);
-//                                if (stats == null || stats.unreadMessageCount == 0) {
-//                                    notificationController.clearNewMailNotifications(account);
-//                                }
-//                            } catch (MessagingException e) {
-//                                Timber.e(K9.LOG_TAG, "Unable to getUnreadMessageCount for account: " + account, e);
-//                            }
-//                        }
-//                    }
-//            );
+            Timber.e(e, "pEpEngine-AppSync Unable to synchronize account %s", account.getName());
         }
 
 
     }
 
-    private void synchronizepEpSyncFolder(
+    private  void synchronizepEpSyncFolder(
             final Account account,
-            final Folder folder,
-            final boolean ignoreLastCheckedTime,
-            final long accountInterval,
-            final MessagingListener listener) {
+            final Folder folder) {
 
-        Timber.v("Folder %s was last synced @ %tc", folder.getName(), folder.getLastChecked());
+        Timber.v("pEp Folder %s was last synced @ %tc", folder.getName(), folder.getLastChecked());
 
-        if (!ignoreLastCheckedTime && folder.getLastChecked() >
-                (System.currentTimeMillis() - accountInterval)) {
-            Timber.v("Not syncing folder %s, previously synced @ %tc which would be too recent for the account " +
-                    "period", folder.getName(), folder.getLastChecked());
+        put("sync" + folder.getName(), null, () -> {
+                    try {
+                        synchronizepEpSyncMailboxSynchronous(account, folder.getName());
+                    } catch (Exception e) {
 
-
-            return;
-        }
-        put("sync" + folder.getName(), null, new Runnable() {
-                    @Override
-                    public void run() {
-                        LocalFolder tLocalFolder = null;
-                        try {
-                            // In case multiple Commands get enqueued, don't run more than
-                            // once
-                            final LocalStore localStore = account.getLocalStore();
-                            tLocalFolder = localStore.getFolder(folder.getName());
-                            tLocalFolder.open(Folder.OPEN_MODE_RW);
-
-                            if (!ignoreLastCheckedTime && tLocalFolder.getLastChecked() >
-                                    (System.currentTimeMillis() - accountInterval)) {
-                                Timber.v("pEp Not running Command for folder %s, " +
-                                                "previously synced @ %s which would be too recent for the account period",
-                                        folder.getName(), new Date(folder.getLastChecked()));
-                                return;
-                            }
-                            //showFetchingMailNotificationIfNecessary(account, folder);
-                            try {
-                                synchronizepEpSyncMailboxSynchronous(account, folder.getName(), listener, null);
-                            } finally {
-                                clearFetchingMailNotificationIfNecessary(account);
-                            }
-                        } catch (Exception e) {
-
-                            Timber.e(e, "pEp Exception while processing folder %s:%s",
-                                    account.getDescription(), folder.getName());
-                        } finally {
-                            closeFolder(tLocalFolder);
-                        }
+                        Timber.e(e, "pEpEngine-AppSync Exception while processing folder %s:%s",
+                                account.getDescription(), folder.getName());
                     }
                 }
         );
@@ -4791,7 +4648,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Message localMessage = null;
         try {
             LocalStore localStore = account.getLocalStore();
-            LocalFolder localFolder = localStore.getFolder(account.getpEpSyncFolderName());
+            LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
             localFolder.open(Folder.OPEN_MODE_RW);
 
 
@@ -4799,9 +4656,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             localFolder.appendMessages(Collections.singletonList(message));
             // Fetch the message back from the store.  This is the Message that's returned to the caller.
             localMessage = localFolder.getMessage(message.getUid());
-            localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
 
-            PendingCommand command = PendingAppend.create(account.getpEpSyncFolderName(), localMessage.getUid());
+            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
             queuePendingCommand(account, command);
             processPendingCommands(account);
 
@@ -4854,7 +4710,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                 }
 
-                checkpEpSyncMailForAccount(fromAccount, null);
+                checkpEpSyncMailForAccount(fromAccount);
 
             } catch (pEpException | MessagingException e) {
                 Timber.e(e, "messageToSend: Cannot send message");
