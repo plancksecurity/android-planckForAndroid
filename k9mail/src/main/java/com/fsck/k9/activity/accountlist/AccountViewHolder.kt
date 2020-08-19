@@ -5,7 +5,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.ColorRes
 import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.*
 import com.fsck.k9.helper.SizeFormatter
@@ -40,29 +39,25 @@ class AccountViewHolder(
     private var accountsDescriptionLayout =
         view.findViewById<View>(R.id.accounts_description_layout)
 
-    fun bind(account: BaseAccount,
-             stats: AccountStats?) {
+    fun bind(account: BaseAccount, stats: AccountStats?) {
         accountsDescriptionLayout.setOnClickListener { onFolderClickListener.onClick(position) }
 
-        if (stats != null && account is Account && stats.size >= 0) {
-            email.text = SizeFormatter.formatSize(view.context, stats.size)
-            email.visibility = View.VISIBLE
-        } else {
-            if (account.email == account.description) {
-                email.visibility = View.GONE
-            } else {
-                email.visibility = View.VISIBLE
-                email.text = account.email
-            }
-        }
+        bindEmail(stats, account)
 
-        var description: String? = account.description
-        if (description == null || description.isEmpty()) {
-            description = account.email
-        }
+        bindDescription(account)
 
-        this.description.text = description
+        bindUnreadCount(stats, account)
 
+        fontSizes.setViewTextSize(this.description, fontSizes.accountName)
+        fontSizes.setViewTextSize(email, fontSizes.accountDescription)
+
+        bindFolders(account)
+
+        settings.drawable.alpha = 255
+        settings.setOnClickListener { listener.settingsClicked(account) }
+    }
+
+    private fun bindUnreadCount(stats: AccountStats?, account: BaseAccount) {
         if (stats != null) {
             val unreadMessageCount: Int? = stats.unreadMessageCount
             descriptionUnreadMessages.text = String.format("%d", unreadMessageCount)
@@ -88,11 +83,18 @@ class AccountViewHolder(
         }
 
         flaggedMessageCountIcon.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconFlagButton))
+    }
 
+    private fun bindDescription(account: BaseAccount) {
+        var description: String? = account.description
+        if (description == null || description.isEmpty()) {
+            description = account.email
+        }
 
-        fontSizes.setViewTextSize(this.description, fontSizes.accountName)
-        fontSizes.setViewTextSize(email, fontSizes.accountDescription)
+        this.description.text = description
+    }
 
+    private fun bindFolders(account: BaseAccount) {
         if (account is SearchAccount) {
             folders.visibility = View.GONE
         } else {
@@ -100,9 +102,20 @@ class AccountViewHolder(
             folders.drawable.alpha = 255
             folders.setOnClickListener { listener.foldersClicked(account) }
         }
+    }
 
-        settings.drawable.alpha = 255
-        settings.setOnClickListener { listener.settingsClicked(account) }
+    private fun bindEmail(stats: AccountStats?, account: BaseAccount) {
+        if (stats != null && account is Account && stats.size >= 0) {
+            email.text = SizeFormatter.formatSize(view.context, stats.size)
+            email.visibility = View.VISIBLE
+        } else {
+            if (account.email == account.description) {
+                email.visibility = View.GONE
+            } else {
+                email.visibility = View.VISIBLE
+                email.text = account.email
+            }
+        }
     }
 
     fun setAlpha(alpha: Float) {
