@@ -670,6 +670,11 @@ public class Account implements BaseAccount, StoreConfig {
         return findNewAccountNumber(accountNumbers);
     }
 
+    /**
+     * @deprecated
+     * This method is no longer used since the drag & drop behaviour was added
+     */
+    @Deprecated()
     public void move(Preferences preferences, boolean moveUp) {
         String[] uuids = preferences.getStorage().getString("accountUuids", "").split(",");
         StorageEditor editor = preferences.getStorage().edit();
