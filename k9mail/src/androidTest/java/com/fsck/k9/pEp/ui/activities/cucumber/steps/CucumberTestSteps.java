@@ -771,6 +771,7 @@ public class CucumberTestSteps {
 
     @When("^I check account devices (\\S+) and (\\S+) are not protected$")
     public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
+        testUtils.selectAccount(0);
         switch (testUtils.keySync_number()) {
             case "1":
                 testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
