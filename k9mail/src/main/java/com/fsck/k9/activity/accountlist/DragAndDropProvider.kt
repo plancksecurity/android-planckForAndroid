@@ -2,6 +2,7 @@ package com.fsck.k9.activity.accountlist
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import timber.log.Timber
 import java.util.*
@@ -9,10 +10,13 @@ import javax.inject.Inject
 
 class DragAndDropProvider @Inject constructor() : ItemTouchHelper.Callback() {
 
+    private lateinit var listener: ItemReleasedListener
     private lateinit var list: RecyclerView
     private lateinit var data: List<Any>
     private lateinit var touchHelper: ItemTouchHelper
 
+    @Inject
+    lateinit var preferences: Preferences
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
@@ -55,9 +59,10 @@ class DragAndDropProvider @Inject constructor() : ItemTouchHelper.Callback() {
     fun initialize(
         list: RecyclerView,
         data: List<Any>
-    ) {
+    , listener: ItemReleasedListener) {
         this.list = list
         this.data = data
+        this.listener = listener
         initTouchHelper()
     }
 
@@ -71,6 +76,7 @@ class DragAndDropProvider @Inject constructor() : ItemTouchHelper.Callback() {
             is AccountViewHolder -> viewHolder.setAlpha(1f)
         }
         list.adapter?.notifyDataSetChanged()
+        listener.itemReleased()
     }
 
     private fun onItemSelected(viewHolder: RecyclerView.ViewHolder) {
@@ -100,4 +106,9 @@ class DragAndDropProvider @Inject constructor() : ItemTouchHelper.Callback() {
         touchHelper.attachToRecyclerView(null)
     }
 
+}
+
+interface ItemReleasedListener {
+
+    fun itemReleased()
 }

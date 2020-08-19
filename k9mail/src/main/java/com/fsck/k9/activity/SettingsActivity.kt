@@ -25,6 +25,7 @@ import com.fsck.k9.*
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.accountlist.AccountListAdapter
 import com.fsck.k9.activity.accountlist.DragAndDropProvider
+import com.fsck.k9.activity.accountlist.ItemReleasedListener
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
@@ -67,7 +68,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
-class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback, ItemReleasedListener {
 
     private var controller: MessagingController? = null
 
@@ -359,7 +360,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         super.onPause()
         StorageManager.getInstance(application).removeListener(storageListener)
         dragAndDropProvider.onPause()
-        preferences.reorderAccounts(accounts)
     }
 
     private enum class ACCOUNT_LOCATION {
@@ -439,7 +439,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         val layoutManager = LinearLayoutManager(this);
         accountsList.layoutManager = layoutManager;
         accountsList.adapter = adapter
-        dragAndDropProvider.initialize(accountsList, accounts)
+        dragAndDropProvider.initialize(accountsList, accounts, this)
     }
 
     private fun onAddNewAccount() {
@@ -743,6 +743,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         asyncTask.execute()
     }
 
+    override fun itemReleased() {
+        val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        scope.launch {
+            reorderAccounts()
+        }
+    }
+
+    private suspend fun reorderAccounts() = withContext(Dispatchers.IO) {
+        preferences.reorderAccounts(accounts)
+    }
 
     /**
      * Set the `NonConfigurationInstance` this activity should retain on configuration
@@ -1072,8 +1082,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
             }
             anyAccountWasDeleted = false
-        }
-        else {
+        } else {
             super.onBackPressed()
         }
     }
