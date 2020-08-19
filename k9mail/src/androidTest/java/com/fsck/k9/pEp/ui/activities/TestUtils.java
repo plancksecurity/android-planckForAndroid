@@ -847,9 +847,12 @@ public class TestUtils {
     }
 
     public void disableProtection (int account) {
-        selectAccount(account + 1);
+        if (!exists(onView(withId(R.id.available_accounts_title)))) {
+            selectFromMenu(R.string.action_settings);
+        }
+        selectAccountSettingsFromList(account);
         selectFromScreen(stringToID("privacy_preferences"));
-        selectFromScreen(stringToID("pep_enable_privacy_protection"));
+        clickTextOnScreen(stringToID("pep_enable_privacy_protection"));
         while (!exists(onView(withId(R.id.available_accounts_title)))) {
             pressBack();
             waitForIdle();
