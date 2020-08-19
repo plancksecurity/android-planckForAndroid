@@ -935,6 +935,17 @@ public class TestUtils {
         }
     }
 
+    private void selectAccountSettingsFromList (int accountToSelect) {
+        while (!viewIsDisplayed(R.id.accounts_list)) {
+            swipeUpScreen();
+        }
+        onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+        goToTheAccountSettings(accountToSelect);
+        if (exists(onView(withId(R.id.message_list)))) {
+            getMessageListSize();
+        }
+    }
+
     private void goToTheInbox (int accountToSelect){
         while (true) {
             device.waitForIdle();
