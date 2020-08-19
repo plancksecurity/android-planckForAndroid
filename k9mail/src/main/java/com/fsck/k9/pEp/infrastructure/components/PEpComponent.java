@@ -28,7 +28,6 @@ import security.pEp.ui.keyimport.KeyImportActivity;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
@@ -44,8 +43,6 @@ import security.pEp.ui.permissions.PermissionsActivity;
 public interface PEpComponent extends ActivityComponent {
 
     void inject(PEpStatus activity);
-
-    void inject(PEpTrustwords activity);
 
     void inject(PEpAddDevice activity);
 

@@ -1056,16 +1056,20 @@ public class Account implements BaseAccount, StoreConfig {
                 folderName.equals(getSpamFolderName()) ||
                 folderName.equals(getOutboxFolderName()) ||
                 folderName.equals(getSentFolderName()) ||
-                folderName.equals(getpEpSyncFolderName())
+                folderName.equals(getCurrentpEpSyncFolderName())
         ));
     }
 
-    public String getpEpSyncFolderName() {
+    public String getCurrentpEpSyncFolderName() {
         if (K9.isUsingpEpSyncFolder()) {
             return PEP_FOLDER;
         } else {
             return inboxFolderName;
         }
+    }
+
+    public String getDefaultpEpSyncFolderName() {
+        return PEP_FOLDER;
     }
 
     public synchronized String getDraftsFolderName() {

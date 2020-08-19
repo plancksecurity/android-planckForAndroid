@@ -6,10 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.preference.CheckBoxPreference
-import androidx.preference.MultiSelectListPreference
-import androidx.preference.Preference
-import androidx.preference.TwoStatePreference
+import androidx.preference.*
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -28,6 +25,8 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import security.pEp.ui.passphrase.PassphraseActivity
+import security.pEp.ui.passphrase.PassphraseRequirementType
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
@@ -50,12 +49,21 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
+        initializeNewKeysPassphrase()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeNewKeysPassphrase() {
+        findPreference<Preference>(NEW_KEYS_PASSPHRASE)?.onClick {
+            context?.let {
+                PassphraseActivity.notifyRequest(it, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
+            }
+        }
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
@@ -130,46 +138,38 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpSync() {
-
         if (!BuildConfig.WITH_KEY_SYNC) {
             findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
-
         } else {
-            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as TwoStatePreference?)?.apply {
-                onPreferenceClickListener = Preference.OnPreferenceClickListener { preference ->
-                    processKeySyncSwitchClick(preference as TwoStatePreference)
+            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processKeySyncSwitchClick(preference, newValue)
                 }
             }
         }
     }
 
-    private fun processKeySyncSwitchClick(preference: TwoStatePreference): Boolean {
-        // IF we are disabling sync, warning, if not just set it.
-        // 1 uncheck to return to "current state
-        preference.isChecked = !preference.isChecked
-
-        //2 If we are disabling (which means it is checked)
-        if (preference.isChecked) {
-            val theme = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                R.style.SyncDisableDialog
+    private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
+        if (preference is SwitchPreferenceCompat && newValue is Boolean) {
+            if (!newValue) {
+                val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    R.style.SyncDisableDialog
+                } else {
+                    com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+                }
+                AlertDialog.Builder(view?.context, theme)
+                        .setTitle(R.string.keysync_disable_warning_title)
+                        .setMessage(R.string.keysync_disable_warning_explanation)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
+                        .setNegativeButton(R.string.cancel_action) { _, _ -> }
+                        .show()
+            } else {
+                preference.isChecked = true
             }
-            else {
-                com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
-            }
-            AlertDialog.Builder(view?.context, theme)
-                    .setTitle(R.string.keysync_disable_warning_title)
-                    .setMessage(R.string.keysync_disable_warning_explanation)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ ->
-                        preference.isChecked = false
-                    }.setNegativeButton(R.string.cancel_action) { _, _ ->
-                        preference.isChecked = true
-                    }
-                    .show()
-        } else {
-            preference.isChecked = true
         }
-        return true
+
+        return false
     }
 
     private fun initializeAfterMessageDeleteBehavior() {
@@ -254,6 +254,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
+        private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

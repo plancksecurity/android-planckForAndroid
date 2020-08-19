@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
+
 import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -87,9 +87,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
-    @Inject
-    ToolBarCustomizer toolBarCustomizer;
-    
+    @Inject ToolBarCustomizer toolBarCustomizer;
+
     @Inject Preferences preferences;
 
     private ServerSettings.Type mStoreType;
@@ -421,7 +420,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 AuthType selection = getSelectedAuthType();
 
                 // Have the user select (or confirm) the client certificate
-                if (AuthType.EXTERNAL == selection) {
+                if (selection.isExternalAuth()) {
 
                     // This may again invoke validateFields()
                     mClientCertificateSpinner.chooseCertificate();
@@ -454,13 +453,15 @@ public class AccountSetupIncomingFragment extends PEpFragment {
      */
     private void updateViewFromAuthType() {
         AuthType authType = getSelectedAuthType();
-        boolean isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+        boolean isAuthTypeExternal = authType.isExternalAuth();
         boolean isAuthTypeXOAuth2 = (AuthType.XOAUTH2 == authType);
 
         if (isAuthTypeExternal) {
             // hide password fields, show client certificate fields
-            mPasswordView.setVisibility(View.GONE);
-            mPasswordLabelView.setVisibility(View.GONE);
+            if (authType != AuthType.EXTERNAL_PLAIN) {
+                mPasswordView.setVisibility(View.GONE);
+                mPasswordLabelView.setVisibility(View.GONE);
+            }
             mClientCertificateLabelView.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
         } else if (isAuthTypeXOAuth2) {
@@ -484,7 +485,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
      */
     private void validateFields() {
         AuthType authType = getSelectedAuthType();
-        boolean isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+        boolean isAuthTypeExternal = authType.isExternalAuth();
         boolean isAuthTypeXOAuth2 = (AuthType.XOAUTH2 == authType);
 
         ConnectionSecurity connectionSecurity = getSelectedSecurity();
@@ -518,7 +519,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
             mPortView.addTextChangedListener(validationTextWatcher);
 
             authType = getSelectedAuthType();
-            isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+            isAuthTypeExternal =authType.isExternalAuth();
 
             connectionSecurity = getSelectedSecurity();
             hasConnectionSecurity = (connectionSecurity != ConnectionSecurity.NONE);
@@ -539,6 +540,11 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 && isAuthTypeExternal
                 && hasConnectionSecurity
                 && hasValidCertificateAlias;
+
+        if (authType == AuthType.EXTERNAL_PLAIN) {
+            hasValidExternalAuthSettings = hasValidExternalAuthSettings
+               && Utility.requiredFieldValid(mPasswordView);
+        }
 
         boolean hasValidXOAuth2Settings = hasValidUserName
                 && isAuthTypeXOAuth2;
@@ -593,6 +599,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     AuthType authType = getSelectedAuthType();
                     if (AuthType.EXTERNAL == authType) {
                         clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                    } else if (AuthType.EXTERNAL_PLAIN == authType) {
+                        clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                        password = mPasswordView.getText().toString();
                     } else {
                         password = mPasswordView.getText().toString();
                     }
@@ -703,7 +712,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         String username = mUsernameView.getText().toString();
         String clientCertificateAlias = null;
         AuthType authType = getSelectedAuthType();
-        if (authType == AuthType.EXTERNAL) {
+        if (authType.isExternalAuth()) {
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         }
         String host = mServerView.getText().toString();

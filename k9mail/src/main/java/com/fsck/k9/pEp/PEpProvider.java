@@ -185,6 +185,8 @@ public interface PEpProvider extends AutoCloseable {
 
     void configPassphrase(String passphrase);
 
+    void configPassphraseForNewKeys(boolean enable, String passphrase);
+
     List<KeyListItem> getBlacklistInfo();
 
     List<KeyListItem> getMasterKeysInfo();

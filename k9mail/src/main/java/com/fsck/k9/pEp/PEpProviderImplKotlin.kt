@@ -67,6 +67,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.config_passive_mode(K9.getPEpPassiveMode())
         configKeyServerLockup(K9.getPEpUseKeyserver())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
+        engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
@@ -247,6 +248,11 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun configPassphrase(passphrase: String) {
         createEngineInstanceIfNeeded()
         engine.config_passphrase(passphrase)
+    }
+
+    override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {
+        createEngineInstanceIfNeeded()
+        engine.config_passphrase_for_new_keys(enable, passphrase)
     }
 
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
@@ -465,27 +471,18 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun acceptSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeAccepted)
     }
 
     override fun rejectSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeRejected)
     }
 
     override fun cancelSync() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-            deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
-        }
+        deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
     }
 
-    private suspend fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = withContext(Dispatchers.IO) {
+    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) {
         engine.deliverHandshakeResult(syncResult, Vector())
     }
 
