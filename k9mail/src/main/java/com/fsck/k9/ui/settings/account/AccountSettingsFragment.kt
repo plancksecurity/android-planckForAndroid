@@ -70,7 +70,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpKeyReset(account)
         initializeNewRingtoneOptions()
         initializeAccountpEpSync(account)
-        initializePgpImportKey(account)
+        initializePgpImportKey()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -174,8 +174,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun initializePgpImportKey(account: Account) {
-        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+    private fun initializePgpImportKey() {
+        val app: K9 = context?.applicationContext as K9
+        if (app.isGrouped) {
+            findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.isEnabled = false
+        } else {
+            findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+        }
     }
 
     private fun onKeyImportClicked() {
