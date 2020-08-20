@@ -648,7 +648,12 @@ class PEpProviderImplKotlin @Inject constructor(
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
-        engine.myself(myId)
+        try {
+            engine.myself(myId)
+        } catch (exception: pEpCannotCreateKey) {
+            Timber.e(exception, "%s %s", TAG, "could not create key in PEpProviderImpl.myself")
+            myId
+        }
     }
 
     override fun loadOutgoingMessageRatingAfterResetTrust(

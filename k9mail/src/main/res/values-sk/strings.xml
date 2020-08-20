@@ -134,9 +134,6 @@
     <string name="message_view_theme_action_dark">Prepnúť na tmavú tému</string>
     <string name="message_view_theme_action_light">Prepnúť na svetlú tému</string>
     <string name="mark_as_unread_action">Označiť ako neprečítané</string>
-    <string name="read_receipt">Potvrdenie o prečítaní</string>
-    <string name="read_receipt_enabled">Potvrdenie o prečítaní bude vyžadované</string>
-    <string name="read_receipt_disabled">Potvrdenie o prečítaní nebude vyžadované</string>
     <string name="add_attachment_action">Pridať prílohu</string>
     <string name="empty_trash_action">Vyprázdniť kôš</string>
     <string name="expunge_action">Vymazať</string>
@@ -466,8 +463,6 @@
     <string name="account_settings_message_format_html">HTML (ponechať obrázky a formátovanie)</string>
     <string name="account_settings_message_format_auto">Automatický</string>
     <string name="account_settings_always_show_cc_bcc_label">Vždy zobraziť kópiu/skrytú kópiu</string>
-    <string name="account_settings_message_read_receipt_label">Potvrdenie o prečítaní</string>
-    <string name="account_settings_message_read_receipt_summary">Vždy požadovať potvrdenie o prečítaní</string>
     <string name="account_settings_quote_style_label">Štýl citácie odpovedi</string>
     <string name="account_settings_quote_style_prefix">Predpona (ako Gmail)</string>
     <string name="account_settings_quote_style_header">Hlavička (ako Outlook)</string>

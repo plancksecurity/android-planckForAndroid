@@ -130,9 +130,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="message_view_theme_action_dark">Dunkles Theme verwenden</string>
     <string name="message_view_theme_action_light">Helles Theme verwenden</string>
     <string name="mark_as_unread_action">Als ungelesen markieren</string>
-    <string name="read_receipt">Lesebestätigung</string>
-    <string name="read_receipt_enabled">Eine Lesebestätigung wird angefordert</string>
-    <string name="read_receipt_disabled">Es wird keine Lesebestätigung angefordert</string>
     <string name="add_attachment_action">Anhang hinzufügen</string>
     <string name="empty_trash_action">Papierkorb leeren</string>
     <string name="expunge_action">Bereinigen</string>
@@ -461,8 +458,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_settings_message_format_html">HTML (Bilder und Formatierungen bleiben erhalten)</string>
     <string name="account_settings_message_format_auto">Automatisch</string>
     <string name="account_settings_always_show_cc_bcc_label">CC/BCC immer anzeigen</string>
-    <string name="account_settings_message_read_receipt_label">Empfangsbestätigung</string>
-    <string name="account_settings_message_read_receipt_summary">Immer eine Empfangsbestätigung anfordern</string>
     <string name="account_settings_quote_style_label">Antwortstil</string>
     <string name="account_settings_quote_style_prefix">Normal (wie in Gmail, Pine)</string>
     <string name="account_settings_quote_style_header">Erweitert (wie in Outlook, Yahoo!, Hotmail)</string>

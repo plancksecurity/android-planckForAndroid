@@ -129,9 +129,6 @@
     <string name="message_view_theme_action_dark">Verander naar donker thema</string>
     <string name="message_view_theme_action_light">Verander naar licht thema</string>
     <string name="mark_as_unread_action">Markeer als ongelezen</string>
-    <string name="read_receipt">Leesbevestiging</string>
-    <string name="read_receipt_enabled">Leesbevestiging wordt aangevraagd</string>
-    <string name="read_receipt_disabled">Zal geen leesbevestiging vragen</string>
     <string name="add_attachment_action">Voeg bijlage toe</string>
     <string name="empty_trash_action">Prullenbak Legen</string>
     <string name="expunge_action">Wissen</string>
@@ -457,8 +454,6 @@
     <string name="account_settings_message_format_html">HTML (plaatjes en formattering blijven behouden)</string>
     <string name="account_settings_message_format_auto">Automatisch</string>
     <string name="account_settings_always_show_cc_bcc_label">Altijd Cc/Bcc laten zien</string>
-    <string name="account_settings_message_read_receipt_label">Leesbevestiging</string>
-    <string name="account_settings_message_read_receipt_summary">Altijd een leesbevestiging vragen</string>
     <string name="account_settings_quote_style_label">Quotestijl bij antwoorden</string>
     <string name="account_settings_quote_style_prefix">Prefix (zoals Gmail, Pine)</string>
     <string name="account_settings_quote_style_header">Header (zoals Outlook, Yahoo!, Hotmail)</string>

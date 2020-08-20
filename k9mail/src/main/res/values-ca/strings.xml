@@ -110,9 +110,6 @@
     <string name="message_view_theme_action_dark">Canvia a la vista fosca</string>
     <string name="message_view_theme_action_light">Canvia a la vista clara</string>
     <string name="mark_as_unread_action">Marca com a no llegit</string>
-    <string name="read_receipt">Llegeix la confirmació de lectura</string>
-    <string name="read_receipt_enabled">Es farà una petició per la confirmació de lectura</string>
-    <string name="read_receipt_disabled">No es faran més peticions per les confirmacions de lectura</string>
     <string name="add_attachment_action">Afegeix adjunt</string>
     <string name="empty_trash_action">Buida paperera</string>
     <string name="expunge_action">Elimina</string>
@@ -402,8 +399,6 @@
     <string name="account_settings_message_format_html">HTML (es conservaran el format i les imatges)</string>
     <string name="account_settings_message_format_auto">Automàtic (text net excepte per missatges HTML)</string>
     <string name="account_settings_always_show_cc_bcc_label">Mostra sempre C/a i C/a ocults</string>
-    <string name="account_settings_message_read_receipt_label">Confirmació de lectura</string>
-    <string name="account_settings_message_read_receipt_summary">Sempre es realitzen peticions de confirmació de lectura.</string>
     <string name="account_settings_quote_style_label">Contesta amb estil cita</string>
     <string name="account_settings_quote_style_prefix">Prefix (com a Gmail, Pine)</string>
     <string name="account_settings_quote_style_header">Capçalera (com a l\'Outlook, Yahoo!, Hotmail)</string>

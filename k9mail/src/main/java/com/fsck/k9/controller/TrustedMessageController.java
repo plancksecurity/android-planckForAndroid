@@ -27,7 +27,8 @@ class TrustedMessageController {
                 && !account.isUntrustedSever()
                 && result.flags == -1
                 && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
-                && !alreadyDecrypted;
+                && !alreadyDecrypted
+                && result.rating.value >= Rating.pEpRatingUnreliable.value;
     }
 
     <T extends Message> boolean shouldAppendMessageInTrustedServer(T message, Account account) {

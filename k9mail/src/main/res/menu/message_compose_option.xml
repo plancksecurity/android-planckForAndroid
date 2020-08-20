@@ -28,27 +28,9 @@
         android:alphabeticShortcut="q"
         android:icon="?attr/iconActionCancel"
         android:title="@string/discard_action" />
-    <item
-        android:id="@+id/read_receipt"
-        android:alphabeticShortcut="r"
-        android:icon="?attr/iconActionRequestReadReceipt"
-        android:title="@string/read_receipt" />
 
     <item
         android:id="@+id/privacyStatus"
         android:title="@string/pep_title_activity_privacy_status"
         app:showAsAction="never" />
-
-    <!--item
-        android:id="@+id/openpgp_inline_enable"
-        android:alphabeticShortcut="i"
-        android:title="@string/enable_inline_pgp"
-        app:showAsAction="never"
-        />
-    <item
-        android:id="@+id/openpgp_inline_disable"
-        android:alphabeticShortcut="i"
-        android:title="@string/disable_inline_pgp"
-        app:showAsAction="never"
-        /-->
 </menu>

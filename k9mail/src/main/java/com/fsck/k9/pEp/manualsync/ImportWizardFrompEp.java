@@ -72,7 +72,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     private SyncDialogReceiver receiver;
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("trustwords", tvTrustwords.getText().toString());
@@ -80,7 +80,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    protected void onRestoreInstanceState(@NotNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
         SyncState state = (SyncState) savedInstanceState.getSerializable("state");
@@ -225,6 +225,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     private void showLangIcon() {
         int resource = resourcesProvider.getAttributeResource(R.attr.iconLanguageGray);
+        assert getToolbar() != null;
         getToolbar().setOverflowIcon(ContextCompat.getDrawable(this, resource));
     }
 
@@ -286,6 +287,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void disableSync() {
+        this.getK9().persistentShutDown();
+        finish();
+    }
+
+    @Override
+    public void leaveDeviceGroup() {
         this.getK9().setpEpSyncEnabled(false);
         finish();
     }

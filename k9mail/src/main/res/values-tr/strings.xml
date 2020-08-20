@@ -104,9 +104,6 @@
     <string name="message_view_theme_action_dark">Koyu temaya çevir</string>
     <string name="message_view_theme_action_light">Aydınlık temaya çevir</string>
     <string name="mark_as_unread_action">Okunmadı Olarak İşaretle</string>
-    <string name="read_receipt">Okundu raporu</string>
-    <string name="read_receipt_enabled">Okundu raporu istenecek</string>
-    <string name="read_receipt_disabled">Okundu raporu istenmeyecek</string>
     <string name="add_attachment_action">Ekle</string>
     <string name="empty_trash_action">Çöpü Boşalt</string>
     <string name="expunge_action">Çıkar</string>
@@ -433,8 +430,6 @@
     <string name="account_settings_message_format_html">HTML (resimler ve biçimler korunacak)</string>
     <string name="account_settings_message_format_auto">Otomatik (HTML mesajına yanıt verilmiyorsa düz metin)</string>
     <string name="account_settings_always_show_cc_bcc_label">Her zaman Bilgi/Gizli göster</string>
-    <string name="account_settings_message_read_receipt_label">Okundu raporu</string>
-    <string name="account_settings_message_read_receipt_summary">Daima bir okuma raporu iste</string>
     <string name="account_settings_quote_style_label">Alıntı stili</string>
     <string name="account_settings_quote_style_prefix">Önek (Gmail, Pine gibi)</string>
     <string name="account_settings_quote_style_header">Başlık (Outlook, Yahoo!, Hotmail gibi)</string>

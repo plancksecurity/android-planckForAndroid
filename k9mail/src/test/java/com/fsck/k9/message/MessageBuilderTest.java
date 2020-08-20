@@ -380,7 +380,6 @@ public class MessageBuilderTest {
                 .setBcc(Arrays.asList(TEST_BCC))
                 .setInReplyTo("inreplyto")
                 .setReferences("references")
-                .setRequestReadReceipt(false)
                 .setIdentity(identity)
                 .setMessageFormat(SimpleMessageFormat.TEXT)
                 .setText(TEST_MESSAGE_TEXT)
