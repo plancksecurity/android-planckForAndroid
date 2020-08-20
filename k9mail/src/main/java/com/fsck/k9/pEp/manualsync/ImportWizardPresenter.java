@@ -158,8 +158,8 @@ public class ImportWizardPresenter implements Presenter {
 
     boolean changeTrustwordsLanguage(int languagePosition) {
         showDebugInfo();
-        final List pEpLanguages = PEpUtils.getPEpLocales();
-        String language = pEpLanguages.get(languagePosition).toString();
+        final List<String> pEpLanguages = PEpUtils.getPEpLocales();
+        String language = pEpLanguages.get(languagePosition);
         changeTrustwords(language);
         return true;
     }
@@ -185,7 +185,7 @@ public class ImportWizardPresenter implements Presenter {
     }
 
     public void leaveDeviceGroup() {
-        view.disableSync();
+        view.leaveDeviceGroup();
     }
 
 
