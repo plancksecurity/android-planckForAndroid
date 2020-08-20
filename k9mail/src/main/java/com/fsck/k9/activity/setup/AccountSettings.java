@@ -286,7 +286,6 @@ public class AccountSettings extends K9PreferenceActivity {
         alwaysShowCcBcc.setChecked(account.isAlwaysShowCcBcc());
 
         messageReadReceipt = (CheckBoxPreference) findPreference(PREFERENCE_MESSAGE_READ_RECEIPT);
-        messageReadReceipt.setChecked(account.isMessageReadReceiptAlways());
 
         accountQuotePrefix = (EditTextPreference) findPreference(PREFERENCE_QUOTE_PREFIX);
         accountQuotePrefix.setSummary(account.getQuotePrefix());
@@ -877,7 +876,6 @@ public class AccountSettings extends K9PreferenceActivity {
         //account.setSearchableFolders(Searchable.valueOf(searchableFolders.getValue()));
         account.setMessageFormat(MessageFormat.valueOf(messageFormat.getValue()));
         account.setAlwaysShowCcBcc(alwaysShowCcBcc.isChecked());
-        account.setMessageReadReceipt(messageReadReceipt.isChecked());
         account.setQuoteStyle(QuoteStyle.valueOf(quoteStyle.getValue()));
         account.setQuotePrefix(accountQuotePrefix.getText());
         account.setDefaultQuotedTextShown(accountDefaultQuotedTextShown.isChecked());

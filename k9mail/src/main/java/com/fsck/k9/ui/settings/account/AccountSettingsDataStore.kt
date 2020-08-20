@@ -24,7 +24,6 @@ class AccountSettingsDataStore(
             "account_sync_remote_deletetions" -> account.syncRemoteDeletions()
             "push_poll_on_connect" -> account.isPushPollOnConnect
             "always_show_cc_bcc" -> account.isAlwaysShowCcBcc
-            "message_read_receipt" -> account.isMessageReadReceiptAlways
             "default_quoted_text_shown" -> account.isDefaultQuotedTextShown
             "reply_after_quote" -> account.isReplyAfterQuote
             "strip_signature" -> account.isStripSignature
@@ -56,7 +55,6 @@ class AccountSettingsDataStore(
             "account_sync_remote_deletetions" -> account.setSyncRemoteDeletions(value)
             "push_poll_on_connect" -> account.isPushPollOnConnect = value
             "always_show_cc_bcc" -> account.isAlwaysShowCcBcc = value
-            "message_read_receipt" -> account.setMessageReadReceipt(value)
             "default_quoted_text_shown" -> account.isDefaultQuotedTextShown = value
             "reply_after_quote" -> account.isReplyAfterQuote = value
             "strip_signature" -> account.isStripSignature = value
