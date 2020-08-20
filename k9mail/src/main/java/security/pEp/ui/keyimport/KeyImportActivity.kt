@@ -13,7 +13,7 @@ import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
-import kotlinx.android.synthetic.main.key_import_progress_dialog.*
+import kotlinx.android.synthetic.main.import_key_progress.*
 import javax.inject.Inject
 
 

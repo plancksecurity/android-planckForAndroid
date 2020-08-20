@@ -98,7 +98,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include layout="@layout/key_import_progress_dialog"
+    <include layout="@layout/import_key_progress"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/confirmationLayout"
