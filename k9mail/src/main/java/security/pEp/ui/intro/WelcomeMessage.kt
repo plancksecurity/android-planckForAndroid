@@ -24,7 +24,6 @@ import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.*
 import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.permissions.PermissionsActivity
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import javax.inject.Inject
 
 
@@ -93,10 +92,6 @@ class WelcomeMessage : AppIntro() {
                 AccountSetupBasics.actionNewAccount(this)
             }
         finish()
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
     }
 
 }

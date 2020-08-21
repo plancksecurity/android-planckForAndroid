@@ -4,10 +4,10 @@ buildscript {
                 'compileSdk'           : 29,
                 'targetSdk'            : 29,
                 'minSdk'               : 21,
-                'versionCode'          : 59,
+                'versionCode'          : 61,
                 'pEpEngineRevision'    : 'Release_2.1.0-RC26',
                 'pEpJNIAdapterRevision': 'Release_2.1.0-RC12',
-                'versionName'          : '1.1.100',
+                'versionName'          : '1.1.102',
                 'libpEpAdapterRevision': 'Release_2.1.0-RC23'
         ]
 
@@ -34,7 +34,6 @@ buildscript {
                 'showCaseView'       : '5.4.1',
                 'moshi'              : '1.2.0',
                 'butterKnife'        : '7.0.1',
-                'callygraphy'        : '2.1.0',
                 'circleImageView'    : '2.1.0',
                 'renderers'          : '3.5.0',
                 'acra'               : '4.6.1',

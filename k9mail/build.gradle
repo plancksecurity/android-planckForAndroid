@@ -72,8 +72,6 @@ dependencies {
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}"
-    implementation "uk.co.chrisjenx:calligraphy:${versions.callygraphy}"
-    //implementation "com.klinkerapps:floating-tutorial:1.0.4"
     implementation "androidx.preference:preference:${versions.androidX}"
     implementation "com.takisoft.preferencex:preferencex:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-ringtone:${versions.preferencesFix}"
