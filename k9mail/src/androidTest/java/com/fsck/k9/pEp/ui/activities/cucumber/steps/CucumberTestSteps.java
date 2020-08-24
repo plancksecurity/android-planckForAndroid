@@ -1781,17 +1781,6 @@ public class CucumberTestSteps {
         device.waitForIdle();
     }
 
-    @And("^I do next thing$")
-    public void iDoNextThing() {
-        timeRequiredForThisMethod(5);
-        onView(withId(R.id.accounts_list)).perform(ViewActions.click());
-        device.waitForIdle();
-        try{
-            Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
-        }catch (AssertionFailedError exception){
-            Timber.e("Theme is not light");
-        }
-    }
     @Then("^I wait (\\d+) seconds$")
     public void I_wait_seconds(int seconds) {
         timeRequiredForThisMethod(seconds);
