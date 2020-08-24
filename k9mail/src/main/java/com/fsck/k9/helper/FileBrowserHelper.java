@@ -134,7 +134,7 @@ public class FileBrowserHelper {
 
         //if (listIndex == PICK_DIRECTORY_INTENTS.length) {
             //No Filebrowser is installed => show a fallback textdialog
-            String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
+            String externalStoragePath = c.getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getPath();
             Intent intent = new Intent(c.getContext(), FilePickerActivity.class);
             intent.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
             intent.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
