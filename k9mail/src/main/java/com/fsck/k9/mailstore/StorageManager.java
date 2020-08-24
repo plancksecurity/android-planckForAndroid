@@ -341,7 +341,7 @@ public class StorageManager {
 
         @Override
         public void init(Context context) {
-            mRoot = Environment.getExternalStorageDirectory();
+            mRoot = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
             mApplicationDirectory = new File(new File(new File(new File(mRoot, "Android"), "data"),
                                              context.getPackageName()), "files");
         }
@@ -449,7 +449,7 @@ public class StorageManager {
 
         @Override
         protected File computeRoot(Context context) {
-            return Environment.getExternalStorageDirectory(); // was: new
+            return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS); // was: new
             // File("/sdcard")
         }
     }

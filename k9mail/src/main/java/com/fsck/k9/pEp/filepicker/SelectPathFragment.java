@@ -42,7 +42,7 @@ public class SelectPathFragment extends Fragment {
     public void onResume() {
         super.onResume();
         toolbar.setTitle(R.string.settings_attachment_default_path);
-        String externalStoragePath = Environment.getExternalStorageDirectory().getPath();
+        String externalStoragePath = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getPath();
         String secondaryStorage = System.getenv(SECONDARY_STORAGE);
         pathsAdapter =
                 new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1);

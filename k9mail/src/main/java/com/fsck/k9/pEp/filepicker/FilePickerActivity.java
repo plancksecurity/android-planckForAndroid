@@ -20,7 +20,7 @@ public class FilePickerActivity extends AbstractFilePickerActivity<File> {
             final boolean singleClick) {
         AbstractFilePickerFragment<File> fragment = new FilePickerFragment();
         // startPath is allowed to be null. In that case, default folder should be SD-card and not "/"
-        fragment.setArgs(startPath != null ? startPath : Environment.getExternalStorageDirectory().getPath(),
+        fragment.setArgs(startPath != null ? startPath : getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getPath(),
                 mode, allowMultiple, allowCreateDir, allowExistingFile, singleClick);
         return fragment;
     }
