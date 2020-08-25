@@ -1936,7 +1936,6 @@ public class TestUtils {
                 }
             }
         }
-        waitForIdle();
     }
 
     public void clickTextOnScreen(String text) {
