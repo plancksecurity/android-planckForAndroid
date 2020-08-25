@@ -276,6 +276,7 @@
 
 
     <string name="pgp_key_import_title">PGP Key import from filesystem</string>
+    <string name="pgp_key_import_disabled_summary">This device is part of a device group, cannot import key</string>
     <string name="pgp_key_import_dialog_title">PGP Key import</string>
     <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
