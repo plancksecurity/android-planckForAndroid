@@ -1971,14 +1971,14 @@ public class TestUtils {
         }
     }
 
-    public void selectButtonFromScreen(int resource) {
+    public void selectButtonFromScreen(String text) {
         BySelector selector = By.clazz("android.widget.Button");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getText().equals(resources.getString(resource).toUpperCase())) {
+                    if (object.getText().equals(text)) {
                         try {
-                            while (object.getText().equals(resources.getString(resource).toUpperCase())) {
+                            while (object.getText().equals(text)) {
                                 device.waitForIdle();
                                 Espresso.onIdle();
                                 object.longClick();
@@ -2002,6 +2002,11 @@ public class TestUtils {
             }
         }
     }
+
+    public void selectButtonFromScreen(int resource) {
+        selectButtonFromScreen(resources.getString(resource).toUpperCase());
+    }
+
 
     void doWait(String viewId) {
         UiObject2 waitForView = device
