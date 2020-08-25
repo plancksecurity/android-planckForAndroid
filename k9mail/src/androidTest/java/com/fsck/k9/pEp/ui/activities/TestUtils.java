@@ -944,6 +944,7 @@ public class TestUtils {
         if (exists(onView(withId(R.id.message_list)))) {
             getMessageListSize();
         }
+        waitForIdle();
     }
 
     private void goToTheInbox (int accountToSelect){
@@ -1935,6 +1936,7 @@ public class TestUtils {
                 }
             }
         }
+        waitForIdle();
     }
 
     public void clickTextOnScreen(String text) {
@@ -1979,24 +1981,19 @@ public class TestUtils {
                     if (object.getText().equals(text)) {
                         try {
                             while (object.getText().equals(text)) {
-                                device.waitForIdle();
-                                Espresso.onIdle();
+                                waitForIdle();
                                 object.longClick();
-                                device.waitForIdle();
-                                Espresso.onIdle();
+                                waitForIdle();
                             }
-                            device.waitForIdle();
-                            Espresso.onIdle();
+                            waitForIdle();
                             return;
                         } catch (Exception ex1) {
-                            device.waitForIdle();
-                            Espresso.onIdle();
+                            waitForIdle();
                             return;
                         }
                     }
                 } catch (Exception ex) {
-                    device.waitForIdle();
-                    Espresso.onIdle();
+                    waitForIdle();
                     Timber.i("Cannot find button on screen: " + ex);
                 }
             }
