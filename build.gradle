@@ -2,12 +2,12 @@ buildscript {
     ext {
         buildConfig = [
                 'compileSdk'           : 29,
-                'targetSdk'            : 29,
+                'targetSdk'            : 28,
                 'minSdk'               : 21,
-                'versionCode'          : 61,
+                'versionCode'          : 62,
                 'pEpEngineRevision'    : 'Release_2.1.0-RC26',
                 'pEpJNIAdapterRevision': 'Release_2.1.0-RC12',
-                'versionName'          : '1.1.102',
+                'versionName'          : '1.1.103',
                 'libpEpAdapterRevision': 'Release_2.1.0-RC23'
         ]
 
