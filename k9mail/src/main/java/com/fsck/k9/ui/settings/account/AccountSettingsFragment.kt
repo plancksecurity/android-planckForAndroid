@@ -176,11 +176,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializePgpImportKey() {
         val app: K9 = context?.applicationContext as K9
-        if (app.isGrouped) {
-            findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.isEnabled = false
-            findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.summary = getString(R.string.pgp_key_import_disabled_summary)
-        } else {
-            findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.apply {
+            if (app.isGrouped) {
+                isEnabled = false
+                summary = getString(R.string.pgp_key_import_disabled_summary)
+            } else {
+                onClick(::onKeyImportClicked)
+            }
         }
     }
 
