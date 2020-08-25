@@ -935,7 +935,7 @@ public class TestUtils {
         }
     }
 
-    private void selectAccountSettingsFromList (int accountToSelect) {
+    public void selectAccountSettingsFromList (int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
             swipeUpScreen();
         }
