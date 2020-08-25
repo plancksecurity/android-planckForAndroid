@@ -257,7 +257,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
         try {
             val address = Address(account.email, account.name)
-            var id = PEpUtils.createIdentity(address, context);
+            var id = PEpUtils.createIdentity(address, context)
             id = pEpProvider.updateIdentity(id)
             pEpProvider.keyResetIdentity(id, null)
             true
@@ -334,10 +334,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun onKeyImport(uri: Uri?, currentAccount: String) {
-        // TODO
-    }
-
     private fun getAccount(): Account {
         return viewModel.getAccountBlocking(accountUuid)
     }
@@ -383,6 +379,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
         fun create(accountUuid: String, rootKey: String?) = AccountSettingsFragment().withArguments(
                 ARG_ACCOUNT_UUID to accountUuid,
-                PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to rootKey)
+                ARG_PREFERENCE_ROOT to rootKey)
     }
 }
