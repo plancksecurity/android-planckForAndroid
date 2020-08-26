@@ -50,9 +50,9 @@ public class ManageIdentities extends ChooseIdentity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.manage_identities_option, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
+        // getMenuInflater().inflate(R.menu.manage_identities_option, menu);
+        // return true;
     }
 
     @Override
