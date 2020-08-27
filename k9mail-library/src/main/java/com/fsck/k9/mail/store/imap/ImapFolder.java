@@ -29,6 +29,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessageRetrievalListener;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.EOLConvertingOutputStream;
 import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
@@ -111,6 +112,10 @@ class ImapFolder extends Folder<ImapMessage> {
             prefixedName = store.getCombinedPrefix();
         }
 
+        //P4A-1098 PATCH
+        if (prefixedName.equals("") && name.equals(Store.PEP_FOLDER)) {
+            prefixedName = Store.INBOX + store.getPathDelimiter();
+        }
         prefixedName += name;
 
         return prefixedName;

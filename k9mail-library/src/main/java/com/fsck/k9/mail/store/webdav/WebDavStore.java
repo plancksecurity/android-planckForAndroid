@@ -995,4 +995,10 @@ public class WebDavStore extends RemoteStore {
             }
         }
     }
+
+    @Override
+    public String getPathDelimiter() {
+        //WebDav Is not maintained anymore
+        return null;
+    }
 }

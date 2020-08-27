@@ -16,6 +16,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -55,11 +56,6 @@ import static com.fsck.k9.Preferences.getEnumStringPref;
  * and delete itself given a Preferences to work with. Each account is defined by a UUID.
  */
 public class Account implements BaseAccount, StoreConfig {
-    /**
-     * Default value for the inbox folder (never changes for POP3 and IMAP)
-     */
-    private static final String INBOX = "INBOX";
-    private static final String PEP_FOLDER = "pEp";
 
     /**
      * This local folder is used to store messages to be sent.
@@ -319,8 +315,8 @@ public class Account implements BaseAccount, StoreConfig {
         showPictures = ShowPictures.NEVER;
         isSignatureBeforeQuotedText = false;
         expungePolicy = Expunge.EXPUNGE_IMMEDIATELY;
-        autoExpandFolderName = INBOX;
-        inboxFolderName = INBOX;
+        autoExpandFolderName = Store.INBOX;
+        inboxFolderName = Store.INBOX;
         maxPushFolders = 10;
         chipColor = pickColor(context);
         goToUnreadMessageSearch = false;
@@ -421,7 +417,7 @@ public class Account implements BaseAccount, StoreConfig {
         notifyContactsMailOnly = storage.getBoolean(accountUuid + ".notifyContactsMailOnly", false);
         notifySync = storage.getBoolean(accountUuid + ".notifyMailCheck", false);
         deletePolicy =  DeletePolicy.fromInt(storage.getInt(accountUuid + ".deletePolicy", DeletePolicy.NEVER.setting));
-        inboxFolderName = storage.getString(accountUuid + ".inboxFolderName", INBOX);
+        inboxFolderName = storage.getString(accountUuid + ".inboxFolderName", Store.INBOX);
         draftsFolderName = storage.getString(accountUuid + ".draftsFolderName", "Drafts");
         sentFolderName = storage.getString(accountUuid + ".sentFolderName", "Sent");
         trashFolderName = storage.getString(accountUuid + ".trashFolderName", "Trash");
@@ -451,7 +447,7 @@ public class Account implements BaseAccount, StoreConfig {
             compressionMap.put(type, useCompression);
         }
 
-        autoExpandFolderName = storage.getString(accountUuid  + ".autoExpandFolderName", INBOX);
+        autoExpandFolderName = storage.getString(accountUuid  + ".autoExpandFolderName", Store.INBOX);
 
         accountNumber = storage.getInt(accountUuid + ".accountNumber", 0);
 
@@ -1057,14 +1053,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public String getCurrentpEpSyncFolderName() {
         if (K9.isUsingpEpSyncFolder()) {
-            return PEP_FOLDER;
+            return Store.PEP_FOLDER;
         } else {
             return inboxFolderName;
         }
     }
 
     public String getDefaultpEpSyncFolderName() {
-        return PEP_FOLDER;
+        return Store.PEP_FOLDER;
     }
 
     public synchronized String getDraftsFolderName() {
