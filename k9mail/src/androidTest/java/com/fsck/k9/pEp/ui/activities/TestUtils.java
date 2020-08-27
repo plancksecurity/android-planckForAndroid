@@ -1972,6 +1972,25 @@ public class TestUtils {
         }
     }
 
+    public void waitForKeyImport() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        boolean isFingerprint = false;
+        while (true) {
+            waitForIdle();
+            try {
+                for (UiObject2 object : device.findObjects(selector)) {
+                    waitForIdle();
+                    if (object.getText().equals(resources.getString(stringToID("key_import_success")))) {
+                        waitForIdle();
+                        return;
+                    }
+                }
+            } catch (Exception noImport) {
+                Timber.i("Key not imported yet");
+            }
+        }
+    }
+
     public void selectButtonFromScreen(String text) {
         BySelector selector = By.clazz("android.widget.Button");
         while (true) {
