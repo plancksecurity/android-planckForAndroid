@@ -4821,9 +4821,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     @WorkerThread
-    private void consumeMessages(Account account) throws MessagingException {
+    private void consumeMessages(Account account) {
         Timber.e("Delete pEp-auto-consume messages for account %s::%s", account.getName(), account.getEmail());
-        List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
+        List<MessageReference> refs = null;
+        try {
+            refs = account.getLocalStore().getAutoConsumeMessageReferences();
+        } catch (MessagingException e) {
+           Timber.e("Could not access to store to consume pEpEngine consumable message");
+           return;
+        }
 
         actOnMessagesGroupedByAccountAndFolder(
                 refs, (account1, messageFolder, accountMessages) -> {
