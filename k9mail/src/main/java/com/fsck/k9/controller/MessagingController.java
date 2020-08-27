@@ -4655,8 +4655,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
         // Fetch the message back from the store.  This is the Message that's returned to the caller.
         localMessage = localFolder.getMessage(message.getUid());
 
-        PendingAppend command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
-        processPendingAppend(command, account);
+            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+            queuePendingCommand(account, command);
+            processPendingCommands(account);
 
         return localMessage;
     }
