@@ -240,6 +240,12 @@ public class Pop3Store extends RemoteStore {
     }
 
     @Override
+    public String getPathDelimiter() {
+        //POP3 Is not maintained anymore
+        return null;
+    }
+
+    @Override
     public Folder getFolder(String name) {
         Folder folder = mFolders.get(name);
         if (folder == null) {
