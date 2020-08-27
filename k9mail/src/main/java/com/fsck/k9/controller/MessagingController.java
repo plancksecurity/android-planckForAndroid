@@ -4644,27 +4644,20 @@ public class MessagingController implements Sync.MessageToSendCallback {
         pEpProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
-    private synchronized Message appendToInboxpEpSyncMessage(final Account account, final Message message) {
+    private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
         Message localMessage = null;
-        try {
-            LocalStore localStore = account.getLocalStore();
-            LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
-            localFolder.open(Folder.OPEN_MODE_RW);
+        LocalStore localStore = account.getLocalStore();
+        LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
+        localFolder.open(Folder.OPEN_MODE_RW);
 
+        // Save the message to the store.
+        localFolder.appendMessages(Collections.singletonList(message));
+        // Fetch the message back from the store.  This is the Message that's returned to the caller.
+        localMessage = localFolder.getMessage(message.getUid());
 
-            // Save the message to the store.
-            localFolder.appendMessages(Collections.singletonList(message));
-            // Fetch the message back from the store.  This is the Message that's returned to the caller.
-            localMessage = localFolder.getMessage(message.getUid());
+        PendingAppend command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+        processPendingAppend(command, account);
 
-            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
-            queuePendingCommand(account, command);
-            processPendingCommands(account);
-
-
-        } catch (MessagingException e) {
-            Timber.e(e, "Unable to save message as draft.");
-        }
         return localMessage;
     }
 
@@ -4697,17 +4690,19 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
                 if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
-                        Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
-                        appendToInboxpEpSyncMessage(account, message);
-                        Timber.e("%s %s", "pEpEngine", "Finish Append: " + message.getMessageId());
+                        try {
+                            Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
+                            appendpEpSyncMessage(account, message);
+                            Timber.e("%s %s", "pEpEngine", "Finish Append: " + message.getMessageId());
+                        } catch (MessagingException e) {
+                            Timber.e(e, "%s %s", "pEpEngine", "Could not append sync message");
 
+                            sendpEpSyncMessage(fromAccount, message);
+                        }
                     }
 
                 } else {
-                    Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
                     sendpEpSyncMessage(fromAccount, message);
-                    Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
-
                 }
 
                 checkpEpSyncMailForAccount(fromAccount);
@@ -4736,8 +4731,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
+        Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
         Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
         sendMessage(transport, message);
+        Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
     }
 
     Account checkAccount(String address, Account account) {
@@ -4824,24 +4821,33 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     @WorkerThread
-    private void consumeMessages(Account account) throws MessagingException {
+    private void consumeMessages(Account account) {
         Timber.e("Delete pEp-auto-consume messages for account %s::%s", account.getName(), account.getEmail());
-        List<MessageReference> refs = account.getLocalStore().getAutoConsumeMessageReferences();
+        List<MessageReference> refs = null;
+        try {
+            refs = account.getLocalStore().getAutoConsumeMessageReferences();
+        } catch (MessagingException e) {
+           Timber.e("Could not access to store to consume pEpEngine consumable message");
+           return;
+        }
 
         actOnMessagesGroupedByAccountAndFolder(
                 refs, (account1, messageFolder, accountMessages) -> {
-                        try {
-                        Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
+                    try {
                         messageFolder.delete(accountMessages, null);
-                        remoteFolder.delete(accountMessages, null);
-                        remoteFolder.expunge();
                         messageFolder.expunge();
                     } catch (MessagingException e) {
-                        Timber.e(e, "Could not clean pEpEngine sync message");
+                        Timber.e(e, "Could not clean pEpEngine sync local message");
                     }
 
+                    try {
+                        Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
+                        remoteFolder.delete(accountMessages, null);
+                        remoteFolder.expunge();
+                    } catch (MessagingException e) {
+                        Timber.e(e, "Could not clean pEpEngine sync remote message");
+                    }
                 });
-
     }
 
     //FIXME: check if really needed

@@ -407,6 +407,11 @@ public class ImapStore extends RemoteStore {
         return new ImapPusher(this, receiver);
     }
 
+    @Override
+    public String getPathDelimiter() {
+        return pathDelimiter;
+    }
+
 
     private class StoreImapSettings implements ImapSettings {
         @Override
