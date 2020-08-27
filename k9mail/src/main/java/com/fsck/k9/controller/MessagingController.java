@@ -4298,6 +4298,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public void deleteAccount(Account account) {
         notificationController.clearNewMailNotifications(account);
         memorizingMessagingListener.removeAccount(account);
+        Address address = new Address(account.getEmail());
+        pEpProvider.setIdentityFlag(PEpUtils.createIdentity(address, context), false);
     }
 
     /**
