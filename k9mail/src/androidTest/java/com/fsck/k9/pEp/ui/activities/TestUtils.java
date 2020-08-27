@@ -1972,6 +1972,21 @@ public class TestUtils {
         }
     }
 
+    public String getFingerprint() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        boolean isFingerprint = false;
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                if (isFingerprint) {
+                    return object.getText().trim().replace("\n", "").replace(" ", "");
+                }
+                if (object.getText().equals(resources.getString(stringToID("pgp_key_import_confirmation_fingerprint_label")))) {
+                    isFingerprint = true;
+                }
+            }
+        }
+    }
+
     public void waitForKeyImport() {
         BySelector selector = By.clazz("android.widget.TextView");
         boolean isFingerprint = false;
