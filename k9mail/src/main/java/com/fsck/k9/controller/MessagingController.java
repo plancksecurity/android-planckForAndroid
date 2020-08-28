@@ -2016,6 +2016,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     Timber.d("Done processing pending command '%s'", command);
                 } catch (MessagingException me) {
+                     if (command instanceof PendingAppend
+                            && ((PendingAppend) command).folder.equalsIgnoreCase("pEp")) {
+                        Timber.e(me, "pEpEngine append to pEp folder failed");
+                    }
+
                     if (me.isPermanentFailure()) {
                         Timber.e("Failure of command '%s' was permanent, removing command from queue", command);
                         localStore.removePendingCommand(processingCommand);
@@ -2050,6 +2055,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * TODO update the local message UID instead of deleting it
      */
     void processPendingAppend(PendingAppend command, Account account) throws MessagingException {
+        if (command.folder.equalsIgnoreCase("pEp")) {
+            Timber.e("pEpEngine start pEp folder append");
+        }
         Folder remoteFolder = null;
         LocalFolder localFolder = null;
         try {
@@ -2069,7 +2077,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
             remoteFolder = remoteStore.getFolder(folder);
             if (!remoteFolder.exists()) {
                 if (!remoteFolder.create(FolderType.HOLDS_MESSAGES)) {
+                    if (folder.equalsIgnoreCase("pEp")) {
+                        Timber.e("pEpEngine could not create pEp sync folder");
+                    }
                     return;
+                } else if (folder.equalsIgnoreCase(account.getDefaultpEpSyncFolderName())) {
+                    //Workarround try for P4A-1103
+                    Thread.sleep(5000);
                 }
             }
             remoteFolder.open(Folder.OPEN_MODE_RW);
@@ -2174,9 +2188,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                 }
             }
+            if (command.folder.equalsIgnoreCase("pEp")) {
+                Timber.e("pEpEngine finish pEp folder append success");
+            }
+        } catch (InterruptedException e) {
+            Timber.e(e, "pEp Append failed");
         } finally {
             closeFolder(remoteFolder);
             closeFolder(localFolder);
+        }
+        if (command.folder.equalsIgnoreCase("pEp")){
+            Timber.e("pEpEngine finish pEp folder append");
         }
     }
 
@@ -4655,9 +4677,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
         // Fetch the message back from the store.  This is the Message that's returned to the caller.
         localMessage = localFolder.getMessage(message.getUid());
 
-            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
-            queuePendingCommand(account, command);
-            processPendingCommands(account);
+        PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+        queuePendingCommand(account, command);
+        processPendingCommands(account);
 
         return localMessage;
     }
@@ -4677,7 +4699,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
 
                 if (message == null) {
-                    Timber.e("messageToSend: Cannot convert pEpMessage into K9Message");
+                    Timber.e("pEpEngine  messageToSend: Cannot convert pEpMessage into K9Message");
                     return;
                 }
 
@@ -4709,7 +4731,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 checkpEpSyncMailForAccount(fromAccount);
 
             } catch (pEpException | MessagingException e) {
-                Timber.e(e, "messageToSend: Cannot send message");
+                Timber.e(e, "pEpEngine messageToSend: Cannot send message");
             }
 
         });
@@ -4717,12 +4739,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private List<Account> getAccountsToAppend(final Set<Address> recipients) {
-
+        //Only appends to pEpFolder not to Inbox.
         List <Account> result = new ArrayList<>();
 
         for (Address recipient : recipients) {
             Account account = loadAddressAccount(recipient.getAddress());
-            if (account == null) {
+            if (account == null
+                    || account.getInboxFolderName().equalsIgnoreCase(account.getCurrentpEpSyncFolderName())) {
                 return null;
             } else {
                 result.add(account);
