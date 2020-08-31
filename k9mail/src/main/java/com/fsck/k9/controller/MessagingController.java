@@ -99,6 +99,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpProviderImpl;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotCreateSyncFolder;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
@@ -2077,10 +2078,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
             remoteFolder = remoteStore.getFolder(folder);
             if (!remoteFolder.exists()) {
                 if (!remoteFolder.create(FolderType.HOLDS_MESSAGES)) {
-                    if (folder.equalsIgnoreCase("pEp")) {
+                    if (folder.equalsIgnoreCase(account.getDefaultpEpSyncFolderName())) {
                         Timber.e("pEpEngine could not create pEp sync folder");
+                        throw new AppCannotCreateSyncFolder();
                     }
-                    return;
                 } else if (folder.equalsIgnoreCase(account.getDefaultpEpSyncFolderName())) {
                     //Workarround try for P4A-1103
                     Thread.sleep(5000);
@@ -4667,19 +4668,27 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
-        Message localMessage = null;
-        LocalStore localStore = account.getLocalStore();
-        LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
-        localFolder.open(Folder.OPEN_MODE_RW);
+            Message localMessage = null;
+            LocalFolder localFolder = null;
+        try {
+            LocalStore localStore = account.getLocalStore();
+            localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
+            localFolder.open(Folder.OPEN_MODE_RW);
 
-        // Save the message to the store.
-        localFolder.appendMessages(Collections.singletonList(message));
-        // Fetch the message back from the store.  This is the Message that's returned to the caller.
-        localMessage = localFolder.getMessage(message.getUid());
+            // Save the message to the store.
+            localFolder.appendMessages(Collections.singletonList(message));
+            // Fetch the message back from the store.  This is the Message that's returned to the caller.
+            localMessage = localFolder.getMessage(message.getUid());
 
-        PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
-        queuePendingCommand(account, command);
-        processPendingCommands(account);
+            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+            queuePendingCommand(account, command);
+            processPendingCommands(account);
+        } catch (AppCannotCreateSyncFolder e) {
+            Timber.e(e, "%s %s", "pEpEngine", "Could not append sync message");
+            sendpEpSyncMessage(account, message);
+        } finally {
+            closeFolder(localFolder);
+        }
 
         return localMessage;
     }
@@ -4696,6 +4705,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     return;
                 }
 
+                listFoldersSynchronous(fromAccount, true, null);
                 Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
 
                 if (message == null) {
@@ -4713,15 +4723,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 List<Account> accountsToAppend = getAccountsToAppend(recipients);
                 if (accountsToAppend != null) {
                     for (Account account : accountsToAppend) {
-                        try {
-                            Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
-                            appendpEpSyncMessage(account, message);
-                            Timber.e("%s %s", "pEpEngine", "Finish Append: " + message.getMessageId());
-                        } catch (MessagingException e) {
-                            Timber.e(e, "%s %s", "pEpEngine", "Could not append sync message");
-
-                            sendpEpSyncMessage(fromAccount, message);
-                        }
+                        Timber.e("%s %s", "pEpEngine", "Start Append: " + message.getMessageId());
+                        appendpEpSyncMessage(account, message);
+                        Timber.e("%s %s", "pEpEngine", "Finish Append: " + message.getMessageId());
                     }
 
                 } else {
@@ -4846,32 +4850,37 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @WorkerThread
     private void consumeMessages(Account account) {
-        Timber.e("Delete pEp-auto-consume messages for account %s::%s", account.getName(), account.getEmail());
-        List<MessageReference> refs = null;
         try {
-            refs = account.getLocalStore().getAutoConsumeMessageReferences();
-        } catch (MessagingException e) {
-           Timber.e("Could not access to store to consume pEpEngine consumable message");
-           return;
+            Timber.i("Delete pEp-auto-consume messages for account %s::%s", account.getName(), account.getEmail());
+            List<MessageReference> refs = null;
+            try {
+                refs = account.getLocalStore().getAutoConsumeMessageReferences();
+            } catch (MessagingException e) {
+                Timber.e("Could not access to store to consume pEpEngine consumable message");
+                return;
+            }
+
+            actOnMessagesGroupedByAccountAndFolder(
+                    refs, (account1, messageFolder, accountMessages) -> {
+                        try {
+                            messageFolder.delete(accountMessages, null);
+                            messageFolder.expunge();
+                        } catch (MessagingException e) {
+                            Timber.e(e, "Could not clean pEpEngine sync local message");
+                        }
+
+                        try {
+                            Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
+                            remoteFolder.delete(accountMessages, null);
+                            remoteFolder.expunge();
+                        } catch (MessagingException e) {
+                            Timber.e(e, "Could not clean pEpEngine sync remote message");
+                        }
+                    });
+
+        } catch (Throwable t) {
+            Timber.e(t, "Ignoring exception during pEp management messages deletion");
         }
-
-        actOnMessagesGroupedByAccountAndFolder(
-                refs, (account1, messageFolder, accountMessages) -> {
-                    try {
-                        messageFolder.delete(accountMessages, null);
-                        messageFolder.expunge();
-                    } catch (MessagingException e) {
-                        Timber.e(e, "Could not clean pEpEngine sync local message");
-                    }
-
-                    try {
-                        Folder<? extends Message> remoteFolder = account.getRemoteStore().getFolder(messageFolder.getName());
-                        remoteFolder.delete(accountMessages, null);
-                        remoteFolder.expunge();
-                    } catch (MessagingException e) {
-                        Timber.e(e, "Could not clean pEpEngine sync remote message");
-                    }
-                });
     }
 
     //FIXME: check if really needed
