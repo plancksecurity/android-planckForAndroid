@@ -70,7 +70,7 @@ class ImapFolder extends Folder<ImapMessage> {
     private final FolderNameCodec folderNameCodec;
     private final String name;
     private int mode;
-    private volatile boolean exists = false;
+    private volatile boolean exists;
     private boolean inSearch = false;
     private boolean canCreateKeywords = false;
 
@@ -114,7 +114,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
         //P4A-1098 PATCH
         if (prefixedName.equals("") && name.equals(Store.PEP_FOLDER)) {
-            prefixedName = store.getStoreConfig().getInboxFolderName() + store.getPathDelimiter();
+            prefixedName = Store.INBOX + store.getPathDelimiter();
         }
         prefixedName += name;
 
@@ -258,7 +258,7 @@ class ImapFolder extends Folder<ImapMessage> {
 
     @Override
     public boolean exists() throws MessagingException {
-        if (exists && !name.equalsIgnoreCase(Store.PEP_FOLDER)) {
+        if (exists) {
             return true;
         }
 
@@ -315,9 +315,8 @@ class ImapFolder extends Folder<ImapMessage> {
             String encodedFolderName = folderNameCodec.encode(getPrefixedName());
             String escapedFolderName = ImapUtility.encodeString(encodedFolderName);
             connection.executeSimpleCommand(String.format("CREATE %s", escapedFolderName));
-            if (!name.equalsIgnoreCase(Store.PEP_FOLDER)) {
-                connection.executeSimpleCommand(String.format("SUBSCRIBE %s", escapedFolderName));
-            }
+            connection.executeSimpleCommand(String.format("SUBSCRIBE %s", escapedFolderName));
+
             return true;
         } catch (NegativeImapResponseException e) {
             return false;
