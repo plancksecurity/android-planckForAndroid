@@ -4682,13 +4682,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
             // Fetch the message back from the store.  This is the Message that's returned to the caller.
             localMessage = localFolder.getMessage(message.getUid());
 
-            PendingCommand command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
+            PendingAppend command = PendingAppend.create(account.getCurrentpEpSyncFolderName(), localMessage.getUid());
             queuePendingCommand(account, command);
-            processPendingCommands(account);
+            processPendingAppend(command, account);
         } catch (AppCannotCreateSyncFolder e) {
             Timber.e(e, "%s %s", "pEpEngine", "Could not append sync message");
             sendpEpSyncMessage(account, message);
-        } finally {
+        } catch (Throwable t) {
+            Timber.i(t, "Ignored exception");
+        }finally {
             closeFolder(localFolder);
         }
 
