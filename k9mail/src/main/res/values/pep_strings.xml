@@ -46,8 +46,8 @@
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>
     <string name="pep_reset_trust">Stop trusting</string>
     <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
-    <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
-    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
+    <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue\?</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Confirm</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
     <string name="pep_title_activity_privacy_status">Privacy Status</string>
@@ -70,7 +70,7 @@
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store messages unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
     <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
@@ -96,14 +96,14 @@
     <string name="basic_options">Basic options</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
     <string name="pep_keysync_timeout">p≡p Sync timeout</string>
-    <string name="read_permission_first_explanation">We need your permission to read the contacts stored on your mobile phone</string>
+    <string name="read_permission_first_explanation">p≡p needs permission to access the contacts on your device</string>
     <string name="button_settings">Settings</string>
-    <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
-    <string name="read_snackbar_permission_permanently_denied">Not allowing us read your contacts may cause unexpected behaviour</string>
-    <string name="read_permission_rationale_title">Reading contacts</string>
-    <string name="download_permission_first_explanation">We need your permission to download files on your mobile phone</string>
-    <string name="download_snackbar_permission_rationale">We need your permission to save attachments from your emails.</string>
-    <string name="download_snackbar_permission_permanently_denied">Not allowing us download files may cause unexpected behaviour</string>
+    <string name="read_snackbar_permission_rationale">p≡p needs permission to access the contacts on your device</string>
+    <string name="read_snackbar_permission_permanently_denied">Not granting p≡p access to the contacts may cause unexpected behavior</string>
+    <string name="read_permission_rationale_title">Access contacts</string>
+    <string name="download_permission_first_explanation">p≡p needs permission to download files on your device</string>
+    <string name="download_snackbar_permission_rationale">p≡p needs permission to save attachments from your emails.</string>
+    <string name="download_snackbar_permission_permanently_denied">Not granting us permission to download files might cause unexpected behavior</string>
     <string name="download_permission_rationale_title">Download files</string>
     <string name="add_fpr">Add fingerprint</string>
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
@@ -114,11 +114,11 @@
     <string name="action_continue">Continue</string>
     <string name="battery_optimization_rationale_title">Disable battery optimizations</string>
     <string name="battery_optimiazation_explanation">In order to synchronize your emails in the background we need to disable battery optimizations</string>
-    <string name="add_account_title">Add your account</string>
+    <string name="add_account_title">Add account</string>
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
-    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviors. Press OK to grant them to us.</string>
+    <string name="permissions_needed_message">Not granting required permissions might cause unexpected behavior. Press OK to grant the permissions.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -169,13 +169,13 @@
     <string name="nnf_name">Name</string>
     <string name="nnf_select_something_first">Please select something first</string>
     <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
-    <string name="nnf_permission_external_write_denied">Permission to access filesystem denied</string>
+    <string name="nnf_permission_external_write_denied">Permission to access storage denied</string>
     <string name="nnf_filename">Filename</string>
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
     <string name="pep_sync">p≡p Sync</string>
-    <string name="pep_sync_enable_account">Synchronize this account</string>
+    <string name="pep_sync_enable_account">p≡p Sync this account</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync is enabled</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync is disabled</string>
     <string name="pep_sync_leave_device_group">Leave p≡p Device Group</string>
@@ -184,11 +184,11 @@
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
     <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your p≡p key from another device, and export your private key.</string>
     <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
-    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key into your keychain.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">In your PGP device, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">On your device with PGP, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
     <string name="key_import_wizard_from_pgp_send_handshake_request">Encrypt and sign the answer message with the public p≡p key you just imported and send it.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Please compare the PGP fingerprints of the below keys with the ones on your PGP device and confirm if they match.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">In your PGP device, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">On your device with PGP, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Encrypt and sign the answer message again with the public p≡p key and send it.</string>
     <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public p≡p key and reply with a message that: \n\n\n
 
@@ -236,7 +236,7 @@
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none" translatable="false">\"\"</string>
+    <string name="pep_rating_none" translatable="false"/>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
