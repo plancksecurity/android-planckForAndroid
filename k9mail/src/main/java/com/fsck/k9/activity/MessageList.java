@@ -83,11 +83,6 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import com.google.android.material.navigation.NavigationView;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
@@ -105,7 +100,6 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.nav_view.NavFolderAccountButton;
-import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -2629,5 +2623,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mMessageViewFragment != null) {
             mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
         }
+    }
+
+    public String getCurrentVisibleFragment() {
+        if (mMessageViewFragment != null && mMessageViewFragment.isVisible())
+            return mMessageViewFragment.getClass().getSimpleName();
+        if (mMessageListFragment != null && mMessageListFragment.isVisible())
+            return mMessageListFragment.getClass().getSimpleName();
+        return "no visible fragment";
     }
 }

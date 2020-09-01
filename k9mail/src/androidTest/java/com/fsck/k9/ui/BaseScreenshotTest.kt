@@ -20,6 +20,7 @@ import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
+import com.fsck.k9.activity.MessageList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -60,7 +61,7 @@ open class BaseScreenshotTest {
             waitLauncher()
             waitAppLaunch()
         } catch (e: Exception) {
-            Timber.e( "Launch failed ================>")
+            Timber.e("Launch failed ================>")
             Timber.e(e)
         }
         Timber.e("Test", "Launch successful ================>")
@@ -105,7 +106,7 @@ open class BaseScreenshotTest {
         // Default is natural orientation (if a testcase fails)
         device.setOrientationNatural()
         device.pressHome()
-        Timber.e( "Testcase stops here <===========================")
+        Timber.e("Testcase stops here <===========================")
     }
 
     @Test
@@ -113,12 +114,12 @@ open class BaseScreenshotTest {
 
     }
 
-    fun getScreenShot(className: String, action: String) {
+    private fun getScreenShot(className: String, action: String) {
         sleep(500) // Wait for screen to change
         val imageDir = File(IMAGE_DIR)
         if (!imageDir.exists()) imageDir.mkdir()
-        device.takeScreenshot(File("$IMAGE_DIR${cnt++}_${className}_${action}.png"), 0.5f, 25)
-        Timber.e( "Screenshot #" + (cnt - 1))
+        device.takeScreenshot(File("$IMAGE_DIR${cnt++} $className ${action}.png"), 0.5f, 25)
+        Timber.e("Screenshot #" + (cnt - 1))
     }
 
     fun sleep(time: Int) {
@@ -126,6 +127,18 @@ open class BaseScreenshotTest {
             Thread.sleep(time.toLong())
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    fun getScreenShotMessageList(action: String) = runBlocking(Dispatchers.Main) {
+        waitForIdle()
+        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+        Iterables.getOnlyElement(activities)?.let { currentActivity ->
+            if (currentActivity is MessageList) {
+                val name = currentActivity::class.java.simpleName + " " + currentActivity.currentVisibleFragment
+                getScreenShot(name, action)
+
+            }
         }
     }
 
@@ -159,6 +172,14 @@ open class BaseScreenshotTest {
 
     fun swipeRight(view: Matcher<View>) {
         Espresso.onView(view).perform(ViewActions.swipeRight())
+    }
+
+    fun clickListItem(resourceId: Int, position: Int) {
+        Espresso.onData(CoreMatchers.anything())
+                .inAdapterView(ViewMatchers.withId(resourceId))
+                .atPosition(position)
+                .perform(click())
+
     }
 
     companion object {
