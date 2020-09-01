@@ -9,11 +9,12 @@ import android.util.Log
 import android.view.View
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
@@ -21,6 +22,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.fsck.k9.activity.MessageList
+import com.fsck.k9.activity.setup.AccountSetupBasics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -118,7 +120,8 @@ open class BaseScreenshotTest {
         sleep(500) // Wait for screen to change
         val imageDir = File(IMAGE_DIR)
         if (!imageDir.exists()) imageDir.mkdir()
-        device.takeScreenshot(File("$IMAGE_DIR${cnt++} $className ${action}.png"), 0.5f, 25)
+        val index = "%2d".format(cnt++)
+        device.takeScreenshot(File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25)
         Timber.e("Screenshot #" + (cnt - 1))
     }
 
@@ -136,6 +139,18 @@ open class BaseScreenshotTest {
         Iterables.getOnlyElement(activities)?.let { currentActivity ->
             if (currentActivity is MessageList) {
                 val name = currentActivity::class.java.simpleName + " " + currentActivity.currentVisibleFragment
+                getScreenShot(name, action)
+
+            }
+        }
+    }
+
+    fun getScreenShotAccountSetup(action: String) = runBlocking(Dispatchers.Main) {
+        waitForIdle()
+        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+        Iterables.getOnlyElement(activities)?.let { currentActivity ->
+            if (currentActivity is AccountSetupBasics) {
+                val name = currentActivity::class.java.simpleName + " " + currentActivity.visibleFragmentSimpleName
                 getScreenShot(name, action)
 
             }
@@ -163,20 +178,24 @@ open class BaseScreenshotTest {
     }
 
     fun addTextTo(resourceId: Int, text: String) {
-        Espresso.onView(ViewMatchers.withId(resourceId)).perform(ViewActions.typeText(text))
+        onView(withId(resourceId)).perform(typeText(text))
+    }
+
+    fun setTextTo(resourceId: Int, text: String) {
+        onView(withId(resourceId)).perform(clearText(), typeText(text))
     }
 
     fun click(resourceId: Int) {
-        Espresso.onView(ViewMatchers.withId(resourceId)).perform(click())
+        onView(withId(resourceId)).perform(click())
     }
 
     fun swipeRight(view: Matcher<View>) {
-        Espresso.onView(view).perform(ViewActions.swipeRight())
+        onView(view).perform(swipeRight())
     }
 
     fun clickListItem(resourceId: Int, position: Int) {
         Espresso.onData(CoreMatchers.anything())
-                .inAdapterView(ViewMatchers.withId(resourceId))
+                .inAdapterView(withId(resourceId))
                 .atPosition(position)
                 .perform(click())
 

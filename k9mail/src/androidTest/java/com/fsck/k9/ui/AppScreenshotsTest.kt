@@ -31,20 +31,33 @@ class AppScreenshotsTest : BaseScreenshotTest() {
     /**
      * NEEDS PEP_TEST_EMAIL_ADDRESS and PEP_TEST_EMAIL_PASSWORD system variables
      */
+
     @Test
-    fun allTestsCleanState() {
+    fun automaticAccountSetup() {
+       accountSetup(true)
+    }
+
+    @Test
+    fun manualAccountSetup() {
+       accountSetup(false)
+    }
+
+    @Test
+    fun afterAccountSetup() {
+        openFirstScreen()
+        openSingleInboxMessage()
+    }
+
+    private fun accountSetup(automaticLogin: Boolean) {
         openFirstScreen()
         passWelcomeScreen()
         when {
             showPermissionsScreen() -> acceptPermissions()
-            else -> addFirstAccountAutomatic()
+            else -> {
+                if (automaticLogin) addFirstAccountAutomatic()
+                else addFirstAccountManual()
+            }
         }
-        openSingleInboxMessage()
-    }
-
-    @Test
-    fun allTestWithAddedAccount() {
-        openFirstScreen()
         openSingleInboxMessage()
     }
 
@@ -65,22 +78,6 @@ class AppScreenshotsTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity(" third click")
         click(R.id.done)
         runBlocking { waitForIdle() }
-    }
-
-    private fun swipeBackInWelcomeMessage() {
-        val welcomeMessage = getCurrentActivity()
-        if (welcomeMessage is WelcomeMessage) {
-            val view = withId(R.id.view_pager)
-            swipeRight(view)
-            getScreenShotCurrentActivity(" swipe right once")
-            swipeRight(view)
-            getScreenShotCurrentActivity(" swipe right twice")
-            swipeRight(view)
-            getScreenShotCurrentActivity(" swipe right thrice")
-            click(R.id.skip)
-        } else {
-            throw Exception("Wrong activity on screen")
-        }
     }
 
     private fun showPermissionsScreen(): Boolean {
@@ -111,17 +108,55 @@ class AppScreenshotsTest : BaseScreenshotTest() {
         click(R.id.done)
     }
 
+    private fun addFirstAccountManual() {
+        // email password
+        getScreenShotAccountSetup("without values")
+        addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+        addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        getScreenShotAccountSetup("with values")
+        Espresso.closeSoftKeyboard()
+        sleep(1000)
+        click(R.id.manual_setup)
+        sleep(1000)
+
+        // setup income
+        getScreenShotAccountSetup("without values")
+        setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        getScreenShotAccountSetup("with values")
+        Espresso.closeSoftKeyboard()
+        sleep(1000)
+        click(R.id.next)
+        sleep(1000)
+
+        // setup outcome
+        getScreenShotAccountSetup("without values")
+        setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        getScreenShotAccountSetup("with values")
+        Espresso.closeSoftKeyboard()
+        sleep(1000)
+        click(R.id.next)
+        sleep(1000)
+
+        getScreenShotAccountSetup("")
+        click(R.id.next)
+        sleep(1000)
+
+        getScreenShotCurrentActivity("without values")
+        addTextTo(R.id.account_name, "John Smith")
+        getScreenShotCurrentActivity("with values")
+        click(R.id.done)
+    }
+
     private fun openSingleInboxMessage() {
         getScreenShotMessageList("inbox list")
         sleep(2000)
-        clickListItem(R.id.message_list,0)
+        clickListItem(R.id.message_list, 0)
         getScreenShotMessageList("inbox item 0")
         click(R.id.message_more_options)
         getScreenShotMessageList("click more options")
         pressBack()
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext);
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
         getScreenShotMessageList("click menu options")
     }
-
 
 }
