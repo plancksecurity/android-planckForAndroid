@@ -213,4 +213,7 @@
     <string name="permissions_needed_message">No concedir els permisos necessaris pot provocar conductes inesperades. Premeu OK per concedir-nos-les.</string>
     <string name="keysync_wizard_action_try_again">Torna-ho a provar</string>
     <string name="only_own_identities">Es tracta d’un missatge propi, no hi ha cap altre soci de comunicació implicat.</string>
+    <string name="keysync_disable_warning_action_disable">Desactivar</string>
+    <string name="keysync_disable_warning_explanation">Si desactiveu p≡p Sync, ja no se sincronitzaran els vostres comptes als vostres dispositius. Esteu segur que voleu desactivar la sincronització p≡p\?</string>
+    <string name="keysync_disable_warning_title">Desactiva la sincronització p≡p</string>
 </resources>

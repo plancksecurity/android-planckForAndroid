@@ -4,7 +4,7 @@
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Datenschutz wird eingerichtet "</string>
-    <string name="pep_dialog_weaker_forward_warning_message">Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, setzen Sie sich und Ihre Kommunikationspartner dem Risiko aus, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren\?</string>
+    <string name="pep_dialog_weaker_forward_warning_message">Sie versuchen, eine sichere Nachricht ungesichert weiterzuleiten. Wenn Sie damit fortfahren, besteht das Risiko, dass Dritte Zugriff auf vertrauliche Informationen erhalten. Möchten Sie wirklich fortfahren\?</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Fortfahren</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Abbrechen</string>
     <string name="pep_dialog_confirm_forward_title">Weiterleitung bestätigen</string>
@@ -38,7 +38,7 @@
     <string name="pep_device_group">p≡p-Gerätegruppe</string>
     <string name="handshake_reset_dialog_message">Warnung: Dieser Kommunikationspartner wurde vorgängig als nicht vertrauenswürdig eingestuft. Sind Sie sicher, dass trotzdem erneut ein Handshake durchgeführt werden soll\?</string>
     <string name="pep_gpg_compatibility">OpenPGP-Kompatibilität</string>
-    <string name="crash_toast_text">Entschuldigung, es ist etwas schiefgelaufen</string>
+    <string name="crash_toast_text">Entschuldigung, etwas ist schiefgelaufen</string>
     <string name="advanced_options">Erweiterte Optionen</string>
     <string name="basic_options">Einfache Optionen</string>
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
@@ -88,7 +88,7 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Überprüfen Sie den Inhalt dieser Nachricht zusammen mit Ihrem Kommunikationspartner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-    <string name="pep_forward_warning_description">Warnhinweis anzeigen, wenn die Datensicherheit einer Nachricht durch Antwort oder Weiterleitung verloren geht.</string>
+    <string name="pep_forward_warning_description">Warnhinweis, wenn die Datensicherheit einer Nachricht durch Antwort oder Weiterleitung verloren geht.</string>
     <string name="navigation_drawer_open">Seitenmenü öffnen</string>
     <string name="navigation_drawer_close">Seitenmenü schließen</string>
     <string name="pep_force_protected">Schutz einschalten</string>
@@ -101,14 +101,14 @@
     <string name="configure_account_action">Konten verwalten</string>
     <string name="pep_add_device_ask_move_trustwords">Sie möchten neues Gerät in eine andere p≡p-Gerätegruppe verschieben. Bitte bestätigen Sie dies, wenn die folgenden Trustwords auf den Geräten übereinstimmen.</string>
     <string name="pep_keysync_timeout">Zeitüberschreitung bei p≡p Sync</string>
-    <string name="read_permission_first_explanation">Wir benötigen Ihre Erlaubnis, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
+    <string name="read_permission_first_explanation">p≡p benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
     <string name="button_settings">Einstellungen</string>
-    <string name="read_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
-    <string name="read_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Lesen der Kontakte nicht erlauben</string>
-    <string name="read_permission_rationale_title">Lesezugriff auf Kontakte</string>
-    <string name="download_permission_first_explanation">p≡p benötigt Ihre Erlaubnis, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_rationale">p≡p benötigt Ihre Erlaubnis, um Anhänge auf Ihr Gerät herunterzuladen.</string>
-    <string name="download_snackbar_permission_permanently_denied">Es kann zu unerwartetem Verhalten in der Anwendung führen, wenn Sie das Herunterladen von Dateien nicht erlauben</string>
+    <string name="read_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um auf die Kontakte auf Ihrem Gerät zuzugreifen</string>
+    <string name="read_snackbar_permission_permanently_denied">Wenn p≡p nicht auf die Kontakte zuzugreifen darf, können unerwartete Probleme entstehen</string>
+    <string name="read_permission_rationale_title">Zugriff auf Kontakte</string>
+    <string name="download_permission_first_explanation">p≡p benötigt die Berechtigung, um Dateien auf Ihr Gerät herunterzuladen</string>
+    <string name="download_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um Anhänge auf Ihr Gerät herunterzuladen.</string>
+    <string name="download_snackbar_permission_permanently_denied">Wenn p≡p keine Dateien herunterladen darf, können unerwartete Probleme entstehen</string>
     <string name="download_permission_rationale_title">Dateien herunterladen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
@@ -120,9 +120,16 @@
     <string name="battery_optimization_rationale_title">Energiesparmodus deaktivieren</string>
     <string name="battery_optimiazation_explanation">Um Ihre Nachrichten im Hintergrund synchronisieren zu können, muss der Energiesparmodus deaktiviert werden</string>
     <string name="key_import_reject">Ablehnen</string>
-    <string name="intro_frag_first_text_1"><![CDATA[Willkommen zur <font color="#4caf50">p≡p</font> Anleitung]]></string>
+    <string name="pep_user_name_format" translatable="false">%1$s</string>
+    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
+    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
+    <string name="pep" translatable="false">p≡p</string>
+    <string name="intro_frag_first_text_1">Willkommen zur &lt;font color=#4caf50&gt;p≡p&lt;/font&gt; Anleitung<font color="#4caf50">p≡p</font> Anleitung</string>
     <string name="search_empty_error">Bitte Suchtext eingeben</string>
     <string name="pep_key_reset_own_id_warning_title">Konto %s zurücksetzen</string>
+    <string name="ellipsized_text" translatable="false">%s …</string>
     <string name="pep_key_reset_own_id_warning">Dies wird Ihr Konto zurücksetzen.
 \nSind Sie sicher, dass sie einen Reset wünschen\?</string>
     <string name="pep_key_reset_all_own_ids_warning">Dies wird alle Ihre Konten zurücksetzen.
@@ -136,8 +143,8 @@
     <string name="key_reset_for_identity_context_title">Alle p≡p Daten für diesen Kommunikationspartner zurücksetzen:</string>
     <string name="reset_all">Alles zurücksetzen</string>
     <string name="reset">Zurücksetzen</string>
-    <string name="key_import_success">Schlüsselcode erfolgreich importiert</string>
-    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüsselcodes ein.</string>
+    <string name="key_import_success">Schlüssel erfolgreich importiert</string>
+    <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüssel ein.</string>
     <string name="key_import_failure">Fehler beim Importieren und Verwenden jeglicher Schlüsselcodes</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Falls Sie einen Schlüsselimport für das Konto %s ausgelöst haben, clicken Sie bitte Start.</string>
     <string name="pgp_key_import_instructions">Um mit dem Schlüsselimport fortzufahren, importieren Sie bitte den angehängten öffentlichen p≡p Schlüssel und antworten Sie mit einer Nachricht, die: 
@@ -152,31 +159,40 @@
     <string name="key_import_wizard_from_pgp_create_handshake_request">Auf Ihrem Gerät mit PGP antworten Sie bitte auf die p≡p Nachricht und fügen Sie Ihren öffentlichen PGP Schlüssel als Anhang hinzu.</string>
     <string name="key_import_wizard_from_pgp_key_sent">Eine Nachricht mit Ihrem öffentlichen p≡p Schlüssel wurde an Sie selbst gesendet. Bitte öffnen Sie diese und importieren Sie den Schlüssel in Ihr Gerät mit PGP.</string>
     <string name="key_import_wizard_from_pgp_initial_text">Wir starten den Schlüsselimport vom Gerät mit PGP</string>
-    <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dabei importieren wir Ihren p≡p-Schlüsselcode und verwenden ihn, um Ihren privaten Schlüsselcode von diesem Gerät zu exportieren.</string>
+    <string name="key_import_wizard_from_pep_initial_text">Wir starten den Schlüsselimport: Dazu importieren wir Ihren p≡p-Schlüssel und verwenden ihn, um Ihren privaten Schlüssel von diesem Gerät zu exportieren.</string>
     <string name="key_import_wizard_handshake_explanation">Bitte vergleichen Sie die folgenden Trustwords mit jenen auf Ihrem anderen Gerät und bestätigen Sie, ob sie übereinstimmen.</string>
+    <string name="pgp">PGP</string>
+    <string name="open_pgp">OpenPGP</string>
     <string name="pep_sync_leave_device_group">Gerätegruppe verlassen</string>
     <string name="pep_sync_is_disabled_global">p≡p Sync ist deaktiviert</string>
     <string name="pep_sync_is_enabled_global">p≡p Sync ist aktiviert</string>
-    <string name="pep_sync">p≡p Synchronisierung</string>
-    <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen. Versuchen Sie es erneut</string>
-    <string name="key_import_accept">Bestätigen</string>
+    <string name="pep_sync">p≡p Sync</string>
+    <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen, versuchen Sie es erneut</string>
+    <string name="key_import_accept">Akzeptieren</string>
     <string name="nnf_filename">Dateiname</string>
-    <string name="nnf_permission_external_write_denied">Zugriff auf das Dateisystem verweigert</string>
+    <string name="nnf_permission_external_write_denied">Zugriff auf den Speicher verweigert</string>
     <string name="nnf_need_valid_filename">Bitte einen gültigen Dateinamen eingeben oder auswählen</string>
     <string name="nnf_select_something_first">Bitte wählen Sie zuerst etwas aus</string>
     <string name="nnf_name">Name</string>
-    <string name="nnf_create_folder_error">Erstellen des Ordners fehlgeschlagen</string>
+    <string name="nnf_create_folder_error">Fehler beim Erstellen des Ordners</string>
     <string name="nnf_new_folder">Neuer Ordner</string>
-    <string name="permissions_needed_message">Das Nichtgewähren der erforderlichen Berechtigungen kann unerwartetes Verhalten verursachen. Gewähren Sie uns diese Berechtigungen mit einem Klick auf OK.</string>
+    <string name="permissions_needed_message">Ohne die notwendigen Berechtigungen können unerwartete Probleme entstehen. Mit OK können Sie die Berechtigungen erteilen.</string>
     <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
     <string name="account_already_exists">Dieses Konto existiert bereits</string>
     <string name="add_account_message">Übertragen Sie dieses Konto auf Ihr Gerät, um es nutzen zu können</string>
     <string name="add_account_title">Konto hinzufügen</string>
+    <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_text">Die Nachricht wurde nicht versendet und liegt im Ordner für Entwürfe.</string>
     <string name="notification_failed_to_encrypt_title">Die Nachricht konnte nicht verschlüsselt werden.</string>
-    <string name="intro_frag_fourth_text_2">Das Symbol in der oberen Leiste spiegelt den Datenschutzstatus der Nachricht wieder, der für alle Kommunikationspartner dieser Nachricht den kleinsten gemeinsamen Nenner darstellt, z. B.:</string>
+    <string name="intro_frag_fourth_text_2">Das Symbol in der oberen Leiste zeigt den Datenschutzstatus der Nachricht an, der für alle Kommunikationspartner dieser Nachricht den kleinsten gemeinsamen Nenner darstellt, z. B.:</string>
     <string name="intro_frag_first_text_3">Und in der oberen Leiste, wenn Sie eine E-Mail öffnen oder schreiben:</string>
-    <string name="intro_frag_first_text_2"><![CDATA[Sie können dieses Tutorial jederzeit schließen.\n\n<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.\n\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.]]></string>
+    <string name="intro_frag_first_text_2">Sie können diese Anleitung jederzeit schließen. 
+\n 
+\n&lt;font color=#4caf50&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
+\n 
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
+\n 
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt</string>
     <string name="message_failed_to_encrypt">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
     <string name="action_tutorial">Anleitung</string>
@@ -210,7 +226,36 @@
     <string name="license">Lizenz</string>
     <string name="keysync_wizard_action_try_again">Versuchen Sie es nochmal</string>
     <string name="keysync_disable_warning_title">p≡p Sync deaktivieren</string>
-    <string name="keysync_disable_warning_explanation">Wenn Sie p≡p Sync deaktivieren, werden Ihre Konten auf Ihren Geräten nicht mehr synchronisiert.
+    <string name="keysync_disable_warning_explanation">Wenn Sie p≡p Sync deaktivieren, werden Ihre Geräte nicht mehr synchronisiert. 
 \n<b>Möchten Sie die p≡p-Synchronisierung wirklich deaktivieren\?</b></string>
     <string name="keysync_disable_warning_action_disable">Deaktivieren</string>
+    <string name="passhphrase_action_disable_sync">Sync stoppen</string>
+    <string name="about_documentation">Dokumentation:</string>
+    <string name="passhphrase_body_sync_passphrase">Für p≡p Sync, geben Sie Ihre Passphrase ein:</string>
+    <string name="passhphrase_body_wrong_passphrase">Sie haben eine falsche Passphrase eingegeben.
+\nBitte geben Sie die richtige an, um weiterzufahren.</string>
+    <string name="passhphrase_body_insert_passphrase">Um weiterzufahren, geben Sie Ihre Passphrase ein</string>
+    <string name="passhphrase_input_hint">Passphrase</string>
+    <string name="passhphrase_title">Passphrase</string>
+    <string name="about_contact">Kontakt:</string>
+    <string name="pep_sync_folder_is_disabled">p≡p Sync Ordner ist deaktiviert, INBOX wird verwendet</string>
+    <string name="pep_sync_folder_is_enabled">p≡p Sync Ordner ist aktiviert</string>
+    <string name="pep_sync_folder">p≡p Sync Ordner</string>
+    <string name="pgp_key_import_dialog_empty_edittext">Die Eingabe des Fingerabdrucks ist notwendig</string>
+    <string name="pgp_key_import_dialog_summary">Import aus dem Dateisystem</string>
+    <string name="pgp_key_import_dialog_accept_button">Wähle und importiere Schlüssel</string>
+    <string name="pgp_key_import_dialog_title">PGP Schlüsselimport</string>
+    <string name="pgp_key_import_title">PGP Schlüsselimport aus dem Dateisystem</string>
+    <string name="change_language_explanation">App wird zum Startbildschirm wechseln um die Änderung abzuschliessen</string>
+    <string name="change_language_title">Sprache ändern</string>
+    <string name="blacklist_title">Blacklist</string>
+    <string name="account_settings_save_encrypted_summary_disabled">Verschlüsselte Nachrichten entschlüsseln und auf dem Server ungesichert speichern.</string>
+    <string name="account_settings_save_encrypted_summary_enabled">Verschlüsselte Nachrichten auf dem Server ebenso sicher speichern.</string>
+    <string name="global_settings_blacklist_summary">OpenPGP-Schlüssel eines Kommunikationspartenrs nicht mehr verwenden</string>
+    <string name="global_settings_subject_protection_summary">Nachricht schützen, wenn der Kommunikationspartner OpenPGP verwendet</string>
+    <string name="global_settings_passive_mode_summary">Keinen Schlüssel mitsenden, wenn der Kommunikationspartner kein p≡p verwendet</string>
+    <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
+    <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
+    <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
+    <string name="support_email" translatable="false">support@pep.security</string>
 </resources>
