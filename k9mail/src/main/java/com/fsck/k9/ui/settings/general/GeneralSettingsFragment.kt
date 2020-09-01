@@ -17,7 +17,6 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.Theme
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -27,6 +26,7 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import security.pEp.ui.keyimport.KeyImportActivity
 import security.pEp.ui.passphrase.PassphraseActivity
 import security.pEp.ui.passphrase.PassphraseRequirementType
 import java.io.File
@@ -53,6 +53,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
         initializeNewKeysPassphrase()
+        initializePgpImportKey()
         initializeTheme()
     }
 
@@ -99,6 +100,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                         }
                     )
                 }
+            }
+        }
+    }
+
+    private fun onKeyImportClicked() {
+        KeyImportActivity.showImportKeyDialog(activity, "")
+    }
+
+    private fun initializePgpImportKey() {
+        val app: K9 = context?.applicationContext as K9
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.apply {
+            if (app.isGrouped) {
+                isEnabled = false
+                summary = getString(R.string.pgp_key_import_disabled_summary)
+            } else {
+                onClick(::onKeyImportClicked)
             }
         }
     }
@@ -272,6 +289,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
+        private const val PREFERENCE_PGP_KEY_IMPORT = "pgp_key_import"
         private const val PREFERENCE_THEME = "theme"
 
 

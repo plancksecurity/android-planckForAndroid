@@ -379,6 +379,10 @@
 
                 </Preference>
 
+                <Preference
+                        android:key="pgp_key_import"
+                        android:title="@string/pgp_key_import_title"/>
+
             </PreferenceCategory>
 
             <PreferenceCategory
