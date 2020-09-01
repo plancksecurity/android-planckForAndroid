@@ -26,6 +26,9 @@ class AppScreenshotsTest : BaseScreenshotTest() {
     var splashRule =
             ActivityTestRule(SplashActivity::class.java, false, false)
 
+    /**
+     * NEEDS PEP_TEST_EMAIL_ADDRESS and PEP_TEST_EMAIL_PASSWORD system variables
+     */
     @Test
     fun allTest() {
         openFirstScreen()
