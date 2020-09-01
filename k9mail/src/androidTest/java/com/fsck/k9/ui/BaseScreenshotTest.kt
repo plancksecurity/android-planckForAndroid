@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
@@ -23,6 +25,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.pEp.ui.activities.SplashActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -30,13 +33,19 @@ import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import timber.log.Timber
 import java.io.File
 
 
 open class BaseScreenshotTest {
+
     lateinit var device: UiDevice
+
+    @get:Rule
+    var splashRule =
+            ActivityTestRule(SplashActivity::class.java, false, false)
 
     /**
      * Wake up device and remove screenlock if needed
@@ -111,9 +120,11 @@ open class BaseScreenshotTest {
         Timber.e("Testcase stops here <===========================")
     }
 
-    @Test
-    fun test() {
-
+    fun openFirstScreen() {
+        val intent = Intent()
+        splashRule.launchActivity(intent)
+        getScreenShotCurrentActivity("splash")
+        runBlocking { waitForIdle() }
     }
 
     private fun getScreenShot(className: String, action: String) {
