@@ -26,23 +26,27 @@ class KeyImportPresenter @Inject constructor(
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
-    private lateinit var accountUuid: String
 
     private lateinit var context: Context
-    private lateinit var accountIdentity: Identity
-    private lateinit var currentFpr: String
-    private lateinit var address: String
+    private lateinit var accountIdentities: List<Identity>
+    private lateinit var currentFprs: List<String>
+    private lateinit var addresses: List<String>
 
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
-        this.accountUuid = accountUuid
+
         scope.launch {
             context = view.getApplicationContext()
-            address = preferences.getAccount(accountUuid).email
-            accountIdentity = PEpUtils.createIdentity(Address(address), context)
-            withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
+            addresses = if(accountUuid.isNotEmpty()) {
+                listOf(preferences.getAccount(accountUuid).email)
+            } else {
+                preferences.availableAccounts.map { it.email }
+            }
+            accountIdentities = addresses.map {address -> PEpUtils.createIdentity(Address(address), context) }
+            withContext(Dispatchers.IO) { currentFprs = accountIdentities.map { accountIdentity -> pEp.myself(accountIdentity).fpr } }
+            view.openFileChooser()
         }
     }
 
@@ -61,11 +65,13 @@ class KeyImportPresenter @Inject constructor(
 
         scope.launch {
             view.showLoading()
-            val firstIdentity = importKey(uri)
+            val importedIdentities = importKey(uri)
             view.hideLoading()
-            firstIdentity?.let {
-                view.showKeyImportConfirmationDialog(firstIdentity, filename)
-            } ?: replyResult(false, filename)
+            if(importedIdentities.isNotEmpty()) {
+                view.showKeyImportConfirmationDialog(importedIdentities, filename)
+            } else {
+                replyResult(emptyList(), filename)
+            }
         }
     }
 
@@ -73,32 +79,38 @@ class KeyImportPresenter @Inject constructor(
         view.finish()
     }
 
-    private suspend fun onKeyImportConfirmed(): Boolean {
+    private suspend fun onKeyImportConfirmed(): List<Identity> {
         return withContext(Dispatchers.IO) {
-            var result = false
+            val result: MutableList<Identity> = mutableListOf()
+            var currentResult = false
             runBlocking {
-                try {
-                    val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                    result = if (id == null || !pEp.canEncrypt(address)) {
-                        Timber.w("Couldn't set own key: %s", fingerprint)
-                        pEp.setOwnIdentity(accountIdentity, currentFpr)
-                        false
-                    } else {
-                        pEp.myself(id)
-                        true
-                    }
+                accountIdentities.forEachIndexed { index, accountIdentity ->
+                    try {
+                        val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
+                        currentResult = if (id == null || !pEp.canEncrypt(addresses[index])) {
+                            Timber.w("Couldn't set own key: %s", fingerprint)
+                            pEp.setOwnIdentity(accountIdentity, currentFprs[index])
+                            false
+                        } else {
+                            pEp.myself(id)
+                            true
+                        }
 
-                } catch (e: pEpException) {  // this means there was no right formatted key in the file.
-                    result = true
-                    pEp.setOwnIdentity(accountIdentity, currentFpr)
+                    } catch (e: pEpException) {  // this means there was no right formatted key in the file.
+                        currentResult = false
+                        pEp.setOwnIdentity(accountIdentity, currentFprs[index])
+                    }
+                    if(currentResult) {
+                        result.add(accountIdentity)
+                    }
                 }
             }
             result
         }
     }
 
-    private suspend fun importKey(uri: Uri): Identity?  = withContext(Dispatchers.IO){
-        var result: Identity?
+    private suspend fun importKey(uri: Uri): List<Identity>  = withContext(Dispatchers.IO){
+        var result: List<Identity> = emptyList()
         try {
             val resolver = context.contentResolver
             val inputStream = resolver.openInputStream(uri)
@@ -107,21 +119,18 @@ class KeyImportPresenter @Inject constructor(
 
                 val importedIdentities = pEp.importKey(key)
                 if (importedIdentities.isEmpty()) { // This means that the file contains a key, but not a proper private key which we need.
-                    result = null
+                    result = emptyList()
                 }
                 else {
-                    result = importedIdentities.firstOrNull { identity -> identity.address == address }
-                    result?.let {
-                        fingerprint = (importedIdentities[0] as Identity).fpr
-                        result = importedIdentities[0]
-                    }
+                    result = importedIdentities.filter { identity -> identity.address in addresses }.groupBy { it.address }.values.map { it.first() }
+                    fingerprint = result.first().fpr
                 }
             } catch (e: IOException) {
-                pEp.setOwnIdentity(accountIdentity, currentFpr)
+                //pEp.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()
             } catch (e: pEpException) {  // this means there was no right formatted key in the file.
-                pEp.setOwnIdentity(accountIdentity, currentFpr)
-                result = null
+                //pEp.setOwnIdentity(accountIdentity, currentFpr)
+                result = emptyList()
             } finally {
                 try {
                     inputStream!!.close()
@@ -131,15 +140,15 @@ class KeyImportPresenter @Inject constructor(
             }
         } catch (e: FileNotFoundException) {
             Timber.w("Couldn't read content from URI %s", uri)
-            result = null
+            result = emptyList()
         }
         result
     }
 
-    private fun replyResult(success: Boolean, filename: String) {
+    private fun replyResult(result: List<Identity>, filename: String) {
         view.hideLoading()
         when {
-            success -> view.showCorrectKeyImport(fingerprint, filename)
+            result.isNotEmpty() -> view.showCorrectKeyImport(result, filename)
             else -> view.showFailedKeyImport(filename)
         }
     }

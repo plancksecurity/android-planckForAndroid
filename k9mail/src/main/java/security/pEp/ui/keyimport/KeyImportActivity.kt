@@ -38,7 +38,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
         }
-        openFileChooser()
     }
 
     override fun openFileChooser() {
@@ -68,9 +67,12 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
-        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
-        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+    override fun showKeyImportConfirmationDialog(importedIdentities: List<Identity>, filename: String) {
+        val identityTextLines = importedIdentities.map { identity ->
+            getString(R.string.pep_user_address_format, identity.username, identity.address)
+        }.joinToString("\n")
+        addressText.text = identityTextLines//getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        fingerprintTextView.text = PEpUtils.formatFpr(importedIdentities.first().fpr)
         acceptButton.setOnClickListener {
             layout.visibility = View.GONE
             presenter.onKeyImportAccepted(filename)
@@ -86,6 +88,19 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
                 .setMessage(getString(R.string.key_import_success))
+                .setCancelable(false)
+                .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
+                .create()
+                .show()
+    }
+
+    override fun showCorrectKeyImport(importedIdentities: List<Identity>, filename: String?) {
+        val identityTextLines = importedIdentities.map { identity ->
+            getString(R.string.pep_user_address_format, identity.username, identity.address)
+        }.joinToString("\n")
+        AlertDialog.Builder(this)
+                .setTitle(R.string.settings_import_success_header)
+                .setMessage(getString(R.string.key_import_success, identityTextLines))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
