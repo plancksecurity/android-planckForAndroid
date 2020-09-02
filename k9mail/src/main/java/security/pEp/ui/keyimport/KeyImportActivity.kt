@@ -71,11 +71,11 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         val identityTextLines = importedIdentities.map { identity ->
             getString(R.string.pep_user_address_format, identity.username, identity.address)
         }.joinToString("\n")
-        addressText.text = identityTextLines//getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        addressText.text = identityTextLines
         fingerprintTextView.text = PEpUtils.formatFpr(importedIdentities.first().fpr)
         acceptButton.setOnClickListener {
             layout.visibility = View.GONE
-            presenter.onKeyImportAccepted(filename)
+            presenter.onKeyImportAccepted(importedIdentities, filename)
         }
         cancelButton.setOnClickListener {
             layout.visibility = View.GONE
@@ -94,13 +94,31 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showCorrectKeyImport(importedIdentities: List<Identity>, filename: String?) {
-        val identityTextLines = importedIdentities.map { identity ->
-            getString(R.string.pep_user_address_format, identity.username, identity.address)
-        }.joinToString("\n")
+    override fun showKeyImportResult(result: Map<Identity, Boolean>, filename: String) {
+        val goodSb = StringBuilder()
+        val badSb = StringBuilder()
+        result.forEach {
+            val line = getString(R.string.pep_user_address_format, it.key.username, it.key.address)
+            val identityLine = getString(R.string.bullet_text, line)
+            if(it.value) {
+                goodSb.append(identityLine)
+                goodSb.append("\n")
+            }
+            else {
+                badSb.append(identityLine)
+                badSb.append("\n")
+            }
+        }
+        val resultSb = StringBuilder()
+        if(goodSb.isNotEmpty()) {
+            resultSb.append(getString(R.string.key_import_success_general_settings, goodSb))
+        }
+        if(badSb.isNotEmpty()) {
+            resultSb.append(getString(R.string.key_could_not_be_imported_for_accounts_general_settings, badSb))
+        }
         AlertDialog.Builder(this)
-                .setTitle(R.string.settings_import_success_header)
-                .setMessage(getString(R.string.key_import_success, identityTextLines))
+                .setTitle(R.string.key_import_result_header)
+                .setMessage(resultSb)
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
@@ -142,7 +160,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     companion object {
-        const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
         const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
         const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 

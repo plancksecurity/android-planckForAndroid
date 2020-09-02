@@ -12,6 +12,7 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
+    <string name="bullet_text" translatable="false">\u25CF %s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -197,7 +198,10 @@
 </string>
     <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
     <string name="key_import_failure">Error occurred. No key imported.</string>
-    <string name="key_import_success">Private key successfully imported for accounts:\n %s</string>
+    <string name="key_import_success_general_settings">Private key successfully imported for accounts:\n%s</string>
+    <string name="key_could_not_be_imported_for_accounts_general_settings">Key could not be imported for accounts:\n%s</string>
+    <string name="key_import_success">Private key successfully imported.</string>
+    <string name="key_import_result_header">Import result</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Reset all</string>

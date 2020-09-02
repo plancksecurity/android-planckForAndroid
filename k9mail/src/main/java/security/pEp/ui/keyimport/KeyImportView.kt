@@ -9,8 +9,6 @@ interface KeyImportView {
 
     fun showCorrectKeyImport(fingerprint: String, filename: String?)
 
-    fun showCorrectKeyImport(importedIdentities: List<Identity>, filename: String?)
-
     fun showFailedKeyImport(filename: String?)
 
     fun finish()
@@ -22,4 +20,6 @@ interface KeyImportView {
     fun hideLoading()
 
     fun showKeyImportConfirmationDialog(importedIdentities: List<Identity>, filename: String)
+
+    fun showKeyImportResult(result: Map<Identity, Boolean>, filename: String)
 }
