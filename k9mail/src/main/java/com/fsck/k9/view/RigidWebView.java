@@ -17,7 +17,9 @@
 
 package com.fsck.k9.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.util.AttributeSet;
 import timber.log.Timber;
@@ -38,13 +40,28 @@ public class RigidWebView extends WebView {
     private static final boolean NO_THROTTLE = Build.VERSION.SDK_INT >= 21; //Build.VERSION_CODES.LOLLIPOP
 
     public RigidWebView(Context context) {
-        super(context);
+        super(getFixedContext(context));
     }
+
     public RigidWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(getFixedContext(context), attrs);
     }
-    public RigidWebView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+
+    public RigidWebView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(getFixedContext(context), attrs, defStyleAttr);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public RigidWebView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(getFixedContext(context), attrs, defStyleAttr, defStyleRes);
+    }
+
+    public RigidWebView(Context context, AttributeSet attrs, int defStyleAttr, boolean privateBrowsing) {
+        super(getFixedContext(context), attrs, defStyleAttr, privateBrowsing);
+    }
+
+    public static Context getFixedContext(Context context) {
+        return context.createConfigurationContext(new Configuration());
     }
 
     private static final int MIN_RESIZE_INTERVAL = 200;

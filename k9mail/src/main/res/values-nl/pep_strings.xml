@@ -3,7 +3,13 @@
     <string name="navigation_drawer_open">Navigatielade openen</string>
     <string name="navigation_drawer_close">Navigatielade sluiten</string>
     <!-- Unstranslatable strings -->
+    <string name="pep" translatable="false">p≡p</string>
+    <string name="pep_long" translatable="false">pretty Easy privacy</string>
+    <string name="pep_handshake" translatable="false">Handshake</string>
+    <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
+    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
+    <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
         <item>pEpRatingCannotDecrypt</item>
@@ -208,11 +214,16 @@
     <string name="pep_key_reset_own_id_warning">Met deze actie wordt uw account gereset.
 \n Weet je zeker dat je wilt resetten\?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset% s account</string>
+    <string name="ellipsized_text" translatable="false">%s  …</string>
     <!-- Folder list-->
     <string name="search_empty_error">Schrijf tekst om te zoeken</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Je kunt deze tutorial op elk moment sluiten.\n\n<font color="#4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.\n\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker.]]></string>
+    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> tutorial</string>
+    <string name="intro_frag_first_text_2">Je kunt deze tutorial op elk moment sluiten.
+\n
+\n<font color="# 4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.
+\n
+\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker</string>
     <string name="intro_frag_first_text_3">En in de bovenste balk wanneer u een e-mail opent of schrijft:</string>
     <string name="intro_frag_second_header_1">Veilig</string>
     <string name="intro_frag_second_header_2">Veilig en vertrouwd</string>

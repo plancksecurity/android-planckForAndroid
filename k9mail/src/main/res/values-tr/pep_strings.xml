@@ -98,8 +98,8 @@
 \n 1. genel PGP anahtarınız eklenmiş ve
 \n 2. yeni içe aktardığınız p≡p anahtarı ile şifrelenir ve imzalanır</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Aşağıdaki hesap için bir anahtar içe aktarma başlattıysanız:% s, lütfen Başlat\'ı tıklayın.</string>
-    <string name="key_import_failure">anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı</string>
-    <string name="key_import_success">anahtarından başarıyla aktarıldı</string>
+    <string name="key_import_failure">% 1 $ s anahtar kimliğine sahip herhangi bir anahtar içe aktarılamadı ve kullanılamadı:% 2 $ s</string>
+    <string name="key_import_success">% 1 $ s% 2 $ s anahtarından başarıyla aktarıldı</string>
     <string name="key_import_from_fs_input_fpr">Lütfen Anahtar Kimliğini veya anahtarın parmak izini girin.</string>
     <string name="reset">Sıfırla</string>
     <string name="reset_all">Hepsini sıfırla</string>
@@ -114,10 +114,9 @@
 \n Sıfırlamak istediğinizden emin misiniz\?</string>
     <string name="pep_key_reset_own_id_warning">Bu işlem hesabınızı sıfırlayacaktır.
 \n Sıfırlamak istediğinizden emin misiniz\?</string>
-    <string name="pep_key_reset_own_id_warning_title">%s hesabını sıfırla</string>
+    <string name="pep_key_reset_own_id_warning_title">% S hesabını sıfırla</string>
     <string name="search_empty_error">Lütfen aramak için metin yazın</string>
-    <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> eğitimine hoş geldiniz<font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2"><![CDATA[Bu öğreticiyi istediğiniz zaman kapatabilirsiniz.\n\n<font color="#4caf50"> p≡p </font> iletişiminizin ne kadar güvenli olduğunu belirtmek için bir Gizlilik Durumu kullanır.\n\nBu Gizlilik Durumu, kullanıcının avatarında bir simge olarak gösterilir.]]></string>
+    <string name="intro_frag_first_text_1">&lt;Font color = \"# 4caf50\"&gt; p≡p &lt;/font&gt; eğitimine hoş geldiniz<font color="#4caf50">p≡p</font> tutorial</string>
     <string name="pep_force_protected">Korumayı etkinleştir</string>
     <string name="navigation_drawer_close">Gezinme çekmecesini kapat</string>
     <string name="message_list_item_removed">Kaldırılan</string>
@@ -184,9 +183,9 @@
     <string name="intro_frag_second_text_3">Trustwords doğru değilse, iletişim ortağınıza güvenilmez.</string>
     <string name="intro_frag_third_text_1">Tokalaşma</string>
     <string name="intro_frag_third_text_2">Üst çubuktaki Gizlilik Durumu simgesini tıkladığınızda, iletişim ortağınızı doğrulayabileceğiniz El Sıkışma sayfasına gidersiniz.</string>
-    <string name="intro_frag_third_text_3">Geçmek Corrina ETİYOPYA Hızlı Kovboy FLEECER…</string>
+    <string name="intro_frag_third_text_3">Geçmek Corrina ETİYOPYA Hızlı Kovboy FLEECER ...</string>
     <string name="intro_frag_third_text_4">İletişim ortağınızla bir el sıkışma tamamlayın. Ortak başına bir el sıkışma gereklidir ve Güvenli ve Güvenilir iletişim sağlar.</string>
-    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
+    <string name="intro_frag_fourth_text_1">\@ String / pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Üst çubuktaki simge, iletinin tüm iletişim ortaklarının en düşük ortak paydası olan iletinin Gizlilik Durumunu yansıtır, örneğin:</string>
     <string name="intro_frag_fourth_text_3">Bu durumda, iletinin Gizlilik Durumu Güvenli\'dir, çünkü bu iki iletişim ortağının en düşük ortak paydasıdır.</string>
     <string name="pep_rating_secure_trusted">Güvenli ve Güvenilir</string>
@@ -209,4 +208,7 @@
     <string name="keysync_wizard_action_cancel">İptal etmek</string>
     <string name="keysync_wizard_action_try_again">Tekrar deneyin</string>
     <string name="only_own_identities">Bu kendi mesajınızdır, başka hiçbir iletişim ortağı dahil değildir.</string>
+    <string name="keysync_disable_warning_action_disable">Kapat</string>
+    <string name="keysync_disable_warning_explanation">If you disable p≡p Sync, your accounts on your devices will not be synchronized anymore. Are you sure you want to disable p≡p Sync\?</string>
+    <string name="keysync_disable_warning_title">P≡p Senkronizasyonunu devre dışı bırak</string>
 </resources>
