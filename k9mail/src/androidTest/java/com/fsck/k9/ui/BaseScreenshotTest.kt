@@ -11,10 +11,9 @@ import android.view.View
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
@@ -34,7 +33,6 @@ import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import timber.log.Timber
 import java.io.File
 
@@ -189,25 +187,30 @@ open class BaseScreenshotTest {
     }
 
     fun addTextTo(resourceId: Int, text: String) {
-        onView(withId(resourceId)).perform(typeText(text))
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform(typeText(text))
     }
 
     fun setTextTo(resourceId: Int, text: String) {
-        onView(withId(resourceId)).perform(clearText(), typeText(text))
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform(clearText(), typeText(text))
     }
 
     fun click(resourceId: Int) {
-        onView(withId(resourceId)).perform(click())
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform(click())
+    }
+
+    fun longClick(resourceId: Int) {
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform(longClick())
     }
 
     fun swipeRight(view: Matcher<View>) {
-        onView(view).perform(swipeRight())
+        onView(view).check(matches(isDisplayed())).perform(swipeRight())
     }
 
     fun clickListItem(resourceId: Int, position: Int) {
         Espresso.onData(CoreMatchers.anything())
                 .inAdapterView(withId(resourceId))
                 .atPosition(position)
+                .check(matches(isDisplayed()))
                 .perform(click())
 
     }
