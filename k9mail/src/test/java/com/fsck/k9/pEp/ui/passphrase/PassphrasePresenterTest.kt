@@ -5,25 +5,29 @@
 package com.fsck.k9.pEp.ui.passphrase
 
 import android.content.Context
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.pEp.PEpProvider
+import com.nhaarman.mockito_kotlin.mock
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
 import org.mockito.Mockito.verify
 import security.pEp.ui.passphrase.PassphraseInputView
 import security.pEp.ui.passphrase.PassphrasePresenter
 import security.pEp.ui.passphrase.PassphraseRequirementType
 
+@RunWith(AndroidJUnit4::class)
 class PassphrasePresenterTest {
     lateinit var  context: Context
-    private val view: PassphraseInputView = mock(PassphraseInputView::class.java)
+    private val view: PassphraseInputView = mock()
     lateinit var presenter: PassphrasePresenter
+    private val pEpProvider: PEpProvider = mock()
 
     @Before
     fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        PassphrasePresenter(context)
+        context = ApplicationProvider.getApplicationContext<Context>()
+        presenter = PassphrasePresenter(context, pEpProvider)
     }
     @Test
     fun `when initializing the present view is also initialized`() {
