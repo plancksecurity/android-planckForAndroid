@@ -285,12 +285,6 @@ android {
         }
     }
 
-    testOptions{
-        unitTests{
-            includeAndroidResources = true
-        }
-    }
-
     sourceSets {
         test.manifest.srcFile "src/test/AndroidManifest.xml"
         androidTest {
