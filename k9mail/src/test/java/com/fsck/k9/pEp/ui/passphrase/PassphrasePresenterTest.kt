@@ -13,11 +13,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.verify
+import org.robolectric.annotation.Config
 import security.pEp.ui.passphrase.PassphraseInputView
 import security.pEp.ui.passphrase.PassphrasePresenter
 import security.pEp.ui.passphrase.PassphraseRequirementType
 
 @RunWith(AndroidJUnit4::class)
+@Config(manifest = Config.NONE)
 class PassphrasePresenterTest {
     lateinit var  context: Context
     private val view: PassphraseInputView = mock()

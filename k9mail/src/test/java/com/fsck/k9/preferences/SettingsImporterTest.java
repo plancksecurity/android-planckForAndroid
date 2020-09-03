@@ -8,10 +8,13 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.AuthType;
 
+import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 
 
 @RunWith(AndroidJUnit4.class)
+@Config(manifest = Config.NONE)
 public class SettingsImporterTest {
 
     @Before
@@ -223,5 +227,10 @@ public class SettingsImporterTest {
         assertEquals(1, results.accounts.size());
         assertEquals("user@gmail.com", results.accounts.get(0).name);
         assertEquals(validUUID, results.accounts.get(0).uuid);
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        FakeAndroidKeyStore.setup();
     }
 }
