@@ -1,14 +1,18 @@
 package com.fsck.k9.ui
 
-import android.os.Build
 import androidx.test.espresso.Espresso
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import security.pEp.ui.permissions.PermissionsActivity
+import org.junit.runner.RunWith
 
+@LargeTest
+@RunWith(AndroidJUnit4::class)
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
+
 
     /**
      * NEEDS PEP_TEST_EMAIL_ADDRESS and PEP_TEST_EMAIL_PASSWORD system variables
@@ -16,37 +20,21 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun automaticAccountSetup() {
+        grantPermissions()
         accountSetup(true)
     }
 
     @Test
     fun manualAccountSetup() {
+        grantPermissions()
         accountSetup(false)
-    }
-
-    private fun acceptPermissions() {
-        getScreenShotCurrentActivity("accept permissions")
-        TODO("Not sure if possible, since no screenshots if there is no permissions")
-        // addFirstAccountAuto()
     }
 
     private fun accountSetup(automaticLogin: Boolean) {
         openFirstScreen()
         passWelcomeScreen()
-        when {
-            showPermissionsScreen() -> acceptPermissions()
-            else -> {
-                if (automaticLogin) addFirstAccountAutomatic()
-                else addFirstAccountManual()
-            }
-        }
-    }
-
-    private fun showPermissionsScreen(): Boolean {
-        getScreenShotCurrentActivity("show permissions")
-        if (getCurrentActivity() is PermissionsActivity)
-            click(R.id.action_continue)
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        if (automaticLogin) addFirstAccountAutomatic()
+        else addFirstAccountManual()
     }
 
     private fun passWelcomeScreen() {

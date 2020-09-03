@@ -1,5 +1,6 @@
 package com.fsck.k9.ui
 
+import android.Manifest.permission.*
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
@@ -15,13 +16,16 @@ import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.pEp.ui.activities.SplashActivity
@@ -33,6 +37,7 @@ import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import timber.log.Timber
 import java.io.File
 
@@ -45,6 +50,12 @@ open class BaseScreenshotTest {
     var splashRule =
             ActivityTestRule(SplashActivity::class.java, false, false)
 
+
+    @get:Rule
+    var permissionRule: GrantPermissionRule =
+            GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_CONTACTS, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+
+
     /**
      * Wake up device and remove screenlock if needed
      * Set portrait orientation
@@ -53,7 +64,7 @@ open class BaseScreenshotTest {
     @Throws(Exception::class)
     fun setUp() {
         Log.e("Test", "New testcase starts here ======================>")
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device = UiDevice.getInstance(getInstrumentation())
         assertThat(device, CoreMatchers.notNullValue())
         if (!device.isScreenOn) {
             // Just in case, starting up from scratch
@@ -73,7 +84,36 @@ open class BaseScreenshotTest {
             Timber.e("Launch failed ================>")
             Timber.e(e)
         }
+
+        K9.setShallRequestPermissions(false)
+
         Timber.e("Test", "Launch successful ================>")
+    }
+
+    fun grantPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getInstrumentation().uiAutomation.executeShellCommand(
+                    "pm grant " + getInstrumentation().context.packageName
+                            + " android.permission.WRITE_EXTERNAL_STORAGE")
+            getInstrumentation().uiAutomation.executeShellCommand(
+                    "pm grant " + getInstrumentation().context.packageName
+                            + " android.permission.READ_CONTACTS")
+            getInstrumentation().uiAutomation.executeShellCommand(
+                    "pm grant " + getInstrumentation().context.packageName
+                            + " android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
+            K9.setShallRequestPermissions(false)
+
+            Thread(Runnable {
+                val prefs = Preferences.getPreferences(getInstrumentation().context)
+                val editor = prefs.storage.edit()
+                K9.save(editor)
+                editor.commit()
+            }).start()
+        }
+    }
+
+    @Test
+    fun emptyTest() {
     }
 
     private fun waitAppLaunch() {
@@ -88,7 +128,7 @@ open class BaseScreenshotTest {
 
     private fun launchApp() {
         // Launch the app
-        val context = InstrumentationRegistry.getInstrumentation().context
+        val context = getInstrumentation().context
         val intent = context.packageManager.getLaunchIntentForPackage(BASIC_SAMPLE_PACKAGE)
         // Clear out any previous instances
         context.startActivity(intent)
@@ -98,7 +138,7 @@ open class BaseScreenshotTest {
         try {
             // clearing app data
             if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
-                (InstrumentationRegistry.getInstrumentation().context.getSystemService(ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+                (getInstrumentation().context.getSystemService(ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
             } else {
                 val packageName = getApplicationContext<Context>().packageName
                 val runtime = Runtime.getRuntime()
@@ -121,6 +161,7 @@ open class BaseScreenshotTest {
     fun openFirstScreen() {
         val intent = Intent()
         splashRule.launchActivity(intent)
+        sleep(1000)
         getScreenShotCurrentActivity("splash")
         runBlocking { waitForIdle() }
     }
@@ -144,6 +185,7 @@ open class BaseScreenshotTest {
 
     fun getScreenShotMessageList(action: String) = runBlocking(Dispatchers.Main) {
         waitForIdle()
+        Timber.e("getScreenShotMessageList $action")
         val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         Iterables.getOnlyElement(activities)?.let { currentActivity ->
             if (currentActivity is MessageList) {
@@ -156,6 +198,7 @@ open class BaseScreenshotTest {
 
     fun getScreenShotAccountSetup(action: String) = runBlocking(Dispatchers.Main) {
         waitForIdle()
+        Timber.e("getScreenShotAccountSetup $action")
         val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         Iterables.getOnlyElement(activities)?.let { currentActivity ->
             if (currentActivity is AccountSetupBasics) {
@@ -169,6 +212,7 @@ open class BaseScreenshotTest {
     @Throws(Throwable::class)
     fun getScreenShotCurrentActivity(action: String) = runBlocking(Dispatchers.Main) {
         waitForIdle()
+        Timber.e("getScreenShotCurrentActivity $action")
         val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         Iterables.getOnlyElement(activities)?.let { currentActivity ->
             getScreenShot(currentActivity::class.java.simpleName, action)
@@ -176,7 +220,7 @@ open class BaseScreenshotTest {
     }
 
     suspend fun waitForIdle() = withContext(Dispatchers.IO) {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        getInstrumentation().waitForIdleSync()
     }
 
     @Throws(Throwable::class)
