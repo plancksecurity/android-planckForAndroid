@@ -9,11 +9,14 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -226,7 +229,6 @@ open class BaseScreenshotTest {
         getInstrumentation().waitForIdleSync()
     }
 
-    @Throws(Throwable::class)
     fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
         waitForIdle()
         val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
@@ -261,6 +263,25 @@ open class BaseScreenshotTest {
         onView(withContentDescription(R.string.navigation_drawer_open)).perform(click())
     }
 
+    fun clickSetting(stringResource: Int) {
+        onView(withId(androidx.preference.R.id.recycler_view))
+                .perform(actionOnItem<ViewHolder>(hasDescendant(withText(stringResource)), click()))
+    }
+
+    fun clickSettingDialog(stringResource: Int, description: String) {
+        onView(withId(androidx.preference.R.id.recycler_view))
+                .perform(actionOnItem<ViewHolder>(hasDescendant(withText(stringResource)), click()))
+        getScreenShotCurrentActivity(description)
+        Espresso.pressBack()
+    }
+
+    fun expandSetting(stringResource: Int) {
+        val string = getString(stringResource)
+        onView(withId(androidx.preference.R.id.recycler_view))
+                .perform(actionOnItem<ViewHolder>(hasDescendant(withSubstring(string)), click()))
+    }
+
+
     fun clickListItem(resourceId: Int, position: Int) {
         onData(CoreMatchers.anything())
                 .inAdapterView(withId(resourceId))
@@ -269,6 +290,9 @@ open class BaseScreenshotTest {
                 .perform(click())
 
     }
+
+    private fun getString(resourceId: Int): String =
+            getCurrentActivity()?.resources?.getString(resourceId) ?: ""
 
     companion object {
         private const val BASIC_SAMPLE_PACKAGE = "com.fsck.k9"
