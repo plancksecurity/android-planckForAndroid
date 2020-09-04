@@ -3,23 +3,19 @@ package com.fsck.k9.ui
 import android.Manifest.permission.*
 import android.app.Activity
 import android.app.ActivityManager
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.os.Build
-import android.service.autofill.Validators.not
 import android.util.Log
 import android.view.View
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.RootMatchers.withDecorView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
@@ -31,13 +27,13 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import net.bytebuddy.matcher.ElementMatchers.`is`
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.junit.After
@@ -250,7 +246,7 @@ open class BaseScreenshotTest {
     }
 
     fun clickPopUpMenuItem(resourceId: Int) {
-        onView(withText("Disable protection")).inRoot(RootMatchers.isPlatformPopup()).perform(click());
+        onView(withText("Disable protection")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
     }
 
     fun longClick(resourceId: Int) {
@@ -259,6 +255,10 @@ open class BaseScreenshotTest {
 
     fun swipeRight(view: Matcher<View>) {
         onView(view).check(matches(isDisplayed())).perform(swipeRight())
+    }
+
+    fun clickClosedNavHamburger() {
+        onView(withContentDescription(R.string.navigation_drawer_open)).perform(click())
     }
 
     fun clickListItem(resourceId: Int, position: Int) {

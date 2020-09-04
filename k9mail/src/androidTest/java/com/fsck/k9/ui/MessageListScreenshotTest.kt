@@ -19,6 +19,27 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         openListItem()
     }
 
+    @Test
+    fun messageListTest() {
+        openFirstScreen()
+        openOptionsMenu()
+        clickSearch()
+        openCloseNavMenu()
+    }
+
+    private fun openCloseNavMenu() {
+        clickClosedNavHamburger()
+        getScreenShotCurrentActivity("nav menu")
+        Espresso.pressBack()
+    }
+
+    private fun clickSearch() {
+        click(R.id.search)
+        getScreenShotCurrentActivity("click search")
+        Espresso.closeSoftKeyboard()
+        Espresso.pressBack()
+    }
+
     private fun openListItem() {
         runBlocking { waitForIdle() }
         clickListItem(R.id.message_list, 1)
@@ -29,5 +50,6 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         runBlocking { waitForIdle() }
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("click options menu")
+        Espresso.pressBack()
     }
 }
