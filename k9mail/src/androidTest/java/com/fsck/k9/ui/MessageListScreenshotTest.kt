@@ -50,6 +50,11 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         runBlocking { waitForIdle() }
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("click options menu")
+        click(getString(R.string.folders_title))
+        getScreenShotCurrentActivity("folders list")
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        getScreenShotCurrentActivity("click folders list options menu")
+
         Espresso.pressBack()
     }
 }
