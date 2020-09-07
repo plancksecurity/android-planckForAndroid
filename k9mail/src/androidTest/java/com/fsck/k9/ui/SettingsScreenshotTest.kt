@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -34,13 +35,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         openGlobalAdvancedSettings()
     }
 
-    @Test
-    fun accountSettingsTest() {
-        openFirstScreen()
-        openNavMenu()
-        openSettings()
-    }
-
     private fun openNavMenu() {
         clickClosedNavHamburger()
         getScreenShotCurrentActivity("nav menu folders")
@@ -58,7 +52,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("main settings menu")
     }
-
 
     private fun openGlobalDisplaySettings() {
         clickSetting(R.string.display_preferences)
@@ -110,7 +103,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         Espresso.pressBack()
     }
 
-
     private fun openGlobalAdvancedSettings() {
         clickSetting(R.string.advanced)
         getScreenShotCurrentActivity("global advanced setting")
@@ -121,4 +113,120 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         Espresso.pressBack()
 
     }
+
+    @Test
+    fun accountSettingsTest() {
+        openFirstScreen()
+        openNavMenu()
+        openSettings()
+        openAccountSettings()
+        openAccountGeneralSettings()
+        openAccountFetchingSettings()
+        openAccountSendingSettings()
+        openAccountDefaultFoldersSettings()
+        openAccountNotificationsSettings()
+        openAccountSearchSettings()
+        openAccountPrivacySettings()
+    }
+
+    private fun openAccountSettings() {
+        runBlocking { waitForIdle() }
+        clickListItem(R.id.accounts_list, 0)
+        getScreenShotCurrentActivity("account main setting")
+    }
+
+    private fun openAccountGeneralSettings() {
+        clickSetting(R.string.account_settings_general_title)
+        getScreenShotCurrentActivity("account general setting")
+
+        expandSetting(R.string.account_settings_reading_mail)
+        clickSettingDialog(R.string.account_settings_description_label, "account name setting")
+        Espresso.pressBack()
+        clickSettingDialog(R.string.account_settings_show_pictures_label, "account always show images setting")
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountFetchingSettings() {
+        clickSetting(R.string.account_settings_sync)
+        getScreenShotCurrentActivity("account fetching email setting")
+
+        expandSetting(R.string.account_settings_mail_display_count_label)
+        clickSettingDialog(R.string.account_settings_incoming_label, "account incoming server setting")
+        clickSettingDialog(R.string.account_settings_mail_display_count_label, "account local folder size setting")
+        clickSettingDialog(R.string.account_settings_message_age_label, "account sync messages from setting")
+        clickSettingDialog(R.string.account_settings_autodownload_message_size_label, "account fetch messages up to setting")
+        clickSettingDialog(R.string.account_settings_mail_check_frequency_label, "account folder poll frequency setting")
+        clickSettingDialog(R.string.account_settings_folder_sync_mode_label, "account poll folders setting")
+        clickSettingDialog(R.string.account_settings_folder_push_mode_label, "account push folders setting")
+        clickSettingDialog(R.string.account_setup_incoming_delete_policy_label, "account delete message behaviour setting")
+        clickSettingDialog(R.string.account_setup_expunge_policy_label, "account erase deleted messages behaviour setting")
+        clickSettingDialog(R.string.account_setup_push_limit_label, "account max folders push check setting")
+        clickSettingDialog(R.string.idle_refresh_period_label, "account refresh idle connections setting")
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountSendingSettings() {
+        clickSetting(R.string.account_settings_composition)
+        getScreenShotCurrentActivity("account sending email setting")
+
+        expandSetting(R.string.account_settings_quote_style_label)
+        clickSettingDialog(R.string.account_settings_composition_label, "account composition defaults setting")
+        clickSettingDialog(R.string.account_settings_identities_label, "account manage identities setting")
+        clickSettingDialog(R.string.account_settings_message_format_label, "account message format setting")
+        clickSettingDialog(R.string.account_settings_outgoing_label, "account outgoing server setting")
+        clickSettingDialog(R.string.account_settings_quote_style_label, "account reply quoting style setting")
+        clickSettingDialog(R.string.account_settings_quote_prefix_label, "account quoted text preview setting")
+        Espresso.pressBack()
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountDefaultFoldersSettings() {
+        clickSetting(R.string.account_settings_folders)
+        getScreenShotCurrentActivity("account default folders setting")
+
+        clickSettingDialog(R.string.account_setup_auto_expand_folder, "account auto-expand folder setting")
+        clickSettingDialog(R.string.account_settings_folder_display_mode_label, "account folders to display setting")
+        clickSettingDialog(R.string.account_settings_folder_target_mode_label, "account move/copy destination folders setting")
+        clickSettingDialog(R.string.archive_folder_label, "account archive folder setting")
+        clickSettingDialog(R.string.drafts_folder_label, "account drafts folder setting")
+        clickSettingDialog(R.string.sent_folder_label, "account sent folder setting")
+        clickSettingDialog(R.string.spam_folder_label, "account spam folder setting")
+        clickSettingDialog(R.string.trash_folder_label, "account trash folder setting")
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountNotificationsSettings() {
+        clickSetting(R.string.notifications_title)
+        getScreenShotCurrentActivity("account notifications setting")
+
+        expandSetting(R.string.account_settings_folder_notify_new_mail_mode_label)
+        clickSettingDialog(R.string.account_settings_folder_notify_new_mail_mode_label, "account notification folders setting")
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountSearchSettings() {
+        clickSetting(R.string.account_settings_search)
+        getScreenShotCurrentActivity("account search setting")
+
+        clickSettingDialog(R.string.account_settings_remote_search_num_label, "account Server search limit setting")
+
+        Espresso.pressBack()
+    }
+
+    private fun openAccountPrivacySettings() {
+        clickSetting(R.string.privacy_preferences)
+        getScreenShotCurrentActivity("account privacy setting")
+
+        expandSetting(R.string.pep_sync_enable_account)
+        clickSettingDialog(R.string.reset, "account reset setting")
+        click(getString(R.string.cancel_action))
+
+        Espresso.pressBack()
+    }
+
 }
