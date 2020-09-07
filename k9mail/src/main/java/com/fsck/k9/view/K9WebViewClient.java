@@ -78,6 +78,8 @@ abstract class K9WebViewClient extends WebViewClient {
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        //Add common flags
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
