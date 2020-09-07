@@ -247,6 +247,11 @@ open class BaseScreenshotTest {
         onView(withId(resourceId)).check(matches(isDisplayed())).perform(click())
     }
 
+    fun click(string: String) {
+        onView(withText(string)).check(matches(isDisplayed())).perform(click())
+    }
+
+
     fun clickPopUpMenuItem(resourceId: Int) {
         onView(withText("Disable protection")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
     }
@@ -291,7 +296,7 @@ open class BaseScreenshotTest {
 
     }
 
-    private fun getString(resourceId: Int): String =
+    fun getString(resourceId: Int): String =
             getCurrentActivity()?.resources?.getString(resourceId) ?: ""
 
     companion object {
