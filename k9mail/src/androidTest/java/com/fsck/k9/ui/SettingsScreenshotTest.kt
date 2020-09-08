@@ -13,7 +13,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class SettingsScreenshotTest : BaseScreenshotTest() {
 
-
     @Test
     fun mainSettingsTest() {
         openFirstScreen()
@@ -22,7 +21,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickMenu()
         openAboutAndLicense()
     }
-
 
     @Test
     fun globalSettingsTest() {

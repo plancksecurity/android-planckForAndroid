@@ -22,9 +22,17 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
     @Test
     fun messageListTest() {
         openFirstScreen()
-        openOptionsMenu()
-        clickSearch()
         openCloseNavMenu()
+        clickSearch()
+        openOptionsMenu()
+        openFoldersList()
+        selectAll()
+    }
+
+    private fun openListItem() {
+        runBlocking { waitForIdle() }
+        clickListItem(R.id.message_list, 1)
+        getScreenShotMessageList("inbox item 0")
     }
 
     private fun openCloseNavMenu() {
@@ -40,21 +48,24 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         Espresso.pressBack()
     }
 
-    private fun openListItem() {
-        runBlocking { waitForIdle() }
-        clickListItem(R.id.message_list, 1)
-        getScreenShotMessageList("inbox item 0")
-    }
-
     private fun openOptionsMenu() {
-        runBlocking { waitForIdle() }
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("click options menu")
+    }
+
+    private fun openFoldersList() {
         click(getString(R.string.folders_title))
         getScreenShotCurrentActivity("folders list")
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("click folders list options menu")
+        Espresso.pressBack()
+        Espresso.pressBack()
+    }
 
+    private fun selectAll() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.batch_select_all))
+        getScreenShotCurrentActivity("all items selected")
         Espresso.pressBack()
     }
 }
