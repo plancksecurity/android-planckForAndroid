@@ -11,24 +11,90 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class MessageViewScreenshotTest : BaseScreenshotTest(){
+class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    fun afterAccountSetup() {
+    fun openMessages() {
         openFirstScreen()
-        openSingleInboxMessage()
+        openThreadMessage()
+        openSingleInboxMessage(0)
+        openMoreOptions()
+        openMessageOptionsMenu()
+        clickSend()
+        clickRefile()
+        showHideHeaders()
     }
 
-    private fun openSingleInboxMessage() {
+    @Test
+    fun privacyStatus() {
+        openFirstScreen()
+        openSingleInboxMessage(0)
+        openPrivacyStatus()
+        privacyStatusLanguageClicks()
+    }
+
+    private fun openThreadMessage() {
         getScreenShotMessageList("inbox list")
-        sleep(2000)
-        clickListItem(R.id.message_list, 0)
-        getScreenShotMessageList("inbox item 0")
+        clickListItem(R.id.message_list, 1)
+        getScreenShotMessageList("inbox thread message")
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        getScreenShotMessageList("click options menu")
+        Espresso.pressBack()
+        Espresso.pressBack()
+    }
+
+    private fun openSingleInboxMessage(position: Int) {
+        clickListItem(R.id.message_list, position)
+        getScreenShotMessageList("inbox item $position")
+    }
+
+    private fun openMoreOptions() {
         click(R.id.message_more_options)
         getScreenShotMessageList("click more options")
         Espresso.pressBack()
+    }
+
+    private fun openMessageOptionsMenu() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotMessageList("click options menu")
+        Espresso.pressBack()
     }
+
+    private fun clickSend() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.single_message_options_action))
+        getScreenShotMessageList("click send... options menu")
+        Espresso.pressBack()
+    }
+
+    private fun clickRefile() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.refile_action))
+        getScreenShotMessageList("click refile... options menu")
+        Espresso.pressBack()
+    }
+
+    private fun showHideHeaders() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.show_headers_action))
+        getScreenShotMessageList("message headers")
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.hide_headers_action))
+    }
+
+    private fun openPrivacyStatus() {
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        click(getString(R.string.pep_title_activity_privacy_status))
+    }
+
+    private fun privacyStatusLanguageClicks() {
+        /*
+        getScreenShotCurrentActivity("privacy status")
+        clickListItem(R.id.my_recycler_view, R.id.shortTrustwords, "long trustwords")
+        sleep(1000)
+        clickListItem(R.id.my_recycler_view, R.id.change_language, "click change trustwords language")
+*/
+    }
+
 
 }

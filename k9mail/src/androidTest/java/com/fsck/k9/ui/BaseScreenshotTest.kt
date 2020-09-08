@@ -245,7 +245,7 @@ open class BaseScreenshotTest {
     }
 
     fun click(resourceId: Int) {
-        onView(withId(resourceId)).check(matches(isDisplayed())).perform( click())
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform(click())
     }
 
     fun scrollAndClick(resourceId: Int) {
@@ -285,12 +285,17 @@ open class BaseScreenshotTest {
         Espresso.pressBack()
     }
 
+    fun clickListItem(listResource: Int, viewId: Int, description: String) {
+        onView(withId(listResource)).perform(actionOnItem<ViewHolder>(hasDescendant(withId(viewId)), click()))
+        getScreenShotCurrentActivity(description)
+        Espresso.pressBack()
+    }
+
     fun expandSetting(stringResource: Int) {
         val string = getString(stringResource)
         onView(withId(androidx.preference.R.id.recycler_view))
                 .perform(actionOnItem<ViewHolder>(hasDescendant(withSubstring(string)), click()))
     }
-
 
     fun clickListItem(resourceId: Int, position: Int) {
         onData(CoreMatchers.anything())
