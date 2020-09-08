@@ -797,17 +797,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         showLoadingMessages();
         restartLoader();
 
-        if(folderName == null) {
-            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if(!LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders() && !anyAccountWasDeleted()) {
-                        initializeLoaders();
-                    }
-                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            });
-        }
+        startGlobalLayoutListener();
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -846,6 +836,23 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fab.hide();
         } else {
             fab.show();
+        }
+    }
+
+    private void startGlobalLayoutListener() {
+        if (folderName == null) {
+            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (loadingView.getViewTreeObserver().isAlive()) {
+                        loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                    if (isAdded() && !anyAccountWasDeleted() &&
+                            !LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders()) {
+                        initializeLoaders();
+                    }
+                }
+            });
         }
     }
 
