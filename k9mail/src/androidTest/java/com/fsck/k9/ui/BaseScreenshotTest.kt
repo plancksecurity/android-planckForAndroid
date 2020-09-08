@@ -39,6 +39,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -244,7 +245,11 @@ open class BaseScreenshotTest {
     }
 
     fun click(resourceId: Int) {
-        onView(withId(resourceId)).check(matches(isDisplayed())).perform(click())
+        onView(withId(resourceId)).check(matches(isDisplayed())).perform( click())
+    }
+
+    fun scrollAndClick(resourceId: Int) {
+        onView(withId(resourceId)).check(matches(not(isDisplayed()))).perform(scrollTo(), click())
     }
 
     fun click(string: String) {

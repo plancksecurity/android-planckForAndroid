@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class SettingsScreenshotTest : BaseScreenshotTest() {
@@ -21,7 +20,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         openNavMenu()
         openSettings()
         clickMenu()
+        openAboutAndLicense()
     }
+
 
     @Test
     fun globalSettingsTest() {
@@ -53,6 +54,12 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("main settings menu")
     }
 
+    private fun openAboutAndLicense() {
+        click(getString(R.string.about_action))
+        getScreenShotCurrentActivity("about")
+        scrollAndClick(R.id.license_button)
+        getScreenShotCurrentActivity("license")
+    }
     private fun openGlobalDisplaySettings() {
         clickSetting(R.string.display_preferences)
         getScreenShotCurrentActivity("global display setting")
