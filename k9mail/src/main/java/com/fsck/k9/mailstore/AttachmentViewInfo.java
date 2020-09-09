@@ -33,9 +33,4 @@ public class AttachmentViewInfo {
         this.part = part;
         this.isContentAvailable = isContentAvailable;
     }
-
-    public boolean ispEpAttachment() {
-        return mimeType.equalsIgnoreCase("application/pEp.sign")
-                || mimeType.equalsIgnoreCase("application/pEp.sync");
-    }
 }
