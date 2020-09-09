@@ -1622,13 +1622,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     && message.getFrom().length > 0
                                     && message.getFrom()[0].getAddress() != null) {
                                 PEpProvider.DecryptResult tempResult;
-                                tempResult = decryptMessage((MimeMessage) message);
+                                tempResult = decryptMessage((MimeMessage) message, account);
                                 if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
-                                    Rating rating = PEpUtils.extractRating(message);
+                                    Rating rating = tempResult.rating;
                                     if (!rating.equals(Rating.pEpRatingUndefined)) {
-                                        // if we are on a trusted server and already had an EncStatus, then is already encrypted by someone else.
-                                        alreadyDecrypted = controller.getAlreadyDecrypted(message, account, rating);
-                                        tempResult = new PEpProvider.DecryptResult((MimeMessage) tempResult.msg, rating, tempResult.flags);
+                                        // if we are on a trusted server and already have a rating, then is already decrypted by someone else.
+                                        alreadyDecrypted = controller.getAlreadyDecrypted(message, tempResult, account, rating);
                                     }
                                 }
                                 if (tempResult.flags == -1)
@@ -1639,7 +1638,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
                             } else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1);
+                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                             if (result == null) {
@@ -1649,7 +1648,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
                                     || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
                                     ) {
-                                MimeMessage decryptedMessage = alreadyDecrypted ? ((MimeMessage) message) : result.msg;
+                                MimeMessage decryptedMessage = result.msg;
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
 
@@ -1709,12 +1708,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Done fetching small messages for folder %s", folder);
     }
 
-    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message) {
+    private <T extends Message> PEpProvider.DecryptResult decryptMessage(MimeMessage message, Account account) {
         PEpProvider.DecryptResult tempResult;
         try {
-            tempResult = pEpProvider.decryptMessage(message);
+            tempResult = pEpProvider.decryptMessage(message, account.getEmail());
         } catch (AppCannotDecryptException error) {
-            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, -1);
+            tempResult = new PEpProvider.DecryptResult(message, Rating.pEpRatingUndefined, -1, false);
         }
         return tempResult;
     }
