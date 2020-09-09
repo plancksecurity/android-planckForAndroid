@@ -189,7 +189,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized DecryptResult decryptMessage(MimeMessage source, String email) {
+    public synchronized DecryptResult decryptMessage(MimeMessage source) {
         Timber.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
         Engine.decrypt_message_Return decReturn = null;
