@@ -100,7 +100,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return false
     }
 
-    private fun processKeyImportSyncMessages(decReturn: decrypt_message_Return?, decryptedMimeMessage: MimeMessage): DecryptResult? {
+    private fun processKeyImportSyncMessages(source: Message, decReturn: decrypt_message_Return, decryptedMimeMessage: MimeMessage): DecryptResult? {
         val flags: Int
         val lastValidDate = Date(System.currentTimeMillis() - TIMEOUT)
 
@@ -109,7 +109,10 @@ class PEpProviderImplKotlin @Inject constructor(
                     || decryptedMimeMessage.headerNames.contains(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY) -> {
                 if (lastValidDate.after(decryptedMimeMessage.sentDate)) {
                     flags = DecryptFlags.pEpDecryptFlagConsumed.value
-                    return DecryptResult(decryptedMimeMessage, decReturn!!.rating, flags)
+                    return DecryptResult(decryptedMimeMessage,
+                            decReturn.rating,
+                            flags,
+                            source.isEncrypted())
                 }
             }
             PEpUtils.isAutoConsumeMessage(decryptedMimeMessage) -> {
@@ -117,7 +120,10 @@ class PEpProviderImplKotlin @Inject constructor(
                     lastValidDate.after(decryptedMimeMessage.sentDate) -> DecryptFlags.pEpDecryptFlagConsumed.value
                     else -> DecryptFlags.pEpDecryptFlagIgnored.value
                 }
-                return DecryptResult(decryptedMimeMessage, decReturn!!.rating, flags)
+                return DecryptResult(decryptedMimeMessage,
+                        decReturn.rating,
+                        flags,
+                        source.isEncrypted())
             }
         }
         return null
@@ -515,12 +521,12 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread //Only in controller, already done
-    override fun decryptMessage(source: MimeMessage): DecryptResult = runBlocking {
+    override fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult = runBlocking {
         Timber.d("%s %s", TAG, "decryptMessage() enter")
-        decryptMessageSuspend(source)
+        decryptMessageSuspend(source, receivedBy)
     }
 
-    private suspend fun decryptMessageSuspend(source: MimeMessage): DecryptResult = withContext(Dispatchers.IO) {
+    private suspend fun decryptMessageSuspend(source: MimeMessage, receivedBy: String): DecryptResult = withContext(Dispatchers.IO) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         try {
@@ -528,6 +534,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
             srcMsg = PEpMessageBuilder(source).createMessage(context)
             srcMsg.dir = Message.Direction.Incoming
+            srcMsg.recvBy = PEpUtils.createIdentity(Address(receivedBy), context)
 
             Timber.d("%s %s", TAG, "pEpdecryptMessage() before decrypt")
             decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
@@ -537,23 +544,21 @@ class PEpProviderImplKotlin @Inject constructor(
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
 
-            when {
-                PEpUtils.isAutoConsumeMessage(decMsg) -> {
-                    Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                    if (K9.DEBUG) {
-                        // Using Log.e on purpose
-                        try {
-                            Log.e(TAG, message.attachments[0].toString())
-                        } catch (e: Exception) {
-                            Timber.d(e, "%s %s", TAG, "Could not print the autoconsume message contents")
-                        }
+            if (PEpUtils.isAutoConsumeMessage(decMsg)) {
+                Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
+                if (K9.DEBUG) {
+                    // Using Log.e on purpose
+                    try {
+                        Log.e(TAG, message.attachments[0].toString())
+                    } catch (e: Exception) {
+                        Timber.d(e, "%s %s", TAG, "Could not print the autoconsume message contents")
                     }
                 }
-                else -> {
-                    Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
-                    Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
-                }
+            } else {
+                Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
+                Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)
             }
+
             val neverUnprotected = (decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE).isNotEmpty()
                     && decMsg.getHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE)[0] == PEP_ALWAYS_SECURE_TRUE)
             decMsg.setFlag(Flag.X_PEP_NEVER_UNSECURE, neverUnprotected)
@@ -561,8 +566,8 @@ class PEpProviderImplKotlin @Inject constructor(
             extractpEpImportHeaderFromReplyTo(decMsg)
             // TODO: 2020-02-20 Seem like this flags currently are not used on the engine,
             //  this needs to be reviewed and probably removed
-            val flaggedResult = processKeyImportSyncMessages(decReturn, decMsg)
-            flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1)
+            val flaggedResult = processKeyImportSyncMessages(srcMsg, decReturn, decMsg)
+            flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1, srcMsg.isEncrypted())
 
         } catch (t: Throwable) {
             Timber.e(t, "%s %s", TAG, source.subject +
@@ -594,6 +599,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
             srcMsg = PEpMessageBuilder(source).createMessage(context)
             srcMsg.dir = Message.Direction.Incoming
+            srcMsg.recvBy = PEpUtils.createIdentity(Address(account.email), context)
 
             Timber.d("%s %s", TAG, "decryptMessage() before decrypt")
             decReturn = engine.decrypt_message(srcMsg, Vector(), 0)
@@ -610,7 +616,7 @@ class PEpProviderImplKotlin @Inject constructor(
                         decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(getRating(source)))
                     }
 
-                    notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback)
+                    notifyLoaded(DecryptResult(decMsg, decReturn.rating, decReturn.flags, srcMsg.isEncrypted()), callback)
                 }
             }
         } catch (t: Throwable) {
@@ -1273,6 +1279,10 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun getLogSuspend(): String = withContext(Dispatchers.IO) {
         engine.getCrashdumpLog(100)
+    }
+
+    fun Message.isEncrypted(): Boolean {
+        return encFormat != Message.EncFormat.None
     }
 
     companion object {
