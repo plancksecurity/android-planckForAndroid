@@ -450,7 +450,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         if (messageViewInfo.attachments != null) {
             for (AttachmentViewInfo attachment : messageViewInfo.attachments) {
                 attachments.put(attachment.internalUri, attachment);
-                if (attachment.inlineAttachment) {
+                if (attachment.inlineAttachment || attachment.ispEpAttachment()) {
                     continue;
                 }
 
