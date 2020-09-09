@@ -784,6 +784,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
+        destroyLoaders();
     }
 
     /**
@@ -2577,7 +2578,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 Timber.e(e, "Could not abort remote search before going back");
             }
         }
-        destroyLoaders();
         super.onStop();
     }
 
