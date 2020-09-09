@@ -795,7 +795,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
         showLoadingMessages();
-        restartLoader();
 
         startGlobalLayoutListener();
 
