@@ -17,6 +17,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -33,6 +34,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.common.ChildViewAction.clickChildViewWithId
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -285,10 +287,9 @@ open class BaseScreenshotTest {
         Espresso.pressBack()
     }
 
-    fun clickListItem(listResource: Int, viewId: Int, description: String) {
-        onView(withId(listResource)).perform(actionOnItem<ViewHolder>(hasDescendant(withId(viewId)), click()))
-        getScreenShotCurrentActivity(description)
-        Espresso.pressBack()
+    fun clickListChildItem(listResource: Int, viewId: Int) {
+        onView(withId(listResource))
+                .perform(actionOnItemAtPosition<ViewHolder>(0, clickChildViewWithId(viewId)))
     }
 
     fun expandSetting(stringResource: Int) {

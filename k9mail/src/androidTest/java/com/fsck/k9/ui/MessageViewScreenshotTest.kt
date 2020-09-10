@@ -33,6 +33,14 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
         privacyStatusLanguageClicks()
     }
 
+    @Test
+    fun privacyStatusActions() {
+        openFirstScreen()
+        rejectHandshake()
+        acceptHandshake()
+        resetCommunication()
+    }
+
     private fun openThreadMessage() {
         getScreenShotMessageList("inbox list")
         clickListItem(R.id.message_list, 1)
@@ -88,13 +96,42 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun privacyStatusLanguageClicks() {
-        /*
         getScreenShotCurrentActivity("privacy status")
-        clickListItem(R.id.my_recycler_view, R.id.shortTrustwords, "long trustwords")
+        clickListChildItem(R.id.my_recycler_view, R.id.trustwords)
         sleep(1000)
-        clickListItem(R.id.my_recycler_view, R.id.change_language, "click change trustwords language")
-*/
+        getScreenShotCurrentActivity("long trustwords")
+
+        clickListChildItem(R.id.my_recycler_view, R.id.change_language)
+        sleep(1000)
+        getScreenShotCurrentActivity("click trustwords language")
     }
 
+    private fun rejectHandshake() {
+        openSingleInboxMessage(0)
+        openPrivacyStatus()
+        clickListChildItem(R.id.my_recycler_view, R.id.rejectHandshake)
+        sleep(1000)
+        getScreenShotCurrentActivity("reject handshake")
+        Espresso.pressBack()
+        Espresso.pressBack()
+    }
+
+    private fun acceptHandshake() {
+        openSingleInboxMessage(1)
+        openPrivacyStatus()
+        clickListChildItem(R.id.my_recycler_view, R.id.confirmHandshake)
+        sleep(1000)
+        getScreenShotCurrentActivity("accept handshake")
+        Espresso.pressBack()
+        Espresso.pressBack()
+    }
+
+    private fun resetCommunication() {
+        openSingleInboxMessage(2)
+        openPrivacyStatus()
+        click(R.id.button_identity_key_reset)
+        sleep(1000)
+        getScreenShotCurrentActivity("reset communication")
+    }
 
 }
