@@ -14,6 +14,10 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.GeneralLocation.*
+import androidx.test.espresso.action.GeneralSwipeAction
+import androidx.test.espresso.action.Press.*
+import androidx.test.espresso.action.Swipe.*
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
@@ -258,7 +262,6 @@ open class BaseScreenshotTest {
         onView(withText(string)).check(matches(isDisplayed())).perform(click())
     }
 
-
     fun clickPopUpMenuItem(resourceId: Int) {
         onView(withText("Disable protection")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
     }
@@ -292,6 +295,30 @@ open class BaseScreenshotTest {
                 .perform(actionOnItemAtPosition<ViewHolder>(0, clickChildViewWithId(viewId)))
     }
 
+    fun swipeListItem(listResource: Int, swipeDirection: String) {
+        onData(CoreMatchers.anything())
+                .inAdapterView(withId(listResource))
+                .atPosition(0)
+                .check(matches(isDisplayed()))
+                .perform(if (swipeDirection == SWIPE_LEFT_ACTION)
+                    GeneralSwipeAction(FAST, CENTER, CENTER_RIGHT, FINGER)
+                else
+                    GeneralSwipeAction(FAST, CENTER, CENTER_LEFT, FINGER)
+                )
+    }
+
+    fun closeSwipeListItem(listResource: Int, swipeDirection: String) {
+        onData(CoreMatchers.anything())
+                .inAdapterView(withId(listResource))
+                .atPosition(0)
+                .check(matches(isDisplayed()))
+                .perform(if (swipeDirection == SWIPE_LEFT_ACTION)
+                    GeneralSwipeAction(FAST, CENTER, CENTER_LEFT, FINGER)
+                else
+                    GeneralSwipeAction(FAST, CENTER, CENTER_RIGHT, FINGER)
+                )
+    }
+
     fun expandSetting(stringResource: Int) {
         val string = getString(stringResource)
         onView(withId(androidx.preference.R.id.recycler_view))
@@ -314,6 +341,8 @@ open class BaseScreenshotTest {
         private const val BASIC_SAMPLE_PACKAGE = "com.fsck.k9"
         private const val LAUNCH_TIMEOUT = 5000L
         private const val IMAGE_DIR = "/sdcard/Screenshots/"
+        const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"
+        const val SWIPE_RIGHT_ACTION = "SWIPE_RIGHT_ACTION"
         private var cnt = 0
     }
 }

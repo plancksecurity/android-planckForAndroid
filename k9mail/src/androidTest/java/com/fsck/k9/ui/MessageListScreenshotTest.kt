@@ -22,11 +22,22 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
     @Test
     fun messageListTest() {
         openFirstScreen()
+        swipeRightAndLeft()
         openCloseNavMenu()
         clickSearch()
         openOptionsMenu()
         openFoldersList()
         selectAll()
+    }
+
+    private fun swipeRightAndLeft() {
+        swipeListItem(R.id.message_list, SWIPE_LEFT_ACTION)
+        getScreenShotMessageList("item swipe left")
+        closeSwipeListItem(R.id.message_list, SWIPE_LEFT_ACTION)
+
+        swipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
+        getScreenShotMessageList("item swipe right")
+        closeSwipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
     }
 
     private fun openListItem() {
