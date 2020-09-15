@@ -660,9 +660,7 @@ public class TestUtils {
     }
 
     public String keySync_number() {
-        if (testConfig.getKeySync_number() == null || testConfig.getKeySync_number().equals("-10")) {
-            readConfigFile();
-        }
+        readConfigFile();
         return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
@@ -2784,6 +2782,8 @@ public class TestUtils {
     }
 
     public String getKeySyncAccount (int account) {
+        waitForIdle();
+        readConfigFile();
         return testConfig.getKeySync_account(account);
     }
 
