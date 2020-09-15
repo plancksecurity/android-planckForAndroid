@@ -182,7 +182,7 @@ class PEpMessageBuilder {
 
     private Boolean hasContentTypeAndIsInline(MimeBodyPart attachment) {
         return !TextUtils.isEmpty(attachment.getContentId())
-                && "inline".equalsIgnoreCase(attachment.getDisposition());
+                && "inline".equalsIgnoreCase(attachment.getDisposition().split(";")[0]);
     }
 
 
