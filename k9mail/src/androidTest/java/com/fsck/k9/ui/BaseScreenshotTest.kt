@@ -16,8 +16,8 @@ import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.GeneralLocation.*
 import androidx.test.espresso.action.GeneralSwipeAction
-import androidx.test.espresso.action.Press.*
-import androidx.test.espresso.action.Swipe.*
+import androidx.test.espresso.action.Press.FINGER
+import androidx.test.espresso.action.Swipe.FAST
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
@@ -334,8 +334,16 @@ open class BaseScreenshotTest {
 
     }
 
-    fun getString(resourceId: Int): String =
-            getCurrentActivity()?.resources?.getString(resourceId) ?: ""
+    fun viewIsDisplayed(viewId: Int): Boolean {
+        val isDisplayed = booleanArrayOf(true)
+        onView(withId(viewId))
+                .withFailureHandler { error, _ -> isDisplayed[0] = false }
+                .check(matches(isDisplayed()))
+        return isDisplayed[0]
+    }
+
+    fun getString(resourceId: Int): String = getCurrentActivity()?.resources?.getString(resourceId)
+            ?: ""
 
     companion object {
         private const val BASIC_SAMPLE_PACKAGE = "com.fsck.k9"
@@ -346,3 +354,4 @@ open class BaseScreenshotTest {
         private var cnt = 0
     }
 }
+
