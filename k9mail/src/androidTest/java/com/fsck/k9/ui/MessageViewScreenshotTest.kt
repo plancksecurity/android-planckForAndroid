@@ -27,7 +27,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     private fun messageClicks() {
         setTestSet("D")
-        openSingleInboxMessage(0)
+        clickListItem(R.id.message_list, 0)
         getScreenShotMessageList("inbox item 0")
         openMoreOptions()
         openMessageOptionsMenu()
@@ -39,7 +39,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     private fun privacyStatus() {
         setTestSet("E")
-        openSingleInboxMessage(0)
+        clickListItem(R.id.message_list, 0)
         openPrivacyStatus()
         privacyStatusLanguageClicks()
         Espresso.pressBack()
@@ -52,10 +52,6 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
         acceptHandshake()
         resetCommunication()
         openThreadMessage()
-    }
-
-    private fun openSingleInboxMessage(position: Int) {
-        clickListItem(R.id.message_list, position)
     }
 
     private fun openMoreOptions() {
@@ -110,37 +106,40 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun rejectHandshake() {
-        openSingleInboxMessage(0)
+        clickListItem(R.id.message_list, 0)
         openPrivacyStatus()
         clickListChildItem(R.id.my_recycler_view, R.id.rejectHandshake)
         sleep(1000)
         getScreenShotCurrentActivity("reject handshake")
         Espresso.pressBack()
+        getScreenShotCurrentActivity("red status")
         Espresso.pressBack()
     }
 
     private fun acceptHandshake() {
-        openSingleInboxMessage(1)
+        clickListItem(R.id.message_list, 1)
         openPrivacyStatus()
         clickListChildItem(R.id.my_recycler_view, R.id.confirmHandshake)
         sleep(1000)
         getScreenShotCurrentActivity("accept handshake")
         Espresso.pressBack()
+        getScreenShotCurrentActivity("green status")
         Espresso.pressBack()
     }
 
     private fun resetCommunication() {
-        openSingleInboxMessage(2)
+        clickListItem(R.id.message_list, 2)
         openPrivacyStatus()
         click(R.id.button_identity_key_reset)
         sleep(1000)
         getScreenShotCurrentActivity("reset communication")
         Espresso.pressBack()
+        getScreenShotCurrentActivity("yellow status")
         Espresso.pressBack()
     }
 
     private fun openThreadMessage() {
-        openSingleInboxMessage( 3)
+        clickListItem(R.id.message_list, 3)
         getScreenShotMessageList("thread message")
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotMessageList("click options menu")

@@ -17,9 +17,9 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
     fun messageListTest() {
         setTestSet("C")
         openFirstScreen()
-        swipeRightAndLeft()
-        openCloseNavMenu()
         clickSearch()
+        openCloseNavMenu()
+        swipeRightAndLeft()
         openOptionsMenu()
         openFoldersList()
         selectAll()
@@ -32,7 +32,6 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
 
         swipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
         getScreenShotMessageList("item swipe right")
-        closeSwipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
     }
 
     private fun openCloseNavMenu() {

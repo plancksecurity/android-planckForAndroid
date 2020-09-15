@@ -51,8 +51,8 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     private fun openListItem() {
         runBlocking { waitForIdle() }
-        clickListItem(R.id.message_list, 0)
-        getScreenShotMessageList("inbox item 0")
+        clickListItem(R.id.message_list, 1)
+        getScreenShotMessageList("inbox item 1")
     }
 
     private fun openRecipientsLayout() {
