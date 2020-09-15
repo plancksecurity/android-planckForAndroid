@@ -19,6 +19,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun openNewEmptyMessage() {
+        setTestSet("H")
         openFirstScreen()
         click(R.id.fab_button_compose_message)
         getScreenShotCurrentActivity("empty")
@@ -26,6 +27,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun replyFirstInboxMessage() {
+        setTestSet("I")
         openFirstScreen()
         getScreenShotMessageList("inbox list")
         openListItem()
@@ -40,6 +42,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun addRecipient(){
+        setTestSet("J")
         openFirstScreen()
         click(R.id.fab_button_compose_message)
         getScreenShotCurrentActivity("empty")
@@ -82,7 +85,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         longClick(R.id.actionbar_message_view)
         sleep(2000)
         getScreenShotCurrentActivity("message status")
-        clickPopUpMenuItem(R.menu.pep_security_badge_options_menu)
+        clickPopUpMenuItem("Disable protection")
         getScreenShotCurrentActivity("unencrypted")
 
     }

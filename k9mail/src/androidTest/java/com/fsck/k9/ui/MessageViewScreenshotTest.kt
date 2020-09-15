@@ -15,6 +15,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun openMessages() {
+        setTestSet("E")
         openFirstScreen()
         openThreadMessage()
         openSingleInboxMessage(0)
@@ -27,6 +28,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun privacyStatus() {
+        setTestSet("F")
         openFirstScreen()
         openSingleInboxMessage(0)
         openPrivacyStatus()
@@ -35,6 +37,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun privacyStatusActions() {
+        setTestSet("G")
         openFirstScreen()
         rejectHandshake()
         acceptHandshake()

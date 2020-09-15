@@ -15,6 +15,7 @@ class SyncScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun syncTest() {
+        setTestSet("M")
         openFirstScreen()
         getScreenShotMessageList("inbox list")
         waitSyncDialog()

@@ -183,9 +183,9 @@ open class BaseScreenshotTest {
         sleep(500) // Wait for screen to change
         val imageDir = File(IMAGE_DIR)
         if (!imageDir.exists()) imageDir.mkdir()
-        val index = "%2d".format(cnt++)
+        val index = "%2d".format(count++)
         device.takeScreenshot(File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25)
-        Timber.e("Screenshot #" + (cnt - 1))
+        Timber.e("Screenshot #" + (count - 1))
     }
 
     fun sleep(time: Int) {
@@ -262,8 +262,8 @@ open class BaseScreenshotTest {
         onView(withText(string)).check(matches(isDisplayed())).perform(click())
     }
 
-    fun clickPopUpMenuItem(resourceId: Int) {
-        onView(withText("Disable protection")).inRoot(RootMatchers.isPlatformPopup()).perform(click())
+    fun clickPopUpMenuItem(string: String) {
+        onView(withText(string)).inRoot(RootMatchers.isPlatformPopup()).perform(click())
     }
 
     fun longClick(resourceId: Int) {
@@ -345,13 +345,18 @@ open class BaseScreenshotTest {
     fun getString(resourceId: Int): String = getCurrentActivity()?.resources?.getString(resourceId)
             ?: ""
 
+    fun setTestSet(string:String){
+        testSet = string
+    }
+
     companion object {
         private const val BASIC_SAMPLE_PACKAGE = "com.fsck.k9"
         private const val LAUNCH_TIMEOUT = 5000L
         private const val IMAGE_DIR = "/sdcard/Screenshots/"
         const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"
         const val SWIPE_RIGHT_ACTION = "SWIPE_RIGHT_ACTION"
-        private var cnt = 0
+        private var count = 0
+        private var testSet = "A"
     }
 }
 

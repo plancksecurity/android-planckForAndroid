@@ -15,12 +15,14 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun threadConversation() {
+        setTestSet("C")
         openFirstScreen()
         openListItem()
     }
 
     @Test
     fun messageListTest() {
+        setTestSet("D")
         openFirstScreen()
         swipeRightAndLeft()
         openCloseNavMenu()

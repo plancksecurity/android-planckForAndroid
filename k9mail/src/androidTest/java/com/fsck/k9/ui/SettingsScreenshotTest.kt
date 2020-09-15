@@ -15,6 +15,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun mainSettingsTest() {
+        setTestSet("K")
         openFirstScreen()
         openNavMenu()
         openSettings()
@@ -24,6 +25,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun globalSettingsTest() {
+        setTestSet("L")
         openFirstScreen()
         openNavMenu()
         openSettings()

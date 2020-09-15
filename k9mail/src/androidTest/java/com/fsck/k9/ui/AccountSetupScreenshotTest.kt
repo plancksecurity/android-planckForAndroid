@@ -20,12 +20,14 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun automaticAccountSetup() {
+        setTestSet("A")
         grantPermissions()
         accountSetup(true)
     }
 
     @Test
     fun manualAccountSetup() {
+        setTestSet("B")
         grantPermissions()
         accountSetup(false)
     }
