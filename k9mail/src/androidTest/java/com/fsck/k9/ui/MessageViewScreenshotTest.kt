@@ -7,7 +7,11 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import org.junit.Test
 import org.junit.runner.RunWith
-
+/*
+ *   For this test we need to:
+ *   1 - create one thread conversation
+ *   2 - send 1 message to 3 different bots
+ */
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -15,48 +19,43 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     @Test
     fun openMessages() {
-        setTestSet("E")
         openFirstScreen()
-        openThreadMessage()
+        messageClicks()
+        privacyStatus()
+        privacyStatusActions()
+    }
+
+    private fun messageClicks() {
+        setTestSet("D")
         openSingleInboxMessage(0)
+        getScreenShotMessageList("inbox item 0")
         openMoreOptions()
         openMessageOptionsMenu()
         clickSend()
         clickRefile()
         showHideHeaders()
+        Espresso.pressBack()
     }
 
-    @Test
-    fun privacyStatus() {
-        setTestSet("F")
-        openFirstScreen()
+    private fun privacyStatus() {
+        setTestSet("E")
         openSingleInboxMessage(0)
         openPrivacyStatus()
         privacyStatusLanguageClicks()
+        Espresso.pressBack()
+        Espresso.pressBack()
     }
 
-    @Test
-    fun privacyStatusActions() {
-        setTestSet("G")
-        openFirstScreen()
+    private fun privacyStatusActions() {
+        setTestSet("F")
         rejectHandshake()
         acceptHandshake()
         resetCommunication()
-    }
-
-    private fun openThreadMessage() {
-        getScreenShotMessageList("inbox list")
-        clickListItem(R.id.message_list, 1)
-        getScreenShotMessageList("inbox thread message")
-        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-        getScreenShotMessageList("click options menu")
-        Espresso.pressBack()
-        Espresso.pressBack()
+        openThreadMessage()
     }
 
     private fun openSingleInboxMessage(position: Int) {
         clickListItem(R.id.message_list, position)
-        getScreenShotMessageList("inbox item $position")
     }
 
     private fun openMoreOptions() {
@@ -107,6 +106,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
         clickListChildItem(R.id.my_recycler_view, R.id.change_language)
         sleep(1000)
         getScreenShotCurrentActivity("click trustwords language")
+        Espresso.pressBack()
     }
 
     private fun rejectHandshake() {
@@ -135,6 +135,16 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
         click(R.id.button_identity_key_reset)
         sleep(1000)
         getScreenShotCurrentActivity("reset communication")
+        Espresso.pressBack()
+        Espresso.pressBack()
     }
 
+    private fun openThreadMessage() {
+        openSingleInboxMessage( 3)
+        getScreenShotMessageList("thread message")
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        getScreenShotMessageList("click options menu")
+        Espresso.pressBack()
+        Espresso.pressBack()
+    }
 }
