@@ -347,6 +347,7 @@ open class BaseScreenshotTest {
 
     fun setTestSet(string:String){
         testSet = string
+        count = 0
     }
 
     companion object {
