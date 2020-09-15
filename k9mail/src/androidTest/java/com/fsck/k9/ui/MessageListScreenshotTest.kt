@@ -14,15 +14,8 @@ import org.junit.runner.RunWith
 class MessageListScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    fun threadConversation() {
-        setTestSet("C")
-        openFirstScreen()
-        openListItem()
-    }
-
-    @Test
     fun messageListTest() {
-        setTestSet("D")
+        setTestSet("C")
         openFirstScreen()
         swipeRightAndLeft()
         openCloseNavMenu()
@@ -40,12 +33,6 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         swipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
         getScreenShotMessageList("item swipe right")
         closeSwipeListItem(R.id.message_list, SWIPE_RIGHT_ACTION)
-    }
-
-    private fun openListItem() {
-        runBlocking { waitForIdle() }
-        clickListItem(R.id.message_list, 1)
-        getScreenShotMessageList("inbox item 0")
     }
 
     private fun openCloseNavMenu() {
