@@ -784,6 +784,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
+        destroyLoaders();
     }
 
     /**
@@ -795,9 +796,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
         showLoadingMessages();
-        restartLoader();
 
-        startGlobalLayoutListener();
+        if(folderName == null) {
+            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if(!LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders() && !anyAccountWasDeleted()) {
+                        initializeLoaders();
+                    }
+                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -836,23 +846,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fab.hide();
         } else {
             fab.show();
-        }
-    }
-
-    private void startGlobalLayoutListener() {
-        if (folderName == null) {
-            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if (loadingView.getViewTreeObserver().isAlive()) {
-                        loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                    if (isAdded() && !anyAccountWasDeleted() &&
-                            !LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders()) {
-                        initializeLoaders();
-                    }
-                }
-            });
         }
     }
 
@@ -2578,7 +2571,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 Timber.e(e, "Could not abort remote search before going back");
             }
         }
-        destroyLoaders();
         super.onStop();
     }
 
