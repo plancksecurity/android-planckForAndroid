@@ -14,26 +14,43 @@ import org.junit.runner.RunWith
 class SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    fun mainSettingsTest() {
-        setTestSet("K")
+    fun settingsTest() {
         openFirstScreen()
+        mainSettingsTest()
+        globalSettingsTest()
+        accountSettingsTest()
+        Espresso.pressBack()
+    }
+
+    private fun mainSettingsTest() {
+        setTestSet("H")
         openNavMenu()
         openSettings()
         clickMenu()
         openAboutAndLicense()
+        Espresso.pressBack()
     }
 
-    @Test
-    fun globalSettingsTest() {
-        setTestSet("L")
-        openFirstScreen()
-        openNavMenu()
-        openSettings()
+    private fun globalSettingsTest() {
+        setTestSet("I")
         openGlobalDisplaySettings()
         openGlobalInteractionSettings()
         openGlobalNotificationsSettings()
         openGlobalPrivacySettings()
         openGlobalAdvancedSettings()
+    }
+
+    private fun accountSettingsTest() {
+        setTestSet("J")
+        openAccountSettings()
+        openAccountGeneralSettings()
+        openAccountFetchingSettings()
+        openAccountSendingSettings()
+        openAccountDefaultFoldersSettings()
+        openAccountNotificationsSettings()
+        openAccountSearchSettings()
+        openAccountPrivacySettings()
+        Espresso.pressBack()
     }
 
     private fun openNavMenu() {
@@ -59,7 +76,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("about")
         scrollAndClick(R.id.license_button)
         getScreenShotCurrentActivity("license")
+        Espresso.pressBack()
     }
+
     private fun openGlobalDisplaySettings() {
         clickSetting(R.string.display_preferences)
         getScreenShotCurrentActivity("global display setting")
@@ -113,27 +132,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openGlobalAdvancedSettings() {
         clickSetting(R.string.advanced)
         getScreenShotCurrentActivity("global advanced setting")
-
         clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
         clickSettingDialog(R.string.background_ops_label, "global background sync setting")
-
         Espresso.pressBack()
-
-    }
-
-    @Test
-    fun accountSettingsTest() {
-        openFirstScreen()
-        openNavMenu()
-        openSettings()
-        openAccountSettings()
-        openAccountGeneralSettings()
-        openAccountFetchingSettings()
-        openAccountSendingSettings()
-        openAccountDefaultFoldersSettings()
-        openAccountNotificationsSettings()
-        openAccountSearchSettings()
-        openAccountPrivacySettings()
     }
 
     private fun openAccountSettings() {
