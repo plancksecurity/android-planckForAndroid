@@ -1,9 +1,6 @@
 package com.fsck.k9.ui
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.matcher.RootMatchers.isPlatformPopup
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -18,18 +15,11 @@ import org.junit.runner.RunWith
 class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    fun openNewEmptyMessage() {
-        setTestSet("H")
-        openFirstScreen()
-        click(R.id.fab_button_compose_message)
-        getScreenShotCurrentActivity("empty")
-    }
-
-    @Test
     fun replyFirstInboxMessage() {
-        setTestSet("I")
+        setTestSet("G")
         openFirstScreen()
         getScreenShotMessageList("inbox list")
+        openEmptyCompose()
         openListItem()
         openFabMenu()
         clickReply()
@@ -40,13 +30,11 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         longClickStatus()
     }
 
-    @Test
-    fun addRecipient(){
-        setTestSet("J")
-        openFirstScreen()
+    private fun openEmptyCompose() {
         click(R.id.fab_button_compose_message)
         getScreenShotCurrentActivity("empty")
-        click(R.id.to)
+        Espresso.closeSoftKeyboard()
+        Espresso.pressBack()
     }
 
     private fun clickReply() {
@@ -87,7 +75,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("message status")
         clickPopUpMenuItem("Disable protection")
         getScreenShotCurrentActivity("unencrypted")
-
+        Espresso.pressBack()
     }
 
 }
