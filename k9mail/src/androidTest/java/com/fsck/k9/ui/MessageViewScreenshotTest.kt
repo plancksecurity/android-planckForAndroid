@@ -20,9 +20,14 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     @Test
     fun openMessages() {
         openFirstScreen()
+        clickListItem(R.id.message_list, 0)
+        Espresso.pressBack()
+        sleep(500)
+        getScreenShotMessageList("inbox initial status")
         messageClicks()
         privacyStatus()
         privacyStatusActions()
+        getScreenShotMessageList("inbox all status")
     }
 
     private fun messageClicks() {
@@ -62,6 +67,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
 
     private fun openMessageOptionsMenu() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        sleep(500)
         getScreenShotMessageList("click options menu")
         Espresso.pressBack()
     }
@@ -69,6 +75,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     private fun clickSend() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         click(getString(R.string.single_message_options_action))
+        sleep(500)
         getScreenShotMessageList("click send... options menu")
         Espresso.pressBack()
     }
@@ -76,6 +83,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     private fun clickRefile() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         click(getString(R.string.refile_action))
+        sleep(500)
         getScreenShotMessageList("click refile... options menu")
         Espresso.pressBack()
     }
@@ -83,6 +91,7 @@ class MessageViewScreenshotTest : BaseScreenshotTest() {
     private fun showHideHeaders() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         click(getString(R.string.show_headers_action))
+        sleep(500)
         getScreenShotMessageList("message headers")
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         click(getString(R.string.hide_headers_action))
