@@ -450,29 +450,43 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun onOpenAccount(account: BaseAccount?): Boolean {
         if (account is SearchAccount) {
             val searchAccount = account as SearchAccount?
-            MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+            openSearchAccount(searchAccount)
         } else {
             val realAccount = account as Account?
-            if (!realAccount!!.isEnabled) {
-                onActivateAccount(realAccount)
-                return false
-            } else if (!realAccount.isAvailable(this)) {
-                val toastText = getString(R.string.account_unavailable, account!!.description)
-                FeedbackTools.showShortFeedback(accountsList, toastText)
-                Timber.i("refusing to open account that is not available")
-                return false
-            }
-            if (K9.FOLDER_NONE == realAccount.autoExpandFolderName) {
-                FolderList.actionHandleAccount(this, realAccount)
-            } else {
-                val search = LocalSearch(realAccount.autoExpandFolderName)
-                search.addAllowedFolder(realAccount.autoExpandFolderName)
-                search.addAccountUuid(realAccount.uuid)
-                MessageList.actionDisplaySearch(this, search, false, true)
-            }
+            if(!canOpenAccount(realAccount!!)) return false
+            openAccount(realAccount)
         }
         return true
     }
+
+    private fun openAccount(realAccount: Account) {
+        if (K9.FOLDER_NONE == realAccount.autoExpandFolderName) {
+            FolderList.actionHandleAccount(this, realAccount)
+        } else {
+            val search = LocalSearch(realAccount.autoExpandFolderName)
+            search.addAllowedFolder(realAccount.autoExpandFolderName)
+            search.addAccountUuid(realAccount.uuid)
+            MessageList.actionDisplaySearch(this, search, false, true)
+        }
+    }
+
+    private fun openSearchAccount(searchAccount: SearchAccount?) {
+        MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+    }
+
+    private fun canOpenAccount(realAccount: Account): Boolean {
+        if (!realAccount.isEnabled) {
+            onActivateAccount(realAccount)
+            return false
+        } else if (!realAccount.isAvailable(this)) {
+            val toastText = getString(R.string.account_unavailable, realAccount.description)
+            FeedbackTools.showShortFeedback(accountsList, toastText)
+            Timber.i("refusing to open account that is not available")
+            return false
+        }
+        return true
+    }
+
 
     private fun onActivateAccount(account: Account) {
         val disabledAccounts = ArrayList<Account>()
@@ -1112,14 +1126,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     override fun onBackPressed() {
         if(anyAccountWasDeleted) {
             if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
-                if(onOpenAccount(unifiedInboxAccount)) {
-                    anyAccountWasDeleted = false
-                    finish()
+                finishAffinity()
+                openSearchAccount(unifiedInboxAccount)
+            } else {
+                val defaultAccount = Preferences.getPreferences(this@SettingsActivity).defaultAccount
+                if(canOpenAccount(defaultAccount)) {
+                    finishAffinity()
+                    openAccount(defaultAccount)
                 }
-            } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
-                anyAccountWasDeleted = false
-                finish()
             }
+            anyAccountWasDeleted = false
         }
         else {
             super.onBackPressed()
