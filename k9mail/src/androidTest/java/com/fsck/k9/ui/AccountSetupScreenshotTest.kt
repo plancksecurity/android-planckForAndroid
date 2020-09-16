@@ -58,14 +58,18 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("without values")
         addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
         addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        closeKeyboardWithDelay()
         getScreenShotCurrentActivity("with values")
-        Espresso.closeSoftKeyboard()
         sleep(2000)
+
         click(R.id.next)
         sleep(2000)
+
         getScreenShotCurrentActivity("without values")
         addTextTo(R.id.account_name, "account name")
+        closeKeyboardWithDelay()
         getScreenShotCurrentActivity("with values")
+
         click(R.id.done)
     }
 
@@ -74,38 +78,40 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotAccountSetup("without values")
         addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
         addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
-        Espresso.closeSoftKeyboard()
-        sleep(1000)
         click(R.id.manual_setup)
-        sleep(1000)
+        sleep(1500)
 
         // setup income
         getScreenShotAccountSetup("without values")
         setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
-        Espresso.closeSoftKeyboard()
-        sleep(1000)
         click(R.id.next)
-        sleep(1000)
+        sleep(1500)
 
         // setup outcome
         getScreenShotAccountSetup("without values")
         setTextTo(R.id.account_server, BuildConfig.PEP_TEST_EMAIL_SERVER)
+        closeKeyboardWithDelay()
         getScreenShotAccountSetup("with values")
-        Espresso.closeSoftKeyboard()
-        sleep(1000)
         click(R.id.next)
-        sleep(1000)
+        sleep(1500)
 
         getScreenShotAccountSetup("")
         click(R.id.next)
-        sleep(1000)
+        sleep(1500)
 
         getScreenShotCurrentActivity("without values")
         addTextTo(R.id.account_name, "John Smith")
+        closeKeyboardWithDelay()
         getScreenShotCurrentActivity("with values")
         click(R.id.done)
     }
 
+    private fun closeKeyboardWithDelay() {
+        Espresso.closeSoftKeyboard()
+        sleep(1000)
+    }
 }
