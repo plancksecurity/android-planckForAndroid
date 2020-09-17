@@ -32,14 +32,17 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     private fun openEmptyCompose() {
         click(R.id.fab_button_compose_message)
-        getScreenShotCurrentActivity("empty")
         Espresso.closeSoftKeyboard()
+        sleep(500)
+        getScreenShotCurrentActivity("empty")
         Espresso.pressBack()
     }
 
     private fun clickReply() {
         runBlocking { waitForIdle() }
         click(R.id.fabReply)
+        Espresso.closeSoftKeyboard()
+        sleep(500)
         getScreenShotCurrentActivity("reply")
     }
 
@@ -74,6 +77,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
         sleep(2000)
         getScreenShotCurrentActivity("message status")
         clickPopUpMenuItem("Disable protection")
+        sleep(500)
         getScreenShotCurrentActivity("unencrypted")
         Espresso.pressBack()
     }
