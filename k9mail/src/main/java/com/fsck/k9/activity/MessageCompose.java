@@ -118,6 +118,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
@@ -229,7 +230,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      */
     private boolean relatedMessageProcessed = false;
 
-    private PEpProvider pEp;
+    @Inject @Named("MainUI")
+    PEpProvider pEp;
 
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
@@ -362,7 +364,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
-                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
+                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
+                pEp,
+                new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();
 
