@@ -9,6 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.view.View
+import android.widget.ScrollView
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
@@ -45,7 +47,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers.not
+import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -254,8 +256,12 @@ open class BaseScreenshotTest {
         onView(withId(resourceId)).check(matches(isDisplayed())).perform(click())
     }
 
-    fun scrollAndClick(resourceId: Int) {
-        onView(withId(resourceId)).check(matches(not(isDisplayed()))).perform(scrollTo(), click())
+    fun swipeScrollView() {
+        onView(instanceOf(ScrollView::class.java)).check(matches(isDisplayed())).perform(swipeUp())
+    }
+
+    fun swipeSettingsView() {
+        onView(instanceOf(RecyclerView::class.java)).check(matches(isDisplayed())).perform(swipeUp())
     }
 
     fun click(string: String) {
@@ -286,6 +292,7 @@ open class BaseScreenshotTest {
     fun clickSettingDialog(stringResource: Int, description: String) {
         onView(withId(androidx.preference.R.id.recycler_view))
                 .perform(actionOnItem<ViewHolder>(hasDescendant(withText(stringResource)), click()))
+        sleep(100)
         getScreenShotCurrentActivity(description)
         Espresso.pressBack()
     }

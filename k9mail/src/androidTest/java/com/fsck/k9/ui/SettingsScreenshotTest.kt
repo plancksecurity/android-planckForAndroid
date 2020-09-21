@@ -74,7 +74,10 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openAboutAndLicense() {
         click(getString(R.string.about_action))
         getScreenShotCurrentActivity("about")
-        scrollAndClick(R.id.license_button)
+        swipeScrollView()
+        sleep(1500)
+        getScreenShotCurrentActivity("about scrolled")
+        click(R.id.license_button)
         getScreenShotCurrentActivity("license")
         Espresso.pressBack()
     }
@@ -82,6 +85,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openGlobalDisplaySettings() {
         clickSetting(R.string.display_preferences)
         getScreenShotCurrentActivity("global display setting")
+        swipeSettingsView()
+        sleep(1000)
+        getScreenShotCurrentActivity("global display setting scrolled")
 
         clickSettingDialog(R.string.settings_language_label, "global language selection setting")
         clickSettingDialog(R.string.font_size_settings_title, "global font selection setting")
@@ -119,6 +125,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSetting(R.string.privacy_preferences)
         expandSetting(R.string.reset)
         getScreenShotCurrentActivity("global privacy setting")
+        swipeSettingsView()
+        sleep(1000)
+        getScreenShotCurrentActivity("global privacy setting scrolled")
 
         clickSettingDialog(R.string.reset, "global reset accounts setting")
         click(getString(R.string.cancel_action))
@@ -145,9 +154,10 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun openAccountGeneralSettings() {
         clickSetting(R.string.account_settings_general_title)
+        expandSetting(R.string.account_settings_reading_mail)
+        sleep(500)
         getScreenShotCurrentActivity("account general setting")
 
-        expandSetting(R.string.account_settings_reading_mail)
         clickSettingDialog(R.string.account_settings_description_label, "account name setting")
         Espresso.pressBack()
         clickSettingDialog(R.string.account_settings_show_pictures_label, "account always show images setting")
@@ -157,9 +167,13 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun openAccountFetchingSettings() {
         clickSetting(R.string.account_settings_sync)
-        getScreenShotCurrentActivity("account fetching email setting")
-
         expandSetting(R.string.account_settings_mail_display_count_label)
+        sleep(500)
+        getScreenShotCurrentActivity("account fetching email setting")
+        swipeSettingsView()
+        sleep(500)
+        getScreenShotCurrentActivity("account fetching email setting scrolled")
+
         clickSettingDialog(R.string.account_settings_incoming_label, "account incoming server setting")
         clickSettingDialog(R.string.account_settings_mail_display_count_label, "account local folder size setting")
         clickSettingDialog(R.string.account_settings_message_age_label, "account sync messages from setting")
@@ -177,9 +191,10 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun openAccountSendingSettings() {
         clickSetting(R.string.account_settings_composition)
+        expandSetting(R.string.account_settings_quote_style_label)
+        sleep(500)
         getScreenShotCurrentActivity("account sending email setting")
 
-        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_composition_label, "account composition defaults setting")
         clickSettingDialog(R.string.account_settings_identities_label, "account manage identities setting")
         clickSettingDialog(R.string.account_settings_message_format_label, "account message format setting")
@@ -209,9 +224,11 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun openAccountNotificationsSettings() {
         clickSetting(R.string.notifications_title)
+        expandSetting(R.string.account_settings_folder_notify_new_mail_mode_label)
+        sleep(500)
         getScreenShotCurrentActivity("account notifications setting")
 
-        expandSetting(R.string.account_settings_folder_notify_new_mail_mode_label)
+
         clickSettingDialog(R.string.account_settings_folder_notify_new_mail_mode_label, "account notification folders setting")
 
         Espresso.pressBack()
@@ -228,9 +245,10 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun openAccountPrivacySettings() {
         clickSetting(R.string.privacy_preferences)
+        expandSetting(R.string.pep_sync_enable_account)
+        sleep(500)
         getScreenShotCurrentActivity("account privacy setting")
 
-        expandSetting(R.string.pep_sync_enable_account)
         clickSettingDialog(R.string.reset, "account reset setting")
         click(getString(R.string.cancel_action))
 
