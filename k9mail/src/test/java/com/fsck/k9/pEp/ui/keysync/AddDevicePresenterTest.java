@@ -1,25 +1,23 @@
 package com.fsck.k9.pEp.ui.keysync;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.pEp.PEpProvider;
-
+import foundation.pEp.jniadapter.Identity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import foundation.pEp.jniadapter.Identity;
 import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@RunWith(AndroidJUnit4.class)
+@Config(manifest = Config.NONE)
 public class AddDevicePresenterTest {
     private static final String PARTNER_USER_ID = "partner_user_id";
     private static final String PARTNER_ADDRESS = "partner@address";
@@ -29,48 +27,48 @@ public class AddDevicePresenterTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         addDevicePresenter = new AddDevicePresenter();
         addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(),false, "");
     }
 
     @Test
-    public void shouldAcceptHandshakeOnEngineWhenAccepting() throws Exception {
+    public void shouldAcceptHandshakeOnEngineWhenAccepting() {
         addDevicePresenter.acceptHandshake();
 
         verify(pEpProvider).acceptSync();
     }
 
     @Test
-    public void shouldCancelHandshakeOnEngineWhenCancelling() throws Exception {
+    public void shouldCancelHandshakeOnEngineWhenCancelling() {
         addDevicePresenter.cancelHandshake();
 
         verify(pEpProvider).cancelSync();
     }
 
     @Test
-    public void shouldRejectHandshakeOnEngineWhenRejecting() throws Exception {
+    public void shouldRejectHandshakeOnEngineWhenRejecting() {
         addDevicePresenter.rejectHandshake();
 
         verify(pEpProvider).rejectSync();
     }
 
     @Test
-    public void shouldCloseViewWhenAccepting() throws Exception {
+    public void shouldCloseViewWhenAccepting() {
         addDevicePresenter.acceptHandshake();
 
         verify(view).close(true);
     }
 
     @Test
-    public void shouldCloseViewWhenRejecting() throws Exception {
+    public void shouldCloseViewWhenRejecting() {
         addDevicePresenter.rejectHandshake();
 
         verify(view).close(false);
     }
 
     @Test
-    public void shouldCloseViewWhenCancelling() throws Exception {
+    public void shouldCloseViewWhenCancelling() {
         addDevicePresenter.cancelHandshake();
 
         verify(view).goBack();
