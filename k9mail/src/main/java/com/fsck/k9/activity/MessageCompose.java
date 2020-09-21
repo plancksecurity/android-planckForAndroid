@@ -355,7 +355,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
-                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
+                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
+                pEp,
+                new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();
 
