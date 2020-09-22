@@ -1,14 +1,18 @@
 package com.fsck.k9.message.html;
 
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static com.fsck.k9.message.html.UriParserTestHelper.assertLinkOnly;
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 
-
+@RunWith(AndroidJUnit4.class)
+@Config(manifest = Config.NONE)
 public class UriLinkifierTest {
-    private StringBuffer outputBuffer = new StringBuffer();
+    private final StringBuffer outputBuffer = new StringBuffer();
 
 
     @Test
