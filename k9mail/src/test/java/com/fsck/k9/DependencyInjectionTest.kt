@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.junit.Test
 import org.koin.Koin
 import org.koin.log.PrintLogger
+import org.koin.standalone.StandAloneContext
 import org.koin.test.dryRun
 
 class DependencyInjectionTest : K9RobolectricTest() {
@@ -19,6 +20,7 @@ class DependencyInjectionTest : K9RobolectricTest() {
 
     @Test
     fun testDependencyTree() {
+        StandAloneContext.startKoin(emptyList())
         Koin.logger = PrintLogger()
 
         dryRun {
