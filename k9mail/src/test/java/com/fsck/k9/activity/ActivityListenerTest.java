@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,17 +40,21 @@ public class ActivityListenerTest {
     @Before
     public void before() {
         context = ApplicationProvider.getApplicationContext();
+        stubContextSpy();
+
+        account = createAccount();
+        message = mock(Message.class);
+
+        activityListener = new ActivityListener();
+    }
+
+    private void stubContextSpy() {
         contextSpy = Mockito.spy(context);
 
         Mockito.doReturn("Syncing messages").when(contextSpy).getString(R.string.status_syncing);
         Mockito.doReturn("1/2").when(contextSpy).getString(R.string.folder_progress, 1, 2);
         Mockito.doReturn("Syncing disabled").when(contextSpy).getString(R.string.status_syncing_off);
         Mockito.doReturn("2/3").when(contextSpy).getString(R.string.folder_progress, 2, 3);
-
-        account = createAccount();
-        message = mock(Message.class);
-
-        activityListener = new ActivityListener();
     }
 
     @Test
