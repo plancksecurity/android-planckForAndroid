@@ -377,11 +377,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setWindowTitle() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
         // regular folder content display
         if (!isManualSearch() && singleFolderMode) {
-            Activity activity = getActivity();
-            String displayName = FolderInfoHolder.getDisplayName(activity, account,
-                    folderName);
+            String displayName = FolderInfoHolder.getDisplayName(activity, account, folderName);
 
             fragmentListener.setMessageListTitle(displayName);
 
