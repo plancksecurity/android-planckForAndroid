@@ -895,14 +895,20 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onDownloadErrorMessageNotFound() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
+                    }
+            );
         }
 
         @Override
         public void onDownloadErrorNetworkError() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
+                    }
+            );
         }
 
         @Override
@@ -1006,13 +1012,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onViewAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
+        currentAttachmentViewInfo = attachment;
         getAttachmentController(attachment).viewAttachment();
     }
 
     @Override
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
+        currentAttachmentViewInfo = attachment;
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();

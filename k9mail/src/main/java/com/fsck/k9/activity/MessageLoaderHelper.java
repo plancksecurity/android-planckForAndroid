@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -89,6 +91,7 @@ public class MessageLoaderHelper {
     private OpenPgpDecryptionResult cachedDecryptionResult;
 
     private MessageCryptoHelper messageCryptoHelper;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
 
     public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
@@ -441,19 +444,20 @@ public class MessageLoaderHelper {
 
     MessagingListener downloadMessageListener = new SimpleMessagingListener() {
         @Override
-        public void loadMessageRemoteFinished(Account account, String folder, String uid) {
-            if (!messageReference.equals(account.getUuid(), folder, uid)) {
-                return;
-            }
-            onMessageDownloadFinished();
+        public void loadMessageRemoteFinished(final Account account, final String folder, final String uid) {
+            handler.post(() -> {
+                if (!messageReference.equals(account.getUuid(), folder, uid)) {
+                    return;
+                }
+                onMessageDownloadFinished();
+            });
         }
 
         @Override
         public void loadMessageRemoteFailed(Account account, String folder, String uid, final Throwable t) {
-            onDownloadMessageFailed(t);
+            handler.post(() -> onDownloadMessageFailed(t));
         }
     };
-
 
     // callback interface
 
