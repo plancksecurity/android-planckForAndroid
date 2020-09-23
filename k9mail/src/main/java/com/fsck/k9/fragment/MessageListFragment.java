@@ -683,8 +683,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         search = args.getParcelable(ARG_SEARCH);
         title = search.getName();
 
-        ((MessageList) getActivity()).setThreadDisplay(isThreadDisplay);
-
         String[] accountUuids = search.getAccountUuids();
 
         singleAccountMode = false;
@@ -797,6 +795,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
+        ((MessageList) requireActivity()).setThreadDisplay(isThreadDisplay);
         showLoadingMessages();
 
         startGlobalLayoutListener();
