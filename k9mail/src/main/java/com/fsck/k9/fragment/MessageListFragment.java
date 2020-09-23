@@ -377,11 +377,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setWindowTitle() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
         // regular folder content display
         if (!isManualSearch() && singleFolderMode) {
-            Activity activity = getActivity();
-            String displayName = FolderInfoHolder.getDisplayName(activity, account,
-                    folderName);
+            String displayName = FolderInfoHolder.getDisplayName(activity, account, folderName);
 
             fragmentListener.setMessageListTitle(displayName);
 
@@ -681,8 +683,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         search = args.getParcelable(ARG_SEARCH);
         title = search.getName();
 
-        ((MessageList) getActivity()).setThreadDisplay(isThreadDisplay);
-
         String[] accountUuids = search.getAccountUuids();
 
         singleAccountMode = false;
@@ -795,19 +795,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
+        ((MessageList) requireActivity()).setThreadDisplay(isThreadDisplay);
         showLoadingMessages();
 
-        if(folderName == null) {
-            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if(!LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders() && !anyAccountWasDeleted()) {
-                        initializeLoaders();
-                    }
-                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-            });
-        }
+        startGlobalLayoutListener();
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -846,6 +837,23 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fab.hide();
         } else {
             fab.show();
+        }
+    }
+
+    private void startGlobalLayoutListener() {
+        if (folderName == null) {
+            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    if (loadingView.getViewTreeObserver().isAlive()) {
+                        loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                    if (isAdded() && !anyAccountWasDeleted() &&
+                            !LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders()) {
+                        initializeLoaders();
+                    }
+                }
+            });
         }
     }
 
