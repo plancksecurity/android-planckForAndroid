@@ -298,12 +298,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void populate(final Message message, final Account account) {
 
-        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
-            loadpEpRating(message, account.ispEpPrivacyProtected());
-        }
-        else {
-            loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
-        }
+        populateRating(message, account);
 
         final Contacts contacts =
                 permissionChecker.hasContactsPermission() &&
@@ -395,6 +390,22 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mSavedState = null;
         } else {
             hideAdditionalHeaders();
+        }
+    }
+
+    private void populateRating(Message message, Account account) {
+        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
+            loadpEpRating(message, account.ispEpPrivacyProtected());
+        }
+        else {
+            if (message.getFrom() != null && message.getFrom().length > 0) {
+                loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
+            } else {
+                Timber.e("Message %s from is null or empty, uid = %s",
+                        message.getMessageId(), message.getUid());
+                pEpRating = Rating.pEpRatingUndefined;
+                mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
+            }
         }
     }
 
