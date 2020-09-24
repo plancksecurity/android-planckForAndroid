@@ -16,10 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -34,6 +31,9 @@ import static org.mockito.Mockito.*;
 @RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
 public class PEpStatusPresenterTest {
+
+    @Captor
+    private ArgumentCaptor<PEpProvider.SimpleResultCallback<Rating>> simpleResultCallbackCaptor;
 
     @Mock SimpleMessageLoaderHelper simpleMessageLoaderHelper;
     @Mock PEpStatusView pEpStatusView;
@@ -85,6 +85,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldExtractRatingWhenOnHandshakeResult() {
         presenter.initialize(pEpStatusView, uiCache, provider, true,
                 senderAddress, false, false);
@@ -145,14 +146,11 @@ public class PEpStatusPresenterTest {
     }
 
     private void stubHandshakeCallbackCall() {
-        ArgumentCaptor<PEpProvider.SimpleResultCallback<Rating>> argumentCaptor =
-                ArgumentCaptor.forClass(PEpProvider.SimpleResultCallback.class);
-
         Mockito.doAnswer(invocation -> {
-            argumentCaptor.getValue().onLoaded(Rating.pEpRatingReliable);
+            simpleResultCallbackCaptor.getValue().onLoaded(Rating.pEpRatingReliable);
             return null;
         }).when(provider).getRating(eq(senderAddress), anyList(), anyList(), anyList(),
-                argumentCaptor.capture());
+                simpleResultCallbackCaptor.capture());
     }
 
     @Test
@@ -165,6 +163,7 @@ public class PEpStatusPresenterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldGetRatingWhenonHandshakeResultWithMessageIncoming() throws Exception {
         runOnHandshakeResult(true, false);
 
@@ -183,7 +182,7 @@ public class PEpStatusPresenterTest {
     }
 
     private void prepareAndRunOnHandshakeResult(boolean trust) throws Exception {
-        ShadowLooper shadowLooper = prepareAndCallLoadRecipients();
+        ShadowLooper shadowLooper = prepareAndCallLoadRecipients(); // requirement: Identities have been loaded
 
         verify(pEpStatusView).setupRecipients(anyList());
 
@@ -197,7 +196,7 @@ public class PEpStatusPresenterTest {
     private ShadowLooper prepareAndCallLoadRecipients() throws Exception {
         ShadowLooper shadowLooper = Shadows.shadowOf(Looper.getMainLooper());
 
-        presenter.loadRecipients(); // requirement: Identities have been loaded
+        presenter.loadRecipients();
 
         Thread.sleep(1000);
         shadowLooper.runOneTask();

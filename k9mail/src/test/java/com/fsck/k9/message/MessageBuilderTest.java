@@ -3,6 +3,7 @@ package com.fsck.k9.message;
 
 import android.app.Application;
 
+import android.os.Looper;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account.QuoteStyle;
@@ -25,7 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,8 +42,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -75,7 +78,6 @@ public class MessageBuilderTest {
             "CC: cc recip <cc@example.org>\r\n" +
             "BCC: bcc recip <bcc@example.org>\r\n" +
             "Subject: test_subject\r\n" +
-            "User-Agent: K-9 Mail for Android\r\n" +
             "In-Reply-To: inreplyto\r\n" +
             "References: references\r\n" +
             "Message-ID: " + TEST_MESSAGE_ID + "\r\n" +
@@ -206,7 +208,8 @@ public class MessageBuilderTest {
     public void build_shouldSucceed() throws Exception {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
+
 
         MimeMessage message = getMessageFromCallback();
         assertEquals("text/plain", message.getMimeType());
@@ -218,6 +221,15 @@ public class MessageBuilderTest {
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT, getMessageContents(message));
     }
 
+    private void callBuildAsync(MessageBuilder messageBuilder) throws InterruptedException {
+        ShadowLooper shadowLooper = Shadows.shadowOf(Looper.getMainLooper());
+
+        messageBuilder.buildAsync(callback);
+
+        Thread.sleep(1000);
+        shadowLooper.runOneTask();
+    }
+
     @Test
     public void build_withAttachment_shouldSucceed() throws Exception {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
@@ -225,7 +237,7 @@ public class MessageBuilderTest {
                 "text/plain", "attach.txt", TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_ATTACH, getMessageContents(message));
@@ -240,7 +252,7 @@ public class MessageBuilderTest {
                 TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_LONG_FILE_NAME,
@@ -254,7 +266,7 @@ public class MessageBuilderTest {
                 "text/plain", ATTACHMENT_FILENAME_NON_ASCII, TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_ATTACH_NON_ASCII_FILENAME,
@@ -262,10 +274,10 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void build_usingHtmlFormat_shouldUseMultipartAlternativeInCorrectOrder() {
+    public void build_usingHtmlFormat_shouldUseMultipartAlternativeInCorrectOrder() throws Exception {
         MessageBuilder messageBuilder = createHtmlMessageBuilder();
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MimeMultipart.class, message.getBody().getClass());
@@ -283,7 +295,7 @@ public class MessageBuilderTest {
                 "message/rfc822", "attach.txt", TEST_ATTACHMENT_TEXT);
         messageBuilder.setAttachments(Collections.singletonList(attachment));
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         MimeMessage message = getMessageFromCallback();
         assertEquals(MESSAGE_HEADERS + MESSAGE_CONTENT_WITH_MESSAGE_ATTACH,
@@ -291,7 +303,7 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void build_detachAndReattach_shouldSucceed() throws MessagingException {
+    public void build_detachAndReattach_shouldSucceed() throws Exception {
         MessageBuilder messageBuilder = createSimpleMessageBuilder();
         Callback anotherCallback = mock(Callback.class);
 
@@ -299,6 +311,8 @@ public class MessageBuilderTest {
         messageBuilder.buildAsync(callback);
         messageBuilder.detachCallback();
         Robolectric.getBackgroundThreadScheduler().unPause();
+        Thread.sleep(1000);
+
         messageBuilder.reattachCallback(anotherCallback);
 
         verifyNoMoreInteractions(callback);
@@ -307,7 +321,7 @@ public class MessageBuilderTest {
     }
 
     @Test
-    public void buildWithException_shouldThrow() throws MessagingException {
+    public void buildWithException_shouldThrow() throws Exception {
         MessageBuilder messageBuilder = new SimpleMessageBuilder(context, messageIdGenerator, boundaryGenerator) {
             @Override
             protected void buildMessageInternal() {
@@ -315,14 +329,14 @@ public class MessageBuilderTest {
             }
         };
 
-        messageBuilder.buildAsync(callback);
+        callBuildAsync(messageBuilder);
 
         verify(callback).onMessageBuildException(any(MessagingException.class));
         verifyNoMoreInteractions(callback);
     }
 
     @Test
-    public void buildWithException_detachAndReattach_shouldThrow() throws MessagingException {
+    public void buildWithException_detachAndReattach_shouldThrow() throws Exception {
         Callback anotherCallback = mock(Callback.class);
         MessageBuilder messageBuilder = new SimpleMessageBuilder(context, messageIdGenerator, boundaryGenerator) {
             @Override
@@ -331,11 +345,15 @@ public class MessageBuilderTest {
             }
         };
 
+
         Robolectric.getBackgroundThreadScheduler().pause();
         messageBuilder.buildAsync(callback);
         messageBuilder.detachCallback();
         Robolectric.getBackgroundThreadScheduler().unPause();
+        Thread.sleep(1000);
+
         messageBuilder.reattachCallback(anotherCallback);
+
 
         verifyNoMoreInteractions(callback);
         verify(anotherCallback).onMessageBuildException(any(MessagingException.class));
@@ -383,7 +401,7 @@ public class MessageBuilderTest {
                 .setIdentity(identity)
                 .setMessageFormat(SimpleMessageFormat.TEXT)
                 .setText(TEST_MESSAGE_TEXT)
-                .setAttachments(new ArrayList<Attachment>())
+                .setAttachments(new ArrayList<>())
                 .setSignature("signature")
                 .setQuoteStyle(QuoteStyle.PREFIX)
                 .setQuotedTextMode(QuotedTextMode.NONE)
