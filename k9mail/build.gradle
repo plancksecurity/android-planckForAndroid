@@ -21,7 +21,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
-apply from: '../gradle/screenshots.gradle'
+apply from: '../gradle/plugins/utils/screenshots.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
