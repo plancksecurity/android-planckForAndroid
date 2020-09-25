@@ -238,14 +238,4 @@ public class AccountSetupBasics extends PEpImporterActivity {
     public void setManualSetupRequired(boolean manualSetupRequired) {
         isManualSetupRequired = manualSetupRequired;
     }
-
-    public String getVisibleFragmentSimpleName(){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        List<Fragment> fragments = fragmentManager.getFragments();
-        for(Fragment fragment : fragments){
-            if(fragment != null && fragment.isVisible())
-                return fragment.getClass().getSimpleName();
-        }
-        return "";
-    }
 }

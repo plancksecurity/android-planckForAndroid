@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -47,7 +48,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.instanceOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -185,7 +186,7 @@ open class BaseScreenshotTest {
         sleep(500) // Wait for screen to change
         val imageDir = File(IMAGE_DIR)
         if (!imageDir.exists()) imageDir.mkdir()
-        val index = testSet+"%2d".format(count++)
+        val index = testSet + "%2d".format(count++)
         device.takeScreenshot(File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25)
         Timber.e("Screenshot #" + (count - 1))
     }
@@ -204,7 +205,7 @@ open class BaseScreenshotTest {
         val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         Iterables.getOnlyElement(activities)?.let { currentActivity ->
             if (currentActivity is MessageList) {
-                val name = currentActivity::class.java.simpleName + " " + currentActivity.currentVisibleFragment
+                val name = currentActivity::class.java.simpleName + " " + currentActivity.currentMessageView
                 getScreenShot(name, action)
 
             }
@@ -352,7 +353,7 @@ open class BaseScreenshotTest {
     fun getString(resourceId: Int): String = getCurrentActivity()?.resources?.getString(resourceId)
             ?: ""
 
-    fun setTestSet(string:String){
+    fun setTestSet(string: String) {
         testSet = string
         count = 0
     }
@@ -366,5 +367,23 @@ open class BaseScreenshotTest {
         private var count = 0
         private var testSet = "A"
     }
+
+    private val AccountSetupBasics.visibleFragmentSimpleName: String
+        get() {
+            val fragmentManager: FragmentManager = this.supportFragmentManager
+            val fragments = fragmentManager.fragments
+            for (fragment in fragments) {
+                if (fragment != null && fragment.isVisible) return fragment.javaClass.simpleName
+            }
+            return ""
+        }
+
+    private val MessageList.currentMessageView: String
+        get() {
+            val fragment = this.messageViewFragment
+            return if (fragment != null && fragment.isVisible)
+                fragment.javaClass.simpleName
+            else "no visible fragment"
+        }
 }
 

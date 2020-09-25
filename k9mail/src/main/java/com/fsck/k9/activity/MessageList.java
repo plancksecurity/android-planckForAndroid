@@ -2624,12 +2624,4 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
         }
     }
-
-    public String getCurrentVisibleFragment() {
-        if (mMessageViewFragment != null && mMessageViewFragment.isVisible())
-            return mMessageViewFragment.getClass().getSimpleName();
-        if (mMessageListFragment != null && mMessageListFragment.isVisible())
-            return mMessageListFragment.getClass().getSimpleName();
-        return "no visible fragment";
-    }
 }
