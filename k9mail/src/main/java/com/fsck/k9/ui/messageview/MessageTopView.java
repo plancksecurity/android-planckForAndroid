@@ -86,12 +86,7 @@ public class MessageTopView extends RelativeLayout {
     }
 
     private void setShowPicturesButtonListener() {
-        showPicturesButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPicturesInAllContainerViews();
-            }
-        });
+        showPicturesButton.setOnClickListener(v -> showPicturesInAllContainerViews());
     }
 
     private void showPicturesInAllContainerViews() {
@@ -120,12 +115,10 @@ public class MessageTopView extends RelativeLayout {
         containerView.addView(view);
 
         boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-        view.displayMessageViewContainer(messageViewInfo, new OnRenderingFinishedListener() {
-            @Override
-            public void onLoadFinished() {
-                displayViewOnLoadFinished(true);
-            }
-        }, automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
+        view.displayMessageViewContainer(
+                messageViewInfo,
+                () -> displayViewOnLoadFinished(true),
+                automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
         if (view.hasHiddenExternalImages()) {
             showShowPicturesButton();
