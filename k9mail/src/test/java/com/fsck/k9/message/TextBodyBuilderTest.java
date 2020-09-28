@@ -1,32 +1,88 @@
 package com.fsck.k9.message;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.mail.internet.TextBody;
 
 import com.fsck.k9.message.quote.InsertableHtmlContent;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-//TODO: Get rid of 'Theories' and write simple tests
-@Ignore
-@RunWith(Theories.class)
+@RunWith(AndroidJUnit4.class)
+@Config(manifest = Config.NONE)
 public class TextBodyBuilderTest {
 
-    @DataPoints
-    public static boolean[] BOOLEANS = { true, false };
+    @Test
+    public void runBuildTextTests() {
+        int theSize = 6;
+        String input0 = "000000";
+        String input1 = "000001";
+        int limit = (int)Math.pow(2, theSize);
+        for(int i = 0; i < limit; i ++) {
 
-    @DataPoints
-    public static QuoteStyle[] QUOTESTYLES = { QuoteStyle.PREFIX, QuoteStyle.HEADER };
+            boolean[] params = binaryToBooleanArray(completeBinaryNumber(input0, theSize));
+            printParams(params);
+            testBuildTextPlain(
+                    params[0],
+                    params[1] ? QuoteStyle.PREFIX : QuoteStyle.HEADER,
+                    params[2],
+                    params[3],
+                    params[4],
+                    params[5]
+            );
+            testBuildTextHtml(
+                    params[0],
+                    params[1] ? QuoteStyle.PREFIX : QuoteStyle.HEADER,
+                    params[2],
+                    params[3],
+                    params[4],
+                    params[5]
+            );
 
-    @Theory
-    public void testBuildTextPlain(boolean includeQuotedText,
+            int number = Integer.parseInt(input0, 2);
+            int number1 = Integer.parseInt(input1, 2);
+
+            number = number + number1;
+            input0 = Integer.toBinaryString(number);
+        }
+    }
+
+    private boolean[] binaryToBooleanArray(String s) {
+        boolean[] out = new boolean[s.length()];
+        char[] charArray = s.toCharArray();
+        for(int i = 0; i < out.length; i ++) {
+            out[i] = charArray[i] == '1';
+        }
+        return out;
+    }
+
+    private void printParams(boolean[] booleans) {
+        StringBuilder sb = new StringBuilder();
+        for(boolean b : booleans) {
+            sb.append(b); sb.append(", ");
+        }
+        System.out.println("running test with params: " + sb);
+    }
+
+    private String completeBinaryNumber(String n, int size) {
+        StringBuilder nBuilder = new StringBuilder(n);
+        while(nBuilder.length() < size) {
+            nBuilder.insert(0, "0");
+        }
+        return nBuilder.toString();
+    }
+
+    //@Theory
+    private void testBuildTextPlain(boolean includeQuotedText,
             QuoteStyle quoteStyle,
             boolean isReplyAfterQuote,
             boolean isSignatureUse,
@@ -130,7 +186,7 @@ public class TextBodyBuilderTest {
      *
      * @see InsertableHtmlContent#toDebugString()
      */
-    public String makeExpectedHtmlContent(String expectedText, String quotedContent,
+    private String makeExpectedHtmlContent(String expectedText, String quotedContent,
             int footerInsertionPoint, boolean isBefore,
             String userContent, String compiledResult) {
         String expectedHtmlContent = "InsertableHtmlContent{"
@@ -144,8 +200,8 @@ public class TextBodyBuilderTest {
         return expectedHtmlContent;
     }
 
-    @Theory
-    public void testBuildTextHtml(boolean includeQuotedText,
+
+    private void testBuildTextHtml(boolean includeQuotedText,
             QuoteStyle quoteStyle,
             boolean isReplyAfterQuote,
             boolean isSignatureUse,
