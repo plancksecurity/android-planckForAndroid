@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class ContactPictureLoaderTest {
 
-    @Test
+    /*@Test
     public void calcUnknownContactLetter_withNoNameUsesAddress() {
         Address address = new Address("<c@d.com>");
 
@@ -94,5 +94,5 @@ public class ContactPictureLoaderTest {
         String result = ContactPictureLoader.calcUnknownContactLetter(address);
 
         assertEquals("?", result);
-    }
+    }*/
 }
