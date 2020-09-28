@@ -1,7 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -195,7 +194,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
-        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
+        mInitialized = true;
         ((MessageList) getActivity()).hideSearchView();
     }
 
@@ -866,13 +865,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             isMessageFullDownloaded = mMessage.isSet(Flag.X_DOWNLOADED_FULL) &&
                     !MessageExtractor.hasMissingParts(mMessage);
 
-            displayHeaderForLoadingMessage(message);
             mMessageView.setToLoadingState();
-            recoverRating(message);
 
+            displayHeaderForLoadingMessage(message);
+            recoverRating(message);
             boolean hasToBeDecrypted = hasToBeDecrypted(message);
+
             if (hasToBeDecrypted) {
-                showNeedsDecryptionFeedback(message);
+                decryptMessage(message);
             }
 
             if (!mAccount.ispEpPrivacyProtected()) {
@@ -889,7 +889,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-            showMessage(messageViewInfo);
+            if (mMessage != null && !hasToBeDecrypted(mMessage))
+                 showMessage(messageViewInfo);
         }
 
         @Override
@@ -944,24 +945,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void showKeyNotFoundFeedback() {
-        String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
-        String message = pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey);
-        Activity activity = getActivity();
-        if (activity != null) {
-            new AlertDialog.Builder(activity)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setPositiveButton(getString(R.string.okay_action), null)
-                    .create().show();
-        }
-    }
-
-    private void showNeedsDecryptionFeedback(final LocalMessage message) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.decrypt_message_explanation)
-                .setPositiveButton(getString(R.string.okay_action), (dialogInterface, i) -> decryptMessage(message))
-                .setNegativeButton(getString(R.string.cancel_action), null)
-                .create().show();
+        mMessageView.setToErrorState(
+                pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey),
+                pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
+        );
     }
 
     private boolean hasToBeDecrypted(LocalMessage message) {
