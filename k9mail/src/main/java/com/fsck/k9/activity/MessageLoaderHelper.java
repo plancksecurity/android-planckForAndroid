@@ -89,6 +89,9 @@ public class MessageLoaderHelper {
     private LoaderManager loaderManager;
     @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
     private MessageLoaderCallbacks callback;
+    @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
+    private MessageLoaderDecryptCallbacks decryptCallback;
+
     private PEpProvider pEpProvider;
 
     // transient state
@@ -110,6 +113,13 @@ public class MessageLoaderHelper {
         this.fragmentManager = fragmentManager;
         this.callback = callback;
         this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+    }
+
+    public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
+                               @NonNull MessageLoaderCallbacks callback,
+                               @NonNull MessageLoaderDecryptCallbacks decryptCallback) {
+        this(context, loaderManager, fragmentManager, callback);
+        this.decryptCallback = decryptCallback;
     }
 
     // public interface
@@ -235,13 +245,11 @@ public class MessageLoaderHelper {
             return;
         }*/
 
-        startOrResumeDecodeMessage();
     }
 
     public boolean hasToBeDecrypted(LocalMessage localMessage) {
         return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded();
     }
-
 
     private boolean isMessageIncomplete() {
         return !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
@@ -294,7 +302,6 @@ public class MessageLoaderHelper {
             // Do nothing
         }
     };
-
 
     // process with crypto helper
 
@@ -363,7 +370,6 @@ public class MessageLoaderHelper {
                     flagsMask, flagValues, extraFlags);
         }
     };
-
 
     // decode message
 
@@ -487,25 +493,20 @@ public class MessageLoaderHelper {
 
     // decrypt message
 
-    private void decryptMessage(LocalMessage message){
+    private void decryptMessage(LocalMessage message) {
         pEpProvider.decryptMessage(message, account, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
             @Override
             public void onLoaded(PEpProvider.DecryptResult decryptResult) {
-                if (callback == null) {
-                    throw new IllegalStateException("unexpected call when callback is already detached");
-                }
-
                 try {
                     MimeMessage decryptedMessage = decryptResult.msg;
                     // sync UID so we know our mail...
                     decryptedMessage.setUid(message.getUid());
                     // Store the updated message locally
                     LocalFolder folder = message.getFolder();
-                    LocalMessage localMessage;
-                    localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
-                        //NOP
+                    folder.storeSmallMessage(decryptedMessage, () -> {
+                        if (decryptCallback != null)
+                            decryptCallback.onMessageDecrypted();
                     });
-                    callback.onMessageDecrypted();
                 } catch (MessagingException e) {
                     Timber.e("pEp %s", "decryptMessage: view", e);
                 }
@@ -513,25 +514,19 @@ public class MessageLoaderHelper {
 
             @Override
             public void onError(Throwable throwable) {
-                if (callback == null) {
-                    throw new IllegalStateException("unexpected call when callback is already detached");
-                }
-
-                if (throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
-                    callback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
+                if (decryptCallback != null && throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
                 }
             }
         });
     }
 
 
-    // callback interface
+    // main callback interface
 
     public interface MessageLoaderCallbacks {
         void onMessageDataLoadFinished(LocalMessage message);
-        void onMessageDecrypted();
         void onMessageDataLoadFailed();
-        void onMessageDataDecryptFailed(String errorMessage);
 
         void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo);
         void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo);
@@ -543,6 +538,13 @@ public class MessageLoaderHelper {
 
         void onDownloadErrorMessageNotFound();
         void onDownloadErrorNetworkError();
+    }
+
+    // decrypt callback interface
+
+    public interface MessageLoaderDecryptCallbacks {
+        void onMessageDecrypted();
+        void onMessageDataDecryptFailed(String errorMessage);
     }
 
 }

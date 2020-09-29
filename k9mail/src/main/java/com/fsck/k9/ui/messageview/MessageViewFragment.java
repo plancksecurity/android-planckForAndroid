@@ -31,6 +31,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
+import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -214,6 +215,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         mMessageView.setOnDownloadButtonClickListener(v -> {
             mMessageView.disableDownloadButton();
+            mMessageView.setToLoadingState();
             messageLoaderHelper.downloadCompleteMessage();
         });
         // onDownloadRemainder();;
@@ -231,7 +233,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         ((MessageList) getActivity()).setMessageViewVisible(true);
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
-        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
+        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
+                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks);
 
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);
@@ -857,6 +860,21 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         return mInitialized;
     }
 
+    private MessageLoaderDecryptCallbacks messageLoaderDecryptCallbacks = new MessageLoaderDecryptCallbacks() {
+
+        @Override
+        public void onMessageDecrypted() {
+            refreshMessage();
+        }
+
+        @Override
+        public void onMessageDataDecryptFailed(String errorMessage) {
+            if (errorMessage.equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
+                showKeyNotFoundFeedback();
+            }
+        }
+    };
+
     private MessageLoaderCallbacks messageLoaderCallbacks = new MessageLoaderCallbacks() {
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
@@ -878,20 +896,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
 
         @Override
-        public void onMessageDecrypted() {
-            refreshMessage();
-        }
-
-        @Override
         public void onMessageDataLoadFailed() {
             FeedbackTools.showLongFeedback(getView(), getString(R.string.status_loading_error));
-        }
-
-        @Override
-        public void onMessageDataDecryptFailed(String errorMessage) {
-            if (errorMessage.equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
-                showKeyNotFoundFeedback();
-            }
         }
 
         @Override
