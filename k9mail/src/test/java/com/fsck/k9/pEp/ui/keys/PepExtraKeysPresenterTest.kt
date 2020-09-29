@@ -1,15 +1,11 @@
 package com.fsck.k9.pEp.ui.keys
 
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import com.nhaarman.mockito_kotlin.any
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -17,6 +13,9 @@ import org.mockito.MockitoAnnotations
 
 @ExperimentalCoroutinesApi
 class PepExtraKeysPresenterTest {
+    @get:Rule
+    var coroutinesTestRule = CoroutineTestRule()
+
     private lateinit var presenter: PepExtraKeysPresenter
 
     @Mock
@@ -28,25 +27,21 @@ class PepExtraKeysPresenterTest {
     @Throws(Exception::class)
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        presenter = PepExtraKeysPresenter()
-        Dispatchers.setMain(TestCoroutineDispatcher())
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
+        presenter = PepExtraKeysPresenter(coroutinesTestRule.testDispatcherProvider)
     }
 
     @Test
     @Throws(Exception::class)
-    fun shouldGetMasterKeysInfoWhenSetupMasterKeys() = runBlockingTest {
+    fun shouldGetMasterKeysInfoWhenSetupMasterKeys(): Unit =
+            coroutinesTestRule.testDispatcher.run {
         presenter.initialize(view, provider, keys())
         Mockito.verify(provider).masterKeysInfo
     }
 
     @Test
     @Throws(Exception::class)
-    fun shouldShowKeysInfoWhenSetupMasterKeys() = runBlockingTest {
+    fun shouldShowKeysInfoWhenSetupMasterKeys() =
+            coroutinesTestRule.testDispatcher.run {
         presenter.initialize(view, provider, keys())
         Mockito.verify(view).showKeys(any())
     }
