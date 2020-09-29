@@ -106,7 +106,7 @@ public class MessageTopView extends RelativeLayout {
         setShowDownloadButton(messageViewInfo);
     }
 
-    public void showMessage(Account account, MessageViewInfo messageViewInfo) {
+    public void showMessage(Account account, MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
         resetAndPrepareMessageView(messageViewInfo);
 
         ShowPictures showPicturesSetting = account.getShowPictures();
@@ -120,7 +120,10 @@ public class MessageTopView extends RelativeLayout {
         boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
         view.displayMessageViewContainer(
                 messageViewInfo,
-                () -> displayViewOnLoadFinished(true),
+                () -> {
+                    if (shouldStopProgressDialog)
+                        displayViewOnLoadFinished(true);
+                },
                 automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
         if (view.hasHiddenExternalImages()) {

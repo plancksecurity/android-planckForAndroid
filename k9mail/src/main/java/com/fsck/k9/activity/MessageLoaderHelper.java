@@ -24,8 +24,15 @@ import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.helper.RetainFragment;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MessageExtractor;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -33,6 +40,8 @@ import com.fsck.k9.ui.message.LocalMessageExtractorLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
+
+import static com.fsck.k9.pEp.PEpProvider.KEY_MIOSSING_ERORR_MESSAGE;
 
 
 /** This class is responsible for loading a message start to finish, and
@@ -80,7 +89,7 @@ public class MessageLoaderHelper {
     private LoaderManager loaderManager;
     @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
     private MessageLoaderCallbacks callback;
-
+    private PEpProvider pEpProvider;
 
     // transient state
     private MessageReference messageReference;
@@ -100,6 +109,7 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
+        this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
     }
 
     // public interface
@@ -201,10 +211,13 @@ public class MessageLoaderHelper {
             throw new IllegalStateException("unexpected call when callback is already detached");
         }
 
+        if (hasToBeDecrypted(localMessage)) {
+            decryptMessage(localMessage);
+        }
+
         callback.onMessageDataLoadFinished(localMessage);
 
-        boolean messageIncomplete =
-                !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+        boolean messageIncomplete = isMessageIncomplete();
         if (messageIncomplete) {
             startDownloadingMessageBody(false);
             return;
@@ -223,6 +236,19 @@ public class MessageLoaderHelper {
         }*/
 
         startOrResumeDecodeMessage();
+    }
+
+    public boolean hasToBeDecrypted(LocalMessage localMessage) {
+        return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded();
+    }
+
+
+    private boolean isMessageIncomplete() {
+        return !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+    }
+
+    private boolean isMessageFullDownloaded() {
+        return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(localMessage);
     }
 
     private void onLoadMessageFromDatabaseFailed() {
@@ -459,11 +485,53 @@ public class MessageLoaderHelper {
         }
     };
 
+    // decrypt message
+
+    private void decryptMessage(LocalMessage message){
+        pEpProvider.decryptMessage(message, account, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
+            @Override
+            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
+                if (callback == null) {
+                    throw new IllegalStateException("unexpected call when callback is already detached");
+                }
+
+                try {
+                    MimeMessage decryptedMessage = decryptResult.msg;
+                    // sync UID so we know our mail...
+                    decryptedMessage.setUid(message.getUid());
+                    // Store the updated message locally
+                    LocalFolder folder = message.getFolder();
+                    LocalMessage localMessage;
+                    localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
+                        //NOP
+                    });
+                    callback.onMessageDecrypted();
+                } catch (MessagingException e) {
+                    Timber.e("pEp %s", "decryptMessage: view", e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                if (callback == null) {
+                    throw new IllegalStateException("unexpected call when callback is already detached");
+                }
+
+                if (throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
+                    callback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
+                }
+            }
+        });
+    }
+
+
     // callback interface
 
     public interface MessageLoaderCallbacks {
         void onMessageDataLoadFinished(LocalMessage message);
+        void onMessageDecrypted();
         void onMessageDataLoadFailed();
+        void onMessageDataDecryptFailed(String errorMessage);
 
         void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo);
         void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo);

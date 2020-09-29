@@ -1804,9 +1804,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         @Override
+        public void onMessageDecrypted() {
+            // NOP
+        }
+
+        @Override
         public void onMessageDataLoadFailed() {
             internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_OFF);
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.status_invalid_id_error));
+        }
+
+        @Override
+        public void onMessageDataDecryptFailed(String errorMessage) {
+            // NOP
         }
 
         @Override

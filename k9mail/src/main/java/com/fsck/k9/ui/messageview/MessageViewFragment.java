@@ -101,7 +101,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
-    private boolean isMessageFullDownloaded;
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
@@ -353,7 +352,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         FeedbackTools.showShortFeedback(getView(), getString(R.string.message_view_toast_unable_to_display_message));
     }
 
-    private void showMessage(MessageViewInfo messageViewInfo) {
+    private void showMessage(MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
         KeyboardUtils.hideKeyboard(getActivity());
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
@@ -362,7 +361,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 requireActivity().onBackPressed();
                 FeedbackTools.showLongFeedback(requireView(), getString(R.string.message_view_message_no_longer_available));
             } else {
-                mMessageView.showMessage(mAccount, messageViewInfo);
+                mMessageView.showMessage(mAccount, messageViewInfo, shouldStopProgressDialog);
             }
             /*if (mAccount.isOpenPgpProviderConfigured()) {
                 mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
@@ -862,24 +861,25 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
-            isMessageFullDownloaded = mMessage.isSet(Flag.X_DOWNLOADED_FULL) &&
-                    !MessageExtractor.hasMissingParts(mMessage);
-
-            mMessageView.setToLoadingState();
 
             displayHeaderForLoadingMessage(message);
             recoverRating(message);
-            boolean hasToBeDecrypted = hasToBeDecrypted(message);
-
-            if (hasToBeDecrypted) {
-                decryptMessage(message);
-            }
+            ((MessageList) getActivity()).setMessageViewVisible(true);
 
             if (!mAccount.ispEpPrivacyProtected()) {
                 pEpRating = pEpRatingUndefined;
             }
 
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            if (shouldStopProgressDialog)
+                mMessageView.displayViewOnLoadFinished(true);
+
             setToolbar();
+        }
+
+        @Override
+        public void onMessageDecrypted() {
+            refreshMessage();
         }
 
         @Override
@@ -888,14 +888,25 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
 
         @Override
+        public void onMessageDataDecryptFailed(String errorMessage) {
+            if (errorMessage.equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
+                showKeyNotFoundFeedback();
+            }
+        }
+
+        @Override
         public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-            if (mMessage != null && !hasToBeDecrypted(mMessage))
-                 showMessage(messageViewInfo);
+            //At this point MessageTopView is ready, but the message may be going through decryption
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            showMessage(messageViewInfo, shouldStopProgressDialog);
+
         }
 
         @Override
         public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-            showMessage(messageViewInfo);
+            //At this point MessageTopView is ready, but the message may be going through decryption
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            showMessage(messageViewInfo, shouldStopProgressDialog);
         }
 
         @Override
@@ -951,47 +962,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         );
     }
 
-    private boolean hasToBeDecrypted(LocalMessage message) {
-        return EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
-    }
-
     private boolean canDecrypt() {
         return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
-    }
-
-    private void decryptMessage(LocalMessage message) {
-        PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
-        pEpProvider.decryptMessage(mMessage, mAccount, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
-            @Override
-            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
-                try {
-
-                    MimeMessage decryptedMessage = decryptResult.msg;
-
-                    decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-
-                    // Store the updated message locally
-                    LocalFolder folder = mMessage.getFolder();
-                    LocalMessage localMessage;
-
-                    localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
-                        //NOP
-                    });
-                    mMessage = localMessage;
-                    refreshMessage();
-
-                } catch (MessagingException e) {
-                    Timber.e("pEp %s", "decryptMessage: view", e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                if (throwable.getMessage().equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
-                    showKeyNotFoundFeedback();
-                }
-            }
-        });
     }
 
     private void refreshMessage() {
@@ -1003,7 +975,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             ft.commit();
         }
     }
-
 
     @Override
     public void onViewAttachment(AttachmentViewInfo attachment) {

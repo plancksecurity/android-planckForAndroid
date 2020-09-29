@@ -241,8 +241,18 @@ public class PEpStatusPresenter {
             }
 
             @Override
+            public void onMessageDecrypted() {
+                // NOP
+            }
+
+            @Override
             public void onMessageDataLoadFailed() {
                 view.showDataLoadError();
+            }
+
+            @Override
+            public void onMessageDataDecryptFailed(String errorMessage) {
+                // NOP
             }
 
             @Override
