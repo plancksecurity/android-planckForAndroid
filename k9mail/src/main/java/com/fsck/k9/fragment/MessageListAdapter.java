@@ -178,7 +178,7 @@ public class MessageListAdapter extends CursorAdapter {
 
         Address counterpartyAddress = fetchCounterPartyAddress(fromMe, toAddrs, ccAddrs, fromAddrs);
 
-        int threadCount = (fragment.showingThreadedList) ? cursor.getInt(THREAD_COUNT_COLUMN) : 0;
+        int threadCount = (fragment.shouldShowThreadedList()) ? cursor.getInt(THREAD_COUNT_COLUMN) : 0;
 
         String subject = cursor.getString(SUBJECT_COLUMN);
         if (subject == null || TextUtils.isEmpty(subject.trim())) {

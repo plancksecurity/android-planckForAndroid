@@ -1208,7 +1208,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             else {
                 mMessageListFragment = MessageListFragment.newInstance(mSearch, false,
-                        (K9.isThreadedViewEnabled() && !mNoThreading));
+                         !mNoThreading);
             }
             ft.add(R.id.message_list_container, mMessageListFragment);
             ft.commit();
@@ -1227,8 +1227,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         fragmentManager.addOnBackStackChangedListener(this);
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        mMessageListFragment = MessageListFragment.newInstance(search, false,
-                (K9.isThreadedViewEnabled() && !mNoThreading));
+        mMessageListFragment = MessageListFragment.newInstance(search, false, !mNoThreading);
         if (!hasMessageListFragment) {
             ft.add(R.id.message_list_container, mMessageListFragment);
         } else {

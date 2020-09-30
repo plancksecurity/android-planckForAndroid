@@ -95,9 +95,6 @@ import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
@@ -111,13 +108,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.FunctionN;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -271,7 +264,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     MessageHelper messageHelper;
     private final ActionModeCallback actionModeCallback = new ActionModeCallback();
     MessageListFragmentListener fragmentListener;
-    boolean showingThreadedList;
+    private boolean threadListEnabledInActivity;
     private boolean isThreadDisplay;
     private Context context;
     private final ActivityListener activityListener = new MessageListActivityListener();
@@ -482,7 +475,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         } else {
             adapter.clearSelected();
             this.selected.clear();
-            if (showingThreadedList && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
+            if (shouldShowThreadedList()  && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
                 Account account = getAccountFromCursor(cursor);
                 String folderName = cursor.getString(FOLDER_NAME_COLUMN);
 
@@ -695,7 +688,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private void decodeArguments() {
         Bundle args = getArguments();
 
-        showingThreadedList = args.getBoolean(ARG_THREADED_LIST, false);
+        threadListEnabledInActivity = args.getBoolean(ARG_THREADED_LIST, false);
         isThreadDisplay = args.getBoolean(ARG_IS_THREAD_DISPLAY, false);
         search = args.getParcelable(ARG_SEARCH);
         title = search.getName();
@@ -741,6 +734,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 this.accountUuids = accountUuids;
             }
         }
+    }
+
+    boolean shouldShowThreadedList() {
+        return threadListEnabledInActivity && K9.isThreadedViewEnabled();
     }
 
     private void initializeMessageList() {
@@ -1228,7 +1225,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void onDeleteConfirmed(List<MessageReference> messages) {
-        if (showingThreadedList) {
+        if (shouldShowThreadedList()) {
             messagingController.deleteThreads(messages);
         } else {
             messagingController.deleteMessages(messages, null);
@@ -1799,7 +1796,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 long uniqueId = cursor.getLong(uniqueIdColumn);
                 this.selected.add(uniqueId);
                 adapter.addSelected(cursor.getPosition());
-                if (showingThreadedList) {
+                if (shouldShowThreadedList()) {
                     int threadCount = cursor.getInt(THREAD_COUNT_COLUMN);
                     selectedCount += (threadCount > 1) ? threadCount : 1;
                 } else {
@@ -1860,7 +1857,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
 
         int selectedCountDelta = 1;
-        if (showingThreadedList) {
+        if (shouldShowThreadedList()) {
             int threadCount = cursor.getInt(THREAD_COUNT_COLUMN);
             if (threadCount > 1) {
                 selectedCountDelta = threadCount;
@@ -1940,7 +1937,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         Cursor cursor = (Cursor) adapter.getItem(adapterPosition);
         Account account = preferences.getAccount(cursor.getString(ACCOUNT_UUID_COLUMN));
 
-        if (showingThreadedList && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
+        if (shouldShowThreadedList() && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
             long threadRootId = cursor.getLong(THREAD_ROOT_COLUMN);
             messagingController.setFlagForThreads(account,
                     Collections.singletonList(threadRootId), flag, newState);
@@ -1971,7 +1968,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 Account account = preferences.getAccount(uuid);
                 accounts.add(account);
 
-                if (showingThreadedList && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
+                if (shouldShowThreadedList() && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
                     List<Long> threadRootIdList = threadMap.get(account);
                     if (threadRootIdList == null) {
                         threadRootIdList = new ArrayList<>();
@@ -2279,13 +2276,13 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             Account account = preferences.getAccount(outMessages.get(0).getAccountUuid());
 
             if (operation == FolderOperation.MOVE) {
-                if (showingThreadedList) {
+                if (shouldShowThreadedList()) {
                     messagingController.moveMessagesInThread(account, folderName, outMessages, destination);
                 } else {
                     messagingController.moveMessages(account, folderName, outMessages, destination);
                 }
             } else {
-                if (showingThreadedList) {
+                if (shouldShowThreadedList()) {
                     messagingController.copyMessagesInThread(account, folderName, outMessages, destination);
                 } else {
                     messagingController.copyMessages(account, folderName, outMessages, destination);
@@ -2901,7 +2898,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             uri = Uri.withAppendedPath(EmailProvider.CONTENT_URI, "account/" + accountUuid + "/thread/" + threadId);
             projection = PROJECTION;
             needConditions = false;
-        } else if (showingThreadedList) {
+        } else if (shouldShowThreadedList()) {
             uri = Uri.withAppendedPath(EmailProvider.CONTENT_URI, "account/" + accountUuid + "/messages/threaded");
             projection = THREADED_PROJECTION;
             needConditions = true;
@@ -3184,7 +3181,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * </p>
      */
     private void recalculateSelectionCount() {
-        if (!showingThreadedList) {
+        if (!shouldShowThreadedList()) {
             selectedCount = selected.size();
             return;
         }
