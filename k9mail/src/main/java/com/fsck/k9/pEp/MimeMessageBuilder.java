@@ -111,7 +111,7 @@ public class MimeMessageBuilder extends MessageBuilder {
         //if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
         //else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
         buildHeader(mimeMsg);
-        mimeMsg.setMessageId(pEpMessage.getId());
+        mimeMsg.setMessageId(String.format("<%s>", pEpMessage.getId()));
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
@@ -341,10 +341,11 @@ public class MimeMessageBuilder extends MessageBuilder {
 
     // move to peputils somewhen soon
     private String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
-        String rt = "";
+        StringBuilder builder = new StringBuilder();
         if (sv != null)
-            for (String cur : sv)
-                rt += cur + "; ";
-        return rt;
+            for (String cur : sv) {
+                builder.append("<").append(cur).append(">").append(" ");
+            }
+        return builder.toString();
     }
 }
