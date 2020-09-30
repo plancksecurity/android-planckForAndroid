@@ -344,8 +344,11 @@ public class TestUtils {
     }
 
     public void readConfigFile() {
-        File directory = new File(Environment.getExternalStorageDirectory().toString());
-        File newFile = new File(directory, "test/test_config.txt");
+        File newFile = null;
+         do {
+            File directory = new File(Environment.getExternalStorageDirectory().toString());
+            newFile = new File(directory, "test/test_config.txt");
+        } while (!newFile.exists());
         testConfig = new TestConfig();
         while (newFile.canRead() && (testConfig.getMail(0) == null || testConfig.getMail(0).equals(""))) {
             try {
@@ -524,8 +527,11 @@ public class TestUtils {
         }}
 
     public void checkSyncIsWorking_FirstDevice () {
+        waitForIdle();
         getMessageListSize();
+        waitForIdle();
         composeMessageButton();
+        waitForIdle();
         fillMessage(new TestUtils.BasicMessage("",
                         "SyncFirstDevice",
                         trustWords,
@@ -558,14 +564,16 @@ public class TestUtils {
     }
 
     public void checkSyncIsWorking_SecondDevice () {
+        waitForIdle();
         getMessageListSize();
+        waitForIdle();
         waitForMessageAndClickIt();
-        compareMessageBodyWithText(trustWords);
+        compareMessageBodyWithText("trust");
         pressBack();
         composeMessageButton();
         fillMessage(new TestUtils.BasicMessage("",
                         "SyncSecondDevice",
-                        trustWords,
+                        "trust",
                         getKeySyncAccount(0)),
                 false);
         while (exists(onView(withId(R.id.send)))) {
@@ -660,7 +668,9 @@ public class TestUtils {
     }
 
     public String keySync_number() {
-        readConfigFile();
+        while (testConfig.getKeySync_number().equals("-10")) {
+            readConfigFile();
+        }
         return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
@@ -1263,9 +1273,9 @@ public class TestUtils {
 
     public void attachFile(String fileName) {
         do {
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
         } while (!textExistsOnScreenTextView(fileName));
         waitUntilIdle();
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
@@ -2373,11 +2383,12 @@ public class TestUtils {
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
         onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        waitForIdle();
         while (!newEmail) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 swipeDownMessageList();
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
                 if (messageListSize[1] > messageListSize[0]){
@@ -2399,12 +2410,12 @@ public class TestUtils {
     }
 
     public void getMessageListSize() {
-        device.waitForIdle();
+        waitForIdle();
         swipeDownMessageList();
-        device.waitForIdle();
+        waitForIdle();
         while (exists(onView(withId(R.id.message_list)))) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 return;
