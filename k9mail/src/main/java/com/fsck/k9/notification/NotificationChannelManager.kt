@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -111,15 +112,15 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
 
     fun getChannelIdFor(account: Account, channelType: ChannelType): String {
         val accountUuid = account.uuid
-
-        return if (channelType == ChannelType.MESSAGES) {
-            "messages_channel_$accountUuid"
-        } else {
-            "miscellaneous_channel_$accountUuid"
+        return when {
+            channelType == ChannelType.MESSAGES && !K9.isQuietTime() ->
+                "messages_channel_$accountUuid"
+            else ->
+                "miscellaneous_channel_$accountUuid"
         }
     }
 
     fun displayName(account: Account?): String {
-        return account?.name + " (" +account?.email +")"
+        return account?.name + " (" + account?.email + ")"
     }
 }
