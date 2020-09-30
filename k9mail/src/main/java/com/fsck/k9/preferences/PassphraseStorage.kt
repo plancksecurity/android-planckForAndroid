@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import kotlinx.coroutines.*
+import timber.log.Timber
 
 
 class PassphraseStorage(context: Context) {
@@ -12,13 +14,28 @@ class PassphraseStorage(context: Context) {
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
-    private val preferences: SharedPreferences = EncryptedSharedPreferences.create(
-            context,
-            SECRET_SHARED_PREFS_FILENAME,
-            masterKeyAlias,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private lateinit var preferences: SharedPreferences
+
+    init {
+        createEncryptedSharedPreferences(context)
+    }
+
+    private fun createEncryptedSharedPreferences(context: Context) {
+        runBlocking {
+            createEncryptedSharedPreferencesInternal(context)
+        }
+    }
+
+    private suspend fun createEncryptedSharedPreferencesInternal(context: Context) =
+            withContext(Dispatchers.IO) {
+        preferences = EncryptedSharedPreferences.create(
+                context,
+                SECRET_SHARED_PREFS_FILENAME,
+                masterKeyAlias,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
 
 
     fun putPassphrase(passphrase: String?) {

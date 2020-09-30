@@ -4,10 +4,10 @@ buildscript {
                 'compileSdk'           : 29,
                 'targetSdk'            : 28,
                 'minSdk'               : 21,
-                'versionCode'          : 72,
+                'versionCode'          : 73,
                 'pEpEngineRevision'    : 'Release_2.1.0-RC38',
                 'pEpJNIAdapterRevision': 'Release_2.1.0-RC12',
-                'versionName'          : '1.1.250-dev',
+                'versionName'          : '1.1.206',
                 'libpEpAdapterRevision': 'Release_2.1.0-RC25'
         ]
 
