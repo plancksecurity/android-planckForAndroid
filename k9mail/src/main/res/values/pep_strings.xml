@@ -273,6 +273,7 @@
 
     <string name="change_language_title">Change Language</string>
     <string name="change_language_explanation">App will return to main screen to change language</string>
+    <string name="no_results_found">No results found</string>
 
 
     <string name="pgp_key_import_title">PGP Key import from filesystem</string>
