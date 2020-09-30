@@ -12,12 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -26,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
@@ -100,6 +96,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
@@ -263,7 +260,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
-        specialAccountUuid = searchAccount.getUuid();
         LocalSearch search = searchAccount.getRelatedSearch();
         MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
         addMessageListFragment(fragment, !isHomeScreen(search));
@@ -422,17 +418,39 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void search(String query) {
         if (mAccount != null && query != null) {
-            final Bundle appData = new Bundle();
-            if(isUnifiedInbox(mSearch)) specialAccountUuid = SearchAccount.UNIFIED_INBOX;
-            if(specialAccountUuid != null) {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
-            }
-            else {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
-                appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
-            }
+            final Bundle appData = prepareSearch();
             triggerSearch(query, appData);
         }
+    }
+
+    @Override
+    public void startSearch(@Nullable String initialQuery, boolean selectInitialQuery, @Nullable Bundle appSearchData, boolean globalSearch) {
+        if (mAccount != null) {
+            final Bundle appData = prepareSearch();
+            super.startSearch(null, false, appData, false);
+        }
+    }
+
+    @NotNull
+    private Bundle prepareSearch() {
+        final Bundle appData = new Bundle();
+        String currentSearchName = mActionBarTitle.getText().toString();
+        if(currentSearchName.equals(getString(R.string.integrated_inbox_title))) {
+            specialAccountUuid = SearchAccount.UNIFIED_INBOX;
+        }
+        else if(currentSearchName.equals(getString(R.string.search_all_messages_title))) {
+            specialAccountUuid = SearchAccount.ALL_MESSAGES;
+        }
+        else {
+            specialAccountUuid = null;
+        }
+        if (specialAccountUuid != null) {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+        } else {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+        }
+        return appData;
     }
 
     @Override
