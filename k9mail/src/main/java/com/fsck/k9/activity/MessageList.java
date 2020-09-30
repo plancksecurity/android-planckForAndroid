@@ -1460,9 +1460,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (!(this instanceof Search)) {
             //necessary b/c no guarantee Search.onStop will be called before MessageList.onResume
             //when returning from search results
-            Search.setActive(false);
+            if(Search.isActive()) {
+                Search.setActive(false);
+                hideSearchView();
+            }
         }
-        hideSearchView();
 
         if (mAccount != null && !mAccount.isAvailable(this)) {
             onAccountUnavailable();

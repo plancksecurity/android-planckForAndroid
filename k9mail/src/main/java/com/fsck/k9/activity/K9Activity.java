@@ -13,10 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -32,6 +29,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
+import org.jetbrains.annotations.NotNull;
+import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
@@ -41,10 +40,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
     @Nullable @Bind(R.id.fab_button_compose_message) View fabButton;
 
+    private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
+    private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
+
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
     private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
             Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
+    private boolean isShowingSearchView;
+    private String searchText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +62,14 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         mBase = K9ActivityCommon.newInstance(this);
         super.onCreate(savedInstanceState);
 //        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
+        if(savedInstanceState != null) {
 
+            isShowingSearchView = savedInstanceState.getBoolean(SHOWING_SEARCH_VIEW, false);
+
+            searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
+
+
+        }
     }
 
     @Override
@@ -145,6 +156,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public void showSearchView() {
+        isShowingSearchView = true;
         if (isAndroidLollipop) {
             onSearchRequested();
             showComposeFab(false);
@@ -157,6 +169,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             setFocusOnKeyboard();
             searchInput.setError(null);
             showComposeFab(false);
+            searchInput.setText(searchText);
         }
     }
 
@@ -172,6 +185,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Nullable @OnClick(R.id.search_clear)
     public void hideSearchView() {
+        isShowingSearchView = false;
+        searchText = null;
+
         if (searchInput != null &&
             toolbarSearchContainer != null && toolbar != null) {
             toolbarSearchContainer.setVisibility(View.GONE);
@@ -230,11 +246,24 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onResume() {
         super.onResume();
         mBase.registerPassphraseReceiver();
+        if(isShowingSearchView) {
+            showSearchView();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mBase.unregisterPassphraseReceiver();
+        if(isShowingSearchView) {
+            searchText = searchInput.getText().toString();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
+        outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
     }
 }
