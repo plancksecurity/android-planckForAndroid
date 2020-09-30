@@ -1341,10 +1341,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
                 //Query was received from Search Dialog
                 String query = intent.getStringExtra(SearchManager.QUERY).trim();
+                mSearch = new LocalSearch(getString(R.string.search_results));
+                addManualSearchConditions(query);
                 Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
                 if (appData != null) {
                     String accountExtra = appData.getString(EXTRA_SEARCH_ACCOUNT);
-                    mSearch = new LocalSearch(getString(R.string.search_results));
                     if(accountExtra.equals(SearchAccount.UNIFIED_INBOX)) {
                         prepareSpecialManualSearch(accountExtra, query, SearchField.INTEGRATE);
                     }
@@ -1353,7 +1354,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     }
                     else {
                         mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
-                        addManualSearchConditions(query);
                         if (appData.getString(EXTRA_SEARCH_FOLDER) != null) {
                             mSearch.addAllowedFolder(appData.getString(EXTRA_SEARCH_FOLDER));
                         }
@@ -1362,9 +1362,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 else {
                     mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
                 }
-
-                mSearch.setManualSearch(true);
-                mNoThreading = true;
 
             }
         } else if (intent.hasExtra(EXTRA_SEARCH_OLD)) {
@@ -1434,11 +1431,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void prepareSpecialManualSearch(String accountExtra, String query, SearchField searchField) {
         specialAccountUuid = accountExtra;
         mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
-        addManualSearchConditions(query);
         mSearch.and(searchField, "1", Attribute.EQUALS);
     }
 
     private void addManualSearchConditions(String query) {
+        mSearch.setManualSearch(true);
+        mNoThreading = true;
         mSearch.or(new SearchCondition(SearchField.SENDER, Attribute.CONTAINS, query));
         mSearch.or(new SearchCondition(SearchField.SUBJECT, Attribute.CONTAINS, query));
         mSearch.or(new SearchCondition(SearchField.MESSAGE_CONTENTS, Attribute.CONTAINS, query));
