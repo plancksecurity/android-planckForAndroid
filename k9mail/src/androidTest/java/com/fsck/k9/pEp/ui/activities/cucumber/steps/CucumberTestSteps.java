@@ -683,28 +683,35 @@ public class CucumberTestSteps {
     public void I_sync_devices(String device1, String device2) {
         int inboxMessages = testUtils.getListSize();
         int totalMessages = getTotalMessagesSize();
+        boolean ignoreThisTest = true;
         switch (testUtils.keySync_number()) {
             case "1":
                 if (device1.equals("A") || device2.equals("A")) {
+                    ignoreThisTest = false;
                     testUtils.syncDevices();
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
                     testUtils.selectAccount(0);
                 }
                 break;
             case "2":
                 if (device1.equals("B") || device2.equals("B")) {
+                    ignoreThisTest = false;
                     testUtils.syncDevices();
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
                     testUtils.selectAccount(0);
                 }
                 break;
             case "3":
                 if (device1.equals("C") || device2.equals("C")) {
+                    ignoreThisTest = false;
                     testUtils.syncDevices();
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
                     testUtils.selectAccount(1);
                 }
                 break;
@@ -713,7 +720,7 @@ public class CucumberTestSteps {
                 break;
         }
         testUtils.getMessageListSize();
-        if (totalMessages >= getTotalMessagesSize()) {
+        if (!ignoreThisTest && totalMessages >= getTotalMessagesSize()) {
             testUtils.assertFailWithMessage("There are more sync messages before sync than after sync");
         }
         if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
@@ -1205,7 +1212,7 @@ public class CucumberTestSteps {
     @Then("^I attach (\\S+)$")
     public void I_attach_file_to_message(String file) {
         timeRequiredForThisMethod(15);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         Set_external_mock(file);
         testUtils.attachFile(fileName);
         device.waitForIdle();
@@ -1219,32 +1226,39 @@ public class CucumberTestSteps {
         switch (mock){
             case "settings":
                 raw = R.raw.settingsthemedark;
+                testUtils.waitForIdle();
                 fileName = "settings.k9s";
                 break;
             case "settingsthemedark":
                 raw = R.raw.settingsthemedark;
+                testUtils.waitForIdle();
                 fileName = "settingsthemedark.k9s";
                 break;
             case "MSoffice":
                 raw = R.raw.testmsoffice;
+                testUtils.waitForIdle();
                 fileName = "testmsoffice.docx";
                 break;
             case "PDF":
                 raw = R.raw.testpdf;
+                testUtils.waitForIdle();
                 fileName = "testpdf.pdf";
                 break;
             case "masterKey":
                 raw = R.raw.masterkeypro;
+                testUtils.waitForIdle();
                 fileName = "masterkey.asc";
                 break;
             case "picture":
                 raw = R.raw.testpicture;
+                testUtils.waitForIdle();
                 fileName = "testpicture.png";
         }
         while (true) {
             try {
+                testUtils.waitForIdle();
                 TestUtils.createFile(fileName, raw);
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
