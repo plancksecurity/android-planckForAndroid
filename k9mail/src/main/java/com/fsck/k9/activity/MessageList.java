@@ -3,6 +3,7 @@ package com.fsck.k9.activity;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -83,6 +84,7 @@ import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,6 +93,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
@@ -255,7 +258,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
-        specialAccountUuid = searchAccount.getUuid();
         LocalSearch search = searchAccount.getRelatedSearch();
         MessageListFragment fragment = MessageListFragment.newInstance(search, false,
                 !mNoThreading);
@@ -415,17 +417,47 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void search(String query) {
         if (mAccount != null && query != null) {
-            final Bundle appData = new Bundle();
-            if(isUnifiedInbox(mSearch)) specialAccountUuid = SearchAccount.UNIFIED_INBOX;
-            if(specialAccountUuid != null) {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+            final Bundle appData = prepareSearch();
+            if(isAndroidLollipop()) {
+                triggerSearchForAndroidLollipop(query, appData);
             }
             else {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
-                appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+                triggerSearch(query, appData);
             }
-            triggerSearch(query, appData);
         }
+    }
+
+    private void triggerSearchForAndroidLollipop(String query, Bundle appData) {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        try {
+            Field field = searchManager.getClass().getDeclaredField("mAssociatedPackage");
+            field.setAccessible(true);
+            ComponentName componentName = new ComponentName(getApplicationContext(), MessageList.class);
+            field.set(searchManager, componentName.getPackageName());
+            searchManager.triggerSearch(query, componentName, appData);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+    }
+
+    @NotNull
+    private Bundle prepareSearch() {
+        final Bundle appData = new Bundle();
+        String currentSearchName = mActionBarTitle.getText().toString();
+        if(currentSearchName.equals(getString(R.string.integrated_inbox_title))) {
+            specialAccountUuid = SearchAccount.UNIFIED_INBOX;
+        } else if(currentSearchName.equals(getString(R.string.search_all_messages_title))) {
+            specialAccountUuid = SearchAccount.ALL_MESSAGES;
+        } else {
+            specialAccountUuid = null;
+        }
+        if (specialAccountUuid != null) {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+        } else {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+        }
+        return appData;
     }
 
     @Override

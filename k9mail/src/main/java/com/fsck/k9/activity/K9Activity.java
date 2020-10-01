@@ -30,7 +30,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import org.jetbrains.annotations.NotNull;
-import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
@@ -157,12 +156,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     public void showSearchView() {
         isShowingSearchView = true;
-        if (isAndroidLollipop) {
-            onSearchRequested();
-            showComposeFab(false);
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            searchManager.setOnDismissListener(() -> showComposeFab(true));
-        } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
+        if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
             toolbarSearchContainer.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.GONE);
             searchInput.setEnabled(true);
