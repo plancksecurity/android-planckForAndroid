@@ -9,12 +9,14 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroSecondFragment">
+            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroSecondFragment"
+            android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_secure"
