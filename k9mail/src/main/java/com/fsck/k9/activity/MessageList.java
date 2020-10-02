@@ -1106,7 +1106,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             public void onDrawerClosed(View drawerView) {
                 LocalSearch search = getLocalSearch(mAccount, folder);
                 MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
-                addMessageListFragment(fragment, true);
+                addMessageListFragment(fragment, !isHomeScreen(search));
                 drawerLayout.removeDrawerListener(drawerCloseListener);
             }
 
