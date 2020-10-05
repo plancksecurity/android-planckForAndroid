@@ -153,13 +153,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
             if (!newValue) {
-                val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                    R.style.SyncDisableDialog
-                } else {
-                    com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
-                }
                 if (syncSwitchDialog == null) {
-                    syncSwitchDialog = AlertDialog.Builder(view?.context, theme)
+                    syncSwitchDialog = AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
                             .setTitle(R.string.keysync_disable_warning_title)
                             .setMessage(R.string.keysync_disable_warning_explanation)
                             .setCancelable(false)
