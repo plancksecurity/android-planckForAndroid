@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -83,11 +82,6 @@ import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 import com.google.android.material.navigation.NavigationView;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import com.pedrogomez.renderers.RendererBuilder;
@@ -341,7 +335,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private ProgressBar mActionBarProgress;
     private MenuItem mMenuButtonCheckMail;
-    private CheckBox flaggedCheckbox;
+    private MenuItem flaggedCheckbox;
     private View mActionButtonIndeterminateProgress;
     private int mLastDirection = (K9.messageViewShowNext()) ? NEXT : PREVIOUS;
 
@@ -1906,6 +1900,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             case R.id.privacyStatus:
                 mMessageViewFragment.onPEpPrivacyStatus(true);
                 return true;
+            case R.id.flag:
+                mMessageViewFragment.onToggleFlagged();
+                return true;
         }
 
         if (!mSingleFolderMode) {
@@ -1930,14 +1927,19 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         getMenuInflater().inflate(R.menu.message_list_option, menu);
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
-        flaggedCheckbox = (CheckBox) menu.findItem(R.id.flag).getActionView();
-        flaggedCheckbox.setButtonDrawable(resourcesProvider.getAttributeResource(R.attr.iconFlagButtonOpaque));
-        flaggedCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                    if (buttonView.isPressed())
-                        mMessageViewFragment.onToggleFlagged();
-                }
-        );
+        flaggedCheckbox = menu.findItem(R.id.flag);
         return true;
+    }
+
+    private void checkFlagMenuItemChecked(boolean check) {
+        if(check) {
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueCheckedIcon));
+            flaggedCheckbox.setTitle(R.string.unflag_action);
+        }
+        else {
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueUncheckedIcon));
+            flaggedCheckbox.setTitle(R.string.flag_action);
+        }
     }
 
     @Override
@@ -2010,8 +2012,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
 
-
-            flaggedCheckbox.setChecked(mMessageViewFragment.isMessageFlagged());
+            checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {
