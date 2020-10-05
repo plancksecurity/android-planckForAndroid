@@ -35,6 +35,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var attachmentDefaultPathPreference: Preference
 
+    private var syncSwitchDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -152,18 +153,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
             if (!newValue) {
-                val theme = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-                    R.style.SyncDisableDialog
-                } else {
-                    com.google.android.material.R.style.Theme_AppCompat_Light_Dialog
+                if (syncSwitchDialog == null) {
+                    syncSwitchDialog = AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+                            .setTitle(R.string.keysync_disable_warning_title)
+                            .setMessage(R.string.keysync_disable_warning_explanation)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
+                            .setNegativeButton(R.string.cancel_action) { _, _ -> }
+                            .create()
                 }
-                AlertDialog.Builder(view?.context, theme)
-                        .setTitle(R.string.keysync_disable_warning_title)
-                        .setMessage(R.string.keysync_disable_warning_explanation)
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.keysync_disable_warning_action_disable) { _, _ -> preference.isChecked = false }
-                        .setNegativeButton(R.string.cancel_action) { _, _ -> }
-                        .show()
+                syncSwitchDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
             } else {
                 preference.isChecked = true
             }
