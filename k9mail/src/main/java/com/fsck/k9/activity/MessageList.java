@@ -2624,4 +2624,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
         }
     }
+
+    public MessageViewFragment getMessageViewFragment() {
+        return mMessageViewFragment;
+    }
 }
