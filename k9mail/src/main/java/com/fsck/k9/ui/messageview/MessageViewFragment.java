@@ -196,7 +196,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
-        mInitialized = true;
         ((MessageList) getActivity()).hideSearchView();
     }
 
@@ -240,6 +239,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         MessageReference messageReference = MessageReference.parse(messageReferenceString);
 
         displayMessage(messageReference);
+
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
         pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
     }
@@ -291,7 +291,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
-
+        mInitialized = true;
         mFragmentListener.updateMenu();
     }
 
