@@ -2525,7 +2525,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mViewSwitcher.showFirstView();
 
         mMessageListFragment.setActiveMessage(null);
-
+        removeMessageViewFragment();
         showDefaultTitleView();
         configureMenu(mMenu);
     }
