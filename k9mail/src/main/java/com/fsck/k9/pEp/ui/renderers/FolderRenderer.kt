@@ -40,17 +40,7 @@ class FolderRenderer : Renderer<FolderModel>() {
     override fun render() {
         folderName.text =
                 FolderInfoHolder.getDisplayName(context, content.account, content.localFolder.name)
-        try {
-            val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
-            uiScope.launch {
-                val unreadMessageCount = getUnreadMessageCount()
-                renderUnreadMessages(unreadMessageCount)
-            }
-        } catch (e: MessagingException) {
-            Timber.e(e)
-        }
-
+        renderUnreadMessages(content.unreadCount)
     }
 
     private suspend fun getUnreadMessageCount(): Int = withContext(Dispatchers.IO) {

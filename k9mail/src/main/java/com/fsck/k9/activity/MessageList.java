@@ -46,6 +46,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.activity.setup.DrawerFolderPopulator;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
@@ -125,6 +126,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     Preferences preferences;
     @Inject
     ResourcesProvider resourcesProvider;
+    @Inject
+    DrawerFolderPopulator drawerFolderPopulator;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -843,7 +846,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 @Override
                 public void listFolders(Account account, List<LocalFolder> folders) {
                     menuFolders = folders;
-                    populateFolders(folders);
+                    populateFolders(menuFolders);
                 }
 
                 @Override
@@ -1036,22 +1039,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void populateFolders(List<LocalFolder> folders) {
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
-
-        List<FolderModel> folderModels = new ArrayList<>(foldersFiltered.size());
-        for (LocalFolder folder : foldersFiltered) {
-            FolderModel folderModel = new FolderModel();
-            folderModel.setAccount(mAccount);
-            folderModel.setLocalFolder(folder);
-            folderModels.add(folderModel);
-        }
-        folderModels = PEpUIUtils.orderFolderLists(mAccount, folderModels);
-
-        ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(folderModels);
         runOnUiThread(() -> {
-            folderAdapter.setCollection(adapteeCollection);
-            folderAdapter.notifyDataSetChanged();
+            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount);
+            setupMainFolders();
         });
-        setupMainFolders();
     }
 
     @NonNull
