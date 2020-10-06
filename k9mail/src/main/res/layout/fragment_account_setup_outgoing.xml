@@ -57,6 +57,7 @@
                 android:id="@+id/account_port"
                 android:singleLine="true"
                 android:inputType="number"
+                android:maxLength="5"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
                 android:contentDescription="@string/account_setup_outgoing_port_label" />
