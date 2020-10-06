@@ -3,10 +3,13 @@ package com.fsck.k9.ui
 import android.Manifest.permission.*
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.Instrumentation
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.ScrollView
@@ -26,6 +29,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -49,6 +54,7 @@ import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.instanceOf
+import org.hamcrest.core.IsNot
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -356,6 +362,19 @@ open class BaseScreenshotTest {
     fun setTestSet(string: String) {
         testSet = string
         count = 0
+    }
+
+    fun startFileManagerStub(filename: String, extension: String) {
+        val result: Instrumentation.ActivityResult = fileManagerResultStub(filename, extension)
+        Intents.intending(IsNot.not(IntentMatchers.isInternal())).respondWith(result)
+        runBlocking { waitForIdle() }
+    }
+
+    private fun fileManagerResultStub(fileName: String, extension: String): Instrumentation.ActivityResult {
+        val resultData = Intent()
+        val fileLocation = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName + extension)
+        resultData.data = Uri.parse("file://$fileLocation")
+        return Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
     }
 
     companion object {

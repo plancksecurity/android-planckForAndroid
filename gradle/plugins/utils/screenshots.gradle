@@ -1,6 +1,21 @@
 
 
+task clearDataImportAccount(type: Exec) {
+    def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
+    commandLine clearDataCommand
+}
+
+task importAccount(type: Exec) {
+    dependsOn clearDataImportAccount
+    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+                            'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#importAccountSetup',
+                            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
+    commandLine autoLoginCommand
+}
+
+
 task clearDataAuto(type: Exec) {
+    dependsOn importAccount
     def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
     commandLine clearDataCommand
 }

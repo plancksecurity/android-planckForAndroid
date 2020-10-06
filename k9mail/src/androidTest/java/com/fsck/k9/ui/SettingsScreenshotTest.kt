@@ -1,23 +1,13 @@
 package com.fsck.k9.ui
 
-import android.app.Activity
-import android.app.Instrumentation.ActivityResult
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
-import android.os.Environment.getExternalStoragePublicDirectory
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.core.IsNot.not
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -267,9 +257,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun importKey() {
-        val result: ActivityResult = fileManagerResultStub()
-        intending(not(isInternal())).respondWith(result)
-        runBlocking { waitForIdle() }
+        startFileManagerStub("test_key", "asc")
 
         clickSetting(R.string.pgp_key_import_title)
         runBlocking { waitForIdle() }
@@ -282,11 +270,4 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import key step 2")
     }
 
-    private fun fileManagerResultStub(): ActivityResult {
-        val resultData = Intent()
-        val fileName = "test_key.asc"
-        val fileLocation = File(getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName)
-        resultData.data = Uri.parse("file://$fileLocation")
-        return ActivityResult(Activity.RESULT_OK, resultData)
-    }
 }

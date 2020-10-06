@@ -3,6 +3,7 @@ package com.fsck.k9.ui
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
@@ -33,6 +34,35 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         setTestSet("B")
         grantPermissions()
         accountSetup(false)
+    }
+
+    @Test
+    fun importAccountSetup() {
+        setTestSet("L")
+        grantPermissions()
+        openFirstScreen()
+        click(R.id.skip)
+        sleep(500)
+
+        Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        getScreenShotCurrentActivity("import account menu")
+        sleep(500)
+
+        startFileManagerStub("android07", "k9s")
+        click(getString(R.string.settings_import))
+        sleep(500)
+
+        getScreenShotCurrentActivity("import account step 1")
+        click(getString(R.string.okay_action))
+        sleep(500)
+
+        getScreenShotCurrentActivity("import account step 2")
+        click(getString(R.string.okay_action))
+        sleep(2000)
+
+        getScreenShotCurrentActivity("import account step 3")
+        addTextTo(R.id.incoming_server_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        getScreenShotCurrentActivity("import account step 3 filled")
     }
 
     private fun accountSetup(automaticLogin: Boolean) {
