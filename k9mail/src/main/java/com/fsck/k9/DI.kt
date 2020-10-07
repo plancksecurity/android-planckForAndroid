@@ -11,6 +11,7 @@ import com.fsck.k9.mailstore.mailStoreModule
 import com.fsck.k9.ui.endtoend.endToEndUiModule
 import com.fsck.k9.ui.folders.FolderNameFormatter
 import com.fsck.k9.ui.settings.settingsUiModule
+import kotlinx.coroutines.*
 import org.koin.Koin
 import org.koin.KoinContext
 import org.koin.android.ext.koin.with
@@ -43,7 +44,17 @@ object DI {
     @JvmStatic fun start(application: Application) {
         @Suppress("ConstantConditionIf")
         Koin.logger = if (BuildConfig.DEBUG) AndroidLogger() else EmptyLogger()
+        startKoin(application)
+    }
 
+    private fun startKoin(application: Application) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            startKoinCoroutine(application)
+        }
+    }
+
+    private suspend fun startKoinCoroutine(application: Application) = withContext(Dispatchers.IO) {
         StandAloneContext.startKoin(appModules) with application
     }
 
