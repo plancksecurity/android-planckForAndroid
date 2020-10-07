@@ -302,6 +302,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 
+    @Override
+    public void onStop() {
+        pEpSecurityStatusLayout.setVisibility(View.GONE);
+        super.onStop();
+    }
+
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
             requestCode ^= REQUEST_MASK_LOADER_HELPER;
