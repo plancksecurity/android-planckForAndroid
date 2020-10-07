@@ -527,6 +527,11 @@ public class TestUtils {
         }}
 
     public void checkSyncIsWorking_FirstDevice () {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         waitForIdle();
         getMessageListSize();
         waitForIdle();
@@ -568,12 +573,12 @@ public class TestUtils {
         getMessageListSize();
         waitForIdle();
         waitForMessageAndClickIt();
-        compareMessageBodyWithText("trust");
+        compareMessageBodyWithText(trustWords);
         pressBack();
         composeMessageButton();
         fillMessage(new TestUtils.BasicMessage("",
                         "SyncSecondDevice",
-                        "trust",
+                        trustWords,
                         getKeySyncAccount(0)),
                 false);
         while (exists(onView(withId(R.id.send)))) {
