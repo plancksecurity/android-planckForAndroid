@@ -1,13 +1,12 @@
 package com.fsck.k9.pEp.ui.keys
 
 import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.infrastructure.Presenter
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
 
-class PepExtraKeysPresenter @Inject constructor() : Presenter {
+class PepExtraKeysPresenter @Inject constructor() {
 
     private lateinit var view: PepExtraKeysView
     private lateinit var pEp: PEpProvider
@@ -35,8 +34,4 @@ class PepExtraKeysPresenter @Inject constructor() : Presenter {
     private suspend fun getMasterKeyInfo(): List<KeyListItem>? = withContext(Dispatchers.IO) {
         pEp.masterKeysInfo
     }
-
-    override fun resume() {}
-    override fun pause() {}
-    override fun destroy() {}
 }

@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.ui.keysync;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.IdentityFlags;
@@ -12,7 +11,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class KeysyncManagerPresenter implements Presenter {
+public class KeysyncManagerPresenter {
 
     private KeysyncManagementView view;
     private PEpProvider pEpProvider;
@@ -89,20 +88,5 @@ public class KeysyncManagerPresenter implements Presenter {
                 }
             });
         }
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void destroy() {
-
     }
 }
