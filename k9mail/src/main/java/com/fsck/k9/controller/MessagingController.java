@@ -1601,7 +1601,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         try {
                             long time = System.currentTimeMillis();
 
-                            boolean store = true;
                             if (!shouldImportMessage(account, message, earliestDate)) {
                                 progress.incrementAndGet();
 
@@ -1641,13 +1640,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                            if (result == null) {
-                                deleteMessage(message, account, folder, localFolder);
-                            } else if (store
-                                    && (!account.ispEpPrivacyProtected()
-                                    || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
-                                    || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
-                                    ) {
+                            // Store message
                                 MimeMessage decryptedMessage = result.msg;
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
@@ -1688,7 +1681,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (shouldNotifyForMessage(account, localFolder, message)) {
                                         messagesToNotify.add(localMessage);
                                     }
-                            }
+                                    //End message Store
+
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
                         }
