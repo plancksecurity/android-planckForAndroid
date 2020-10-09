@@ -111,7 +111,14 @@ public class MimeMessageBuilder extends MessageBuilder {
         //if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
         //else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
         buildHeader(mimeMsg);
-        mimeMsg.setMessageId(String.format("<%s>", pEpMessage.getId()));
+
+        if (pEpMessage.getId() != null) {
+            if (messageIdIncludesAngleBrackets(pEpMessage.getId())) {
+                mimeMsg.setMessageId(pEpMessage.getId());
+            } else {
+                mimeMsg.setMessageId(String.format("<%s>", pEpMessage.getId()));
+            }
+        }
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
@@ -122,6 +129,10 @@ public class MimeMessageBuilder extends MessageBuilder {
                 mimeMsg.addHeader(field.first, field.second);
             }
         }
+    }
+
+    private boolean messageIdIncludesAngleBrackets(String messageId) {
+        return messageId.startsWith("<") && messageId.endsWith(">");
     }
 
     private void buildBodyForMessage(MimeMessage mimeMsg) throws MessagingException {
