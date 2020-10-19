@@ -263,7 +263,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
         specialAccountUuid = searchAccount.getUuid();
         LocalSearch search = searchAccount.getRelatedSearch();
-        MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+                !mNoThreading);
         addMessageListFragment(fragment, !isHomeScreen(search));
         drawerLayout.closeDrawers();
     }
@@ -885,7 +886,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onDrawerClosed(View drawerView) {
                 LocalSearch search = getLocalSearch(mAccount, folder);
-                MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+                MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+                        !mNoThreading);
                 addMessageListFragment(fragment, true);
                 drawerLayout.removeDrawerListener(drawerCloseListener);
             }
@@ -2046,7 +2048,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         tmpSearch.addAccountUuids(mSearch.getAccountUuids());
         tmpSearch.and(SearchField.SENDER, senderAddress, Attribute.CONTAINS);
 
-        MessageListFragment fragment = MessageListFragment.newInstance(tmpSearch, false, false);
+        MessageListFragment fragment = MessageListFragment.newInstance(
+                tmpSearch, false, !mNoThreading);
 
         addMessageListFragment(fragment, !isHomeScreen(tmpSearch));
     }
