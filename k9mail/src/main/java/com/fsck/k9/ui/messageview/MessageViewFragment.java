@@ -8,6 +8,7 @@ import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -591,7 +592,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     public void onSendAlternate() {
         if (mMessage != null) {
-            mController.sendAlternate(getActivity(), mAccount, mMessage);
+            AsyncTask.execute(()  -> mController.sendAlternate(getActivity(), mAccount, mMessage));
         }
     }
 

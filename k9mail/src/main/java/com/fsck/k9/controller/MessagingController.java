@@ -1,6 +1,8 @@
 package com.fsck.k9.controller;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -3831,7 +3833,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             quotedText = MessageExtractor.getTextFromPart(part);
         }
         if (quotedText != null) {
-            msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            if (quotedText.length() > 64000) {
+                shareEmailFile(context, message);
+                return;
+            } else {
+                msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            }
         }
         msg.putExtra(Intent.EXTRA_SUBJECT, message.getSubject());
 
@@ -3858,6 +3865,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         msg.setType("text/plain");
         context.startActivity(Intent.createChooser(msg, context.getString(R.string.send_alternate_chooser_title)));
+    }
+
+    public void shareEmailFile(Context context, LocalMessage message) {
+        String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), 20)) + ".eml";
+        File file = new File(context.getExternalCacheDir(), fileName);
+        try {
+            message.writeTo(new FileOutputStream(file));
+        } catch (IOException | MessagingException e) {
+            Timber.e(e);
+        }
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        intent.setType("message/rfc822");
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
     }
 
     /**
