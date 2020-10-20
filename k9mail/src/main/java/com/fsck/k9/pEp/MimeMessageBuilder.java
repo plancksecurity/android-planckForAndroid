@@ -355,8 +355,13 @@ public class MimeMessageBuilder extends MessageBuilder {
         StringBuilder builder = new StringBuilder();
         if (sv != null)
             for (String cur : sv) {
-                builder.append("<").append(cur).append(">").append(" ");
+                if (messageIdIncludesAngleBrackets(cur)) {
+                    builder.append(cur);
+                } else {
+                    builder.append("<").append(cur).append(">");
+                }
+                builder.append(" ");
             }
-        return builder.toString();
+        return builder.toString().trim();
     }
 }
