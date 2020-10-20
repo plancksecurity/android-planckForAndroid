@@ -246,6 +246,13 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mFragmentListener = null;
+        mContext = null;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Activity activity = getActivity();
