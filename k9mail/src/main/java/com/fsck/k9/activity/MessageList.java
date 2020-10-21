@@ -667,7 +667,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void changeAccount(View fromView, Account accountClicked) {
         fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-        drawerLayout.closeDrawers();
         mAccount = accountClicked;
         setupNavigationHeader();
         setActionBarSubTitle(mAccount.getEmail());
