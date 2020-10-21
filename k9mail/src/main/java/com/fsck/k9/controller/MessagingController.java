@@ -122,7 +122,6 @@ import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
-import static com.fsck.k9.K9.jobManager;
 import static com.fsck.k9.mail.Flag.X_PEP_DISABLED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 
