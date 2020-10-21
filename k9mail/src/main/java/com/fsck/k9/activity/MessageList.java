@@ -747,41 +747,19 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onClick(final Account account) {
                 mMessageListFragment.showLoadingMessages();
-                mAccount = account;
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                drawerCloseListener = new DrawerLayout.DrawerListener() {
-                    @Override
-                    public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                    }
-
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {
-                        String folder = account.getAutoExpandFolderName();
-                        LocalSearch search = new LocalSearch(folder);
-                        search.addAccountUuid(mAccount.getUuid());
-                        search.addAllowedFolder(folder);
-                        refreshMessages(search);
-                        setupNavigationHeader();
-                        createFoldersMenu();
-                        navFoldersAccountsButton.showAccounts();
-                        drawerLayout.removeDrawerListener(drawerCloseListener);
-                        changeAccountsOrder();
-                    }
-
-                    @Override
-                    public void onDrawerStateChanged(int newState) {
-
-                    }
-                };
-                drawerLayout.addDrawerListener(drawerCloseListener);
+                mAccount = account;
+                String folder = account.getAutoExpandFolderName();
+                LocalSearch search = new LocalSearch(folder);
+                search.addAccountUuid(mAccount.getUuid());
+                search.addAllowedFolder(folder);
+                refreshMessages(search);
+                setupNavigationHeader();
+                setActionBarSubTitle(mAccount.getEmail());
+                createFoldersMenu();
+                changeAccountsOrder();
+                navFoldersAccountsButton.showAccounts();
                 drawerLayout.closeDrawers();
-//                onOpenFolder(account.getAutoExpandFolderName());
             }
         });
         ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
@@ -887,32 +865,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void changeFolder(final LocalFolder folder) {
         mFolderName = folder.getName();
         mMessageListFragment.showLoadingMessages();
-        drawerCloseListener = new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                LocalSearch search = getLocalSearch(mAccount, folder);
-                MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+        LocalSearch search = getLocalSearch(mAccount, folder);
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false,
                         !mNoThreading);
-                addMessageListFragment(fragment, !isHomeScreen(search));
-                drawerLayout.removeDrawerListener(drawerCloseListener);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        };
-        drawerLayout.addDrawerListener(drawerCloseListener);
+        addMessageListFragment(fragment, !isHomeScreen(search));
         drawerLayout.closeDrawers();
     }
 
