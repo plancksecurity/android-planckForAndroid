@@ -865,7 +865,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void changeFolder(final LocalFolder folder) {
         mFolderName = folder.getName();
         setActionBarTitle(mFolderName);
-        mMessageListFragment.showLoadingMessages();
         LocalSearch search = getLocalSearch(mAccount, folder);
         MessageListFragment fragment = MessageListFragment.newInstance(search, false,
                         !mNoThreading);
