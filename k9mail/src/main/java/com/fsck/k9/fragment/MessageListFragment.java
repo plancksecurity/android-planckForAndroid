@@ -165,6 +165,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             }
             else {
                 listView.setVisibility(View.VISIBLE);
+                noResultsFound.setVisibility(View.GONE);
             }
         }
         else {
