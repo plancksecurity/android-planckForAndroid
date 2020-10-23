@@ -1601,7 +1601,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         try {
                             long time = System.currentTimeMillis();
 
-                            boolean store = true;
                             if (!shouldImportMessage(account, message, earliestDate)) {
                                 progress.incrementAndGet();
 
@@ -1641,13 +1640,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
-                            if (result == null) {
-                                deleteMessage(message, account, folder, localFolder);
-                            } else if (store
-                                    && (!account.ispEpPrivacyProtected()
-                                    || account.ispEpPrivacyProtected() && (result.rating != Rating.pEpRatingUndefined
-                                    || message.getFrom().length > 0 && message.getFrom()[0].getAddress() == null))
-                                    ) {
+                            // Store message
                                 MimeMessage decryptedMessage = result.msg;
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
@@ -1688,7 +1681,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (shouldNotifyForMessage(account, localFolder, message)) {
                                         messagesToNotify.add(localMessage);
                                     }
-                            }
+                                    //End message Store
+
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
                         }
@@ -2081,8 +2075,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                     return;
                 } else if (folder.equalsIgnoreCase(account.getDefaultpEpSyncFolderName())) {
-                    //Workarround try for P4A-1103
-                    Thread.sleep(5000);
+                    //Workaround try for P4A-1103
+                    remoteStore.getPersonalNamespaces(true);
+                    K9.jobManager.scheduleAllMailJobs();
                 }
             }
             remoteFolder.open(Folder.OPEN_MODE_RW);
@@ -2190,8 +2185,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (command.folder.equalsIgnoreCase("pEp")) {
                 Timber.e("pEpEngine finish pEp folder append success");
             }
-        } catch (InterruptedException e) {
-            Timber.e(e, "pEp Append failed");
         } finally {
             closeFolder(remoteFolder);
             closeFolder(localFolder);

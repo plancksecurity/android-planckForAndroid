@@ -60,6 +60,7 @@
                 android:id="@+id/account_port"
                 android:singleLine="true"
                 android:inputType="number"
+                android:maxLength="5"
                 android:fontFamily="sans-serif"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent" />

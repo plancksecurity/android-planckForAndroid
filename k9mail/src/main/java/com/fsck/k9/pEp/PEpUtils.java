@@ -236,10 +236,11 @@ public class PEpUtils {
         InputStream is = MimeUtility.decodeBody(body);
         if (is != null) {
             byte[] rv = IOUtils.toByteArray(is);
+            // Forcing the file to be erased
+            body.writeTo(new ByteArrayOutputStream());
             is.close();
             return rv;
-        }
-        else if (body instanceof TextBody) {
+        } else if (body instanceof TextBody) {
             return ((TextBody) body).getRawText().getBytes();
         }
         return new ByteArrayOutputStream().toByteArray();

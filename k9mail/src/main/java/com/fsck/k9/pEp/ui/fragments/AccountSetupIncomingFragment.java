@@ -549,10 +549,23 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         boolean hasValidXOAuth2Settings = hasValidUserName
                 && isAuthTypeXOAuth2;
 
+        boolean hasValidPort = validatePortEditText();
+
         mNextButton.setEnabled(Utility.domainFieldValid(mServerView)
-                && Utility.requiredFieldValid(mPortView)
+                && hasValidPort
                 && (hasValidPasswordSettings || hasValidExternalAuthSettings || hasValidXOAuth2Settings));
         Utility.setCompoundDrawablesAlpha(mNextButton, mNextButton.isEnabled() ? 255 : 128);
+    }
+
+    private boolean validatePortEditText() {
+       boolean isNotEmpty = Utility.requiredFieldValid(mPortView) ;
+       boolean isWithinRange = isNotEmpty && Integer.parseInt(mPortView.getText().toString()) < 65354;
+        if (!isNotEmpty) {
+            mPortView.setError(getString(R.string.port_is_empty));
+        }else if(!isWithinRange){
+            mPortView.setError(getString(R.string.port_is_out_of_range));
+        }
+        return isWithinRange;
     }
 
     private void updatePortFromSecurityType() {
