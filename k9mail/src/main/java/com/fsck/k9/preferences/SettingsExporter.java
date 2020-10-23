@@ -85,7 +85,7 @@ public class SettingsExporter {
 
         OutputStream os = null;
         try {
-            File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) + File.separator + context.getPackageName());
+            File dir = new File(Environment.getExternalStorageDirectory() + File.separator + context.getPackageName());
             if (!dir.mkdirs()) {
                 Timber.d("Unable to create directory: %s", dir.getAbsolutePath());
             }
