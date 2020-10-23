@@ -2075,8 +2075,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                     return;
                 } else if (folder.equalsIgnoreCase(account.getDefaultpEpSyncFolderName())) {
-                    //Workarround try for P4A-1103
-                    Thread.sleep(5000);
+                    //Workaround try for P4A-1103
+                    remoteStore.getPersonalNamespaces(true);
+                    K9.jobManager.scheduleAllMailJobs();
                 }
             }
             remoteFolder.open(Folder.OPEN_MODE_RW);
@@ -2184,8 +2185,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (command.folder.equalsIgnoreCase("pEp")) {
                 Timber.e("pEpEngine finish pEp folder append success");
             }
-        } catch (InterruptedException e) {
-            Timber.e(e, "pEp Append failed");
         } finally {
             closeFolder(remoteFolder);
             closeFolder(localFolder);
