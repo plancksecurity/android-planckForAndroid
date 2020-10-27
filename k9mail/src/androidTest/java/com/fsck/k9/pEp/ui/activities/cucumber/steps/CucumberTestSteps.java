@@ -1292,6 +1292,37 @@ public class CucumberTestSteps {
         startTest(0);
     }
 
+    @When("^I test Unified Inbox (\\d+) times")
+    public void I_test_unified_inbox(int times) {
+        for (int i = 0; i < times; i++) {
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            testUtils.clickMessageAtPosition(1);
+            testUtils.waitForIdle();
+            testUtils.pressBack();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            testUtils.clickMessageAtPosition(2);
+            testUtils.waitForIdle();
+            testUtils.pressBack();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_outbox);
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            testUtils.clickMessageAtPosition(3);
+            testUtils.waitForIdle();
+            testUtils.pressBack();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+            testUtils.clickMessageAtPosition(4);
+            testUtils.waitForIdle();
+            testUtils.pressBack();
+        }
+
+    }
+
 
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
