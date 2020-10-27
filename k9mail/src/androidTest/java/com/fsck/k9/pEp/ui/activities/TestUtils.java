@@ -665,6 +665,11 @@ public class TestUtils {
     }
 
     public void enableKeySync() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         selectFromMenu(R.string.prefs_title);
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
