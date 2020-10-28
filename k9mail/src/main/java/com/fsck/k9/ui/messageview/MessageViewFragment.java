@@ -85,7 +85,6 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.fsck.k9.mail.Flag.DELETED;
 import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
 
 public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
@@ -360,9 +359,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
-            if (messageViewInfo.message.isSet(DELETED)) {
-                getActivity().onBackPressed();
-                FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_view_message_no_longer_available));
+            if (messageViewInfo.message.isSet(Flag.DELETED)) {
+                requireActivity().onBackPressed();
+                FeedbackTools.showLongFeedback(requireView(), getString(R.string.message_view_message_no_longer_available));
             } else {
                 mMessageView.showMessage(mAccount, messageViewInfo);
             }
