@@ -90,6 +90,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
@@ -372,7 +373,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    private final DrawerLayout.DrawerListener drawerCloseListener = new DrawerLayout.DrawerListener() {
+    private final MessageListDrawerLayoutListener drawerCloseListener = new MessageListDrawerLayoutListener();
+
+    private class MessageListDrawerLayoutListener implements DrawerLayout.DrawerListener {
+        private Function0<Void> doOnClose;
+
+        public void setDoOnCloseAction(Function0<Void> doOnClose) {
+            this.doOnClose = doOnClose;
+        }
+
         @Override
         public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
 
@@ -385,6 +394,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         @Override
         public void onDrawerClosed(@NonNull View drawerView) {
+            if(doOnClose != null) {
+                doOnClose.invoke();
+                doOnClose = null;
+            }
             unlockDrawer();
         }
 
@@ -392,7 +405,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         public void onDrawerStateChanged(int newState) {
 
         }
-    };
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -646,7 +659,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         fromView.getLocationOnScreen( firstAccountLayoutPosition );
         final int mainAccountLayoutPosition[] = new int[2];
         goToView.getLocationOnScreen(mainAccountLayoutPosition);
-
+        drawerCloseListener.doOnClose = () -> {
+            changeAccount(fromView, accountClicked);
+            return null;
+        };
         TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
         anim.setDuration(500);
         fromView.startAnimation(anim);
@@ -661,7 +677,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onAnimationEnd(Animation animation) {
                 fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-                changeAccount(fromView, accountClicked);
                 drawerLayout.closeDrawers();
             }
 
