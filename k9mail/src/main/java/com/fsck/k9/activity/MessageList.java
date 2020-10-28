@@ -1000,7 +1000,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void refreshMessages(LocalSearch search) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(this);
+        fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         mMessageListFragment = MessageListFragment.newInstance(search, false, !mNoThreading);
