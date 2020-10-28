@@ -172,7 +172,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private View addAccountContainer;
     private View configureAccountContainer;
     private ActionBarDrawerToggle toggle;
-    private DrawerLayout.DrawerListener drawerCloseListener;
     private boolean messageViewVisible;
     private boolean isThreadDisplayed;
     private MessageSwipeDirection direction;
@@ -180,6 +179,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private SearchAccount unifiedInboxAccount;
     private SearchAccount allMessagesAccount;
     private String specialAccountUuid;
+    private boolean drawerLocked;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask, boolean isFolder) {
@@ -255,11 +255,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
-        LocalSearch search = searchAccount.getRelatedSearch();
-        MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+        if(tryToLockDrawer()) {
+            specialAccountUuid = searchAccount.getUuid();
+            LocalSearch search = searchAccount.getRelatedSearch();
+            MessageListFragment fragment = MessageListFragment.newInstance(search, false,
                 !mNoThreading);
-        addMessageListFragment(fragment, !isHomeScreen(search));
-        drawerLayout.closeDrawers();
+            addMessageListFragment(fragment, !isHomeScreen(search));
+            drawerLayout.closeDrawers();
+        }
     }
 
     @Override
@@ -368,6 +371,28 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             permissionRequester.requestContactsPermission(getRootView());
         }
     }
+
+    private final DrawerLayout.DrawerListener drawerCloseListener = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+        }
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerClosed(@NonNull View drawerView) {
+            unlockDrawer();
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -507,7 +532,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         folderRenderer.setFolderClickListener(new OnFolderClickListener() {
             @Override
             public void onClick(LocalFolder folder) {
-                changeFolder(folder);
+                if(tryToLockDrawer()) {
+                    changeFolder(folder);
+                }
             }
 
             @Override
@@ -533,15 +560,16 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void setupNavigationHeaderListeners() {
         findViewById(R.id.menu_header).setOnClickListener(v -> {
-                    if (!showingAccountsMenu) {
-                        navFoldersAccountsButton.showFolders();
-                        createAccountsMenu();
-                    } else {
-                        navFoldersAccountsButton.showAccounts();
-                        createFoldersMenu();
-                    }
+            if(!drawerLocked) {
+                if (!showingAccountsMenu) {
+                    navFoldersAccountsButton.showFolders();
+                    createAccountsMenu();
+                } else {
+                    navFoldersAccountsButton.showAccounts();
+                    createFoldersMenu();
                 }
-        );
+            }
+        });
     }
 
     private void setupAccountsListeners() {
@@ -565,12 +593,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-                firstAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                mainAccountEmail.setText(firstAccount.getEmail());
-                mainAccountName.setText(firstAccount.getName());
-                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
+                if(tryToLockDrawer()) {
+                    mMessageListFragment.showLoadingMessages();
+                    mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+                    firstAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
+                    mainAccountEmail.setText(firstAccount.getEmail());
+                    mainAccountName.setText(firstAccount.getName());
+                    changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
+                }
             }
         });
     }
@@ -585,24 +615,28 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         firstAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-                mainAccountEmail.setText(firstAccount.getEmail());
-                mainAccountName.setText(firstAccount.getName());
-                firstAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
-                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
+                if(tryToLockDrawer()) {
+                    mMessageListFragment.showLoadingMessages();
+                    mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
+                    mainAccountEmail.setText(firstAccount.getEmail());
+                    mainAccountName.setText(firstAccount.getName());
+                    firstAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
+                    secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
+                    changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
+                }
             }
         });
         secondAccountLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
-                mainAccountEmail.setText(lastAccount.getEmail());
-                mainAccountName.setText(lastAccount.getName());
-                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
+                if(tryToLockDrawer()) {
+                    mMessageListFragment.showLoadingMessages();
+                    mainAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
+                    mainAccountEmail.setText(lastAccount.getEmail());
+                    mainAccountName.setText(lastAccount.getName());
+                    secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
+                    changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
+                }
             }
         });
     }
@@ -616,20 +650,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
         anim.setDuration(500);
         fromView.startAnimation(anim);
-        initializeDrawerListener(fromView, accountClicked);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 Animation dissapearAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_down);
                 dissapearAnimation.setDuration(500);
                 goToView.startAnimation(dissapearAnimation);
-
-                drawerLayout.addDrawerListener(drawerCloseListener);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
                 fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
+                changeAccount(fromView, accountClicked);
                 drawerLayout.closeDrawers();
             }
 
@@ -638,31 +670,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
             }
         });
-    }
-
-    private void initializeDrawerListener(final View fromView, final Account accountClicked) {
-        drawerCloseListener = new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                changeAccount(fromView, accountClicked);
-                drawerLayout.removeDrawerListener(drawerCloseListener);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        };
     }
 
     private void changeAccount(View fromView, Account accountClicked) {
@@ -729,6 +736,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         });
     }
 
+    private boolean tryToLockDrawer() {
+        if(drawerLocked) {
+            return false;
+        }
+        drawerLocked = true;
+        return true;
+    }
+
+    private void unlockDrawer() {
+        drawerLocked = false;
+    }
+
     private void createAccountsMenu() {
         if (navigationAccounts != null) {
             navigationAccounts.setLayoutManager(getDrawerLayoutManager());
@@ -746,6 +765,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         accountRenderer.setOnAccountClickListenerListener(new OnAccountClickListener() {
             @Override
             public void onClick(final Account account) {
+                if(!tryToLockDrawer()) {
+                    return;
+                }
                 mMessageListFragment.showLoadingMessages();
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 mAccount = account;
@@ -925,7 +947,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.removeDrawerListener(toggle);
+        drawerLayout.removeDrawerListener(drawerCloseListener);
         drawerLayout.addDrawerListener(toggle);
+        drawerLayout.addDrawerListener(drawerCloseListener);
         toggle.syncState();
     }
 
