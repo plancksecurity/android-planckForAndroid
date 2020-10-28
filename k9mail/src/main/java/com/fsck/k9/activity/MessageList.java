@@ -664,13 +664,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             return null;
         };
         TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
-        anim.setDuration(500);
+        anim.setDuration(200);
         fromView.startAnimation(anim);
         anim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 Animation dissapearAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_down);
-                dissapearAnimation.setDuration(500);
+                dissapearAnimation.setDuration(200);
                 goToView.startAnimation(dissapearAnimation);
             }
 
