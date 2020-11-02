@@ -275,7 +275,11 @@ public class TestUtils {
     }
 
     public void composeMessageButton() {
+        waitForIdle();
         clickView(R.id.fab_button_compose_message);
+        waitForIdle();
+        onView(withId(R.id.to)).perform(closeSoftKeyboard());
+        waitForIdle();
     }
 
     void goBackToMessageCompose() {
