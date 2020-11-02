@@ -1253,6 +1253,10 @@ public class CucumberTestSteps {
                 raw = R.raw.testpicture;
                 testUtils.waitForIdle();
                 fileName = "testpicture.png";
+            case "passphrase":
+                raw = R.raw.passphrase;
+                testUtils.waitForIdle();
+                fileName = "passphrase.asc";
         }
         while (true) {
             try {
@@ -1362,20 +1366,24 @@ public class CucumberTestSteps {
 
     @When("^I import key with passphrase for account (\\d+)$")
     public void I_import_passphrase (int account) {
-        String passphrase = "pEpdichauf1234";
+        String passphrasePassword = "pEpdichauf1234";
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
             testUtils.selectFromMenu(R.string.action_settings);
         }
         testUtils.selectAccountSettingsFromList(account);
         testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        timeRequiredForThisMethod(15);
+        testUtils.waitForIdle();
+        Set_external_mock("passphrase");
+        device.waitForIdle();
+        testUtils.testReset = true;
         testUtils.selectFromScreen(testUtils.stringToID("pgp_key_import_title"));
         I_wait_seconds(20);
         fingerprint = testUtils.getFingerprint();
-        //archivo de passphrase
         testUtils.selectButtonFromScreen(testUtils.stringToID("pgp_key_import_confirmation_confirm"));
-        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(passphrase)){
+        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(passphrasePassword)){
             testUtils.waitForIdle();
-            onView(withId(R.id.passphrase)).perform(typeText(passphrase));
+            onView(withId(R.id.passphrase)).perform(typeText(passphrasePassword));
         }
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         testUtils.waitForKeyImport();
@@ -1383,6 +1391,15 @@ public class CucumberTestSteps {
         testUtils.pressBack();
         testUtils.pressBack();
     }
+
+    @When("^I compare fingerprint$")
+    public void I_compare_fingerprint () {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.show_headers_action);
+        testUtils.assertsTextExistsOnScreen(fingerprint);
+
+    }
+
     @When("^I remove account (\\S+)$")
     public void I_remove_account (String account) {
         int accountToRemove = Integer.parseInt(account);
