@@ -1764,9 +1764,12 @@ public class TestUtils {
     }
 
     public void openHamburgerMenu () {
-        device.waitForIdle();
+        waitForIdle();
+        while (!exists(onView(withContentDescription("Open navigation drawer")))) {
+            waitForIdle();
+        }
         onView(withContentDescription("Open navigation drawer")).perform(click());
-        device.waitForIdle();
+        waitForIdle();
     }
 
     public void typeTextToForceRatingCaltulation (int view) {
