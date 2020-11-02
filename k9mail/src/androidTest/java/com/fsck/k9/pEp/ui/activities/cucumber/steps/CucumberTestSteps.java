@@ -90,7 +90,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
-@RunWith(AndroidJUnit4.class)
+
 public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
