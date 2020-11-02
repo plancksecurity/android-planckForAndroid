@@ -62,6 +62,7 @@ import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -130,7 +131,7 @@ public class CucumberTestSteps {
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[9];
-            resources = getTargetContext().getResources();
+            resources = getApplicationContext().getResources();
             //startTimer(2000);
             device.waitForIdle();
             if (testUtils.getCurrentActivity() == null) {
