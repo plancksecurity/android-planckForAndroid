@@ -1308,26 +1308,32 @@ public class CucumberTestSteps {
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
             testUtils.clickMessageAtPosition(1);
             testUtils.waitForIdle();
-            testUtils.pressBack();
+            testUtils.goBackToMessageList();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
             testUtils.clickMessageAtPosition(2);
             testUtils.waitForIdle();
-            testUtils.pressBack();
+            testUtils.goBackToMessageList();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_outbox);
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
             testUtils.clickMessageAtPosition(3);
             testUtils.waitForIdle();
-            testUtils.pressBack();
+            testUtils.goBackToMessageList();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
             testUtils.clickMessageAtPosition(4);
             testUtils.waitForIdle();
-            testUtils.pressBack();
+            testUtils.goBackToMessageList();
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
         }
 
     }
