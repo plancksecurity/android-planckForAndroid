@@ -475,7 +475,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (selectedCount > 0) {
             toggleMessageSelect(position);
         } else {
-            adapter.clearSelected();
             this.selected.clear();
             if (shouldShowThreadedList()  && cursor.getInt(THREAD_COUNT_COLUMN) > 1) {
                 Account account = getAccountFromCursor(cursor);
@@ -1067,7 +1066,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                         }
                     }
                     selected.clear();
-                    adapter.clearSelected();
                     if (actionMode == null) {
                         startAndPrepareActionMode();
                     }
@@ -1800,7 +1798,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 Cursor cursor = (Cursor) adapter.getItem(i);
                 long uniqueId = cursor.getLong(uniqueIdColumn);
                 this.selected.add(uniqueId);
-                adapter.addSelected(cursor.getPosition());
                 if (shouldShowThreadedList()) {
                     int threadCount = cursor.getInt(THREAD_COUNT_COLUMN);
                     selectedCount += (threadCount > 1) ? threadCount : 1;
@@ -1822,7 +1819,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         } else {
             this.selected.clear();
             selectedCount = 0;
-            adapter.clearSelected();
             if (actionMode != null) {
                 actionMode.finish();
                 actionMode = null;
@@ -1855,10 +1851,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         boolean selected = this.selected.contains(uniqueId);
         if (!selected) {
             this.selected.add(uniqueId);
-            adapter.addSelected(cursor.getPosition());
         } else {
             this.selected.remove(uniqueId);
-            adapter.removeSelected(cursor.getPosition());
         }
 
         int selectedCountDelta = 1;
@@ -3063,6 +3057,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private void updateToolbarColorToOriginal() {
         toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
         toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
+    }
+
+    boolean isMessageSelected(Cursor cursor) {
+        long messageId = cursor.getLong(uniqueIdColumn);
+        return selected.contains(messageId);
     }
 
     private void updateToolbarColor(Cursor cursor) {
