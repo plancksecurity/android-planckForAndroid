@@ -23,6 +23,7 @@ import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.*
 import kotlinx.android.synthetic.main.fragment_intro_fourth.*
+import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.permissions.PermissionsActivity
 import javax.inject.Inject
 
@@ -115,8 +116,9 @@ class IntroFirstFragment : PEpFragment() {
     }
 
     private fun startTexts() {
-        headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1),HtmlCompat.FROM_HTML_MODE_LEGACY)
-        secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2),HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val primaryColorARGB = PEpUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
+        headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun startImage() {

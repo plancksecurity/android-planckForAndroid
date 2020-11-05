@@ -218,10 +218,10 @@
     <!-- Folder list-->
     <string name="search_empty_error">Escreva um texto para pesquisar</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1">Bem-vindo ao tutorial <font color="#4caf50">p≡p</font></string>
+    <string name="intro_frag_first_text_1">Bem-vindo ao tutorial &lt;font color="%s"&gt;p≡p&lt;/font&gt;</string>
     <string name="intro_frag_first_text_2">Você pode fechar este tutorial a qualquer momento.
 \n
-\n<font color="#4caf50">p≡p</font> usa um Status de privacidade para indicar o quão segura é sua comunicação.
+\n&lt;font color="%s"&gt;p≡p&lt;/font&gt; usa um Status de privacidade para indicar o quão segura é sua comunicação.
 \n
 \nEste status de privacidade é mostrado como um ícone no avatar do usuário</string>
     <string name="intro_frag_first_text_3">E na barra superior, quando você abre ou escreve um email:</string>
