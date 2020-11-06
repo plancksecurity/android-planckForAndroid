@@ -76,7 +76,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         updateDate(displayDate)
         updateFlagCheckbox(isFlagged)
         updateSelectedCheckbox(cursor)
-        updateSecurityBadge(pEpRating)
+        updateSecurityBadge(account, pEpRating)
         updateContactBadge(counterpartyAddress)
         updateAttachment(cursor)
         updateNameAndSubject(displayName, statusHolder, subjectText)
@@ -153,10 +153,15 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         }
     }
 
-    private fun updateSecurityBadge(pEpRating: Rating) {
+    private fun updateSecurityBadge(account: Account, pEpRating: Rating) {
         if (fragment.context != null) {
             val pepSecurityBadge = getDrawableForMessageList(fragment.context!!, pEpRating)
-            securityBadge?.visibility = if (pepSecurityBadge != null) View.VISIBLE else View.GONE
+            securityBadge?.visibility =
+                    if (pepSecurityBadge != null && account.ispEpPrivacyProtected()) {
+                        View.VISIBLE
+                    } else {
+                        View.GONE
+                    }
             if (pepSecurityBadge != null) securityBadge?.setImageDrawable(pepSecurityBadge)
         }
     }
