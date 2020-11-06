@@ -155,14 +155,13 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
 
     private fun updatePrivacyBadge(account: Account, pEpRating: Rating) {
         if (fragment.context != null) {
-            val pepPrivacyBadge = getDrawableForMessageList(fragment.context!!, pEpRating)
-            privacyBadge?.visibility =
-                    if (pepPrivacyBadge != null && account.ispEpPrivacyProtected()) {
-                        View.VISIBLE
-                    } else {
-                        View.GONE
-                    }
-            if (pepPrivacyBadge != null) privacyBadge?.setImageDrawable(pepPrivacyBadge)
+            if (!account.ispEpPrivacyProtected()) {
+                privacyBadge?.visibility = View.GONE
+            } else {
+                val pepPrivacyBadge = getDrawableForMessageList(fragment.context!!, pEpRating)
+                privacyBadge?.visibility = if (pepPrivacyBadge != null) View.VISIBLE else View.GONE
+                if (pepPrivacyBadge != null) privacyBadge?.setImageDrawable(pepPrivacyBadge)
+            }
         }
     }
 
