@@ -801,13 +801,7 @@ public class RecipientPresenter {
     }
 
     public void onResume() {
-        toAdresses = getToAddresses();
-        ccAdresses = getCcAddresses();
-        bccAdresses = getBccAddresses();
-
-        dirty = true;
-
-        this.recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+        refreshRecipients();
         setupPEPStatusPolling();
     }
 
@@ -935,6 +929,13 @@ public class RecipientPresenter {
         handlepEpState();
     }
 
+    public void refreshRecipients() {
+        dirty = true;
+        toAdresses = getToAddresses();
+        ccAdresses = getCcAddresses();
+        bccAdresses = getBccAddresses();
+        recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+    }
     private List<Address> initializeAdresses(List<Address> addresses) {
         if(addresses == null) {
             addresses = Collections.emptyList();

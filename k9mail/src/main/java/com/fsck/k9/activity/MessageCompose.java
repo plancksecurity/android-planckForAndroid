@@ -113,6 +113,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.remoteConfiguration.RestrictionsListener;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
@@ -127,7 +128,7 @@ import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
 public class MessageCompose extends PepActivity implements OnClickListener,
         CancelListener, OnFocusChangeListener, OnCryptoModeChangedListener,
         OnOpenPgpInlineChangeListener, PgpSignOnlyDialog.OnOpenPgpSignOnlyChangeListener, MessageBuilder.Callback,
-        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener {
+        AttachmentPresenter.AttachmentsChangedListener, RecipientPresenter.RecipientsChangedListener, RestrictionsListener {
     private static final int DIALOG_SAVE_OR_DISCARD_DRAFT_MESSAGE = 1;
     private static final int DIALOG_CONFIRM_DISCARD_ON_BACK = 2;
     private static final int DIALOG_CHOOSE_IDENTITY = 3;
@@ -655,6 +656,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         MessagingController.getInstance(this).addListener(messagingListener);
         recipientPresenter.onResume();
         invalidateOptionsMenu();
+        setConfigurationManagerListener(this);
     }
 
     @Override
@@ -696,6 +698,13 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
         // TODO: trigger pep?
 
+    }
+
+    @Override
+    public void updatedRestrictions() {
+        recipientPresenter.updateCryptoStatus();
+        recipientPresenter.refreshRecipients();
+        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
     }
 
     public static class MessageComposeNonConfigInstance implements NonConfigurationInstance {
