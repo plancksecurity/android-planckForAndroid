@@ -94,6 +94,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.remoteConfiguration.RestrictionsListener;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.nav_view.NavFolderAccountButton;
@@ -109,7 +110,7 @@ import timber.log.Timber;
  */
 public class MessageList extends PepActivity implements MessageListFragmentListener,
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener,
-        NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
+        NavigationView.OnNavigationItemSelectedListener, DrawerLocker, RestrictionsListener {
 
     @Inject AccountUtils accountUtils;
     @Inject
@@ -301,6 +302,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     public Boolean isThreadDisplayed() {
         return isThreadDisplayed;
+    }
+
+    @Override
+    public void updatedRestrictions() {
+        if (mMessageViewFragment != null) {
+            mMessageViewFragment.onResume();
+        } else if (mMessageListFragment != null) {
+            mMessageListFragment.refreshAccount();
+        }
     }
 
     private enum DisplayMode {
@@ -1265,6 +1275,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mAccount != null) {
             loadNavigationView();
         }
+
+        setConfigurationManagerListener(this);
     }
 
     private void setupMainFoldersUnreadMessages() {
