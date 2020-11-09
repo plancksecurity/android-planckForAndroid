@@ -29,10 +29,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
+import security.pEp.remoteConfiguration.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 import timber.log.Timber;
 
-public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
+public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
@@ -97,6 +98,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 //        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
 //    }
 
+    public void setConfigurationManagerListener(RestrictionsListener listener) {
+        mBase.setConfigurationManagerListener(listener);
+    }
 
     public void setUpToolbar(boolean showUpButton) {
         if (toolbar != null) {
@@ -246,6 +250,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onResume() {
         super.onResume();
         mBase.registerPassphraseReceiver();
+        mBase.registerConfigurationManager();
         if(isShowingSearchView) {
             showSearchView();
         }
@@ -255,7 +260,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onPause() {
         super.onPause();
         mBase.unregisterPassphraseReceiver();
-        mBase.onPause();
+        mBase.unregisterConfigurationManager();
         if(isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
