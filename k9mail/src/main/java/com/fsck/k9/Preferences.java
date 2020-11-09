@@ -19,6 +19,8 @@ import java.util.Map;
 
 import timber.log.Timber;
 
+import static security.pEp.remoteConfiguration.ConfigurationManager.RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED;
+
 
 public class Preferences {
 
@@ -219,6 +221,14 @@ public class Preferences {
         StorageEditor editor = getStorage().edit();
         editor.putString("accountUuids", accountUuids);
         editor.commit();
+    }
+
+    public boolean isPepEnablePrivacyProtectionManaged() {
+        return storage.getBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED, false);
+    }
+
+    public void setPepEnablePrivacyProtectionManaged(boolean isManaged) {
+        getStorage().edit().putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED, isManaged).commit();
     }
 
     /*public synchronized List<String> getMasterKeys(String uid) {

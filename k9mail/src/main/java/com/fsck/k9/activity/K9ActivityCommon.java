@@ -16,13 +16,19 @@ import android.view.View;
 import android.webkit.WebView;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.pEp.LangUtils;
+import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
+import security.pEp.remoteConfiguration.ConfigurationManager;
+import security.pEp.remoteConfiguration.RestrictionsListener;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;
@@ -37,6 +43,7 @@ import timber.log.Timber;
 public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
+    private ConfigurationManager configurationManager;
 
     /**
      * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
@@ -82,6 +89,10 @@ public class K9ActivityCommon {
         }
     }
 
+    public void setConfigurationManagerListener(RestrictionsListener listener) {
+        configurationManager.setListener(listener);
+    }
+
     /**
      * Base activities need to implement this interface.
      *
@@ -105,8 +116,16 @@ public class K9ActivityCommon {
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
-
+        initConfigurationManager();
         configureNavigationBar(activity);
+    }
+
+    private void initConfigurationManager() {
+        AccountSettingsDataStoreFactory accountSettingsDataStoreFactory =
+                new AccountSettingsDataStoreFactory(mActivity,
+                        Preferences.getPreferences(mActivity),
+                        Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings")));
+        configurationManager = new ConfigurationManager(mActivity, accountSettingsDataStoreFactory);
     }
 
     public static void configureNavigationBar(Activity activity) {
@@ -182,6 +201,15 @@ public class K9ActivityCommon {
     public void unregisterPassphraseReceiver() {
         mActivity.getApplicationContext().unregisterReceiver(passphraseReceiver);
     }
+
+    public void registerConfigurationManager() {
+        configurationManager.registerReceiver();
+    }
+
+    public void unregisterConfigurationManager() {
+        configurationManager.unregisterReceiver();
+    }
+
     public static class PassphraseRequestReceiver extends BroadcastReceiver {
 
         @Override
