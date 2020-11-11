@@ -11,11 +11,11 @@ import javax.inject.Named
 class ContactLetterBitmapConfig  @Inject constructor(@Named("AppContext") context: Context) {
     val hasDefaultBackgroundColor: Boolean = !K9.isColorizeMissingContactPictures()
     private val appThemeResourceId =
-            if (K9.getK9Theme() == K9.Theme.LIGHT)
+            if (K9.getK9LegacyTheme() == K9.Theme.LIGHT)
                 R.style.Theme_K9_Dialog_Light
             else
                 R.style.Theme_K9_Dialog_Dark
-    val useDarkTheme = K9.getK9Theme() != K9.Theme.LIGHT
+    val useDarkTheme = K9.getK9LegacyTheme() != K9.Theme.LIGHT
 
     val defaultBackgroundColor: Int
 

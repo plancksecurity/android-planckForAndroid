@@ -132,7 +132,7 @@ public class RemoteControlServiceLegacy extends CoreService {
 
                         String theme = intent.getStringExtra(K9_THEME);
                         if (theme != null) {
-                            K9.setK9Theme(K9RemoteControl.K9_THEME_DARK.equals(theme) ? K9.Theme.DARK : K9.Theme.LIGHT);
+                            K9.setK9AppTheme(K9RemoteControl.K9_THEME_DARK.equals(theme) ? K9.AppTheme.DARK : K9.AppTheme.LIGHT);
                         }
 
                         Storage storage = preferences.getStorage();

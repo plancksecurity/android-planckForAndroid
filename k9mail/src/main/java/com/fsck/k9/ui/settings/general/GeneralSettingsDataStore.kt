@@ -5,6 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.K9.Theme
 import com.fsck.k9.Preferences
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 
@@ -115,7 +116,7 @@ class GeneralSettingsDataStore(
     override fun getString(key: String, defValue: String?): String? {
         return when (key) {
             "language" -> K9.getK9Language()
-            "theme" -> themeToString(K9.getK9Theme())
+            "theme" -> appThemeToString(K9.getK9AppTheme())
             "fixed_message_view_theme" -> themeToString(K9.getK9MessageViewThemeSetting())
             "message_compose_theme" -> themeToString(K9.getK9ComposerThemeSetting())
             "messageViewTheme" -> themeToString(K9.getK9MessageViewThemeSetting())
@@ -239,8 +240,9 @@ class GeneralSettingsDataStore(
     }
 
     private fun setTheme(value: String?) {
-        K9.setK9Theme(stringToTheme(value))
-        recreateActivity()
+        K9.setK9AppTheme(stringToAppTheme(value))
+        ThemeManager.updateAppTheme()
+        //recreateActivity()
     }
 
     private fun showChangeLanguageDialog(language: String?) {
@@ -258,6 +260,19 @@ class GeneralSettingsDataStore(
         "dark" -> Theme.DARK
         "global" -> Theme.USE_GLOBAL
         else -> throw AssertionError()
+    }
+
+    private fun stringToAppTheme(theme: String?) = when (theme) {
+        "light" -> K9.AppTheme.LIGHT
+        "dark" -> K9.AppTheme.DARK
+        "follow_system" -> K9.AppTheme.FOLLOW_SYSTEM
+        else -> throw AssertionError()
+    }
+
+    private fun appThemeToString(theme: K9.AppTheme) = when (theme) {
+        K9.AppTheme.DARK -> "dark"
+        K9.AppTheme.LIGHT -> "light"
+        K9.AppTheme.FOLLOW_SYSTEM -> "follow_system"
     }
 
     private fun setBackgroundOps(value: String) {

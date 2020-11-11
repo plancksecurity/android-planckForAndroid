@@ -1,6 +1,5 @@
 package com.fsck.k9.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -117,7 +116,7 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
-            if (K9.getK9Theme() == K9.Theme.DARK) {
+            if (K9.getK9LegacyTheme() == K9.Theme.DARK) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }

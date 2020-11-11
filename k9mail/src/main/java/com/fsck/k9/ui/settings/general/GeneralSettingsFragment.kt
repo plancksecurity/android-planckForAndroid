@@ -51,12 +51,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
         initializeNewKeysPassphrase()
+        initializeTheme()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeTheme() {
+        (findPreference(PREFERENCE_THEME) as? ListPreference)?.apply {
+            if (Build.VERSION.SDK_INT < 28) {
+                setEntries(R.array.theme_entries_legacy)
+                setEntryValues(R.array.theme_values_legacy)
+            }
+        }
     }
 
     private fun initializeNewKeysPassphrase() {
@@ -254,6 +264,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
+        private const val PREFERENCE_THEME = "theme"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

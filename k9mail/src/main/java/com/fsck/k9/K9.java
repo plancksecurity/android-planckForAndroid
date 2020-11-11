@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -195,7 +197,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private static String language = "";
-    private static Theme theme = Theme.LIGHT;
+    private static AppTheme appTheme = AppTheme.FOLLOW_SYSTEM;
     private static Theme messageViewTheme = Theme.USE_GLOBAL;
     private static Theme composerTheme = Theme.USE_GLOBAL;
     private static boolean useFixedMessageTheme = true;
@@ -575,7 +577,7 @@ public class K9 extends MultiDexApplication {
 
 
         editor.putString("language", language);
-        editor.putInt("theme", theme.ordinal());
+        editor.putInt("theme", appTheme.ordinal());
         editor.putInt("messageViewTheme", messageViewTheme.ordinal());
         editor.putInt("messageComposeTheme", composerTheme.ordinal());
         editor.putBoolean("fixedMessageViewTheme", useFixedMessageTheme);
@@ -1004,14 +1006,8 @@ public class K9 extends MultiDexApplication {
 
         K9.setK9Language(storage.getString("language", ""));
 
-        int themeValue = Theme.LIGHT.ordinal();
-        // We used to save the resource ID of the theme. So convert that to the new format if
-        // necessary.
-        if (themeValue == Theme.DARK.ordinal() || themeValue == android.R.style.Theme) {
-            K9.setK9Theme(Theme.DARK);
-        } else {
-            K9.setK9Theme(Theme.LIGHT);
-        }
+        int themeValue = storage.getInt("theme", AppTheme.FOLLOW_SYSTEM.ordinal());
+        appTheme = AppTheme.values()[themeValue];
 
         themeValue = storage.getInt("messageViewTheme", Theme.USE_GLOBAL.ordinal());
         K9.setK9MessageViewThemeSetting(Theme.values()[themeValue]);
@@ -1107,16 +1103,18 @@ public class K9 extends MultiDexApplication {
         USE_GLOBAL
     }
 
-    public static int getK9ThemeResourceId(Theme themeId) {
-        return (themeId == Theme.LIGHT) ? R.style.Theme_K9_Light_NoActionBar : R.style.Theme_K9_Dark;
+    public enum AppTheme {
+        LIGHT,
+        DARK,
+        FOLLOW_SYSTEM
     }
 
     public static int getK9ThemeResourceId() {
-        return getK9ThemeResourceId(theme);
+        return R.style.Theme_K9_DayNight;
     }
 
     public static Theme getK9MessageViewTheme() {
-        return messageViewTheme == Theme.USE_GLOBAL ? theme : messageViewTheme;
+        return resolveTheme(messageViewTheme);
     }
 
     public static Theme getK9MessageViewThemeSetting() {
@@ -1124,21 +1122,58 @@ public class K9 extends MultiDexApplication {
     }
 
     public static Theme getK9ComposerTheme() {
-        return composerTheme == Theme.USE_GLOBAL ? theme : composerTheme;
+        return resolveTheme(composerTheme);
+    }
+
+    public static int getK9ComposerThemeResourceId() {
+        return getK9ThemeResourceId();
     }
 
     public static Theme getK9ComposerThemeSetting() {
         return composerTheme;
     }
 
-    public static Theme getK9Theme() {
-        return K9.Theme.LIGHT;
+    private static Theme resolveTheme(Theme theme) {
+        switch (theme) {
+            case LIGHT:
+            case DARK:
+                return theme;
+            default:
+                return getK9LegacyTheme();
+        }
     }
 
-    public static void setK9Theme(Theme ntheme) {
-        if (ntheme != Theme.USE_GLOBAL) {
-            theme = ntheme;
+    public static Theme getK9LegacyTheme() {
+        switch (appTheme) {
+            case DARK:
+                return Theme.DARK;
+            case LIGHT:
+                return Theme.LIGHT;
+            case FOLLOW_SYSTEM:
+                return (Build.VERSION.SDK_INT < 28) ? Theme.LIGHT : getSystemTheme();
+
         }
+        return Theme.LIGHT;
+    }
+
+    private static Theme getSystemTheme() {
+        switch (app.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                return Theme.LIGHT;
+            case Configuration.UI_MODE_NIGHT_YES:
+                return Theme.DARK;
+            default: return Theme.LIGHT;
+        }
+    }
+
+    @NonNull
+    public static AppTheme getK9AppTheme() {
+        if(appTheme == null) return AppTheme.FOLLOW_SYSTEM;
+        return appTheme;
+    }
+
+    public static void setK9AppTheme(AppTheme theme) {
+        appTheme = theme;
     }
 
     public static void setK9MessageViewThemeSetting(Theme nMessageViewTheme) {
@@ -1156,7 +1191,7 @@ public class K9 extends MultiDexApplication {
     public static void setUseFixedMessageViewTheme(boolean useFixed) {
         useFixedMessageTheme = useFixed;
         if (!useFixedMessageTheme && messageViewTheme == Theme.USE_GLOBAL) {
-            messageViewTheme = theme;
+            messageViewTheme = getK9LegacyTheme();
         }
     }
 

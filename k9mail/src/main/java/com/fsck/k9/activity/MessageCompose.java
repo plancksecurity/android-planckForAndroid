@@ -294,7 +294,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (K9.getK9ComposerThemeSetting() != K9.Theme.USE_GLOBAL) {
             // theme the whole content according to the theme (except the action bar)
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
-                    K9.getK9ThemeResourceId(K9.getK9ComposerTheme()));
+                    K9.getK9ComposerThemeResourceId());
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
                     View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
@@ -1269,7 +1269,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
-                        (K9.getK9Theme() == K9.Theme.LIGHT) ?
+                        (K9.getK9LegacyTheme() == K9.Theme.LIGHT) ?
                                 R.style.Theme_K9_Dialog_Light :
                                 R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);

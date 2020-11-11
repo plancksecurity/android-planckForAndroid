@@ -104,7 +104,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
-            if (K9.getK9Theme() == K9.Theme.DARK) {
+            if (K9.getK9LegacyTheme() == K9.Theme.DARK) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }
