@@ -1763,6 +1763,53 @@ public class TestUtils {
         }
     }
 
+    public String getStatusRating(Rating [] statusRating, String status) {
+        switch (status){
+            case "pEpRatingUndefined":
+                statusRating[0] = Rating.pEpRatingUndefined;
+                break;
+            case "pEpRatingCannotDecrypt":
+                statusRating[0] = Rating.pEpRatingCannotDecrypt;
+                break;
+            case "pEpRatingHaveNoKey":
+                statusRating[0] = Rating.pEpRatingHaveNoKey;
+                break;
+            case "pEpRatingUnencrypted":
+                statusRating[0] = Rating.pEpRatingUnencrypted;
+                break;
+            case "pEpRatingUnencryptedForSome":
+                statusRating[0] = Rating.pEpRatingUnencryptedForSome;
+                break;
+            case "pEpRatingUnreliable":
+                statusRating[0] = Rating.pEpRatingUnreliable;
+                break;
+            case "pEpRatingReliable":
+                statusRating[0] = Rating.pEpRatingReliable;
+                break;
+            case "pEpRatingTrusted":
+                statusRating[0] = null;
+                status = "pep_green";
+                break;
+            case "pEpRatingTrustedAndAnonymized":
+                statusRating[0] = Rating.pEpRatingTrustedAndAnonymized;
+                break;
+            case "pEpRatingFullyAnonymous":
+                statusRating[0] = Rating.pEpRatingFullyAnonymous;
+                break;
+            case "pEpRatingMistrust":
+                statusRating[0] = null;
+                status = "pep_red";
+                break;
+            case "pEpRatingB0rken":
+                statusRating[0] = Rating.pEpRatingB0rken;
+                break;
+            case "pEpRatingUnderAttack":
+                statusRating[0] = Rating.pEpRatingUnderAttack;
+                break;
+        }
+        return status;
+    }
+
     public void openHamburgerMenu () {
         waitForIdle();
         while (!exists(onView(withContentDescription("Open navigation drawer")))) {
