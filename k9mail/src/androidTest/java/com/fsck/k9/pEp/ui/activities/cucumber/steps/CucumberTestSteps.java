@@ -926,7 +926,7 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status){
-        Rating statusRating = null;
+        Rating [] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
             testUtils.waitForIdle();
@@ -958,51 +958,9 @@ public class CucumberTestSteps {
             }
             testUtils.waitForIdle();
             waitUntilIdle();
-        switch (status){
-            case "pEpRatingUndefined":
-                statusRating = Rating.pEpRatingUndefined;
-                break;
-            case "pEpRatingCannotDecrypt":
-                statusRating = Rating.pEpRatingCannotDecrypt;
-                break;
-            case "pEpRatingHaveNoKey":
-                statusRating = Rating.pEpRatingHaveNoKey;
-                break;
-            case "pEpRatingUnencrypted":
-                statusRating = Rating.pEpRatingUnencrypted;
-                break;
-            case "pEpRatingUnencryptedForSome":
-                statusRating = Rating.pEpRatingUnencryptedForSome;
-                break;
-            case "pEpRatingUnreliable":
-                statusRating = Rating.pEpRatingUnreliable;
-                break;
-            case "pEpRatingReliable":
-                statusRating = Rating.pEpRatingReliable;
-                break;
-            case "pEpRatingTrusted":
-                statusRating = null;
-                status = "pep_green";
-                break;
-            case "pEpRatingTrustedAndAnonymized":
-                statusRating = Rating.pEpRatingTrustedAndAnonymized;
-                break;
-            case "pEpRatingFullyAnonymous":
-                statusRating = Rating.pEpRatingFullyAnonymous;
-                break;
-            case "pEpRatingMistrust":
-                statusRating = null;
-                status = "pep_red";
-                break;
-            case "pEpRatingB0rken":
-                statusRating = Rating.pEpRatingB0rken;
-                break;
-            case "pEpRatingUnderAttack":
-                statusRating = Rating.pEpRatingUnderAttack;
-                break;
-        }
-        if (statusRating != null) {
-            testUtils.assertMessageStatus(statusRating);
+            status = testUtils.getStatusRating(statusRating, status);
+        if (statusRating[0] != null) {
+            testUtils.assertMessageStatus(statusRating[0]);
         } else {
             testUtils.checkToolbarColor(testUtils.colorToID(status));
         }
@@ -1590,6 +1548,13 @@ public class CucumberTestSteps {
     public void I_wait_for_the_new_message(){
         timeRequiredForThisMethod(40);
         testUtils.waitForNewMessage();
+    }
+
+    @Then("^I wait for the new message and I check color is $")
+    public void I_wait_for_the_new_message_and_I_check_color(){
+        timeRequiredForThisMethod(40);
+        testUtils.waitForNewMessage();
+
     }
 
     @And("^I go to the sent folder$")
