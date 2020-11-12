@@ -395,7 +395,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="@drawable/ic_advanced_light"
+        android:icon="?attr/iconAdavancedSettings"
         android:key="advanced_preferences"
         android:title="@string/advanced">
         <PreferenceCategory
