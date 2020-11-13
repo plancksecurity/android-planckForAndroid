@@ -27,8 +27,8 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
-import security.pEp.remoteConfiguration.ConfigurationManager;
-import security.pEp.remoteConfiguration.RestrictionsListener;
+import security.pEp.mdm.ConfigurationManager;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;

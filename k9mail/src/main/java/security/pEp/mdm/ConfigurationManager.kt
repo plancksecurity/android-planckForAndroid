@@ -1,4 +1,4 @@
-package security.pEp.remoteConfiguration
+package security.pEp.mdm
 
 import android.content.*
 import android.os.Bundle

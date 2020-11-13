@@ -77,7 +77,7 @@ import foundation.pEp.jniadapter.Rating;
 import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.remoteConfiguration.RestrictionsListener;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;

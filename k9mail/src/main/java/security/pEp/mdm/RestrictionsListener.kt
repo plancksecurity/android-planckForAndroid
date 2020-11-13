@@ -1,4 +1,4 @@
-package security.pEp.remoteConfiguration
+package security.pEp.mdm
 
 interface RestrictionsListener {
 
