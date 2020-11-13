@@ -1,4 +1,4 @@
-package security.pEp.remoteConfiguration
+package security.pEp.mdm
 
 data class RemoteConfig(val pepEnablePrivacyProtection: Boolean, val isPepEnablePrivacyProtectionManaged: Boolean)
 

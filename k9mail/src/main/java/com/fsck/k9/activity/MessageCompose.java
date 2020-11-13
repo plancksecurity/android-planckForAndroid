@@ -116,7 +116,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.remoteConfiguration.RestrictionsListener;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
