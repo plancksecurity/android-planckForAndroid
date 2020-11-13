@@ -140,8 +140,5 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         click(R.id.done)
     }
 
-    private fun closeKeyboardWithDelay() {
-        Espresso.closeSoftKeyboard()
-        sleep(1000)
-    }
+
 }
