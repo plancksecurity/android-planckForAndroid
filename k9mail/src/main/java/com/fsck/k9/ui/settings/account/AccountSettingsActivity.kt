@@ -13,7 +13,7 @@ import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
 import org.koin.android.architecture.ext.viewModel
-import security.pEp.remoteConfiguration.RestrictionsListener
+import security.pEp.mdm.RestrictionsListener
 import timber.log.Timber
 
 

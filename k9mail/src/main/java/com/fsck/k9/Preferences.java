@@ -19,7 +19,7 @@ import java.util.Map;
 
 import timber.log.Timber;
 
-import static security.pEp.remoteConfiguration.ConfigurationManager.RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED;
+import static security.pEp.mdm.ConfigurationManager.RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED;
 
 
 public class Preferences {

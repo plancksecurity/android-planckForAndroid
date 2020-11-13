@@ -94,7 +94,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.remoteConfiguration.RestrictionsListener;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.nav_view.NavFolderAccountButton;
