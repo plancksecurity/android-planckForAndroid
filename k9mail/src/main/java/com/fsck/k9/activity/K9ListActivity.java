@@ -51,6 +51,13 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     @Override
     public void onResume() {
         super.onResume();
+        mBase.registerConfigurationManager();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBase.unregisterConfigurationManager();
     }
 
     @Override
