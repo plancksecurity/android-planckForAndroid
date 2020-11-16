@@ -43,6 +43,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,6 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -105,6 +105,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 
@@ -1616,7 +1617,7 @@ public class TestUtils {
             device.waitForIdle();
         }*/
         waitForToolbar();
-        statusColor = getSecurityStatusIconColor(status);
+        statusColor = getSecurityStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
@@ -1808,6 +1809,40 @@ public class TestUtils {
                 break;
         }
         return status;
+    }
+
+    public void checkBadgeStatus(String status, int messageFromList){
+        Rating [] statusRating = new Rating[1];
+        waitForIdle();
+        getStatusRating(statusRating, status);
+        int statusColor = getSecurityStatusIconColor(statusRating[0]);
+        boolean assertedBadgeColor = false;
+        BySelector selector = By.clazz("android.widget.ImageView");
+        while (!assertedBadgeColor) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getResourceName().equals("security.pEp.debug:id/securityBadge")) {
+                        View v1 = getCurrentActivity().getWindow().getDecorView().getRootView();
+                        v1.setDrawingCacheEnabled(true);
+                        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                        int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
+
+                        if (pixel != resources.getColor(statusColor)) {
+                            assertFailWithMessage("Badge status colors are different");
+                        }
+                        assertedBadgeColor = true;
+                        break;
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void checkBadgeColor(int color, int messageFromList) {
+        waitForIdle();
+        onView(withId(R.id.securityBadge)).check(matches(withTextColor(color)));
     }
 
     public void openHamburgerMenu () {
