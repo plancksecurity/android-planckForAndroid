@@ -1633,7 +1633,7 @@ public class TestUtils {
         }
     }
 
-    private int getSecurityStatusIconColor (Rating rating){
+    private int getSecurityStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
             color = -10;
@@ -1645,6 +1645,24 @@ public class TestUtils {
             color = R.drawable.pep_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
+    private int getSecurityStatusIconColor (Rating rating){
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = -10;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.color.pep_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.color.pep_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.color.pep_yellow;
         } else {
             color = -10;
         }
