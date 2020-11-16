@@ -1788,8 +1788,7 @@ public class TestUtils {
                 statusRating[0] = Rating.pEpRatingReliable;
                 break;
             case "pEpRatingTrusted":
-                statusRating[0] = null;
-                status = "pep_green";
+                statusRating[0] = Rating.pEpRatingTrusted;
                 break;
             case "pEpRatingTrustedAndAnonymized":
                 statusRating[0] = Rating.pEpRatingTrustedAndAnonymized;
@@ -1798,8 +1797,7 @@ public class TestUtils {
                 statusRating[0] = Rating.pEpRatingFullyAnonymous;
                 break;
             case "pEpRatingMistrust":
-                statusRating[0] = null;
-                status = "pep_red";
+                statusRating[0] = Rating.pEpRatingMistrust;
                 break;
             case "pEpRatingB0rken":
                 statusRating[0] = Rating.pEpRatingB0rken;
