@@ -1550,10 +1550,9 @@ public class CucumberTestSteps {
         testUtils.waitForNewMessage();
     }
 
-    @Then("^I wait for the new message and I check color is (\\S+)$")
-    public void I_wait_for_the_new_message_and_I_check_color(String status){
+    @Then("^I check the badge color of the first message is (\\S+)$")
+    public void I_check_badge_color(String status){
         timeRequiredForThisMethod(40);
-        testUtils.waitForNewMessage();
         testUtils.checkBadgeStatus(status, 1);
 
     }
