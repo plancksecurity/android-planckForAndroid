@@ -6,6 +6,8 @@ import android.content.Context;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.pEp.DefaultDispatcherProvider;
+import com.fsck.k9.pEp.DispatcherProvider;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
@@ -15,6 +17,7 @@ import com.fsck.k9.pEp.infrastructure.threading.UIThread;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import security.pEp.permissions.PermissionChecker;
@@ -64,5 +67,9 @@ public class ApplicationModule {
     public PEpProvider providepEpProvider() {
         return application.getpEpProvider();
     }
+
+    @Provides
+    @Singleton
+    public DispatcherProvider provideDispatcherProvider() { return new DefaultDispatcherProvider(); }
 
 }
