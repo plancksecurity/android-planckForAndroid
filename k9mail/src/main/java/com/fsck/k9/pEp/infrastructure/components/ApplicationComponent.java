@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.pEp.DispatcherProvider;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
@@ -36,6 +37,8 @@ public interface ApplicationComponent {
 
     PEpSettingsChecker settingsChecker();
     AccountSetupNavigator accountSetupNavigator();
+
+    DispatcherProvider dispatcherProvider();
 
     @Named("AppContext")
     Context getContext();
