@@ -44,8 +44,17 @@ task manualLogin(type: Exec) {
     commandLine manualLoginCommand
 }
 
-task mainTest(type: Exec) {
+task addMessagesToAccount(type: Exec) {
     dependsOn manualLogin
+
+    def addMessagesToAccountCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+                           'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#addMessagesToAccount',
+                           'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
+    commandLine addMessagesToAccountCommand
+}
+
+task mainTest(type: Exec) {
+    dependsOn addMessagesToAccount
 
     def mainTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
                            'class', 'com.fsck.k9.ui.ScreenshotTestSuite',

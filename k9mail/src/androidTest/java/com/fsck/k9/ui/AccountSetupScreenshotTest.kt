@@ -10,45 +10,41 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- *  This 2 test need to be run in an clean app, before run it clean the app data
- */
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
-
-    /**
-     * NEEDS PEP_TEST_EMAIL_ADDRESS and PEP_TEST_EMAIL_PASSWORD system variables
-     */
+    companion object {
+        const val BOT_1_NAME = "na1"
+        const val BOT_2_NAME = "na2"
+        const val BOT_3_NAME = "na3"
+    }
 
     @Test
     fun automaticAccountSetup() {
         setTestSet("A")
-        grantPermissions()
         accountSetup(true)
     }
 
     @Test
     fun manualAccountSetup() {
         setTestSet("B")
-        grantPermissions()
         accountSetup(false)
     }
 
     @Test
     fun importAccountSetup() {
         setTestSet("L")
-        grantPermissions()
         openFirstScreen()
         click(R.id.skip)
         sleep(500)
+        permissions()
 
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("import account menu")
         sleep(500)
 
-        startFileManagerStub("android07", "k9s")
+        startFileManagerStub("stubAccount", "k9s")
         click(getString(R.string.settings_import))
         sleep(500)
 
@@ -65,9 +61,41 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import account step 3 filled")
     }
 
+    @Test
+    fun addMessagesToAccount() {
+        openFirstScreen()
+        waitListView()
+
+        sendNewMessageToSelf()
+        waitNewMessage()
+
+        replyToSelfMessage()
+        waitNewMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_1_NAME)
+        waitNewMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_2_NAME)
+        waitNewMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_3_NAME)
+        waitNewMessage()
+    }
+
+    private fun permissions() {
+        getScreenShotCurrentActivity("permissions")
+        sleep(1000)
+        click(R.id.action_continue)
+        allowPermissions()
+    }
+
     private fun accountSetup(automaticLogin: Boolean) {
         openFirstScreen()
         passWelcomeScreen()
+        permissions()
         if (automaticLogin) addFirstAccountAutomatic()
         else addFirstAccountManual()
     }

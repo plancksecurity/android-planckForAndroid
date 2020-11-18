@@ -29,13 +29,6 @@ open class BaseDeviceAdminTest : BaseTest() {
         }
     }
 
-    fun openFirstScreen() {
-        val intent = Intent()
-        splashRule.launchActivity(intent)
-        sleep(2000)
-        runBlocking { waitForIdle() }
-    }
-
     companion object {
         const val ENFORCER_PACKAGE_NAME: String = "com.example.android.apprestrictionenforcer"
     }

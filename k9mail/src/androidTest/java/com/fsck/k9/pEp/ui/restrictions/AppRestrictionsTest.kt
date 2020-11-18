@@ -48,7 +48,6 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun automaticStartUp() {
-        openFirstScreen()
         passWelcomeScreen()
         allowPermissions()
         addFirstAccount()
@@ -56,30 +55,14 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun sendMessageToSelf() {
-        openFirstScreen()
-
         waitListView()
         getMessageListSize()
-        click(R.id.fab_button_compose_message)
-
-        waitMessageCompose()
-
-        val message = BasicMessage(
-                BuildConfig.PEP_TEST_EMAIL_ADDRESS,
-                "Subject",
-                "Body",
-                BuildConfig.PEP_TEST_EMAIL_ADDRESS
-        )
-        fillMessage(message)
-        click(R.id.send)
-        sleep(3000)
-
+        sendNewMessageToSelf()
         waitNewMessage()
     }
 
     @Test
     fun messageListAppRestrictions() {
-        openFirstScreen()
         waitListView()
 
         openEnforcerSplitScreen(
@@ -97,7 +80,6 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun messageViewAppRestrictions() {
-        openFirstScreen()
         waitListView()
         clickListItem(R.id.message_list, 0)
 
@@ -114,7 +96,6 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun messageComposeAppRestrictions() {
-        openFirstScreen()
         waitListView()
         clickListItem(R.id.message_list, 0)
 
@@ -133,7 +114,6 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun accountSettingsAppRestrictions() {
-        openFirstScreen()
         waitListView()
 
         onView(withContentDescription(R.string.navigation_drawer_open)).perform(click())
@@ -208,56 +188,5 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         forcedAppConfig = true
     }
 
-    private fun allowPermissions() {
-        device.waitForIdle()
-        try {
-            val popUpMessage = By.clazz("android.widget.Button")
-            var buttonExists = true
-            while (buttonExists) {
-                buttonExists = false
-                device.findObjects(popUpMessage).forEach { obj ->
-                    if (obj.resourceName != null && obj.resourceName == "com.android.permissioncontroller:id/permission_allow_button") {
-                        buttonExists = true
-                        obj.click()
-                    }
-                }
-            }
-        } catch (ex: Exception) {
-            Timber.e("Cannot allow permissions")
-        }
-        do {
-            allowPermissions(2)
-            allowPermissions(1)
-        } while (!UtilsPackage.viewIsDisplayed(R.id.action_continue) && !UtilsPackage.viewIsDisplayed(R.id.account_email))
-    }
-
-    private fun allowPermissions(index: Int) {
-        while (true) {
-            try {
-                device.waitForIdle()
-                val allowPermissions = device.findObject(UiSelector()
-                        .clickable(true)
-                        .checkable(false)
-                        .index(index))
-                if (allowPermissions.exists()) {
-                    allowPermissions.click()
-                    device.waitForIdle()
-                } else {
-                    Timber.e("There is no permissions dialog to interact with ")
-                    return
-                }
-            } catch (ignoredException: Exception) {
-                Timber.e(ignoredException, "Failed trying to allow permission")
-            }
-        }
-    }
-
-    private fun fillMessage(message: BasicMessage) {
-        Espresso.closeSoftKeyboard()
-        sleep(500)
-        addTextTo(R.id.to, message.to)
-        addTextTo(R.id.subject, message.subject)
-        addTextTo(R.id.message_content, message.message)
-    }
 
 }

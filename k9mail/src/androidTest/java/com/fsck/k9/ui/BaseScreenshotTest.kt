@@ -1,6 +1,5 @@
 package com.fsck.k9.ui
 
-import android.Manifest.permission.*
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
@@ -25,10 +24,8 @@ import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
-import com.fsck.k9.K9
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.BaseTest
@@ -39,25 +36,11 @@ import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.IsNot
 import org.junit.After
-import org.junit.Before
-import org.junit.Rule
 import timber.log.Timber
 import java.io.File
 
 
 open class BaseScreenshotTest : BaseTest() {
-
-
-    @get:Rule
-    var permissionRule: GrantPermissionRule =
-            GrantPermissionRule.grant(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_CONTACTS, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-
-    @Before
-    @Throws(Exception::class)
-    fun beforeBaseScreenshot() {
-        K9.setShallRequestPermissions(false)
-    }
-
     @After
     @Throws(Exception::class)
     fun tearDown() {
@@ -68,9 +51,6 @@ open class BaseScreenshotTest : BaseTest() {
     }
 
     fun openFirstScreen() {
-        val intent = Intent()
-        splashRule.launchActivity(intent)
-        sleep(2000)
         getScreenShotCurrentActivity("splash")
         sleep(2000)
         runBlocking { waitForIdle() }
