@@ -2601,6 +2601,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setSelectionState(true);
     }
 
+    public void deselectAll() {
+        setSelectionState(false);
+    }
+
     public void onMoveUp() {
         int currentPosition = listView.getSelectedItemPosition();
         if (currentPosition == AdapterView.INVALID_POSITION || listView.isInTouchMode()) {
