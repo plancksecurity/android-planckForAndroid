@@ -1029,6 +1029,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      *         {@link #onCreate(Bundle)}. May be {@code null}.
      */
     private void initializeDisplayMode(Bundle savedInstanceState) {
+        messageViewVisible = false;
         if (useSplitView()) {
             mDisplayMode = DisplayMode.SPLIT_VIEW;
             return;
@@ -2172,9 +2173,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void goBack() {
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            if(!isThreadDisplayed) {
-                updateToolbarColorToOriginal();
-            }
             showMessageList();
         }
         else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -2315,7 +2313,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mViewSwitcher.showFirstView();
 
         mMessageListFragment.setActiveMessage(null);
-
+        removeMessageViewFragment();
         showDefaultTitleView();
         configureMenu(mMenu);
     }

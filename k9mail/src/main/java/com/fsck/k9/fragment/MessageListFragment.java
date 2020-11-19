@@ -3031,6 +3031,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 //TODO: empty thread view -> return to full message list
             }
         }
+        else if (!((MessageList) requireActivity()).isMessageViewVisible()) {
+            updateToolbarColorToOriginal();
+        }
         cleanupSelected(cursor);
         updateContextMenu(cursor);
 
@@ -3047,6 +3050,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fragmentListener.updateMenu();
         }
         hideLoadingMessages(cursor.getCount());
+    }
+
+    private void updateToolbarColorToOriginal() {
+        toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
     }
 
     private void updateToolbarColor(Cursor cursor) {
