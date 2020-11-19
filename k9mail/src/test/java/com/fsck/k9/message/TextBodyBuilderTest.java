@@ -1,15 +1,12 @@
 package com.fsck.k9.message;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.mail.internet.TextBody;
-
 import com.fsck.k9.message.quote.InsertableHtmlContent;
-import org.junit.Ignore;
+
 import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 

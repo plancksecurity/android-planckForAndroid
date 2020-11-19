@@ -4,17 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
+
 import androidx.loader.app.LoaderManager;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.Account;
 import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.pEp.PEpProvider;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openintents.openpgp.IOpenPgpService2;
@@ -29,10 +31,16 @@ import org.robolectric.shadows.ShadowLooper;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)

@@ -3,8 +3,6 @@ package com.fsck.k9
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.fsck.k9.ui.endtoend.AutocryptKeyTransferActivity
-import com.fsck.k9.ui.endtoend.AutocryptKeyTransferViewModel
-import com.fsck.k9.ui.endtoend.AutocryptSetupMessageLiveEvent
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.junit.Test
