@@ -39,7 +39,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.AccountStats;
-import com.fsck.k9.BaseAccount;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
@@ -48,14 +47,10 @@ import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.DrawerFolderPopulator;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.AccountUtils;
@@ -101,7 +96,6 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.nav_view.NavFolderAccountButton;
-import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -1233,6 +1227,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
+        drawerFolderPopulator.clearFolders();
     }
 
     @Override

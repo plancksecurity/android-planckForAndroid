@@ -16,6 +16,11 @@ class DrawerFolderPopulator @Inject constructor() {
     private var lastUnreadCounts: IntArray = intArrayOf()
     private lateinit var lastFolders: List<LocalFolder>
 
+    fun clearFolders() {
+        lastFolders = listOf()
+        lastUnreadCounts = intArrayOf()
+    }
+
     fun populateFoldersIfNeeded(folderAdapter: RVRendererAdapter<FolderModel>, newFolders: List<LocalFolder>, account: Account) {
         val newFoldersAreDifferent = areFolderListDifferent(newFolders)
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
