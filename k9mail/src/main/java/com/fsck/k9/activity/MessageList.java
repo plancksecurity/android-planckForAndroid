@@ -39,7 +39,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.AccountStats;
-import com.fsck.k9.BaseAccount;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
@@ -48,14 +47,10 @@ import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.DrawerFolderPopulator;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Part;
 import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.AccountUtils;
@@ -262,7 +257,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
         specialAccountUuid = searchAccount.getUuid();
         LocalSearch search = searchAccount.getRelatedSearch();
-        MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+                !mNoThreading);
         addMessageListFragment(fragment, !isHomeScreen(search));
         drawerLayout.closeDrawers();
     }
@@ -884,8 +880,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             @Override
             public void onDrawerClosed(View drawerView) {
                 LocalSearch search = getLocalSearch(mAccount, folder);
-                MessageListFragment fragment = MessageListFragment.newInstance(search, false, false);
-                addMessageListFragment(fragment, true);
+                MessageListFragment fragment = MessageListFragment.newInstance(search, false,
+                        !mNoThreading);
+                addMessageListFragment(fragment, !isHomeScreen(search));
                 drawerLayout.removeDrawerListener(drawerCloseListener);
             }
 
@@ -1028,6 +1025,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      *         {@link #onCreate(Bundle)}. May be {@code null}.
      */
     private void initializeDisplayMode(Bundle savedInstanceState) {
+        messageViewVisible = false;
         if (useSplitView()) {
             mDisplayMode = DisplayMode.SPLIT_VIEW;
             return;
@@ -1229,6 +1227,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
+        drawerFolderPopulator.clearFolders();
     }
 
     @Override
@@ -1238,9 +1237,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (!(this instanceof Search)) {
             //necessary b/c no guarantee Search.onStop will be called before MessageList.onResume
             //when returning from search results
-            Search.setActive(false);
+            if(Search.isActive()) {
+                Search.setActive(false);
+                hideSearchView();
+            }
         }
-        hideSearchView();
 
         if (mAccount != null && !mAccount.isAvailable(this)) {
             onAccountUnavailable();
@@ -2045,7 +2046,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         tmpSearch.addAccountUuids(mSearch.getAccountUuids());
         tmpSearch.and(SearchField.SENDER, senderAddress, Attribute.CONTAINS);
 
-        MessageListFragment fragment = MessageListFragment.newInstance(tmpSearch, false, false);
+        MessageListFragment fragment = MessageListFragment.newInstance(
+                tmpSearch, false, !mNoThreading);
 
         addMessageListFragment(fragment, !isHomeScreen(tmpSearch));
     }
@@ -2169,9 +2171,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void goBack() {
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
-            if(!isThreadDisplayed) {
-                updateToolbarColorToOriginal();
-            }
             showMessageList();
         }
         else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -2312,7 +2311,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mViewSwitcher.showFirstView();
 
         mMessageListFragment.setActiveMessage(null);
-
+        removeMessageViewFragment();
         showDefaultTitleView();
         configureMenu(mMenu);
     }
