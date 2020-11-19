@@ -15,7 +15,6 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.infrastructure.Presenter;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
@@ -29,7 +28,7 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 
-public class PEpStatusPresenter implements Presenter {
+public class PEpStatusPresenter {
 
     private static final String STATE_FORCE_UNENCRYPTED = "forceUnencrypted";
     private static final String STATE_ALWAYS_SECURE = "alwaysSecure";
@@ -231,21 +230,6 @@ public class PEpStatusPresenter implements Presenter {
                 view.showUndoMistrust(latestHandshakeId.username);
                 break;
         }
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void destroy() {
-
     }
 
     public MessageLoaderHelper.MessageLoaderCallbacks callback() {

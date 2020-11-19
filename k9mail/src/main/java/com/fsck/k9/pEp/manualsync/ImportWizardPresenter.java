@@ -4,7 +4,6 @@ package com.fsck.k9.pEp.manualsync;
 import com.fsck.k9.K9;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.SyncState;
 import timber.log.Timber;
 
-public class ImportWizardPresenter implements Presenter {
+public class ImportWizardPresenter {
 
     private static final String DEFAULT_TRUSTWORDS_LANGUAGE = "en";
     private boolean formingGroup;
@@ -186,22 +185,6 @@ public class ImportWizardPresenter implements Presenter {
 
     public void leaveDeviceGroup() {
         view.leaveDeviceGroup();
-    }
-
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-
-    }
-
-    @Override
-    public void destroy() {
     }
 
     public void processSignal(SyncHandshakeSignal signal) {

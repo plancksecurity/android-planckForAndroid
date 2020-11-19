@@ -155,20 +155,17 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.resume();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        presenter.destroy();
         unregisterReceiver(receiver);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        presenter.pause();
     }
 
 
