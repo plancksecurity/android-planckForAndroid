@@ -1775,7 +1775,7 @@ public class TestUtils {
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForToolbar();
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
-                //checkUpperToolbar(color);
+                checkUpperToolbar(color);
                 return;
             }
         }
