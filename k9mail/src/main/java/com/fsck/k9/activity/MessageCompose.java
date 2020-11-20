@@ -237,7 +237,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private boolean alreadyNotifiedUserOfEmptySubject = false;
     private boolean changesMadeSinceLastSave = false;
     private Rating originalMessageRating = null;
-    private boolean isSendButtonLocked = false;
+    private boolean isMessageRatingBeingLoaded = false;
+    private boolean isProcessingSendClick = false;
 
     /**
      * The database ID of this message's draft. This is used when saving drafts so the message in
@@ -1099,13 +1100,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 goBack();
                 break;
             case R.id.send:
-                if (!isSendButtonLocked) {
-                    if (isLookNeeded()) {
-                        lockSendButton();
+                if (isMessageRatingBeingLoaded) {
+                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
+                } else if (!isProcessingSendClick) {
+                    processingSend();
+                    if (isMessageRatingNotAvailable()) {
+                        messageRatingIsBeingLoaded();
                     }
                     checkToSendMessage();
-                } else {
-                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 }
                 break;
             case R.id.save:
@@ -1141,7 +1143,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isLookNeeded() {
+    private boolean isMessageRatingNotAvailable() {
         return !recipientPresenter.isForceUnencrypted()
                 && account.ispEpPrivacyProtected();
     }
@@ -1730,12 +1732,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                     draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
-                    unlockSendButton();
+                    sendFinished();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    unlockSendButton();
+                    sendFinished();
                 }
             }).execute();
             finish();
@@ -2002,12 +2004,20 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
     }
 
-    public void lockSendButton() {
-        isSendButtonLocked = true;
+    public void messageRatingIsBeingLoaded() {
+        isMessageRatingBeingLoaded = true;
     }
 
-    public void unlockSendButton() {
-        isSendButtonLocked = false;
+    public void messageRatingLoaded() {
+        isMessageRatingBeingLoaded = false;
+    }
+
+    public void processingSend() {
+        isProcessingSendClick = true;
+    }
+
+    public void sendFinished() {
+        isProcessingSendClick = false;
     }
 
     public void setToolbarColor(@ColorInt int color) {
