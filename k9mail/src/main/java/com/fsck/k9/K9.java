@@ -52,6 +52,7 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -660,6 +661,7 @@ public class K9 extends MultiDexApplication {
 
         Preferences prefs = Preferences.getPreferences(this);
         loadPrefs(prefs);
+        ThemeManager.updateAppTheme();
 
         /*
          * We have to give MimeMessage a temp directory because File.createTempFile(String, String)
