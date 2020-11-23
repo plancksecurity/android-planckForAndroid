@@ -85,12 +85,12 @@
 
         <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
 
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
+        <item name="openpgp_black">@color/openpgp_black</item>
+        <item name="openpgp_orange">@color/openpgp_orange</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
+        <item name="openpgp_green">@color/openpgp_green</item>
+        <item name="openpgp_blue">@color/openpgp_blue</item>
+        <item name="openpgp_grey">@color/openpgp_grey</item>
         <item name="openpgp_dark_grey">#888</item>
 
         <item name="background">@android:color/background_light</item>
@@ -188,12 +188,12 @@
 
         <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
 
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
+        <item name="openpgp_black">@color/openpgp_black</item>
+        <item name="openpgp_orange">@color/openpgp_orange</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
+        <item name="openpgp_green">@color/openpgp_green</item>
+        <item name="openpgp_blue">@color/openpgp_blue</item>
+        <item name="openpgp_grey">@color/openpgp_grey</item>
         <item name="openpgp_dark_grey">#888</item>
 
         <item name="background">@android:color/background_dark</item>
@@ -323,12 +323,12 @@
 
         <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
 
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
+        <item name="openpgp_black">@color/openpgp_black</item>
+        <item name="openpgp_orange">@color/openpgp_orange</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
+        <item name="openpgp_green">@color/openpgp_green</item>
+        <item name="openpgp_blue">@color/openpgp_blue</item>
+        <item name="openpgp_grey">@color/openpgp_grey</item>
         <item name="openpgp_dark_grey">#888</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
 
@@ -417,11 +417,11 @@
 
         <item name="openpgp_black">#fff</item>
         <item name="openpgp_orange">#ee7700</item>
-        <item name="openpgp_red">#CC0000</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
         <item name="openpgp_green">#77aa00</item>
         <item name="openpgp_blue">#6699cc</item>
         <item name="openpgp_grey">#888</item>
-        <item name="openpgp_dark_grey">#bbb</item>
+        <item name="openpgp_dark_grey">@color/openpgp_grey</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
 
         <item name="iconpEpShield">@drawable/pep_status_green_dark</item>
