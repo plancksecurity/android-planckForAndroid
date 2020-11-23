@@ -15,9 +15,14 @@ import org.junit.runner.RunWith
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     companion object {
-        const val BOT_1_NAME = "na1"
-        const val BOT_2_NAME = "na2"
-        const val BOT_3_NAME = "na3"
+        const val BOT_1_NAME = "account1"
+        const val BOT_2_NAME = "account2"
+        const val BOT_3_NAME = "account2"
+    }
+
+    @Test
+    fun installApk() {
+
     }
 
     @Test
