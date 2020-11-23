@@ -66,6 +66,8 @@ import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -2350,10 +2352,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onToggleTheme() {
-        if (K9.getK9MessageViewTheme() == K9.Theme.DARK) {
-            K9.setK9MessageViewThemeSetting(K9.Theme.LIGHT);
+        if (ThemeManager.getMessageViewTheme() == Theme.DARK) {
+            ThemeManager.setMessageViewTheme(Theme.LIGHT);
         } else {
-            K9.setK9MessageViewThemeSetting(K9.Theme.DARK);
+            ThemeManager.setMessageViewTheme(Theme.DARK);
         }
 
         new Thread(new Runnable() {

@@ -10,7 +10,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
 import com.fsck.k9.K9.NotificationQuickDelete;
 import com.fsck.k9.K9.SplitViewMode;
-import com.fsck.k9.K9.Theme;
+import com.fsck.k9.pEp.ui.tools.AppTheme;
+import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.preferences.Settings.BooleanSetting;
 import com.fsck.k9.preferences.Settings.ColorSetting;
@@ -200,7 +201,7 @@ public class GlobalSettings {
         ));
         s.put("theme", Settings.versions(
                 new V(1, new LegacyThemeSetting(Theme.LIGHT)),
-                new V(52, new ThemeSetting(K9.AppTheme.FOLLOW_SYSTEM))
+                new V(52, new ThemeSetting(AppTheme.FOLLOW_SYSTEM))
         ));
         s.put("messageViewTheme", Settings.versions(
                 new V(16, new LegacyThemeSetting(Theme.LIGHT)),
@@ -459,7 +460,7 @@ public class GlobalSettings {
      * Upgrades the settings from version 51 to 52.
      *
      * <p>
-     * Set <em>theme</em> to {@link K9.AppTheme#FOLLOW_SYSTEM} if <em>theme</em> has the value {@link K9.AppTheme#LIGHT}.
+     * Set <em>theme</em> to {@link AppTheme#FOLLOW_SYSTEM} if <em>theme</em> has the value {@link AppTheme#LIGHT}.
      * </p>
      */
     private static class SettingsUpgraderV52 implements SettingsUpgrader {
@@ -468,7 +469,7 @@ public class GlobalSettings {
         public Set<String> upgrade(Map<String, Object> settings) {
             Theme theme = (Theme) settings.get("theme");
             if (theme == Theme.LIGHT) {
-                settings.put("theme", K9.AppTheme.FOLLOW_SYSTEM);
+                settings.put("theme", AppTheme.FOLLOW_SYSTEM);
             }
 
             return null;
@@ -508,47 +509,47 @@ public class GlobalSettings {
         }
     }
 
-    static class ThemeSetting extends SettingsDescription<K9.AppTheme> {
+    static class ThemeSetting extends SettingsDescription<AppTheme> {
         private static final String THEME_LIGHT = "light";
         private static final String THEME_DARK = "dark";
         private static final String THEME_FOLLOW_SYSTEM = "follow_system";
 
-        ThemeSetting(K9.AppTheme defaultValue) {
+        ThemeSetting(AppTheme defaultValue) {
             super(defaultValue);
         }
 
         @Override
-        public K9.AppTheme fromString(String value) throws InvalidSettingValueException {
+        public AppTheme fromString(String value) throws InvalidSettingValueException {
             try {
                 Integer theme = Integer.parseInt(value);
-                if (theme == K9.AppTheme.LIGHT.ordinal() ||
+                if (theme == AppTheme.LIGHT.ordinal() ||
                         // We used to store the resource ID of the theme in the preference storage,
                         // but don't use the database upgrade mechanism to update the values. So
                         // we have to deal with the old format here.
                         theme == android.R.style.Theme_Light) {
-                    return K9.AppTheme.LIGHT;
-                } else if (theme == K9.AppTheme.DARK.ordinal() || theme == android.R.style.Theme) {
-                    return K9.AppTheme.DARK;
+                    return AppTheme.LIGHT;
+                } else if (theme == AppTheme.DARK.ordinal() || theme == android.R.style.Theme) {
+                    return AppTheme.DARK;
                 }
                 else {
-                    return K9.AppTheme.FOLLOW_SYSTEM;
+                    return AppTheme.FOLLOW_SYSTEM;
                 }
             } catch (NumberFormatException e) { throw new InvalidSettingValueException(); }
         }
 
         @Override
-        public K9.AppTheme fromPrettyString(String value) throws InvalidSettingValueException {
+        public AppTheme fromPrettyString(String value) throws InvalidSettingValueException {
             if (THEME_LIGHT.equals(value)) {
-                return K9.AppTheme.LIGHT;
+                return AppTheme.LIGHT;
             } else if (THEME_DARK.equals(value)) {
-                return K9.AppTheme.DARK;
+                return AppTheme.DARK;
             }
 
             throw new InvalidSettingValueException();
         }
 
         @Override
-        public String toPrettyString(K9.AppTheme value) {
+        public String toPrettyString(AppTheme value) {
             switch (value) {
                 case DARK: {
                     return THEME_DARK;
@@ -563,7 +564,7 @@ public class GlobalSettings {
         }
 
         @Override
-        public String toString(K9.AppTheme value) {
+        public String toString(AppTheme value) {
             return Integer.toString(value.ordinal());
         }
     }

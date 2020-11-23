@@ -9,6 +9,8 @@ import androidx.test.uiautomator.UiDevice;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
@@ -65,7 +67,7 @@ public class ImportSettingsDarkThemeTest {
         onView(withId(R.id.accounts_list)).perform(ViewActions.click());
         device.waitForIdle();
         try{
-            Assert.assertEquals(K9.Theme.LIGHT, K9.getK9LegacyTheme());
+            Assert.assertEquals(Theme.LIGHT, ThemeManager.getLegacyTheme());
         }catch (AssertionFailedError exception){
         }
         testUtils.goBackAndRemoveAccount();

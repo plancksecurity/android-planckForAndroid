@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +21,6 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -52,6 +50,8 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.pEp.ui.tools.AppTheme;
+import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
@@ -198,10 +198,6 @@ public class K9 extends MultiDexApplication {
     }
 
     private static String language = "";
-    private static AppTheme appTheme = AppTheme.FOLLOW_SYSTEM;
-    private static Theme messageViewTheme = Theme.USE_GLOBAL;
-    private static Theme composerTheme = Theme.USE_GLOBAL;
-    private static boolean useFixedMessageTheme = true;
 
     private static final FontSizes fontSizes = new FontSizes();
 
@@ -578,10 +574,10 @@ public class K9 extends MultiDexApplication {
 
 
         editor.putString("language", language);
-        editor.putInt("theme", appTheme.ordinal());
-        editor.putInt("messageViewTheme", messageViewTheme.ordinal());
-        editor.putInt("messageComposeTheme", composerTheme.ordinal());
-        editor.putBoolean("fixedMessageViewTheme", useFixedMessageTheme);
+        editor.putInt("theme", ThemeManager.getAppTheme().ordinal());
+        editor.putInt("messageViewTheme", ThemeManager.getMessageViewTheme().ordinal());
+        editor.putInt("messageComposeTheme", ThemeManager.getComposerTheme().ordinal());
+        editor.putBoolean("fixedMessageViewTheme", ThemeManager.getUseFixedMessageViewTheme());
 
         editor.putBoolean("confirmDelete", mConfirmDelete);
         editor.putBoolean("confirmDiscardMessage", mConfirmDiscardMessage);
@@ -1009,14 +1005,13 @@ public class K9 extends MultiDexApplication {
         K9.setK9Language(storage.getString("language", ""));
 
         int themeValue = storage.getInt("theme", AppTheme.FOLLOW_SYSTEM.ordinal());
-        appTheme = AppTheme.values()[themeValue];
+        ThemeManager.setAppTheme(AppTheme.values()[themeValue]);
 
         themeValue = storage.getInt("messageViewTheme", Theme.USE_GLOBAL.ordinal());
-        K9.setK9MessageViewThemeSetting(Theme.values()[themeValue]);
+        ThemeManager.setMessageViewTheme(Theme.values()[themeValue]);
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
-        K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
-        K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-        K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        ThemeManager.setComposerTheme(Theme.values()[themeValue]);
+        ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpNewKeysPassphrase = storage.getPassphrase();
     }
 
@@ -1090,111 +1085,6 @@ public class K9 extends MultiDexApplication {
 
     public static void setK9Language(String nlanguage) {
         language = nlanguage;
-    }
-
-    /**
-     * Possible values for the different theme settings.
-     *
-     * <p><strong>Important:</strong>
-     * Do not change the order of the items! The ordinal value (position) is used when saving the
-     * settings.</p>
-     */
-    public enum Theme {
-        LIGHT,
-        DARK,
-        USE_GLOBAL
-    }
-
-    public enum AppTheme {
-        LIGHT,
-        DARK,
-        FOLLOW_SYSTEM
-    }
-
-    public static int getK9ThemeResourceId() {
-        return R.style.Theme_K9_DayNight;
-    }
-
-    public static Theme getK9MessageViewTheme() {
-        return resolveTheme(messageViewTheme);
-    }
-
-    public static Theme getK9MessageViewThemeSetting() {
-        return messageViewTheme;
-    }
-
-    public static Theme getK9ComposerTheme() {
-        return resolveTheme(composerTheme);
-    }
-
-    public static int getK9ComposerThemeResourceId() {
-        return getK9ThemeResourceId();
-    }
-
-    public static Theme getK9ComposerThemeSetting() {
-        return composerTheme;
-    }
-
-    private static Theme resolveTheme(Theme theme) {
-        switch (theme) {
-            case LIGHT:
-            case DARK:
-                return theme;
-            default:
-                return getK9LegacyTheme();
-        }
-    }
-
-    public static Theme getK9LegacyTheme() {
-        switch (appTheme) {
-            case DARK:
-                return Theme.DARK;
-            case LIGHT:
-                return Theme.LIGHT;
-            case FOLLOW_SYSTEM:
-                return (Build.VERSION.SDK_INT < 28) ? Theme.LIGHT : getSystemTheme();
-
-        }
-        return Theme.LIGHT;
-    }
-
-    private static Theme getSystemTheme() {
-        switch (app.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
-            case Configuration.UI_MODE_NIGHT_NO:
-                return Theme.LIGHT;
-            case Configuration.UI_MODE_NIGHT_YES:
-                return Theme.DARK;
-            default: return Theme.LIGHT;
-        }
-    }
-
-    @NonNull
-    public static AppTheme getK9AppTheme() {
-        if(appTheme == null) return AppTheme.FOLLOW_SYSTEM;
-        return appTheme;
-    }
-
-    public static void setK9AppTheme(AppTheme theme) {
-        appTheme = theme;
-    }
-
-    public static void setK9MessageViewThemeSetting(Theme nMessageViewTheme) {
-        messageViewTheme = nMessageViewTheme;
-    }
-
-    public static boolean useFixedMessageViewTheme() {
-        return useFixedMessageTheme;
-    }
-
-    public static void setK9ComposerThemeSetting(Theme compTheme) {
-        composerTheme = compTheme;
-    }
-
-    public static void setUseFixedMessageViewTheme(boolean useFixed) {
-        useFixedMessageTheme = useFixed;
-        if (!useFixedMessageTheme && messageViewTheme == Theme.USE_GLOBAL) {
-            messageViewTheme = getK9LegacyTheme();
-        }
     }
 
     public static BACKGROUND_OPS getBackgroundOps() {

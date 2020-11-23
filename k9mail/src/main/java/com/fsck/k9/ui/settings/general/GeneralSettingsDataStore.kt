@@ -3,8 +3,9 @@ package com.fsck.k9.ui.settings.general
 import android.content.Context
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
-import com.fsck.k9.K9.Theme
+import com.fsck.k9.pEp.ui.tools.Theme
 import com.fsck.k9.Preferences
+import com.fsck.k9.pEp.ui.tools.AppTheme
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
@@ -18,7 +19,7 @@ class GeneralSettingsDataStore(
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
         return when (key) {
-            "fixed_message_view_theme" -> K9.useFixedMessageViewTheme()
+            "fixed_message_view_theme" -> ThemeManager.useFixedMessageViewTheme
             "animations" -> K9.showAnimations()
             "measure_accounts" -> K9.measureAccounts()
             "count_search" -> K9.countSearchMessages()
@@ -58,7 +59,7 @@ class GeneralSettingsDataStore(
     override fun putBoolean(key: String, value: Boolean) {
         val app = context.applicationContext as K9
         when (key) {
-            "fixed_message_view_theme" -> K9.setUseFixedMessageViewTheme(value)
+            "fixed_message_view_theme" -> ThemeManager.setUseFixedMessageViewTheme(value)
             "animations" -> K9.setAnimations(value)
             "measure_accounts" -> K9.setMeasureAccounts(value)
             "count_search" -> K9.setCountSearchMessages(value)
@@ -116,10 +117,10 @@ class GeneralSettingsDataStore(
     override fun getString(key: String, defValue: String?): String? {
         return when (key) {
             "language" -> K9.getK9Language()
-            "theme" -> appThemeToString(K9.getK9AppTheme())
-            "fixed_message_view_theme" -> themeToString(K9.getK9MessageViewThemeSetting())
-            "message_compose_theme" -> themeToString(K9.getK9ComposerThemeSetting())
-            "messageViewTheme" -> themeToString(K9.getK9MessageViewThemeSetting())
+            "theme" -> appThemeToString(ThemeManager.appTheme)
+            "fixed_message_view_theme" -> themeToString(ThemeManager.messageViewTheme)
+            "message_compose_theme" -> themeToString(ThemeManager.composerTheme)
+            "messageViewTheme" -> themeToString(ThemeManager.messageViewTheme)
             "messagelist_preview_lines" -> K9.messageListPreviewLines().toString()
             "splitview_mode" -> K9.getSplitViewMode().name
             "notification_quick_delete" -> K9.getNotificationQuickDeleteBehaviour().name
@@ -142,9 +143,9 @@ class GeneralSettingsDataStore(
 
         when (key) {
             "theme" -> setTheme(value)
-            "fixed_message_view_theme" -> K9.setK9MessageViewThemeSetting(stringToTheme(value))
-            "message_compose_theme" -> K9.setK9ComposerThemeSetting(stringToTheme(value))
-            "messageViewTheme" -> K9.setK9MessageViewThemeSetting(stringToTheme(value))
+            "fixed_message_view_theme" -> ThemeManager.messageViewTheme = stringToTheme(value)
+            "message_compose_theme" -> ThemeManager.composerTheme = stringToTheme(value)
+            "messageViewTheme" -> ThemeManager.messageViewTheme = stringToTheme(value)
             "messagelist_preview_lines" -> K9.setMessageListPreviewLines(value.toInt())
             "splitview_mode" -> K9.setSplitViewMode(K9.SplitViewMode.valueOf(value))
             "notification_quick_delete" -> K9.setNotificationQuickDeleteBehaviour(K9.NotificationQuickDelete.valueOf(value))
@@ -240,9 +241,8 @@ class GeneralSettingsDataStore(
     }
 
     private fun setTheme(value: String?) {
-        K9.setK9AppTheme(stringToAppTheme(value))
+        ThemeManager.appTheme = stringToAppTheme(value)
         ThemeManager.updateAppTheme()
-        //recreateActivity()
     }
 
     private fun showChangeLanguageDialog(language: String?) {
@@ -263,16 +263,16 @@ class GeneralSettingsDataStore(
     }
 
     private fun stringToAppTheme(theme: String?) = when (theme) {
-        "light" -> K9.AppTheme.LIGHT
-        "dark" -> K9.AppTheme.DARK
-        "follow_system" -> K9.AppTheme.FOLLOW_SYSTEM
+        "light" -> AppTheme.LIGHT
+        "dark" -> AppTheme.DARK
+        "follow_system" -> AppTheme.FOLLOW_SYSTEM
         else -> throw AssertionError()
     }
 
-    private fun appThemeToString(theme: K9.AppTheme) = when (theme) {
-        K9.AppTheme.DARK -> "dark"
-        K9.AppTheme.LIGHT -> "light"
-        K9.AppTheme.FOLLOW_SYSTEM -> "follow_system"
+    private fun appThemeToString(theme: AppTheme) = when (theme) {
+        AppTheme.DARK -> "dark"
+        AppTheme.LIGHT -> "light"
+        AppTheme.FOLLOW_SYSTEM -> "follow_system"
     }
 
     private fun setBackgroundOps(value: String) {

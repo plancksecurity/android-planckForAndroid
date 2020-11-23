@@ -95,6 +95,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
@@ -291,10 +293,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         Timber.e("P4A-941 took %d to before rendering", System.currentTimeMillis()-time);
-        if (K9.getK9ComposerThemeSetting() != K9.Theme.USE_GLOBAL) {
+        if (ThemeManager.getComposerTheme() != Theme.USE_GLOBAL) {
             // theme the whole content according to the theme (except the action bar)
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
-                    K9.getK9ComposerThemeResourceId());
+                    ThemeManager.getComposerThemeResourceId());
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
                     View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
@@ -1269,7 +1271,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
-                        (K9.getK9LegacyTheme() == K9.Theme.LIGHT) ?
+                        (ThemeManager.getLegacyTheme() == Theme.LIGHT) ?
                                 R.style.Theme_K9_Dialog_Light :
                                 R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);

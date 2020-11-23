@@ -23,6 +23,8 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -104,7 +106,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
-            if (K9.getK9LegacyTheme() == K9.Theme.DARK) {
+            if (ThemeManager.getLegacyTheme() == Theme.DARK) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }

@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -43,7 +44,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
-        setTheme(K9.getK9ThemeResourceId());
+        setTheme(ThemeManager.getAppThemeResourceId());
         super.onCreate(icicle);
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
@@ -225,7 +226,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
             return;
         }
 
-        setTheme(K9.getK9ThemeResourceId());
+        setTheme(ThemeManager.getAppThemeResourceId());
 
         ListView content = dialog.findViewById(android.R.id.list);
         ViewGroup root = (ViewGroup) content.getParent().getParent();
