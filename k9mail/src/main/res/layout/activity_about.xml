@@ -32,7 +32,7 @@
 
             <TextView
                 android:id="@+id/aboutText"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -43,7 +43,7 @@
 
             <TextView
                 android:id="@+id/contact_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -65,7 +65,7 @@
 
             <TextView
                 android:id="@+id/documentation_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -88,7 +88,7 @@
 
             <TextView
                 android:id="@+id/librariesText"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -99,7 +99,7 @@
 
             <TextView
                 android:id="@+id/license_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

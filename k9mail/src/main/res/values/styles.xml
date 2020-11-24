@@ -82,7 +82,7 @@
 
     <style name="HandshakeToolbarTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:textColorPrimary">#000000</item>
-        <item name="android:textColorSecondary">@color/light_black</item>
+        <item name="android:textColorSecondary">?attr/grayScaleColorOnBackground1</item>
     </style>
 
     <style name="ToolbarWhiteTheme" parent="Theme.AppCompat.NoActionBar">
@@ -107,7 +107,7 @@
     </style>
 
     <style name="PEpStyleButton.Grey">
-        <item name="colorControlHighlight">@color/dark_gray</item>
+        <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
         <item name="colorButtonNormal">@color/pep_no_color</item>
     </style>
 
@@ -214,14 +214,14 @@
     </style>
 
     <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:textColor">?attr/grayScaleColorOnBackground2</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
 
     </style>
 
     <style name="SyncDisableDialog" parent="Theme.AppCompat.Light.Dialog">
         <item name="android:textColor">@android:color/black</item>
-        <item name="android:textColorPrimary">@color/light_black</item>
+        <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
         <item name="android:layout_height">@dimen/key_import_floating_height</item>
         <item name="android:layout_width">@dimen/key_import_floating_width</item>
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>

@@ -93,6 +93,10 @@
         <attr name="messageViewStatusBarColor" format="reference|color"/>
         <attr name="screenDefaultBackgroundColor" format="reference|color"/>
         <attr name="defaultColorOnBackground"  format="reference|color"/>
+        <attr name="grayScaleColorOnBackground1" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground2" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground3" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground4" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

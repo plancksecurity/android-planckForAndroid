@@ -21,7 +21,7 @@
             android:layout_gravity="center_vertical"
             app:srcCompat="@drawable/compatibility"
             android:scaleType="fitCenter"
-            android:tint="@color/light_black"
+            android:tint="?attr/grayScaleColorOnBackground1"
             />
 
         <TextView

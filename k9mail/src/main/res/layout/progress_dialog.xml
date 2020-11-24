@@ -30,7 +30,7 @@
 
     <TextView
         android:id="@+id/message"
-        style="@style/DarkGreyText"
+        style="@style/GrayScaleColorText2"
         android:layout_width="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_height="wrap_content"

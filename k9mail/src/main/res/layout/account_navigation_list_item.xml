@@ -4,7 +4,7 @@
     android:id="@+id/account_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/gray"
+    tools:background="?attr/grayScaleColorOnBackground3"
     android:paddingBottom="16dp"
     android:paddingTop="16dp">
 

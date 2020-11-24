@@ -51,7 +51,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="@string/message_view_show_pictures_action"
                     android:textAllCaps="true"
-                    android:textColor="@color/light_black"
+                    android:textColor="?attr/grayScaleColorOnBackground1"
                     android:textStyle="bold" />
             </FrameLayout>
 

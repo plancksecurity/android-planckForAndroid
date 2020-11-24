@@ -22,7 +22,7 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/status_signature_verified_cutout"
             android:scaleType="fitCenter"
-            android:tint="@color/light_black"
+            android:tint="?attr/grayScaleColorOnBackground1"
             />
 
         <TextView
