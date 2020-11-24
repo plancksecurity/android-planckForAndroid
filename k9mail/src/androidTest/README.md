@@ -13,7 +13,7 @@ Prerequisites:
     export PEP_TEST_EMAIL_PASSWORD=password
     export PEP_TEST_EMAIL_SERVER=server.com
 
-- Run installApk() in AccountSetupScreenshotTest from AndroidStudio to install apk
+- Run ./gradlew installWithkeysyncPlayStoreDebugAndroidTest before this test
 
 - A k9 settings should be added to the device downloads folder with name "stubAccount.k9s"
 
