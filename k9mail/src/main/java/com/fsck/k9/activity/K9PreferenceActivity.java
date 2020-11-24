@@ -128,7 +128,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     }
 
     public void setStatusBar() {
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        toolbar.setTitleTextColor(ThemeManager.getColorFromAttributeResource(this, R.attr.defaultToolbarTextColor));
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
         toolBarCustomizer.setStatusBarPepColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
     }

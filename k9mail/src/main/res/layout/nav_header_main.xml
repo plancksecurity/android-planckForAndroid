@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultToolbarTextColor"
                 android:textSize="36sp"
                 tools:text="A" />
         </FrameLayout>
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultToolbarTextColor"
                 android:textSize="24sp"
                 tools:text="B" />
         </FrameLayout>
@@ -86,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultToolbarTextColor"
                 android:textSize="24sp"
                 tools:text="C" />
         </FrameLayout>

@@ -22,7 +22,7 @@
         android:lines="1"
         android:layout_toStartOf="@id/search_clear"
         android:maxLines="1"
-        android:textColor="@color/white"
+        android:textColor="?attr/defaultToolbarTextColor"
         android:textColorHint="@color/light_primary_color"
         android:textCursorDrawable="@null"
         android:textSize="18sp"
@@ -43,7 +43,7 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp"
         android:src="@drawable/ic_content_clear"
-        android:tint="@color/white"
+        android:tint="?attr/defaultToolbarTextColor"
         android:visibility="gone"
         tools:visibility="visible" />
 </RelativeLayout>
