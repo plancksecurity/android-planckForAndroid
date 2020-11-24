@@ -167,6 +167,7 @@
 
         <item name="toolbarDefaultColor">@color/pep_green</item>
         <item name="messageViewToolbarColor">@color/white</item>
+        <item name="screenDefaultBackgroundColor">@color/white</item>
 
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
@@ -265,6 +266,7 @@
 
         <item name="toolbarDefaultColor">@color/pep_green</item>
         <item name="messageViewToolbarColor">@color/light_black</item>
+        <item name="screenDefaultBackgroundColor">@android:color/background_dark</item>
 
     </style>
 
