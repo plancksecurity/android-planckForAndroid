@@ -17,6 +17,8 @@ Prerequisites:
 
 - A k9 settings should be added to the device downloads folder with name "stubAccount.k9s"
 
+- A key file should be added to the device downloads folder with name "test_key.asc"
+
 - Change BOT_1_NAME, BOT_2_NAME & BOT_3_NAME in AccountSetupScreenshotTest.kt to your liking
 
 - Make sure that no other device has the same account instantiated and is able to start sync
