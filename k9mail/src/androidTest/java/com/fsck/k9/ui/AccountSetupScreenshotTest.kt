@@ -23,9 +23,9 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
 
     companion object {
-        const val BOT_1_NAME = "account1"
-        const val BOT_2_NAME = "account2"
-        const val BOT_3_NAME = "account2"
+        const val BOT_1_NAME = "bot1"
+        const val BOT_2_NAME = "bot2"
+        const val BOT_3_NAME = "bot3"
     }
 
     @Test
