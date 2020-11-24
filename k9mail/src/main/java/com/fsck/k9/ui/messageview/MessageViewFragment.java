@@ -62,6 +62,7 @@ import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
@@ -356,8 +357,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private void setToolbar() {
         pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
         pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
-        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
+        toolBarCustomizer.setToolbarColor(
+                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
     }
 
     private void showUnableToDecodeError() {

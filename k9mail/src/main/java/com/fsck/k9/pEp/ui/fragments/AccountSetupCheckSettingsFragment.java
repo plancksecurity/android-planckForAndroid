@@ -37,6 +37,7 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -106,7 +107,8 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_account_setup_check_settings, container, false);
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
         mMessageView = (TextView)rootView.findViewById(R.id.message);
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
         rootView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {

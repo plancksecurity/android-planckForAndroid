@@ -15,6 +15,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 public class AccountSetupComposition extends K9Activity {
 
@@ -56,7 +57,7 @@ public class AccountSetupComposition extends K9Activity {
         bindViews(R.layout.account_setup_composition);
 
         initializeToolbar(true, R.string.account_settings_composition_title);
-        getToolbar().setBackgroundColor(getResources().getColor(R.color.pep_green));
+        getToolbar().setBackgroundColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
         /*
          * If we're being reloaded we override the original account with the one
          * we saved

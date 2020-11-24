@@ -53,6 +53,7 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.SetupAccountType;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.view.ClientCertificateSpinner;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -170,7 +171,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void setupToolbar() {
         ((AccountSetupBasics) getActivity()).initializeToolbar(!getActivity().isTaskRoot(), R.string.account_setup_basics_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
     }
 
     private void initializeViewListeners() {

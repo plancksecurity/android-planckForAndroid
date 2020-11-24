@@ -34,6 +34,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
@@ -79,7 +80,8 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);

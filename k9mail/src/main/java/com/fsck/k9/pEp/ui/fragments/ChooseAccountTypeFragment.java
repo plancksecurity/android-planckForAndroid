@@ -17,6 +17,7 @@ import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;
@@ -81,7 +82,8 @@ public class ChooseAccountTypeFragment extends PEpFragment {
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
         return rootView;
     }
 

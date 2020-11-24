@@ -90,6 +90,7 @@
         <attr name="iconPepLogo" format="reference|color" />
         <attr name="toolbarDefaultColor" format="reference|color" />
         <attr name="messageViewToolbarColor" format="reference|color" />
+        <attr name="messageViewStatusBarColor" format="reference|color"/>
         <attr name="screenDefaultBackgroundColor" format="reference|color"/>
         <attr name="defaultColorOnBackground"  format="reference|color"/>
     </declare-styleable>

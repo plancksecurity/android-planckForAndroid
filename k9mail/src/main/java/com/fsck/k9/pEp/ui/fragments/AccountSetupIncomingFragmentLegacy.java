@@ -55,6 +55,7 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
@@ -156,7 +157,7 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
 
         mUsernameView = (EditText) rootView.findViewById(R.id.account_username);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);
