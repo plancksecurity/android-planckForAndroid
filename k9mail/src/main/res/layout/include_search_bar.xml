@@ -6,7 +6,7 @@
     android:layout_gravity="center"
     android:paddingStart="8dp"
     android:paddingEnd="8dp"
-    tools:background="@color/colorPrimary">
+    tools:background="?attr/toolbarDefaultColor">
 
     <EditText
         android:id="@+id/search_input"
