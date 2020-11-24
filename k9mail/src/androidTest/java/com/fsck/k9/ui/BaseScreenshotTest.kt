@@ -24,6 +24,7 @@ import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.fsck.k9.activity.MessageList
@@ -65,39 +66,51 @@ open class BaseScreenshotTest : BaseTest() {
         Timber.e("Screenshot #" + (count - 1))
     }
 
-    fun getScreenShotMessageList(action: String) = runBlocking(Dispatchers.Main) {
-        waitForIdle()
+    fun getScreenShotMessageList(action: String) {
+        runBlocking { waitForIdle() }
         Timber.e("getScreenShotMessageList $action")
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        Iterables.getOnlyElement(activities)?.let { currentActivity ->
-            if (currentActivity is MessageList) {
-                val name = currentActivity::class.java.simpleName + " " + currentActivity.currentMessageView
-                getScreenShot(name, action)
-
+        getInstrumentation().runOnMainSync {
+            run {
+                val currentActivity: Activity? = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).elementAtOrNull(0)
+                if (currentActivity != null && currentActivity is MessageList) {
+                    val name = currentActivity::class.java.simpleName + " " + currentActivity.currentMessageView
+                    getScreenShot(name, action)
+                } else {
+                    Timber.e("no currentActivity")
+                }
             }
         }
     }
 
-    fun getScreenShotAccountSetup(action: String) = runBlocking(Dispatchers.Main) {
-        waitForIdle()
+    fun getScreenShotAccountSetup(action: String) {
+        runBlocking { waitForIdle() }
         Timber.e("getScreenShotAccountSetup $action")
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        Iterables.getOnlyElement(activities)?.let { currentActivity ->
-            if (currentActivity is AccountSetupBasics) {
-                val name = currentActivity::class.java.simpleName + " " + currentActivity.visibleFragmentSimpleName
-                getScreenShot(name, action)
-
+        getInstrumentation().runOnMainSync {
+            run {
+                val currentActivity: Activity? = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).elementAtOrNull(0)
+                if (currentActivity != null && currentActivity is AccountSetupBasics) {
+                    val name = currentActivity::class.java.simpleName + " " + currentActivity.visibleFragmentSimpleName
+                    getScreenShot(name, action)
+                } else {
+                    Timber.e("no currentActivity")
+                }
             }
         }
     }
 
     @Throws(Throwable::class)
-    fun getScreenShotCurrentActivity(action: String) = runBlocking(Dispatchers.Main) {
-        waitForIdle()
+    fun getScreenShotCurrentActivity(action: String) {
+        runBlocking { waitForIdle() }
         Timber.e("getScreenShotCurrentActivity $action")
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        Iterables.getOnlyElement(activities)?.let { currentActivity ->
-            getScreenShot(currentActivity::class.java.simpleName, action)
+        getInstrumentation().runOnMainSync {
+            run {
+                val currentActivity: Activity? = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).elementAtOrNull(0)
+                if (currentActivity != null) {
+                    getScreenShot(currentActivity::class.java.simpleName, action)
+                } else {
+                    Timber.e("no currentActivity")
+                }
+            }
         }
     }
 
