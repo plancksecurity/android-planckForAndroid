@@ -4,7 +4,7 @@
     android:id="@+id/add_device_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:orientation="vertical"
     tools:context=".activity.MessageList">
 
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="284dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/white"
+        android:background="?attr/screenDefaultBackgroundColor"
         android:paddingBottom="@dimen/pep_sync_add_device_padding_vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"

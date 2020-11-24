@@ -12,7 +12,7 @@
     android:paddingBottom="8dp"
     android:visibility="gone"
     tools:visibility="visible"
-    android:background="@color/white">
+    android:background="?attr/screenDefaultBackgroundColor">
 
     <TextView
         android:id="@+id/title"

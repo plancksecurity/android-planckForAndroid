@@ -7,7 +7,7 @@
     tools:layout_width="@dimen/key_import_floating_width"
     tools:layout_height="@dimen/key_import_floating_height"
     tools:layout_gravity="center"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:clipChildren="false"
     android:clipToPadding="false"
     tools:context="com.fsck.k9.pEp.manualsync.ImportWizardFrompEp"
