@@ -129,4 +129,9 @@
         <attr name="summaryOff" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="MessageListItem">
+        <attr name="deleteEmailContainerBackground" format="reference|color"/>
+        <attr name="archiveEmailContainerBackground" format="reference|color"/>
+    </declare-styleable>
+
 </resources>

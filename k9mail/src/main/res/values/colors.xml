@@ -73,5 +73,7 @@
     <color name="keysync_disable_warning_cancel_color">#969696</color>
     <color name="keysync_disable_warning_text_color">#c8c8c8</color>
 
+    <color name="delete_email_container_background">#FF5722</color>
+    <color name="archive_email_container_background">#559E6E</color>
 
 </resources>
