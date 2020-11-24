@@ -45,6 +45,7 @@ class WelcomeMessage : AppIntro() {
     var automatic: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.appThemeResourceId)
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             window.decorView.systemUiVisibility =
