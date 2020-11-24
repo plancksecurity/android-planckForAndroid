@@ -21,11 +21,6 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
-    fun installApk() {
-
-    }
-
-    @Test
     fun automaticAccountSetup() {
         setTestSet("A")
         accountSetup(true)
@@ -70,12 +65,13 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     fun addMessagesToAccount() {
         openFirstScreen()
         waitListView()
+        getMessageListSize()
 
         sendNewMessageToSelf()
         waitNewMessage()
+        getMessageListSize()
 
         replyToSelfMessage()
-        waitNewMessage()
         getMessageListSize()
 
         sendMessageToBot(BOT_1_NAME)
