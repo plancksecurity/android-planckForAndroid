@@ -1,18 +1,26 @@
 package com.fsck.k9.ui
 
+import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
+
+    @get:Rule
+    var permissionRule: GrantPermissionRule =
+            GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+
 
     companion object {
         const val BOT_1_NAME = "account1"

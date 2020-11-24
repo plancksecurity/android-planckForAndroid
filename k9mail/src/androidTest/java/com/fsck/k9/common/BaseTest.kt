@@ -248,7 +248,7 @@ open class BaseTest {
     private fun sendMessage(email: String) {
         click(R.id.fab_button_compose_message)
         waitMessageCompose()
-        val message = TestUtils.BasicMessage(email, "Subject", "Body", email)
+        val message = TestUtils.BasicMessage(email, "reset", "", email)
         fillMessage(message)
         sleep(2000)
         click(R.id.send)
