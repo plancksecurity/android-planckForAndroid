@@ -478,7 +478,7 @@
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
             android:label="@string/blacklist_title"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.K9.DayNight" />
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
