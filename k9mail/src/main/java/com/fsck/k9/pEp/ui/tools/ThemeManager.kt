@@ -1,7 +1,12 @@
 package com.fsck.k9.pEp.ui.tools
 
+import android.content.Context
 import android.content.res.Configuration
+import android.content.res.TypedArray
 import android.os.Build
+import android.util.TypedValue
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -78,6 +83,21 @@ object ThemeManager {
             }
         }
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
+    }
+
+    @JvmStatic
+    fun getAttributeResource(context: Context, @AttrRes resource: Int): Int {
+        val a: TypedArray = context.theme.obtainStyledAttributes(ThemeManager.appThemeResourceId, intArrayOf(resource))
+        return a.getResourceId(0, 0)
+    }
+
+    @JvmStatic
+    @ColorInt
+    fun getColorFromAttributeResource(context: Context, @AttrRes resource: Int): Int {
+        val theme = context.theme
+        val typedValue = TypedValue()
+        theme.resolveAttribute(resource, typedValue, true)
+        return typedValue.data
     }
 
     fun setCurrentTheme(value: String?) {
