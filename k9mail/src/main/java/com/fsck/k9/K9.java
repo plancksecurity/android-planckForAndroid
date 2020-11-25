@@ -575,8 +575,8 @@ public class K9 extends MultiDexApplication {
 
         editor.putString("language", language);
         editor.putInt("theme", ThemeManager.getAppTheme().ordinal());
-        editor.putInt("messageViewTheme", ThemeManager.getMessageViewTheme().ordinal());
-        editor.putInt("messageComposeTheme", ThemeManager.getComposerTheme().ordinal());
+        editor.putInt("messageViewTheme", ThemeManager.getK9MessageViewTheme().ordinal());
+        editor.putInt("messageComposeTheme", ThemeManager.getK9ComposerTheme().ordinal());
         editor.putBoolean("fixedMessageViewTheme", ThemeManager.getUseFixedMessageViewTheme());
 
         editor.putBoolean("confirmDelete", mConfirmDelete);
@@ -1008,9 +1008,9 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setAppTheme(AppTheme.values()[themeValue]);
 
         themeValue = storage.getInt("messageViewTheme", Theme.USE_GLOBAL.ordinal());
-        ThemeManager.setMessageViewTheme(Theme.values()[themeValue]);
+        ThemeManager.setK9MessageViewTheme(Theme.values()[themeValue]);
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
-        ThemeManager.setComposerTheme(Theme.values()[themeValue]);
+        ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpNewKeysPassphrase = storage.getPassphrase();
     }

@@ -12,31 +12,38 @@ object ThemeManager {
 
     @JvmStatic
     val legacyTheme: Theme
-    get() = when(appTheme) {
-        AppTheme.DARK -> Theme.DARK
-        AppTheme.LIGHT -> Theme.LIGHT
-        AppTheme.FOLLOW_SYSTEM -> if (Build.VERSION.SDK_INT < 28) Theme.LIGHT else systemTheme
-    }
+        get() = when (appTheme) {
+            AppTheme.DARK -> Theme.DARK
+            AppTheme.LIGHT -> Theme.LIGHT
+            AppTheme.FOLLOW_SYSTEM -> if (Build.VERSION.SDK_INT < 28) Theme.LIGHT else systemTheme
+        }
 
     private val systemTheme: Theme
-    get() = when (K9.app.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-        Configuration.UI_MODE_NIGHT_NO -> Theme.LIGHT
-        Configuration.UI_MODE_NIGHT_YES -> Theme.DARK
-        else -> Theme.LIGHT
-    }
+        get() = when (K9.app.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_NO -> Theme.LIGHT
+            Configuration.UI_MODE_NIGHT_YES -> Theme.DARK
+            else -> Theme.LIGHT
+        }
 
     @JvmStatic
     val appThemeResourceId: Int
-    get() = R.style.Theme_K9_DayNight
+        get() = R.style.Theme_K9_DayNight
 
     @JvmStatic
     val composerThemeResourceId: Int
-    get() = appThemeResourceId
+        get() = appThemeResourceId
 
     @JvmStatic
-    var composerTheme: Theme = resolveTheme(Theme.USE_GLOBAL)
+    var k9MessageViewTheme: Theme = Theme.USE_GLOBAL
+
     @JvmStatic
-    var messageViewTheme: Theme = resolveTheme(Theme.USE_GLOBAL)
+    var k9ComposerTheme: Theme = Theme.USE_GLOBAL
+
+    @JvmStatic
+    fun getComposerTheme(): Theme = resolveTheme(k9ComposerTheme)
+
+    @JvmStatic
+    fun getMessageViewTheme() = resolveTheme(k9MessageViewTheme)
 
     private fun resolveTheme(theme: Theme): Theme {
         return when (theme) {
@@ -47,13 +54,13 @@ object ThemeManager {
 
     @JvmStatic
     var useFixedMessageViewTheme: Boolean = true
-    private set
+        private set
 
     @JvmStatic
     fun setUseFixedMessageViewTheme(boolean: Boolean) {
         useFixedMessageViewTheme = boolean
-        if(!useFixedMessageViewTheme && messageViewTheme == Theme.USE_GLOBAL) {
-            messageViewTheme = legacyTheme
+        if (!useFixedMessageViewTheme && k9MessageViewTheme == Theme.USE_GLOBAL) {
+            k9MessageViewTheme = legacyTheme
         }
     }
 

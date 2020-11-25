@@ -2353,9 +2353,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void onToggleTheme() {
         if (ThemeManager.getMessageViewTheme() == Theme.DARK) {
-            ThemeManager.setMessageViewTheme(Theme.LIGHT);
+            ThemeManager.setK9MessageViewTheme(Theme.LIGHT);
         } else {
-            ThemeManager.setMessageViewTheme(Theme.DARK);
+            ThemeManager.setK9MessageViewTheme(Theme.DARK);
         }
 
         new Thread(new Runnable() {

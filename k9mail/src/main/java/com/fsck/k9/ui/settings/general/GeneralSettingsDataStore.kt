@@ -117,10 +117,10 @@ class GeneralSettingsDataStore(
     override fun getString(key: String, defValue: String?): String? {
         return when (key) {
             "language" -> K9.getK9Language()
-            "theme" -> appThemeToString(ThemeManager.appTheme)
-            "fixed_message_view_theme" -> themeToString(ThemeManager.messageViewTheme)
-            "message_compose_theme" -> themeToString(ThemeManager.composerTheme)
-            "messageViewTheme" -> themeToString(ThemeManager.messageViewTheme)
+            "theme" -> ThemeManager.appThemeToString(ThemeManager.appTheme)
+            "fixed_message_view_theme" -> ThemeManager.themeToString(ThemeManager.k9MessageViewTheme)
+            "message_compose_theme" -> ThemeManager.themeToString(ThemeManager.k9ComposerTheme)
+            "messageViewTheme" -> ThemeManager.themeToString(ThemeManager.k9MessageViewTheme)
             "messagelist_preview_lines" -> K9.messageListPreviewLines().toString()
             "splitview_mode" -> K9.getSplitViewMode().name
             "notification_quick_delete" -> K9.getNotificationQuickDeleteBehaviour().name
@@ -143,9 +143,9 @@ class GeneralSettingsDataStore(
 
         when (key) {
             "theme" -> setTheme(value)
-            "fixed_message_view_theme" -> ThemeManager.messageViewTheme = stringToTheme(value)
-            "message_compose_theme" -> ThemeManager.composerTheme = stringToTheme(value)
-            "messageViewTheme" -> ThemeManager.messageViewTheme = stringToTheme(value)
+            "fixed_message_view_theme" -> ThemeManager.k9MessageViewTheme = ThemeManager.stringToTheme(value)
+            "message_compose_theme" -> ThemeManager.k9ComposerTheme = ThemeManager.stringToTheme(value)
+            "messageViewTheme" -> ThemeManager.k9MessageViewTheme = ThemeManager.stringToTheme(value)
             "messagelist_preview_lines" -> K9.setMessageListPreviewLines(value.toInt())
             "splitview_mode" -> K9.setSplitViewMode(K9.SplitViewMode.valueOf(value))
             "notification_quick_delete" -> K9.setNotificationQuickDeleteBehaviour(K9.NotificationQuickDelete.valueOf(value))
