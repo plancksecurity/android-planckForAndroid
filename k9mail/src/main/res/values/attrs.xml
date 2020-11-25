@@ -104,6 +104,7 @@
         <attr name="iconAddAccount" format="reference"/>
         <attr name="answeredForwardedIconColor" format="reference|color"/>
         <attr name="defaultToolbarTextColor" format="reference|color"/>
+        <attr name="messageListSeparatorColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

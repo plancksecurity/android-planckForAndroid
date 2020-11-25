@@ -190,6 +190,7 @@
         <item name="iconAddAccount">@drawable/ic_add_account</item>
         <item name="answeredForwardedIconColor">@color/gray</item>
         <item name="defaultToolbarTextColor">@color/white</item>
+        <item name="messageListSeparatorColor">@color/white</item>
 
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
@@ -309,6 +310,7 @@
         <item name="iconAddAccount">@drawable/ic_add_account</item>
         <item name="answeredForwardedIconColor">@color/gray</item>
         <item name="defaultToolbarTextColor">@color/white</item>
+        <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
 
     </style>
 
