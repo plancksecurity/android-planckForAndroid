@@ -88,6 +88,8 @@
         <attr name="openpgp_grey" format="reference|color" />
         <attr name="openpgp_dark_grey" format="reference|color" />
         <attr name="iconPepLogo" format="reference|color" />
+        <attr name="toolbarDefaultColor" format="reference|color" />
+        <attr name="messageViewToolbarColor" format="reference|color" />
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

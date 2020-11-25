@@ -165,6 +165,9 @@
         <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_opaque_light</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_light</item>
 
+        <item name="toolbarDefaultColor">@color/pep_green</item>
+        <item name="messageViewToolbarColor">@color/white</item>
+
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
@@ -259,6 +262,9 @@
         <item name="flagOpaqueCheckedIcon">@drawable/ic_flag_dark</item>
         <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_dark</item>
+
+        <item name="toolbarDefaultColor">@color/pep_green</item>
+        <item name="messageViewToolbarColor">@color/light_black</item>
 
     </style>
 
