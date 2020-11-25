@@ -1842,11 +1842,11 @@ public class TestUtils {
                             currentMessage++;
                         }
                         else {
-                            View v1 = getCurrentActivity().getWindow().getDecorView().getRootView();
-                            v1.setDrawingCacheEnabled(true);
-                            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                            View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
+                            currentViewActivity.setDrawingCacheEnabled(true);
+                            Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
                             int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                            v1.setDrawingCacheEnabled(false);
+                            currentViewActivity.setDrawingCacheEnabled(false);
                             if (pixel != resources.getColor(statusColor)) {
                                 assertFailWithMessage("Badge status colors are different");
                             }
