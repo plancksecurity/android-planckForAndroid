@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.view.children
+import com.fsck.k9.pEp.PEpColorUtils
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +39,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating) and 0x00FFFFFF
+            val color = PEpColorUtils.makeColorTransparent(PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating))
             setColor(color)
         }
 
@@ -48,7 +49,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = colorReference and 0x00FFFFFF
+            val color = PEpColorUtils.makeColorTransparent(colorReference)
             setColor(color)
         }
     }

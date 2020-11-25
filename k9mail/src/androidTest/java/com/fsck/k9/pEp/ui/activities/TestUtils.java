@@ -44,6 +44,7 @@ import android.view.View;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
+import com.fsck.k9.pEp.PEpColorUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1940,7 +1941,8 @@ public class TestUtils {
         }}
 
     private void checkUpperToolbar (int color){
-        int colorFromResource = (ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color) & 0x00FFFFFF);
+        int colorFromResource = PEpColorUtils.makeColorTransparent(
+                ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color));
         float[] hsv = new float[3];
         Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
         hsv[2] = hsv[2]*0.9f;

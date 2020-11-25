@@ -14,6 +14,7 @@ import timber.log.Timber;
 
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
+import com.fsck.k9.pEp.PEpColorUtils;
 
 /*
  * TODO:
@@ -418,7 +419,7 @@ public class Settings {
 
         @Override
         public String toPrettyString(Integer value) {
-            int color = value & 0x00FFFFFF;
+            int color = PEpColorUtils.makeColorTransparent(value);
             return String.format("#%06x", color);
         }
 
@@ -426,7 +427,7 @@ public class Settings {
         public Integer fromPrettyString(String value) throws InvalidSettingValueException {
             try {
                 if (value.length() == 7) {
-                    return Integer.parseInt(value.substring(1), 16) | 0xFF000000;
+                    return PEpColorUtils.makeColorOpaque(Integer.parseInt(value.substring(1), 16));
                 }
             } catch (NumberFormatException e) { /* do nothing */ }
 
