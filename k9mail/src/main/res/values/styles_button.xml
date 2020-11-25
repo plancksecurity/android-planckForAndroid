@@ -9,7 +9,7 @@
         <item name="android:elevation">4dp</item>
         <item name="elevation">4dp</item>
         <item name="fabSize">normal</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="backgroundTint">?attr/screenDefaultBackgroundColor</item>
         <item name="pressedTranslationZ">2dp</item>
     </style>
 </resources>
