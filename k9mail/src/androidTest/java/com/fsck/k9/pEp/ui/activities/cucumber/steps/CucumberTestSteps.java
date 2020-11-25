@@ -1554,7 +1554,12 @@ public class CucumberTestSteps {
     public void I_check_badge_color(String status){
         timeRequiredForThisMethod(40);
         testUtils.checkBadgeStatus(status, 1);
+    }
 
+    @Then("^I check the badge color of the message (\\d+) is (\\S+)$")
+    public void I_check_badge_color_of_message_x(int message, String status){
+        timeRequiredForThisMethod(40);
+        testUtils.checkBadgeStatus(status, message);
     }
 
     @And("^I go to the sent folder$")
