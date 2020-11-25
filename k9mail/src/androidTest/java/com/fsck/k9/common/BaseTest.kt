@@ -35,6 +35,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -83,6 +84,11 @@ open class BaseTest {
         waitLauncher()
         waitAppLaunch()
         Timber.e("Test Launch successful ================>")
+    }
+
+    @After
+    fun after() {
+        Intents.release()
     }
 
     private fun waitAppLaunch() {

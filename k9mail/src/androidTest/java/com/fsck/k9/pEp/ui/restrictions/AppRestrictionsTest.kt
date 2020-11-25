@@ -33,7 +33,7 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
     private var forcedAppConfig = false
 
     @After
-    fun after() {
+    fun afterRestrictionTest() {
         if (forcedAppConfig)
             openEnforcerSplitScreen(
                     key = "pep_disable_privacy_protection",

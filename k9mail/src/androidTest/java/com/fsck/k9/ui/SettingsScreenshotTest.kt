@@ -214,7 +214,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
         clickSettingDialog(R.string.account_setup_auto_expand_folder, "account auto-expand folder setting")
         clickSettingDialog(R.string.account_settings_folder_display_mode_label, "account folders to display setting")
-        clickSettingDialog(R.string.account_settings_folder_target_mode_label, "account move/copy destination folders setting")
+        clickSettingDialog(R.string.account_settings_folder_target_mode_label, "account move copy destination folders setting")
         clickSettingDialog(R.string.archive_folder_label, "account archive folder setting")
         clickSettingDialog(R.string.drafts_folder_label, "account drafts folder setting")
         clickSettingDialog(R.string.sent_folder_label, "account sent folder setting")
