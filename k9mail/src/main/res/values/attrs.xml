@@ -92,6 +92,7 @@
         <attr name="messageViewToolbarColor" format="reference|color" />
         <attr name="messageViewStatusBarColor" format="reference|color"/>
         <attr name="messageViewToolbarIconsColor" format="reference|color"/>
+        <attr name="messageListToolbarIconsColor" format="reference|color"/>
         <attr name="screenDefaultBackgroundColor" format="reference|color"/>
         <attr name="defaultColorOnBackground"  format="reference|color"/>
         <attr name="grayScaleColorOnBackground1" format="reference|color"/>
@@ -99,6 +100,8 @@
         <attr name="grayScaleColorOnBackground3" format="reference|color"/>
         <attr name="grayScaleColorOnBackground4" format="reference|color"/>
         <attr name="syncDisableDialogStyle" format="reference"/>
+        <attr name="iconConfigureAccount" format="reference"/>
+        <attr name="iconAddAccount" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
