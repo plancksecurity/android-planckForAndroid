@@ -219,12 +219,30 @@
 
     </style>
 
-    <style name="SyncDisableDialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="SyncDisableDialog.Light.Base" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:background">?attr/screenDefaultBackgroundColor</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SyncDisableDialog.Dark.Base" parent="Theme.AppCompat.Dialog">
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:background">?attr/screenDefaultBackgroundColor</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SyncDisableDialog.Light" parent="SyncDisableDialog.Light.Base">
         <item name="android:layout_height">@dimen/key_import_floating_height</item>
         <item name="android:layout_width">@dimen/key_import_floating_width</item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+    </style>
+
+    <style name="SyncDisableDialog.Dark" parent="SyncDisableDialog.Dark.Base">
+        <item name="android:layout_height">@dimen/key_import_floating_height</item>
+        <item name="android:layout_width">@dimen/key_import_floating_width</item>
     </style>
 </resources>
 

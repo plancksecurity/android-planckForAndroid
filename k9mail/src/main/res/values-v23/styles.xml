@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="SyncDisableDialog" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
-        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
+    <style name="SyncDisableDialog.Light" parent="SyncDisableDialog.Light.Base"/>
+    <style name="SyncDisableDialog.Dark" parent="SyncDisableDialog.Dark.Base"/>
 </resources>

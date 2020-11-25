@@ -97,6 +97,7 @@
         <attr name="grayScaleColorOnBackground2" format="reference|color"/>
         <attr name="grayScaleColorOnBackground3" format="reference|color"/>
         <attr name="grayScaleColorOnBackground4" format="reference|color"/>
+        <attr name="syncDisableDialogStyle" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

@@ -183,6 +183,8 @@
         <item name="introSeparatorColor">@color/white</item>
         <item name="introIndicatorColor">@color/light_gray</item>
 
+        <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Light</item>
+
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
@@ -294,6 +296,7 @@
         <item name="introPrimaryColor">@color/colorPrimary</item>
         <item name="introSeparatorColor">@color/white</item>
         <item name="introIndicatorColor">@color/light_gray</item>
+        <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Dark</item>
 
     </style>
 

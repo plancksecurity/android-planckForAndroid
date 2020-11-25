@@ -17,6 +17,8 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.pEp.ui.tools.Theme
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -164,7 +166,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
             if (!newValue) {
                 if (syncSwitchDialog == null) {
-                    syncSwitchDialog = AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+                    syncSwitchDialog = AlertDialog.Builder(view?.context,
+                            ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
                             .setTitle(R.string.keysync_disable_warning_title)
                             .setMessage(R.string.keysync_disable_warning_explanation)
                             .setCancelable(false)
