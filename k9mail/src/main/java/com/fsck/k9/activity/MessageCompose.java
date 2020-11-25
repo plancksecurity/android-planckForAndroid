@@ -546,7 +546,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             pEpSecurityStatusLayout.setOnLongClickListener( view -> {
-                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(getApplicationContext(),
+                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                         view, recipientPresenter);
                 statusMenu.show();
                 return true;
