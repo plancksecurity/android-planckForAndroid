@@ -1184,7 +1184,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onPrepareOptionsMenu(menu);
 
         recipientPresenter.onPrepareOptionsMenu(menu);
-        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this, R.color.light_black));
+        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor));
 
         return true;
     }

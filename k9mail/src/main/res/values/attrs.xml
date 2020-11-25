@@ -91,6 +91,7 @@
         <attr name="toolbarDefaultColor" format="reference|color" />
         <attr name="messageViewToolbarColor" format="reference|color" />
         <attr name="messageViewStatusBarColor" format="reference|color"/>
+        <attr name="messageViewToolbarIconsColor" format="reference|color"/>
         <attr name="screenDefaultBackgroundColor" format="reference|color"/>
         <attr name="defaultColorOnBackground"  format="reference|color"/>
         <attr name="grayScaleColorOnBackground1" format="reference|color"/>

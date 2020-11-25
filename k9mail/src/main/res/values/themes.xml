@@ -168,6 +168,7 @@
         <item name="toolbarDefaultColor">@color/pep_green</item>
         <item name="messageViewToolbarColor">@color/white</item>
         <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
+        <item name="messageViewToolbarIconsColor">@color/light_black</item>
         <item name="screenDefaultBackgroundColor">@color/white</item>
         <item name="defaultColorOnBackground">@color/black</item>
         <item name="grayScaleColorOnBackground1">@color/light_black</item>
@@ -283,6 +284,7 @@
         <item name="toolbarDefaultColor">@color/pep_green</item>
         <item name="messageViewToolbarColor">@color/light_black</item>
         <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
+        <item name="messageViewToolbarIconsColor">@color/white</item>
         <item name="screenDefaultBackgroundColor">@android:color/background_dark</item>
         <item name="defaultColorOnBackground">@color/white</item>
         <item name="grayScaleColorOnBackground1">@color/white</item>
