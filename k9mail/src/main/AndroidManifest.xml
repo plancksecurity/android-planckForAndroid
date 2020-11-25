@@ -530,8 +530,7 @@
         <activity android:name="security.pEp.ui.permissions.PermissionsActivity" />
         <activity
             android:name=".pEp.filepicker.FilePickerActivity"
-            android:label="@string/app_name"
-            android:theme="@style/FilePickerTheme">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
