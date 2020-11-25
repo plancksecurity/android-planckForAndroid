@@ -129,7 +129,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_cancel"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/defaultColorOnBackground"
         android:visibility="visible"
 
         app:layout_constraintBottom_toBottomOf="parent"
