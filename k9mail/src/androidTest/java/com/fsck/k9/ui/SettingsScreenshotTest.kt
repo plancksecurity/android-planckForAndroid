@@ -260,7 +260,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun importKey() {
-        startFileManagerStub("test_key", "asc")
+        startFileManagerStub("test_key", ".asc")
 
         clickSetting(R.string.pgp_key_import_title)
         runBlocking { waitForIdle() }

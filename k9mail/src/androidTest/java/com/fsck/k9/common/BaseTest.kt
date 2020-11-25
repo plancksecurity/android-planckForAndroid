@@ -12,6 +12,7 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
+import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.RootMatchers
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
@@ -78,6 +79,7 @@ open class BaseTest {
 
         // Start from the home screen
         // device.pressHome()
+        Intents.init()
         waitLauncher()
         waitAppLaunch()
         Timber.e("Test Launch successful ================>")

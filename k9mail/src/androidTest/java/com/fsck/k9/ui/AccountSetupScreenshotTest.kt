@@ -52,7 +52,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import account menu")
         sleep(500)
 
-        startFileManagerStub("stubAccount", "k9s")
+        startFileManagerStub("stubAccount", ".k9s")
         click(getString(R.string.settings_import))
         sleep(500)
 

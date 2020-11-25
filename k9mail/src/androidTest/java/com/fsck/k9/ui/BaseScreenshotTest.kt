@@ -20,9 +20,8 @@ import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
@@ -31,11 +30,10 @@ import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.BaseTest
 import com.fsck.k9.common.ChildViewAction.clickChildViewWithId
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hamcrest.core.IsNot
+import org.hamcrest.core.IsNot.not
 import org.junit.After
 import timber.log.Timber
 import java.io.File
@@ -168,7 +166,7 @@ open class BaseScreenshotTest : BaseTest() {
 
     fun startFileManagerStub(filename: String, extension: String) {
         val result: Instrumentation.ActivityResult = fileManagerResultStub(filename, extension)
-        Intents.intending(IsNot.not(IntentMatchers.isInternal())).respondWith(result)
+        intending(not(isInternal())).respondWith(result)
         runBlocking { waitForIdle() }
     }
 
