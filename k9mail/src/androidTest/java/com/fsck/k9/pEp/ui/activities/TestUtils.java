@@ -1842,9 +1842,6 @@ public class TestUtils {
                             currentMessage++;
                         }
                         else {
-                            for (int i = 0; i < 500; i++) {
-                                waitForIdle();
-                            }
                             View v1 = getCurrentActivity().getWindow().getDecorView().getRootView();
                             v1.setDrawingCacheEnabled(true);
                             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
