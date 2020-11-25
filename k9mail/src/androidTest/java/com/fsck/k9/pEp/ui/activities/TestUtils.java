@@ -1828,6 +1828,7 @@ public class TestUtils {
 
     public void checkBadgeStatus(String status, int messageFromList){
         Rating [] statusRating = new Rating[1];
+        int currentMessage = 1;
         waitForIdle();
         getStatusRating(statusRating, status);
         int statusColor = getSecurityStatusIconColor(statusRating[0]);
@@ -1837,16 +1838,24 @@ public class TestUtils {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
                     if (object.getResourceName().equals("security.pEp.debug:id/securityBadge")) {
-                        View v1 = getCurrentActivity().getWindow().getDecorView().getRootView();
-                        v1.setDrawingCacheEnabled(true);
-                        Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-                        int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
-
-                        if (pixel != resources.getColor(statusColor)) {
-                            assertFailWithMessage("Badge status colors are different");
+                        if (currentMessage != messageFromList) {
+                            currentMessage++;
                         }
-                        assertedBadgeColor = true;
-                        break;
+                        else {
+                            for (int i = 0; i < 500; i++) {
+                                waitForIdle();
+                            }
+                            View v1 = getCurrentActivity().getWindow().getDecorView().getRootView();
+                            v1.setDrawingCacheEnabled(true);
+                            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                            int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                            v1.setDrawingCacheEnabled(false);
+                            if (pixel != resources.getColor(statusColor)) {
+                                assertFailWithMessage("Badge status colors are different");
+                            }
+                            assertedBadgeColor = true;
+                            break;
+                        }
                     }
                 } catch (Exception ex){
                     Timber.i("Cannot find text on screen: " + ex);
