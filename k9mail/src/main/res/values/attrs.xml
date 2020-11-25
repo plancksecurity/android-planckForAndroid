@@ -134,4 +134,12 @@
         <attr name="archiveEmailContainerBackground" format="reference|color"/>
     </declare-styleable>
 
+    <declare-styleable name="Intro">
+        <attr name="introTextColor" format="reference|color"/>
+        <attr name="introHeaderTextColor" format="reference|color"/>
+        <attr name="introPrimaryColor" format="reference|color"/>
+        <attr name="introIndicatorColor" format="reference|color"/>
+        <attr name="introSeparatorColor" format="reference|color"/>
+    </declare-styleable>
+
 </resources>

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.ui.fragments.PEpFragment
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
@@ -65,14 +67,18 @@ class WelcomeMessage : AppIntro() {
     }
 
     private fun setAppIntroColors() {
-        val primaryColor = ContextCompat.getColor(this, R.color.colorPrimary)
-        val white = ContextCompat.getColor(this, R.color.white)
-        val lightGray = ContextCompat.getColor(this, R.color.light_gray)
-        setIndicatorColor(primaryColor, lightGray)
-        setSeparatorColor(white)
+        val primaryColor = getColorFromAttributeResource(R.attr.introPrimaryColor)
+        val separatorColor = getColorFromAttributeResource(R.attr.introSeparatorColor)
+        val indicatorColor = getColorFromAttributeResource(R.attr.introIndicatorColor)
+        setIndicatorColor(primaryColor, indicatorColor)
+        setSeparatorColor(separatorColor)
         setColorSkipButton(primaryColor)
         setColorDoneText(primaryColor)
         setNextArrowColor(primaryColor)
+    }
+
+    private fun getColorFromAttributeResource(@AttrRes resource: Int): Int {
+        return ThemeManager.getColorFromAttributeResource(this, resource)
     }
 
     override fun onSkipPressed(currentFragment: Fragment?) {
