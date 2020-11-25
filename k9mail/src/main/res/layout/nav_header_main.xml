@@ -29,7 +29,7 @@
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="center_vertical"
-                android:src="@color/colorPrimary" />
+                android:src="?attr/colorPrimary" />
 
             <TextView
                 android:id="@+id/nav_header_contact_text"
@@ -54,7 +54,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
-                android:src="@color/colorPrimary" />
+                android:src="?attr/colorPrimary" />
 
             <TextView
                 android:id="@+id/first_account"
@@ -79,7 +79,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center_vertical"
-                android:src="@color/colorPrimary" />
+                android:src="?attr/colorPrimary" />
 
             <TextView
                 android:id="@+id/second_account"

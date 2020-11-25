@@ -58,7 +58,7 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="4dp"
                 android:text="@string/support_email"
-                android:textColor="@color/colorPrimary"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/contact_label"
                 app:layout_constraintTop_toTopOf="@+id/contact_label" />
 
@@ -81,7 +81,7 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="4dp"
                 android:text="@string/pEp_documentation_url"
-                android:textColor="@color/colorPrimary"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/documentation_label"
                 app:layout_constraintTop_toTopOf="@+id/documentation_label" />
 
