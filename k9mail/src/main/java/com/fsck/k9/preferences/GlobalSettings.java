@@ -182,7 +182,7 @@ public class GlobalSettings {
                 new V(1, new TimeSetting("21:00"))
         ));
         s.put("registeredNameColor", Settings.versions(
-                new V(1, new ColorSetting(0xFF00008F))
+                new V(1, new ColorSetting(K9.DEFAULT_CONTACT_NAME_COLOR))
         ));
         s.put("showContactName", Settings.versions(
                 new V(1, new BooleanSetting(false))

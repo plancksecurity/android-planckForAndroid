@@ -134,6 +134,7 @@ public class K9 extends MultiDexApplication {
 
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+    public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
 
@@ -299,7 +300,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mMessageListSenderAboveSubject = false;
     private static boolean mShowContactName = false;
     private static boolean mChangeContactNameColor = false;
-    private static int mContactNameColor = 0xff00008f;
+    private static int mContactNameColor = DEFAULT_CONTACT_NAME_COLOR;
     private static boolean sShowContactPicture = true;
     private static boolean mMessageViewFixedWidthFont = false;
     private static boolean mMessageViewReturnToList = false;
@@ -917,7 +918,7 @@ public class K9 extends MultiDexApplication {
         mShowContactName = storage.getBoolean("showContactName", false);
         sShowContactPicture = storage.getBoolean("showContactPicture", true);
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
-        mContactNameColor = storage.getInt("registeredNameColor", 0xff00008f);
+        mContactNameColor = storage.getInt("registeredNameColor", DEFAULT_CONTACT_NAME_COLOR);
         mMessageViewFixedWidthFont = storage.getBoolean("messageViewFixedWidthFont", false);
         boolean returnToList = storage.getBoolean("messageViewReturnToList", false);
         boolean showNext = storage.getBoolean("messageViewShowNext", true);
