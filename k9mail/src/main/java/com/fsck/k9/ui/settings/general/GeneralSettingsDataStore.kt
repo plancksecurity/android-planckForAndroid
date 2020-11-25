@@ -142,7 +142,7 @@ class GeneralSettingsDataStore(
         }
 
         when (key) {
-            "theme" -> setTheme(value)
+            "theme" -> ThemeManager.setCurrentTheme(value)
             "fixed_message_view_theme" -> ThemeManager.k9MessageViewTheme = ThemeManager.stringToTheme(value)
             "message_compose_theme" -> ThemeManager.k9ComposerTheme = ThemeManager.stringToTheme(value)
             "messageViewTheme" -> ThemeManager.k9MessageViewTheme = ThemeManager.stringToTheme(value)
@@ -240,39 +240,8 @@ class GeneralSettingsDataStore(
         }
     }
 
-    private fun setTheme(value: String?) {
-        ThemeManager.appTheme = stringToAppTheme(value)
-        ThemeManager.updateAppTheme()
-    }
-
     private fun showChangeLanguageDialog(language: String?) {
         (activity!! as GeneralSettingsActivity).showLanguageChangeDialog(language)
-    }
-
-    private fun themeToString(theme: Theme) = when (theme) {
-        Theme.LIGHT -> "light"
-        Theme.DARK -> "dark"
-        Theme.USE_GLOBAL -> "global"
-    }
-
-    private fun stringToTheme(theme: String?) = when (theme) {
-        "light" -> Theme.LIGHT
-        "dark" -> Theme.DARK
-        "global" -> Theme.USE_GLOBAL
-        else -> throw AssertionError()
-    }
-
-    private fun stringToAppTheme(theme: String?) = when (theme) {
-        "light" -> AppTheme.LIGHT
-        "dark" -> AppTheme.DARK
-        "follow_system" -> AppTheme.FOLLOW_SYSTEM
-        else -> throw AssertionError()
-    }
-
-    private fun appThemeToString(theme: AppTheme) = when (theme) {
-        AppTheme.DARK -> "dark"
-        AppTheme.LIGHT -> "light"
-        AppTheme.FOLLOW_SYSTEM -> "follow_system"
     }
 
     private fun setBackgroundOps(value: String) {

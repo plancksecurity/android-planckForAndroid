@@ -79,6 +79,37 @@ object ThemeManager {
         }
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
     }
+
+    fun setCurrentTheme(value: String?) {
+        appTheme = stringToAppTheme(value)
+        updateAppTheme()
+    }
+
+    fun themeToString(theme: Theme) = when (theme) {
+        Theme.LIGHT -> "light"
+        Theme.DARK -> "dark"
+        Theme.USE_GLOBAL -> "global"
+    }
+
+    fun stringToTheme(theme: String?) = when (theme) {
+        "light" -> Theme.LIGHT
+        "dark" -> Theme.DARK
+        "global" -> Theme.USE_GLOBAL
+        else -> throw AssertionError()
+    }
+
+    private fun stringToAppTheme(theme: String?) = when (theme) {
+        "light" -> AppTheme.LIGHT
+        "dark" -> AppTheme.DARK
+        "follow_system" -> AppTheme.FOLLOW_SYSTEM
+        else -> throw AssertionError()
+    }
+
+    fun appThemeToString(theme: AppTheme) = when (theme) {
+        AppTheme.DARK -> "dark"
+        AppTheme.LIGHT -> "light"
+        AppTheme.FOLLOW_SYSTEM -> "follow_system"
+    }
 }
 
 /**
