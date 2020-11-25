@@ -188,6 +188,7 @@
         <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Light</item>
         <item name="iconConfigureAccount">@drawable/ic_configure_account</item>
         <item name="iconAddAccount">@drawable/ic_add_account</item>
+        <item name="answeredForwardedIconColor">@color/gray</item>
 
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
@@ -305,6 +306,7 @@
         <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Dark</item>
         <item name="iconConfigureAccount">@drawable/ic_configure_account</item>
         <item name="iconAddAccount">@drawable/ic_add_account</item>
+        <item name="answeredForwardedIconColor">@color/gray</item>
 
     </style>
 

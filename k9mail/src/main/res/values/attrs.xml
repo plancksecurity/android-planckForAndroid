@@ -102,6 +102,7 @@
         <attr name="syncDisableDialogStyle" format="reference"/>
         <attr name="iconConfigureAccount" format="reference"/>
         <attr name="iconAddAccount" format="reference"/>
+        <attr name="answeredForwardedIconColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
