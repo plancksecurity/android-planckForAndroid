@@ -155,4 +155,8 @@
         <attr name="introSeparatorColor" format="reference|color"/>
     </declare-styleable>
 
+    <declare-styleable name="Buttons">
+        <attr name="negativeButtonDefaultColor" format="reference|color"/>
+    </declare-styleable>
+
 </resources>
