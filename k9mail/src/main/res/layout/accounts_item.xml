@@ -97,7 +97,7 @@
             android:layout_height="fill_parent"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:tint="@color/pep_green"
+            android:tint="?attr/colorAccent"
             />
     </LinearLayout>
 </LinearLayout>

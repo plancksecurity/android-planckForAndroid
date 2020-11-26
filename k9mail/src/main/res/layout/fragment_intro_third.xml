@@ -79,7 +79,7 @@
                 android:layout_marginTop="@dimen/intro_margin_top_small"
                 android:text="@string/pep_confirm_trustwords"
                 android:textColor="@color/white"
-                app:backgroundTint="@color/pep_green"
+                app:backgroundTint="?attr/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/rejectButton"
                 app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />

@@ -140,7 +140,7 @@
         android:padding="8dp"
         android:text="@string/pep_confirm_trustwords"
         android:textAllCaps="true"
-        android:textColor="@color/pep_green"
+        android:textColor="?attr/colorAccent"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
