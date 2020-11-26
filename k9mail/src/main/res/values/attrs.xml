@@ -106,6 +106,7 @@
         <attr name="defaultToolbarTextColor" format="reference|color"/>
         <attr name="messageListSeparatorColor" format="reference|color"/>
         <attr name="defaultButtonTextColor" format="reference|color"/>
+        <attr name="searchBarHintColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

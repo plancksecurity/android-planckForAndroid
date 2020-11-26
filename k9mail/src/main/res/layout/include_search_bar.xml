@@ -23,7 +23,7 @@
         android:layout_toStartOf="@id/search_clear"
         android:maxLines="1"
         android:textColor="?attr/defaultToolbarTextColor"
-        android:textColorHint="@color/light_primary_color"
+        android:textColorHint="?attr/searchBarHintColor"
         android:textCursorDrawable="@null"
         android:textSize="18sp"
         android:drawableLeft="@drawable/ic_action_search"
