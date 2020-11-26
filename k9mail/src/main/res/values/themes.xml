@@ -192,6 +192,7 @@
         <item name="defaultToolbarTextColor">@color/white</item>
         <item name="messageListSeparatorColor">@color/white</item>
         <item name="negativeButtonDefaultColor">@color/pep_red</item>
+        <item name="defaultButtonTextColor">@color/white</item>
 
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
@@ -313,6 +314,7 @@
         <item name="defaultToolbarTextColor">@color/white</item>
         <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
         <item name="negativeButtonDefaultColor">@color/pep_red</item>
+        <item name="defaultButtonTextColor">@color/white</item>
 
     </style>
 
