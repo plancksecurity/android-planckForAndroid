@@ -7,17 +7,30 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.TextView
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
+import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.controller.SimpleMessagingListener
+import com.fsck.k9.fragment.ProgressDialogFragment
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID
 import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNT_ID
+import com.fsck.k9.pEp.importAccount.PASSWORD.FRAGMENT_SET_ACCOUNT_PASSWORD
 import com.fsck.k9.pEp.manualsync.WizardActivity
-import kotlinx.android.synthetic.main.password_prompt_dialog.*
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import java.util.*
 
 fun showPasswordDialog(context: Context,
@@ -38,6 +51,29 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
     private var configureOutgoingServer: Boolean = false
     private var configureIncomingServer: Boolean = false
 
+    private lateinit var okButton: Button
+    private lateinit var cancelButton: Button
+    private lateinit var incomingPasswordEditText: EditText
+    private lateinit var outgoingPasswordEditText: EditText
+    private lateinit var useIncomingCheckbox: CheckBox
+    private lateinit var passwordPromptIntro: TextView
+    private lateinit var outgoingTIL: TextInputLayout
+    private lateinit var incomingTIL: TextInputLayout
+
+    private var progressDialog: ProgressDialogFragment? = null
+
+    val listener = object : SimpleMessagingListener() {
+
+        override fun listFoldersFinished(account: Account?) {
+            removeProgressDialog()
+            sendDataBack()
+        }
+
+        override fun listFoldersFailed(account: Account?, message: String?) {
+            this.listFoldersFinished(account)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.password_prompt_dialog)
@@ -49,14 +85,23 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
     private fun getExtras() {
         if (intent != null) {
             intent.getStringExtra(ACCOUNT_ID).let { accountId ->
-                        val preferences = Preferences.getPreferences(this)
-                        account = preferences.getAccount(accountId)
-                    }
+                val preferences = Preferences.getPreferences(this)
+                account = preferences.getAccount(accountId)
+            }
             intent.getStringArrayListExtra(ACCOUNTS_ID).let { remainingAccounts = it }
         }
     }
 
     private fun startView() {
+        okButton = findViewById(R.id.okButton)
+        cancelButton = findViewById(R.id.cancelButton)
+        outgoingTIL = findViewById(R.id.outgoingTIL)
+        incomingTIL = findViewById(R.id.incomingTIL)
+        useIncomingCheckbox = findViewById(R.id.useIncomingCheckbox)
+        passwordPromptIntro = findViewById(R.id.passwordPromptIntro)
+        incomingPasswordEditText = findViewById(R.id.incomingPasswordEditText)
+        outgoingPasswordEditText = findViewById(R.id.outgoingPasswordEditText)
+
         getConfigs()
         setClickListeners()
         setTexts()
@@ -98,14 +143,13 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
                         else outgoingPasswordEditText.text.toString()
             }
             // Set the server passwords in the background
-            setAccountPassword(this, account, incomingPassword, outgoingPassword)
-            setDataBack()
-
+            showProgressDialog()
+            setAccountPassword(incomingPassword, outgoingPassword)
         }
         cancelButton.setOnClickListener { finish() }
     }
 
-    private fun setDataBack() {
+    private fun sendDataBack() {
         val resultIntent = Intent()
         resultIntent.putStringArrayListExtra(ACCOUNTS_ID, remainingAccounts)
         setResult(Activity.RESULT_OK, resultIntent)
@@ -127,7 +171,7 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
                 outgoingPasswordEditText.isEnabled = false
                 outgoingTIL.visibility = View.INVISIBLE
             } else {
-                outgoingPasswordEditText.text = incomingPasswordEditText!!.text
+                outgoingPasswordEditText.text = incomingPasswordEditText.text
                 outgoingPasswordEditText.isEnabled = true
                 outgoingTIL.visibility = View.VISIBLE
             }
@@ -171,23 +215,68 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
     override fun afterTextChanged(s: Editable) {
         var enable = false
         if (configureIncomingServer) {
-            if (incomingPasswordEditText!!.text.isNotEmpty()) {
+            if (incomingPasswordEditText.text.isNotEmpty()) {
                 if (!configureOutgoingServer) {
                     enable = true
-                } else if (useIncomingCheckbox!!.isChecked ||
-                        outgoingPasswordEditText!!.text.isNotEmpty()) {
+                } else if (useIncomingCheckbox.isChecked ||
+                        outgoingPasswordEditText.text.isNotEmpty()) {
                     enable = true
                 }
             }
         } else {
-            enable = outgoingPasswordEditText!!.text.isNotEmpty()
+            enable = outgoingPasswordEditText.text.isNotEmpty()
         }
-        okButton!!.isEnabled = enable
+        okButton.isEnabled = enable
     }
 
+    private fun showProgressDialog() {
+        val outgoingPassword = outgoingPasswordEditText.text?.toString()
+
+        val title = getString(R.string.settings_import_activate_account_header)
+        val passwordCount = outgoingPassword?.length ?: 1
+        val message = resources.getQuantityString(R.plurals.settings_import_setting_passwords, passwordCount)
+        progressDialog = ProgressDialogFragment.newInstance(title, message)
+        progressDialog?.show(supportFragmentManager, FRAGMENT_SET_ACCOUNT_PASSWORD)
+    }
+
+    private fun setAccountPassword(incomingPassword: String?, outgoingPassword: String?) = runBlocking {
+        launch(Dispatchers.IO) {
+            try {
+                if (incomingPassword != null) {
+                    val storeUri = account.storeUri
+                    val incoming = RemoteStore.decodeStoreUri(storeUri)
+                    val newIncoming = incoming.newPassword(incomingPassword)
+                    val newStoreUri = RemoteStore.createStoreUri(newIncoming)
+                    account.storeUri = newStoreUri
+                }
+                if (outgoingPassword != null) {
+                    val transportUri = account.transportUri
+                    val outgoing = Transport.decodeTransportUri(transportUri)
+                    val newOutgoing = outgoing.newPassword(outgoingPassword)
+                    val newTransportUri = Transport.createTransportUri(newOutgoing)
+                    account.transportUri = newTransportUri
+                }
+                account.isEnabled = true
+                account.save(Preferences.getPreferences(this@PasswordPrompt))
+                K9.setServicesEnabled(this@PasswordPrompt)
+                MessagingController.getInstance(this@PasswordPrompt.applicationContext)
+                        .listFolders(account, true, listener)
+            } catch (e: Exception) {
+                Timber.e(e, "Something happened while setting account passwords")
+            }
+        }
+    }
+
+    private fun removeProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog!!.dismiss()
+        }
+        progressDialog = null
+    }
 }
 
 object PASSWORD {
+    const val FRAGMENT_SET_ACCOUNT_PASSWORD = "FRAGMENT_SET_ACCOUNT_PASSWORD"
     const val ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS = 12342
     const val ACCOUNTS_ID = "ACCOUNTS_ID"
     const val ACCOUNT_ID = "ACCOUNT_ID"
