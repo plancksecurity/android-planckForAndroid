@@ -11,13 +11,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.SparseBooleanArray;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,9 +23,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.preferences.SettingsExporter;
 import com.fsck.k9.preferences.SettingsImportExportException;
@@ -48,11 +40,11 @@ import timber.log.Timber;
 
 import static com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID;
 import static com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS;
+import static security.pEp.ui.keyimport.KeyImportActivity.ANDROID_FILE_MANAGER_MARKET_URL;
 
 public abstract class PEpImporterActivity extends PepActivity {
 
     protected static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
-    protected static final int DIALOG_NO_FILE_MANAGER = 4;
 
     protected static final String CURRENT_ACCOUNT_UUID = "CURRENT_ACCOUNT_UUID";
 
@@ -67,17 +59,28 @@ public abstract class PEpImporterActivity extends PepActivity {
         PackageManager packageManager = getPackageManager();
         List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
 
-        if (infos.size() > 0) {
-            startActivityForResult(Intent.createChooser(i, null),
-                    ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
+        if (infos.size() <= 0) {
+            startActivityForResult(Intent.createChooser(i, null), ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
         } else {
-            showDialog(DIALOG_NO_FILE_MANAGER);
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.import_dialog_error_title)
+                    .setMessage(R.string.import_dialog_error_message)
+                    .setPositiveButton(R.string.open_market, (dialog, which) -> {
+                        Uri uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    })
+                    .setNegativeButton(R.string.cancel_action, (dialog, which) -> {
+                    })
+                    .show();
         }
     }
 
     public abstract void onImport(Uri uri);
 
     public abstract void setNonConfigurationInstance(NonConfigurationInstance inst);
+
+    protected abstract void onImportFinished();
 
     private void showImportSelectionDialog(SettingsImporter.ImportContents importContents, Uri uri) {
         ImportSelectionDialog dialog = new ImportSelectionDialog(importContents, uri);
@@ -94,10 +97,8 @@ public abstract class PEpImporterActivity extends PepActivity {
     /**
      * Shows a dialog that displays how many accounts were successfully imported.
      *
-     * @param importResults
-     *         The {@link SettingsImporter.ImportResults} instance returned by the {@link SettingsImporter}.
-     * @param filename
-     *         The name of the settings file that was imported.
+     * @param importResults The {@link SettingsImporter.ImportResults} instance returned by the {@link SettingsImporter}.
+     * @param filename      The name of the settings file that was imported.
      */
     private void showAccountsImportedDialog(SettingsImporter.ImportResults importResults, String filename) {
         AccountsImportedDialog dialog = new AccountsImportedDialog(importResults, filename);
@@ -107,7 +108,6 @@ public abstract class PEpImporterActivity extends PepActivity {
 
     private void promptServerPasswords(ArrayList<String> ids) {
         disabledAccounts = ids;
-        // new ArrayList<>(ids) -> deep copy
         Intent intent = PasswordPromptKt.showPasswordDialog(this, new ArrayList<>(ids));
         startActivityForResult(intent, ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS);
     }
@@ -130,10 +130,8 @@ public abstract class PEpImporterActivity extends PepActivity {
         }
     }
 
-    protected abstract void onImportFinished();
-
     public static class ListImportContentsAsyncTask extends ExtendedAsyncTask<Boolean, Void, Boolean> {
-        private Uri mUri;
+        private final Uri mUri;
         private SettingsImporter.ImportContents mImportContents;
 
         public ListImportContentsAsyncTask(PEpImporterActivity activity, Uri uri) {
@@ -155,25 +153,17 @@ public abstract class PEpImporterActivity extends PepActivity {
 
         @NonNull
         private Boolean importSettings() {
-            try {
-                ContentResolver resolver = mContext.getContentResolver();
-                InputStream is = resolver.openInputStream(mUri);
-                try {
-                    mImportContents = SettingsImporter.getImportStreamContents(is);
-                } finally {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        /* Ignore */
-                    }
-                }
-            } catch (SettingsImportExportException e) {
-                Timber.w(e, "Exception during export");
-                return false;
+            ContentResolver resolver = mContext.getContentResolver();
+            try (InputStream is = resolver.openInputStream(mUri)) {
+                mImportContents = SettingsImporter.getImportStreamContents(is);
             } catch (FileNotFoundException e) {
                 Timber.w("Couldn't read content from URI %s", mUri);
                 return false;
+            } catch (IOException | SettingsImportExportException e) {
+                Timber.w(e, "Exception during export");
+                return false;
             }
+
             return true;
         }
 
@@ -196,7 +186,6 @@ public abstract class PEpImporterActivity extends PepActivity {
                 activity.showImportSelectionDialog(mImportContents, mUri);
             } else {
                 String filename = mUri.getLastPathSegment();
-                //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_import_failed_header,
                         R.string.settings_import_failure, filename);
             }
@@ -206,7 +195,7 @@ public abstract class PEpImporterActivity extends PepActivity {
     public static class SimpleDialog implements NonConfigurationInstance {
         private final int mHeaderRes;
         private final int mMessageRes;
-        private Object[] mArguments;
+        private final Object[] mArguments;
         private Dialog mDialog;
 
         SimpleDialog(int headerRes, int messageRes, Object... args) {
@@ -236,24 +225,18 @@ public abstract class PEpImporterActivity extends PepActivity {
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setTitle(mHeaderRes);
             builder.setMessage(message);
-            builder.setPositiveButton(R.string.okay_action,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            activity.setNonConfigurationInstance(null);
-                            okayAction(activity);
-                        }
-                    });
+            builder.setPositiveButton(R.string.okay_action, (dialog, which) -> {
+                dialog.dismiss();
+                activity.setNonConfigurationInstance(null);
+                okayAction(activity);
+            });
             mDialog = builder.show();
         }
 
         /**
          * Returns the message the dialog should display.
          *
-         * @param activity
-         *         The {@code Activity} this dialog belongs to.
-         *
+         * @param activity The {@code Activity} this dialog belongs to.
          * @return The message the dialog should display
          */
         protected String generateMessage(PEpImporterActivity activity) {
@@ -263,8 +246,7 @@ public abstract class PEpImporterActivity extends PepActivity {
         /**
          * This method is called after the "OK" button was pressed.
          *
-         * @param activity
-         *         The {@code Activity} this dialog belongs to.
+         * @param activity The {@code Activity} this dialog belongs to.
          */
         protected void okayAction(PEpImporterActivity activity) {
             // Do nothing
@@ -272,11 +254,10 @@ public abstract class PEpImporterActivity extends PepActivity {
     }
 
     public static class ImportSelectionDialog implements NonConfigurationInstance {
-        private SettingsImporter.ImportContents mImportContents;
-        private Uri mUri;
+        private final SettingsImporter.ImportContents mImportContents;
+        private final Uri mUri;
         private AlertDialog mDialog;
         private SparseBooleanArray mSelection;
-
 
         ImportSelectionDialog(SettingsImporter.ImportContents importContents, Uri uri) {
             mImportContents = importContents;
@@ -306,7 +287,7 @@ public abstract class PEpImporterActivity extends PepActivity {
         }
 
         public void show(final PEpImporterActivity activity, SparseBooleanArray selection) {
-            List<String> contents = new ArrayList<String>();
+            List<String> contents = new ArrayList<>();
 
             if (mImportContents.globalSettings) {
                 contents.add(activity.getString(R.string.settings_import_global_settings));
@@ -332,67 +313,56 @@ public abstract class PEpImporterActivity extends PepActivity {
             //TODO: listview footer: "Select all" / "Select none" buttons?
             //TODO: listview footer: "Overwrite existing accounts?" checkbox
 
-            DialogInterface.OnMultiChoiceClickListener listener = new DialogInterface.OnMultiChoiceClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                    ((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
-                }
-            };
+            DialogInterface.OnMultiChoiceClickListener listener =
+                    (dialog, which, isChecked) ->
+                            ((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
 
             final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
             builder.setMultiChoiceItems(contents.toArray(new String[0]), checkedItems, listener);
             builder.setTitle(activity.getString(R.string.settings_import_selection));
             builder.setInverseBackgroundForced(true);
             builder.setPositiveButton(R.string.okay_action,
-                    new DialogInterface.OnClickListener() {
+                    (dialog, which) -> {
+                        ListView listView = ((AlertDialog) dialog).getListView();
+                        SparseBooleanArray pos = listView.getCheckedItemPositions();
 
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ListView listView = ((AlertDialog) dialog).getListView();
-                            SparseBooleanArray pos = listView.getCheckedItemPositions();
-
-                            boolean includeGlobals = mImportContents.globalSettings ? pos.get(0) : false;
-                            List<String> accountUuids = new ArrayList<String>();
-                            int start = mImportContents.globalSettings ? 1 : 0;
-                            for (int i = start, end = listView.getCount(); i < end; i++) {
-                                if (pos.get(i)) {
-                                    accountUuids.add(mImportContents.accounts.get(i - start).uuid);
-                                }
+                        boolean includeGlobals = mImportContents.globalSettings && pos.get(0);
+                        List<String> accountUuids = new ArrayList<>();
+                        int start = mImportContents.globalSettings ? 1 : 0;
+                        for (int i = start, end = listView.getCount(); i < end; i++) {
+                            if (pos.get(i)) {
+                                accountUuids.add(mImportContents.accounts.get(i - start).uuid);
                             }
-
-                    /*
-                     * TODO: Think some more about this. Overwriting could change the store
-                     * type. This requires some additional code in order to work smoothly
-                     * while the app is running.
-                     */
-                            boolean overwrite = false;
-
-                            dialog.dismiss();
-                            activity.setNonConfigurationInstance(null);
-
-                            ImportAsyncTask importAsyncTask = new ImportAsyncTask(activity,
-                                    includeGlobals, accountUuids, overwrite, mUri);
-                            activity.setNonConfigurationInstance(importAsyncTask);
-                            importAsyncTask.execute();
                         }
+
+                        /*
+                         * TODO: Think some more about this. Overwriting could change the store
+                         * type. This requires some additional code in order to work smoothly
+                         * while the app is running.
+                         */
+                        boolean overwrite = false;
+
+                        dialog.dismiss();
+                        activity.setNonConfigurationInstance(null);
+
+                        ImportAsyncTask importAsyncTask = new ImportAsyncTask(activity,
+                                includeGlobals, accountUuids, overwrite, mUri);
+                        activity.setNonConfigurationInstance(importAsyncTask);
+                        importAsyncTask.execute();
                     });
-            builder.setNegativeButton(R.string.cancel_action,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            activity.setNonConfigurationInstance(null);
-                        }
-                    });
+            builder.setNegativeButton(R.string.cancel_action, (dialog, which) -> {
+                dialog.dismiss();
+                activity.setNonConfigurationInstance(null);
+            });
             mDialog = builder.show();
         }
     }
 
     private static class ImportAsyncTask extends ExtendedAsyncTask<Void, Void, Boolean> {
-        private boolean mIncludeGlobals;
-        private List<String> mAccountUuids;
-        private boolean mOverwrite;
-        private Uri mUri;
+        private final boolean mIncludeGlobals;
+        private final List<String> mAccountUuids;
+        private final boolean mOverwrite;
+        private final Uri mUri;
         private SettingsImporter.ImportResults mImportResults;
 
         private ImportAsyncTask(PEpImporterActivity activity, boolean includeGlobals,
@@ -413,18 +383,9 @@ public abstract class PEpImporterActivity extends PepActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            try {
-                InputStream is = mContext.getContentResolver().openInputStream(mUri);
-                try {
-                    mImportResults = SettingsImporter.importSettings(mContext, is,
-                            mIncludeGlobals, mAccountUuids, mOverwrite);
-                } finally {
-                    try {
-                        is.close();
-                    } catch (IOException e) {
-                        /* Ignore */
-                    }
-                }
+            try (InputStream is = mContext.getContentResolver().openInputStream(mUri)) {
+                mImportResults = SettingsImporter.importSettings(mContext, is,
+                        mIncludeGlobals, mAccountUuids, mOverwrite);
             } catch (SettingsImportExportException e) {
                 Timber.w(e, "Exception during import");
                 return false;
@@ -469,8 +430,8 @@ public abstract class PEpImporterActivity extends PepActivity {
      * A dialog that displays how many accounts were successfully imported.
      */
     public static class AccountsImportedDialog extends SimpleDialog {
-        private SettingsImporter.ImportResults mImportResults;
-        private String mFilename;
+        private final SettingsImporter.ImportResults mImportResults;
+        private final String mFilename;
 
         public AccountsImportedDialog(SettingsImporter.ImportResults importResults, String filename) {
             super(R.string.settings_import_success_header, R.string.settings_import_success);
@@ -480,8 +441,6 @@ public abstract class PEpImporterActivity extends PepActivity {
 
         @Override
         protected String generateMessage(PEpImporterActivity activity) {
-            //TODO: display names of imported accounts (name from file *and* possibly new name)
-
             int imported = mImportResults.importedAccounts.size();
             String accounts = activity.getResources().getQuantityString(
                     R.plurals.settings_import_accounts, imported, imported);
@@ -511,11 +470,10 @@ public abstract class PEpImporterActivity extends PepActivity {
      * Handles exporting of global settings and/or accounts in a background thread.
      */
     public static class ExportAsyncTask extends ExtendedAsyncTask<Void, Void, Boolean> {
-        private boolean mIncludeGlobals;
+        private final boolean mIncludeGlobals;
+        private final Uri mUri;
         private Set<String> mAccountUuids;
         private String mFileName;
-        private Uri mUri;
-
 
         public ExportAsyncTask(SettingsActivity activity, boolean includeGlobals,
                                List<String> accountUuids, Uri uri) {
@@ -555,7 +513,6 @@ public abstract class PEpImporterActivity extends PepActivity {
         protected void onPostExecute(Boolean success) {
             PEpImporterActivity activity = (PEpImporterActivity) mActivity;
 
-            // Let the activity know that the background task is complete
             activity.setNonConfigurationInstance(null);
 
             removeProgressDialog();
@@ -569,7 +526,6 @@ public abstract class PEpImporterActivity extends PepActivity {
                             R.string.settings_export_success_generic);
                 }
             } else {
-                //TODO: better error messages
                 activity.showSimpleDialog(R.string.settings_export_failed_header,
                         R.string.settings_export_failure);
             }
