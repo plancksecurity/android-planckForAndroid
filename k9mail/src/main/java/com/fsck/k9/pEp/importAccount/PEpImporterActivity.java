@@ -59,7 +59,7 @@ public abstract class PEpImporterActivity extends PepActivity {
         PackageManager packageManager = getPackageManager();
         List<ResolveInfo> infos = packageManager.queryIntentActivities(i, 0);
 
-        if (infos.size() <= 0) {
+        if (infos.size() > 0) {
             startActivityForResult(Intent.createChooser(i, null), ACTIVITY_REQUEST_PICK_SETTINGS_FILE);
         } else {
             new AlertDialog.Builder(this)
