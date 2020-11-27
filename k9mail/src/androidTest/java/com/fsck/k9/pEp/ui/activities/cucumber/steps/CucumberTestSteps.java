@@ -628,7 +628,7 @@ public class CucumberTestSteps {
     public void I_click_stop_trusting_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
-        onView(withId(R.id.buttonHandshake)).perform(click());
+        onView(withId(R.id.rejectHandshake)).perform(click());
         testUtils.waitForIdle();
         testUtils.pressBack();
     }
