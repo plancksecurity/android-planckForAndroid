@@ -4,6 +4,7 @@ package com.fsck.k9.activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -37,8 +38,7 @@ public class ChooseIdentity extends K9ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_content_simple);
 
-        setUpToolbar(false);
-        getToolbar().setTitle(getResources().getString(R.string.manage_identities_title));
+        initializeToolbar(true,R.string.manage_identities_title);
         getListView().setTextFilterEnabled(true);
         getListView().setItemsCanFocus(false);
         getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
@@ -74,6 +74,18 @@ public class ChooseIdentity extends K9ListActivity {
         }
 
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected void setupClickListeners() {
