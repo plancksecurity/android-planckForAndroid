@@ -1218,10 +1218,18 @@ public class CucumberTestSteps {
                 raw = R.raw.testpicture;
                 testUtils.waitForIdle();
                 fileName = "testpicture.png";
-            case "passphrase":
-                raw = R.raw.passphrase;
+            case "passphrase1":
+                raw = R.raw.passphrase_test003;
                 testUtils.waitForIdle();
-                fileName = "passphrase.asc";
+                fileName = "passphrase_test003.asc";
+            case "passphrase2":
+                raw = R.raw.passphrase_test004;
+                testUtils.waitForIdle();
+                fileName = "passphrase_test004.asc";
+            case "passphrase3":
+                raw = R.raw.passphrase_test005;
+                testUtils.waitForIdle();
+                fileName = "passphrase_test005.asc";
         }
         while (true) {
             try {
