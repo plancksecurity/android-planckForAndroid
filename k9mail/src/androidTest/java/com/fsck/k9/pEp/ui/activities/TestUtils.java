@@ -137,6 +137,11 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
 
+    public String passphraseAccount;
+    public String passphraseAccountPassword;
+    public String passphrasePassword;
+
+
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
         this.instrumentation = instrumentation;
@@ -347,6 +352,28 @@ public class TestUtils {
         }
     }
 
+    public void setPassphraseAccount() {
+        switch (keySync_number()) {
+            case "-1":
+                passphraseAccount = "test003@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "leakydente2020";
+                break;
+            case "-2":
+                passphraseAccount = "test004@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "leakydente2020";
+                break;
+            case "-3":
+                passphraseAccount = "test005@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "pEpdichauf1234";
+                break;
+            default:
+                Timber.i("Wrong passphrase Account");
+        }
+    }
+
     public void readConfigFile() {
         File newFile = null;
          do {
@@ -497,6 +524,7 @@ public class TestUtils {
                 Timber.i("Error reading config file, trying again");
             }
         }
+        setPassphraseAccount();
     }
 
     public void syncDevices () {
