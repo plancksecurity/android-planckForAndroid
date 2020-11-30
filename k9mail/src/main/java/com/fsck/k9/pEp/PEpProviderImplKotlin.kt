@@ -456,6 +456,7 @@ class PEpProviderImplKotlin @Inject constructor(
                 throw AppDidntEncryptMessageException(source)
             }
             currentEnc = message
+            currentEnc.encFormat = Message.EncFormat.None
         }
         Timber.d("%s %s", TAG, "encryptMessage() after encrypt")
         return@withContext getMimeMessage(source, currentEnc)
