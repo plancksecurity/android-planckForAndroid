@@ -1139,7 +1139,7 @@ public class CucumberTestSteps {
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync")));
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync_folder")));
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_subject_protection")));
-        testUtils.scrollToView(resources.getString(testUtils.stringToID("blacklist_title")));
+        //testUtils.scrollToView(resources.getString(testUtils.stringToID("blacklist_title")));
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
         testUtils.pressBack();
     }
