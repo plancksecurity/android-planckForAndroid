@@ -449,7 +449,8 @@ class PEpProviderImplKotlin @Inject constructor(
         from.user_id = PEP_OWN_USER_ID
         from.me = true
         message.from = from
-        var currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), message.encFormat)
+        val desiredEncFormat = if (source.isSet(Flag.X_PEP_DISABLED)) Message.EncFormat.None else Message.EncFormat.PEP
+        var currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), desiredEncFormat)
         source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null)
         if (currentEnc == null) {
             if (source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED)) {
