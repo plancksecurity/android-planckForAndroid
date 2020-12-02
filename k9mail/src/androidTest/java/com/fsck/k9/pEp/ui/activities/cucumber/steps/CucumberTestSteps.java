@@ -1132,14 +1132,12 @@ public class CucumberTestSteps {
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_passive_mode"));
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_forward_warning"));
         testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
-        testUtils.pressBack();
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
-        testUtils.pressBack();
+        //testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
+        //testUtils.pressBack();
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync")));
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync_folder")));
         testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_subject_protection")));
-        //testUtils.scrollToView(resources.getString(testUtils.stringToID("blacklist_title")));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("blacklist_title")));
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
         testUtils.pressBack();
     }
@@ -1218,18 +1216,20 @@ public class CucumberTestSteps {
                 raw = R.raw.testpicture;
                 testUtils.waitForIdle();
                 fileName = "testpicture.png";
-            case "passphrase1":
-                raw = R.raw.passphrase_test003;
+            case "passphrase":
+                switch (testUtils.keySync_number()) {
+                    case "4":
+                        raw = R.raw.passphrase_test003;
+                        break;
+                    case "5":
+                        raw = R.raw.passphrase_test004;
+                        break;
+                    case "6":
+                        raw = R.raw.passphrase_test005;
+                        break;
+                }
                 testUtils.waitForIdle();
-                fileName = "passphrase_test003.asc";
-            case "passphrase2":
-                raw = R.raw.passphrase_test004;
-                testUtils.waitForIdle();
-                fileName = "passphrase_test004.asc";
-            case "passphrase3":
-                raw = R.raw.passphrase_test005;
-                testUtils.waitForIdle();
-                fileName = "passphrase_test005.asc";
+                fileName = "passphrase.asc";
         }
         while (true) {
             try {
@@ -1345,7 +1345,6 @@ public class CucumberTestSteps {
 
     @When("^I import key with passphrase for account (\\d+)$")
     public void I_import_passphrase (int account) {
-        String passphrasePassword = "pEpdichauf1234";
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
             testUtils.selectFromMenu(R.string.action_settings);
         }
@@ -1357,18 +1356,24 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
         testUtils.testReset = true;
         testUtils.selectFromScreen(testUtils.stringToID("pgp_key_import_title"));
-        I_wait_seconds(20);
         fingerprint = testUtils.getFingerprint();
         testUtils.selectButtonFromScreen(testUtils.stringToID("pgp_key_import_confirmation_confirm"));
-        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(passphrasePassword)){
+        while (!exists(onView(withId(R.id.passphrase)))) {
             testUtils.waitForIdle();
-            onView(withId(R.id.passphrase)).perform(typeText(passphrasePassword));
         }
+        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(testUtils.passphrasePassword)){
+            testUtils.waitForIdle();
+            onView(withId(R.id.passphrase)).perform(typeText(testUtils.passphrasePassword));
+        }
+        testUtils.waitForIdle();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         testUtils.waitForKeyImport();
         onView(withId(android.R.id.button1)).perform(click());
+        testUtils.waitForIdle();
         testUtils.pressBack();
+        testUtils.waitForIdle();
         testUtils.pressBack();
+        testUtils.waitForIdle();
     }
 
     @When("^I compare fingerprint$")
