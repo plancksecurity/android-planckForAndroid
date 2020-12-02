@@ -354,17 +354,17 @@ public class TestUtils {
 
     public void setPassphraseAccount() {
         switch (keySync_number()) {
-            case "-1":
+            case "4":
                 passphraseAccount = "test003@peptest.ch";
                 passphraseAccountPassword = "leakydente2020";
                 passphrasePassword = "leakydente2020";
                 break;
-            case "-2":
+            case "5":
                 passphraseAccount = "test004@peptest.ch";
                 passphraseAccountPassword = "leakydente2020";
                 passphrasePassword = "leakydente2020";
                 break;
-            case "-3":
+            case "6":
                 passphraseAccount = "test005@peptest.ch";
                 passphraseAccountPassword = "leakydente2020";
                 passphrasePassword = "pEpdichauf1234";
@@ -524,7 +524,6 @@ public class TestUtils {
                 Timber.i("Error reading config file, trying again");
             }
         }
-        setPassphraseAccount();
     }
 
     public void syncDevices () {
@@ -769,9 +768,8 @@ public class TestUtils {
         return totalAccounts;
     }
 
-    private void createNewAccountWithPermissions(){
+    private void createNewAccountWithPermissions() {
         testReset = false;
-        boolean isKeySync = false;
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
@@ -791,23 +789,37 @@ public class TestUtils {
             }
             allowPermissions();
             readConfigFile();
-            if (keySyncAccountsExist() && !keySync_number().equals("0")) {
-                isKeySync = true;
+            while (exists(onView(withId(R.id.action_continue)))) {
+                try {
+                    onView(withId(R.id.action_continue)).perform(click());
+                    device.waitForIdle();
+                } catch (Exception ignoredException) {
+                    Timber.i("Ignored", "Ignored exception");
+                }
             }
-                while (exists(onView(withId(R.id.action_continue)))) {
-                    try {
-                        onView(withId(R.id.action_continue)).perform(click());
-                        device.waitForIdle();
-                    } catch (Exception ignoredException) {
-                        Timber.i("Ignored", "Ignored exception");
-                    }
-                }
-                Timber.i("Cuentas: " +getTotalAccounts());
-                if (keySync_number().equals("3")) {
-                createNAccounts(1, isKeySync, false);
-            } else {
-                    createNAccounts(getTotalAccounts(), isKeySync, false);
-                }
+            switch (keySync_number()) {
+                case "6":
+                case "5":
+                case "4":
+                    setPassphraseAccount();
+                    fillAccountAddress(passphraseAccount);
+                    fillAccountPassword(passphraseAccountPassword);
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    break;
+                case "0":
+                    createNAccounts(getTotalAccounts(), false, false);
+                    break;
+                case "1":
+                case "2":
+                    createNAccounts(getTotalAccounts(), true, false);
+                    break;
+                case "3":
+                    createNAccounts(1, true, false);
+                    break;
+                default:
+                    Timber.i("Key sync value is not valid");
+            }
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
