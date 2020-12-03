@@ -1358,22 +1358,20 @@ public class CucumberTestSteps {
         testUtils.selectFromScreen(testUtils.stringToID("pgp_key_import_title"));
         fingerprint = testUtils.getFingerprint();
         testUtils.selectButtonFromScreen(testUtils.stringToID("pgp_key_import_confirmation_confirm"));
-        while (!exists(onView(withId(R.id.passphrase)))) {
+        while (!exists(onView(withId(R.id.passphrase))) && !exists(onView(withId(android.R.id.button1)))) {
             testUtils.waitForIdle();
         }
+        testUtils.waitForIdle();
         while (!getTextFromView(onView(withId(R.id.passphrase))).contains(testUtils.passphrasePassword)){
             testUtils.waitForIdle();
             onView(withId(R.id.passphrase)).perform(typeText(testUtils.passphrasePassword));
         }
         testUtils.waitForIdle();
-        onView(withId(R.id.afirmativeActionButton)).perform(click());
+        testUtils.clickView(R.id.afirmativeActionButton);
         testUtils.waitForKeyImport();
-        onView(withId(android.R.id.button1)).perform(click());
-        testUtils.waitForIdle();
+        testUtils.clickView(android.R.id.button1);
         testUtils.pressBack();
-        testUtils.waitForIdle();
         testUtils.pressBack();
-        testUtils.waitForIdle();
     }
 
     @When("^I compare fingerprint$")
