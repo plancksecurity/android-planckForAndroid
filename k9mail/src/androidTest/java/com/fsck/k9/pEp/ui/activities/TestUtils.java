@@ -1969,6 +1969,7 @@ public class TestUtils {
     public void waitForIdle() {
         device.waitForIdle();
         Espresso.onIdle();
+        waitUntilIdle();
     }
 
     String getTextFromTextViewThatContainsText(String text) {
