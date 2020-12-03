@@ -1448,15 +1448,12 @@ public class TestUtils {
     }
 
     public void pressBack() {
-        Espresso.onIdle();
-        device.waitForIdle();
-        waitUntilIdle();
+        waitForIdle();
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
         onView(isRoot()).perform(ViewActions.pressBack());
-        Espresso.onIdle();
-        device.waitForIdle();
+        waitForIdle();
     }
 
     void removeLastAccount() {
