@@ -25,7 +25,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 
 @RunWith(AndroidJUnit4.class)
-public class RemoveContactsFromMessageAndKeepOriginalToolbarColor {
+public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
 
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
