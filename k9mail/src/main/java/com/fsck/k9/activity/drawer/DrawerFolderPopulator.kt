@@ -1,4 +1,4 @@
-package com.fsck.k9.activity.setup
+package com.fsck.k9.activity.drawer
 
 import com.fsck.k9.Account
 import com.fsck.k9.mail.MessagingException
