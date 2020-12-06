@@ -2,9 +2,9 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -20,106 +20,121 @@ import foundation.pEp.jniadapter.Rating;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 
 public class StatusIncomingMessageTest {
 
-    private static final String HOST = "test.pep-security.net";
+    private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
     private UiDevice device;
     private TestUtils testUtils;
-    private String messageTo;
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
+    private String messageTo = System.currentTimeMillis() + "@" + HOST;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        device = UiDevice.getInstance(instrumentation);
+        new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils = new TestUtils(device, instrumentation);
-        testUtils.increaseTimeoutWait();
-        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
-        testUtils.startActivity();
+        testUtils.setupAccountIfNeeded();
     }
 
     @After
-    public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+    public void tearDown() {
+        splashActivityTestRule.finishActivity();
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test
     public void pEpStatusIncomingTrustedMessageShouldBeGreen() {
-        assertPartnerStatusIsTrusted();
+        acceptHandshakeWithPartner();
+        assertPartnerIsGreenAndSendMessage();
         assertIncomingTrustedPartnerMessageIsGreen();
     }
 
-    // TODO FIX TEST
-    private void assertPartnerStatusIsTrusted() {
-        //testUtils.createAccount();
-        testUtils.composeMessageButton();
-        device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        testUtils.sendMessage();
-        device.waitForIdle();
-        testUtils.waitForNewMessage();
-        //testUtils.clickLastMessageReceived();
-        testUtils.clickMessageStatus();
-        testUtils.clickView(R.id.confirmTrustWords);
-      //  testUtils.clickView(R.id.tvPep);
-        //testUtils.assertMessageStatus(Rating.pEpRatingTrusted.value);
-        device.waitForIdle();
-        goBackToMessageList();
-    }
-
-    void goBackToMessageList(){
-        boolean backToMessageCompose = false;
-        while (!backToMessageCompose){
-            device.pressBack();
-            device.waitForIdle();
-            if (viewIsDisplayed(R.id.fab_button_compose_message)){
-                backToMessageCompose = true;
+    private void checkToolbarColor(int color) {
+        boolean toolbarExists = false;
+        while (!toolbarExists) {
+            if (exists(onView(withId(R.id.toolbar)))) {
+                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                toolbarExists = true;
             }
         }
     }
 
-    // TODO FIX TEST
-    private void assertIncomingTrustedPartnerMessageIsGreen() {
+    private void sendMessageToBot() {
+        device.waitForIdle();
         testUtils.composeMessageButton();
+        device.waitForIdle();
+
         fillMessage();
+
+        testUtils.sendMessage();
+    }
+
+    private void acceptHandshakeWithPartner() {
+        sendMessageToBot();
+        testUtils.waitForNewMessage();
+        testUtils.clickFirstMessage();
+
+        onView(withId(R.id.securityStatusText)).check(matches(withText(
+                testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
+
+        testUtils.clickMessageStatus();
+
+        checkToolbarColor(R.color.pep_yellow);
+        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
+                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
+
+        onView(withId(R.id.confirmHandshake)).perform(click());
+        testUtils.goBackToMessageList();
+    }
+
+    private void assertPartnerIsGreenAndSendMessage() {
         device.waitForIdle();
-     //   onView(withId(R.id.pEp_indicator)).perform(click());
+        testUtils.composeMessageButton();
         device.waitForIdle();
-        testUtils.doWaitForResource(R.id.my_recycler_view);
-        device.waitForIdle();
-        onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_green)));
-        device.waitForIdle();
-        testUtils.goBackAndRemoveAccount(true);
+        fillMessage();
+        onView(withId(R.id.securityStatusText)).check(matches(withText(
+                testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
+
+        testUtils.sendMessage();
+    }
+
+    private void assertIncomingTrustedPartnerMessageIsGreen() {
+        testUtils.waitForNewMessage();
+        testUtils.clickFirstMessage();
+
+        testUtils.clickStatus();
+        checkToolbarColor(R.color.pep_green);
+        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
+        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
+                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
+        testUtils.pressBack();
     }
 
     private void fillMessage() {
+        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
         device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
+        onView(withId(R.id.subject)).perform(replaceText(MESSAGE_SUBJECT));
         device.waitForIdle();
-        onView(withId(R.id.subject)).perform(longClick(), closeSoftKeyboard());
+        onView(withId(R.id.message_content)).perform(typeText(MESSAGE_BODY));
         device.waitForIdle();
     }
-
-    private static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-
-        return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
-    }
-
 }
