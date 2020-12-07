@@ -45,6 +45,7 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -88,7 +89,7 @@ import timber.log.Timber;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends PepActivity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, DrawerLayoutInterface {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, DrawerLayoutInterface, DrawerLocker {
 
     @Inject
     NotificationChannelManager channelUtils;
@@ -229,7 +230,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     @Override
-    public void _onEditSettings() {
+    public void editAccount() {
         onEditSettings();
     }
 
@@ -263,6 +264,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void updateLastUsedAccount() {
         PePUIArtefactCache.getInstance(this).setLastUsedAccount(mAccount);
+    }
+
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        drawerLayoutManager.setDrawerEnabled(enabled);
     }
 
     private enum DisplayMode {

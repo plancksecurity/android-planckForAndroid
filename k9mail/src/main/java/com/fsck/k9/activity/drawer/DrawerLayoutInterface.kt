@@ -8,7 +8,7 @@ import com.fsck.k9.search.SearchAccount
 
 interface DrawerLayoutInterface {
     fun _refreshMessages(search: LocalSearch)
-    fun _onEditSettings()
+    fun editAccount()
     fun _addMessageListFragment(fragment: MessageListFragment, isHomeScreen: Boolean)
     fun showLoadingMessages()
     fun onBackPressed()
