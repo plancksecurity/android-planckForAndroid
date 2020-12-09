@@ -21,7 +21,6 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.WorkerThread;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -757,6 +756,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
+        refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
 
@@ -766,6 +766,13 @@ public class K9 extends MultiDexApplication {
             PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
             String packageName = getPackageName();
             batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+        }
+    }
+
+    private void refreshFoldersForAllAccounts() {
+        List<Account> accounts = Preferences.getPreferences(this.getApplicationContext()).getAccounts();
+        for (Account account : accounts) {
+            MessagingController.getInstance(this).listFolders(account, true, null);
         }
     }
 
