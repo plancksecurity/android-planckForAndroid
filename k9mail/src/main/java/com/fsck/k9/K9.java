@@ -21,7 +21,6 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.WorkerThread;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -31,6 +30,7 @@ import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.helper.AppUpdater;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
@@ -343,7 +343,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
-
+    private static long appVersionCode = -1;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -618,7 +618,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
-        editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putLong("appVersionCode", appVersionCode);
         editor.putPassphrase(pEpNewKeysPassphrase);
 
         fontSizes.save(editor);
@@ -664,6 +664,7 @@ public class K9 extends MultiDexApplication {
          * doesn't work in Android and MimeMessage does not have access to a Context.
          */
         BinaryTempFileBody.setTempDirectory(getCacheDir());
+        clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(getDir("KeyStore", MODE_PRIVATE).toString());
 
@@ -767,6 +768,11 @@ public class K9 extends MultiDexApplication {
             String packageName = getPackageName();
             batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
         }
+    }
+
+    private void clearBodyCacheIfAppUpgrade() {
+        AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
+        appUpdater.clearBodyCacheIfAppUpgrade();
     }
 
     private void initJobManager(Preferences prefs) {
@@ -968,6 +974,7 @@ public class K9 extends MultiDexApplication {
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
+        appVersionCode = storage.getLong("appVersionCode", -1);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1643,6 +1650,14 @@ public class K9 extends MultiDexApplication {
 
     public static void setUsingpEpSyncFolder(boolean usingpEpSyncFolder) {
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
+    }
+
+    public static long getAppVersionCode() {
+        return appVersionCode;
+    }
+
+    public static void setAppVersionCode(long appVersionCode) {
+        K9.appVersionCode = appVersionCode;
     }
 
     /**
