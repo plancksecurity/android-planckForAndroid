@@ -245,6 +245,7 @@ public class MessageLoaderHelper {
             return;
         }*/
 
+        startOrResumeDecodeMessage();
     }
 
     public boolean hasToBeDecrypted(LocalMessage localMessage) {
