@@ -592,7 +592,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     public void onSendAlternate() {
         if (mMessage != null) {
-            AsyncTask.execute(()  -> mController.sendAlternate(getActivity(), mAccount, mMessage));
+            mController.sendAlternate(getActivity(), mAccount, mMessage);
         }
     }
 
