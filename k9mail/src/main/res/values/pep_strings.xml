@@ -270,6 +270,7 @@
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
     <string name="blacklist_title">Blacklist</string>
+    <string name="message_view_message_no_longer_available">This message is no longer available, probably it has been deleted using another email client.</string>
 
     <string name="change_language_title">Change Language</string>
     <string name="change_language_explanation">App will return to main screen to change language</string>

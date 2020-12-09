@@ -526,12 +526,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return new Address(getFrom());
     }
 
-    public void lockSendButton() {
-        activity.lockSendButton();
+    public void messageRatingIsBeingLoaded() {
+        activity.messageRatingIsBeingLoaded();
     }
 
-    public void unlockSendButton() {
-        activity.unlockSendButton();
+    public void messageRatingLoaded() {
+        activity.messageRatingLoaded();
     }
 
     public void notifyAddressesChanged(List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {

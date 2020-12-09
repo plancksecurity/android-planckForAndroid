@@ -359,7 +359,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
-            mMessageView.showMessage(mAccount, messageViewInfo);
+            if (messageViewInfo.message.isSet(Flag.DELETED)) {
+                requireActivity().onBackPressed();
+                FeedbackTools.showLongFeedback(requireView(), getString(R.string.message_view_message_no_longer_available));
+            } else {
+                mMessageView.showMessage(mAccount, messageViewInfo);
+            }
             /*if (mAccount.isOpenPgpProviderConfigured()) {
                 mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
             } else {

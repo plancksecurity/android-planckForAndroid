@@ -221,11 +221,7 @@ class PEpMessageBuilder {
         } catch (ParseException ignore) {
         }
 
-        if (mm.isSet(Flag.X_PEP_DISABLED)) {
-            m.setEncFormat(Message.EncFormat.None);
-        } else {
-            m.setEncFormat(Message.EncFormat.PEP);
-        }
+        m.setEncFormat(Message.EncFormat.None);
     }
 
     private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {
