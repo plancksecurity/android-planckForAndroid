@@ -15,10 +15,19 @@ import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 
 
-public class SqlQueryBuilder {
-    public static void buildWhereClause(Account account, ConditionsTreeNode node,
+class SqlQueryBuilder {
+    protected static void buildWhereClause(Account account, ConditionsTreeNode node,
             StringBuilder query, List<String> selectionArgs) {
         buildWhereClauseInternal(account, node, query, selectionArgs);
+    }
+
+    protected static String addPrefixToSelection(String[] columnNames, String prefix, String selection) {
+        String result = selection;
+        for (String columnName : columnNames) {
+            result = result.replaceAll("(?<=^|[^\\.])\\b" + columnName + "\\b", prefix + columnName);
+        }
+
+        return result;
     }
 
     private static void buildWhereClauseInternal(Account account, ConditionsTreeNode node,
@@ -284,12 +293,4 @@ public class SqlQueryBuilder {
         }
     }
 
-    public static String addPrefixToSelection(String[] columnNames, String prefix, String selection) {
-        String result = selection;
-        for (String columnName : columnNames) {
-            result = result.replaceAll("(?<=^|[^\\.])\\b" + columnName + "\\b", prefix + columnName);
-        }
-
-        return result;
-    }
 }

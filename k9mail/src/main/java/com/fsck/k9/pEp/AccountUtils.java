@@ -14,7 +14,7 @@ import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.search.ConditionsTreeNode;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,11 +74,11 @@ public class AccountUtils {
                     EmailProvider.StatsColumns.FLAGGED_COUNT
             };
 
-            for (Account account : accounts) {
-                StringBuilder query = new StringBuilder();
-                List<String> queryArgs = new ArrayList<>();
-                ConditionsTreeNode conditions = search.getConditions();
-                SqlQueryBuilder.buildWhereClause(account, conditions, query, queryArgs);
+        for (Account account : accounts) {
+            StringBuilder query = new StringBuilder();
+            List<String> queryArgs = new ArrayList<>();
+            ConditionsTreeNode conditions = search.getConditions();
+            SqlQueryBuilderInvoker.buildWhereClause(account, conditions, query, queryArgs);
 
                 String selection = query.toString();
                 String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);

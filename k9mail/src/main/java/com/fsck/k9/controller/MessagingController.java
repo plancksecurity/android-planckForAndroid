@@ -109,7 +109,7 @@ import com.fsck.k9.search.ConditionsTreeNode;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
@@ -3250,7 +3250,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             StringBuilder query = new StringBuilder();
             List<String> queryArgs = new ArrayList<>();
             ConditionsTreeNode conditions = search.getConditions();
-            SqlQueryBuilder.buildWhereClause(account, conditions, query, queryArgs);
+            SqlQueryBuilderInvoker.buildWhereClause(account, conditions, query, queryArgs);
 
             String selection = query.toString();
             String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);

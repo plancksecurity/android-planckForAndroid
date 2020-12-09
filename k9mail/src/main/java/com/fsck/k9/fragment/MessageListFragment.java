@@ -13,6 +13,7 @@ import android.os.Parcelable;
 
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.AttrRes;
@@ -92,7 +93,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.search.SqlQueryBuilder;
+
 import com.google.android.material.textview.MaterialTextView;
 
 import foundation.pEp.jniadapter.Rating;
@@ -620,7 +621,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void goToMessageCompose() {
-        MessageActions.actionCompose(getActivity(), account);
+        MessageList activity = (MessageList) getActivity();
+        if (!activity.isMessageViewVisible()) {
+            MessageActions.actionCompose(getActivity(), account);
+        }
     }
 
     /**
@@ -2601,6 +2605,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setSelectionState(true);
     }
 
+    public void deselectAll() {
+        setSelectionState(false);
+    }
+
     public void onMoveUp() {
         int currentPosition = listView.getSelectedItemPosition();
         if (currentPosition == AdapterView.INVALID_POSITION || listView.isInTouchMode()) {
@@ -2920,7 +2928,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 queryArgs.add(activeMessage.getFolderName());
             }
 
-            SqlQueryBuilder.buildWhereClause(account, search.getConditions(), query, queryArgs);
+            SqlQueryBuilderInvoker.buildWhereClause(account, search.getConditions(), query, queryArgs);
 
             if (selectActive) {
                 query.append(')');

@@ -889,7 +889,7 @@ public class RecipientPresenter {
         bccAdresses = initializeAdresses(bccAdresses);
         if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
             showDefaultStatus();
-            recipientMvpView.unlockSendButton();
+            recipientMvpView.messageRatingLoaded();
             return;
         }
         if (fromAddress != null
@@ -901,7 +901,7 @@ public class RecipientPresenter {
             toAdresses = newToAdresses;
             ccAdresses = newCcAdresses;
             bccAdresses = newBccAdresses;
-            recipientMvpView.lockSendButton();
+            recipientMvpView.messageRatingIsBeingLoaded();
             pEp = ((K9) context.getApplicationContext()).getpEpProvider();
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
@@ -912,17 +912,17 @@ public class RecipientPresenter {
                         privacyState = rating;
                         showRatingFeedback(rating);
                     }
-                    recipientMvpView.unlockSendButton();
+                    recipientMvpView.messageRatingLoaded();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
                     showDefaultStatus();
-                    recipientMvpView.unlockSendButton();
+                    recipientMvpView.messageRatingLoaded();
                 }
             });
         }
-        recipientMvpView.unlockSendButton();
+        recipientMvpView.messageRatingLoaded();
     }
 
     private void showDefaultStatus() {
