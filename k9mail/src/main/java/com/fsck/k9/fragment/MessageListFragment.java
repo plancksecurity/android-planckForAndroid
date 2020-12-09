@@ -621,7 +621,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void goToMessageCompose() {
-        MessageActions.actionCompose(getActivity(), account);
+        MessageList activity = (MessageList) getActivity();
+        if (!activity.isMessageViewVisible()) {
+            MessageActions.actionCompose(getActivity(), account);
+        }
     }
 
     /**
