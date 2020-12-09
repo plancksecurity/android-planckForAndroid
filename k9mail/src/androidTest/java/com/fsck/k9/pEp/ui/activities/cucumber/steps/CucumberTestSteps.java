@@ -1590,13 +1590,20 @@ public class CucumberTestSteps {
     public void I_enable_passive_mode(){
         timeRequiredForThisMethod(25);
         testUtils.waitForIdle();
-        testUtils.selectFromMenu(R.string.action_settings);
-        testUtils.waitForIdle();
-        testUtils.selectFromScreen(R.string.settings_import_global_settings);
-        testUtils.waitForIdle();
-        testUtils.selectFromScreen(R.string.app_name);
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
         testUtils.waitForIdle();
         testUtils.checkBoxOnScreenChecked(testUtils.stringToID("pep_passive_mode"), true);
+        testUtils.waitForIdle();
+        testUtils.pressBack();
+        testUtils.waitForIdle();
+    }
+
+    @And("^I go back to accounts list$")
+    public void I_go_back_to_accounts_list() {
+        timeRequiredForThisMethod(25);
+        testUtils.waitForIdle();
+        testUtils.selectFromMenu(R.string.action_settings);
+        testUtils.waitForIdle();
     }
 
     @And("^I go to the drafts folder$")
