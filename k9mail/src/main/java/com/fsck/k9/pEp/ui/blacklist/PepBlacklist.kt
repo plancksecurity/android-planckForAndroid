@@ -26,8 +26,11 @@ import com.fsck.k9.pEp.ui.keys.OnKeyClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils
 import kotlinx.coroutines.*
+import security.pEp.ui.resources.ResourcesProvider
+import security.pEp.ui.toolbar.ToolBarCustomizer
 import java.util.*
 import java.util.regex.Pattern
+import javax.inject.Inject
 
 class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
 
@@ -43,6 +46,11 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
     private lateinit var pEp: PEpProvider
     private var keys: List<KeyListItem>? = null
 
+    @Inject
+    lateinit var toolbarCustomizer: ToolBarCustomizer
+    @Inject
+    lateinit var resourcesProvider: ResourcesProvider
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +58,7 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
         ButterKnife.bind(this@PepBlacklist)
         initializeViews()
         initializeToolbar(true, R.string.pep)
+        toolbarCustomizer.setStatusBarPepColor(resourcesProvider.getColorFromAttributeResource(R.attr.colorPrimary))
         initializeSearchBar()
 
         pEp = (application as K9).getpEpProvider()
