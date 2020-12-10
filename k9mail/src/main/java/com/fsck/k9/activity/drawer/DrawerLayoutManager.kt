@@ -66,7 +66,7 @@ class DrawerLayoutManager @Inject constructor(
             drawerView.setNavigationItemSelectedListener(this)
 
             setupNavigationHeader()
-            setupNavigationFoldersList()
+            setFoldersAdapter()
             createFoldersMenu()
             drawerView.setNavigationViewInsets()
         }
@@ -154,7 +154,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerView.closeDrawers()
     }
 
-    private fun setupNavigationFoldersList() {
+    private fun setFoldersAdapter() {
         val folderRenderer = FolderRenderer()
         rendererFolderBuilder = RendererBuilder(folderRenderer)
         folderRenderer.setFolderClickListener(object : OnFolderClickListener {

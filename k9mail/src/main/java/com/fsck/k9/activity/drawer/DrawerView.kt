@@ -266,7 +266,7 @@ class DrawerView @Inject constructor(
             unreadMessagesView.visibility = View.VISIBLE
             unreadMessagesView.text = stats.unreadMessageCount.toString()
         } else {
-            unreadMessagesView.visibility = View.VISIBLE
+            unreadMessagesView.visibility = View.GONE
         }
     }
 
