@@ -57,6 +57,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.account_setup_options, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_settings_title_fmt);

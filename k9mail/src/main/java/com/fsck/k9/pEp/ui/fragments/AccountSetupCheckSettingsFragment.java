@@ -37,7 +37,8 @@ import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.TransportProvider;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.store.webdav.WebDavStore;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -48,9 +49,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
-import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
@@ -86,8 +84,6 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     private boolean mMakeDefault;
     private String mProcedence;
 
-    @Inject
-    ToolBarCustomizer toolBarCustomizer;
 
     public static AccountSetupCheckSettingsFragment actionCheckSettings(Account account,
                                                                         AccountSetupCheckSettings.CheckDirection direction, Boolean makeDefault, String procedence) {
@@ -105,10 +101,9 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_check_settings, container, false);
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_check_settings_title);
-        toolBarCustomizer.setStatusBarPepColor(
-                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
         mMessageView = (TextView)rootView.findViewById(R.id.message);
         mProgressBar = (ProgressBar)rootView.findViewById(R.id.progress);
         rootView.findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {

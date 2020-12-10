@@ -17,15 +17,11 @@ import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.inject.Inject;
-
-import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 import static com.fsck.k9.mail.ServerSettings.Type.POP3;
@@ -43,8 +39,6 @@ public class ChooseAccountTypeFragment extends PEpFragment {
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
 
-    @Inject
-    ToolBarCustomizer toolBarCustomizer;
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Account account, boolean makeDefault) {
         ChooseAccountTypeFragment fragment = new ChooseAccountTypeFragment();
@@ -58,6 +52,7 @@ public class ChooseAccountTypeFragment extends PEpFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_choose_account_type, container, false);
         rootView.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +77,6 @@ public class ChooseAccountTypeFragment extends PEpFragment {
         mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
         ((AccountSetupBasics) getActivity()).initializeToolbar(true, R.string.account_setup_account_type_title);
-        toolBarCustomizer.setStatusBarPepColor(
-                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
         return rootView;
     }
 

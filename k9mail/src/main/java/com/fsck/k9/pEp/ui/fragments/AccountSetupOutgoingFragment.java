@@ -46,7 +46,6 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
@@ -61,7 +60,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -98,8 +96,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private boolean mEdit;
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
-    @Inject
-    ToolBarCustomizer toolBarCustomizer;
     @Inject Preferences preferences;
     
     private ContentLoadingProgressBar nextProgressBar;
@@ -145,10 +141,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_outgoing, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
