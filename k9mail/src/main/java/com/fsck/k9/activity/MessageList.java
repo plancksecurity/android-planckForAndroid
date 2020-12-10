@@ -417,6 +417,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         getpEpComponent().inject(this);
     }
 
+    @Override
+    public void changeAccountsOrder() {
+        List<Account> accounts = preferences.getAccounts();
+        List<Account> clonedAccounts = new ArrayList<>(accounts.size());
+        clonedAccounts.addAll(accounts);
+        clonedAccounts.remove(mAccount);
+        ArrayList<Account> reorderedAccounts = new ArrayList<>(accounts.size());
+        reorderedAccounts.add(mAccount);
+        reorderedAccounts.addAll(clonedAccounts);
+        preferences.setAccounts(reorderedAccounts);
+    }
+
     private void onOpenFolder(String folder) {
         LocalSearch search = new LocalSearch(folder);
         search.addAccountUuid(mAccount.getUuid());
@@ -1933,17 +1945,5 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     public MessageViewFragment getMessageViewFragment() {
         return mMessageViewFragment;
-    }
-
-    @Override
-    public void changeAccountsOrder() {
-        List<Account> accounts = preferences.getAccounts();
-        List<Account> clonedAccounts = new ArrayList<>(accounts.size());
-        clonedAccounts.addAll(accounts);
-        clonedAccounts.remove(mAccount);
-        ArrayList<Account> reorderedAccounts = new ArrayList<>(accounts.size());
-        reorderedAccounts.add(mAccount);
-        reorderedAccounts.addAll(clonedAccounts);
-        preferences.setAccounts(reorderedAccounts);
     }
 }
