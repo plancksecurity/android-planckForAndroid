@@ -15,7 +15,6 @@ import android.view.KeyEvent;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
@@ -25,14 +24,15 @@ import androidx.test.uiautomator.Direction;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageList;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
-
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,6 +62,7 @@ import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static androidx.test.InstrumentationRegistry.getTargetContext;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -89,10 +90,12 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
-@RunWith(AndroidJUnit4.class)
+
 public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
+
+    private boolean syncThirdDevice = false;
 
     private String[] bot;
     private int accounts = 3;
@@ -107,6 +110,7 @@ public class CucumberTestSteps {
     private EspressoTestingIdlingResource espressoTestingIdlingResource;
     private Resources resources;
     private String trustWords;
+    String fingerprint = "empty";
     private final Timer timer = new Timer();
     private final int[] time = {0};
     @Rule
@@ -114,6 +118,11 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
+        try {
+            Thread.sleep(25000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -122,15 +131,15 @@ public class CucumberTestSteps {
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[9];
-            resources = getTargetContext().getResources();
+            resources = getApplicationContext().getResources();
             //startTimer(2000);
-            device.waitForIdle();
+            testUtils.waitForIdle();
             if (testUtils.getCurrentActivity() == null) {
                 //startTimer(350);
                 testUtils.testReset = true;
                 try {
                     activityTestRule.launchActivity(new Intent());
-                    device.waitForIdle();
+                    testUtils.waitForIdle();
                 } catch (Exception ex) {
                     Timber.i("Cannot launch activity");
                 }
@@ -145,26 +154,30 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
+        if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
+            testUtils.selectFromMenu(R.string.action_settings);
+            testUtils.waitForIdle();
+            Espresso.onIdle();
+        }
         while (!exists(onView(withId(R.id.available_accounts_title)))) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             if (exists(onView(withText(R.string.discard_action)))) {
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 onView(withText(R.string.discard_action)).perform(click());
             }
             testUtils.pressBack();
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
-        device.waitForIdle();
+        testUtils.waitForIdle();
         Espresso.onIdle();
         onView(withId(R.id.available_accounts_title)).check(matches(isDisplayed()));
         activityTestRule.finishActivity();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        boolean isKeySync = false;
-        device.waitForIdle();
+        testUtils.waitForIdle();
         if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))){
@@ -176,7 +189,7 @@ public class CucumberTestSteps {
                     Timber.i("Cannot get accounts list size: " + ex.getMessage());
                 }
                 if (accounts[0] == 0) {
-                    testUtils.createNAccounts(testUtils.getTotalAccounts(), isKeySync);
+                    testUtils.createNAccounts(testUtils.getTotalAccounts(), false, false);
                 }
             }
         }
@@ -186,7 +199,7 @@ public class CucumberTestSteps {
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
         timeRequiredForThisMethod(15);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
             TestUtils.swipeUpScreen();
         }
@@ -245,10 +258,10 @@ public class CucumberTestSteps {
             boolean filled = false;
             while (!filled) {
                 try {
-                    device.waitForIdle();
+                    testUtils.waitForIdle();
                     onView(withId(R.id.to)).check(matches(isDisplayed()));
                     onView(withId(R.id.to)).perform(closeSoftKeyboard());
-                    device.waitForIdle();
+                    testUtils.waitForIdle();
                     fillMessage(cucumberMessageTo);
                     onView(withId(R.id.to)).perform(closeSoftKeyboard());
                     filled = true;
@@ -281,9 +294,9 @@ public class CucumberTestSteps {
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
         while (!exists(onView(withId(viewId)))) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             TestUtils.swipeDownScreen();
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
         switch (text) {
             case "empty":
@@ -292,7 +305,7 @@ public class CucumberTestSteps {
                 break;
             case "longText":
                 timeRequiredForThisMethod(3000);
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 BySelector selector = By.clazz("android.widget.EditText");
                 UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
                 UiObject2 scroll;
@@ -301,7 +314,7 @@ public class CucumberTestSteps {
                         while (!object.getText().contains(testUtils.longText())) {
                             try {
                                 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                                device.waitForIdle();
+                                testUtils.waitForIdle();
                                 object.click();
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
@@ -310,10 +323,10 @@ public class CucumberTestSteps {
                                     }
                                 });
                                 for (int i = 0; i < 80; i++) {
-                                    device.waitForIdle();
+                                    testUtils.waitForIdle();
                                     scroll.swipe(Direction.UP, 1.0f);
                                     testUtils.pasteClipboard();
-                                    device.waitForIdle();
+                                    testUtils.waitForIdle();
                                 }
                                 object.click();
                             } catch (Exception ex) {
@@ -369,19 +382,7 @@ public class CucumberTestSteps {
     @When("^I compare messageBody with (\\S+)")
     public void I_compare_body(String cucumberBody) {
         timeRequiredForThisMethod(10);
-        switch (cucumberBody) {
-            case "empty":
-                testUtils.compareMessageBody("");
-                break;
-            case "longText":
-                device.waitForIdle();
-                cucumberBody = testUtils.longText();
-                testUtils.compareMessageBodyLongText(cucumberBody);
-                break;
-            default:
-                testUtils.compareMessageBody(cucumberBody);
-                break;
-        }
+        testUtils.compareMessageBodyWithText(cucumberBody);
     }
 
 
@@ -416,7 +417,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(30);
         testUtils.goToHandshakeDialog();
         onView(withId(R.id.rejectHandshake)).perform(click());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
     }
 
@@ -425,7 +426,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.selectFromMenu(R.string.pep_title_activity_privacy_status);
         onView(withId(R.id.button_identity_key_reset)).perform(click());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
     }
 
@@ -433,9 +434,9 @@ public class CucumberTestSteps {
     public void I_check_there_is_an_extra_key() {
         timeRequiredForThisMethod(80);
         TestUtils.getJSONObject("keys");
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
             TestUtils.assertFailWithMessage("Wrong extra key");
@@ -445,16 +446,16 @@ public class CucumberTestSteps {
     @Then("^I check there is an extra key on Key Management$")
     public void I_check_there_is_an_extra_key_management() {
         timeRequiredForThisMethod(80);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.doWaitForResource(R.id.toolbar);
         testUtils.assertsTextExistsOnScreen("4722 0F54 8739 1A9A DA81\n99FD 8F8E B771 6FA5 9050");
     }
 
     private void confirmAllTrustWords (JSONArray array) {
         checkTrustWords(array, "short");
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.trustwords)).perform(click());
         checkTrustWords(array, "long");
     }
@@ -463,13 +464,13 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.widget.ListView");
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             Espresso.onIdle();
             onView(withId(R.id.change_language)).perform(click());
             if (size == 1) {
                 size = calculateNewSize(size, selector);
             }
-            device.waitForIdle();
+            testUtils.waitForIdle();
             Espresso.onIdle();
             selectLanguage(positionToClick, size, selector);
             if (words.equals("short")) {
@@ -507,7 +508,7 @@ public class CucumberTestSteps {
     }
 
     private void assertTextInJSON(JSONObject json, String textToCompare) {
-        device.waitForIdle();
+        testUtils.waitForIdle();
         if (json.toString().contains(textToCompare)) {
             return;
         }
@@ -525,10 +526,10 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.widget.CheckedTextView");
         int size = 1;
         for (int positionToClick = 0; positionToClick < size; positionToClick++) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             testUtils.selectFromMenu(R.string.settings_language_label);
             size = calculateNewSize(size, selector);
-            device.waitForIdle();
+            testUtils.waitForIdle();
             selectLanguage(positionToClick, size, selector);
             //getTrustWords();
             String []trustWordsSplited = trustWords.split("\\s+");
@@ -538,30 +539,30 @@ public class CucumberTestSteps {
 
     private  int calculateNewSize(int size, BySelector selector) {
         while (size <= 1) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             size = device.findObjects(selector).get(0).getChildren().size();
         }
         return size;
     }
 
     private void selectLanguage(int positionToClick, int size, BySelector selector) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             for (int position = 0; position < size; position++) {
                 if (position == positionToClick) {
                     while (device.findObjects(selector).get(0).getChildren().size() <= 1){
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                     }
                         try {
-                            device.waitForIdle();
+                            testUtils.waitForIdle();
                             device.findObjects(selector).get(0).getChildren().get(position).longClick();
-                            device.waitForIdle();
+                            testUtils.waitForIdle();
                         } catch (Exception ex) {
                             Timber.i("Cannot click language selected");
                         }
                     try {
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                         onView(withId(android.R.id.button1)).perform(click());
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                     } catch (Exception ex) {
                         Timber.i("Cannot find button1");
                     }
@@ -572,7 +573,7 @@ public class CucumberTestSteps {
     private void getTrustWords(int trustWordsId) {
         do {
             try {
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 trustWords = getTextFromView(onView(withId(trustWordsId)));
             } catch (Exception ex) {
                 Timber.i("Cannot find trustWords: " + ex.getMessage());
@@ -594,7 +595,7 @@ public class CucumberTestSteps {
         boolean webViewLoaded = false;
         while (!webViewLoaded) {
             try {
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
@@ -605,7 +606,7 @@ public class CucumberTestSteps {
                     if (webViewTemporal.getText().contains("long")) {
                         webViewText = webViewTemporal.getText();
                         webViewLoaded = true;
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                         break;
                     } else {
                         try {
@@ -618,7 +619,7 @@ public class CucumberTestSteps {
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
         return webViewText;
     }
@@ -627,8 +628,8 @@ public class CucumberTestSteps {
     public void I_click_stop_trusting_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
-        onView(withId(R.id.buttonHandshake)).perform(click());
-        device.waitForIdle();
+        onView(withId(R.id.rejectHandshake)).perform(click());
+        testUtils.waitForIdle();
         testUtils.pressBack();
     }
 
@@ -640,81 +641,263 @@ public class CucumberTestSteps {
             TestUtils.swipeUpScreen();
         }
         while (!exists(onView(withId(R.id.confirmHandshake)))) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             waitUntilIdle();
         }
         onView(withId(R.id.confirmHandshake)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.confirmHandshake)).perform(click());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
     }
 
+    private int getTotalMessagesSize() {
+        LocalStore localStore;
+        int size = -1;
+        while (size == -1) {
+            try {
+                localStore = getLocalStore();
+                size = localStore.getMessageCount();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
+        return size;
+    }
 
-    @When("^I keysync devices A and B$")
-    public void I_keysync_devices_A_B() {
+    private Account getAccount(String email) {
+        email = email.replaceAll("\\s+","");
+        for (Account account : Preferences.getPreferences(K9.app).getAccounts()) {
+            if (account.getEmail().equalsIgnoreCase(email)) {
+                return account;
+            }
+        }
+        return null;
+    }
+    public LocalStore getLocalStore() throws MessagingException {
+        Account ac = null;
+        while (ac == null) {
+            ac = getAccount(testUtils.getKeySyncAccount(0));
+        }
+        return LocalStore.getInstance(ac, K9.app);
+    }
+
+    @When("^I sync devices (\\S+) and (\\S+)$")
+    public void I_sync_devices(String device1, String device2) {
+        int inboxMessages = testUtils.getListSize();
+        int totalMessages = getTotalMessagesSize();
+        boolean ignoreThisTest = true;
         switch (testUtils.keySync_number()) {
             case "1":
+                if (device1.equals("A") || device2.equals("A")) {
+                    ignoreThisTest = false;
+                    testUtils.syncDevices();
+                }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
+                    testUtils.selectAccount(0);
+                }
+                break;
             case "2":
-                testUtils.syncDevices();
+                if (device1.equals("B") || device2.equals("B")) {
+                    ignoreThisTest = false;
+                    testUtils.syncDevices();
+                }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
+                    testUtils.selectAccount(0);
+                }
                 break;
             case "3":
+                if (device1.equals("C") || device2.equals("C")) {
+                    ignoreThisTest = false;
+                    testUtils.syncDevices();
+                }
+                if (exists(onView(withId(R.id.available_accounts_title)))) {
+                    ignoreThisTest = false;
+                    testUtils.selectAccount(1);
+                }
+                break;
             default:
+                Timber.i("Cannot sync this device");
                 break;
         }
         testUtils.getMessageListSize();
+        if (!ignoreThisTest && totalMessages >= getTotalMessagesSize()) {
+            testUtils.assertFailWithMessage("There are more sync messages before sync than after sync");
+        }
+        if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
+            testUtils.assertFailWithMessage("Sync messages went to wrong folder");
+        }
+        testUtils.getMessageListSize();
     }
-
-    @When("^I check devices A and B are sync$")
-    public void I_check_A_B_sync() {
-        Timber.i("Estoy en check: " + testUtils.keySync_number());
+    @When("^I create an account for sync on device C$")
+    public void I_create_an_account_for_C() {
         switch (testUtils.keySync_number()) {
             case "1":
+                testUtils.getMessageListSize();
                 testUtils.composeMessageButton();
                 testUtils.fillMessage(new TestUtils.BasicMessage("",
-                                "SyncDeviceA",
-                        testUtils.trustWords,
-                                testUtils.getKeySyncAccount(0)),
+                                "C creates account",
+                                "ready",
+                                testUtils.getKeySyncAccount(1)),
                         false);
                 while (exists(onView(withId(R.id.send)))) {
                     testUtils.clickView(R.id.send);
                 }
-                testUtils.waitForNewMessage();
-                testUtils.waitForMessageAndClickIt();
-                I_compare_body(testUtils.trustWords);
                 break;
-            case "2":
-                break;
-            default:
-                break;
-        }
-    }
-
-    @When("^I reset sync$")
-    public void I_reset_sync() {
-        switch (testUtils.keySync_number()) {
-            case "1":
             case "2":
 
                 break;
             case "3":
-            default:
+                testUtils.waitForNewMessage();
+                testUtils.createNAccounts(2, true, true);
+                I_select_account("1");
                 break;
+            default:
+                Timber.i("Cannot create");
+                break;
+        }
+        testUtils.getMessageListSize();
+        syncThirdDevice = true;
+    }
+
+    @When("^I check devices (\\S+) and (\\S+) are sync$")
+    public void I_check_1_and_2_sync(String firstDevice, String secondDevice) {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.checkDeviceIsSync("A", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "2":
+                testUtils.checkDeviceIsSync("B", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "3":
+                testUtils.checkDeviceIsSync("C", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            default:
+                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are sync");
+                break;
+        }
+    }
+
+    @When("^I check account devices (\\S+) and (\\S+) are not protected$")
+    public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
+        testUtils.selectAccount(0);
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "2":
+                testUtils.checkAccountIsNotProtected("B", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "3":
+                testUtils.checkAccountIsNotProtected("C", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            default:
+                TestUtils.assertFailWithMessage("Unknown Account to assert is not protected");
+                break;
+        }
+    }
+
+    @When("^I check devices (\\S+) and (\\S+) are not sync$")
+    public void I_check_A_B_are_not_sync(String firstDevice, String secondDevice) {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                testUtils.checkDeviceIsNotSync("A", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "2":
+                testUtils.checkDeviceIsNotSync("B", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            case "3":
+                testUtils.checkDeviceIsNotSync("C", firstDevice, secondDevice, syncThirdDevice);
+                break;
+            default:
+                TestUtils.assertFailWithMessage("Unknown Sync Device to check devices are not sync");
+                break;
+        }
+    }
+
+    @When("^I disable sync on device (\\S+)$")
+    public void I_disable_sync(String device) {
+        if (device.equals("C")) {
+            testUtils.setTrustWords("Disabled sync on device C");
+        }
+        switch (testUtils.keySync_number()) {
+            case "1":
+                if (device.equals("A")) {
+                    testUtils.disableKeySync();
+                }
+                else {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case "2":
+                if (device.equals("B")) {
+                    testUtils.disableKeySync();
+                }
+                else {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case "3":
+                if (device.equals("C")) {
+                    testUtils.disableKeySync();
+                }
+                else {
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            default:
+                Timber.i("Unknown Device to disable sync");
+                break;
+        }
+        while (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.pressBack();
         }
         testUtils.getMessageListSize();
     }
 
-    @When("^I keysync device C$")
-    public void I_keysync_devices_C() {
-
+    @When("^I enable sync on device (\\S+)$")
+    public void I_enable_sync(String device) {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                if (device.equals("A")) {
+                    testUtils.enableKeySync();
+                }
+                break;
+            case "2":
+                if (device.equals("B")) {
+                    testUtils.enableKeySync();
+                }
+                break;
+            case "3":
+                if (device.equals("C")) {
+                    testUtils.enableAccountGlobalKeySync();
+                }
+                break;
+            default:
+                Timber.i("Unknown Device to enable sync");
+                break;
+        }
+        testUtils.waitForIdle();
+        if (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.pressBack();
+        }
     }
 
     @When("^I setup second account for devices A and B$")
     public void I_setup_second_account_for_devices_A_B() {
-
-    }
-
-    @When("^I remove from keysync device C$")
-    public void I_remove_from_keysync_device_C() {
 
     }
 
@@ -723,36 +906,36 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         testUtils.clickStatus();
         while (!exists(onView(withId(R.id.rejectHandshake)))) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             waitUntilIdle();
         }
         onView(withId(R.id.rejectHandshake)).check(matches(isCompletelyDisplayed()));
         Espresso.onIdle();
         TestUtils.swipeUpScreen();
         onView(withId(R.id.rejectHandshake)).perform(click());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         timeRequiredForThisMethod(20);
         checkPrivacyStatus(status);
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     private void checkPrivacyStatus(String status){
-        Rating statusRating = null;
+        Rating [] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             waitUntilIdle();
         }
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        testUtils.waitForIdle();
             try {
                 testUtils.typeTextToForceRatingCaltulation(R.id.subject);
             } catch (Exception ex) {
@@ -773,53 +956,11 @@ public class CucumberTestSteps {
                     Timber.i("Cannot find subject");
                 }
             }
-            device.waitForIdle();
+            testUtils.waitForIdle();
             waitUntilIdle();
-        switch (status){
-            case "pEpRatingUndefined":
-                statusRating = Rating.pEpRatingUndefined;
-                break;
-            case "pEpRatingCannotDecrypt":
-                statusRating = Rating.pEpRatingCannotDecrypt;
-                break;
-            case "pEpRatingHaveNoKey":
-                statusRating = Rating.pEpRatingHaveNoKey;
-                break;
-            case "pEpRatingUnencrypted":
-                statusRating = Rating.pEpRatingUnencrypted;
-                break;
-            case "pEpRatingUnencryptedForSome":
-                statusRating = Rating.pEpRatingUnencryptedForSome;
-                break;
-            case "pEpRatingUnreliable":
-                statusRating = Rating.pEpRatingUnreliable;
-                break;
-            case "pEpRatingReliable":
-                statusRating = Rating.pEpRatingReliable;
-                break;
-            case "pEpRatingTrusted":
-                statusRating = null;
-                status = "pep_green";
-                break;
-            case "pEpRatingTrustedAndAnonymized":
-                statusRating = Rating.pEpRatingTrustedAndAnonymized;
-                break;
-            case "pEpRatingFullyAnonymous":
-                statusRating = Rating.pEpRatingFullyAnonymous;
-                break;
-            case "pEpRatingMistrust":
-                statusRating = null;
-                status = "pep_red";
-                break;
-            case "pEpRatingB0rken":
-                statusRating = Rating.pEpRatingB0rken;
-                break;
-            case "pEpRatingUnderAttack":
-                statusRating = Rating.pEpRatingUnderAttack;
-                break;
-        }
-        if (statusRating != null) {
-            testUtils.assertMessageStatus(statusRating);
+            status = testUtils.getStatusRating(statusRating, status);
+        if (statusRating[0] != null) {
+            testUtils.assertMessageStatus(statusRating[0]);
         } else {
             testUtils.checkToolbarColor(testUtils.colorToID(status));
         }
@@ -829,7 +970,7 @@ public class CucumberTestSteps {
     public void I_select_from_message_menu(String textToSelect){
         timeRequiredForThisMethod(15);
         testUtils.selectFromMenu(testUtils.stringToID(textToSelect));
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @And("^I disable protection from privacy status menu$")
@@ -838,22 +979,22 @@ public class CucumberTestSteps {
         testUtils.selectFromMenu(testUtils.stringToID("pep_title_activity_privacy_status"));
         testUtils.selectFromMenu(testUtils.stringToID("pep_force_unprotected"));
         testUtils.pressBack();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @Then("^I open menu$")
     public void I_select_from_menu(){
         timeRequiredForThisMethod(10);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.openOptionsMenu();
     }
 
     @Then("^I select from screen (\\S+)$")
     public void I_select_from_screen(String textToSelect){
         timeRequiredForThisMethod(15);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.selectFromScreen(testUtils.stringToID(textToSelect));
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @Then("^I walk through app$")
@@ -861,11 +1002,29 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(15);
         testUtils.openOptionsMenu();
         testUtils.selectFromScreen(testUtils.stringToID("action_settings"));
+        aboutMenu();
         walkThroughDisplay();
         walkThroughInteraction();
         walkThroughNotifications();
         walkThroughPrivacy();
         walkThroughAdvanced();
+    }
+
+    private void aboutMenu () {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromScreen(testUtils.stringToID("about_action"));
+        String aboutText = getTextFromView(onView(withId(R.id.aboutText)));
+        String librariesText = getTextFromView(onView(withId(R.id.librariesText)));
+        String[][] shortTextInAbout = new String[3][2];
+        shortTextInAbout[0] = resources.getString(testUtils.stringToID("app_authors_fmt")).split("%");
+        shortTextInAbout[1] = resources.getString(testUtils.stringToID("app_libraries")).split("%");
+        shortTextInAbout[2] = resources.getString(testUtils.stringToID("app_copyright_fmt")).split("%");
+        if (!aboutText.contains(shortTextInAbout[0][0])
+                || !librariesText.contains(shortTextInAbout[1][0])
+                || !aboutText.contains(shortTextInAbout[2][0])) {
+            TestUtils.assertFailWithMessage("Wrong text in About");
+        }
+        testUtils.pressBack();
     }
 
     private void walkThroughDisplay () {
@@ -973,10 +1132,12 @@ public class CucumberTestSteps {
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_passive_mode"));
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("pep_forward_warning"));
         testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
-        testUtils.pressBack();
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
-        testUtils.pressBack();
+        //testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
+        //testUtils.pressBack();
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync")));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_sync_folder")));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("pep_subject_protection")));
+        testUtils.scrollToView(resources.getString(testUtils.stringToID("blacklist_title")));
         testUtils.scrollToCehckBoxAndCheckIt(false, testUtils.stringToID("global_settings_privacy_hide_timezone"));
         testUtils.pressBack();
     }
@@ -998,9 +1159,9 @@ public class CucumberTestSteps {
     @Then("^I remove email address$")
     public void I_remove_email_address(){
         timeRequiredForThisMethod(20);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @Then("^I attach files to message$")
@@ -1014,10 +1175,10 @@ public class CucumberTestSteps {
     @Then("^I attach (\\S+)$")
     public void I_attach_file_to_message(String file) {
         timeRequiredForThisMethod(15);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         Set_external_mock(file);
         testUtils.attachFile(fileName);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.testReset = true;
     }
 
@@ -1028,32 +1189,53 @@ public class CucumberTestSteps {
         switch (mock){
             case "settings":
                 raw = R.raw.settingsthemedark;
+                testUtils.waitForIdle();
                 fileName = "settings.k9s";
                 break;
             case "settingsthemedark":
                 raw = R.raw.settingsthemedark;
+                testUtils.waitForIdle();
                 fileName = "settingsthemedark.k9s";
                 break;
             case "MSoffice":
                 raw = R.raw.testmsoffice;
+                testUtils.waitForIdle();
                 fileName = "testmsoffice.docx";
                 break;
             case "PDF":
                 raw = R.raw.testpdf;
+                testUtils.waitForIdle();
                 fileName = "testpdf.pdf";
                 break;
             case "masterKey":
                 raw = R.raw.masterkeypro;
+                testUtils.waitForIdle();
                 fileName = "masterkey.asc";
                 break;
             case "picture":
                 raw = R.raw.testpicture;
+                testUtils.waitForIdle();
                 fileName = "testpicture.png";
+            case "passphrase":
+                switch (testUtils.keySync_number()) {
+                    case "4":
+                        raw = R.raw.passphrase_test003;
+                        break;
+                    case "5":
+                        raw = R.raw.passphrase_test004;
+                        break;
+                    case "6":
+                        raw = R.raw.passphrase_test005;
+                        break;
+                }
+                testUtils.waitForIdle();
+                fileName = "passphrase.asc";
         }
         while (true) {
             try {
+                testUtils.waitForIdle();
                 TestUtils.createFile(fileName, raw);
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1065,7 +1247,7 @@ public class CucumberTestSteps {
     public void I_click_message_status() {
         timeRequiredForThisMethod(10);
         testUtils.clickMessageStatus();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @Then("^I click the send message button$")
@@ -1087,48 +1269,151 @@ public class CucumberTestSteps {
         startTest(0);
     }
 
+    @When("^I test Unified Inbox (\\d+) times")
+    public void I_test_unified_inbox(int times) {
+        for (int i = 0; i < times; i++) {
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            testUtils.clickMessageAtPosition(1);
+            testUtils.waitForIdle();
+            testUtils.goBackToMessageList();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
+            testUtils.clickMessageAtPosition(2);
+            testUtils.waitForIdle();
+            testUtils.goBackToMessageList();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_outbox);
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.integrated_inbox_title);
+            testUtils.clickMessageAtPosition(3);
+            testUtils.waitForIdle();
+            testUtils.goBackToMessageList();
+            testUtils.openHamburgerMenu();
+            testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+            testUtils.clickMessageAtPosition(4);
+            testUtils.waitForIdle();
+            testUtils.goBackToMessageList();
+            //testUtils.composeMessageButton();
+            //testUtils.pressBack();
+        }
+
+    }
+
 
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
         accountSelected = Integer.parseInt(account);
+        while (testUtils.getTotalAccounts() == -1) {
+            testUtils.readConfigFile();
+        }
         if (!(accountSelected < testUtils.getTotalAccounts())) {
             skipTest("No more accounts");
         }
         startTest(accountSelected);
     }
 
+    @When("^I disable protection on device (\\S+)$")
+    public void I_disable_protection (String device) {
+        switch (testUtils.keySync_number()) {
+            case "1":
+                if (device.equals("A")) {
+                    testUtils.disableProtection(0);
+                }
+                break;
+            case "2":
+                if (device.equals("B")) {
+                    testUtils.disableProtection(0);
+                }
+                break;
+            case "3":
+                if (device.equals("C")) {
+                    testUtils.disableProtection(0);
+                }
+                break;
+            default:
+                Timber.i("Cannot disable protection on: " + device);
+                break;
+        }
+    }
+
+    @When("^I import key with passphrase for account (\\d+)$")
+    public void I_import_passphrase (int account) {
+        if (!exists(onView(withId(R.id.available_accounts_title)))) {
+            testUtils.selectFromMenu(R.string.action_settings);
+        }
+        testUtils.selectAccountSettingsFromList(account);
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        timeRequiredForThisMethod(15);
+        testUtils.waitForIdle();
+        Set_external_mock("passphrase");
+        testUtils.waitForIdle();
+        testUtils.testReset = true;
+        testUtils.selectFromScreen(testUtils.stringToID("pgp_key_import_title"));
+        fingerprint = testUtils.getFingerprint();
+        testUtils.selectButtonFromScreen(testUtils.stringToID("pgp_key_import_confirmation_confirm"));
+        while (!exists(onView(withId(R.id.passphrase))) && !exists(onView(withId(android.R.id.button1)))) {
+            testUtils.waitForIdle();
+        }
+        testUtils.waitForIdle();
+        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(testUtils.passphrasePassword)){
+            testUtils.waitForIdle();
+            onView(withId(R.id.passphrase)).perform(typeText(testUtils.passphrasePassword));
+        }
+        testUtils.waitForIdle();
+        testUtils.clickView(R.id.afirmativeActionButton);
+        testUtils.waitForKeyImport();
+        testUtils.clickView(android.R.id.button1);
+        testUtils.pressBack();
+        testUtils.pressBack();
+    }
+
+    @When("^I compare fingerprint$")
+    public void I_compare_fingerprint () {
+        testUtils.openOptionsMenu();
+        testUtils.selectFromMenu(R.string.show_headers_action);
+        testUtils.assertsTextExistsOnScreen(fingerprint);
+
+    }
+
     @When("^I remove account (\\S+)$")
-        public void I_remove_account (String account) {
+    public void I_remove_account (String account) {
         int accountToRemove = Integer.parseInt(account);
         while (true) {
             try {
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-                device.waitForIdle();
+                testUtils.waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
                 break;
             }
         }
         testUtils.selectFromMenu(R.string.action_settings);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         while (true) {
             try {
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 if (exists(onView(withId(R.id.accounts_list)))) {
                     while (!viewIsDisplayed(R.id.accounts_list)) {
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                     }
                     onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
                     while (exists(onView(withId(R.id.accounts_list)))) {
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.accounts_list)).atPosition(accountToRemove).perform(longClick());
-                        device.waitForIdle();
+                        testUtils.waitForIdle();
                         BySelector selector = By.clazz("android.widget.TextView");
                         for (UiObject2 object : device.findObjects(selector)) {
                             if (object.getText().equals(resources.getString(R.string.remove_account_action))) {
                                 object.click();
-                                device.waitForIdle();
+                                testUtils.waitForIdle();
                                 testUtils.clickAcceptButton();
                                 return;
                             }
@@ -1164,9 +1449,9 @@ public class CucumberTestSteps {
     @And("^I click view (\\S+)$")
     public void I_click_view(String viewClicked){
         timeRequiredForThisMethod(10);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.clickView(testUtils.intToID(viewClicked));
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @And("^I search for (\\d+) (?:message|messages) with text (\\S+)$")
@@ -1174,27 +1459,27 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(25);
         testUtils.goBackToMessageList();
         int[] messageListSize = new int[1];
-        device.waitForIdle();
+        testUtils.waitForIdle();
         while (!exists(onView(withId(R.id.search)))) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             testUtils.pressBack();
         }
         testUtils.clickSearch();
         if (exists(onView(withId(R.id.search_clear)))) {
             try {
                 onView(withId(R.id.search_clear)).perform(click());
-                device.waitForIdle();
+                testUtils.waitForIdle();
                 onView(withId(R.id.search)).perform(click());
-                device.waitForIdle();
+                testUtils.waitForIdle();
             } catch (Exception e) {
                 Timber.i("Cannot clear text in search box");
             }
         }
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.search_input)).perform(typeText(text));
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.search_input)).perform(pressImeActionButton(), closeSoftKeyboard());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
         if (messageListSize[0] - 1 != messages) {
             TestUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
@@ -1209,22 +1494,22 @@ public class CucumberTestSteps {
     @And("^I click reply message$")
     public void I_click_reply_message(){
         timeRequiredForThisMethod(10);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         while (!viewIsDisplayed(R.id.openCloseButton)) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
         onView(withId(R.id.openCloseButton)).check(matches(isDisplayed()));
         testUtils.clickView(testUtils.intToID("openCloseButton"));
-        device.waitForIdle();
-        device.waitForIdle();
+        testUtils.waitForIdle();
+        testUtils.waitForIdle();
         while (!viewIsDisplayed(R.id.message_content)) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
         testUtils.typeTextToForceRatingCaltulation(R.id.message_content);
     }
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
-    public void I_send_messages_to_bot(int totalMessages,String botName, String subject, String body) {
+    public void I_send_message_to_address(int totalMessages,String botName, String subject, String body) {
         String messageTo = "nothing";
         switch (botName){
             case "bot1":
@@ -1256,18 +1541,18 @@ public class CucumberTestSteps {
                 break;
         }
         for (int message = 0; message < totalMessages; message++) {
-            device.waitForIdle();
+            testUtils.waitForIdle();
             if (exists(onView(withId(R.id.fab_button_compose_message)))) {
                 testUtils.composeMessageButton();
             }
-            device.waitForIdle();
+            testUtils.waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageTo), false);
-            device.waitForIdle();
+            testUtils.waitForIdle();
             testUtils.sendMessage();
-            device.waitForIdle();
+            testUtils.waitForIdle();
             testUtils.waitForNewMessage();
         }
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     private void fillMessage(String to){
@@ -1281,10 +1566,22 @@ public class CucumberTestSteps {
         testUtils.waitForNewMessage();
     }
 
+    @Then("^I check the badge color of the first message is (\\S+)$")
+    public void I_check_badge_color(String status){
+        timeRequiredForThisMethod(40);
+        testUtils.checkBadgeStatus(status, 1);
+    }
+
+    @Then("^I check the badge color of the message (\\d+) is (\\S+)$")
+    public void I_check_badge_color_of_message_x(int message, String status){
+        timeRequiredForThisMethod(40);
+        testUtils.checkBadgeStatus(status, message);
+    }
+
     @And("^I go to the sent folder$")
     public void I_go_to_the_sent_folder(){
         timeRequiredForThisMethod(25);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.goBackToMessageList();
         testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
     }
@@ -1292,20 +1589,27 @@ public class CucumberTestSteps {
     @And("^I enable passive mode$")
     public void I_enable_passive_mode(){
         timeRequiredForThisMethod(25);
-        device.waitForIdle();
-        testUtils.selectFromMenu(R.string.action_settings);
-        device.waitForIdle();
-        testUtils.selectFromScreen(R.string.settings_import_global_settings);
-        device.waitForIdle();
-        testUtils.selectFromScreen(R.string.app_name);
-        device.waitForIdle();
+        testUtils.waitForIdle();
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        testUtils.waitForIdle();
         testUtils.checkBoxOnScreenChecked(testUtils.stringToID("pep_passive_mode"), true);
+        testUtils.waitForIdle();
+        testUtils.pressBack();
+        testUtils.waitForIdle();
+    }
+
+    @And("^I go back to accounts list$")
+    public void I_go_back_to_accounts_list() {
+        timeRequiredForThisMethod(25);
+        testUtils.waitForIdle();
+        testUtils.selectFromMenu(R.string.action_settings);
+        testUtils.waitForIdle();
     }
 
     @And("^I go to the drafts folder$")
     public void I_go_to_the_drafts_folder(){
         timeRequiredForThisMethod(25);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.goBackToMessageList();
         testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_drafts));
     }
@@ -1322,7 +1626,7 @@ public class CucumberTestSteps {
             timeRequiredForThisMethod(100);
             testUtils.createAccount();
             testUtils.goBackAndRemoveAccount();
-            device.waitForIdle();
+            testUtils.waitForIdle();
         }
     }
 
@@ -1343,7 +1647,7 @@ public class CucumberTestSteps {
     @Then("^I discard the message$")
     public void I_discard_the_message(){
         timeRequiredForThisMethod(10);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
         testUtils.doWaitForObject("android.widget.Button");
         onView(withText(R.string.discard_action)).perform(click());
@@ -1352,9 +1656,9 @@ public class CucumberTestSteps {
     @Given("^I press back$")
     public void I_press_back(){
         timeRequiredForThisMethod(2);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.pressBack();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @And("^I go back to app$")
@@ -1390,12 +1694,12 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
-        device.waitForIdle();
+        testUtils.waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        testUtils.waitForIdle();
         checkPrivacyStatus(color);
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @And("^I go back to the Inbox$")
@@ -1407,18 +1711,18 @@ public class CucumberTestSteps {
     @And("^I check color is (\\S+) at position (\\d+)$")
     public void I_check_color_is___at_position(String color, int position){
         timeRequiredForThisMethod(5);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.doWaitForResource(R.id.my_recycler_view);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(position)).check(matches(withBackgroundColor(testUtils.colorToID(color))));
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @And("^I open attached files$")
     public void I_open_attached_files() {
         testUtils.emptyFolder("Download");
         openAttached();
-        device.waitForIdle();
+        testUtils.waitForIdle();
         File directory = new File(Environment.getExternalStorageDirectory().toString()+"/Download/");
         File[] files = directory.listFiles();
         byte[] buffer= new byte[8192];
@@ -1426,7 +1730,7 @@ public class CucumberTestSteps {
         for (File fileOpen : files) {
             timeRequiredForThisMethod(5);
             File file = new File(Environment.getExternalStorageDirectory().toString() + "/Download/" + fileOpen.getName());
-            device.waitForIdle();
+            testUtils.waitForIdle();
             try {
                 MessageDigest digest = MessageDigest.getInstance("SHA-256");
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
@@ -1454,7 +1758,7 @@ public class CucumberTestSteps {
         String masterKeyText2;
         while (masterKeyText.equals("")) {
             openAttachedMasterKey();
-            device.waitForIdle();
+            testUtils.waitForIdle();
             try {
                 masterKeyText = testUtils.readFile("/Download/", "masterkey.asc").toString();
             } catch (Exception e) {
@@ -1552,29 +1856,18 @@ public class CucumberTestSteps {
     @And("^I check status color is (\\S+) at position (\\d+)$")
     public void I_check_color_at(String color, int position) {
         timeRequiredForThisMethod(5);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withRecyclerView(R.id.my_recycler_view).atPosition(position)).check(matches(withBackgroundColor(testUtils.colorToID(color))));
     }
 
     @Then("^I click acceptButton$")
     public void iClickAcceptButton() {
         timeRequiredForThisMethod(5);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         testUtils.clickAcceptButton();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
-    @And("^I do next thing$")
-    public void iDoNextThing() {
-        timeRequiredForThisMethod(5);
-        onView(withId(R.id.accounts_list)).perform(ViewActions.click());
-        device.waitForIdle();
-        try{
-            Assert.assertEquals(K9.Theme.LIGHT, K9.getK9Theme());
-        }catch (AssertionFailedError exception){
-            Timber.e("Theme is not light");
-        }
-    }
     @Then("^I wait (\\d+) seconds$")
     public void I_wait_seconds(int seconds) {
         timeRequiredForThisMethod(seconds);
@@ -1588,12 +1881,12 @@ public class CucumberTestSteps {
     @And("^I save trustWords$")
     public void I_save_trustwords(){
         timeRequiredForThisMethod(10);
-        device.waitForIdle();
+        testUtils.waitForIdle();
         onView(withId(R.id.securityStatusText)).perform(click());
-        device.waitForIdle();
+        testUtils.waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         testUtils.pressBack();
-        device.waitForIdle();
+        testUtils.waitForIdle();
     }
 
     @Then("^I save test report$")

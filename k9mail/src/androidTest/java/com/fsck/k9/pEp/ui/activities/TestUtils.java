@@ -43,6 +43,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,6 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -136,6 +136,11 @@ public class TestUtils {
     public static JSONArray jsonArray;
     public static String rating;
     public String trustWords = "nothing";
+
+    public String passphraseAccount;
+    public String passphraseAccountPassword;
+    public String passphrasePassword;
+
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
         TestUtils.device = device;
@@ -268,11 +273,18 @@ public class TestUtils {
                 Timber.i("Cannot find account name field");
             }
         }
+        if (testConfig.keySync_number.equals("3")) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        }
         onView(withId(R.id.done)).perform(click());
     }
 
     public void composeMessageButton() {
+        waitForIdle();
         clickView(R.id.fab_button_compose_message);
+        waitForIdle();
+        onView(withId(R.id.to)).perform(closeSoftKeyboard());
+        waitForIdle();
     }
 
     void goBackToMessageCompose() {
@@ -340,9 +352,34 @@ public class TestUtils {
         }
     }
 
+    public void setPassphraseAccount() {
+        switch (keySync_number()) {
+            case "4":
+                passphraseAccount = "test003@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "leakydente2020";
+                break;
+            case "5":
+                passphraseAccount = "test004@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "leakydente2020";
+                break;
+            case "6":
+                passphraseAccount = "test005@peptest.ch";
+                passphraseAccountPassword = "leakydente2020";
+                passphrasePassword = "pEpdichauf1234";
+                break;
+            default:
+                Timber.i("Wrong passphrase Account");
+        }
+    }
+
     public void readConfigFile() {
-        File directory = new File(Environment.getExternalStorageDirectory().toString());
-        File newFile = new File(directory, "test/test_config.txt");
+        File newFile = null;
+         do {
+            File directory = new File(Environment.getExternalStorageDirectory().toString());
+            newFile = new File(directory, "test/test_config.txt");
+        } while (!newFile.exists());
         testConfig = new TestConfig();
         while (newFile.canRead() && (testConfig.getMail(0) == null || testConfig.getMail(0).equals(""))) {
             try {
@@ -458,9 +495,6 @@ public class TestUtils {
                                 break;
                             case "keysync_account_1":
                                 testConfig.setKeySync_account(line[1], 0);
-                                if (!testConfig.getKeySync_account(0).equals("")) {
-                                    totalAccounts = 1;
-                                }
                                 break;
                             case "keysync_password_1":
                                 testConfig.setKeySync_password(line[1], 0);
@@ -473,6 +507,12 @@ public class TestUtils {
                                 break;
                             case "keysync_number":
                                 testConfig.setKeySync_number(line[1]);
+                                if (!testConfig.getKeySync_number().equals("0")) {
+                                    totalAccounts = 1;
+                                    if(testConfig.getKeySync_number().equals("3")) {
+                                        totalAccounts = 2;
+                                    }
+                                }
                                 break;
                             default:
                                 break;
@@ -487,37 +527,214 @@ public class TestUtils {
     }
 
     public void syncDevices () {
-        while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
-            device.waitForIdle();
-            Espresso.onIdle();
-        }
+        waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
-        device.waitForIdle();
-        Espresso.onIdle();
-        trustWords = getTextFromView(onView(withId(R.id.trustwords)));
+        waitForIdle();
+        onView(withId(R.id.show_long_trustwords)).perform(click());
+        waitForIdle();
+        setTrustWords(getTextFromView(onView(withId(R.id.trustwords))));
         onView(withId(R.id.afirmativeActionButton)).perform(click());
+        waitForIdle();
         while (!viewIsDisplayed(R.id.loading)) {
-            device.waitForIdle();
-            Espresso.onIdle();
+            waitForIdle();
         }
         while (viewIsDisplayed(R.id.loading)) {
-            device.waitForIdle();
-            Espresso.onIdle();
+            waitForIdle();
         }
         if (!viewIsDisplayed(R.id.afirmativeActionButton)) {
             assertFailWithMessage("Cannot sync devices");
         } else {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
+            waitForIdle();
         }
     }
 
-    public String keySync_number() { return testConfig.getKeySync_number();}
+    public void waitForSyncPopUp () {
+        device.waitForIdle();
+        Espresso.onIdle();
+        while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
+            device.waitForIdle();
+            Espresso.onIdle();
+        }}
+
+    public void checkSyncIsWorking_FirstDevice () {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        waitForIdle();
+        getMessageListSize();
+        waitForIdle();
+        composeMessageButton();
+        waitForIdle();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SyncFirstDevice",
+                        trustWords,
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText(trustWords);
+        pressBack();
+    }
+
+    public void checkIsNotProtected_FirstDevice () {
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "FirstDevice",
+                        "Account is not protected",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText("Account is not protected");
+        pressBack();
+    }
+
+    public void checkSyncIsWorking_SecondDevice () {
+        waitForIdle();
+        getMessageListSize();
+        waitForIdle();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText(trustWords);
+        pressBack();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SyncSecondDevice",
+                        trustWords,
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
+    public void checkIsNotProtected_SecondDevice () {
+        getMessageListSize();
+        waitForMessageAndClickIt();
+        compareMessageBodyWithText("Account is not protected");
+        pressBack();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "SecondDevice",
+                        "Account is not protected",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
+    public void checkSyncIsNotWorking_FirstDevice () {
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "NotSync_FirstDevice",
+                        "This should be encrypted",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+        if (waitForMessageAndClickIt()) {
+            pressBack();
+        } else {
+            TestUtils.assertFailWithMessage("Failed checking 1st devices is not sync");
+        }
+    }
+
+    public void checkSyncIsNotWorking_SecondDevice () {
+        getMessageListSize();
+        if (waitForMessageAndClickIt()) {
+            pressBack();
+        } else {
+            TestUtils.assertFailWithMessage("Failed checking 2nd devices is not sync");
+        }
+        getMessageListSize();
+        composeMessageButton();
+        fillMessage(new TestUtils.BasicMessage("",
+                        "NotSync_SecondDevice",
+                        "This should be encrypted",
+                        getKeySyncAccount(0)),
+                false);
+        while (exists(onView(withId(R.id.send)))) {
+            clickView(R.id.send);
+        }
+        waitForNewMessage();
+    }
+
+    public void disableKeySync() {
+        selectFromMenu(R.string.prefs_title);
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        selectFromScreen(stringToID("pep_sync"));
+        selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
+    }
+
+    public void enableAccountGlobalKeySync(){
+        selectFromMenu(R.string.prefs_title);
+        goToTheAccountSettings(1);
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        clickTextOnScreen(stringToID("pep_sync_enable_account"));
+        pressBack();
+        pressBack();
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        clickTextOnScreen(stringToID("pep_sync"));
+    }
+
+    public void enableKeySync() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        selectFromMenu(R.string.prefs_title);
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        clickTextOnScreen(stringToID("pep_sync"));
+
+    }
+
+    public String keySync_number() {
+        while (testConfig.getKeySync_number().equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getKeySync_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_account(1) != null
                 && testConfig.getKeySync_password(1) != null;
+    }
+
+    public void compareMessageBodyWithText (String cucumberBody) {
+        switch (cucumberBody) {
+            case "empty":
+                compareMessageBody("");
+                break;
+            case "longText":
+                device.waitForIdle();
+                cucumberBody = longText();
+                compareMessageBodyLongText(cucumberBody);
+                break;
+            default:
+                compareMessageBody(cucumberBody);
+                break;
+        }
     }
 
     public static void assertFailWithMessage(String message) {
@@ -551,9 +768,8 @@ public class TestUtils {
         return totalAccounts;
     }
 
-    private void createNewAccountWithPermissions(){
+    private void createNewAccountWithPermissions() {
         testReset = false;
-        boolean isKeySync = false;
         try {
             onView(withId(R.id.next)).perform(click());
             device.waitForIdle();
@@ -573,19 +789,37 @@ public class TestUtils {
             }
             allowPermissions();
             readConfigFile();
-            if (keySyncAccountsExist() && !keySync_number().equals("0")) {
-                isKeySync = true;
-            }
-                while (exists(onView(withId(R.id.action_continue)))) {
-                    try {
-                        onView(withId(R.id.action_continue)).perform(click());
-                        device.waitForIdle();
-                    } catch (Exception ignoredException) {
-                        Timber.i("Ignored", "Ignored exception");
-                    }
+            while (exists(onView(withId(R.id.action_continue)))) {
+                try {
+                    onView(withId(R.id.action_continue)).perform(click());
+                    device.waitForIdle();
+                } catch (Exception ignoredException) {
+                    Timber.i("Ignored", "Ignored exception");
                 }
-                Timber.i("Cuentas: " +getTotalAccounts());
-                createNAccounts(getTotalAccounts(), isKeySync);
+            }
+            switch (keySync_number()) {
+                case "6":
+                case "5":
+                case "4":
+                    setPassphraseAccount();
+                    fillAccountAddress(passphraseAccount);
+                    fillAccountPassword(passphraseAccountPassword);
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    break;
+                case "0":
+                    createNAccounts(getTotalAccounts(), false, false);
+                    break;
+                case "1":
+                case "2":
+                    createNAccounts(getTotalAccounts(), true, false);
+                    break;
+                case "3":
+                    createNAccounts(1, true, false);
+                    break;
+                default:
+                    Timber.i("Key sync value is not valid");
+            }
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
                 readConfigFile();
@@ -626,7 +860,7 @@ public class TestUtils {
         }
     }
 
-    public void createNAccounts (int n, boolean isKeySync) {
+    public void createNAccounts (int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
                 device.waitForIdle();
@@ -637,8 +871,12 @@ public class TestUtils {
                 }
                 addAccount();
                 if (isKeySync) {
-                    fillAccountAddress(testConfig.getKeySync_account(Integer.parseInt(testConfig.keySync_number) - 1));
-                    fillAccountPassword(testConfig.getKeySync_password(Integer.parseInt(testConfig.keySync_number) - 1));
+                    int account = 0;
+                    if (testConfig.keySync_number.equals("3") && !isThirdSync) {
+                        account = 1;
+                    }
+                    fillAccountAddress(testConfig.getKeySync_account(account));
+                    fillAccountPassword(testConfig.getKeySync_password(account));
                 } else {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
@@ -670,6 +908,19 @@ public class TestUtils {
         }
     }
 
+    public void disableProtection (int account) {
+        if (!exists(onView(withId(R.id.available_accounts_title)))) {
+            selectFromMenu(R.string.action_settings);
+        }
+        selectAccountSettingsFromList(account);
+        selectFromScreen(stringToID("privacy_preferences"));
+        clickTextOnScreen(stringToID("pep_enable_privacy_protection"));
+        while (!exists(onView(withId(R.id.available_accounts_title)))) {
+            pressBack();
+            waitForIdle();
+        }
+    }
+
     public void selectAccount (int accountToSelect) {
         while (true) {
             try {
@@ -686,7 +937,7 @@ public class TestUtils {
                     clickInbox();
                     return;
                 } else if (!exists(onView(withId(R.id.available_accounts_title)))){
-                    selectFromMenu(R.string.prefs_title);
+                    selectFromMenu(R.string.action_settings);
                     selectAccountFromList(accountToSelect);
                     getMessageListSize();
                     return;
@@ -746,6 +997,18 @@ public class TestUtils {
         }
     }
 
+    public void selectAccountSettingsFromList (int accountToSelect) {
+        while (!viewIsDisplayed(R.id.accounts_list)) {
+            swipeUpScreen();
+        }
+        onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+        goToTheAccountSettings(accountToSelect);
+        if (exists(onView(withId(R.id.message_list)))) {
+            getMessageListSize();
+        }
+        waitForIdle();
+    }
+
     private void goToTheInbox (int accountToSelect){
         while (true) {
             device.waitForIdle();
@@ -760,6 +1023,22 @@ public class TestUtils {
                 Timber.i("Cannot click account from list: " + e.getMessage());
             }
             device.waitForIdle();
+        }
+    }
+
+    private void goToTheAccountSettings (int accountToSelect){
+        while (true) {
+            device.waitForIdle();
+            try {
+                UiObject2 wb;
+                wb = device.findObject(By.clazz("android.widget.ListView"));
+                device.waitForIdle();
+                wb.getChildren().get(accountToSelect).getChildren().get(0).click();
+                return;
+            } catch (Exception e) {
+                Timber.i("Cannot click account from list: " + e.getMessage());
+            }
+            waitForIdle();
         }
     }
 
@@ -1048,9 +1327,9 @@ public class TestUtils {
 
     public void attachFile(String fileName) {
         do {
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
         } while (!textExistsOnScreenTextView(fileName));
         waitUntilIdle();
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
@@ -1169,15 +1448,12 @@ public class TestUtils {
     }
 
     public void pressBack() {
-        Espresso.onIdle();
-        device.waitForIdle();
-        waitUntilIdle();
+        waitForIdle();
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
         onView(isRoot()).perform(ViewActions.pressBack());
-        Espresso.onIdle();
-        device.waitForIdle();
+        waitForIdle();
     }
 
     void removeLastAccount() {
@@ -1377,7 +1653,7 @@ public class TestUtils {
             device.waitForIdle();
         }*/
         waitForToolbar();
-        statusColor = getSecurityStatusIconColor(status);
+        statusColor = getSecurityStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
@@ -1393,7 +1669,7 @@ public class TestUtils {
         }
     }
 
-    private int getSecurityStatusIconColor (Rating rating){
+    private int getSecurityStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
             color = -10;
@@ -1405,6 +1681,24 @@ public class TestUtils {
             color = R.drawable.pep_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
+    private int getSecurityStatusIconColor (Rating rating){
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = -10;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.color.pep_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.color.pep_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.color.pep_yellow;
         } else {
             color = -10;
         }
@@ -1524,10 +1818,98 @@ public class TestUtils {
         }
     }
 
+    public String getStatusRating(Rating [] statusRating, String status) {
+        switch (status){
+            case "pEpRatingUndefined":
+                statusRating[0] = Rating.pEpRatingUndefined;
+                break;
+            case "pEpRatingCannotDecrypt":
+                statusRating[0] = Rating.pEpRatingCannotDecrypt;
+                break;
+            case "pEpRatingHaveNoKey":
+                statusRating[0] = Rating.pEpRatingHaveNoKey;
+                break;
+            case "pEpRatingUnencrypted":
+                statusRating[0] = Rating.pEpRatingUnencrypted;
+                break;
+            case "pEpRatingUnencryptedForSome":
+                statusRating[0] = Rating.pEpRatingUnencryptedForSome;
+                break;
+            case "pEpRatingUnreliable":
+                statusRating[0] = Rating.pEpRatingUnreliable;
+                break;
+            case "pEpRatingReliable":
+                statusRating[0] = Rating.pEpRatingReliable;
+                break;
+            case "pEpRatingTrusted":
+                statusRating[0] = Rating.pEpRatingTrusted;
+                break;
+            case "pEpRatingTrustedAndAnonymized":
+                statusRating[0] = Rating.pEpRatingTrustedAndAnonymized;
+                break;
+            case "pEpRatingFullyAnonymous":
+                statusRating[0] = Rating.pEpRatingFullyAnonymous;
+                break;
+            case "pEpRatingMistrust":
+                statusRating[0] = Rating.pEpRatingMistrust;
+                break;
+            case "pEpRatingB0rken":
+                statusRating[0] = Rating.pEpRatingB0rken;
+                break;
+            case "pEpRatingUnderAttack":
+                statusRating[0] = Rating.pEpRatingUnderAttack;
+                break;
+        }
+        return status;
+    }
+
+    public void checkBadgeStatus(String status, int messageFromList){
+        Rating [] statusRating = new Rating[1];
+        int currentMessage = 1;
+        waitForIdle();
+        getStatusRating(statusRating, status);
+        int statusColor = getSecurityStatusIconColor(statusRating[0]);
+        boolean assertedBadgeColor = false;
+        BySelector selector = By.clazz("android.widget.ImageView");
+        while (!assertedBadgeColor) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getResourceName().equals("security.pEp.debug:id/securityBadge")) {
+                        if (currentMessage != messageFromList) {
+                            currentMessage++;
+                        }
+                        else {
+                            View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
+                            currentViewActivity.setDrawingCacheEnabled(true);
+                            Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
+                            int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                            currentViewActivity.setDrawingCacheEnabled(false);
+                            if (pixel != resources.getColor(statusColor)) {
+                                assertFailWithMessage("Badge status colors are different");
+                            }
+                            assertedBadgeColor = true;
+                            break;
+                        }
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void checkBadgeColor(int color, int messageFromList) {
+        waitForIdle();
+        onView(withId(R.id.securityBadge)).check(matches(withTextColor(color)));
+    }
+
     public void openHamburgerMenu () {
-        device.waitForIdle();
+        waitForIdle();
+        while (!exists(onView(withContentDescription("Open navigation drawer")))) {
+            waitForIdle();
+        }
         onView(withContentDescription("Open navigation drawer")).perform(click());
-        device.waitForIdle();
+        waitForIdle();
     }
 
     public void typeTextToForceRatingCaltulation (int view) {
@@ -1582,6 +1964,12 @@ public class TestUtils {
                 Timber.i("Toolbar is not closed yet");
             }
         }
+    }
+
+    public void waitForIdle() {
+        device.waitForIdle();
+        Espresso.onIdle();
+        waitUntilIdle();
     }
 
     String getTextFromTextViewThatContainsText(String text) {
@@ -1652,7 +2040,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
                 device.waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot open menu");
                 return;
@@ -1715,6 +2103,106 @@ public class TestUtils {
             }
         }
     }
+
+    public void clickTextOnScreen(String text) {
+        clickText(text);
+    }
+
+    public void clickTextOnScreen(int resource) {
+        clickText(resources.getString(resource));
+    }
+
+    public void clickText(String text) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(text)) {
+                        try {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            object.longClick();
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public String getFingerprint() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        boolean isFingerprint = false;
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                if (isFingerprint) {
+                    return object.getText().trim().replace("\n", "").replace(" ", "");
+                }
+                if (object.getText().equals(resources.getString(stringToID("pgp_key_import_confirmation_fingerprint_label")))) {
+                    isFingerprint = true;
+                }
+            }
+        }
+    }
+
+    public void waitForKeyImport() {
+        BySelector selector = By.clazz("android.widget.TextView");
+        boolean isFingerprint = false;
+        while (true) {
+            waitForIdle();
+            try {
+                for (UiObject2 object : device.findObjects(selector)) {
+                    waitForIdle();
+                    if (object.getText().equals(resources.getString(stringToID("key_import_success")))) {
+                        waitForIdle();
+                        return;
+                    }
+                }
+            } catch (Exception noImport) {
+                Timber.i("Key not imported yet");
+            }
+        }
+    }
+
+    public void selectButtonFromScreen(String text) {
+        BySelector selector = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(text)) {
+                        try {
+                            while (object.getText().equals(text)) {
+                                waitForIdle();
+                                object.longClick();
+                                waitForIdle();
+                            }
+                            waitForIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            waitForIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    waitForIdle();
+                    Timber.i("Cannot find button on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void selectButtonFromScreen(int resource) {
+        selectButtonFromScreen(resources.getString(resource).toUpperCase());
+    }
+
 
     void doWait(String viewId) {
         UiObject2 waitForView = device
@@ -1830,11 +2318,11 @@ public class TestUtils {
         } while (!textIsOk);
     }
 
-    public void waitForMessageAndClickIt() {
+    public boolean waitForMessageAndClickIt() {
         Timber.i("MessageList antes: " + messageListSize[0] + " " + messageListSize[1]);
         waitForNewMessage();
         Timber.i("MessageList despues: " + messageListSize[0] + " " + messageListSize[1]);
-        clickLastMessage();
+        return clickLastMessage();
     }
 
     public String longText() {
@@ -1842,8 +2330,9 @@ public class TestUtils {
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
-    public void clickLastMessage() {
+    public boolean clickLastMessage() {
         boolean messageClicked = false;
+        boolean encrypted = false;
         while (!messageClicked) {
             device.waitForIdle();
             if (!viewIsDisplayed(R.id.openCloseButton)) {
@@ -1874,6 +2363,7 @@ public class TestUtils {
         }
         try {
             onView(withText(R.string.cancel_action)).perform(click());
+            encrypted = true;
         } catch (NoMatchingViewException ignoredException) {
             Timber.i("Ignored exception. Email is not encrypted");
         }
@@ -1883,14 +2373,8 @@ public class TestUtils {
             Timber.i("There are no JSON files attached");
         }
         device.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-        device.waitForIdle();
-        try {
-            onView(withId(R.id.message_list)).perform(swipeUp());
-        } catch (Exception noSwipe) {
-            Timber.i("Cannot SwipeUp");
-        }
-        device.waitForIdle();
+        Espresso.onIdle();
+        return encrypted;
     }
 
     public void clickMessageAtPosition(int position) {
@@ -2042,20 +2526,27 @@ public class TestUtils {
         return json;
     }
 
+    public void waitForNewMessages(int totalMessages) {
+        for (int waitMessage = 0; waitMessage < totalMessages; waitMessage++){
+            waitForNewMessage();
+        }
+    }
+
     public void waitForNewMessage() {
         boolean newEmail = false;
-        device.waitForIdle();
+        waitForIdle();
         while (!exists(onView(withId(R.id.message_list)))){
-            device.waitForIdle();
+            waitForIdle();
         }
         doWaitForResource(R.id.message_list);
         doWaitForIdlingListViewResource(R.id.message_list);
         onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        waitForIdle();
         while (!newEmail) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 swipeDownMessageList();
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
                 if (messageListSize[1] > messageListSize[0]){
@@ -2077,12 +2568,12 @@ public class TestUtils {
     }
 
     public void getMessageListSize() {
-        device.waitForIdle();
+        waitForIdle();
         swipeDownMessageList();
-        device.waitForIdle();
+        waitForIdle();
         while (exists(onView(withId(R.id.message_list)))) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 return;
@@ -2092,14 +2583,18 @@ public class TestUtils {
         }
     }
 
+    public int getListSize() {
+        return messageListSize[0];
+    }
+
     public void swipeDownMessageList() {
         while (true) {
             try {
+                Thread.sleep(2000);
                 device.waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
                 device.waitForIdle();
-                onView(withId(R.id.message_list)).perform(swipeDown());
-                device.waitForIdle();
+                Thread.sleep(2000);
                 return;
             } catch (Exception e) {
                 Timber.i("Cannot swipe down");
@@ -2230,14 +2725,14 @@ public class TestUtils {
                     body[1] = "Decoded Rating | PEP_rating_reliable";
                 } else {
                     body = new String[1];
-                    body[0] = cucumberBody;
+                    body[0] = cucumberBody.substring(0, cucumberBody.length() - 1);
                 }
                 compareTextWithWebViewText(body[0]);
                 return;
             } else if (exists(onView(withId(R.id.message_content)))) {
                 onView(withId(R.id.message_content)).check(matches(isDisplayed()));
                 String[] text = getTextFromView(onView(withId(R.id.message_content))).split("--");
-                if (text[0].equals(cucumberBody)) {
+                if (text[0].contains(cucumberBody)) {
                     return;
                 } else {
                     device.waitForIdle();
@@ -2287,7 +2782,7 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
-            if (webViewText[0].equals(textToCompare)) {
+            if (webViewText[0].contains(textToCompare)) {
                 device.waitForIdle();
                 return;
             } else {
@@ -2418,9 +2913,50 @@ public class TestUtils {
         }
     }
 
+    public void setTrustWords(String text) {
+        trustWords = text;
+    }
+
+    public void checkDeviceIsSync(String deviceName, String firstDevice,
+                                  String secondDevice, boolean syncThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkSyncIsWorking_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkSyncIsWorking_SecondDevice();
+        } else if (syncThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
+    public void checkAccountIsNotProtected(String deviceName, String firstDevice,
+                                  String secondDevice, boolean ThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkIsNotProtected_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkIsNotProtected_SecondDevice();
+        } else if (ThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
+    public void checkDeviceIsNotSync(String deviceName, String firstDevice,
+                                     String secondDevice, boolean syncThirdDevice) {
+        if (firstDevice.equals(deviceName)) {
+            checkSyncIsNotWorking_FirstDevice();
+        } else if (secondDevice.equals(deviceName)) {
+            checkSyncIsNotWorking_SecondDevice();
+        } else if (syncThirdDevice) {
+            waitForNewMessages(2);
+        }
+    }
+
     public String getKeySyncAccount (int account) {
+        waitForIdle();
+        readConfigFile();
         return testConfig.getKeySync_account(account);
     }
+
+    public String getEmailAccount (int account) { return testConfig.getMail(account);}
 
     public static void getJSONObject(String object) {
         switch (object) {
@@ -2605,7 +3141,7 @@ public class TestUtils {
             this.smtp_port = new String[total];
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
-            keySync_number = "0";
+            keySync_number = "-10";
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
