@@ -116,35 +116,39 @@ class DrawerLayoutManager @Inject constructor(
         val accountRenderer = AccountRenderer()
         rendererAccountBuilder = RendererBuilder(accountRenderer)
         accountRenderer.setOnAccountClickListenerListener { account ->
-            drawerLayoutInterface.showLoadingMessages()
-            this.account = account
-            drawerLayoutInterface.updateAccount(account)
-            drawerLayoutInterface.updateLastUsedAccount()
-            drawerCloseListener = object : DrawerListener {
-                override fun onDrawerSlide(view: View, slideOffset: Float) {}
-                override fun onDrawerOpened(view: View) {}
-                override fun onDrawerClosed(view: View) {
-                    val folder = account.autoExpandFolderName
-                    val search = LocalSearch(folder)
-                    search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
-                    search.addAllowedFolder(folder)
-                    drawerLayoutInterface._refreshMessages(search)
-                    setupNavigationHeader()
-                    createFoldersMenu()
-                    drawerView.showAccounts()
-                    drawerView.removeDrawerListener(drawerCloseListener)
-                    drawerLayoutInterface.changeAccountsOrder()
-                }
-
-                override fun onDrawerStateChanged(newState: Int) {}
-            }
-            drawerView.addDrawerListener(drawerCloseListener)
-            drawerView.closeDrawers()
+            onAccountClick(account)
         }
         val adapteeCollection = ListAdapteeCollection(accounts)
         drawerView.setAccountsAdapter(rendererAccountBuilder, adapteeCollection)
         drawerView.setupCreateConfigAccountListeners()
 
+    }
+
+    private fun onAccountClick(account: Account) {
+        this.account = account
+        drawerLayoutInterface.showLoadingMessages()
+        drawerLayoutInterface.updateAccount(account)
+        drawerLayoutInterface.updateLastUsedAccount()
+        drawerCloseListener = object : DrawerListener {
+            override fun onDrawerSlide(view: View, slideOffset: Float) {}
+            override fun onDrawerOpened(view: View) {}
+            override fun onDrawerClosed(view: View) {
+                val folder = account.autoExpandFolderName
+                val search = LocalSearch(folder)
+                search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
+                search.addAllowedFolder(folder)
+                drawerLayoutInterface._refreshMessages(search)
+                setupNavigationHeader()
+                createFoldersMenu()
+                drawerView.showAccounts()
+                drawerView.removeDrawerListener(drawerCloseListener)
+                drawerLayoutInterface.changeAccountsOrder()
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {}
+        }
+        drawerView.addDrawerListener(drawerCloseListener)
+        drawerView.closeDrawers()
     }
 
     private fun setupNavigationFoldersList() {
