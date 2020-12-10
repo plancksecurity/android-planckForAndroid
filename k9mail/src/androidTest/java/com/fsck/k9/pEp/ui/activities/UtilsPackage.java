@@ -52,7 +52,7 @@ public class UtilsPackage {
             return atPositionOnView(position, -1);
         }
 
-        Matcher<View> atPositionOnView(final int position, final int targetViewId) {
+        public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
 
             return new TypeSafeMatcher<View>() {
                 Resources resources = null;
@@ -77,12 +77,19 @@ public class UtilsPackage {
                     this.resources = view.getResources();
 
                     if (childView == null) {
-                        RecyclerView recyclerView =
-                                view.getRootView().findViewById(recyclerViewId);
-                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
-                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        } else {
+                        View listOrRecyclerView = view.getRootView().findViewById(recyclerViewId);
+                        if(listOrRecyclerView == null || listOrRecyclerView.getId() != recyclerViewId) {
                             return false;
+                        }
+                        else if(listOrRecyclerView instanceof ListView) {
+                            childView = ((ListView) listOrRecyclerView).getChildAt(position);
+                        }
+                        else if(listOrRecyclerView instanceof RecyclerView) {
+                            childView = ((RecyclerView) listOrRecyclerView).getChildAt(position);
+                        }
+                        else {
+                            throw new IllegalArgumentException("Expected ListView or RecyclerView but got "
+                                    + listOrRecyclerView.getClass().getSimpleName());
                         }
                     }
 
