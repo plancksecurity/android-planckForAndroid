@@ -111,6 +111,11 @@ class DrawerLayoutManager @Inject constructor(
 
         drawerView.setFoldersDrawerVisibility(View.GONE)
         drawerView.setAccountsDrawerVisibility(View.VISIBLE)
+        setAccountAdapter()
+        drawerView.setupCreateConfigAccountListeners()
+    }
+
+    private fun setAccountAdapter() {
         val accounts: MutableList<Account> = ArrayList(preferences.accounts)
         accounts.remove(account)
         val accountRenderer = AccountRenderer()
@@ -120,8 +125,6 @@ class DrawerLayoutManager @Inject constructor(
         }
         val adapteeCollection = ListAdapteeCollection(accounts)
         drawerView.setAccountsAdapter(rendererAccountBuilder, adapteeCollection)
-        drawerView.setupCreateConfigAccountListeners()
-
     }
 
     private fun onAccountClick(account: Account) {
