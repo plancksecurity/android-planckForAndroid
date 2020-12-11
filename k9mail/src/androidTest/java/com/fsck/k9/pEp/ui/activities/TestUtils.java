@@ -43,6 +43,7 @@ import android.view.View;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.common.GetListSizeAction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -3167,5 +3168,18 @@ public class TestUtils {
         String getKeySync_account(int account) { return keySync_account[account];}
         String getKeySync_password(int account) { return keySync_password[account];}
         String getKeySync_number() { return keySync_number;}
+    }
+
+    public String getString(int stringId) {
+        return resources.getString(stringId);
+    }
+
+    public int getListSize(int listId) {
+        GetListSizeAction listSize = new GetListSizeAction();
+        device.waitForIdle();
+        onView(withId(listId))
+                .check(matches(isDisplayed()))
+                .perform(listSize);
+        return listSize.getSize();
     }
 }

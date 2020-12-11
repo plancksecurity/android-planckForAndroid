@@ -1,13 +1,17 @@
 package com.fsck.k9.pEp.ui.navigationdrawer
 
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
-import com.fsck.k9.R
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
+import com.fsck.k9.R
+import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import org.hamcrest.core.IsNot.not
@@ -24,17 +28,18 @@ class DrawerLayoutTest {
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
 
     private lateinit var testUtils: TestUtils
+    private lateinit var uiDevice: UiDevice
 
     @Before
     fun before() {
-        testUtils = TestUtils(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()), InstrumentationRegistry.getInstrumentation())
+        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        testUtils = TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation())
     }
 
 
     @Test
     fun navDrawerIsNotEmpty() {
         testUtils.openHamburgerMenu()
-        // click hamburger account
         onView(withId(R.id.menu_header)).check(matches(isDisplayed()))
         onView(withId(R.id.navigation_bar_folders_layout)).check(matches(isDisplayed()))
         onView(withId(R.id.unified_inbox)).check(matches(isDisplayed()))
@@ -57,15 +62,39 @@ class DrawerLayoutTest {
         // check if folders are visible
     }
 
+    @Test
     fun clickFolders() {
         // click unified account
-        // check if unified messages is showing in messageList
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.unified_inbox)).perform(click())
+        uiDevice.waitForIdle()
+        onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.integrated_inbox_title))))
         // click all messages
-        // check if all messages is showing in messageList
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.all_messages_container)).perform(click())
+        uiDevice.waitForIdle()
+        onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.search_all_messages_title))))
         // click inbox folder
-        // check if inbox is showing in messageList
-        // click <last folder> after inbox
-        // check if <last folder> is showing in messageList
+        testUtils.openHamburgerMenu()
+        val action = GetNavigationFolderTextAction()
+        uiDevice.waitForIdle()
+        onView(withId(R.id.navigation_folders))
+                .check(matches(isDisplayed()))
+                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, action),
+                        actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+        uiDevice.waitForIdle()
+        onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
+        // click last folder
+        testUtils.openHamburgerMenu()
+        uiDevice.waitForIdle()
+        val size = testUtils.getListSize(R.id.navigation_folders)
+        onView(withId(R.id.navigation_folders))
+                .check(matches(isDisplayed()))
+                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, action),
+                        actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, click()))
+        uiDevice.waitForIdle()
+        onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
+
     }
 
     fun clickAccountInList() {
