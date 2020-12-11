@@ -1763,23 +1763,19 @@ public class TestUtils {
     }
 
     void testStatusEmpty() {
-        checkStatus(Rating.pEpRatingUndefined);
-        pressBack();
+        assertMessageStatus(Rating.pEpRatingUndefined, false);
     }
 
     void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
+        assertMessageStatus(expectedIdentity.getRating(), false);
         pressBack();
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
-        onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
-        pressBack();
+        assertMessageStatus(expectedIdentity.getRating(), false);
+        goBack(false);
     }
 
     void checkStatus(Rating rating) {
@@ -1930,18 +1926,19 @@ public class TestUtils {
         Activity currentActivity = getCurrentActivity();
         while (currentActivity == getCurrentActivity()){
             try {
-                if (saveAsDraft) {
+                device.waitForIdle();
+                while (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
                     device.waitForIdle();
-                    while (!viewIsDisplayed(R.id.message_content)) {
-                        onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                        device.waitForIdle();
-                    }
                 }
                 device.waitForIdle();
                 pressBack();
                 device.waitForIdle();
                 if (saveAsDraft) {
                     onView(withText(R.string.save_draft_action)).perform(click());
+                }
+                else {
+                    onView(withText(R.string.discard_action)).perform(click());
                 }
             } catch (Exception ex){
                 Timber.i("Ignored exception: " + ex);
