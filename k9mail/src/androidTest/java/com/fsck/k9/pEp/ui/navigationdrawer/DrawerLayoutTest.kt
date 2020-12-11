@@ -14,8 +14,10 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.GetNavigationFolderTextAction
+import com.fsck.k9.common.GetTextViewTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -23,6 +25,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/* Pre requirements
+ *       Add 3 accounts that have different folders count
+ *       ie. account1 -> 3 folders , account2 -> 4 folders, account3 -> 5 folders
+ * */
 
 @RunWith(AndroidJUnit4::class)
 class DrawerLayoutTest {
@@ -51,11 +57,60 @@ class DrawerLayoutTest {
         onView(withId(R.id.navigation_folders)).check(matches(not(hasChildCount(0))))
     }
 
+    @Test
     fun clickAccountBall() {
-        // click first account
-        // check if drawer header changed to selected account
-        // check if drawer accounts changed to other accounts
-        // check if drawer folders changed to selected account
+        testUtils.openHamburgerMenu()
+
+        var email = getTextFromComponent(R.id.nav_header_email)
+        var currentBallText = getTextFromComponent(R.id.nav_header_contact_text)
+        var secondBallText = getTextFromComponent(R.id.second_account)
+        var firstBallText = getTextFromComponent(R.id.first_account)
+        var foldersSize = testUtils.getListSize(R.id.navigation_folders)
+
+        onView(withId(R.id.second_account_container)).perform(click())
+        uiDevice.waitForIdle()
+        testUtils.openHamburgerMenu()
+        uiDevice.waitForIdle()
+        onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
+        onView(withId(R.id.nav_header_contact_text)).check(matches(withText(secondBallText)))
+        onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
+        onView(withId(R.id.first_account)).check(matches(withText(firstBallText)))
+        assertTrue(foldersSize != testUtils.getListSize(R.id.navigation_folders))
+
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        for (position in 0 until testUtils.getListSize(R.id.navigation_accounts)) {
+            onView(withId(R.id.navigation_accounts))
+                    .check(matches(atPosition(0, hasDescendant(withText(email)))))
+        }
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+
+        email = getTextFromComponent(R.id.nav_header_email)
+        currentBallText = getTextFromComponent(R.id.nav_header_contact_text)
+        secondBallText = getTextFromComponent(R.id.second_account)
+        firstBallText = getTextFromComponent(R.id.first_account)
+        foldersSize = testUtils.getListSize(R.id.navigation_folders)
+
+        onView(withId(R.id.first_account_container)).perform(click())
+        uiDevice.waitForIdle()
+        testUtils.openHamburgerMenu()
+        uiDevice.waitForIdle()
+        onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
+        onView(withId(R.id.nav_header_contact_text)).check(matches(withText(firstBallText)))
+        onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
+        onView(withId(R.id.first_account)).check(matches(withText(secondBallText)))
+        assertTrue(foldersSize != testUtils.getListSize(R.id.navigation_folders))
+
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        for (position in 0 until testUtils.getListSize(R.id.navigation_accounts)) {
+            onView(withId(R.id.navigation_accounts))
+                    .check(matches(atPosition(0, hasDescendant(withText(email)))))
+        }
+    }
+
+    private fun getTextFromComponent(resourceId: Int): String {
+        val action = GetTextViewTextAction()
+        onView(withId(resourceId)).perform(action)
+        return action.text.toString()
     }
 
     @Test
