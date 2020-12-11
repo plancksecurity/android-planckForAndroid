@@ -1766,12 +1766,6 @@ public class TestUtils {
         assertMessageStatus(Rating.pEpRatingUndefined, false);
     }
 
-    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
-        fillMessage(inputMessage, false);
-        assertMessageStatus(expectedIdentity.getRating(), false);
-        pressBack();
-    }
-
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
         assertMessageStatus(expectedIdentity.getRating(), false);
