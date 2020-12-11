@@ -11,6 +11,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
+import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
@@ -113,13 +114,19 @@ class DrawerLayoutTest {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.menu_header)).perform(click())
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
-
         onView(withId(R.id.add_account_container)).perform(click())
+        uiDevice.waitForIdle()
         assertTrue(testUtils.currentActivity is AccountSetupBasics)
     }
 
+    @Test
     fun clickSettings() {
-        // click settings button
-        // check if settings opened
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.menu_header)).perform(click())
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.configure_account_container)).perform(click())
+        uiDevice.waitForIdle()
+        assertTrue(testUtils.currentActivity is SettingsActivity)
     }
 }
