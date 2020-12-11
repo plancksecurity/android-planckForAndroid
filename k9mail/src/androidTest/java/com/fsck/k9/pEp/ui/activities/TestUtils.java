@@ -19,11 +19,14 @@ import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.Root;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -41,7 +44,9 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 
 import org.json.JSONArray;
@@ -60,6 +65,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
@@ -70,6 +76,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -99,7 +106,9 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
+import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -136,6 +145,7 @@ public class TestUtils {
     public static JSONArray jsonArray;
     public static String rating;
     public String trustWords = "nothing";
+    private String emailForDevice;
 
     public String passphraseAccount;
     public String passphraseAccountPassword;
@@ -372,6 +382,39 @@ public class TestUtils {
             default:
                 Timber.i("Wrong passphrase Account");
         }
+    }
+
+    public String getAccountEmailForDevice() {
+        if(emailForDevice != null) return emailForDevice;
+        String out = "error: email for device not initialized";
+        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
+        File configFile = new File(directory, "test_config.txt");
+        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+
+        FileInputStream fin;
+        if(configFile.canRead()) {
+            try {
+                fin = new FileInputStream(configFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fin);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                while ((receiveString = bufferedReader.readLine()) != null && !receiveString.contains("mail")) {
+                    Timber.v("Searching for test email address for device...");
+                }
+                fin.close();
+                bufferedReader.close();
+                if(receiveString != null && !receiveString.isEmpty()) {
+                    String[] line = receiveString.split(" = ");
+                    out = emailForDevice = line[1];
+                }
+            }
+            catch (Exception e) {
+                Timber.e(e, "could not read from file %s", configFile);
+                out = e.getMessage();
+            }
+        }
+        return out;
     }
 
     public void readConfigFile() {
@@ -1335,7 +1378,7 @@ public class TestUtils {
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
-    void externalAppRespondWithFile(int id) {
+    public void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -1464,6 +1507,68 @@ public class TestUtils {
         } catch (Exception ex) {
             Timber.i("Cannot select/accept remove account");
         }
+    }
+
+    public void goToSettingsAndRemoveAllAccounts() {
+        selectFromMenu(R.string.action_settings);
+        removeAllAccounts();
+    }
+
+    public void goToSettingsAndRemoveAllAccountsIfNeeded() {
+        if(!exists(onView(withText(R.string.account_setup_basics_title)))) {
+            goToSettingsAndRemoveAllAccounts();
+        }
+    }
+
+    public void removeAllAccounts() {
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
+        while(!preferences.getAccounts().isEmpty()) {
+            removeAccountAtPosition(0);
+            doWait(5000);
+        }
+    }
+
+    private void doWait(int millis) {
+        try {
+            sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAccountAtPosition(int position) {
+        device.waitForIdle();
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        device.waitForIdle();
+        selectFromScreen(R.string.remove_account_action);
+        device.waitForIdle();
+
+        clickAcceptButton();
+        device.waitForIdle();
+    }
+
+    public void skipTutorialAndAllowPermissionsIfNeeded() {
+        if(exists(onView(withId(R.id.skip)))) {
+            skipTutorialAndAllowPermissions();
+        }
+    }
+
+    public void skipTutorialAndAllowPermissions() {
+        try {
+            device.waitForIdle();
+            onView(withId(R.id.skip)).perform(click());
+            device.waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        try {
+            device.waitForIdle();
+            onView(withId(R.id.action_continue)).perform(click());
+            device.waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        allowPermissions();
     }
 
     public void goBackAndRemoveAccount() {
@@ -2226,6 +2331,22 @@ public class TestUtils {
             }
     }
 
+    public void waitUntilViewDisplayed(int viewId) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewId);
+            device.waitForIdle();
+        }
+    }
+
+    public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewInteraction);
+            device.waitForIdle();
+        }
+    }
+
     private void doWaitForIdlingListViewResource(int resource){
         IdlingResource idlingResourceListView;
         device.waitForIdle();
@@ -2247,6 +2368,17 @@ public class TestUtils {
                 .inRoot(isDialog())
                 .check(matches(withText(displayText)))
                 .check(matches(isDisplayed()));
+    }
+
+    public void doWaitForAlertDialog(int displayText) {
+        device.waitForIdle();
+        int id = getCurrentActivity().getResources()
+                .getIdentifier("alertTitle", "id", "android");
+        ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
+        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+
+        onView(withText(displayText)).check(matches(isDisplayed()));
+        device.waitForIdle();
     }
 
     String getResourceString(int id, int position) {
