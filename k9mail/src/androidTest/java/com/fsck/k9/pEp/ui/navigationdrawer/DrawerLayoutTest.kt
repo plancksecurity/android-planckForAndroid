@@ -11,10 +11,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
+import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import org.hamcrest.core.IsNot.not
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -105,9 +107,15 @@ class DrawerLayoutTest {
         // check if drawer folders changed to selected account
     }
 
+    @Test
     fun clickAddAccount() {
-        // click add account button
-        // check if add account opened
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.menu_header)).perform(click())
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+
+        onView(withId(R.id.add_account_container)).perform(click())
+        assertTrue(testUtils.currentActivity is AccountSetupBasics)
     }
 
     fun clickSettings() {
