@@ -51,6 +51,7 @@ import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 
+import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,6 +89,7 @@ import static androidx.test.espresso.intent.Checks.checkNotNull;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -295,9 +297,9 @@ public class TestUtils {
     }
 
     public void composeMessageButton() {
-        waitForIdle();
+        waitUntilViewDisplayed(R.id.fab_button_compose_message);
         clickView(R.id.fab_button_compose_message);
-        waitForIdle();
+        waitUntilViewDisplayed(R.id.subject);
         onView(withId(R.id.to)).perform(closeSoftKeyboard());
         waitForIdle();
     }
@@ -1811,6 +1813,50 @@ public class TestUtils {
         }
     }
 
+    public void assertMessageStatus(Rating status, boolean clickableExpected){
+        assertMessageStatus(status, true, clickableExpected);
+    }
+
+    public void assertMessageStatus(Rating status, boolean enabledForThisMessage, boolean clickableExpected){
+        int statusColor;
+
+        waitForToolbar();
+        if(!enabledForThisMessage) {
+            onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+        }
+
+        statusColor = getSecurityStatusDrawableColor(status);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            if (R.drawable.pep_status_green != statusColor
+                    && R.drawable.pep_status_red != statusColor
+                    && R.drawable.pep_status_yellow != statusColor
+            ) {
+                assertFailWithMessage("Wrong Status color");
+            }
+            waitUntilViewDisplayed(R.id.securityStatusText);
+            if(!enabledForThisMessage) {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
+            }
+            else {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+            }
+        }
+
+        clickStatus();
+        if(clickableExpected) {
+            device.waitForIdle();
+            waitForToolbar();
+            checkToolBarColor(getPEpStatusDueColor(status));
+            device.waitForIdle();
+            pressBack();
+        }
+    }
+
     private int getSecurityStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
@@ -1823,6 +1869,24 @@ public class TestUtils {
             color = R.drawable.pep_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
+    private int getPEpStatusDueColor(Rating rating) {
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = R.color.pep_no_color;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.color.pep_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.color.pep_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.color.pep_yellow;
         } else {
             color = -10;
         }
@@ -2106,6 +2170,22 @@ public class TestUtils {
                 Timber.i("Toolbar is not closed yet");
             }
         }
+    }
+
+    public void selectFromStatusPopupMenu(int itemId) {
+        device.waitForIdle();
+        onView(withId(R.id.actionbar_message_view)).perform(ViewActions.longClick());
+        device.waitForIdle();
+        selectFromPopupMenu(itemId);
+        device.waitForIdle();
+    }
+
+    public void selectFromPopupMenu(int itemId) {
+        onView(withText(itemId)).inRoot(isPopupWindow()).perform(click());
+    }
+
+    public Matcher<Root> isPopupWindow() {
+        return isPlatformPopup();
     }
 
     public void waitForIdle() {
