@@ -1,12 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Activity;
 import android.app.Instrumentation;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
@@ -14,155 +13,131 @@ import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 
-import timber.log.Timber;
+import foundation.pEp.jniadapter.Rating;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.core.internal.deps.guava.base.Preconditions.checkNotNull;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
-import static junit.framework.Assert.assertTrue;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class YellowStatusEmailFromBotTest {
 
     private UiDevice device;
     private TestUtils testUtils;
-    private String messageTo = "";
-    private static final String HOST = "test.pep-security.net";
+    private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
+    private static final String UNKNOWN_ADDRESS = "unkown@user.is";
+
+    private String botMail = System.currentTimeMillis() + "@" + HOST;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        instrumentation = InstrumentationRegistry.getInstrumentation();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        device = UiDevice.getInstance(instrumentation);
         testUtils = new TestUtils(device, instrumentation);
-        testUtils.increaseTimeoutWait();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        messageTo = Long.toString(System.currentTimeMillis()) + "@" + HOST;
-        testUtils.startActivity();
+        new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        testUtils.setupAccountIfNeeded();
     }
 
     @After
-    public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+    public void tearDown() {
+        splashActivityTestRule.finishActivity();
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test
     public void yellowStatusEmailFromBot (){
         sendMessageAndAssertYellowStatusMessage();
-        testUtils.goBackToMessageCompose();
         twoStatusMessageYellowAndGray();
-
     }
-    // TODO FIX TEST
-    public void sendMessageAndAssertYellowStatusMessage() {
-        //testUtils.createAccount();
+
+    private void sendMessageAndAssertYellowStatusMessage() {
+        sendMessage(botMail);
+        testUtils.waitForNewMessage();
+        device.waitForIdle();
+        testUtils.clickFirstMessage();
+
+        testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
+        testUtils.pressBack();
+
         testUtils.composeMessageButton();
         device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.subject)).perform(typeText(" "));
+        fillComposeFields(botMail);
+        testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
+        device.waitForIdle();
+        testUtils.goBackFromMessageCompose(false);
+    }
+
+    private void twoStatusMessageYellowAndGray() {
+        testUtils.composeMessageButton();
+        device.waitForIdle();
+
+        String ownAddress = testUtils.getTextFromTextViewThatContainsText("@");
+
+        fillComposeFields(botMail + "\n" + UNKNOWN_ADDRESS + "\n" + ownAddress);
+        device.waitForIdle();
+
+        selectPrivacyStatusFromMenu();
+        device.waitForIdle();
+
+        checkToolbarColor(R.color.pep_no_color);
+        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
+
+        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
+                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
+        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(1, R.id.tvRatingStatus))
+                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingCannotDecrypt.value))));
+    }
+
+    private void sendMessage(String messageTo) {
+        testUtils.composeMessageButton();
+        device.waitForIdle();
+        fillComposeFields(messageTo);
         testUtils.sendMessage();
         device.waitForIdle();
-        testUtils.waitForNewMessage();
-        //testUtils.clickLastMessageReceived();
-    //    testUtils.clickView(R.id.reply_message);
-        onView(withId(R.id.subject)).perform(typeText(" "));
-        onView(withId(R.id.message_content)).perform(typeText(" "));
-        device.waitForIdle();
-        clickMailStatus();
-        testUtils.checkToolBarColor(R.color.pep_yellow);
-        device.pressBack();
-        testUtils.goBackToMessageListAndPressComposeMessageButton();
-        yellowStatusMessageTest();
     }
 
-    public void twoStatusMessageYellowAndGray() {
-        testUtils.goBackToMessageListAndPressComposeMessageButton();
-        fillComposeFields();
-        onView(withId(R.id.subject)).perform(typeText(" "));
-        clickMailStatus();
-        testUtils.doWaitForResource(R.id.my_recycler_view);
+    private void selectPrivacyStatusFromMenu() {
+        testUtils.openOptionsMenu();
         device.waitForIdle();
-        onView(withRecyclerView(R.id.my_recycler_view).atPosition(0)).check(matches(withBackgroundColor(R.color.pep_yellow)));
-        onView(withRecyclerView(R.id.my_recycler_view).atPosition(1)).check(matches(withBackgroundColor(R.color.pep_no_color)));
-        testUtils.goBackAndRemoveAccount(true);
-    }
-
-    private void fillComposeFields() {
-        device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        onView(withId(R.id.to)).perform(typeText("unknown@user.is"), closeSoftKeyboard());
+        testUtils.selectFromScreen(R.string.pep_title_activity_privacy_status);
         device.waitForIdle();
     }
 
-    public static UtilsPackage.RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
-
-        return new UtilsPackage.RecyclerViewMatcher(recyclerViewId);
-    }
-
-    public void goBackDiscardMessageAndRemoveAccount(){
-        boolean accountRemoved = false;
-        boolean messageDiscarded = false;
-        while (!accountRemoved) {
-            try {
-                testUtils.removeLastAccount();
-                accountRemoved = true;
-            } catch (Exception ex) {
-                device.pressBack();
-                try {
-                    if (!messageDiscarded) {
-                        device.waitForIdle();
-                        onView(withText(R.string.discard_action)).perform(click());
-                        messageDiscarded = true;
-                    }
-                } catch (Exception e){
-                    Timber.i("No dialog alert message");
-                }
-                Timber.i("View not found, pressBack to previous activity: " + ex);
+    private void checkToolbarColor(int color) {
+        boolean toolbarExists = false;
+        while (!toolbarExists) {
+            if (exists(onView(withId(R.id.toolbar)))) {
+                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
+                toolbarExists = true;
             }
         }
     }
-    // TODO FIX TEST
-    private void clickMailStatus() {
-      //  testUtils.doWaitForResource(R.id.pEp_indicator);
-      //  testUtils.clickView(R.id.pEp_indicator);
-    }
 
-    // TODO FIX TEST
-    private void yellowStatusMessageTest() {
+    private void fillComposeFields(String messageTo) {
+        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
         device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-     //   onView(withId(R.id.pEp_indicator)).perform(click());
-        onView(withId(R.id.my_recycler_view)).check(doesNotExist());
-
-    }
-
-    public void assertCurrentActivityIsInstanceOf(Class<? extends Activity> activityClass) {
-        Activity currentActivity = testUtils.getCurrentActivity();
-        checkNotNull(currentActivity);
-        checkNotNull(activityClass);
-        assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
+        onView(withId(R.id.subject)).perform(replaceText(MESSAGE_SUBJECT));
+        device.waitForIdle();
+        onView(withId(R.id.message_content)).perform(typeText(MESSAGE_BODY));
+        device.waitForIdle();
     }
 }
