@@ -58,11 +58,16 @@ class DrawerLayoutTest {
         // check if drawer folders changed to selected account
     }
 
+    @Test
     fun changeAccountFolders() {
-        // click button to show accounts
-        // check if accounts are visible
-        // click button to show folders
-        // check if folders are visible
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.navigation_accounts)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.menu_header)).perform(click())
+        onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -97,7 +102,6 @@ class DrawerLayoutTest {
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, click()))
         uiDevice.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
-
     }
 
     fun clickAccountInList() {
@@ -112,8 +116,6 @@ class DrawerLayoutTest {
     fun clickAddAccount() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
-        onView(withId(R.id.menu_header)).perform(click())
-        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
         uiDevice.waitForIdle()
         assertTrue(testUtils.currentActivity is AccountSetupBasics)
@@ -122,8 +124,6 @@ class DrawerLayoutTest {
     @Test
     fun clickSettings() {
         testUtils.openHamburgerMenu()
-        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
-        onView(withId(R.id.menu_header)).perform(click())
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.configure_account_container)).perform(click())
         uiDevice.waitForIdle()
