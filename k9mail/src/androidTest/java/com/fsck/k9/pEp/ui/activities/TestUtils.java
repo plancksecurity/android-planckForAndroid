@@ -1748,6 +1748,21 @@ public class TestUtils {
         }
     }
 
+    public void removeTextFromTextView(int viewId, String target) {
+        device.waitForIdle();
+        int size = target.length();
+        for (int i  = 0; i < size; i ++) {
+            try {
+                device.waitForIdle();
+                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.waitForIdle();
+            } catch (Exception ex) {
+                pressBack();
+                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+            }
+        }
+    }
+
     private void clickTextView (String viewId) {
         while (true) {
             try {
@@ -1914,6 +1929,10 @@ public class TestUtils {
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
         goBack(true);
+    }
+
+    public void goBackFromMessageCompose(boolean saveAsDraft) {
+        goBack(saveAsDraft);
     }
 
     private void goBack (boolean saveAsDraft) {
