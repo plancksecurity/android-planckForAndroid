@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
@@ -43,6 +44,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
@@ -76,6 +78,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -86,11 +89,13 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.test.platform.app.InstrumentationRegistry ;
 
@@ -1509,6 +1514,38 @@ public class TestUtils {
         }
     }
 
+    public void setupAccountIfNeeded() {
+        skipTutorialAndAllowPermissionsIfNeeded();
+        if(exists(onView(withText(R.string.account_setup_basics_title)))) {
+            setupAccountAutomatically(false);
+        }
+    }
+
+    public void setupAccountAutomatically(boolean withSync) {
+        setupEmailAndPassword();
+        onView(withId(R.id.next)).perform(click());
+        waitUntilViewDisplayed(R.id.account_name);
+        onView(withId(R.id.account_name)).perform(replaceText("test"));
+        if(!withSync) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+            device.waitForIdle();
+        }
+        onView(withId(R.id.done)).perform(click());
+        device.waitForIdle();
+    }
+
+    private void setupEmailAndPassword() {
+        onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
+        onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class))))
+                .check(matches(withText(R.string.account_setup_basics_title)));
+
+        String email = getAccountEmailForDevice();
+        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        onView(withId(R.id.account_email)).perform(replaceText(email));
+        onView(withId(R.id.account_password)).perform(replaceText(pass));
+    }
+
     public void goToSettingsAndRemoveAllAccounts() {
         selectFromMenu(R.string.action_settings);
         removeAllAccounts();
@@ -2134,7 +2171,11 @@ public class TestUtils {
 
     private void goBackToOriginalApp() {
         while (!APP_ID.equals(device.getCurrentPackageName())) {
-            pressBack();
+            device.waitForIdle();
+            Espresso.onIdle();
+            device.pressBack();
+            device.waitForIdle();
+            Espresso.onIdle();
         }
     }
 
