@@ -2512,6 +2512,14 @@ public class TestUtils {
         device.waitForIdle();
     }
 
+    public void doWaitForNextAlertDialog() {
+        device.waitForIdle();
+        int id = getCurrentActivity().getResources()
+                .getIdentifier("alertTitle", "id", "android");
+        waitUntilViewDisplayed(onView(withId(id)).inRoot(isDialog()));
+        device.waitForIdle();
+    }
+
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
