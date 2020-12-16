@@ -33,6 +33,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -829,10 +830,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void populateFolders(List<LocalFolder> folders) {
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
-        runOnUiThread(() -> {
+        if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
             drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount);
-            setupMainFolders();
-        });
+        }
+        runOnUiThread(this::setupMainFolders);
     }
 
     @NonNull
