@@ -79,8 +79,8 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         hideLoading()
     }
 
-    override fun showLayout(show: Boolean) {
-        layout.visibility = if (show) View.VISIBLE else View.GONE
+    override fun show() {
+        layout.visibility = View.VISIBLE
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {

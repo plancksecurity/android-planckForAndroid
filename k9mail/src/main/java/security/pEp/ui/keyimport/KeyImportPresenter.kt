@@ -57,7 +57,7 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private fun onKeyImport(uri: Uri) {
-        view.showLayout(true)
+        view.show()
         val filename = uri.path.toString()
 
         scope.launch {

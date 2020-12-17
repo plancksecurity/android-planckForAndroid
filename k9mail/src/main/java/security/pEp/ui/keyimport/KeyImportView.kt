@@ -21,5 +21,5 @@ interface KeyImportView {
 
     fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String)
 
-    fun showLayout(show: Boolean)
+    fun show()
 }
