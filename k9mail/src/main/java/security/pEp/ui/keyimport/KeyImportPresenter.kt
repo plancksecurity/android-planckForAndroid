@@ -57,12 +57,12 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private fun onKeyImport(uri: Uri) {
+        view.showLayout(true)
         val filename = uri.path.toString()
 
         scope.launch {
             view.showLoading()
             val firstIdentity = importKey(uri)
-            view.hideLoading()
             firstIdentity?.let {
                 view.showKeyImportConfirmationDialog(firstIdentity, filename)
             } ?: replyResult(false, filename)
@@ -98,6 +98,7 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private suspend fun importKey(uri: Uri): Identity?  = withContext(Dispatchers.IO){
+        launch { delay(300) }
         var result: Identity?
         try {
             val resolver = context.contentResolver

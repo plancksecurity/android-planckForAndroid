@@ -20,4 +20,6 @@ interface KeyImportView {
     fun hideLoading()
 
     fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String)
+
+    fun showLayout(show: Boolean)
 }

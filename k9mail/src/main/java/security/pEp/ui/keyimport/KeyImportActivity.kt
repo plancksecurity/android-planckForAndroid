@@ -6,8 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
@@ -72,35 +71,45 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
         acceptButton.setOnClickListener {
-            layout.visibility = View.GONE
             presenter.onKeyImportAccepted(filename)
         }
         cancelButton.setOnClickListener {
-            layout.visibility = View.GONE
             presenter.onKeyImportRejected()
         }
-        layout.visibility = View.VISIBLE
+        hideLoading()
+    }
+
+    override fun showLayout(show: Boolean) {
+        layout.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
-        AlertDialog.Builder(this)
-                .setTitle(R.string.settings_import_success_header)
-                .setMessage(getString(R.string.key_import_success))
-                .setCancelable(false)
-                .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
-                .create()
-                .show()
+        showImportResult(true)
     }
 
     override fun showFailedKeyImport(filename: String?) {
-        AlertDialog.Builder(this)
-                .setTitle(R.string.settings_import_failed_header)
-                .setMessage(getString(R.string.key_import_failure))
-                .setCancelable(false)
-                .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
-                .create()
-                .show()
+        showImportResult(false)
+    }
 
+    private fun showImportResult(success: Boolean) {
+        hideLoading()
+        fingerprintTextView.visibility = View.GONE
+        addressText.visibility = View.GONE
+        textView3.visibility = View.GONE
+
+        if (success) {
+            findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_success_header)
+            textView.text = getString(R.string.key_import_success)
+            cancelButton.visibility = View.INVISIBLE
+            acceptButton.text = getString(R.string.okay_action)
+            acceptButton.setOnClickListener { finish() }
+        } else {
+            acceptButton.visibility = View.GONE
+            findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_failed_header)
+            textView.text = getString(R.string.key_import_failure)
+            cancelButton.text = getString(R.string.okay_action)
+            cancelButton.setOnClickListener { finish() }
+        }
     }
 
     override fun showLoading() {
