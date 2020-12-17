@@ -83,15 +83,15 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         layout.visibility = View.VISIBLE
     }
 
-    override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
+    override fun showCorrectKeyImport() {
         showImportResult(true)
     }
 
     override fun showFailedKeyImport(filename: String?) {
-        showImportResult(false)
+        showImportResult(false, filename)
     }
 
-    private fun showImportResult(success: Boolean) {
+    private fun showImportResult(success: Boolean, filename: String? = "") {
         hideLoading()
         fingerprintTextView.visibility = View.GONE
         addressText.visibility = View.GONE
@@ -106,7 +106,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         } else {
             acceptButton.visibility = View.GONE
             findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_failed_header)
-            textView.text = getString(R.string.key_import_failure)
+            textView.text = getString(R.string.key_import_failure, filename)
             cancelButton.text = getString(R.string.okay_action)
             cancelButton.setOnClickListener { finish() }
         }
