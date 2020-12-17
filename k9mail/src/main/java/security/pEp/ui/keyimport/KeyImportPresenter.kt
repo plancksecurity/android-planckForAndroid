@@ -75,6 +75,7 @@ class KeyImportPresenter @Inject constructor(
 
     private suspend fun onKeyImportConfirmed(): Boolean {
         return withContext(Dispatchers.IO) {
+            launch { delay(300) }
             var result = false
             runBlocking {
                 try {
@@ -147,6 +148,7 @@ class KeyImportPresenter @Inject constructor(
 
     fun onKeyImportAccepted(filename: String) {
         scope.launch {
+            view.showLoading(false)
             val result = onKeyImportConfirmed()
             replyResult(result, filename)
         }

@@ -112,10 +112,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         }
     }
 
-    override fun showLoading() {
-        val title = getString(R.string.settings_import_dialog_title)
-        val message = getString(R.string.settings_import_scanning_file)
-
+    override fun showLoading(showMessage: Boolean) {
+        if(!showMessage) {
+            keyImportDialogText.visibility = View.INVISIBLE
+        }
         confirmationLayout.visibility = View.INVISIBLE
         keyImportLoadingLayout.visibility = View.VISIBLE
     }

@@ -15,7 +15,7 @@ interface KeyImportView {
 
     fun getApplicationContext(): Context
 
-    fun showLoading()
+    fun showLoading(showMessage: Boolean = true)
 
     fun hideLoading()
 
