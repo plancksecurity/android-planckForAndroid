@@ -172,7 +172,6 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         }
         mAccount.setName(mName.getText().toString());
         mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
-        mAccount.save(Preferences.getPreferences(this));
         boolean isManualSetup = getIntent().getBooleanExtra(EXTRA_MANUAL_SETUP, false);
         pEpGenerateAccountKeysTask accountGenerationTask = new pEpGenerateAccountKeysTask(this, mAccount);
         launchGenerateAccountKeysTask(accountGenerationTask, isManualSetup);
