@@ -91,7 +91,7 @@ public class Account implements BaseAccount, StoreConfig {
         INITIAL,
         READY
     }
-    private SetupState setupState = SetupState.INITIAL;
+    private SetupState setupState;
 
     public SetupState getSetupState() {
         return setupState;
@@ -309,6 +309,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Context context) {
         accountUuid = UUID.randomUUID().toString();
+        setupState = SetupState.INITIAL;
         localStorageProviderId = StorageManager.getInstance(context).getDefaultProviderId();
         automaticCheckIntervalMinutes = INTERVAL_MINUTES_NEVER;
         idleRefreshMinutes = 24;
@@ -400,6 +401,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Preferences preferences, String uuid) {
         this.accountUuid = uuid;
+        this.setupState = SetupState.READY;
         loadAccount(preferences);
     }
 
@@ -509,7 +511,6 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
         pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
-        setupState = SetupState.valueOf(storage.getString(accountUuid + ".installState", SetupState.INITIAL.toString()));
 
         // Use email address as account description if necessary
         if (description == null) {
@@ -685,6 +686,9 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized void save(Preferences preferences) {
+        if(setupState == SetupState.INITIAL && BuildConfig.DEBUG) {
+            throw new IllegalStateException("Trying to save an account in state INITIAL");
+        }
         StorageEditor editor = preferences.getStorage().edit();
 
         if (!preferences.getStorage().getString("accountUuids", "").contains(accountUuid)) {
@@ -796,7 +800,6 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
-        editor.putString(accountUuid + ".installState", setupState.toString());
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
