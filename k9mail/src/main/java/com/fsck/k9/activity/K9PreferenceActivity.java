@@ -30,18 +30,24 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 
 public abstract class K9PreferenceActivity extends PreferenceActivity implements LifecycleOwner {
+    private static final String CURRENT_SCREEN_KEY = "currentScreenKey";
     private LifecycleRegistry lifecycleRegistry;
 
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
 
     ToolBarCustomizer toolBarCustomizer;
+    private Dialog dialog;
+    private String currentScreenKey;
 
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
         setTheme(K9.getK9ThemeResourceId());
         super.onCreate(icicle);
+        if (icicle != null) {
+            currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
+        }
         toolBarCustomizer = new PEpToolbarCustomizer(this);
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(State.CREATED);
@@ -57,11 +63,19 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     protected void onResume() {
         super.onResume();
         lifecycleRegistry.markState(State.RESUMED);
+
+        if (currentScreenKey != null) {
+            PreferenceScreen currentScreen = (PreferenceScreen) findPreference(currentScreenKey);
+            if (currentScreen != null) {
+                setUpNestedScreen(currentScreen);
+            }
+        }
     }
 
     @Override
     protected void onPause() {
         lifecycleRegistry.markState(State.STARTED);
+        dialog = null;
         super.onPause();
     }
 
@@ -82,6 +96,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         // see https://developer.android.com/topic/libraries/architecture/lifecycle.html#onStop-and-savedState
         lifecycleRegistry.markState(State.CREATED);
         super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_SCREEN_KEY, currentScreenKey);
     }
 
     @NonNull
@@ -95,6 +110,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         super.onPostCreate(savedInstanceState);
         LinearLayout bar = startLinearLayout();
         this.toolbar = (Toolbar) bar.getChildAt(0);
+        getDelegate().setSupportActionBar(toolbar);
         this.toolbar.setNavigationOnClickListener(v -> finish());
         setStatusBar();
     }
@@ -203,34 +219,39 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     }
 
     public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
-        final Dialog dialog = preferenceScreen.getDialog();
+        currentScreenKey = preferenceScreen.getKey();
+        dialog = preferenceScreen.getDialog();
+        if (dialog == null) {
+            return;
+        }
 
         setTheme(K9.getK9ThemeResourceId());
 
-        LinearLayout bar;
-
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            ListView content = dialog.findViewById(android.R.id.list);
-            ViewGroup root = (ViewGroup) content.getParent().getParent();
-            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-
-            int height;
-            TypedValue tv = new TypedValue();
-            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            } else {
-                height = bar.getHeight();
+        ListView content = dialog.findViewById(android.R.id.list);
+        ViewGroup root = (ViewGroup) content.getParent().getParent();
+        if (root.findViewById(R.id.toolbar) == null) {
+            LinearLayout bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                int height;
+                TypedValue tv = new TypedValue();
+                if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                    height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+                } else {
+                    height = bar.getHeight();
+                }
+                content.setPadding(0, height, 0, 0);
             }
-            content.setPadding(0, height, 0, 0);
             root.addView(bar, 0); // insert at top
-        } else {
-            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
-            bar = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.toolbar, root, false);
-            root.addView(bar, 0); // insert at top
+            toolbar = (Toolbar) bar.getChildAt(0);
+            toolbar.setTitle(preferenceScreen.getTitle());
+            setStatusBar();
+            getDelegate().setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(Build.VERSION.SDK_INT > Build.VERSION_CODES.M);
+            toolbar.setNavigationOnClickListener(v -> {
+                dialog.dismiss();
+                dialog = null;
+                currentScreenKey = null;
+            });
         }
-        toolbar = (Toolbar) bar.getChildAt(0);
-        toolbar.setTitle(preferenceScreen.getTitle());
-        setStatusBar();
-        toolbar.setNavigationOnClickListener(v -> dialog.dismiss());
     }
 }
