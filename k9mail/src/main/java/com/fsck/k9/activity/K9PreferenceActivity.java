@@ -111,7 +111,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         LinearLayout bar = startLinearLayout();
         this.toolbar = (Toolbar) bar.getChildAt(0);
         getDelegate().setSupportActionBar(toolbar);
-        this.toolbar.setNavigationOnClickListener(v -> finish());
+        this.toolbar.setNavigationOnClickListener(v -> onBackPressed());
         setStatusBar();
     }
 
