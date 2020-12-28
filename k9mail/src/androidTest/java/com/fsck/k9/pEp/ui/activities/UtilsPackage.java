@@ -52,7 +52,7 @@ public class UtilsPackage {
             return atPositionOnView(position, -1);
         }
 
-        Matcher<View> atPositionOnView(final int position, final int targetViewId) {
+        public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
 
             return new TypeSafeMatcher<View>() {
                 Resources resources = null;
@@ -77,12 +77,19 @@ public class UtilsPackage {
                     this.resources = view.getResources();
 
                     if (childView == null) {
-                        RecyclerView recyclerView =
-                                view.getRootView().findViewById(recyclerViewId);
-                        if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
-                            childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
-                        } else {
+                        View listOrRecyclerView = view.getRootView().findViewById(recyclerViewId);
+                        if(listOrRecyclerView == null || listOrRecyclerView.getId() != recyclerViewId) {
                             return false;
+                        }
+                        else if(listOrRecyclerView instanceof ListView) {
+                            childView = ((ListView) listOrRecyclerView).getChildAt(position);
+                        }
+                        else if(listOrRecyclerView instanceof RecyclerView) {
+                            childView = ((RecyclerView) listOrRecyclerView).getChildAt(position);
+                        }
+                        else {
+                            throw new IllegalArgumentException("Expected ListView or RecyclerView but got "
+                                    + listOrRecyclerView.getClass().getSimpleName());
                         }
                     }
 
@@ -130,7 +137,14 @@ public class UtilsPackage {
         return new TypeSafeMatcher<View>() {
             @Override
             public boolean matchesSafely(final View view) {
-                return ((ListView) view).getCount() == size;
+                if(view instanceof ListView) {
+                    return ((ListView) view).getCount() == size;
+                }
+                else if(view instanceof RecyclerView) {
+                    return ((RecyclerView) view).getAdapter().getItemCount() == size;
+                }
+                throw new ClassCastException("Wrong view class: expected Listview or RecyclerView but got "
+                        + view.getClass().getSimpleName());
             }
 
             @Override
