@@ -1813,8 +1813,8 @@ public class CucumberTestSteps {
                 TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(1).getText().contains("masterkey")) {
-                        object.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(3).click();
+                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(2).getText().contains("masterkey")) {
+                        object.getChildren().get(0).getChildren().get(0).click();
                         return;
                     }
                 }
