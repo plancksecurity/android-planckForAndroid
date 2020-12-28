@@ -18,12 +18,15 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -40,10 +43,14 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 
+import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +67,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
@@ -70,6 +78,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -78,12 +88,15 @@ import static androidx.test.espresso.intent.Checks.checkNotNull;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.test.platform.app.InstrumentationRegistry ;
 
@@ -99,7 +112,9 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
+import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -352,28 +367,6 @@ public class TestUtils {
         }
     }
 
-    public void setPassphraseAccount() {
-        switch (keySync_number()) {
-            case "4":
-                passphraseAccount = "test003@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "leakydente2020";
-                break;
-            case "5":
-                passphraseAccount = "test004@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "leakydente2020";
-                break;
-            case "6":
-                passphraseAccount = "test005@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "pEpdichauf1234";
-                break;
-            default:
-                Timber.i("Wrong passphrase Account");
-        }
-    }
-
     public void readConfigFile() {
         File newFile = null;
          do {
@@ -513,6 +506,24 @@ public class TestUtils {
                                         totalAccounts = 2;
                                     }
                                 }
+                                break;
+                            case "passphrase_account_1":
+                                testConfig.setPassphrase_account(line[1], 0);
+                                break;
+                            case "passphrase_password_1":
+                                testConfig.setPassphrase_password(line[1], 0);
+                                break;
+                            case "passphrase_account_2":
+                                testConfig.setPassphrase_account(line[1], 1);
+                                break;
+                            case "passphrase_password_2":
+                                testConfig.setPassphrase_password(line[1], 1);
+                                break;
+                            case "passphrase_account_3":
+                                testConfig.setPassphrase_account(line[1], 2);
+                                break;
+                            case "passphrase_password_3":
+                                testConfig.setPassphrase_password(line[1], 2);
                                 break;
                             default:
                                 break;
@@ -801,7 +812,6 @@ public class TestUtils {
                 case "6":
                 case "5":
                 case "4":
-                    setPassphraseAccount();
                     fillAccountAddress(passphraseAccount);
                     fillAccountPassword(passphraseAccountPassword);
                     automaticAccount();
@@ -1335,7 +1345,7 @@ public class TestUtils {
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
-    void externalAppRespondWithFile(int id) {
+    public void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -1464,6 +1474,99 @@ public class TestUtils {
         } catch (Exception ex) {
             Timber.i("Cannot select/accept remove account");
         }
+    }
+
+    public void setupAccountIfNeeded() {
+        skipTutorialAndAllowPermissionsIfNeeded();
+        if(exists(onView(withText(R.string.account_setup_basics_title)))) {
+            setupAccountAutomatically(false);
+        }
+    }
+
+    public void setupAccountAutomatically(boolean withSync) {
+        setupEmailAndPassword();
+        onView(withId(R.id.next)).perform(click());
+        doWait(5000);
+        onView(withId(R.id.account_name)).perform(replaceText("test"));
+        if(!withSync) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        }
+        onView(withId(R.id.done)).perform(click());
+        doWait(5000);
+    }
+
+    private void setupEmailAndPassword() {
+        onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
+        onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class))))
+                .check(matches(withText(R.string.account_setup_basics_title)));
+
+        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        onView(withId(R.id.account_email)).perform(replaceText(email));
+        onView(withId(R.id.account_password)).perform(replaceText(pass));
+    }
+
+    public void goToSettingsAndRemoveAllAccounts() {
+        selectFromMenu(R.string.action_settings);
+        removeAllAccounts();
+    }
+
+    public void goToSettingsAndRemoveAllAccountsIfNeeded() {
+        if(!exists(onView(withText(R.string.account_setup_basics_title)))) {
+            goToSettingsAndRemoveAllAccounts();
+        }
+    }
+
+    public void removeAllAccounts() {
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
+        while(!preferences.getAccounts().isEmpty()) {
+            removeAccountAtPosition(0);
+            doWait(5000);
+        }
+    }
+
+    private void doWait(int millis) {
+        try {
+            sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAccountAtPosition(int position) {
+        device.waitForIdle();
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        device.waitForIdle();
+        selectFromScreen(R.string.remove_account_action);
+        device.waitForIdle();
+
+        clickAcceptButton();
+        device.waitForIdle();
+    }
+
+    public void skipTutorialAndAllowPermissionsIfNeeded() {
+        if(exists(onView(withId(R.id.skip)))) {
+            skipTutorialAndAllowPermissions();
+        }
+    }
+
+    public void skipTutorialAndAllowPermissions() {
+        try {
+            device.waitForIdle();
+            onView(withId(R.id.skip)).perform(click());
+            device.waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        try {
+            device.waitForIdle();
+            onView(withId(R.id.action_continue)).perform(click());
+            device.waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        allowPermissions();
     }
 
     public void goBackAndRemoveAccount() {
@@ -1604,6 +1707,21 @@ public class TestUtils {
         }
     }
 
+    public void removeTextFromTextView(int viewId, String target) {
+        device.waitForIdle();
+        int size = target.length();
+        for (int i  = 0; i < size; i ++) {
+            try {
+                device.waitForIdle();
+                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                device.waitForIdle();
+            } catch (Exception ex) {
+                pressBack();
+                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+            }
+        }
+    }
+
     private void clickTextView (String viewId) {
         while (true) {
             try {
@@ -1619,23 +1737,13 @@ public class TestUtils {
     }
 
     void testStatusEmpty() {
-        checkStatus(Rating.pEpRatingUndefined);
-        pressBack();
-    }
-
-    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
-        fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
-        pressBack();
+        assertMessageStatus(Rating.pEpRatingUndefined, false);
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
-        onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
-        pressBack();
+        assertMessageStatus(expectedIdentity.getRating(), false);
+        goBack(false);
     }
 
     void checkStatus(Rating rating) {
@@ -1669,6 +1777,50 @@ public class TestUtils {
         }
     }
 
+    public void assertMessageStatus(Rating status, boolean clickableExpected){
+        assertMessageStatus(status, true, clickableExpected);
+    }
+
+    public void assertMessageStatus(Rating status, boolean enabledForThisMessage, boolean clickableExpected){
+        int statusColor;
+
+        waitForToolbar();
+        if(!enabledForThisMessage) {
+            onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+        }
+
+        statusColor = getSecurityStatusDrawableColor(status);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            if (R.drawable.pep_status_green != statusColor
+                    && R.drawable.pep_status_red != statusColor
+                    && R.drawable.pep_status_yellow != statusColor
+            ) {
+                assertFailWithMessage("Wrong Status color");
+            }
+
+            if(!enabledForThisMessage) {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
+            }
+            else {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+            }
+        }
+
+        clickStatus();
+        if(clickableExpected) {
+            device.waitForIdle();
+            waitForToolbar();
+            checkToolBarColor(getPEpStatusDueColor(status));
+            device.waitForIdle();
+            pressBack();
+        }
+    }
+
     private int getSecurityStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
@@ -1681,6 +1833,24 @@ public class TestUtils {
             color = R.drawable.pep_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
+    private int getPEpStatusDueColor(Rating rating) {
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = R.color.pep_no_color;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.color.pep_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.color.pep_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.color.pep_yellow;
         } else {
             color = -10;
         }
@@ -1720,28 +1890,33 @@ public class TestUtils {
         goBack(true);
     }
 
+    public void goBackFromMessageCompose(boolean saveAsDraft) {
+        goBack(saveAsDraft);
+    }
+
     private void goBack (boolean saveAsDraft) {
         Activity currentActivity = getCurrentActivity();
-        while (currentActivity == getCurrentActivity()){
+        while (currentActivity == getCurrentActivity()) {
             try {
-                if (saveAsDraft) {
+                device.waitForIdle();
+                while (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
                     device.waitForIdle();
-                    while (!viewIsDisplayed(R.id.message_content)) {
-                        onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                        device.waitForIdle();
-                    }
                 }
                 device.waitForIdle();
                 pressBack();
                 device.waitForIdle();
                 if (saveAsDraft) {
                     onView(withText(R.string.save_draft_action)).perform(click());
+                } else {
+                    onView(withText(R.string.discard_action)).perform(click());
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 Timber.i("Ignored exception: " + ex);
             }
         }
-        device.waitForIdle();}
+        device.waitForIdle();
+    }
 
     public void assertsTextsOnScreenAreEqual(int resourceOnScreen, int comparedWith) {
         BySelector selector = By.clazz("android.widget.TextView");
@@ -1966,6 +2141,19 @@ public class TestUtils {
         }
     }
 
+    public void selectFromStatusPopupMenu(int itemId) {
+        onView(withId(R.id.actionbar_message_view)).perform(ViewActions.longClick());
+        selectFromPopupMenu(itemId);
+    }
+
+    public void selectFromPopupMenu(int itemId) {
+        onView(withText(itemId)).inRoot(isPopupWindow()).perform(click());
+    }
+
+    public Matcher<Root> isPopupWindow() {
+        return isPlatformPopup();
+    }
+
     public void waitForIdle() {
         device.waitForIdle();
         Espresso.onIdle();
@@ -2029,7 +2217,11 @@ public class TestUtils {
 
     private void goBackToOriginalApp() {
         while (!APP_ID.equals(device.getCurrentPackageName())) {
-            pressBack();
+            device.waitForIdle();
+            Espresso.onIdle();
+            device.pressBack();
+            device.waitForIdle();
+            Espresso.onIdle();
         }
     }
 
@@ -2243,6 +2435,14 @@ public class TestUtils {
 
     void doWaitForAlertDialog(IntentsTestRule<SplashActivity> intent, int displayText) {
         onView(withId(intent.getActivity().getResources()
+                .getIdentifier("alertTitle", "id", "android")))
+                .inRoot(isDialog())
+                .check(matches(withText(displayText)))
+                .check(matches(isDisplayed()));
+    }
+
+    public void doWaitForAlertDialog(int displayText) {
+        onView(withId(getCurrentActivity().getResources()
                 .getIdentifier("alertTitle", "id", "android")))
                 .inRoot(isDialog())
                 .check(matches(withText(displayText)))
@@ -3129,6 +3329,8 @@ public class TestUtils {
         String[] keySync_account;
         String[] keySync_password;
         String keySync_number;
+        String[] passphrase_account;
+        String[] passphrase_password;
 
         TestConfig(){
             this.mail = new String[total];
@@ -3142,6 +3344,8 @@ public class TestUtils {
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
             keySync_number = "-10";
+            this.passphrase_account = new String[3];
+            this.passphrase_password = new String[3];
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
@@ -3155,6 +3359,8 @@ public class TestUtils {
         void setKeySync_account(String mail, int account) { this.keySync_account[account] = mail;}
         void setKeySync_password(String password, int account) { this.keySync_password[account] = password;}
         void setKeySync_number(String number) { this.keySync_number = number;}
+        void setPassphrase_account(String mail, int account) { this.passphrase_account[account] = mail;}
+        void setPassphrase_password(String password, int account) { this.passphrase_password[account] = password;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
@@ -3167,5 +3373,7 @@ public class TestUtils {
         String getKeySync_account(int account) { return keySync_account[account];}
         String getKeySync_password(int account) { return keySync_password[account];}
         String getKeySync_number() { return keySync_number;}
+        String getPassphrase_account(int account) { return passphrase_account[account];}
+        String getPassphrase_password(int account) { return passphrase_password[account];}
     }
 }
