@@ -806,14 +806,6 @@ public class TestUtils {
                 }
             }
             switch (keySync_number()) {
-                case "6":
-                case "5":
-                case "4":
-                    fillAccountAddress(passphraseAccount);
-                    fillAccountPassword(passphraseAccountPassword);
-                    automaticAccount();
-                    accountDescription("importKeyWithPassphrase", "Passphrase");
-                    break;
                 case "0":
                     createNAccounts(getTotalAccounts(), false, false);
                     break;
@@ -823,6 +815,24 @@ public class TestUtils {
                     break;
                 case "3":
                     createNAccounts(1, true, false);
+                    break;
+                case "4":
+                    fillAccountAddress(testConfig.getPassphrase_account(0));
+                    fillAccountPassword(testConfig.getPassphrase_password(0));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    break;
+                case "5":
+                    fillAccountAddress(testConfig.getPassphrase_account(1));
+                    fillAccountPassword(testConfig.getPassphrase_password(1));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    break;
+                case "6":
+                    fillAccountAddress(testConfig.getPassphrase_account(2));
+                    fillAccountPassword(testConfig.getPassphrase_password(2));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase");
                     break;
                 default:
                     Timber.i("Key sync value is not valid");
