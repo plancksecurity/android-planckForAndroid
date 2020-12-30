@@ -152,9 +152,6 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
 
-    public String passphraseAccount;
-    public String passphraseAccountPassword;
-    public String passphrasePassword;
 
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
@@ -2463,9 +2460,13 @@ public class TestUtils {
             backToMessageCompose = true;
         }
         while (!backToMessageCompose){
-            pressBack();
+            goBack(false);
             device.waitForIdle();
             waitForToolbar();
+            if (exists(onView(withId(android.R.id.list)))) {
+                clickInbox();
+            }
+            waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
                 backToMessageCompose = true;
             }
@@ -3255,6 +3256,10 @@ public class TestUtils {
             Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
         }
     }
+
+    public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.keySync_number) - 4);}
+
+    public String getPassphrasePassword() { return testConfig.getPassphrase_password(Integer.parseInt(testConfig.keySync_number) - 4);}
 
     @NonNull
     private String getEmail() {
