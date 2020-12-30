@@ -1367,9 +1367,9 @@ public class CucumberTestSteps {
             testUtils.waitForIdle();
         }
         testUtils.waitForIdle();
-        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(testUtils.passphrasePassword)){
+        while (!getTextFromView(onView(withId(R.id.passphrase))).contains("leakydente2020")){
             testUtils.waitForIdle();
-            onView(withId(R.id.passphrase)).perform(typeText(testUtils.passphrasePassword));
+            onView(withId(R.id.passphrase)).perform(typeText("leakydente2020"));
         }
         testUtils.waitForIdle();
         testUtils.clickView(R.id.afirmativeActionButton);
