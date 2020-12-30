@@ -70,6 +70,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -435,9 +436,6 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(80);
         TestUtils.getJSONObject("keys");
         testUtils.waitForIdle();
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        testUtils.waitForIdle();
-        testUtils.doWaitForResource(R.id.toolbar);
         if (!TestUtils.jsonArray.toString().contains("47220F5487391A9ADA8199FD8F8EB7716FA59050")) {
             TestUtils.assertFailWithMessage("Wrong extra key");
         }
@@ -447,10 +445,17 @@ public class CucumberTestSteps {
     public void I_check_there_is_an_extra_key_management() {
         timeRequiredForThisMethod(80);
         testUtils.waitForIdle();
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
+        testUtils.scrollToViewAndClickIt(testUtils.stringToID("master_key_management"));
+        testUtils.waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         testUtils.waitForIdle();
-        testUtils.doWaitForResource(R.id.toolbar);
+        onView(withId(R.id.extra_keys_view)).perform(swipeUp());
+        testUtils.waitForIdle();
         testUtils.assertsTextExistsOnScreen("4722 0F54 8739 1A9A DA81\n99FD 8F8E B771 6FA5 9050");
+        testUtils.pressBack();
+        testUtils.pressBack();
     }
 
     private void confirmAllTrustWords (JSONArray array) {
