@@ -50,6 +50,8 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import com.fsck.k9.pEp.network.ConnectivityMonitorCallback;
+import com.fsck.k9.pEp.network.PEpConnectivityMonitor;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -100,6 +102,7 @@ public class K9 extends MultiDexApplication {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
+    private PEpConnectivityMonitor connectivityMonitor;
 
     public static K9JobManager jobManager;
 
@@ -675,6 +678,7 @@ public class K9 extends MultiDexApplication {
          */
 
         setServicesEnabled(this);
+        startConnectivityMonitor();
         registerReceivers();
 
         MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
@@ -2000,6 +2004,20 @@ public class K9 extends MultiDexApplication {
         editor.commit();
     }
 
+    private void startConnectivityMonitor() {
+        connectivityMonitor = new PEpConnectivityMonitor(this, new ConnectivityMonitorCallback() {
+            @Override
+            public void onConnectivityAvailable(boolean wasConnected) {
+                if (!wasConnected) {
+                    K9.setServicesEnabled(app);
+                }
+            }
 
+            @Override
+            public void onConnectivityLost() {
+                Timber.e("Connectivity was lost");
+            }
+        });
+    }
 
 }
