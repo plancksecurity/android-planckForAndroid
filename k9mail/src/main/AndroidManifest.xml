@@ -516,6 +516,7 @@
                 <action android:name="PEP_SYNC_SIGNAL" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".AppRestartReceiver"/>
 
         <activity
             android:name=".pEp.ui.activities.SplashActivity"

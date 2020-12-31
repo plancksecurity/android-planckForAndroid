@@ -1964,6 +1964,6 @@ public class K9 extends MultiDexApplication implements LifecycleObserver {
     }
 
     public void onAppExited() {
-        jobManager.scheduleAllMailJobs();
+        AppRestartReceiver.scheduleAppRestart(this);
     }
 }
