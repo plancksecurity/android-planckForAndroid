@@ -9,7 +9,8 @@ class K9JobManager(
         private val jobManager: JobManager,
         private val preferences: Preferences,
         private val mailSyncJobManager: MailSyncJobManager,
-        private val pusherRefreshJobManager: PusherRefreshJobManager
+        private val pusherRefreshJobManager: PusherRefreshJobManager,
+        private val awakeAppJobManager: AwakeAppJobManager
 ) {
 
     // It's recommended to initialize JobManager in Application onCreate()
@@ -49,6 +50,11 @@ class K9JobManager(
     fun cancelAllPusherRefreshJobs() {
         Timber.v("canceling pusher refresh job")
         jobManager.cancelAllForTag(PusherRefreshJob.TAG)
+    }
+
+    fun scheduleAwakeAppJob() {
+        jobManager.cancelAllForTag(AwakeAppJob.TAG)
+        awakeAppJobManager.scheduleJob()
     }
 
     companion object {

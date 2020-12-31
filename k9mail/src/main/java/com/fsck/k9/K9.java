@@ -35,6 +35,7 @@ import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.helper.AppUpdater;
+import com.fsck.k9.job.AwakeAppJobManager;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
@@ -797,10 +798,11 @@ public class K9 extends MultiDexApplication implements LifecycleObserver {
 
         MailSyncJobManager mailSyncJobManager = new MailSyncJobManager(messagingController, prefs);
         PusherRefreshJobManager pusherRefreshJobManager = new PusherRefreshJobManager(this, messagingController, prefs);
-        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager);
+        AwakeAppJobManager awakeAppJobManager = new AwakeAppJobManager();
+        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager, awakeAppJobManager);
 
         jobManager = new K9JobManager(jobCreator, JobManager.create(this), prefs,
-                mailSyncJobManager, pusherRefreshJobManager);
+                mailSyncJobManager, pusherRefreshJobManager, awakeAppJobManager);
     }
 
     public void pEpInitSyncEnvironment() {
@@ -1964,6 +1966,6 @@ public class K9 extends MultiDexApplication implements LifecycleObserver {
     }
 
     public void onAppExited() {
-        jobManager.scheduleAllMailJobs();
+        jobManager.scheduleAwakeAppJob();
     }
 }
