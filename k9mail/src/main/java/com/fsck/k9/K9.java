@@ -21,6 +21,10 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.multidex.MultiDexApplication;
 
 import com.evernote.android.job.JobManager;
@@ -95,7 +99,7 @@ import timber.log.Timber.DebugTree;
 @ReportsCrashes(mailTo = "crashreport@pep.security",
         mode = ReportingInteractionMode.TOAST,
         resToastText = R.string.crash_toast_text)
-public class K9 extends MultiDexApplication {
+public class K9 extends MultiDexApplication implements LifecycleObserver {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
     private boolean needsFastPoll = false;
@@ -636,6 +640,7 @@ public class K9 extends MultiDexApplication {
         }
 
         super.onCreate();
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         initializeInjector();
 
@@ -1946,5 +1951,19 @@ public class K9 extends MultiDexApplication {
     private void startConnectivityMonitor() {
         connectivityMonitor.register(this);
     }
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        startService(new Intent(this,
+                AppExitDetectService.class));
+    }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        stopService(new Intent(this,
+                AppExitDetectService.class));
+    }
+
+    public void onAppExited() {
+        jobManager.scheduleAllMailJobs();
+    }
 }
