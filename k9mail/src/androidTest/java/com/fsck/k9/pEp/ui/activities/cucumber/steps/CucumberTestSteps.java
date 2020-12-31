@@ -399,6 +399,12 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
     }
 
+    @When("^I long click message at position (\\d+)$")
+    public void I_long_click_the_last_message_received(int position) {
+        timeRequiredForThisMethod(10);
+        testUtils.longClickMessageAtPosition(position);
+    }
+
     @When("^I click message at position (\\d+)$")
     public void I_click_message_at_position(int position) {
         timeRequiredForThisMethod(10);
