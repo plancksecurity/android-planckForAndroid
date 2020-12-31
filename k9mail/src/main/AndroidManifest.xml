@@ -560,6 +560,9 @@
             android:label="@string/passhphrase_title"
             android:theme="@style/OverlayTheme"
         />
+        <service android:name=".AppExitDetectService"
+            android:stopWithTask="false" />
+
     </application>
 
 </manifest>
