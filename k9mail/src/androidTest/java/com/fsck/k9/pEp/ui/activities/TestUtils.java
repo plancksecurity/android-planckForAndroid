@@ -2639,6 +2639,11 @@ public class TestUtils {
         device.waitForIdle();
     }
 
+    public void longClickMessageAtPosition(int position) {
+        waitForIdle();
+        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(ViewActions.longClick());
+    }
+
     public void emptyFolder (String folderName) {
         device.waitForIdle();
         File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
