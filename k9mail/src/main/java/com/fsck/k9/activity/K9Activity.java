@@ -85,7 +85,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     @Override
     protected void onDestroy() {
-        mBase.onDestroy();
+        mBase = null;
         PePUIArtefactCache pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pePUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
@@ -255,6 +255,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onPause() {
         super.onPause();
         mBase.unregisterPassphraseReceiver();
+        mBase.onPause();
         if(isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
