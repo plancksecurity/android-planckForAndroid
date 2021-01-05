@@ -37,7 +37,7 @@ class DrawerLayoutManager @Inject constructor(
     private lateinit var rendererFolderBuilder: RendererBuilder<FolderModel>
     private lateinit var rendererAccountBuilder: RendererBuilder<Account>
 
-    private lateinit var drawerCloseListener: DrawerListener
+    private lateinit var drawerCloseListener: CloseDrawerListener
 
     private lateinit var drawerLayoutInterface: DrawerLayoutInterface
 
@@ -89,16 +89,12 @@ class DrawerLayoutManager @Inject constructor(
     }
 
     override fun initializeDrawerListener(fromView: View, accountClicked: Account) {
-        drawerCloseListener = object : DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
-            override fun onDrawerOpened(view: View) {}
+        drawerCloseListener = object : CloseDrawerListener() {
             override fun onDrawerClosed(view: View) {
                 drawerView.startAnimation(fromView)
                 changeAccount(accountClicked)
                 drawerView.removeDrawerListener(drawerCloseListener)
             }
-
-            override fun onDrawerStateChanged(newState: Int) {}
         }
     }
 
@@ -129,9 +125,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.showLoadingMessages()
         drawerLayoutInterface.updateAccount(account)
         drawerLayoutInterface.updateLastUsedAccount()
-        drawerCloseListener = object : DrawerListener {
-            override fun onDrawerSlide(view: View, slideOffset: Float) {}
-            override fun onDrawerOpened(view: View) {}
+        drawerCloseListener = object : CloseDrawerListener() {
             override fun onDrawerClosed(view: View) {
                 val folder = account.autoExpandFolderName
                 val search = LocalSearch(folder)
@@ -145,7 +139,6 @@ class DrawerLayoutManager @Inject constructor(
                 drawerLayoutInterface.changeAccountsOrder()
             }
 
-            override fun onDrawerStateChanged(newState: Int) {}
         }
         drawerView.addDrawerListener(drawerCloseListener)
         drawerView.closeDrawers()
@@ -219,15 +212,11 @@ class DrawerLayoutManager @Inject constructor(
     private fun changeFolder(folder: LocalFolder) {
         drawerLayoutInterface.updateFolderName(folder.name)
         drawerLayoutInterface.showLoadingMessages()
-        drawerCloseListener = object : DrawerListener {
-            override fun onDrawerSlide(view: View, slideOffset: Float) {}
-            override fun onDrawerOpened(view: View) {}
+        drawerCloseListener = object : CloseDrawerListener() {
             override fun onDrawerClosed(view: View) {
                 drawerLayoutInterface.onDrawerClosed(folder)
                 drawerView.removeDrawerListener(drawerCloseListener)
             }
-
-            override fun onDrawerStateChanged(newState: Int) {}
         }
         drawerView.addDrawerListener(drawerCloseListener)
         drawerView.closeDrawers()
