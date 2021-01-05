@@ -18,6 +18,9 @@ import com.fsck.k9.AccountStats
 import com.fsck.k9.R
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
+import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
+import com.fsck.k9.pEp.ui.renderers.AccountRenderer
+import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
@@ -271,21 +274,29 @@ class DrawerView @Inject constructor(
         }
     }
 
-    fun setFolderAdapter(
-            rendererFolderBuilder: RendererBuilder<FolderModel>,
-            adapteeCollection: ListAdapteeCollection<FolderModel>
-    ) {
+    fun setFolderAdapter(collection: ListAdapteeCollection<FolderModel>) {
+        val folderRenderer = FolderRenderer()
+        val rendererFolderBuilder = RendererBuilder(folderRenderer)
+        folderRenderer.setFolderClickListener(object : OnFolderClickListener {
+            override fun onClick(folder: LocalFolder) {
+                drawerViewInterface.changeFolder(folder)
+            }
+
+            override fun onClick(position: Int) {}
+        })
+
         navigationFolders.layoutManager = getDrawerLayoutManager()
-        folderAdapter = RVRendererAdapter(rendererFolderBuilder, adapteeCollection)
+        folderAdapter = RVRendererAdapter(rendererFolderBuilder, collection)
         navigationFolders.adapter = folderAdapter
     }
 
-    fun setAccountsAdapter(
-            rendererAccountBuilder: RendererBuilder<Account>,
-            adapteeCollection: ListAdapteeCollection<Account>
-    ) {
+    fun setAccountsAdapter(collection: ListAdapteeCollection<Account>) {
+        val accountRenderer = AccountRenderer()
+        val rendererAccountBuilder = RendererBuilder(accountRenderer)
+        accountRenderer.setOnAccountClickListenerListener { account -> drawerViewInterface.onAccountClick(account) }
+
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, adapteeCollection)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection)
         navigationAccounts.adapter = accountAdapter
     }
 

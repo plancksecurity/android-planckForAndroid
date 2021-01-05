@@ -134,14 +134,11 @@ class DrawerLayoutManager @Inject constructor(
     private fun setAccountAdapter() {
         val accounts: MutableList<Account> = ArrayList(preferences.accounts)
         accounts.remove(account)
-        val accountRenderer = AccountRenderer()
-        val rendererAccountBuilder = RendererBuilder(accountRenderer)
-        accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
-        val adapteeCollection = ListAdapteeCollection(accounts)
-        drawerView.setAccountsAdapter(rendererAccountBuilder, adapteeCollection)
+        val collection = ListAdapteeCollection(accounts)
+        drawerView.setAccountsAdapter(collection)
     }
 
-    private fun onAccountClick(account: Account) {
+    override fun onAccountClick(account: Account) {
         this.account = account
         drawerLayoutInterface.showLoadingMessages()
         drawerLayoutInterface.updateAccount(account)
@@ -152,17 +149,8 @@ class DrawerLayoutManager @Inject constructor(
     }
 
     private fun setFoldersAdapter() {
-        val folderRenderer = FolderRenderer()
-        val rendererFolderBuilder = RendererBuilder(folderRenderer)
-        folderRenderer.setFolderClickListener(object : OnFolderClickListener {
-            override fun onClick(folder: LocalFolder) {
-                changeFolder(folder)
-            }
-
-            override fun onClick(position: Int) {}
-        })
-        val adapteeCollection = ListAdapteeCollection<FolderModel>(emptyList())
-        drawerView.setFolderAdapter(rendererFolderBuilder, adapteeCollection)
+        val collection = ListAdapteeCollection<FolderModel>(emptyList())
+        drawerView.setFolderAdapter(collection)
     }
 
     override fun createFoldersMenu() {
@@ -229,7 +217,7 @@ class DrawerLayoutManager @Inject constructor(
         return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
     }
 
-    private fun changeFolder(folder: LocalFolder) {
+    override fun changeFolder(folder: LocalFolder) {
         drawerLayoutInterface.updateFolderName(folder.name)
         drawerLayoutInterface.showLoadingMessages()
         initDrawerListenerOnFolderChanged(folder)
