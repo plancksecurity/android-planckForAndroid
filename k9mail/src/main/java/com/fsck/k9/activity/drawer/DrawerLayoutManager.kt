@@ -5,12 +5,14 @@ import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.fsck.k9.Account
+import com.fsck.k9.AccountStats
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.mailstore.LocalFolder
+import com.fsck.k9.pEp.AccountUtils
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
@@ -26,7 +28,8 @@ import javax.inject.Named
 class DrawerLayoutManager @Inject constructor(
         @Named("ActivityContext") private val context: Context,
         private val drawerView: DrawerView,
-        private val preferences: Preferences
+        private val preferences: Preferences,
+        private var accountUtils: AccountUtils
 ) : DrawerLocker, DrawerViewInterface {
 
     private lateinit var toggle: ActionBarDrawerToggle
@@ -189,24 +192,39 @@ class DrawerLayoutManager @Inject constructor(
     fun populateDrawerGroup() {
         unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
         allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
-        drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
 
         val menuFoldersNotEmpty = menuFolders?.isNotEmpty() ?: false
         val isSameUid = menuFolders?.get(0)?.accountUuid == account?.uuid
-        if (menuFoldersNotEmpty && isSameUid) {
-            val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders!!)
-            drawerView.populateFolders(account!!, foldersFiltered)
-            drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
-        } else if (account != null) {
-            val instance = MessagingController.getInstance(context)
-            instance.listFolders(account, false, object : SimpleMessagingListener() {
-                override fun listFolders(account: Account, folders: List<LocalFolder>) {
-                    menuFolders = folders
-                    val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders!!)
-                    drawerView.populateFolders(account, foldersFiltered)
-                    drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
-                }
-            })
+        when {
+            menuFoldersNotEmpty && isSameUid -> setupFolders()
+            account != null -> getFolders()
+        }
+    }
+
+    private fun getFolders() {
+        MessagingController.getInstance(context)
+                .listFolders(account, false, object : SimpleMessagingListener() {
+                    override fun listFolders(account: Account, folders: List<LocalFolder>) {
+                        menuFolders = folders
+                        setupFolders()
+                    }
+                })
+    }
+
+    private fun setupFolders() {
+        val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders!!)
+        drawerView.populateFolders(account!!, foldersFiltered)
+        drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
+        loadSearchAccountStats(unifiedInboxAccount, allMessagesAccount)
+    }
+
+    private fun loadSearchAccountStats(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount) {
+        accountUtils.loadSearchAccountStats(context, unifiedInboxAccount) { _, stats: AccountStats ->
+            drawerView.setupUnifiedInboxUnreadMessages(stats)
+        }
+        accountUtils.loadSearchAccountStats(context, allMessagesAccount) { _, stats: AccountStats ->
+            drawerView.setupAllMessagessUnreadMessages(stats)
+
         }
     }
 
@@ -253,7 +271,5 @@ class DrawerLayoutManager @Inject constructor(
     fun drawerWasClosed(): Boolean = drawerView.drawerWasClosed()
 
     fun clearFolders() = drawerView.clearFolders()
-
-    fun setupMainFoldersUnreadMessages() = drawerView.setupMainFoldersUnreadMessages(unifiedInboxAccount, allMessagesAccount)
 
 }

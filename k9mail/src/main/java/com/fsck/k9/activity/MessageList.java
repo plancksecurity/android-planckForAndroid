@@ -1459,7 +1459,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public void setUnreadCount(int unread) {
         setActionBarUnread(unread);
         drawerLayoutManager.populateDrawerGroup();
-        drawerLayoutManager.setupMainFoldersUnreadMessages();
     }
 
     @Override

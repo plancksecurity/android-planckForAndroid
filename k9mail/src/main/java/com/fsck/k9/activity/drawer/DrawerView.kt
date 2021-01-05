@@ -17,7 +17,6 @@ import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.R
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.AccountUtils
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
@@ -31,8 +30,7 @@ import javax.inject.Named
 
 class DrawerView @Inject constructor(
         @Named("ActivityContext") private val context: Context,
-        private var drawerFolderPopulator: DrawerFolderPopulator,
-        private var accountUtils: AccountUtils
+        private var drawerFolderPopulator: DrawerFolderPopulator
 ) {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -233,38 +231,23 @@ class DrawerView @Inject constructor(
         }
     }
 
-    fun setupMainFolders(
-            unifiedInboxAccount: SearchAccount,
-            allMessagesAccount: SearchAccount
-    ) {
+    fun setupMainFolders(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount) {
         (context as Activity).runOnUiThread {
-            setupMainFoldersUnreadMessages(unifiedInboxAccount, allMessagesAccount)
-            setupMainFoldersListeners(unifiedInboxAccount, allMessagesAccount)
+            val unifiedInbox = drawerLayout.findViewById<View>(R.id.unified_inbox)
+            val allMessagesContainer = drawerLayout.findViewById<View>(R.id.all_messages_container)
+            unifiedInbox.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(unifiedInboxAccount) }
+            allMessagesContainer.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(allMessagesAccount) }
         }
     }
 
-    private fun setupMainFoldersListeners(
-            unifiedInboxAccount: SearchAccount,
-            allMessagesAccount: SearchAccount
-    ) {
-        val unifiedInbox: View = drawerLayout.findViewById(R.id.unified_inbox)
-        val allMessagesContainer: View = drawerLayout.findViewById(R.id.all_messages_container)
-        unifiedInbox.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(unifiedInboxAccount) }
-        allMessagesContainer.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(allMessagesAccount) }
+    fun setupUnifiedInboxUnreadMessages(unifiedInboxStats: AccountStats) {
+        val unifiedInboxMessages = drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
+        setNewInboxMessages(unifiedInboxStats, unifiedInboxMessages)
     }
 
-    fun setupMainFoldersUnreadMessages(
-            unifiedInboxAccount: SearchAccount,
-            allMessagesAccount: SearchAccount
-    ) {
-        accountUtils.loadSearchAccountStats(context, unifiedInboxAccount) { _, stats: AccountStats ->
-            val unifiedInboxMessages = drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
-            setNewInboxMessages(stats, unifiedInboxMessages)
-        }
-        accountUtils.loadSearchAccountStats(context, allMessagesAccount) { _, stats: AccountStats ->
-            val allMessages = drawerLayout.findViewById(R.id.all_messages_new_messages) as TextView
-            setNewInboxMessages(stats, allMessages)
-        }
+    fun setupAllMessagessUnreadMessages(allMessagesStats: AccountStats) {
+        val allMessages = drawerLayout.findViewById(R.id.all_messages_new_messages) as TextView
+        setNewInboxMessages(allMessagesStats, allMessages)
     }
 
     private fun setNewInboxMessages(stats: AccountStats, unreadMessagesView: TextView) {
