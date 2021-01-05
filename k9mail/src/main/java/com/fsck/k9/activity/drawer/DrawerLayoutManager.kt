@@ -31,7 +31,7 @@ import javax.inject.Named
 class DrawerLayoutManager @Inject constructor(
         @Named("ActivityContext") private val context: Context,
         private val drawerView: DrawerView,
-        private val preferences: Preferences) : DrawerLocker, NavigationView.OnNavigationItemSelectedListener, DrawerViewInterface {
+        private val preferences: Preferences) : DrawerLocker, DrawerViewInterface {
 
     private lateinit var toggle: ActionBarDrawerToggle
 
@@ -63,7 +63,6 @@ class DrawerLayoutManager @Inject constructor(
 
     fun loadNavigationView() {
         account?.let {
-            drawerView.setNavigationItemSelectedListener(this)
 
             setupNavigationHeader()
             setFoldersAdapter()
@@ -258,22 +257,6 @@ class DrawerLayoutManager @Inject constructor(
             toggle.setToolbarNavigationClickListener { drawerLayoutInterface.onBackPressed() }
             drawerLayoutInterface.setUpToolbarHomeIcon()
 
-        }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.integrated_inbox -> {
-                val unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
-                drawerLayoutInterface.updateMessagesForSpecificInbox(unifiedInboxAccount)
-                true
-            }
-            R.id.all_messages -> {
-                val allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
-                drawerLayoutInterface.updateMessagesForSpecificInbox(allMessagesAccount)
-                true
-            }
-            else -> false
         }
     }
 
