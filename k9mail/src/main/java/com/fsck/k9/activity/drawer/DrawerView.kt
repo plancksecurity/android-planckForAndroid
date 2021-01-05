@@ -322,4 +322,8 @@ class DrawerView @Inject constructor(
     fun showAccounts() {
         navFoldersAccountsButton.showAccounts()
     }
+
+    fun startAnimation(view: View) {
+        view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+    }
 }

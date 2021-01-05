@@ -1,9 +1,7 @@
 package com.fsck.k9.activity.drawer
 
 import android.content.Context
-import android.view.MenuItem
 import android.view.View
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
@@ -21,7 +19,6 @@ import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
-import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RendererBuilder
 import java.util.*
@@ -96,7 +93,8 @@ class DrawerLayoutManager @Inject constructor(
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
             override fun onDrawerOpened(view: View) {}
             override fun onDrawerClosed(view: View) {
-                changeAccount(fromView, accountClicked)
+                drawerView.startAnimation(fromView)
+                changeAccount(accountClicked)
                 drawerView.removeDrawerListener(drawerCloseListener)
             }
 
@@ -235,8 +233,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerView.closeDrawers()
     }
 
-    private fun changeAccount(fromView: View, accountClicked: Account) {
-        fromView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+    private fun changeAccount(accountClicked: Account) {
         drawerView.closeDrawers()
         account = accountClicked
         drawerLayoutInterface.updateAccount(accountClicked)
