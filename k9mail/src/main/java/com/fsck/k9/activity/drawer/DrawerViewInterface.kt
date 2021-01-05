@@ -7,7 +7,7 @@ import com.fsck.k9.search.SearchAccount
 interface DrawerViewInterface {
     fun showLoadingMessages()
     fun updateMessagesForSpecificInbox(account: SearchAccount?)
-    fun initializeDrawerListener(fromView: View, accountClicked: Account)
+    fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account)
     fun createAccountsMenu()
     fun createFoldersMenu()
     fun configureAccountClicked()

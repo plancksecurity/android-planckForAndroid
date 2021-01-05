@@ -209,7 +209,7 @@ class DrawerView @Inject constructor(
                 0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
         anim.duration = 500
         fromView.startAnimation(anim)
-        drawerViewInterface.initializeDrawerListener(fromView, accountClicked)
+        drawerViewInterface.initDrawerListenerAfterAccountChanged(fromView, accountClicked)
         anim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
                 val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down)

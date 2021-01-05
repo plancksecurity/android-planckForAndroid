@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
@@ -28,7 +27,8 @@ import javax.inject.Named
 class DrawerLayoutManager @Inject constructor(
         @Named("ActivityContext") private val context: Context,
         private val drawerView: DrawerView,
-        private val preferences: Preferences) : DrawerLocker, DrawerViewInterface {
+        private val preferences: Preferences
+) : DrawerLocker, DrawerViewInterface {
 
     private lateinit var toggle: ActionBarDrawerToggle
 
@@ -88,11 +88,38 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.updateMessagesForSpecificInbox(account)
     }
 
-    override fun initializeDrawerListener(fromView: View, accountClicked: Account) {
+    override fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account) {
         drawerCloseListener = object : CloseDrawerListener() {
             override fun onDrawerClosed(view: View) {
                 drawerView.startAnimation(fromView)
                 changeAccount(accountClicked)
+                drawerView.removeDrawerListener(drawerCloseListener)
+            }
+        }
+    }
+
+    private fun initDrawerListenerOnAccountChanged(account: Account) {
+        drawerCloseListener = object : CloseDrawerListener() {
+            override fun onDrawerClosed(view: View) {
+                val folder = account.autoExpandFolderName
+                val search = LocalSearch(folder)
+                search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
+                search.addAllowedFolder(folder)
+                drawerLayoutInterface.refreshMessages(search)
+                setupNavigationHeader()
+                createFoldersMenu()
+                drawerView.showAccounts()
+                drawerView.removeDrawerListener(drawerCloseListener)
+                drawerLayoutInterface.changeAccountsOrder()
+            }
+
+        }
+    }
+
+    private fun initDrawerListenerOnFolderChanged(folder: LocalFolder) {
+        drawerCloseListener = object : CloseDrawerListener() {
+            override fun onDrawerClosed(view: View) {
+                drawerLayoutInterface.onDrawerClosed(folder)
                 drawerView.removeDrawerListener(drawerCloseListener)
             }
         }
@@ -125,21 +152,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.showLoadingMessages()
         drawerLayoutInterface.updateAccount(account)
         drawerLayoutInterface.updateLastUsedAccount()
-        drawerCloseListener = object : CloseDrawerListener() {
-            override fun onDrawerClosed(view: View) {
-                val folder = account.autoExpandFolderName
-                val search = LocalSearch(folder)
-                search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
-                search.addAllowedFolder(folder)
-                drawerLayoutInterface.refreshMessages(search)
-                setupNavigationHeader()
-                createFoldersMenu()
-                drawerView.showAccounts()
-                drawerView.removeDrawerListener(drawerCloseListener)
-                drawerLayoutInterface.changeAccountsOrder()
-            }
-
-        }
+        initDrawerListenerOnAccountChanged(account)
         drawerView.addDrawerListener(drawerCloseListener)
         drawerView.closeDrawers()
     }
@@ -212,12 +225,7 @@ class DrawerLayoutManager @Inject constructor(
     private fun changeFolder(folder: LocalFolder) {
         drawerLayoutInterface.updateFolderName(folder.name)
         drawerLayoutInterface.showLoadingMessages()
-        drawerCloseListener = object : CloseDrawerListener() {
-            override fun onDrawerClosed(view: View) {
-                drawerLayoutInterface.onDrawerClosed(folder)
-                drawerView.removeDrawerListener(drawerCloseListener)
-            }
-        }
+        initDrawerListenerOnFolderChanged(folder)
         drawerView.addDrawerListener(drawerCloseListener)
         drawerView.closeDrawers()
     }
