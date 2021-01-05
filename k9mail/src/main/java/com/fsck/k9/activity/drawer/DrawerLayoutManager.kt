@@ -7,7 +7,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.Preferences
-import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.SimpleMessagingListener
@@ -196,8 +195,7 @@ class DrawerLayoutManager @Inject constructor(
     }
 
     private fun setupFolders() {
-        val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders!!)
-        drawerView.populateFolders(account!!, foldersFiltered)
+        drawerView.populateFolders(account!!, menuFolders!!)
         drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
         loadSearchAccountStats()
     }
@@ -209,12 +207,6 @@ class DrawerLayoutManager @Inject constructor(
         accountUtils.loadSearchAccountStats(context, allMessagesAccount) { _, stats: AccountStats ->
             drawerView.setupAllMessagesUnreadMessages(stats)
         }
-    }
-
-    private fun filterLocalFolders(folders: List<LocalFolder>): List<LocalFolder> {
-        val allMessagesFolderName: String = context.getString(R.string.search_all_messages_title)
-        val unifiedFolderName: String = context.getString(R.string.integrated_inbox_title)
-        return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
     }
 
     override fun changeFolder(folder: LocalFolder) {

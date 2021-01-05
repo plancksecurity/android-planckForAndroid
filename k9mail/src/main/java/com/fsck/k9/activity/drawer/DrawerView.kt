@@ -234,8 +234,9 @@ class DrawerView @Inject constructor(
         })
     }
 
-    fun populateFolders(account: Account, foldersFiltered: List<LocalFolder>) {
+    fun populateFolders(account: Account, folders: List<LocalFolder>) {
         (context as Activity).runOnUiThread {
+            val foldersFiltered: List<LocalFolder> = filterLocalFolders(folders)
             drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, account)
         }
     }
@@ -340,5 +341,11 @@ class DrawerView @Inject constructor(
             toggle.setToolbarNavigationClickListener { drawerViewInterface.onBackPressed() }
             drawerViewInterface.setUpToolbarHomeIcon()
         }
+    }
+
+    private fun filterLocalFolders(folders: List<LocalFolder>): List<LocalFolder> {
+        val allMessagesFolderName: String = context.getString(R.string.search_all_messages_title)
+        val unifiedFolderName: String = context.getString(R.string.integrated_inbox_title)
+        return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
     }
 }
