@@ -89,7 +89,7 @@ class DrawerLayoutManager @Inject constructor(
     }
 
     override fun updateMessagesForSpecificInbox(account: SearchAccount?) {
-        drawerLayoutInterface._updateMessagesForSpecificInbox(account)
+        drawerLayoutInterface.updateMessagesForSpecificInbox(account)
     }
 
     override fun initializeDrawerListener(fromView: View, accountClicked: Account) {
@@ -140,7 +140,7 @@ class DrawerLayoutManager @Inject constructor(
                 val search = LocalSearch(folder)
                 search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
                 search.addAllowedFolder(folder)
-                drawerLayoutInterface._refreshMessages(search)
+                drawerLayoutInterface.refreshMessages(search)
                 setupNavigationHeader()
                 createFoldersMenu()
                 drawerView.showAccounts()
@@ -246,7 +246,7 @@ class DrawerLayoutManager @Inject constructor(
         val search = LocalSearch(folder)
         search.addAccountUuid(accountClicked.uuid)
         search.addAllowedFolder(folder)
-        drawerLayoutInterface._refreshMessages(search)
+        drawerLayoutInterface.refreshMessages(search)
         drawerLayoutInterface.changeAccountsOrder()
     }
 
@@ -265,12 +265,12 @@ class DrawerLayoutManager @Inject constructor(
         return when (item.itemId) {
             R.id.integrated_inbox -> {
                 val unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(context)
-                drawerLayoutInterface._updateMessagesForSpecificInbox(unifiedInboxAccount)
+                drawerLayoutInterface.updateMessagesForSpecificInbox(unifiedInboxAccount)
                 true
             }
             R.id.all_messages -> {
                 val allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
-                drawerLayoutInterface._updateMessagesForSpecificInbox(allMessagesAccount)
+                drawerLayoutInterface.updateMessagesForSpecificInbox(allMessagesAccount)
                 true
             }
             else -> false

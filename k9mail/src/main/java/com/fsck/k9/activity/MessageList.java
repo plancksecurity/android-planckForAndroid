@@ -189,7 +189,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         return intent;
     }
 
-    private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
+    @Override
+    public void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
         LocalSearch search = searchAccount.getRelatedSearch();
         MessageListFragment fragment = MessageListFragment.newInstance(search, false, !mNoThreading);
         addMessageListFragment(fragment, !isHomeScreen(search));
@@ -225,23 +226,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     @Override
-    public void _refreshMessages(@NotNull LocalSearch search) {
-        refreshMessages(search);
-    }
-
-    @Override
     public void editAccount() {
         onEditSettings();
-    }
-
-    @Override
-    public void _addMessageListFragment(@NotNull MessageListFragment fragment, boolean isHomeScreen) {
-        addMessageListFragment(fragment, isHomeScreen);
-    }
-
-    @Override
-    public void _updateMessagesForSpecificInbox(SearchAccount account) {
-        updateMessagesForSpecificInbox(account);
     }
 
     @Override
@@ -546,9 +532,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    private void refreshMessages(LocalSearch search) {
+    @Override
+    public void refreshMessages(LocalSearch search) {
         mMessageListFragment.deselectAll();
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
@@ -1601,13 +1587,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
+    @Override
+    public void addMessageListFragment(@NotNull MessageListFragment fragment, boolean addToBackStack) {
         addMessageListFragment(fragment, addToBackStack, true);
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack, boolean popPrevious) {
         mMessageListFragment.deselectAll();
-
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
