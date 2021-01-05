@@ -20,7 +20,6 @@ import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RendererBuilder
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -128,11 +127,8 @@ class DrawerLayoutManager @Inject constructor(
     override fun createAccountsMenu() {
         showingAccountsMenu = true
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
-
-        drawerView.setFoldersDrawerVisible(false)
-        drawerView.setAccountsDrawerVisible(true)
+        drawerView.setAccountsDrawerVisible()
         setAccountAdapter()
-        drawerView.setupCreateConfigAccountListeners()
     }
 
     private fun setAccountAdapter() {
@@ -174,9 +170,7 @@ class DrawerLayoutManager @Inject constructor(
     override fun createFoldersMenu() {
         showingAccountsMenu = false
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
-
-        drawerView.setFoldersDrawerVisible(true)
-        drawerView.setAccountsDrawerVisible(false)
+        drawerView.setFoldersDrawerVisible()
         populateDrawerGroup()
     }
 

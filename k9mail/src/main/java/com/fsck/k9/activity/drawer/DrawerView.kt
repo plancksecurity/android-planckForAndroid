@@ -32,7 +32,8 @@ import javax.inject.Named
 class DrawerView @Inject constructor(
         @Named("ActivityContext") private val context: Context,
         private var drawerFolderPopulator: DrawerFolderPopulator,
-        private var accountUtils: AccountUtils) {
+        private var accountUtils: AccountUtils
+) {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var foldersDrawerLayout: View
@@ -65,6 +66,7 @@ class DrawerView @Inject constructor(
         this.drawerLayout = drawerLayout
         this.drawerViewInterface = drawerViewInterface
         findViewsById()
+        setupCreateConfigAccountListeners()
     }
 
     private fun findViewsById() {
@@ -140,12 +142,14 @@ class DrawerView @Inject constructor(
         mainAccountEmail.text = account.email
     }
 
-    fun setFoldersDrawerVisible(visible: Boolean) {
-        foldersDrawerLayout.visibility = if (visible) View.VISIBLE else View.GONE
+    fun setFoldersDrawerVisible() {
+        foldersDrawerLayout.visibility = View.VISIBLE
+        accountsDrawerLayout.visibility = View.GONE
     }
 
-    fun setAccountsDrawerVisible(visible: Boolean) {
-        accountsDrawerLayout.visibility = if (visible) View.VISIBLE else View.GONE
+    fun setAccountsDrawerVisible() {
+        accountsDrawerLayout.visibility = View.VISIBLE
+        foldersDrawerLayout.visibility = View.GONE
     }
 
     fun setupAccountsListeners(account: Account, accounts: MutableList<Account>) {
@@ -233,24 +237,30 @@ class DrawerView @Inject constructor(
         }
     }
 
-    fun setupMainFolders(unifiedInboxAccount: SearchAccount,
-                         allMessagesAccount: SearchAccount) {
+    fun setupMainFolders(
+            unifiedInboxAccount: SearchAccount,
+            allMessagesAccount: SearchAccount
+    ) {
         (context as Activity).runOnUiThread {
             setupMainFoldersUnreadMessages(unifiedInboxAccount, allMessagesAccount)
             setupMainFoldersListeners(unifiedInboxAccount, allMessagesAccount)
         }
     }
 
-    private fun setupMainFoldersListeners(unifiedInboxAccount: SearchAccount,
-                                          allMessagesAccount: SearchAccount) {
+    private fun setupMainFoldersListeners(
+            unifiedInboxAccount: SearchAccount,
+            allMessagesAccount: SearchAccount
+    ) {
         val unifiedInbox: View = drawerLayout.findViewById(R.id.unified_inbox)
         val allMessagesContainer: View = drawerLayout.findViewById(R.id.all_messages_container)
         unifiedInbox.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(unifiedInboxAccount) }
         allMessagesContainer.setOnClickListener { drawerViewInterface.updateMessagesForSpecificInbox(allMessagesAccount) }
     }
 
-    fun setupMainFoldersUnreadMessages(unifiedInboxAccount: SearchAccount,
-                                       allMessagesAccount: SearchAccount) {
+    fun setupMainFoldersUnreadMessages(
+            unifiedInboxAccount: SearchAccount,
+            allMessagesAccount: SearchAccount
+    ) {
         accountUtils.loadSearchAccountStats(context, unifiedInboxAccount) { _, stats: AccountStats ->
             val unifiedInboxMessages = drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
             setNewInboxMessages(stats, unifiedInboxMessages)
@@ -282,15 +292,19 @@ class DrawerView @Inject constructor(
         }
     }
 
-    fun setFolderAdapter(rendererFolderBuilder: RendererBuilder<FolderModel>,
-                         adapteeCollection: ListAdapteeCollection<FolderModel>) {
+    fun setFolderAdapter(
+            rendererFolderBuilder: RendererBuilder<FolderModel>,
+            adapteeCollection: ListAdapteeCollection<FolderModel>
+    ) {
         navigationFolders.layoutManager = getDrawerLayoutManager()
         folderAdapter = RVRendererAdapter(rendererFolderBuilder, adapteeCollection)
         navigationFolders.adapter = folderAdapter
     }
 
-    fun setAccountsAdapter(rendererAccountBuilder: RendererBuilder<Account>,
-                           adapteeCollection: ListAdapteeCollection<Account>) {
+    fun setAccountsAdapter(
+            rendererAccountBuilder: RendererBuilder<Account>,
+            adapteeCollection: ListAdapteeCollection<Account>
+    ) {
         navigationAccounts.layoutManager = getDrawerLayoutManager()
         accountAdapter = RVRendererAdapter(rendererAccountBuilder, adapteeCollection)
         navigationAccounts.adapter = accountAdapter
@@ -308,7 +322,7 @@ class DrawerView @Inject constructor(
         drawerLayout.setDrawerLockMode(lockMode)
     }
 
-    fun setupCreateConfigAccountListeners() {
+    private fun setupCreateConfigAccountListeners() {
         configureAccountContainer.setOnClickListener {
             closeDrawers()
             drawerViewInterface.configureAccountClicked()
