@@ -36,9 +36,6 @@ class DrawerLayoutManager @Inject constructor(
 
     private var showingAccountsMenu = false
 
-    private lateinit var rendererFolderBuilder: RendererBuilder<FolderModel>
-    private lateinit var rendererAccountBuilder: RendererBuilder<Account>
-
     private lateinit var drawerCloseListener: CloseDrawerListener
 
     private lateinit var drawerLayoutInterface: DrawerLayoutInterface
@@ -138,10 +135,8 @@ class DrawerLayoutManager @Inject constructor(
         val accounts: MutableList<Account> = ArrayList(preferences.accounts)
         accounts.remove(account)
         val accountRenderer = AccountRenderer()
-        rendererAccountBuilder = RendererBuilder(accountRenderer)
-        accountRenderer.setOnAccountClickListenerListener { account ->
-            onAccountClick(account)
-        }
+        val rendererAccountBuilder = RendererBuilder(accountRenderer)
+        accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
         val adapteeCollection = ListAdapteeCollection(accounts)
         drawerView.setAccountsAdapter(rendererAccountBuilder, adapteeCollection)
     }
@@ -158,7 +153,7 @@ class DrawerLayoutManager @Inject constructor(
 
     private fun setFoldersAdapter() {
         val folderRenderer = FolderRenderer()
-        rendererFolderBuilder = RendererBuilder(folderRenderer)
+        val rendererFolderBuilder = RendererBuilder(folderRenderer)
         folderRenderer.setFolderClickListener(object : OnFolderClickListener {
             override fun onClick(folder: LocalFolder) {
                 changeFolder(folder)
@@ -215,10 +210,10 @@ class DrawerLayoutManager @Inject constructor(
         val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders!!)
         drawerView.populateFolders(account!!, foldersFiltered)
         drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
-        loadSearchAccountStats(unifiedInboxAccount, allMessagesAccount)
+        loadSearchAccountStats()
     }
 
-    private fun loadSearchAccountStats(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount) {
+    private fun loadSearchAccountStats() {
         accountUtils.loadSearchAccountStats(context, unifiedInboxAccount) { _, stats: AccountStats ->
             drawerView.setupUnifiedInboxUnreadMessages(stats)
         }
