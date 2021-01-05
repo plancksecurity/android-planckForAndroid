@@ -63,11 +63,17 @@ class DrawerView @Inject constructor(
 
     private lateinit var drawerViewInterface: DrawerViewInterface
 
+    private lateinit var toggle: ActionBarDrawerToggle
+
     fun setUpDrawerView(drawerLayout: DrawerLayout, drawerViewInterface: DrawerViewInterface) {
         this.drawerLayout = drawerLayout
         this.drawerViewInterface = drawerViewInterface
         findViewsById()
         setupCreateConfigAccountListeners()
+    }
+
+    fun initToggle(toggle: ActionBarDrawerToggle) {
+        this.toggle = toggle
     }
 
     private fun findViewsById() {
@@ -248,7 +254,7 @@ class DrawerView @Inject constructor(
         setNewInboxMessages(unifiedInboxStats, unifiedInboxMessages)
     }
 
-    fun setupAllMessagessUnreadMessages(allMessagesStats: AccountStats) {
+    fun setupAllMessagesUnreadMessages(allMessagesStats: AccountStats) {
         val allMessages = drawerLayout.findViewById(R.id.all_messages_new_messages) as TextView
         setNewInboxMessages(allMessagesStats, allMessages)
     }
@@ -329,5 +335,23 @@ class DrawerView @Inject constructor(
 
     fun startAnimation(view: View) {
         view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+    }
+
+    fun isDrawerIndicatorEnabled(enabled: Boolean) {
+        toggle.isDrawerIndicatorEnabled = enabled
+    }
+
+    fun setToggleClickListener() {
+        toggle.setToolbarNavigationClickListener { drawerViewInterface.onBackPressed() }
+    }
+
+    fun setDrawerEnabled(enabled: Boolean) {
+        val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        setDrawerLockMode(lockMode)
+        isDrawerIndicatorEnabled(enabled)
+        if (!enabled) {
+            setToggleClickListener()
+            drawerViewInterface.setUpToolbarHomeIcon()
+        }
     }
 }

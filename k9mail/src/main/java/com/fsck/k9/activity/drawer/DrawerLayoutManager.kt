@@ -14,14 +14,9 @@ import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.AccountUtils
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
-import com.fsck.k9.pEp.ui.renderers.AccountRenderer
-import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import com.pedrogomez.renderers.RendererBuilder
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -30,9 +25,7 @@ class DrawerLayoutManager @Inject constructor(
         private val drawerView: DrawerView,
         private val preferences: Preferences,
         private var accountUtils: AccountUtils
-) : DrawerLocker, DrawerViewInterface {
-
-    private lateinit var toggle: ActionBarDrawerToggle
+) : DrawerViewInterface {
 
     private var showingAccountsMenu = false
 
@@ -52,7 +45,7 @@ class DrawerLayoutManager @Inject constructor(
     }
 
     fun initializeDrawerToggle(toggle: ActionBarDrawerToggle) {
-        this.toggle = toggle
+        drawerView.initToggle(toggle)
         drawerView.setDrawerListener(toggle)
         toggle.syncState()
     }
@@ -148,6 +141,14 @@ class DrawerLayoutManager @Inject constructor(
         drawerView.closeDrawers()
     }
 
+    override fun onBackPressed() {
+        drawerLayoutInterface.onBackPressed()
+    }
+
+    override fun setUpToolbarHomeIcon() {
+        drawerLayoutInterface.setUpToolbarHomeIcon()
+    }
+
     private fun setFoldersAdapter() {
         val collection = ListAdapteeCollection<FolderModel>(emptyList())
         drawerView.setFolderAdapter(collection)
@@ -206,7 +207,7 @@ class DrawerLayoutManager @Inject constructor(
             drawerView.setupUnifiedInboxUnreadMessages(stats)
         }
         accountUtils.loadSearchAccountStats(context, allMessagesAccount) { _, stats: AccountStats ->
-            drawerView.setupAllMessagessUnreadMessages(stats)
+            drawerView.setupAllMessagesUnreadMessages(stats)
 
         }
     }
@@ -238,15 +239,9 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.changeAccountsOrder()
     }
 
-    override fun setDrawerEnabled(enabled: Boolean) {
-        val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        drawerView.setDrawerLockMode(lockMode)
-        toggle.isDrawerIndicatorEnabled = enabled
-        if (!enabled) {
-            toggle.setToolbarNavigationClickListener { drawerLayoutInterface.onBackPressed() }
-            drawerLayoutInterface.setUpToolbarHomeIcon()
+    fun setDrawerEnabled(enabled: Boolean) {
+        drawerView.setDrawerEnabled(enabled)
 
-        }
     }
 
     fun closeDrawers() = drawerView.closeDrawers()

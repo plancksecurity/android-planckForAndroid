@@ -16,4 +16,6 @@ interface DrawerViewInterface {
     fun resetDrawerListener()
     fun changeFolder(folder: LocalFolder)
     fun onAccountClick(account: Account)
+    fun onBackPressed()
+    fun setUpToolbarHomeIcon()
 }

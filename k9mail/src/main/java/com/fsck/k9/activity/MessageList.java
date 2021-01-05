@@ -36,8 +36,8 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.drawer.DrawerLayoutManager;
 import com.fsck.k9.activity.drawer.DrawerLayoutInterface;
+import com.fsck.k9.activity.drawer.DrawerLayoutManager;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
 import com.fsck.k9.mailstore.LocalFolder;
@@ -341,7 +341,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayoutManager.initView(drawerLayout,this);
+        drawerLayoutManager.initView(drawerLayout, this);
         if (!decodeExtras(getIntent())) {
             return;
         }
