@@ -268,7 +268,6 @@ class DrawerView @Inject constructor(
         }
     }
 
-
     fun closeDrawers() = drawerLayout.closeDrawers()
 
     fun drawerWasClosed(): Boolean {
@@ -314,10 +313,6 @@ class DrawerView @Inject constructor(
         drawerLayout.removeDrawerListener(drawerListener)
     }
 
-    fun setDrawerLockMode(lockMode: Int) {
-        drawerLayout.setDrawerLockMode(lockMode)
-    }
-
     private fun setupCreateConfigAccountListeners() {
         configureAccountContainer.setOnClickListener {
             closeDrawers()
@@ -337,20 +332,12 @@ class DrawerView @Inject constructor(
         view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
     }
 
-    fun isDrawerIndicatorEnabled(enabled: Boolean) {
-        toggle.isDrawerIndicatorEnabled = enabled
-    }
-
-    fun setToggleClickListener() {
-        toggle.setToolbarNavigationClickListener { drawerViewInterface.onBackPressed() }
-    }
-
     fun setDrawerEnabled(enabled: Boolean) {
         val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
-        setDrawerLockMode(lockMode)
-        isDrawerIndicatorEnabled(enabled)
+        drawerLayout.setDrawerLockMode(lockMode)
+        toggle.isDrawerIndicatorEnabled = enabled
         if (!enabled) {
-            setToggleClickListener()
+            toggle.setToolbarNavigationClickListener { drawerViewInterface.onBackPressed() }
             drawerViewInterface.setUpToolbarHomeIcon()
         }
     }

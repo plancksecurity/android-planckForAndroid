@@ -208,7 +208,6 @@ class DrawerLayoutManager @Inject constructor(
         }
         accountUtils.loadSearchAccountStats(context, allMessagesAccount) { _, stats: AccountStats ->
             drawerView.setupAllMessagesUnreadMessages(stats)
-
         }
     }
 
@@ -239,10 +238,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.changeAccountsOrder()
     }
 
-    fun setDrawerEnabled(enabled: Boolean) {
-        drawerView.setDrawerEnabled(enabled)
-
-    }
+    fun setDrawerEnabled(enabled: Boolean) = drawerView.setDrawerEnabled(enabled)
 
     fun closeDrawers() = drawerView.closeDrawers()
 
