@@ -107,10 +107,6 @@ class DrawerView @Inject constructor(
         }
     }
 
-    fun setNavigationItemSelectedListener(listener: NavigationView.OnNavigationItemSelectedListener) {
-        navigationView.setNavigationItemSelectedListener(listener)
-    }
-
     fun clearFolders() = drawerFolderPopulator.clearFolders()
 
     fun setupNavigationHeaderListeners(showingAccountsMenu: Boolean) {
