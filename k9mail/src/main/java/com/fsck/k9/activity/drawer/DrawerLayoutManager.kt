@@ -129,8 +129,8 @@ class DrawerLayoutManager @Inject constructor(
         showingAccountsMenu = true
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
 
-        drawerView.setFoldersDrawerVisibility(View.GONE)
-        drawerView.setAccountsDrawerVisibility(View.VISIBLE)
+        drawerView.setFoldersDrawerVisible(false)
+        drawerView.setAccountsDrawerVisible(true)
         setAccountAdapter()
         drawerView.setupCreateConfigAccountListeners()
     }
@@ -175,8 +175,8 @@ class DrawerLayoutManager @Inject constructor(
         showingAccountsMenu = false
         drawerView.setupNavigationHeaderListeners(showingAccountsMenu)
 
-        drawerView.setFoldersDrawerVisibility(View.VISIBLE)
-        drawerView.setAccountsDrawerVisibility(View.GONE)
+        drawerView.setFoldersDrawerVisible(true)
+        drawerView.setAccountsDrawerVisible(false)
         populateDrawerGroup()
     }
 

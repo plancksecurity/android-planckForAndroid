@@ -140,12 +140,12 @@ class DrawerView @Inject constructor(
         mainAccountEmail.text = account.email
     }
 
-    fun setFoldersDrawerVisibility(visibility: Int) {
-        foldersDrawerLayout.visibility = visibility
+    fun setFoldersDrawerVisible(visible: Boolean) {
+        foldersDrawerLayout.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
-    fun setAccountsDrawerVisibility(visibility: Int) {
-        accountsDrawerLayout.visibility = visibility
+    fun setAccountsDrawerVisible(visible: Boolean) {
+        accountsDrawerLayout.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     fun setupAccountsListeners(account: Account, accounts: MutableList<Account>) {
