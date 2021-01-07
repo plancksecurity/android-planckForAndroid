@@ -21,7 +21,6 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
-import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
@@ -34,7 +33,7 @@ import javax.inject.Named
 
 class DrawerView @Inject constructor(
         @Named("ActivityContext") private val context: Context,
-        private var drawerFolderPopulator: DrawerFolderPopulator
+        private var drawerFolderPopulator: DrawerFolderPopulator,
 ) {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -67,6 +66,9 @@ class DrawerView @Inject constructor(
     private lateinit var toggle: ActionBarDrawerToggle
 
     private lateinit var drawerCloseListener: DrawerLayout.DrawerListener
+
+    private val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down).apply { duration = 500 }
+    private val scaleUpAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_up)
 
     fun setUpDrawerView(drawerLayout: DrawerLayout, drawerViewInterface: DrawerViewInterface) {
         this.drawerLayout = drawerLayout
@@ -211,30 +213,33 @@ class DrawerView @Inject constructor(
     }
 
     private fun changeAccountAnimation(goToView: View, fromView: View, accountClicked: Account) {
-        val firstAccountLayoutPosition = IntArray(2)
-        fromView.getLocationOnScreen(firstAccountLayoutPosition)
-        val mainAccountLayoutPosition = IntArray(2)
-        goToView.getLocationOnScreen(mainAccountLayoutPosition)
-        val anim = TranslateAnimation(0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
-                0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
-        anim.duration = 500
+        val anim = createTranslateAnimation(fromView, goToView)
         fromView.startAnimation(anim)
         initDrawerListenerAfterAccountChanged(fromView, accountClicked)
         anim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
-                val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down)
-                disappearAnimation.duration = 500
                 goToView.startAnimation(disappearAnimation)
                 addDrawerListener(drawerCloseListener)
             }
 
             override fun onAnimationEnd(animation: Animation) {
-                fromView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+                fromView.startAnimation(scaleUpAnimation)
                 drawerLayout.closeDrawers()
             }
 
             override fun onAnimationRepeat(animation: Animation) {}
         })
+    }
+
+    private fun createTranslateAnimation(fromView: View, goToView: View): TranslateAnimation {
+        val firstAccountLayoutPosition = IntArray(2)
+        fromView.getLocationOnScreen(firstAccountLayoutPosition)
+        val mainAccountLayoutPosition = IntArray(2)
+        goToView.getLocationOnScreen(mainAccountLayoutPosition)
+        return TranslateAnimation(
+                0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
+                0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
+                .apply { duration = 500 }
     }
 
     fun populateFolders(account: Account, folders: List<LocalFolder>) {
@@ -342,7 +347,7 @@ class DrawerView @Inject constructor(
 
     private fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account) {
         drawerCloseListener = onDrawerClosed {
-            fromView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+            fromView.startAnimation(scaleUpAnimation)
             drawerViewInterface.changeAccount(accountClicked)
             drawerLayout.removeDrawerListener(drawerCloseListener)
         }
