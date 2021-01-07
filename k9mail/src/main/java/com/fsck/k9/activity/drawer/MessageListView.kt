@@ -6,17 +6,18 @@ import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 
-interface DrawerLayoutInterface {
-    fun refreshMessages(search: LocalSearch)
-    fun editAccount()
-    fun addMessageListFragment(fragment: MessageListFragment, isHomeScreen: Boolean)
+interface MessageListView {
     fun showLoadingMessages()
     fun onBackPressed()
+    fun refreshMessages(search: LocalSearch)
     fun setUpToolbarHomeIcon()
     fun updateMessagesForSpecificInbox(account: SearchAccount?)
     fun onDrawerClosed(folder: LocalFolder)
+    fun changeAccountsOrder()
+
+    fun editAccount()
+    fun addMessageListFragment(fragment: MessageListFragment, isHomeScreen: Boolean)
     fun updateAccount(account: Account)
     fun updateFolderName(folderName: String)
-    fun changeAccountsOrder()
     fun updateLastUsedAccount()
 }

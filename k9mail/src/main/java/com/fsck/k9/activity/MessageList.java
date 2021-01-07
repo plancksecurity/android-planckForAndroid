@@ -36,8 +36,8 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.drawer.DrawerLayoutInterface;
-import com.fsck.k9.activity.drawer.DrawerLayoutManager;
+import com.fsck.k9.activity.drawer.DrawerLayoutView;
+import com.fsck.k9.activity.drawer.MessageListView;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
 import com.fsck.k9.mailstore.LocalFolder;
@@ -89,7 +89,7 @@ import timber.log.Timber;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends PepActivity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, DrawerLayoutInterface, DrawerLocker {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker {
 
     @Inject
     NotificationChannelManager channelUtils;
@@ -102,7 +102,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Inject
     ResourcesProvider resourcesProvider;
     @Inject
-    DrawerLayoutManager drawerLayoutManager;
+    DrawerLayoutView drawerLayoutView;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -194,7 +194,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         LocalSearch search = searchAccount.getRelatedSearch();
         MessageListFragment fragment = MessageListFragment.newInstance(search, false, !mNoThreading);
         addMessageListFragment(fragment, !isHomeScreen(search));
-        drawerLayoutManager.closeDrawers();
     }
 
     public void setMessageViewVisible(Boolean visible) {
@@ -254,7 +253,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void setDrawerEnabled(boolean enabled) {
-        drawerLayoutManager.setDrawerEnabled(enabled);
+        drawerLayoutView.setDrawerEnabled(enabled);
     }
 
     private enum DisplayMode {
@@ -341,7 +340,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayoutManager.initView(drawerLayout, this);
+        drawerLayoutView.initDrawerView(drawerLayout, this);
         if (!decodeExtras(getIntent())) {
             return;
         }
@@ -357,7 +356,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutManager.initializeDrawerToggle(toggle);
+        drawerLayoutView.initializeDrawerToggle(toggle);
     }
 
     @Override
@@ -484,7 +483,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutManager.initializeDrawerToggle(toggle);
+        drawerLayoutView.initializeDrawerToggle(toggle);
     }
 
     /**
@@ -718,12 +717,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else {
                 mAccount = preferences.getDefaultAccount();
             }
-            drawerLayoutManager.setAccount(mAccount);
+            drawerLayoutView.updateAccount(mAccount);
         } else {
             mSingleAccountMode = (accountUuids.length == 1);
             if (mSingleAccountMode) {
                 mAccount = preferences.getAccount(accountUuids[0]);
-                drawerLayoutManager.setAccount(mAccount);
+                drawerLayoutView.updateAccount(mAccount);
             }
         }
         mSingleFolderMode = mSingleAccountMode && (mSearch.getFolderNames().size() == 1);
@@ -762,7 +761,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
-        drawerLayoutManager.clearFolders();
+        drawerLayoutView.clearFolders();
     }
 
     @Override
@@ -788,8 +787,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             updateToolbarColorToOriginal();
         }
 
-        drawerLayoutManager.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
-        drawerLayoutManager.loadNavigationView();
+        drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
+        drawerLayoutView.loadNavigationView();
     }
 
     @Override
@@ -808,7 +807,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        setUpToolbar(true, v -> drawerLayoutManager.setDrawerEnabled(true));
+        setUpToolbar(true, v -> drawerLayoutView.setDrawerEnabled(true));
         View customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -840,7 +839,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void onBackPressed() {
-        if (drawerLayoutManager.drawerWasClosed()) {
+        if (drawerLayoutView.drawerWasClosed()) {
             return;
         }
         if (isMessageViewVisible()) {
@@ -1112,7 +1111,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                drawerLayoutManager.setDrawerEnabled(isAndroidLollipop());
+                drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
                 showSearchView();
                 return true;
             }
@@ -1382,7 +1381,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
             menu.findItem(R.id.privacyStatus).setVisible(true);
-            drawerLayoutManager.setDrawerEnabled(false);
+            drawerLayoutView.setDrawerEnabled(false);
         } else {
             menu.findItem(R.id.privacyStatus).setVisible(false);
             menu.findItem(R.id.set_sort).setVisible(true);
@@ -1395,12 +1394,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
             menu.findItem(R.id.show_folder_list).setVisible(true);
 
-            drawerLayoutManager.setDrawerEnabled(!isThreadDisplayed);
+            drawerLayoutView.setDrawerEnabled(!isThreadDisplayed);
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
             // configure action bar in search screen
             if(mMessageListFragment.isManualSearch()) {
-                drawerLayoutManager.setDrawerEnabled(false);
+                drawerLayoutView.setDrawerEnabled(false);
                 menu.findItem(R.id.check_mail).setVisible(false);
                 menu.findItem(R.id.compose).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
@@ -1458,7 +1457,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void setUnreadCount(int unread) {
         setActionBarUnread(unread);
-        drawerLayoutManager.populateDrawerGroup();
+        drawerLayoutView.populateDrawerGroup();
     }
 
     @Override
