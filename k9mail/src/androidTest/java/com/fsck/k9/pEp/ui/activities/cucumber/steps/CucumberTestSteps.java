@@ -705,7 +705,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount(0);
+                    testUtils.selectAccount("Inbox", 0);
                 }
                 break;
             case "2":
@@ -715,7 +715,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount(0);
+                    testUtils.selectAccount("Inbox", 0);
                 }
                 break;
             case "3":
@@ -725,7 +725,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount(1);
+                    testUtils.selectAccount("Inbox", 1);
                 }
                 break;
             default:
@@ -792,7 +792,7 @@ public class CucumberTestSteps {
 
     @When("^I check account devices (\\S+) and (\\S+) are not protected$")
     public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
-        testUtils.selectAccount(0);
+        testUtils.selectAccount("Inbox", 0);
         switch (testUtils.keySync_number()) {
             case "1":
                 testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
@@ -1277,7 +1277,7 @@ public class CucumberTestSteps {
 
     @When("^I run the tests")
     public void I_run_the_tests() {
-        startTest(0);
+        startTest("Inbox", 0);
     }
 
     @When("^I test Unified Inbox (\\d+) times")
@@ -1327,7 +1327,19 @@ public class CucumberTestSteps {
         if (!(accountSelected < testUtils.getTotalAccounts())) {
             skipTest("No more accounts");
         }
-        startTest(accountSelected);
+        startTest("Inbox", accountSelected);
+    }
+
+    @When("^I select (\\S+) folder of account (\\S+)$")
+    public void I_select_folder_account(String folder, String account) {
+        accountSelected = Integer.parseInt(account);
+        while (testUtils.getTotalAccounts() == -1) {
+            testUtils.readConfigFile();
+        }
+        if (!(accountSelected < testUtils.getTotalAccounts())) {
+            skipTest("No more accounts");
+        }
+        startTest(folder, accountSelected);
     }
 
     @When("^I disable protection on device (\\S+)$")
@@ -1442,7 +1454,7 @@ public class CucumberTestSteps {
         throw new cucumber.api.PendingException(text);
     }
 
-    public void startTest(int accountToStart) {
+    public void startTest(String folder, int accountToStart) {
         boolean botListFull = false;
         while (!botListFull) {
             botListFull = true;
@@ -1454,7 +1466,7 @@ public class CucumberTestSteps {
             }
         }
         bot = testUtils.botList;
-        testUtils.selectAccount(accountToStart);
+        testUtils.selectAccount(folder, accountToStart);
     }
 
     @And("^I click view (\\S+)$")
