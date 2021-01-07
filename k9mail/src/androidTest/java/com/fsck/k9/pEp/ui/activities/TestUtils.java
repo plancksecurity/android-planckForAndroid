@@ -45,7 +45,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -67,7 +66,6 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
@@ -82,7 +80,6 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Checks.checkNotNull;
 import static androidx.test.espresso.intent.Intents.intending;
@@ -938,24 +935,24 @@ public class TestUtils {
         }
     }
 
-    public void selectAccount (int accountToSelect) {
+    public void selectAccount (String folder, int accountToSelect) {
         while (true) {
             try {
                 device.waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
                 device.waitForIdle();
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                     getMessageListSize();
                     return;
                 } else if (exists(onView(withId(R.id.accounts_list)))) {
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                 } else if (exists(onView(withId(android.R.id.list)))) {
-                    clickInbox();
+                    clickFolder(folder);
                     return;
                 } else if (!exists(onView(withId(R.id.available_accounts_title)))){
                     selectFromMenu(R.string.action_settings);
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                     getMessageListSize();
                     return;
                 } else {
@@ -1003,12 +1000,12 @@ public class TestUtils {
         onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
     */}
 
-    private void selectAccountFromList (int accountToSelect) {
+    private void selectAccountFromList (String folder, int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
             swipeUpScreen();
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
-        goToTheInbox(accountToSelect);
+        goToFolder(folder, accountToSelect);
         if (exists(onView(withId(R.id.message_list)))) {
             getMessageListSize();
         }
@@ -1026,7 +1023,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    private void goToTheInbox (int accountToSelect){
+    private void goToFolder(String folder, int accountToSelect){
         while (true) {
             device.waitForIdle();
             try {
@@ -1034,7 +1031,7 @@ public class TestUtils {
                 wb = device.findObject(By.clazz("android.widget.ListView"));
                 device.waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(1).click();
-                clickInbox();
+                clickFolder(folder);
                 return;
             } catch (Exception e) {
                 Timber.i("Cannot click account from list: " + e.getMessage());
@@ -1059,12 +1056,39 @@ public class TestUtils {
         }
     }
 
-    private void clickInbox () {
+    private void clickFolder (String folder) {
+        String folderToClick = "";
+        switch (folder){
+            case "Inbox":
+                folderToClick = resources.getString(R.string.special_mailbox_name_inbox);
+                break;
+            case "Sent":
+                folderToClick = resources.getString(R.string.special_mailbox_name_sent);
+                break;
+            case "Drafts":
+                folderToClick = resources.getString(R.string.special_mailbox_name_drafts);
+                break;
+            case "Outbox":
+                folderToClick = resources.getString(R.string.special_mailbox_name_outbox);
+                break;
+            case "Archive":
+                folderToClick = resources.getString(R.string.special_mailbox_name_archive);
+                break;
+            case "Spam":
+                folderToClick = resources.getString(R.string.special_mailbox_name_spam)
+                 + " (" + resources.getString(R.string.special_mailbox_name_spam) + ")";
+                break;
+            case "Trash":
+                folderToClick = resources.getString(R.string.special_mailbox_name_trash);
+                break;
+            default:
+                Timber.e("Is not possible to select folder: " + folder);
+        }
         waitForToolbar();
         device.waitForIdle();
         while (true) {
             try {
-                selectFromScreen(R.string.special_mailbox_name_inbox);
+                selectFromScreen(folderToClick);
                 device.waitForIdle();
                 waitForToolbar();
                 return;
@@ -2305,6 +2329,36 @@ public class TestUtils {
         }
     }
 
+    public void selectFromScreen(String text) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(text)) {
+                        try {
+                            while (object.getText().equals(text)) {
+                                device.waitForIdle();
+                                Espresso.onIdle();
+                                object.longClick();
+                                device.waitForIdle();
+                                Espresso.onIdle();
+                            }
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        } catch (Exception ex1) {
+                            device.waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
     public void clickTextOnScreen(String text) {
         clickText(text);
     }
@@ -2476,7 +2530,7 @@ public class TestUtils {
             device.waitForIdle();
             waitForToolbar();
             if (exists(onView(withId(android.R.id.list)))) {
-                clickInbox();
+                clickFolder("Inbox");
             }
             waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
@@ -2785,6 +2839,21 @@ public class TestUtils {
         }
     }
 
+    public void assertThereAreXMessages(int numberOfMessages) {
+        waitForIdle();
+        while (!exists(onView(withId(R.id.message_list)))) {
+            waitForIdle();
+        }
+        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        waitForIdle();
+        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+        if (messageListSize[1] != numberOfMessages) {
+            assertFailWithMessage("Wrong number of messages");
+        }
+        getMessageListSize();
+    }
+
     public void getMessageListSize() {
         waitForIdle();
         swipeDownMessageList();
@@ -2927,11 +2996,11 @@ public class TestUtils {
 
     public void compareMessageBody(String cucumberBody) {
         String [] body;
-        swipeUpScreen();
-        waitUntilIdle();
         while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
             device.waitForIdle();
         }
+        swipeUpScreen();
+        waitUntilIdle();
         doWaitForResource(R.id.message_container);
         while (true) {
             device.waitForIdle();
