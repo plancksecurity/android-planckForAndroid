@@ -13,11 +13,13 @@ import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.common.GetNavigationAccountEmailAction
 import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.common.GetTextViewTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
+import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -59,6 +61,7 @@ class DrawerLayoutTest {
 
     @Test
     fun clickAccountBall() {
+        // TODO this test will not work since there is a bug to fix
         testUtils.openHamburgerMenu()
 
         var email = getTextFromComponent(R.id.nav_header_email)
@@ -103,7 +106,7 @@ class DrawerLayoutTest {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         for (position in 0 until testUtils.getListSize(R.id.navigation_accounts)) {
             onView(withId(R.id.navigation_accounts))
-                    .check(matches(atPosition(0, hasDescendant(withText(email)))))
+                    .check(matches(atPosition(position, hasDescendant(withText(email)))))
         }
     }
 
@@ -159,12 +162,32 @@ class DrawerLayoutTest {
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
     }
 
+    @Test
     fun clickAccountInList() {
-        // click first account in list
-        // check if drawer folders are visible
-        // check if drawer header changed to selected account
-        // check if drawer accounts changed to other accounts
-        // check if drawer folders changed to selected account
+        testUtils.openHamburgerMenu()
+
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.navigation_accounts)).check(matches(isDisplayed()))
+
+        val action = GetNavigationAccountEmailAction()
+
+        onView(withId(R.id.navigation_accounts))
+                .check(matches(isDisplayed()))
+                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, action),
+                        actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        val email = action.text.toString()
+
+        testUtils.openHamburgerMenu()
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        onView(withId(R.id.navigation_accounts)).check(matches(isDisplayed()))
+
+        uiDevice.waitForIdle()
+        onView(withId(R.id.nav_header_email)).check(matches(withText(email)))
+        for (position in 0 until testUtils.getListSize(R.id.navigation_accounts)) {
+            onView(withId(R.id.navigation_accounts))
+                    .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
+        }
     }
 
     @Test
