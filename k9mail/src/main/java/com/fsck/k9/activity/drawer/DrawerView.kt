@@ -21,6 +21,7 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
+import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
@@ -64,6 +65,8 @@ class DrawerView @Inject constructor(
     private lateinit var drawerViewInterface: DrawerViewInterface
 
     private lateinit var toggle: ActionBarDrawerToggle
+
+    private lateinit var drawerCloseListener: DrawerLayout.DrawerListener
 
     fun setUpDrawerView(drawerLayout: DrawerLayout, drawerViewInterface: DrawerViewInterface) {
         this.drawerLayout = drawerLayout
@@ -216,13 +219,13 @@ class DrawerView @Inject constructor(
                 0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
         anim.duration = 500
         fromView.startAnimation(anim)
-        drawerViewInterface.initDrawerListenerAfterAccountChanged(fromView, accountClicked)
+        initDrawerListenerAfterAccountChanged(fromView, accountClicked)
         anim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
                 val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down)
                 disappearAnimation.duration = 500
                 goToView.startAnimation(disappearAnimation)
-                drawerViewInterface.resetDrawerListener()
+                addDrawerListener(drawerCloseListener)
             }
 
             override fun onAnimationEnd(animation: Animation) {
@@ -310,10 +313,6 @@ class DrawerView @Inject constructor(
         drawerLayout.addDrawerListener(drawerListener)
     }
 
-    fun removeDrawerListener(drawerListener: DrawerLayout.DrawerListener) {
-        drawerLayout.removeDrawerListener(drawerListener)
-    }
-
     private fun setupCreateConfigAccountListeners() {
         configureAccountContainer.setOnClickListener {
             closeDrawers()
@@ -323,14 +322,6 @@ class DrawerView @Inject constructor(
             closeDrawers()
             drawerViewInterface.addAccountClicked()
         }
-    }
-
-    fun showAccounts() {
-        navFoldersAccountsButton.showAccounts()
-    }
-
-    fun startAnimation(view: View) {
-        view.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
     }
 
     fun setDrawerEnabled(enabled: Boolean) {
@@ -347,5 +338,33 @@ class DrawerView @Inject constructor(
         val allMessagesFolderName: String = context.getString(R.string.search_all_messages_title)
         val unifiedFolderName: String = context.getString(R.string.integrated_inbox_title)
         return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
+    }
+
+    private fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account) {
+        drawerCloseListener = onDrawerClosed {
+            fromView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.scale_up))
+            drawerViewInterface.changeAccount(accountClicked)
+            drawerLayout.removeDrawerListener(drawerCloseListener)
+        }
+    }
+
+    fun initDrawerListenerOnAccountChanged(account: Account) {
+        drawerCloseListener = onDrawerClosed {
+            drawerViewInterface.onAccountClicked(account)
+            navFoldersAccountsButton.showAccounts()
+            drawerLayout.removeDrawerListener(drawerCloseListener)
+            drawerViewInterface.changeAccountsOrder()
+        }
+        addDrawerListener(drawerCloseListener)
+        closeDrawers()
+    }
+
+    fun initDrawerListenerOnFolderChanged(folder: LocalFolder) {
+        drawerCloseListener = onDrawerClosed {
+            drawerViewInterface.onDrawerClosed(folder)
+            drawerLayout.removeDrawerListener(drawerCloseListener)
+        }
+        addDrawerListener(drawerCloseListener)
+        closeDrawers()
     }
 }

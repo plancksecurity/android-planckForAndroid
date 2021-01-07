@@ -1,7 +1,6 @@
 package com.fsck.k9.activity.drawer
 
 import android.content.Context
-import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.fsck.k9.Account
@@ -23,12 +22,10 @@ class DrawerLayoutManager @Inject constructor(
         @Named("ActivityContext") private val context: Context,
         private val drawerView: DrawerView,
         private val preferences: Preferences,
-        private var accountUtils: AccountUtils
+        private var accountUtils: AccountUtils,
 ) : DrawerViewInterface {
 
     private var showingAccountsMenu = false
-
-    private lateinit var drawerCloseListener: DrawerLayout.DrawerListener
 
     private lateinit var drawerLayoutInterface: DrawerLayoutInterface
 
@@ -59,7 +56,7 @@ class DrawerLayoutManager @Inject constructor(
         }
     }
 
-    private fun setupNavigationHeader() {
+    override fun setupNavigationHeader() {
         account?.let { acc ->
             drawerView.setUpMainAccountView(acc)
         }
@@ -71,42 +68,39 @@ class DrawerLayoutManager @Inject constructor(
         drawerView.setupAccountsListeners(account!!, accounts)
     }
 
+    override fun refreshMessages(search: LocalSearch) {
+        drawerLayoutInterface.refreshMessages(search)
+    }
+
+    override fun changeAccountsOrder() {
+        drawerLayoutInterface.changeAccountsOrder()
+    }
+
+    override fun onDrawerClosed(folder: LocalFolder) {
+        drawerLayoutInterface.onDrawerClosed(folder)
+    }
+
+    override fun onAccountClicked(account: Account) {
+        val search = createSearchFolder(account)
+        refreshMessages(search)
+        setupNavigationHeader()
+        createFoldersMenu()
+    }
+
+    private fun createSearchFolder(account: Account): LocalSearch {
+        val folder = account.autoExpandFolderName
+        val search = LocalSearch(folder)
+        search.addAccountUuid(account.uuid)
+        search.addAllowedFolder(folder)
+        return search
+    }
+
     override fun showLoadingMessages() {
         drawerLayoutInterface.showLoadingMessages()
     }
 
     override fun updateMessagesForSpecificInbox(account: SearchAccount?) {
         drawerLayoutInterface.updateMessagesForSpecificInbox(account)
-    }
-
-    override fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account) {
-        drawerCloseListener = onDrawerClosed {
-            drawerView.startAnimation(fromView)
-            changeAccount(accountClicked)
-            drawerView.removeDrawerListener(drawerCloseListener)
-        }
-    }
-
-    private fun initDrawerListenerOnAccountChanged(account: Account) {
-        drawerCloseListener = onDrawerClosed {
-            val folder = account.autoExpandFolderName
-            val search = LocalSearch(folder)
-            search.addAccountUuid(this@DrawerLayoutManager.account?.uuid)
-            search.addAllowedFolder(folder)
-            drawerLayoutInterface.refreshMessages(search)
-            setupNavigationHeader()
-            createFoldersMenu()
-            drawerView.showAccounts()
-            drawerView.removeDrawerListener(drawerCloseListener)
-            drawerLayoutInterface.changeAccountsOrder()
-        }
-    }
-
-    private fun initDrawerListenerOnFolderChanged(folder: LocalFolder) {
-        drawerCloseListener = onDrawerClosed {
-            drawerLayoutInterface.onDrawerClosed(folder)
-            drawerView.removeDrawerListener(drawerCloseListener)
-        }
     }
 
     override fun createAccountsMenu() {
@@ -128,9 +122,7 @@ class DrawerLayoutManager @Inject constructor(
         drawerLayoutInterface.showLoadingMessages()
         drawerLayoutInterface.updateAccount(account)
         drawerLayoutInterface.updateLastUsedAccount()
-        initDrawerListenerOnAccountChanged(account)
-        drawerView.addDrawerListener(drawerCloseListener)
-        drawerView.closeDrawers()
+        drawerView.initDrawerListenerOnAccountChanged(account)
     }
 
     override fun onBackPressed() {
@@ -159,10 +151,6 @@ class DrawerLayoutManager @Inject constructor(
 
     override fun addAccountClicked() {
         AccountSetupBasics.actionNewAccount(context)
-    }
-
-    override fun resetDrawerListener() {
-        drawerView.addDrawerListener(drawerCloseListener)
     }
 
     fun populateDrawerGroup() {
@@ -205,12 +193,10 @@ class DrawerLayoutManager @Inject constructor(
     override fun changeFolder(folder: LocalFolder) {
         drawerLayoutInterface.updateFolderName(folder.name)
         drawerLayoutInterface.showLoadingMessages()
-        initDrawerListenerOnFolderChanged(folder)
-        drawerView.addDrawerListener(drawerCloseListener)
-        drawerView.closeDrawers()
+        drawerView.initDrawerListenerOnFolderChanged(folder)
     }
 
-    private fun changeAccount(accountClicked: Account) {
+    override fun changeAccount(accountClicked: Account) {
         drawerView.closeDrawers()
         account = accountClicked
         drawerLayoutInterface.updateAccount(accountClicked)
