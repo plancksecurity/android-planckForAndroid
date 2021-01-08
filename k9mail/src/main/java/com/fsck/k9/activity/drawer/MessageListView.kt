@@ -16,7 +16,6 @@ interface MessageListView {
     fun changeAccountsOrder()
 
     fun editAccount()
-    fun addMessageListFragment(fragment: MessageListFragment, isHomeScreen: Boolean)
     fun updateAccount(account: Account)
     fun updateFolderName(folderName: String)
     fun updateLastUsedAccount()
