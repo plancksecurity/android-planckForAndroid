@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -16,6 +17,7 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.GetNavigationAccountEmailAction
 import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.common.GetTextViewTextAction
+import com.fsck.k9.common.ScrollParentScrollViewAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
@@ -156,7 +158,9 @@ class DrawerLayoutTest {
         val size = testUtils.getListSize(R.id.navigation_folders)
         onView(withId(R.id.navigation_folders))
                 .check(matches(isDisplayed()))
-                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, action),
+                .perform(
+                        ScrollParentScrollViewAction(),
+                        actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, action),
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, click()))
         uiDevice.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
