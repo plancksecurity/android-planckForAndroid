@@ -68,9 +68,13 @@ class DrawerLayoutPresenter @Inject constructor(
         allMessagesAccount = SearchAccount.createAllMessagesAccount(context)
 
         val menuFoldersNotEmpty = menuFolders?.isNotEmpty() ?: false
-        val isSameUid = menuFolders?.get(0)?.accountUuid == account?.uuid
+        val isSameUid = if (menuFoldersNotEmpty && account != null) {
+            menuFolders?.get(0)?.accountUuid == account?.uuid
+        } else {
+            false
+        }
         when {
-            menuFoldersNotEmpty && isSameUid -> setupFolders()
+            isSameUid -> setupFolders()
             account != null -> getFolders()
         }
     }
