@@ -1585,7 +1585,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    public void addMessageListFragment(@NotNull MessageListFragment fragment, boolean addToBackStack) {
+    private void addMessageListFragment(@NotNull MessageListFragment fragment, boolean addToBackStack) {
         addMessageListFragment(fragment, addToBackStack, true);
     }
 
