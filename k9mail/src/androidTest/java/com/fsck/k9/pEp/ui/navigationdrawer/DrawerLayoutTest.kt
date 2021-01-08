@@ -184,10 +184,8 @@ class DrawerLayoutTest {
 
         uiDevice.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(withText(email)))
-        for (position in 0 until testUtils.getListSize(R.id.navigation_accounts)) {
-            onView(withId(R.id.navigation_accounts))
-                    .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
-        }
+        onView(withId(R.id.navigation_accounts))
+                .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
     }
 
     @Test
