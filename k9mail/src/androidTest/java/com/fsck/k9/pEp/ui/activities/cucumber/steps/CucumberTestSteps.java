@@ -1485,6 +1485,14 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
     }
 
+    @And("^I click show pictures button$")
+    public void I_click_show_pictures(){
+        timeRequiredForThisMethod(10);
+        testUtils.waitForIdle();
+        testUtils.clickTextOnScreen("message_view_show_pictures_action");
+        testUtils.waitForIdle();
+    }
+
     @And("^I search for (\\d+) (?:message|messages) with text (\\S+)$")
     public void I_click_search_and_search_for_text(int messages, String text){
         timeRequiredForThisMethod(25);
