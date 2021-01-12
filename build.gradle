@@ -3,7 +3,7 @@ buildscript {
         buildConfig = [
                 'compileSdk'           : 30,
                 'targetSdk'            : 30,
-                'minSdk'               : 21,
+                'minSdk'               : 30,
                 'versionCode'          : 76,
                 'pEpEngineRevision'    : 'Release_2.1.10',
                 'pEpJNIAdapterRevision': 'Release_2.1.4',
@@ -12,7 +12,8 @@ buildscript {
         ]
 
         versions = [
-                'kotlin'             : '1.4.10',
+                'kotlin'             : '1.4.21',
+                'compose'            : '1.0.0-alpha09',
 
                 'supportLibrary'     : '28.0.0',
                 'preferencesFix'     : '1.1.0',
@@ -80,7 +81,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath "com.android.tools.build:gradle:7.0.0-alpha04"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
     }
