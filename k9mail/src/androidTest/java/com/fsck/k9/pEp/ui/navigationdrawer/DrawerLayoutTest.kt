@@ -57,7 +57,6 @@ class DrawerLayoutTest {
         onView(withId(R.id.navigation_bar_folders_layout)).check(matches(isDisplayed()))
         onView(withId(R.id.unified_inbox)).check(matches(isDisplayed()))
         onView(withId(R.id.all_messages_container)).check(matches(isDisplayed()))
-        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
         onView(withId(R.id.navigation_folders)).check(matches(not(hasChildCount(0))))
     }

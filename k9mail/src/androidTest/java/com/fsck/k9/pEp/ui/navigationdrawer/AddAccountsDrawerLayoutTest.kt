@@ -4,7 +4,7 @@ import android.os.Build
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -78,15 +78,15 @@ class AddAccountsDrawerLayoutTest {
         }
     }
 
-    private fun addAccount(emailAddress: String, password: String, accountname: String) {
+    private fun addAccount(emailAddress: String, password: String, accountName: String) {
         uiDevice.waitForIdle()
-        onView(withId(R.id.account_email)).check(matches(isDisplayed())).perform(ViewActions.typeText(emailAddress))
-        onView(withId(R.id.account_password)).check(matches(isDisplayed())).perform(ViewActions.typeText(password))
+        onView(withId(R.id.account_email)).check(matches(isDisplayed())).perform(typeText(emailAddress))
+        onView(withId(R.id.account_password)).check(matches(isDisplayed())).perform(clearText(),typeText(password))
         Espresso.closeSoftKeyboard()
         uiDevice.waitForIdle()
         onView(withId(R.id.next)).check(matches(isDisplayed())).perform(click())
         uiDevice.waitForIdle()
-        onView(withId(R.id.account_name)).check(matches(isDisplayed())).perform(ViewActions.typeText(accountname))
+        onView(withId(R.id.account_name)).check(matches(isDisplayed())).perform(typeText(accountName))
         Espresso.closeSoftKeyboard()
         uiDevice.waitForIdle()
         onView(withId(R.id.done)).check(matches(isDisplayed())).perform(click())
