@@ -57,13 +57,14 @@ class DrawerLayoutTest {
         onView(withId(R.id.navigation_bar_folders_layout)).check(matches(isDisplayed()))
         onView(withId(R.id.unified_inbox)).check(matches(isDisplayed()))
         onView(withId(R.id.all_messages_container)).check(matches(isDisplayed()))
+        onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
         onView(withId(R.id.navigation_folders)).check(matches(not(hasChildCount(0))))
     }
 
     @Test
     fun clickAccountBall() {
-        // TODO this test will not work since there is a bug to fix
+        // TODO https://pep.foundation/jira/browse/P4A-1212
         testUtils.openHamburgerMenu()
 
         var email = getTextFromComponent(R.id.nav_header_email)
