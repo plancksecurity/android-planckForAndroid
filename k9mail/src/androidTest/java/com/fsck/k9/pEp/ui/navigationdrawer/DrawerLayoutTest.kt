@@ -1,15 +1,18 @@
 package com.fsck.k9.pEp.ui.navigationdrawer
 
+import android.app.Activity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
@@ -21,27 +24,30 @@ import com.fsck.k9.common.ScrollParentScrollViewAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.runners.MethodSorters
 
 /* Pre requirements
  *       Add 3 accounts that have different folders count
  *       ie. account1 -> 3 folders , account2 -> 4 folders, account3 -> 5 folders
  * */
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4::class)
-class DrawerLayoutTest {
+class DrawerLayoutTest : SetupDevTestAccounts() {
 
     @get:Rule
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
 
-    private lateinit var testUtils: TestUtils
-    private lateinit var uiDevice: UiDevice
 
     @Before
     fun before() {
@@ -49,9 +55,20 @@ class DrawerLayoutTest {
         testUtils = TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation())
     }
 
+    @Test
+    fun stage1_clearAccounts() {
+        uiDevice.waitForIdle()
+        clearAccounts()
+    }
 
     @Test
-    fun navDrawerIsNotEmpty() {
+    fun stage2_setupAccount() {
+        uiDevice.waitForIdle()
+        setupAccounts()
+    }
+
+    @Test
+    fun stage3_navDrawerIsNotEmpty() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.menu_header)).check(matches(isDisplayed()))
         onView(withId(R.id.navigation_bar_folders_layout)).check(matches(isDisplayed()))
@@ -62,7 +79,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun clickAccountBall() {
+    fun stage3_clickAccountBall() {
         // TODO https://pep.foundation/jira/browse/P4A-1212
         testUtils.openHamburgerMenu()
 
@@ -119,7 +136,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun changeAccountFolders() {
+    fun stage3_changeAccountFolders() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
 
@@ -131,7 +148,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun clickFolders() {
+    fun stage3_clickFolders() {
         // click unified account
         testUtils.openHamburgerMenu()
         onView(withId(R.id.unified_inbox)).perform(click())
@@ -167,7 +184,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun clickAccountInList() {
+    fun stage3_clickAccountInList() {
         testUtils.openHamburgerMenu()
 
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
@@ -193,7 +210,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun clickAddAccount() {
+    fun stage3_clickAddAccount() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
@@ -202,7 +219,7 @@ class DrawerLayoutTest {
     }
 
     @Test
-    fun clickSettings() {
+    fun stage3_clickSettings() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.configure_account_container)).perform(click())

@@ -3,9 +3,6 @@ import com.android.build.OutputFile
 def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
 def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
-def pEpTest1EmailAddress = "\"$System.env.PEP_TEST_1_EMAIL_ADDRESS\""
-def pEpTest2EmailAddress = "\"$System.env.PEP_TEST_2_EMAIL_ADDRESS\""
-def pEpTest3EmailAddress = "\"$System.env.PEP_TEST_3_EMAIL_ADDRESS\""
 
 
 def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
@@ -26,7 +23,6 @@ apply plugin: 'kotlin-android-extensions'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
-apply from: '../gradle/plugins/utils/navigationdrawer.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -192,10 +188,6 @@ android {
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
-
-        buildConfigField "String", "PEP_TEST_1_EMAIL_ADDRESS", "${pEpTest1EmailAddress}"
-        buildConfigField "String", "PEP_TEST_2_EMAIL_ADDRESS", "${pEpTest2EmailAddress}"
-        buildConfigField "String", "PEP_TEST_3_EMAIL_ADDRESS", "${pEpTest3EmailAddress}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
