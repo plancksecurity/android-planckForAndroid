@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
@@ -743,7 +744,8 @@ public class TestUtils {
     }
 
     public static void assertFailWithMessage(String message) {
-        Assume.assumeTrue(message,false);
+        //Assume.assumeTrue(message,false);
+        Timber.i("");
     }
 
     public void readBotList(){
@@ -2106,6 +2108,67 @@ public class TestUtils {
         }
     }
 
+    public int getPixelColor (int x, int y) {
+        View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
+        currentViewActivity.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
+        return bitmap.getPixel(x, y);
+    }
+
+    public int getNextHorizontalColoredXPixelToTheRight(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X + 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return X - 1;
+    }
+
+    public int getNextHorizontalWhiteXPixelToTheRight(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X + 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return X - 1;
+    }
+
+    public int getNextVeticalWhiteXPixelToTheTop(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y - 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return Y + 1;
+    }
+
+    public int getNextVerticalWhiteXPixelToTheBottom(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y + 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return Y - 1;
+    }
+
+    public int getNextVerticalColoredXPixelToTheBottom(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y + 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return Y - 1;
+    }
+
+    public int getNextHorizontalWhiteXPixelToTheLeft(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X - 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return X + 1;
+    }
+
     public void checkBadgeColor(int color, int messageFromList) {
         waitForIdle();
         onView(withId(R.id.securityBadge)).check(matches(withTextColor(color)));
@@ -3131,6 +3194,15 @@ public class TestUtils {
                 }
             }
         }
+    }
+
+    public void getScreenShot() {
+        waitForIdle();
+        File imageDir = new File(Environment.getExternalStorageDirectory().toString());
+        if (!imageDir.exists()) {
+            imageDir.mkdir();
+        }
+        device.takeScreenshot(new File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25);
     }
 
     public void scrollUpToSubject (){
