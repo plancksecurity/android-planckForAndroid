@@ -70,15 +70,16 @@ class PEpMessageBuilder {
         if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
             String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
+            byte[] bodyContent = PEpUtils.extractBodyContent(b);
             if ((isAnAttachment(mm))) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 String filename = MimeUtility.getHeaderParameter(disposition, "filename");
-                addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
+                addAttachment(attachments, mm.getContentType(), filename, bodyContent);
                 pEpMsg.setLongmsg("");
             }
 
             String charset = getMessagePartCharset(mm);
-            String text = new String(PEpUtils.extractBodyContent(b), charset);
+            String text = new String(bodyContent, charset);
             if (mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
             } else {
