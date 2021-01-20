@@ -49,6 +49,7 @@ public class MessageWebView extends RigidWebView {
          *
          */
         getSettings().setBlockNetworkLoads(shouldBlockNetworkData);
+        getSettings().setLoadsImagesAutomatically(!shouldBlockNetworkData);
     }
 
 
@@ -90,7 +91,6 @@ public class MessageWebView extends RigidWebView {
         disableDisplayZoomControls();
 
         webSettings.setJavaScriptEnabled(false);
-        webSettings.setLoadsImagesAutomatically(true);
         webSettings.setRenderPriority(RenderPriority.HIGH);
 
         // TODO:  Review alternatives.  NARROW_COLUMNS is deprecated on KITKAT
