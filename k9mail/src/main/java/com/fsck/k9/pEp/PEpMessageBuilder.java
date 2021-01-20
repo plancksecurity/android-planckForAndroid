@@ -58,7 +58,7 @@ class PEpMessageBuilder {
         return pEpMsg;
     }
 
-    private void addBody(Message pEpMsg) throws MessagingException, IOException, UnsupportedEncodingException {
+    private void addBody(Message pEpMsg) throws MessagingException, IOException {
         // fiddle message txt from MimeMsg...
         // the buildup of mm should be like the follwing:
         // - html body if any, else plain text
@@ -67,20 +67,19 @@ class PEpMessageBuilder {
         Body b = mm.getBody();
         Vector<Blob> attachments = new Vector<>();
 
-        if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
+        if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
-                String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
-                if ((isAnAttachment(mm))) {
-                    Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
-                    String filename = MimeUtility.getHeaderParameter(disposition, "filename");
-                    addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
-                    pEpMsg.setLongmsg("");
-                 //   return;
-                }
+            String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
+            if ((isAnAttachment(mm))) {
+                Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
+                String filename = MimeUtility.getHeaderParameter(disposition, "filename");
+                addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
+                pEpMsg.setLongmsg("");
+            }
 
             String charset = getMessagePartCharset(mm);
             String text = new String(PEpUtils.extractBodyContent(b), charset);
-            if(mm.isMimeType("text/html")) {
+            if (mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
             } else {
                 pEpMsg.setLongmsg(text);
