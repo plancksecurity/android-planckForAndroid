@@ -3368,7 +3368,7 @@ public class TestUtils {
                         jsonArray.put(json.get((String) x.next()));
                     }
                 } catch (JSONException e) {
-                    Timber.i("");
+                    Timber.i("Cannot find json object");
                 }
         }
     }
