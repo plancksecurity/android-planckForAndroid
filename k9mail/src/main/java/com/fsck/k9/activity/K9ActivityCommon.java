@@ -93,6 +93,7 @@ public class K9ActivityCommon {
 
     private Activity mActivity;
     private GestureDetector mGestureDetector;
+    private SwipeGestureDetector swipeGestureDetector;
 
 
     private K9ActivityCommon(Activity activity) {
@@ -135,11 +136,19 @@ public class K9ActivityCommon {
      *         detected.
      */
     public void setupGestureDetector(OnSwipeGestureListener listener) {
-        mGestureDetector = new GestureDetector(mActivity,
-                new SwipeGestureDetector(mActivity, listener));
+        if (mGestureDetector == null) {
+            swipeGestureDetector = new SwipeGestureDetector(mActivity,listener);
+            mGestureDetector = new GestureDetector(mActivity, swipeGestureDetector);
+        } else{
+            swipeGestureDetector.setListener(listener);
+        }
     }
 
-    public void onDestroy() {
+    public void onPause() {
+        if (swipeGestureDetector != null)
+            swipeGestureDetector.onPause();
+        swipeGestureDetector = null;
+        mGestureDetector = null;
     }
 
     private void initPassphraseRequestReceiver() {

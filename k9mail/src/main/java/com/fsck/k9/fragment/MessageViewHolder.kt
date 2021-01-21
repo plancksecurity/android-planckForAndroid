@@ -21,7 +21,7 @@ import java.util.*
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,
                                              private val fontSizes: FontSizes,
                                              private val view: View) : View.OnClickListener {
-    private var securityBadge: ImageView? = null
+    private var privacyBadge: ImageView? = null
     private var selectedCheckBox: CheckBox? = null
     private var contactBadge: PEpContactBadge? = null
     private var senderTV: TextView? = null
@@ -36,7 +36,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     private var read = false
 
     private fun bindViews() {
-        securityBadge = view.findViewById(R.id.securityBadge)
+        privacyBadge = view.findViewById(R.id.privacyBadge)
         selectedCheckBox = view.findViewById(R.id.selectedCheckbox)
         contactBadge = view.findViewById(R.id.contactBadge)
         senderTV = view.findViewById(R.id.sender)
@@ -76,7 +76,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         updateDate(displayDate)
         updateFlagCheckbox(isFlagged)
         updateSelectedCheckbox(cursor)
-        updateSecurityBadge(pEpRating)
+        updatePrivacyBadge(account, pEpRating)
         updateContactBadge(counterpartyAddress)
         updateAttachment(cursor)
         updateNameAndSubject(displayName, statusHolder, subjectText)
@@ -153,11 +153,15 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         }
     }
 
-    private fun updateSecurityBadge(pEpRating: Rating) {
+    private fun updatePrivacyBadge(account: Account, pEpRating: Rating) {
         if (fragment.context != null) {
-            val pepSecurityBadge = getDrawableForMessageList(fragment.context!!, pEpRating)
-            securityBadge?.visibility = if (pepSecurityBadge != null) View.VISIBLE else View.GONE
-            if (pepSecurityBadge != null) securityBadge?.setImageDrawable(pepSecurityBadge)
+            if (!account.ispEpPrivacyProtected()) {
+                privacyBadge?.visibility = View.GONE
+            } else {
+                val pEpPrivacyDrawable = getDrawableForMessageList(fragment.context!!, pEpRating)
+                privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
+                if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
+            }
         }
     }
 

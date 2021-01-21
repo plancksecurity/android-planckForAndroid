@@ -189,7 +189,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
 
-        setupSwipeDetector();
 
         Context context = getActivity().getApplicationContext();
         mController = MessagingController.getInstance(context);
@@ -231,6 +230,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onResume() {
         super.onResume();
         ((MessageList) getActivity()).setMessageViewVisible(true);
+        setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
@@ -246,9 +246,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mFragmentListener = null;
+        mContext = null;
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Activity activity = getActivity();
+        pEpSecurityStatusLayout.setOnClickListener(null);
+
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
             messageLoaderHelper.onDestroyChangingConfigurations();

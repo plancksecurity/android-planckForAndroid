@@ -33,6 +33,9 @@ constructor(
             entryValues = (listOf(K9.FOLDER_NONE) + folders.map { it.serverId }).toTypedArray()
 
             isEnabled = true
+            if (!entryValues.contains(value)) {
+                setValueIndex(0)
+            }
         }
 
 

@@ -13,7 +13,7 @@ public class SwipeGestureDetector extends SimpleOnGestureListener {
     private static final float SWIPE_THRESHOLD_VELOCITY_DIP = 325f;
 
 
-    private final OnSwipeGestureListener mListener;
+    private OnSwipeGestureListener mListener;
     private int mMinVelocity;
     private int mMaxOffPath;
     private MotionEvent mLastOnDownEvent = null;
@@ -33,6 +33,10 @@ public class SwipeGestureDetector extends SimpleOnGestureListener {
         float gestureScale = context.getResources().getDisplayMetrics().density;
         mMinVelocity = (int) (SWIPE_THRESHOLD_VELOCITY_DIP * gestureScale + 0.5f);
         mMaxOffPath = (int) (SWIPE_MAX_OFF_PATH_DIP * gestureScale + 0.5f);
+    }
+
+    public void setListener(OnSwipeGestureListener listener){
+        mListener = listener;
     }
 
     @Override
@@ -84,6 +88,10 @@ public class SwipeGestureDetector extends SimpleOnGestureListener {
         return false;
     }
 
+    public void onPause() {
+        mListener = null;
+    }
+
 
     /**
      * A listener that will be notified when a right to left or left to right swipe has been
@@ -91,7 +99,7 @@ public class SwipeGestureDetector extends SimpleOnGestureListener {
      */
     public interface OnSwipeGestureListener {
         /**
-         * Called when a swipe from right to left is handled by {@link MyGestureDetector}.
+         * Called when a swipe from right to left is handled by {@link SwipeGestureDetector}.
          *
          * <p>See {@link OnGestureListener#onFling(MotionEvent, MotionEvent, float, float)}
          * for more information on the {@link MotionEvent}s being passed.</p>
@@ -104,7 +112,7 @@ public class SwipeGestureDetector extends SimpleOnGestureListener {
         void onSwipeRightToLeft(final MotionEvent e1, final MotionEvent e2);
 
         /**
-         * Called when a swipe from left to right is handled by {@link MyGestureDetector}.
+         * Called when a swipe from left to right is handled by {@link SwipeGestureDetector}.
          *
          * <p>See {@link OnGestureListener#onFling(MotionEvent, MotionEvent, float, float)}
          * for more information on the {@link MotionEvent}s being passed.</p>
