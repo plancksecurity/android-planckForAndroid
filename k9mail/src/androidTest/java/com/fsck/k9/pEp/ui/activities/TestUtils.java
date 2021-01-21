@@ -744,8 +744,7 @@ public class TestUtils {
     }
 
     public static void assertFailWithMessage(String message) {
-        //Assume.assumeTrue(message,false);
-        Timber.i("");
+        Assume.assumeTrue(message,false);
     }
 
     public void readBotList(){
