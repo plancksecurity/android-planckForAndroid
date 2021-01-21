@@ -6,7 +6,6 @@ import android.app.Instrumentation;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -15,10 +14,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.TextView;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
@@ -63,7 +62,6 @@ import cucumber.api.java.en.When;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
-import static android.provider.UserDictionary.Words.APP_ID;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -1482,92 +1480,119 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
     }
 
-    @And("^I click message content$")
-    public void I_click_message_content() {
+    @And("^I test the format and it is showing the pictures$")
+    public void I_test_format_and_pictures() {
         timeRequiredForThisMethod(10);
         testUtils.waitForIdle();
-        ViewInteraction wv = onView(withId(R.id.message_content));
-        if (device.findObject(By.res(APP_ID, "message_content")) != null) {
-            Rect messageContentBounds = device.findObject(By.res(APP_ID, "message_content")).getVisibleBounds();
-            device.click(messageContentBounds.left - 1, messageContentBounds.centerY());
-            testUtils.waitForIdle();
-        }
-        int[] centralThickness = new int[2];
-        int[] topThickness = new int[2];
-        int topYPixel;
-        int bottomYPixel;
+        onView(withId(R.id.message_content)).perform(click());
+        int[] firstLetterCentralThickness = new int[2];
+        int[] firstLetterTopThickness = new int[2];
+        int textBoxHeight = 0;
+        int firstLetterTopYPixel;
         BySelector selectorA = By.clazz("android.view.View");
         for (UiObject2 viewView : device.findObjects(selectorA)) {
-            if (viewView.getText() !=null && viewView.getText().contains("Testing")) {
+            if (viewView.getText() != null && viewView.getText().contains("Testing Blue")) {
+                firstLetterCentralThickness[0] = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
+                firstLetterCentralThickness[1] = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0], viewView.getVisibleBounds().centerY());
+                firstLetterTopYPixel = testUtils.getNextVerticalWhiteYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY()) + 1;
+                firstLetterTopThickness[0] = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, firstLetterTopYPixel);
+                firstLetterTopThickness[1] = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, firstLetterTopYPixel);
+                textBoxHeight = viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top;
+                break;
+            }
+        }
+        for (UiObject2 viewView : device.findObjects(selectorA)) {
+            if (viewView.getText() != null && viewView.getText().contains("Testing")) {
                 switch (viewView.getText()) {
-                    case "Testing Head":
+                    case "Testing Heading":
+                        if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top <= textBoxHeight + 2) {
+                            testUtils.assertFailWithMessage(viewView.getText() + " is not heading");
+                        }
                         break;
                     case "Testing Blue":
-                        centralThickness[0] = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
-                        if (Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).blue() != 1.0
-                        || Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).red() != 0.0
-                        || Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).green() != 0.0) {
+                        if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 1.0
+                                || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 0.0
+                                || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not BLUE");
                         }
-                        centralThickness[1] = testUtils.getNextHorizontalWhiteXPixelToTheRight(centralThickness[0], viewView.getVisibleBounds().centerY());
-                        topYPixel = testUtils.getNextVeticalWhiteXPixelToTheTop(centralThickness[0] + 1, viewView.getVisibleBounds().centerY()) + 1;
-                        topThickness[0] = testUtils.getNextHorizontalWhiteXPixelToTheLeft(centralThickness[0] + 1, topYPixel);
-                        topThickness[1] = testUtils.getNextHorizontalWhiteXPixelToTheRight(centralThickness[0] + 1, topYPixel);
                         break;
                     case "Testing Red":
-                        if (Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).red() != 1.0
-                        || Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).blue() != 0.0
-                        || Color.valueOf(testUtils.getPixelColor(centralThickness[0], viewView.getVisibleBounds().centerY())).green() != 0.0) {
+                        if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 1.0
+                                || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 0.0
+                                || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not RED");
                         }
                         break;
                     case "Testing Italic\n":
-                        int ItalicX = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
-                        int ItalicXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(ItalicX, viewView.getVisibleBounds().centerY());
-                        if (centralThickness[1] - centralThickness[0] != ItalicXEnd - ItalicX) {
+                        int italicCentralXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
+                        int italicCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(italicCentralXStart, viewView.getVisibleBounds().centerY());
+                        if ((firstLetterCentralThickness[1] - firstLetterCentralThickness[0] + 1 < italicCentralXEnd - italicCentralXStart)
+                                || (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] - 1 > italicCentralXEnd - italicCentralXStart)) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
-                        topYPixel = testUtils.getNextVeticalWhiteXPixelToTheTop(centralThickness[0] + 1, viewView.getVisibleBounds().centerY()) + 1;
-                        int ItalicTop = testUtils.getNextHorizontalWhiteXPixelToTheLeft(centralThickness[0] + 1, topYPixel);
-                        int ItalicTopEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(centralThickness[0] + 1, topYPixel);
-                        if (topThickness[0] == ItalicTop || topThickness[1] == ItalicTopEnd) {
+                        firstLetterTopYPixel = testUtils.getNextVerticalColoredYPixelToTheBottom(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().top + 1);
+                        int italicTopStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
+                        int italicTopEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
+                        if (firstLetterTopThickness[0] == italicTopStart || firstLetterTopThickness[1] == italicTopEnd) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
-                        if (topThickness[1] - topThickness[0] != ItalicTopEnd - ItalicTop) {
+                        if ((firstLetterTopThickness[1] - firstLetterTopThickness[0] - 2 > italicTopEnd - italicTopStart) || (firstLetterTopThickness[1] - firstLetterTopThickness[0] + 2 < italicTopEnd - italicTopStart)) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
                         break;
                     case "Testing Bold\n":
-                        int BoldX = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
-                        int BoldXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(BoldX, viewView.getVisibleBounds().centerY());
-                        if (centralThickness[1] - centralThickness[0] >= BoldXEnd - BoldX) {
+                        int boldCentralXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
+                        int boldCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(boldCentralXStart, viewView.getVisibleBounds().centerY());
+                        if (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] >= boldCentralXEnd - boldCentralXStart) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not BOLD");
                         }
                         break;
                     case "Testing Underline":
-                        int UnderlineX = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
-                        int UnderlineXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(UnderlineX, viewView.getVisibleBounds().centerY());
-                        if (centralThickness[1] != UnderlineXEnd || centralThickness[0] != UnderlineX) {
+                        int underlineFirstLetterXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
+                        int underlineFirstLetterXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(underlineFirstLetterXStart, viewView.getVisibleBounds().centerY());
+                        if (firstLetterCentralThickness[1] != underlineFirstLetterXEnd || firstLetterCentralThickness[0] != underlineFirstLetterXStart) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
-                        bottomYPixel = testUtils.getNextVerticalWhiteXPixelToTheBottom(centralThickness[0] + 1, viewView.getVisibleBounds().centerY()) + 1;
-                        bottomYPixel = testUtils.getNextVerticalColoredXPixelToTheBottom(centralThickness[0] + 1, bottomYPixel) +1;
-                        int endOfLine = testUtils.getNextHorizontalWhiteXPixelToTheRight(centralThickness[0] + 1, bottomYPixel);
-                        if (viewView.getVisibleBounds().centerX() - endOfLine < 30) {
+                        int bottomUnderline = testUtils.getNextVerticalColoredYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().bottom) - 1;
+                        int underlineYStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, bottomUnderline);
+                        int underlineYEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, bottomUnderline);
+                        //int endOfUnderline = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, firstLetterBottomYPixel);
+                        if (underlineYEnd - underlineYStart < 30) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not Underlined");
+                        }
+                        break;
+                    case "Testing No Format":
+                        if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top >= textBoxHeight - 2) {
+                            testUtils.assertFailWithMessage(viewView.getText() + " has format");
                         }
                         break;
                 }
             }
         }
-
+        testUtils.waitForIdle();
         Rect pic1 = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
         Rect pic2 = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
         testUtils.waitForIdle();
-        Rect pic1visible = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
-        Rect pic2visible = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
+        selectorA = By.clazz("android.widget.TextView");
+        for (UiObject2 textView : device.findObjects(selectorA)) {
+            if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
+                textView.click();
+            }
+        }
+        testUtils.waitForIdle();
+        Rect pic1visible = null;
+        Rect pic2visible = null;
+        while (pic1visible == null || pic2visible == null) {
+            try {
+                testUtils.waitForIdle();
+                pic1visible = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
+                pic2visible = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
+            } catch (Exception ex) {
+                Timber.i("Waiting for Image bounds...");
+            }
+        }
         if (pic1.toString().equals(pic1visible.toString()) ||
-        pic2.toString().equals(pic2visible.toString())) {
+                pic2.toString().equals(pic2visible.toString())) {
             testUtils.assertFailWithMessage("Not showing pictures");
         }
         testUtils.waitForIdle();
