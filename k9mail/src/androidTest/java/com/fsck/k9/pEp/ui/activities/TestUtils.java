@@ -2133,7 +2133,7 @@ public class TestUtils {
         return X - 1;
     }
 
-    public int getNextVeticalWhiteXPixelToTheTop(int X, int Y) {
+    public int getNextVerticalWhiteYPixelToTheTop(int X, int Y) {
         int color;
         do {
             color = getPixelColor(X, Y);
@@ -2142,7 +2142,16 @@ public class TestUtils {
         return Y + 1;
     }
 
-    public int getNextVerticalWhiteXPixelToTheBottom(int X, int Y) {
+    public int getNextVerticalColoredYPixelToTheTop(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y - 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return Y + 1;
+    }
+
+    public int getNextVerticalWhiteYPixelToTheBottom(int X, int Y) {
         int color;
         do {
             color = getPixelColor(X, Y);
@@ -2151,7 +2160,7 @@ public class TestUtils {
         return Y - 1;
     }
 
-    public int getNextVerticalColoredXPixelToTheBottom(int X, int Y) {
+    public int getNextVerticalColoredYPixelToTheBottom(int X, int Y) {
         int color;
         do {
             color = getPixelColor(X, Y);
