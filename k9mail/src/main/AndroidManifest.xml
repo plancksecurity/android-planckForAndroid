@@ -510,6 +510,7 @@
 
         <activity
             android:name=".pEp.ui.activities.SplashActivity"
+            android:label="@string/launcher_label"
             android:launchMode="singleInstance"
             android:theme="@style/SplashTheme">
             <intent-filter>
