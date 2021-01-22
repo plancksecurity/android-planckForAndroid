@@ -305,4 +305,7 @@
     <string name="pgp_key_import_confirmation_dialog_question">Are you sure you want to import and use this key?</string>
     <string name="pgp_key_import_confirmation_confirm">Yes</string>
     <string name="pgp_key_import_confirmation_reject">No</string>
+    <string name="pep_mail_shortcut_short_label">pEp mail messages</string>
+    <string name="pep_mail_shortcut_long_label">pEp mail messages</string>
+    <string name="pep_mail_shortcut_disabled_message">Shortcut is disabled</string>
 </resources>
