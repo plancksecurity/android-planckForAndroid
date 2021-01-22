@@ -1704,8 +1704,17 @@ public class CucumberTestSteps {
 
     }
 
-    @Then("^I wait for the new message$")
-    public void I_wait_for_the_new_message(){
+    @Then("^I send and remove (\\d+) messages to (\\S+) with subject (\\S+) and body (\\S+)$")
+    public void I_send_and_remove_N_messages(int totalMessages,String botName, String subject, String body){
+        I_send_message_to_address(totalMessages, botName, subject, body);
+        testUtils.clickLastMessage();
+        for (int i = 0; i < totalMessages; i++) {
+            testUtils.clickView(R.id.delete);
+        }
+    }
+
+        @Then("^I wait for the new message$")
+        public void I_wait_for_the_new_message(){
         timeRequiredForThisMethod(40);
         testUtils.waitForNewMessage();
     }
