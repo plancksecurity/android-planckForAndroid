@@ -1713,8 +1713,8 @@ public class CucumberTestSteps {
         }
     }
 
-        @Then("^I wait for the new message$")
-        public void I_wait_for_the_new_message(){
+    @Then("^I wait for the new message$")
+    public void I_wait_for_the_new_message(){
         timeRequiredForThisMethod(40);
         testUtils.waitForNewMessage();
     }
