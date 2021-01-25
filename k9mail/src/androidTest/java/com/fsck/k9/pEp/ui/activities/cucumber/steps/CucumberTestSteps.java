@@ -1293,12 +1293,12 @@ public class CucumberTestSteps {
             testUtils.goBackToMessageList();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
-            //testUtils.composeMessageButton();
-            //testUtils.pressBack();
+            testUtils.composeMessageButton();
+            testUtils.pressBack();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
-            //testUtils.composeMessageButton();
-            //testUtils.pressBack();
+            testUtils.composeMessageButton();
+            testUtils.pressBack();
             testUtils.clickMessageAtPosition(2);
             testUtils.waitForIdle();
             testUtils.goBackToMessageList();
@@ -1311,11 +1311,11 @@ public class CucumberTestSteps {
             testUtils.goBackToMessageList();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
-            testUtils.clickMessageAtPosition(4);
+            testUtils.clickMessageAtPosition(1);
             testUtils.waitForIdle();
             testUtils.goBackToMessageList();
-            //testUtils.composeMessageButton();
-            //testUtils.pressBack();
+            testUtils.composeMessageButton();
+            testUtils.pressBack();
         }
 
     }
