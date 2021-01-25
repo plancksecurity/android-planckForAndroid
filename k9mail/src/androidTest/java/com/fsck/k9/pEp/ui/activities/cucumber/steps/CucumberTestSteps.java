@@ -1015,7 +1015,6 @@ public class CucumberTestSteps {
     public void I_walk_through_app(){
         timeRequiredForThisMethod(15);
         testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(testUtils.stringToID("action_settings"));
         aboutMenu();
         walkThroughDisplay();
         walkThroughInteraction();
