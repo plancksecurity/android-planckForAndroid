@@ -792,16 +792,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                     "this should only happen coming from FragmentManager.popBackStack from MessageList.onNewIntent");
             return;
         }
-        try {
-            MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
-                if(isResumed()) {
-                    onFolderRetrievedGetFolderInfoHolder(localFolder);
-                }
-                return null;
-            });
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
+            if(isResumed()) {
+                onFolderRetrievedGetFolderInfoHolder(localFolder);
+            }
+            return null;
+        });
     }
 
     private void onFolderRetrievedGetFolderInfoHolder(LocalFolder localFolder) {
@@ -3085,18 +3081,14 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     private void updateMoreMessagesOfCurrentFolder() {
         if (folderName != null) {
-            try {
-                MlfUtils.getOpenFolderWithCallback(folderName, account,
-                    localFolder -> {
-                        if(isResumed()) {
-                            onLocalFolderRetrievedUpdateMessagesOfFolder(localFolder);
-                        }
-                        return null;
+            MlfUtils.getOpenFolderWithCallback(folderName, account,
+                localFolder -> {
+                    if(isResumed()) {
+                        onLocalFolderRetrievedUpdateMessagesOfFolder(localFolder);
                     }
-                );
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
+                    return null;
+                }
+            );
         }
     }
 

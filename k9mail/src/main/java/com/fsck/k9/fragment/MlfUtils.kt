@@ -3,6 +3,7 @@ package com.fsck.k9.fragment
 
 import android.database.Cursor
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.Preferences
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.fragment.MLFProjectionInfo.SENDER_LIST_COLUMN
@@ -28,24 +29,42 @@ object MlfUtils {
         return localFolder
     }
 
-    @Throws(MessagingException::class)
     @JvmStatic
-    fun getOpenFolderWithCallback(folderName: String, account: Account, callback: (localFolder: LocalFolder) -> Unit?) {
+    fun getOpenFolderWithCallback(
+        folderName: String,
+        account: Account,
+        callback: (localFolder: LocalFolder) -> Unit?
+    ) {
         val localStore = account.localStore
         val localFolder = localStore.getFolder(folderName)
         val coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        val outerStackTrace = Exception().stackTrace
         coroutineScope.launch {
-            open(localFolder)
+            open(localFolder, outerStackTrace)
             callback.invoke(localFolder)
         }
     }
 
-    private suspend fun open(localFolder: LocalFolder) = withContext(Dispatchers.IO) { localFolder.open(Folder.OPEN_MODE_RO) }
+    private suspend fun open(
+        localFolder: LocalFolder,
+        externalStackTrace: Array<StackTraceElement> = emptyArray()
+    ) = withContext(
+        Dispatchers.IO
+    ) {
+        try {
+            localFolder.open(Folder.OPEN_MODE_RO)
+        } catch (e: MessagingException) {
+            e.stackTrace = e.stackTrace + externalStackTrace
+            throw RuntimeException(e)
+        }
+    }
 
 
     @JvmStatic
-    fun setLastSelectedFolderName(preferences: Preferences,
-                                  messages: List<MessageReference>, destFolderName: String) {
+    fun setLastSelectedFolderName(
+        preferences: Preferences,
+        messages: List<MessageReference>, destFolderName: String
+    ) {
         try {
             val firstMsg = messages[0]
             val account = preferences.getAccount(firstMsg.accountUuid)
