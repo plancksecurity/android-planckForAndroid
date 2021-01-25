@@ -439,11 +439,15 @@ public class GlobalSettings {
 
         @Override
         public Set<String> upgrade(Map<String, Object> settings) {
-            boolean oldValue = (Boolean) settings.get("pEpSubjectUnprotected");
+            Boolean oldValue = (Boolean) settings.get("pEpSubjectUnprotected");
 
-            settings.put("pEpSubjectProtection", !oldValue);
-
-            return new HashSet<>(Collections.singletonList("pEpSubjectUnprotected"));
+            if(oldValue != null) {
+                settings.put("pEpSubjectProtection", !oldValue);
+                return new HashSet<>(Collections.singletonList("pEpSubjectUnprotected"));
+            }
+            else {
+                return null;
+            }
         }
 
     }
