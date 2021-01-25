@@ -2157,6 +2157,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
             showDefaultTitleView();
         }
+        messageViewVisible = false;
     }
 
     private void removeMessageListFragment() {
