@@ -748,10 +748,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private void initializeMessageList() {
         adapter = new MessageListAdapter(this);
 
-        if (folderName != null) {
-            getFolderInfoHolder(folderName, account);
-        }
-
         if (singleFolderMode) {
             listView.addFooterView(getFooterView(listView));
             updateFooterView();
@@ -817,7 +813,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         ((MessageList) requireActivity()).setThreadDisplay(isThreadDisplay);
         showLoadingMessages();
 
-        startGlobalLayoutListener();
+        if(folderName == null) {
+            startGlobalLayoutListener();
+        }
+        else {
+            getFolderInfoHolder(folderName, account);
+        }
 
         // Check if we have connectivity.  Cache the value.
         if (hasConnectivity == null) {
@@ -860,20 +861,18 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void startGlobalLayoutListener() {
-        if (folderName == null) {
-            loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    if (loadingView.getViewTreeObserver().isAlive()) {
-                        loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                    if (isAdded() && !anyAccountWasDeleted() &&
-                            !LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders()) {
-                        initializeLoaders();
-                    }
+        loadingView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (loadingView.getViewTreeObserver().isAlive()) {
+                    loadingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
-            });
-        }
+                if (isAdded() && !anyAccountWasDeleted() &&
+                        !LoaderManager.getInstance(MessageListFragment.this).hasRunningLoaders()) {
+                    initializeLoaders();
+                }
+            }
+        });
     }
 
     private void restartLoader() {
@@ -3108,7 +3107,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void initializeLoadersIfNeeded() {
-        if (!LoaderManager.getInstance(this).hasRunningLoaders()) {
+        if (isAdded() && !LoaderManager.getInstance(this).hasRunningLoaders()) {
             initializeLoaders();
         }
     }
