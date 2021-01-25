@@ -814,23 +814,23 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void populateDrawerGroup() {
         if (menuFolders != null && menuFolders.size() > 0 && mAccount != null
                 && menuFolders.get(0).getAccountUuid().equals(mAccount.getUuid())) {
-            populateFolders(menuFolders);
+            populateFolders(menuFolders, true);
         } else if (mAccount != null) {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new SimpleMessagingListener() {
                     @Override
                     public void listFolders(Account account, List<LocalFolder> folders) {
                         menuFolders = folders;
-                        populateFolders(menuFolders);
+                        populateFolders(menuFolders, false);
                     }
                 });
         }
     }
 
-    private void populateFolders(List<LocalFolder> folders) {
+    private void populateFolders(List<LocalFolder> folders, boolean force) {
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
         runOnUiThread(() -> {
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount);
+            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount, force);
             setupMainFolders();
         });
     }
@@ -1229,7 +1229,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
-        drawerFolderPopulator.clearFolders();
     }
 
     @Override
