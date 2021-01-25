@@ -102,4 +102,14 @@ public class MessageActions {
         i.setAction(MessageCompose.ACTION_EDIT_DRAFT);
         context.startActivity(i);
     }
+
+    public static Intent getDefaultComposeShortcutIntent(Context context) {
+        Intent intent = new Intent(context, MessageCompose.class);
+        intent.putExtra(
+                MessageCompose.EXTRA_ACCOUNT,
+                Preferences.getPreferences(context).getDefaultAccount().getUuid()
+        );
+        intent.setAction(MessageCompose.ACTION_COMPOSE);
+        return intent;
+    }
 }
