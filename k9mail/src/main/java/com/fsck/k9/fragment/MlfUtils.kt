@@ -12,6 +12,7 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Folder
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mailstore.LocalFolder
+import com.fsck.k9.pEp.withContextCatchException
 import kotlinx.coroutines.*
 import timber.log.Timber
 
@@ -45,19 +46,12 @@ object MlfUtils {
         }
     }
 
-    private suspend fun open(
-        localFolder: LocalFolder,
-        externalStackTrace: Array<StackTraceElement> = emptyArray()
-    ) = withContext(
-        Dispatchers.IO
-    ) {
-        try {
-            localFolder.open(Folder.OPEN_MODE_RO)
-        } catch (e: MessagingException) {
-            e.stackTrace = e.stackTrace + externalStackTrace
-            throw RuntimeException(e)
-        }
-    }
+    private suspend fun open(localFolder: LocalFolder, externalTrace: Array<StackTraceElement> = arrayOf()) =
+        withContextCatchException<Unit, MessagingException>(Dispatchers.IO, externalTrace,
+            tryBlock = {
+                localFolder.open(Folder.OPEN_MODE_RO)
+            }, catchBlock = {exception -> throw RuntimeException(exception)})
+
 
 
     @JvmStatic
