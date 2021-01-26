@@ -1003,7 +1003,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mMessageListFragment.deselectAll();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(this);
+        fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         mMessageListFragment = MessageListFragment.newInstance(search, false, !mNoThreading);
