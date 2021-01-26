@@ -102,7 +102,7 @@ public class K9 extends MultiDexApplication {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
-    private ConnectionMonitor connectivityMonitor;
+    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
 
     public static K9JobManager jobManager;
 
@@ -2005,19 +2005,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private void startConnectivityMonitor() {
-        connectivityMonitor = new ConnectionMonitor(this, new ConnectionMonitorCallback() {
-            @Override
-            public void onConnectivityAvailable(boolean wasConnected) {
-                if (!wasConnected) {
-                    K9.setServicesEnabled(app);
-                }
-            }
-
-            @Override
-            public void onConnectivityLost() {
-                Timber.e("Connectivity was lost");
-            }
-        });
+        connectivityMonitor.register(this);
     }
 
 }

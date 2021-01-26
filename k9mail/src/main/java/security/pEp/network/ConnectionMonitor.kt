@@ -5,23 +5,42 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkInfo
 import android.net.NetworkRequest
+import com.fsck.k9.K9
+import timber.log.Timber
+import java.lang.IllegalStateException
 
-class ConnectionMonitor(context: Context, private val callback: ConnectionMonitorCallback) {
-    private val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+class ConnectionMonitor {
+    private var connectivityManager: ConnectivityManager? = null
+    private var callback: ConnectionMonitorCallback? = null
 
     private val isConnected: Boolean
         get() {
-            val netInfo = connectivityManager.activeNetworkInfo
+            val netInfo = connectivityManager?.activeNetworkInfo
             return netInfo != null && netInfo.state == NetworkInfo.State.CONNECTED
         }
 
-    init {
-        registerCallbackForNetworkConnectivity()
+    private val defaultK9Callback = object: ConnectionMonitorCallback() {
+        override fun onConnectivityAvailable(wasConnected: Boolean) {
+            if (!wasConnected) {
+                K9.setServicesEnabled(K9.app)
+            }
+        }
+
+        override fun onConnectivityLost() {
+            Timber.e("Connectivity was lost")
+        }
     }
 
-    private fun registerCallbackForNetworkConnectivity() {
-        val callback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
+    fun register(context: Context) = register(context, null)
+
+    fun register(context: Context, callback: ConnectionMonitorCallback?) {
+        connectivityManager?.let { throw IllegalStateException("ConnectionMonitor already registered") }
+        connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        registerCallbackForNetworkConnectivity(callback?.also { this.callback = it } ?: defaultK9Callback)
+    }
+
+    private fun registerCallbackForNetworkConnectivity(callback: ConnectionMonitorCallback) {
+        val managerCallback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
             private var wasConnected = isConnected
             override fun onAvailable(network: Network) {
                 callback.onConnectivityAvailable(wasConnected)
@@ -33,7 +52,7 @@ class ConnectionMonitor(context: Context, private val callback: ConnectionMonito
                 wasConnected = false
             }
         }
-        connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(), callback)
+        connectivityManager?.registerNetworkCallback(NetworkRequest.Builder().build(), managerCallback)
     }
 }
 
