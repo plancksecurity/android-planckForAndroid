@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.network
+package security.pEp.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,7 +6,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.net.NetworkRequest
 
-class PEpConnectivityMonitor(context: Context, private val callback: ConnectivityMonitorCallback) {
+class ConnectionMonitor(context: Context, private val callback: ConnectionMonitorCallback) {
     private val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -37,7 +37,7 @@ class PEpConnectivityMonitor(context: Context, private val callback: Connectivit
     }
 }
 
-open class ConnectivityMonitorCallback {
+open class ConnectionMonitorCallback {
     open fun onConnectivityAvailable(wasConnected: Boolean) {}
 
     open fun onConnectivityLost() {}
