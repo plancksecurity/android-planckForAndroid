@@ -3,6 +3,7 @@ package com.fsck.k9.fragment
 import android.database.Cursor
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.AdapterView
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,7 +21,8 @@ import java.util.*
 
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,
                                              private val fontSizes: FontSizes,
-                                             private val view: View) : View.OnClickListener {
+                                             private val view: View,
+                                             private val actions: MessageViewHolderActions) : View.OnClickListener {
     private var privacyBadge: ImageView? = null
     private var selectedCheckBox: CheckBox? = null
     private var contactBadge: PEpContactBadge? = null
@@ -47,6 +49,8 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         attachment = view.findViewById(R.id.attachmentIcon)
         previewTV = view.findViewById(R.id.preview)
     }
+
+    private fun getParent(): AdapterView<*> = view.parent.parent.parent as AdapterView<*>
 
     override fun onClick(view: View) {
         if (position != -1) {
@@ -209,6 +213,19 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     }
 
     init {
+        view.setOnLongClickListener {
+            actions.onItemLongClick(position)
+            true
+        }
+        view.setOnClickListener {
+            actions.onItemClick(getParent(), view, position)
+        }
         bindViews()
+    }
+
+    interface MessageViewHolderActions {
+        fun onItemLongClick(position: Int)
+
+        fun onItemClick(parent: AdapterView<*>, view: View, position: Int)
     }
 }
