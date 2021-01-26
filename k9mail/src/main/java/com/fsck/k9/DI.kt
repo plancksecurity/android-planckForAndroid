@@ -48,8 +48,7 @@ object DI {
     }
 
     private fun startKoin(application: Application) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        runBlocking {
             startKoinCoroutine(application)
         }
     }
