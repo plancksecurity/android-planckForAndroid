@@ -137,7 +137,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
-    private static final long CLICK_THRESHOLD_MILLIS = 1000;
+    private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
