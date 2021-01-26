@@ -356,18 +356,18 @@ public class TestUtils {
         switch (keySync_number()) {
             case "4":
                 passphraseAccount = "test003@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "leakydente2020";
+                passphraseAccountPassword = "";
+                passphrasePassword = "";
                 break;
             case "5":
                 passphraseAccount = "test004@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "leakydente2020";
+                passphraseAccountPassword = "";
+                passphrasePassword = "";
                 break;
             case "6":
                 passphraseAccount = "test005@peptest.ch";
-                passphraseAccountPassword = "leakydente2020";
-                passphrasePassword = "pEpdichauf1234";
+                passphraseAccountPassword = "";
+                passphrasePassword = "";
                 break;
             default:
                 Timber.i("Wrong passphrase Account");
@@ -3064,7 +3064,7 @@ public class TestUtils {
 
     @NonNull
     private String getPassword() {
-        return "pEpdichauf5MailPassword";
+        return "";
         //return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
     }
 
