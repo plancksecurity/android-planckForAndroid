@@ -185,7 +185,7 @@ public class FolderSettings extends K9PreferenceActivity {
 
     private void setupActionBar() {
         Toolbar toolbar = getToolbar();
-        toolbar.setTitle(R.string.folders_title);
+        toolbar.setTitle(R.string.folder_settings_title);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

@@ -98,8 +98,14 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        mBase.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
-        mBase.onDestroy();
+        mBase = null;
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
     }

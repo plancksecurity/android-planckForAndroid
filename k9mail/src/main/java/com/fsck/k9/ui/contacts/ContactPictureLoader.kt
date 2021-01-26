@@ -20,6 +20,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.compose.Recipient
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
+import security.pEp.permissions.PermissionChecker
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -28,7 +29,9 @@ import kotlin.math.max
 
 class ContactPictureLoader @Inject constructor(
         @Named("AppContext") private val context: Context,
-        private val contactLetterBitmapCreator: ContactLetterBitmapCreator) {
+        private val contactLetterBitmapCreator: ContactLetterBitmapCreator,
+        private val permissionChecker: PermissionChecker
+) {
 
     private val contactsHelper: Contacts = Contacts.getInstance(context)
     private val backgroundCacheId: String = with(contactLetterBitmapCreator.config) {
@@ -65,7 +68,7 @@ class ContactPictureLoader @Inject constructor(
         }
 
         private fun loadContactPicture(address: Address): Bitmap? {
-            if (contactLetterOnly) return null
+            if (contactLetterOnly || !permissionChecker.hasContactsPermission()) return null
 
             val photoUri = contactsHelper.getPhotoUri(address.address) ?: return null
             return try {

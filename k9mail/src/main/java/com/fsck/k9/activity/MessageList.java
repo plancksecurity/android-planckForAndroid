@@ -33,6 +33,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -814,25 +815,25 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private void populateDrawerGroup() {
         if (menuFolders != null && menuFolders.size() > 0 && mAccount != null
                 && menuFolders.get(0).getAccountUuid().equals(mAccount.getUuid())) {
-            populateFolders(menuFolders);
+            populateFolders(menuFolders, true);
         } else if (mAccount != null) {
             MessagingController instance = MessagingController.getInstance(this);
             instance.listFolders(mAccount, false, new SimpleMessagingListener() {
                     @Override
                     public void listFolders(Account account, List<LocalFolder> folders) {
                         menuFolders = folders;
-                        populateFolders(menuFolders);
+                        populateFolders(menuFolders, false);
                     }
                 });
         }
     }
 
-    private void populateFolders(List<LocalFolder> folders) {
+    private void populateFolders(List<LocalFolder> folders, boolean force) {
         List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
-        runOnUiThread(() -> {
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount);
-            setupMainFolders();
-        });
+        if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount, force);
+        }
+        runOnUiThread(this::setupMainFolders);
     }
 
     @NonNull
@@ -1002,7 +1003,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mMessageListFragment.deselectAll();
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.addOnBackStackChangedListener(this);
+        fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
         FragmentTransaction ft = fragmentManager.beginTransaction();
         mMessageListFragment = MessageListFragment.newInstance(search, false, !mNoThreading);
@@ -1229,7 +1230,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
-        drawerFolderPopulator.clearFolders();
     }
 
     @Override
@@ -2157,6 +2157,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
             showDefaultTitleView();
         }
+        messageViewVisible = false;
     }
 
     private void removeMessageListFragment() {

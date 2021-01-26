@@ -36,6 +36,9 @@ public class AttachmentViewInfo {
 
     public boolean ispEpAttachment() {
         return mimeType.equalsIgnoreCase("application/pEp.sign")
+                || mimeType.equalsIgnoreCase("application/pgp-keys")
+                || mimeType.equalsIgnoreCase("application/pgp-signature")
+                || mimeType.equalsIgnoreCase("application/pep.distribution")
                 || mimeType.equalsIgnoreCase("application/pEp.sync");
     }
 }

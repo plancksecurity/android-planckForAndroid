@@ -18,17 +18,18 @@
         app:layout_constraintTop_toTopOf="@+id/contactBadgeHolder">
 
         <ImageView
-            android:id="@+id/securityBadge"
+            android:id="@+id/privacyBadge"
             android:layout_width="32dp"
             android:layout_height="16dp"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/selectedCheckbox"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
-            app:srcCompat="@drawable/pep_status_yellow" />
+            tools:srcCompat="@drawable/pep_status_yellow" />
 
         <CheckBox
             android:id="@+id/selectedCheckbox"
@@ -40,7 +41,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/securityBadge" />
+            app:layout_constraintTop_toBottomOf="@+id/privacyBadge" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

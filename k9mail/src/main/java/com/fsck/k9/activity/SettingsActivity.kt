@@ -7,6 +7,9 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +22,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
+import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
@@ -204,6 +208,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = Preferences.getPreferences(this).accounts
+        if(accounts.size > 0) {
+            createComposeDynamicShortcut()
+        }
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -366,8 +373,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
         if (accounts.size < 1) {
+            removeComposeDynamicShortcut()
             AccountSetupBasics.actionNewAccount(this)
             finishAffinity()
+            return
         }
 
         val newAccounts: MutableList<BaseAccount>
@@ -1117,4 +1126,24 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
     }
 
+    private fun createComposeDynamicShortcut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
+            val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
+                .setShortLabel(resources.getString(R.string.compose_action))
+                .setLongLabel(resources.getString(R.string.compose_action))
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
+                .setIntent(composeIntent)
+                .build()
+            val shortcutManager = getSystemService(ShortcutManager::class.java)
+            shortcutManager.dynamicShortcuts = listOf(composeShortcut)
+        }
+    }
+
+    private fun removeComposeDynamicShortcut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val shortcutManager = getSystemService(ShortcutManager::class.java)
+            shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
+        }
+    }
 }
