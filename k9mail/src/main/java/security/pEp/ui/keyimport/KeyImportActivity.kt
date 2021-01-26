@@ -93,7 +93,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         hideLoading()
         fingerprintTextView.visibility = View.GONE
         addressText.visibility = View.GONE
-        textView3.visibility = View.GONE
+        actionDescriptionToConfirm.visibility = View.GONE
 
         if (success) {
             findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_success_header)
