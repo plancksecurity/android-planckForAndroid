@@ -2082,7 +2082,7 @@ public class TestUtils {
         while (!assertedBadgeColor) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getResourceName().equals("security.pEp.debug:id/securityBadge")) {
+                    if (object.getResourceName().equals("security.pEp.debug:id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
                         }
@@ -3228,7 +3228,7 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToCehckBoxAndCheckIt(boolean isChecked, int view) {
+    public void scrollToCheckBoxAndCheckIt(boolean isChecked, int view) {
         scrollToView(resources.getString(view));
         if (isChecked) {
             checkBoxOnScreenChecked(view, false);
