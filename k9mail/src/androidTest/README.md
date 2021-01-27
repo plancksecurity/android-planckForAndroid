@@ -29,7 +29,9 @@ Command:
 
 ## AppRestrictions test 
 
-Before installing the app install https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
+- 1 Uninstall pEp app
+
+- 2 install https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
 
 - get adb users: 
     adb shell pm list users
