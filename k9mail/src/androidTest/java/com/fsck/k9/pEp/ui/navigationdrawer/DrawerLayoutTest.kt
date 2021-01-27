@@ -36,11 +36,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
-/* Pre requirements
- *       Add 3 accounts that have different folders count
- *       ie. account1 -> 3 folders , account2 -> 4 folders, account3 -> 5 folders
- * */
-
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4::class)
 class DrawerLayoutTest : SetupDevTestAccounts() {
