@@ -1901,7 +1901,7 @@ public class TestUtils {
 
     public void checkBadgeColor(int color, int messageFromList) {
         waitForIdle();
-        onView(withId(R.id.securityBadge)).check(matches(withTextColor(color)));
+        onView(withId(R.id.privacyBadge)).check(matches(withTextColor(color)));
     }
 
     public void openHamburgerMenu () {
