@@ -1014,7 +1014,10 @@ public class CucumberTestSteps {
     @Then("^I walk through app$")
     public void I_walk_through_app(){
         timeRequiredForThisMethod(15);
-        testUtils.openOptionsMenu();
+        testUtils.waitForIdle();
+        if (!exists(onView(withId(R.id.available_accounts_title)))) {
+            testUtils.selectFromMenu(R.string.action_settings);
+        }
         aboutMenu();
         walkThroughDisplay();
         walkThroughInteraction();
