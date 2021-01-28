@@ -54,8 +54,8 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     override fun onClick(view: View) {
         if (position != -1) {
             when (view.id) {
-                R.id.selectedCheckbox -> fragment.toggleMessageSelectWithAdapterPosition(position)
-                R.id.flaggedCheckbox -> fragment.toggleMessageFlagWithAdapterPosition(position)
+                R.id.selectedCheckbox -> fragment.viewHolderActions.toggleSelect(position)
+                R.id.flaggedCheckbox -> fragment.viewHolderActions.toggleFlag(position)
             }
         }
     }
@@ -226,5 +226,9 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         fun onItemLongClick(position: Int)
 
         fun onItemClick(parent: AdapterView<*>, view: View, position: Int)
+
+        fun toggleSelect(position: Int)
+
+        fun toggleFlag(position: Int)
     }
 }

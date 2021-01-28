@@ -318,6 +318,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 lastClicked = System.currentTimeMillis();
             }
         }
+
+        @Override
+        public void toggleFlag(int position) {
+            toggleMessageFlagWithAdapterPosition(position);
+        }
+
+        @Override
+        public void toggleSelect(int position) {
+            toggleMessageSelectWithAdapterPosition(position);
+        }
     };
 
     int getColorFromAttributeResource(@AttrRes int resource) {
