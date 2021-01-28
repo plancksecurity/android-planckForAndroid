@@ -21,8 +21,7 @@ import java.util.*
 
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,
                                              private val fontSizes: FontSizes,
-                                             private val view: View,
-                                             private val actions: MessageViewHolderActions) : View.OnClickListener {
+                                             private val view: View) : View.OnClickListener {
     private var privacyBadge: ImageView? = null
     private var selectedCheckBox: CheckBox? = null
     private var contactBadge: PEpContactBadge? = null
@@ -214,11 +213,11 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
 
     init {
         view.setOnLongClickListener {
-            actions.onItemLongClick(position)
+            fragment.viewHolderActions.onItemLongClick(position)
             true
         }
         view.setOnClickListener {
-            actions.onItemClick(getParent(), view, position)
+            fragment.viewHolderActions.onItemClick(getParent(), view, position)
         }
         bindViews()
     }

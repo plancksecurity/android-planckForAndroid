@@ -190,7 +190,7 @@ public class MessageListAdapter extends CursorAdapter {
         }
 
         Drawable statusHolder = buildStatusHolder(forwarded, answered);
-        MessageViewHolder holder = new MessageViewHolder(fragment, fontSizes, view, fragment.viewHolderActions);
+        MessageViewHolder holder = new MessageViewHolder(fragment, fontSizes, view);
         holder.bind(cursor,
                 counterpartyAddress,
                 pEpRating,
