@@ -13,9 +13,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -101,15 +98,9 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -291,7 +282,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-        createDynamicShortcut();
+
         uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -561,24 +552,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
-    }
-
-    private void createDynamicShortcut() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-            Intent composeIntent = new Intent(MessageCompose.this, MessageCompose.class);
-            composeIntent.putExtra(MessageCompose.EXTRA_ACCOUNT, getAccount().getUuid());
-            composeIntent.setAction(MessageCompose.ACTION_COMPOSE);
-
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ShortcutInfo composeShortcut = new ShortcutInfo.Builder(this, SHORTCUT_COMPOSE)
-                    .setShortLabel(getResources().getString(R.string.compose_action))
-                    .setLongLabel(getResources().getString(R.string.compose_action))
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
-                    .setIntent(composeIntent)
-                    .build();
-
-            shortcutManager.setDynamicShortcuts(Collections.singletonList(composeShortcut));
-        }
     }
 
     @Override

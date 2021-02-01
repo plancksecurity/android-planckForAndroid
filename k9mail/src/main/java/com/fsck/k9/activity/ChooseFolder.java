@@ -17,7 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ListView;
-import android.widget.SearchView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
@@ -76,6 +76,7 @@ public class ChooseFolder extends K9ListActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.list_content_simple);
+        setUpToolbar(true);
 
         getListView().setFastScrollEnabled(true);
         getListView().setItemsCanFocus(false);
@@ -202,6 +203,9 @@ public class ChooseFolder extends K9ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home: {
+                onBackPressed();
+            }
             case R.id.display_1st_class: {
                 setDisplayMode(FolderMode.FIRST_CLASS);
                 return true;
