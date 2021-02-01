@@ -21,7 +21,10 @@ object MlfUtils {
 
     @Throws(MessagingException::class)
     @JvmStatic
-    fun getOpenFolder(folderName: String, account: Account): LocalFolder {
+    fun getOpenFolder(
+        folderName: String,
+        account: Account
+    ): LocalFolder {
         val localStore = account.localStore
         val localFolder = localStore.getFolder(folderName)
         runBlocking {
@@ -31,8 +34,7 @@ object MlfUtils {
     }
 
     @JvmStatic
-    fun getOpenFolderWithCallback(
-        folderName: String,
+    fun getOpenFolderWithCallback(folderName: String,
         account: Account,
         callback: (localFolder: LocalFolder) -> Unit?
     ) {
@@ -46,8 +48,10 @@ object MlfUtils {
         }
     }
 
-    private suspend fun open(localFolder: LocalFolder, externalTrace: Array<StackTraceElement> = arrayOf()) =
-        withContextCatchException<Unit, MessagingException>(Dispatchers.IO, externalTrace,
+    private suspend fun open(
+        localFolder: LocalFolder,
+        externalTrace: Array<StackTraceElement> = arrayOf()
+    ) = withContextCatchException<Unit, MessagingException>(Dispatchers.IO, externalTrace,
             tryBlock = {
                 localFolder.open(Folder.OPEN_MODE_RO)
             }, catchBlock = {exception -> throw RuntimeException(exception)})
@@ -57,7 +61,8 @@ object MlfUtils {
     @JvmStatic
     fun setLastSelectedFolderName(
         preferences: Preferences,
-        messages: List<MessageReference>, destFolderName: String
+        messages: List<MessageReference>,
+        destFolderName: String
     ) {
         try {
             val firstMsg = messages[0]
@@ -77,7 +82,11 @@ object MlfUtils {
     }
 
     @JvmStatic
-    fun buildSubject(subjectFromCursor: String, emptySubject: String, threadCount: Int): String {
+    fun buildSubject(
+        subjectFromCursor: String,
+        emptySubject: String,
+        threadCount: Int
+    ): String {
         if (subjectFromCursor.isEmpty()) {
             return emptySubject
         } else if (threadCount > 1) {
@@ -88,7 +97,10 @@ object MlfUtils {
     }
 
     @JvmStatic
-    fun getFolderById(account: Account, folderId: Long): LocalFolder {
+    fun getFolderById(
+        account: Account,
+        folderId: Long
+    ): LocalFolder {
         try {
             val localStore = account.localStore
             val localFolder = localStore.getFolderById(folderId)
