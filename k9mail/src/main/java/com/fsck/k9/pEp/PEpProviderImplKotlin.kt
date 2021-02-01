@@ -53,6 +53,7 @@ class PEpProviderImplKotlin @Inject constructor(
                 Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
             }
         } else {
+            initEngineConfig(engine )
             Timber.d("%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
         }
     }
@@ -65,7 +66,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private fun initEngineConfig(engine: Engine) {
         engine.config_passive_mode(K9.getPEpPassiveMode())
-        configKeyServerLockup(K9.getPEpUseKeyserver())
+        //configKeyServerLockup(K9.getPEpUseKeyserver())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
         engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
@@ -1236,12 +1237,12 @@ class PEpProviderImplKotlin @Inject constructor(
             Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
     }
-
+    @Deprecated("Sequoia does not support server lookup")
     override fun startKeyserverLookup() {
         createEngineInstanceIfNeeded()
         engine.startKeyserverLookup()
     }
-
+    @Deprecated("Sequoia does not support server lookup")
     override fun stopKeyserverLookup() {
         createEngineInstanceIfNeeded()
         engine.stopKeyserverLookup()
