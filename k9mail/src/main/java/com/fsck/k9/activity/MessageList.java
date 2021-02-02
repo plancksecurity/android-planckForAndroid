@@ -216,7 +216,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void updatedRestrictions() {
         if (mMessageViewFragment != null) {
-            mMessageViewFragment.onResume();
+            mMessageViewFragment.displayMessage();
         } else if (mMessageListFragment != null) {
             mMessageListFragment.refreshAccount();
         }
