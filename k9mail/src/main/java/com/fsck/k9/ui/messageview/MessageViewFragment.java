@@ -244,14 +244,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                 displayHtml);
-
-        Bundle arguments = getArguments();
-        String messageReferenceString = arguments.getString(ARG_REFERENCE);
-        MessageReference messageReference = MessageReference.parse(messageReferenceString);
-
-        displayMessage(messageReference);
-
-        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
+        displayMessage();
         pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
     }
 
@@ -305,14 +298,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pEpFabMenu.setClickListeners(messageOptionsListener);
     }
 
-    private void displayMessage(MessageReference messageReference) {
-        mMessageReference = messageReference;
+    public void displayMessage() {
+        Bundle arguments = getArguments();
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        mMessageReference = MessageReference.parse(messageReferenceString);
         Timber.d("MessageView displaying message %s", mMessageReference);
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
-        messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
+        messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
         mInitialized = true;
         mFragmentListener.updateMenu();
+        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
     }
 
     @Override
