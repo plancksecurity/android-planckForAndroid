@@ -444,6 +444,7 @@ class PEpProviderImplKotlin @Inject constructor(
     private suspend fun getEncryptedCopySuspend(source: MimeMessage,
                                                 message: Message,
                                                 extraKeys: Array<String>): MimeMessage = withContext(Dispatchers.Default) {
+        createEngineInstanceIfNeeded()
         message.dir = Message.Direction.Outgoing
         Timber.d("%s %s", TAG, "encryptMessage() before encrypt")
         val from = message.from
