@@ -969,7 +969,7 @@ public class CucumberTestSteps {
                     Timber.i("Cannot find subject");
                 }
             }
-            testUtils.waitForIdle();
+            TestUtils.waitForIdle();
             waitUntilIdle();
             status = testUtils.getStatusRating(statusRating, status);
         if (statusRating[0] != null) {
