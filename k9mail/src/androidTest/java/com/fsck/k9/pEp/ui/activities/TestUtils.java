@@ -2255,7 +2255,7 @@ public class TestUtils {
     }
 
     public static void waitForIdle() {
-        TestUtils.waitForIdle();
+        device.waitForIdle();
         Espresso.onIdle();
         waitUntilIdle();
     }
@@ -2374,17 +2374,25 @@ public class TestUtils {
                     if (object.getText().equals(resources.getString(resource))) {
                         try {
                             while (object.getText().equals(resources.getString(resource))) {
-                                TestUtils.waitForIdle();
+                                waitForIdle();
                                 Espresso.onIdle();
                                 object.longClick();
-                                TestUtils.waitForIdle();
+                                waitForIdle();
                                 Espresso.onIdle();
+                                boolean exists = false;
+                                for (UiObject2 object2 : device.findObjects(selector)) {
+                                    if (object.getText().equals(resources.getString(resource))) {
+                                        exists = true;
+                                    }
+                                }
+                                if (exists) {
+                                    waitForIdle();
+                                    return;
+                                }
                             }
-                            TestUtils.waitForIdle();
-                            Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
-                            TestUtils.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         }
