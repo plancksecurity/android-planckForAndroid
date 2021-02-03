@@ -88,7 +88,7 @@ class GeneralSettingsDataStore(
             "pep_passive_mode" -> app.setPEpPassiveMode(value)
             "pep_subject_protection" -> app.setpEpSubjectProtection(value)
             "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
-            "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
+            "pep_enable_sync" -> setpEpSync(value) //TODO: CHECK
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
             else -> return
         }
@@ -275,5 +275,15 @@ class GeneralSettingsDataStore(
 
     private fun recreateActivity() {
         activity?.recreate()
+    }
+
+    private fun setpEpSync(enable: Boolean) {
+        val app = context.applicationContext as K9
+        app.setpEpSyncEnabled(enable)
+        if (enable && preferences.accounts.size == 1) {
+            val account = preferences.accounts[0]
+            account.setPEpSyncAccount(enable)
+            account.save(preferences)
+        }
     }
 }
