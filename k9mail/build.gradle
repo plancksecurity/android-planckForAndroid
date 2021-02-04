@@ -20,6 +20,7 @@ apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
@@ -99,6 +100,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"

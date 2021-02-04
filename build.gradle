@@ -49,6 +49,7 @@ buildscript {
                 'groupie'            : '2.1.0',
                 'ankoCoroutines'     : '0.10.4',
                 'kotlinCoroutines'   : '1.3.3',
+                'kotlinSerialization': '1.0.0',
                 'multidex'           : '2.0.0',
 
 
@@ -83,6 +84,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
     }
 }
 
