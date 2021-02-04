@@ -3056,9 +3056,8 @@ public class TestUtils {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(null, textToCopy);
         while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
-            waitForIdle();
+            device.waitForIdle();
             clipboard.setPrimaryClip(clip);
-            waitForIdle();
         }
     }
 
