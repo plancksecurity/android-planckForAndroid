@@ -1785,6 +1785,10 @@ public class K9 extends MultiDexApplication {
 
     }
 
+    /**
+     * @deprecated "Sequoia does not support SeverLookup"
+     */
+    @Deprecated
     public static boolean getPEpUseKeyserver() {
         // return pEpUseKeyserver;
         return false;
@@ -1796,9 +1800,6 @@ public class K9 extends MultiDexApplication {
 
     public void setPEpPassiveMode(boolean enabled) {
         K9.pEpPassiveMode = enabled;
-        pEpProvider.setPassiveModeEnabled(enabled);
-        MessagingController.getInstance(this).setPassiveModeEnabled(enabled);
-
     }
 
     public static boolean ispEpSubjectProtection() {
