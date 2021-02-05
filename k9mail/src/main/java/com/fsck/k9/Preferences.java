@@ -206,7 +206,7 @@ public class Preferences {
     }
 
     public void setPepEnablePrivacyProtectionManaged(boolean isManaged) {
-        getStorage().edit().putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED, isManaged).commit();
+        storage.edit().putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED, isManaged).commit();
     }
 
     /*public synchronized List<String> getMasterKeys(String uid) {
