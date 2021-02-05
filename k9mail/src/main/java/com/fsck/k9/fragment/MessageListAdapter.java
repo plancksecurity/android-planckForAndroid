@@ -22,10 +22,6 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import foundation.pEp.jniadapter.Rating;
 
 import static android.view.View.GONE;
@@ -43,20 +39,6 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.TO_LIST_COLUMN;
 
 
 public class MessageListAdapter extends CursorAdapter {
-
-    private List<Integer> selectedMessages = new ArrayList<>();
-
-    void addSelected(Integer position) {
-        selectedMessages.add(position);
-    }
-
-    void removeSelected(Integer position) {
-        selectedMessages.remove(position);
-    }
-
-    void clearSelected() {
-        selectedMessages.clear();
-    }
 
     private enum Swipe {
         NO_SWIPE, LEFT, RIGHT
@@ -216,7 +198,7 @@ public class MessageListAdapter extends CursorAdapter {
                 displayName,
                 displayDate,
                 flagged,
-                isSelected(cursor.getPosition()),
+                fragment.isMessageSelected(cursor),
                 read,
                 statusHolder,
                 subject,
@@ -304,10 +286,4 @@ public class MessageListAdapter extends CursorAdapter {
         }
         return null;
     }
-
-    private boolean isSelected(int position) {
-        return selectedMessages != null && selectedMessages.contains(position);
-    }
-
-
 }
