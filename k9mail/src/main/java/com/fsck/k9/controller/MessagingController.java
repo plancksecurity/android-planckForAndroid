@@ -4652,10 +4652,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    public void setPassiveModeEnabled(boolean enable) {
-        pEpProvider.setPassiveModeEnabled(enable);
-    }
-
     public void setSubjectProtected(boolean pEpSubjectProtection) {
         pEpProvider.setSubjectProtection(pEpSubjectProtection);
     }

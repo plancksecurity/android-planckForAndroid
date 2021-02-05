@@ -439,7 +439,9 @@ public class GlobalSettings {
 
         @Override
         public Set<String> upgrade(Map<String, Object> settings) {
-            Boolean oldValue = (Boolean) settings.get("pEpSubjectUnprotected");
+            Boolean oldValue = settings.get("pEpSubjectUnprotected") != null
+                    ? (Boolean) settings.get("pEpSubjectUnprotected")
+                    : null;
 
             if(oldValue != null) {
                 settings.put("pEpSubjectProtection", !oldValue);
