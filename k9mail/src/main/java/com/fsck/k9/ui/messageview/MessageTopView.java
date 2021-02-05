@@ -6,14 +6,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -25,7 +23,6 @@ import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.ui.messageview.MessageContainerView.OnRenderingFinishedListener;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.ThemeUtils;
 import com.fsck.k9.view.ToolableViewAnimator;
@@ -42,6 +39,9 @@ public class MessageTopView extends RelativeLayout {
     private ToolableViewAnimator viewAnimator;
     private ProgressBar progressBar;
     private TextView progressText;
+
+    private TextView errorTitle;
+    private TextView errorText;
 
     private MessageHeader mHeaderContainer;
     private LayoutInflater mInflater;
@@ -74,6 +74,9 @@ public class MessageTopView extends RelativeLayout {
         progressBar = (ProgressBar) findViewById(R.id.message_progress);
         progressText = (TextView) findViewById(R.id.message_progress_text);
 
+        errorTitle = (TextView) findViewById(R.id.error_title);
+        errorText = (TextView) findViewById(R.id.error_message);
+
         mDownloadRemainder = (Button) findViewById(R.id.download_remainder);
         mDownloadRemainder.setVisibility(View.GONE);
 
@@ -86,12 +89,7 @@ public class MessageTopView extends RelativeLayout {
     }
 
     private void setShowPicturesButtonListener() {
-        showPicturesButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPicturesInAllContainerViews();
-            }
-        });
+        showPicturesButton.setOnClickListener(v -> showPicturesInAllContainerViews());
     }
 
     private void showPicturesInAllContainerViews() {
@@ -108,7 +106,7 @@ public class MessageTopView extends RelativeLayout {
         setShowDownloadButton(messageViewInfo);
     }
 
-    public void showMessage(Account account, MessageViewInfo messageViewInfo) {
+    public void showMessage(Account account, MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
         resetAndPrepareMessageView(messageViewInfo);
 
         ShowPictures showPicturesSetting = account.getShowPictures();
@@ -120,18 +118,18 @@ public class MessageTopView extends RelativeLayout {
         containerView.addView(view);
 
         boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-        view.displayMessageViewContainer(messageViewInfo, new OnRenderingFinishedListener() {
-            @Override
-            public void onLoadFinished() {
-                displayViewOnLoadFinished(true);
-            }
-        }, automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
+        view.displayMessageViewContainer(
+                messageViewInfo,
+                () -> {
+                    if (shouldStopProgressDialog)
+                        displayViewOnLoadFinished(true);
+                },
+                automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
         if (view.hasHiddenExternalImages()) {
             showShowPicturesButton();
         }
     }
-
 
     public void showMessageEncryptedButIncomplete(MessageViewInfo messageViewInfo, Drawable providerIcon) {
         resetAndPrepareMessageView(messageViewInfo);
@@ -296,7 +294,13 @@ public class MessageTopView extends RelativeLayout {
     public void setToLoadingState() {
         viewAnimator.setDisplayedChild(0);
         progressBar.setProgress(0);
-        isShowingProgress = false;
+        isShowingProgress = true;
+    }
+
+    public void setToErrorState(String title, String message) {
+        errorTitle.setText(title);
+        errorText.setText(message);
+        viewAnimator.setDisplayedChild(3);
     }
 
     public void setLoadingProgress(int progress, int max) {

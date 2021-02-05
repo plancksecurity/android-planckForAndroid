@@ -61,11 +61,14 @@
                 android:layout_height="match_parent"
                 android:inAnimation="@anim/fade_in"
                 android:outAnimation="@anim/fade_out"
-                custom:previewInitialChild="1">
+                custom:previewInitialChild="3">
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:indeterminate="true"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="30dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -99,6 +102,33 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/error_title"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="Title" />
+
+                    <TextView
+                        android:id="@+id/error_message"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        tools:text="Content" />
+
+                </LinearLayout>
             </com.fsck.k9.view.ToolableViewAnimator>
 
         </LinearLayout>
