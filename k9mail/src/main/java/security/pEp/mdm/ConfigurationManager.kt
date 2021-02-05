@@ -5,52 +5,68 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Preferences
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 class ConfigurationManager(private val context: Context, private val dataStoreFactory: AccountSettingsDataStoreFactory) {
 
     companion object {
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED = "pep_disable_privacy_protection_managed"
-
     }
 
     var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
 
     fun loadConfigurations() {
-        val manager =
-                context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
+        val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
         val restrictions = manager.applicationRestrictions
-        val entries =
-                manager.getManifestRestrictions(context.applicationContext?.packageName)
-        val remoteConfig = mapRestrictions(entries, restrictions)
-        saveRemoteConfig(remoteConfig)
+        val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
+        val restrictionsList = mapRestrictions(entries, restrictions)
+        saveRemoteConfig(restrictionsList)
         sendRemoteConfig()
     }
 
-    private fun mapRestrictions(entries: List<RestrictionEntry>, restrictions: Bundle): RemoteConfig {
-        val remoteConfigBuilder = RemoteConfigBuilder()
+    private fun mapRestrictions(
+            entries: List<RestrictionEntry>,
+            restrictions: Bundle,
+    ): MutableList<AppConfig> {
+        val restrictionsList = mutableListOf<AppConfig>()
         entries.forEach { entry ->
             when (entry.key) {
-                RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION ->
-                    remoteConfigBuilder.pepEnablePrivacyProtection(
-                            restrictions.getBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, true)
-                    )
+                RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> {
+                    restrictionsList.add(
+                            AppConfig(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION,
+                                    restrictions.getString(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION)
+                            ))
+                }
+
             }
         }
-        return remoteConfigBuilder.build()
+        return restrictionsList
     }
 
-    private fun saveRemoteConfig(remoteConfig: RemoteConfig) {
+    private fun saveRemoteConfig(restrictionsList: MutableList<AppConfig>) {
+        restrictionsList.forEach { entry ->
+            if (entry.json != null) {
+                when (entry.key) {
+                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION ->
+                        savePEpPrivacyProtection(Json.decodeFromString(entry.json))
+                }
+            }
+        }
+    }
+
+    private fun savePEpPrivacyProtection(config: PEpGeneralConfigBoolean) {
         val preferences = Preferences.getPreferences(context)
         val accounts = preferences.accounts
 
         accounts.forEach { account ->
-            account.setpEpPrivacyProtection(remoteConfig.pepEnablePrivacyProtection)
+            account.setpEpPrivacyProtection(config.value)
             account.save(preferences)
             val dataStore = dataStoreFactory.create(account)
-            dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, remoteConfig.pepEnablePrivacyProtection)
-            preferences.isPepEnablePrivacyProtectionManaged = remoteConfig.isPepEnablePrivacyProtectionManaged
+            dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, config.value)
+            preferences.isPepEnablePrivacyProtectionManaged = config.blocked
         }
     }
 
