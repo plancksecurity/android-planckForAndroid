@@ -201,8 +201,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePepPrivacyProtection() {
-        if (Preferences.getPreferences(context).isPepEnablePrivacyProtectionManaged) {
-            (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
+        if (account.getpEpPrivacyProtected().locked) {
+                (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
                 this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
                     showMDMDialog(this.title)
                 }

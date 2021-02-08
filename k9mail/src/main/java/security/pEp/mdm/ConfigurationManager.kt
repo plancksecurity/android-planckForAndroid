@@ -5,14 +5,12 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Preferences
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import com.fsck.k9.ui.settings.account.ConfiguredSetting
 
 class ConfigurationManager(private val context: Context, private val dataStoreFactory: AccountSettingsDataStoreFactory) {
 
     companion object {
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
-        const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION_MANAGED = "pep_disable_privacy_protection_managed"
     }
 
     var listener: RestrictionsListener? = null
@@ -50,27 +48,28 @@ class ConfigurationManager(private val context: Context, private val dataStoreFa
         restrictionsList.forEach { entry ->
             if (entry.json != null) {
                 when (entry.key) {
-                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION ->{
-                        val config: JsonAppConfig<Boolean> = Json.decodeFromString(entry.json);
-                        savePEpPrivacyProtection(config)
-
+                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> {
+                        savePEpPrivacyProtection(entry.getValue())
                     }
                 }
             }
         }
     }
 
-    private fun savePEpPrivacyProtection(config: JsonAppConfig<Boolean>) {
-        val preferences = Preferences.getPreferences(context)
-        val accounts = preferences.accounts
+    private fun savePEpPrivacyProtection(config: ConfiguredSetting<Boolean>?) {
+        config?.let {
+            val preferences = Preferences.getPreferences(context)
+            val accounts = preferences.accounts
 
-        accounts.forEach { account ->
-            account.setpEpPrivacyProtection(config.value)
-            account.save(preferences)
-            val dataStore = dataStoreFactory.create(account)
-            dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, config.value)
-            preferences.isPepEnablePrivacyProtectionManaged = config.blocked
+            accounts.forEach { account ->
+                account.setpEpPrivacyProtection(config)
+                account.save(preferences)
+                val dataStore = dataStoreFactory.create(account)
+                dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, config.value)
+            }
+
         }
+
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
