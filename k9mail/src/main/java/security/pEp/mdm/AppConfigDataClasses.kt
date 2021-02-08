@@ -1,14 +1,17 @@
 package security.pEp.mdm
 
-import kotlinx.serialization.Serializable
+import com.fsck.k9.ui.settings.account.ConfiguredSetting
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+
 
 data class AppConfig(
         val key: String,
         val json: String?,
 )
 
-@Serializable
-data class JsonAppConfig<SETTING_TYPE>(
-        val value: SETTING_TYPE,
-        val blocked: Boolean = false,
-)
+inline fun <reified TYPE> AppConfig.getValue(): ConfiguredSetting<TYPE>? {
+    return if (json != null) {
+        Json.decodeFromString(json)
+    } else null
+}

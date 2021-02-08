@@ -30,6 +30,8 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
+import com.fsck.k9.ui.settings.account.ConfiguredSetting;
+import com.fsck.k9.ui.settings.account.ConfiguredSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -225,8 +227,8 @@ public class AccountSettings {
                 new V(42, new BooleanSetting(false))
             ));
         s.put("pEpPrivacyProtected", Settings.versions(
-                new V(45, new BooleanSetting(true))
-            ));
+                new V(46, new StringSetting(ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false))))
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 
