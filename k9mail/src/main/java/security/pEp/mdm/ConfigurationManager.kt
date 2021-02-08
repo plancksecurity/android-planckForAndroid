@@ -50,14 +50,17 @@ class ConfigurationManager(private val context: Context, private val dataStoreFa
         restrictionsList.forEach { entry ->
             if (entry.json != null) {
                 when (entry.key) {
-                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION ->
-                        savePEpPrivacyProtection(Json.decodeFromString(entry.json))
+                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION ->{
+                        val config: JsonAppConfig<Boolean> = Json.decodeFromString(entry.json);
+                        savePEpPrivacyProtection(config)
+
+                    }
                 }
             }
         }
     }
 
-    private fun savePEpPrivacyProtection(config: PEpGeneralConfigBoolean) {
+    private fun savePEpPrivacyProtection(config: JsonAppConfig<Boolean>) {
         val preferences = Preferences.getPreferences(context)
         val accounts = preferences.accounts
 
