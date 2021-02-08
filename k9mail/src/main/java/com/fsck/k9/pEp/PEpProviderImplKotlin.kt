@@ -53,7 +53,6 @@ class PEpProviderImplKotlin @Inject constructor(
                 Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
             }
         } else {
-            initEngineConfig(engine )
             Timber.d("%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
         }
     }
@@ -315,6 +314,7 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
             createEngineInstanceIfNeeded()
+            initEngineConfig(engine)
             val containerMsg = PEpMessageBuilder(message).createMessage(context)
             containerMsg.dir = Message.Direction.Outgoing
             getMimeMessage(engine.encrypt_message_and_add_priv_key(containerMsg, fpr))
@@ -351,6 +351,7 @@ class PEpProviderImplKotlin @Inject constructor(
     @Throws(pEpException::class)
     private suspend fun encryptMessageSuspend(result: Message): Message = withContext(Dispatchers.Default) {
         createEngineInstanceIfNeeded()
+        initEngineConfig(engine)
         return@withContext engine.encrypt_message(result, null, result.encFormat)
     }
 
@@ -412,6 +413,7 @@ class PEpProviderImplKotlin @Inject constructor(
             from.user_id = PEP_OWN_USER_ID
             from.me = true
             message.from = from
+            initEngineConfig(engine)
             var currentEnc = engine.encrypt_message_for_self(message.from, message, convertExtraKeys(keys))
             if (currentEnc == null) currentEnc = message
             Timber.d("%s %s", TAG, "encryptMessage() after encrypt to self")
@@ -452,6 +454,7 @@ class PEpProviderImplKotlin @Inject constructor(
         from.me = true
         message.from = from
         val desiredEncFormat = if (source.isSet(Flag.X_PEP_DISABLED)) Message.EncFormat.None else Message.EncFormat.PEP
+        initEngineConfig(engine)
         var currentEnc = engine.encrypt_message(message, convertExtraKeys(extraKeys), desiredEncFormat)
         source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null)
         if (currentEnc == null) {
