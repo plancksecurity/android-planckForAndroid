@@ -34,6 +34,7 @@ import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
+import com.fsck.k9.ui.settings.account.ConfiguredSetting;
 import com.larswerkman.colorpicker.ColorPicker;
 
 import java.security.cert.CertificateException;
@@ -65,13 +66,22 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean pEpSyncEnabled;
 
     public boolean ispEpPrivacyProtected() {
+        return pEpPrivacyProtectected.getValue();
+    }
+
+    public ConfiguredSetting<Boolean> getpEpPrivacyProtected() {
         return pEpPrivacyProtectected;
+    }
+
+    public void setpEpPrivacyProtected(ConfiguredSetting<Boolean> config) {
+        pEpPrivacyProtectected = config;
     }
 
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
-         this.pEpPrivacyProtectected = privacyProtection;
+        this.pEpPrivacyProtectected.setValue(privacyProtection);
     }
+
 
     public Boolean isPepSyncEnabled() {
         return pEpSyncEnabled;
@@ -249,7 +259,7 @@ public class Account implements BaseAccount, StoreConfig {
     private int remoteSearchNumResults;
 
     private boolean pEpUntrustedServer;
-    private boolean pEpPrivacyProtectected;
+    private ConfiguredSetting<Boolean> pEpPrivacyProtectected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -358,7 +368,7 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLedColor(chipColor);
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
+        pEpPrivacyProtectected = new ConfiguredSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED, false);
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
@@ -493,7 +503,7 @@ public class Account implements BaseAccount, StoreConfig {
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
-        pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
+        pEpPrivacyProtectected.setValue(storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED));
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
 
         // Use email address as account description if necessary
@@ -779,7 +789,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
-        editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
+        editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected.getValue());
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
 
         for (NetworkType type : NetworkType.values()) {

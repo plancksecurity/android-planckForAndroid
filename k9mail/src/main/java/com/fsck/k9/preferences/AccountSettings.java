@@ -30,6 +30,9 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
+import com.fsck.k9.ui.settings.account.ConfiguredSetting;
+
+import kotlinx.serialization.json.Json;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -227,6 +230,12 @@ public class AccountSettings {
         s.put("pEpPrivacyProtected", Settings.versions(
                 new V(45, new BooleanSetting(true))
             ));
+
+        /*//TODO: ADAPT and ADD MIGRATION FROM 45 to 52;
+        s.put("pEpPrivacyProtected", Settings.versions(
+                new V(52, StringSetting(Json.encodeToString(new ConfiguredSetting<Boolean>(true, false))))
+            ));
+        */
 
         SETTINGS = Collections.unmodifiableMap(s);
 
