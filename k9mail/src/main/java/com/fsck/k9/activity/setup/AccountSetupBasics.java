@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
@@ -167,13 +168,9 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment) getSupportFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
-        if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
-            accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
-        } else {
-            if (accountSetupBasicsFragment != null && accountSetupBasicsFragment.isVisible()) {
-                accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
-            }
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        if(fragment != null && fragment.isAdded()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 
