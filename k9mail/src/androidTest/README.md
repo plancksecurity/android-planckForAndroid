@@ -42,4 +42,9 @@ Command:
     ./gradlew testRestrictions -Puser=<user_id>
     - change <user_id> to pEpMdmEnforcer created user
 
+## Add account
 
+Cleans the app and adds ANDROID_DEV_TEST_1_ADDRESS to app
+
+Command:
+   ./gradlew setupAccount
