@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 
+import security.pEp.mdm.ConfiguredSetting;
+import security.pEp.mdm.ConfiguredSettingKt;
 import timber.log.Timber;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
@@ -35,8 +37,6 @@ import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
-import com.fsck.k9.ui.settings.account.ConfiguredSetting;
-import com.fsck.k9.ui.settings.account.ConfiguredSettingKt;
 import com.larswerkman.colorpicker.ColorPicker;
 
 import java.security.cert.CertificateException;
