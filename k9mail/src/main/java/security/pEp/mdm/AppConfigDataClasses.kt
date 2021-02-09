@@ -1,6 +1,5 @@
 package security.pEp.mdm
 
-import com.fsck.k9.ui.settings.account.ConfiguredSetting
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString

@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.settings.account
+package security.pEp.mdm
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
