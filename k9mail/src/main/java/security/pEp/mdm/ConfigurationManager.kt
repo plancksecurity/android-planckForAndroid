@@ -3,9 +3,9 @@ package security.pEp.mdm
 import android.content.*
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
+import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
-import com.fsck.k9.ui.settings.account.ConfiguredSetting
 
 class ConfigurationManager(private val context: Context, private val dataStoreFactory: AccountSettingsDataStoreFactory) {
 
@@ -20,56 +20,29 @@ class ConfigurationManager(private val context: Context, private val dataStoreFa
         val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
         val restrictions = manager.applicationRestrictions
         val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
-        val restrictionsList = mapRestrictions(entries, restrictions)
-        saveRemoteConfig(restrictionsList)
+        mapRestrictions(entries, restrictions)
         sendRemoteConfig()
     }
 
-    private fun mapRestrictions(
-            entries: List<RestrictionEntry>,
-            restrictions: Bundle,
-    ): MutableList<AppConfig> {
-        val restrictionsList = mutableListOf<AppConfig>()
+    private fun mapRestrictions(entries: List<RestrictionEntry>, restrictions: Bundle) {
         entries.forEach { entry ->
             when (entry.key) {
-                RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> {
-                    restrictionsList.add(
-                            AppConfig(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION,
-                                    restrictions.getString(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION)
-                            ))
-                }
-
-            }
-        }
-        return restrictionsList
-    }
-
-    private fun saveRemoteConfig(restrictionsList: MutableList<AppConfig>) {
-        restrictionsList.forEach { entry ->
-            if (entry.json != null) {
-                when (entry.key) {
-                    RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> {
-                        savePEpPrivacyProtection(entry.getValue())
-                    }
-                }
+                RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> savePrivacyProtection(restrictions, entry)
             }
         }
     }
 
-    private fun savePEpPrivacyProtection(config: ConfiguredSetting<Boolean>?) {
-        config?.let {
-            val preferences = Preferences.getPreferences(context)
-            val accounts = preferences.accounts
-
+    private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfig(entry.key, value).getValue<Boolean>().toManageableSetting()
             accounts.forEach { account ->
                 account.setpEpPrivacyProtection(config)
                 account.save(preferences)
                 val dataStore = dataStoreFactory.create(account)
                 dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, config.value)
             }
-
         }
-
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
