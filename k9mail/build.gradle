@@ -93,7 +93,7 @@ dependencies {
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
     implementation "org.koin:koin-android-architecture:${versions.koin}"
-    implementation "androidx.core:core-ktx:${versions.androidX}"
+    implementation "androidx.core:core-ktx:${versions.androidXcore}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
