@@ -6,7 +6,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 
-data class AppConfig(
+data class AppConfigEntry(
         val key: String,
         val value: String?,
 ){
