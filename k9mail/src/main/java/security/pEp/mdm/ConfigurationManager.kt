@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
-import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
 
 class ConfigurationManager(
         private val context: Context,
@@ -40,7 +39,7 @@ class ConfigurationManager(
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         val value = restrictions.getString(entry.key)
         value?.let {
-            val config = AppConfig(entry.key, value).getValue<Boolean>().toManageableSetting()
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>().toManageableSetting()
             accounts.forEach { account ->
                 account.setpEpPrivacyProtection(config)
             }
