@@ -32,8 +32,8 @@ import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
 
-import security.pEp.mdm.ConfiguredSetting;
-import security.pEp.mdm.ConfiguredSettingKt;
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -231,7 +231,7 @@ public class AccountSettings {
         s.put("pEpPrivacyProtected", Settings.versions(
                 new V(45, new BooleanSetting(true)),
                 new V(52, new StringSetting(
-                        ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false)))
+                        ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(true, false)))
                 )
         ));
 
@@ -260,9 +260,9 @@ public class AccountSettings {
             Boolean oldValue = (Boolean) settings.get("pEpPrivacyProtected");
 
             if (oldValue != null) {
-                String newValue = ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false));
+                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(true, false));
                 settings.put("pEpPrivacyProtected", newValue);
-                return new HashSet<>(Collections.singletonList("pEpSubjectUnprotected"));
+                return new HashSet<>(Collections.singletonList("pEpPrivacyProtected"));
             } else {
                 return null;
             }
