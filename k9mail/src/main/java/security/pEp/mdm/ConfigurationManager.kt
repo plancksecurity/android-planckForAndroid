@@ -17,13 +17,15 @@ class ConfigurationManager(
 
     var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
-    val accounts: MutableList<Account> = preferences.accounts
+    private lateinit var accounts: MutableList<Account>
 
     fun loadConfigurations() {
+        accounts = preferences.accounts
         val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
         val restrictions = manager.applicationRestrictions
         val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
         mapRestrictions(entries, restrictions)
+        saveAccounts()
         sendRemoteConfig()
     }
 
@@ -41,8 +43,13 @@ class ConfigurationManager(
             val config = AppConfig(entry.key, value).getValue<Boolean>().toManageableSetting()
             accounts.forEach { account ->
                 account.setpEpPrivacyProtection(config)
-                account.save(preferences)
             }
+        }
+    }
+
+    private fun saveAccounts() {
+        accounts.forEach { account ->
+            account.save(preferences)
         }
     }
 
