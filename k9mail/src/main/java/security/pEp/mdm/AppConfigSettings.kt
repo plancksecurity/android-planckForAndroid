@@ -10,7 +10,7 @@ data class AppConfigEntry(
         val key: String,
         val value: String?,
 ){
-    fun <TYPE> getValue(): ManageableSettingMDMEntry<TYPE> =
+    inline fun <reified TYPE> getValue(): ManageableSettingMDMEntry<TYPE> =
             Json.decodeFromString(value!!)
 }
 
