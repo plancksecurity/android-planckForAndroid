@@ -30,8 +30,9 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
-import com.fsck.k9.ui.settings.account.ConfiguredSetting;
-import com.fsck.k9.ui.settings.account.ConfiguredSettingKt;
+
+import security.pEp.mdm.ConfiguredSetting;
+import security.pEp.mdm.ConfiguredSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
