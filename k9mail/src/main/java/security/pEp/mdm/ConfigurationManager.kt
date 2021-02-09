@@ -15,7 +15,7 @@ class ConfigurationManager(
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
     }
 
-    var listener: RestrictionsListener? = null
+    private var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
     private lateinit var accounts: MutableList<Account>
 
@@ -73,5 +73,9 @@ class ConfigurationManager(
                 restrictionsReceiver, IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
         )
         loadConfigurations()
+    }
+
+    fun setListener(listener: RestrictionsListener) {
+        this.listener = listener
     }
 }
