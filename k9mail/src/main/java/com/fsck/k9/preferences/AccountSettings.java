@@ -3,6 +3,7 @@ package com.fsck.k9.preferences;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -228,14 +229,45 @@ public class AccountSettings {
                 new V(42, new BooleanSetting(false))
             ));
         s.put("pEpPrivacyProtected", Settings.versions(
-                new V(46, new StringSetting(ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false))))
+                new V(45, new BooleanSetting(true)),
+                new V(52, new StringSetting(
+                        ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false)))
+                )
         ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 
         // noinspection MismatchedQueryAndUpdateOfCollection, this map intentionally left blank
         Map<Integer, SettingsUpgrader> u = new HashMap<>();
+        u.put(52, new SettingsUpgraderV52());
+
         UPGRADERS = Collections.unmodifiableMap(u);
+    }
+
+
+    /**
+     * Upgrades the settings from version 51 to 52.
+     *
+     * <p>
+     * Convert boolean from <em>pEpPrivacyProtected</em> to
+     * String
+     * </p>
+     */
+    public static class SettingsUpgraderV52 implements SettingsUpgrader {
+
+        @Override
+        public Set<String> upgrade(Map<String, Object> settings) {
+            Boolean oldValue = (Boolean) settings.get("pEpPrivacyProtected");
+
+            if (oldValue != null) {
+                String newValue = ConfiguredSettingKt.encodeBooleanToString(new ConfiguredSetting<>(true, false));
+                settings.put("pEpPrivacyProtected", newValue);
+                return new HashSet<>(Collections.singletonList("pEpSubjectUnprotected"));
+            } else {
+                return null;
+            }
+        }
+
     }
 
     static Map<String, Object> validate(int version, Map<String, String> importedSettings, boolean useDefaultValues) {
