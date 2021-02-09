@@ -82,6 +82,11 @@
         android:largeHeap="true"
         android:theme="@style/Theme.K9.Startup"
         tools:replace="android:allowBackup">
+
+        <activity
+            android:name="security.pEp.ui.feedback.SendErrorFeedbackActivity"
+            android:theme="@style/OverlayTheme"/>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

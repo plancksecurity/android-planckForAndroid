@@ -13,6 +13,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Folder;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.LocalMessage;
 
 import java.util.List;
@@ -89,8 +90,8 @@ public class NotificationController {
         syncNotifications.clearSendingNotification(account);
     }
 
-    public void showSendFailedNotification(Account account, Exception exception) {
-        sendFailedNotifications.showSendFailedNotification(account, exception);
+    public void showSendFailedNotification(Account account, Exception exception, Message message) {
+        sendFailedNotifications.showSendFailedNotification(account, exception, message);
     }
 
     public void clearSendFailedNotification(Account account) {

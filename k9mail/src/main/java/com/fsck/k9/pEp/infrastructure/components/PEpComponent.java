@@ -15,6 +15,8 @@ import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import security.pEp.ui.about.AboutActivity;
 import security.pEp.ui.about.LicenseActivity;
+
+import security.pEp.ui.feedback.SendErrorFeedbackActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupCheckSettingsFragment;
@@ -101,4 +103,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(IntroFourthFragment frag);
 
     void inject(PassphraseActivity activity);
+
+    void inject(SendErrorFeedbackActivity activity);
 }

@@ -2933,6 +2933,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     protected void sendPendingMessagesSynchronous(final Account account) {
         LocalFolder localFolder = null;
         Exception lastFailure = null;
+        Message failedMessage = null;
         boolean wasPermanentFailure = false;
         try {
             LocalStore localStore = account.getLocalStore();
@@ -2984,7 +2985,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         Timber.e("Send count for message %s can't be delivered after %d attempts. " +
                                 "Giving up until the user restarts the device", message.getUid(), MAX_SEND_ATTEMPTS);
                         notificationController.showSendFailedNotification(account,
-                                new MessagingException(message.getSubject()));
+                                new MessagingException(message.getSubject()), message);
                         continue;
                     }
 
@@ -3024,29 +3025,34 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     } catch (AuthenticationFailedException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
+                        failedMessage = message;
 
                         handleAuthenticationFailure(account, false);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (CertificateValidationException e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
+                        failedMessage = message;
 
                         notifyUserIfCertificateProblem(account, e, false);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (MessagingException e) {
                         lastFailure = e;
                         wasPermanentFailure = e.isPermanentFailure();
+                        failedMessage = message;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }  catch (AppDidntEncryptMessageException e) {
                         // TODO: 06/07/2020 Check if this catch branch is really needed.
                         lastFailure = e;
                         wasPermanentFailure = true;
+                        failedMessage = message;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (AuthFailurePassphraseNeeded e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
+                        failedMessage = message;
                         //Notify passphrase problem
                         // TODO: 04/08/2020 Cleanup this execption, no need to notifyRequest as we are covered by the callback.
                         //PassphraseActivity.notifyRequest(context, PassphraseRequirementType.MISSING_PASSPHRASE);
@@ -3054,18 +3060,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     } catch (AuthFailureWrongPassphrase e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
+                        failedMessage = message;
                         //Notify passphrase problem
                         //PassphraseActivity.notifyRequest(context, PassphraseRequirementType.WRONG_PASSPHRASE);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (Exception e) {
                         lastFailure = e;
                         wasPermanentFailure = true;
+                        failedMessage = message;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }
                 } catch (Exception e) {
                     lastFailure = e;
                     wasPermanentFailure = false;
+                    failedMessage = message;
                     Timber.e(e, "Failed to fetch message for sending");
                     notifySynchronizeMailboxFailed(account, localFolder, e);
                 }
@@ -3076,11 +3085,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
 
             if (lastFailure != null) {
-                if (wasPermanentFailure) {
-                    notificationController.showSendFailedNotification(account, lastFailure);
-                } else {
-                    notificationController.showSendFailedNotification(account, lastFailure);
-                }
+                notificationController.showSendFailedNotification(account, lastFailure, failedMessage);
             }
         } catch (UnavailableStorageException e) {
             Timber.i("Failed to send pending messages because storage is not available - trying again later.");

@@ -11,6 +11,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.ExceptionHelper;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_BLINK_FAST;
@@ -27,7 +28,7 @@ class SendFailedNotifications {
         this.actionBuilder = actionBuilder;
     }
 
-    public void showSendFailedNotification(Account account, Exception exception) {
+    public void showSendFailedNotification(Account account, Exception exception, Message message) {
         Context context = controller.getContext();
         String title = context.getString(R.string.send_failure_subject);
         String text = ExceptionHelper.getRootCauseMessage(exception);
@@ -41,7 +42,8 @@ class SendFailedNotifications {
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
-            folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
+            folderListPendingIntent = actionBuilder.createViewOutboxFolderWithErrorFeedbackIntent(
+                    account, notificationId, title, text, message);
         }
 
         NotificationCompat.Builder builder = controller

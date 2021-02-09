@@ -17,6 +17,8 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.NotificationDeleteConfirmation;
 import com.fsck.k9.activity.compose.MessageActions;
+import security.pEp.ui.feedback.SendErrorFeedbackActivity;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.search.LocalSearch;
 
 import java.util.List;
@@ -75,6 +77,14 @@ class NotificationActionCreator {
 
     public PendingIntent createViewFolderListPendingIntent(Account account, int notificationId) {
         TaskStackBuilder stack = buildFolderListBackStack(account);
+        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    public PendingIntent createViewOutboxFolderWithErrorFeedbackIntent(
+            Account account, int notificationId, String title, String text, Message message) {
+        TaskStackBuilder stack = buildMessageListBackStack(account, account.getOutboxFolderName());
+        Intent intent = SendErrorFeedbackActivity.createFeedbackActivityIntent(context, title, text, message);
+        stack.addNextIntent(intent);
         return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
     }
 
