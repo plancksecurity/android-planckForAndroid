@@ -7,7 +7,9 @@ import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
 
-class ConfigurationManager(private val context: Context, private val dataStoreFactory: AccountSettingsDataStoreFactory) {
+class ConfigurationManager(
+        private val context: Context,
+        private val preferences: Preferences) {
 
     companion object {
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
@@ -15,6 +17,7 @@ class ConfigurationManager(private val context: Context, private val dataStoreFa
 
     var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
+    val accounts: MutableList<Account> = preferences.accounts
 
     fun loadConfigurations() {
         val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
@@ -39,8 +42,6 @@ class ConfigurationManager(private val context: Context, private val dataStoreFa
             accounts.forEach { account ->
                 account.setpEpPrivacyProtection(config)
                 account.save(preferences)
-                val dataStore = dataStoreFactory.create(account)
-                dataStore.putBoolean(RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION, config.value)
             }
         }
     }

@@ -116,11 +116,8 @@ public class K9ActivityCommon {
     }
 
     private void initConfigurationManager() {
-        AccountSettingsDataStoreFactory accountSettingsDataStoreFactory =
-                new AccountSettingsDataStoreFactory(mActivity,
-                        Preferences.getPreferences(mActivity),
-                        Executors.newSingleThreadExecutor(new NamedThreadFactory("SaveSettings")));
-        configurationManager = new ConfigurationManager(mActivity, accountSettingsDataStoreFactory);
+        Preferences preferences = Preferences.getPreferences(mActivity);
+        configurationManager = new ConfigurationManager(mActivity, preferences);
     }
 
     /**
