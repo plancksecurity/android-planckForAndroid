@@ -257,16 +257,14 @@ public class AccountSettings {
 
         @Override
         public Set<String> upgrade(Map<String, Object> settings) {
-            String settingId= "pEpPrivacyProtected";
+            String settingId = "pEpPrivacyProtected";
             Boolean oldValue = (Boolean) settings.get(settingId);
 
             if (oldValue != null) {
-                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(true, false));
+                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(oldValue, false));
                 settings.put(settingId, newValue);
-                return new HashSet<>(Collections.singletonList(settingId));
-            } else {
-                return null;
             }
+            return null;
         }
 
     }
