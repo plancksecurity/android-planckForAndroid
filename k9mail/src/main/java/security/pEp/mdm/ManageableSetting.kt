@@ -8,21 +8,21 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
-data class ConfiguredSetting<SETTING_TYPE>(
+data class ManageableSetting<SETTING_TYPE>(
         @SerialName("value") var value: SETTING_TYPE,
         @SerialName("locked") val locked: Boolean,
 )
 
-fun decodeBooleanFromString(json: String?): ConfiguredSetting<Boolean>? {
+fun decodeBooleanFromString(json: String?): ManageableSetting<Boolean>? {
     return when (json) {
-        "true" -> ConfiguredSetting(value = true, locked = false)
-        "false" -> ConfiguredSetting(value = false, locked = false)
-        null -> ConfiguredSetting(value = true, locked = false)
+        "true" -> ManageableSetting(value = true, locked = false)
+        "false" -> ManageableSetting(value = false, locked = false)
+        null -> ManageableSetting(value = true, locked = false)
         else -> Json.decodeFromString(json)
     }
 }
 
-fun encodeBooleanToString(json: ConfiguredSetting<Boolean>?): String? {
+fun encodeBooleanToString(json: ManageableSetting<Boolean>?): String? {
     return if (json != null) {
         Json.encodeToString(json)
     } else null

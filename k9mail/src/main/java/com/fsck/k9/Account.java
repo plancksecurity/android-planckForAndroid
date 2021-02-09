@@ -7,8 +7,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 
-import security.pEp.mdm.ConfiguredSetting;
-import security.pEp.mdm.ConfiguredSettingKt;
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
 import timber.log.Timber;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
@@ -71,11 +71,11 @@ public class Account implements BaseAccount, StoreConfig {
         return pEpPrivacyProtected.getValue();
     }
 
-    public ConfiguredSetting<Boolean> getpEpPrivacyProtected() {
+    public ManageableSetting<Boolean> getpEpPrivacyProtected() {
         return pEpPrivacyProtected;
     }
 
-    public void setpEpPrivacyProtection(ConfiguredSetting<Boolean> config) {
+    public void setpEpPrivacyProtection(ManageableSetting<Boolean> config) {
         pEpPrivacyProtected = config;
     }
 
@@ -259,7 +259,7 @@ public class Account implements BaseAccount, StoreConfig {
     private int remoteSearchNumResults;
 
     private boolean pEpUntrustedServer;
-    private ConfiguredSetting<Boolean> pEpPrivacyProtected;
+    private ManageableSetting<Boolean> pEpPrivacyProtected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -368,7 +368,7 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLedColor(chipColor);
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtected = new ConfiguredSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED, false);
+        pEpPrivacyProtected = new ManageableSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED, false);
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
@@ -504,7 +504,7 @@ public class Account implements BaseAccount, StoreConfig {
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
 
-        pEpPrivacyProtected = ConfiguredSettingKt.decodeBooleanFromString(
+        pEpPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
                 storage.getString(accountUuid + ".pEpPrivacyProtected", null)
         );
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
@@ -792,7 +792,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
-        editor.putString(accountUuid + ".pEpPrivacyProtected", ConfiguredSettingKt.encodeBooleanToString(pEpPrivacyProtected));
+        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(pEpPrivacyProtected));
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
 
         for (NetworkType type : NetworkType.values()) {
