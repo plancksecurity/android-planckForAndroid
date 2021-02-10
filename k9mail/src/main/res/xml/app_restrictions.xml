@@ -5,7 +5,7 @@
         android:defaultValue="true"
         android:description="@string/pep_enable_privacy_protection"
         android:key="pep_disable_privacy_protection"
-        android:restrictionType="bool"
+        android:restrictionType="string"
         android:title="@string/pep_enable_privacy_protection"/>
 
 </restrictions>
