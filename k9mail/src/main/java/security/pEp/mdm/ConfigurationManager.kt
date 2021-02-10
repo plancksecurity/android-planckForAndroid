@@ -39,10 +39,13 @@ class ConfigurationManager(
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         val value = restrictions.getString(entry.key)
         value?.let {
-            val config = AppConfigEntry(entry.key, value).getValue<Boolean>().toManageableSetting()
-            accounts.forEach { account ->
-                account.setpEpPrivacyProtection(config)
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>()?.toManageableSetting()
+            config?.let {
+                accounts.forEach { account ->
+                    account.setpEpPrivacyProtection(config)
+                }
             }
+
         }
     }
 
