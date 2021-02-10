@@ -16,10 +16,13 @@ import com.fsck.k9.R
 import com.fsck.k9.pEp.ui.activities.TestUtils.BasicMessage
 import com.fsck.k9.pEp.ui.activities.UtilsPackage
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
+import security.pEp.mdm.ManageableSettingMDMEntry
 import timber.log.Timber
 
 
@@ -32,9 +35,16 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
     @After
     fun after() {
         if (forcedAppConfig)
-            openEnforcerSplitScreen(true)
+            openEnforcerSplitScreen(
+                    key = "pep_disable_privacy_protection",
+                    value = pEpPrivacyJson(true),
+                    generic = false
+            )
         sleep(3000)
     }
+
+    private fun pEpPrivacyJson(enabled: Boolean) =
+            Json.encodeToString(ManageableSettingMDMEntry(locked = true, value = enabled))
 
     @Test
     fun automaticStartUp() {
@@ -54,7 +64,12 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
         waitMessageCompose()
 
-        val message = BasicMessage(BuildConfig.PEP_TEST_EMAIL_ADDRESS, "Subject", "Body", BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+        val message = BasicMessage(
+                BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                "Subject",
+                "Body",
+                BuildConfig.PEP_TEST_EMAIL_ADDRESS
+        )
         fillMessage(message)
         click(R.id.send)
         sleep(3000)
@@ -67,7 +82,11 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         openFirstScreen()
         waitListView()
 
-        openEnforcerSplitScreen(false)
+        openEnforcerSplitScreen(
+                key = "pep_disable_privacy_protection",
+                value = pEpPrivacyJson(false),
+                generic = false
+        )
 
         onData(anything())
                 .inAdapterView(withId(R.id.message_list))
@@ -84,7 +103,11 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
         waitMessageView()
 
-        openEnforcerSplitScreen(false)
+        openEnforcerSplitScreen(
+                key = "pep_disable_privacy_protection",
+                value = pEpPrivacyJson(false),
+                generic = false
+        )
 
         onView(withId(R.id.actionbar_message_view)).check(matches(not(isDisplayed())))
     }
@@ -99,7 +122,11 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
         onView(withId(R.id.openCloseButton)).perform(click())
 
-        openEnforcerSplitScreen(false)
+        openEnforcerSplitScreen(
+                key = "pep_disable_privacy_protection",
+                value = pEpPrivacyJson(false),
+                generic = false
+        )
 
         onView(withId(R.id.actionbar_message_view)).check(matches(not(isDisplayed())))
     }
@@ -120,7 +147,11 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         sleep(500)
         clickSetting(R.string.privacy_preferences)
 
-        openEnforcerSplitScreen(false)
+        openEnforcerSplitScreen(
+                key = "pep_disable_privacy_protection",
+                value = pEpPrivacyJson(false),
+                generic = false
+        )
 
         runBlocking { waitForIdle() }
         sleep(2000)
@@ -149,12 +180,14 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         click(R.id.done)
     }
 
-    private fun openEnforcerSplitScreen(clearSettings: Boolean) {
+    private fun openEnforcerSplitScreen(key: String, value: String, generic: Boolean) {
         val intent: Intent = context.packageManager.getLaunchIntentForPackage(ENFORCER_PACKAGE_NAME)
                 ?: return
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
-        intent.putExtra("forceUpdate", true)
-        intent.putExtra("clearSettings", clearSettings)
+        intent.putExtra("inPIP", true)
+        intent.putExtra("generic", generic)
+        intent.putExtra("key", key)
+        intent.putExtra("value", value)
         getCurrentActivity()?.startActivity(intent)
         sleep(5000)
         forcedAppConfig = true
