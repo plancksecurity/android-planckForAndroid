@@ -159,6 +159,21 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         checkSwitchPreferenceStatus(R.string.pep_enable_privacy_protection)
     }
 
+    @Test
+    fun receiveMalformedJson(){
+        openFirstScreen()
+        waitListView()
+
+        openEnforcerSplitScreen(
+                key = "pep_disable_privacy_protection",
+                value = "{hello:hello, john:john}",
+                generic = false
+        )
+
+        runBlocking { waitForIdle() }
+        sleep(2000)
+    }
+
     private fun passWelcomeScreen() {
         click(R.id.skip)
         click(R.id.action_continue)
