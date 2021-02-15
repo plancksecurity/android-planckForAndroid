@@ -17,6 +17,7 @@ buildscript {
                 'supportLibrary'     : '28.0.0',
                 'preferencesFix'     : '1.1.0',
                 'androidX'           : '1.1.0',
+                'androidXcore'       : '1.3.2',
                 'androidXLegacy'     : '1.0.0',
                 'androidXCardView'   : '1.0.0',
                 'constraintLayout'   : '1.1.3',
