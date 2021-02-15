@@ -53,7 +53,8 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
     private fun setupViews() {
         binding = ActivityFeedbackBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.okButton.setOnClickListener { presenter.onOkButtonClicked() }
+        binding.closeButton.setOnClickListener { presenter.onCloseButtonClicked() }
+        binding.retryButton.setOnClickListener { presenter.sendPendingMessages() }
 
         setUpFloatingWindow()
     }

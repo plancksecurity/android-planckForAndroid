@@ -29,18 +29,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/okButton"
+        app:layout_constraintBottom_toTopOf="@+id/closeButton"
         app:layout_constraintTop_toBottomOf="@+id/feedbackTitle"
         tools:layout_editor_absoluteX="24dp" />
 
     <Button
-        android:id="@+id/okButton"
+        android:id="@+id/retryButton"
         style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/okay_action"
+        android:text="Retry"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/closeButton"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Close"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/retryButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
