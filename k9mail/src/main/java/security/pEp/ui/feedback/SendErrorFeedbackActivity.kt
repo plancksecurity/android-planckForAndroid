@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import com.fsck.k9.Account
 import com.fsck.k9.databinding.ActivityFeedbackBinding
 import com.fsck.k9.mail.Message
 import com.fsck.k9.pEp.manualsync.WizardActivity
@@ -67,12 +68,14 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
         @JvmStatic
         fun createFeedbackActivityIntent(
             context: Context,
+            account: Account,
             feedbackTitle: String,
             feedbackText: String,
             message: Message? = null
         ): Intent {
             val intent = Intent(context, SendErrorFeedbackActivity::class.java)
             val sendFailedData = SendErrorFeedbackActivityData.create(
+                account,
                 feedbackTitle,
                 feedbackText,
                 message
@@ -85,6 +88,7 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
 
 @Parcelize
 data class SendErrorFeedbackActivityData(
+    val accountUuid: String,
     val title: String,
     val text: String,
     val messageInfo: FeedbackMessageInfo?
@@ -92,11 +96,13 @@ data class SendErrorFeedbackActivityData(
     companion object {
         @JvmStatic
         fun create(
+            account: Account,
             title: String,
             text: String,
             message: Message? = null
         ): SendErrorFeedbackActivityData {
             return SendErrorFeedbackActivityData(
+                account.uuid,
                 title,
                 text,
                 FeedbackMessageInfo.fromMessage(message)

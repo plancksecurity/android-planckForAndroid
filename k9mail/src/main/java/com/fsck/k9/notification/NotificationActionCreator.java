@@ -83,7 +83,7 @@ class NotificationActionCreator {
     public PendingIntent createViewOutboxFolderWithErrorFeedbackIntent(
             Account account, int notificationId, String title, String text, Message message) {
         TaskStackBuilder stack = buildMessageListBackStack(account, account.getOutboxFolderName());
-        Intent intent = SendErrorFeedbackActivity.createFeedbackActivityIntent(context, title, text, message);
+        Intent intent = SendErrorFeedbackActivity.createFeedbackActivityIntent(context, account, title, text, message);
         stack.addNextIntent(intent);
         return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
     }
