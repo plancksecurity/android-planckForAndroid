@@ -26,6 +26,7 @@ public class NotificationActionService extends CoreService {
     private static final String ACTION_ARCHIVE = "ACTION_ARCHIVE";
     private static final String ACTION_SPAM = "ACTION_SPAM";
     private static final String ACTION_DISMISS = "ACTION_DISMISS";
+    private static final String ACTION_SEND_PENDING_MESSAGES = "ACTION_SEND_PENDING_MESSAGES";
 
     private static final String EXTRA_ACCOUNT_UUID = "accountUuid";
     private static final String EXTRA_MESSAGE_REFERENCE = "messageReference";
@@ -114,6 +115,15 @@ public class NotificationActionService extends CoreService {
         return intent;
     }
 
+    static Intent createSendPendingMessagesIntent(Context context, String accountUuid) {
+        Intent intent = new Intent(context, NotificationActionService.class);
+        intent.setAction(ACTION_SEND_PENDING_MESSAGES);
+        intent.putExtra(EXTRA_ACCOUNT_UUID, accountUuid);
+        intent.putExtra(EXTRA_MESSAGE_REFERENCE, accountUuid);
+
+        return intent;
+    }
+
     private static ArrayList<String> createSingleItemArrayList(MessageReference messageReference) {
         ArrayList<String> messageReferenceStrings = new ArrayList<>(1);
         messageReferenceStrings.add(messageReference.toIdentityString());
@@ -146,6 +156,8 @@ public class NotificationActionService extends CoreService {
             markMessageAsSpam(intent, account, controller);
         } else if (ACTION_DISMISS.equals(action)) {
             Timber.i("Notification dismissed");
+        } else if (ACTION_SEND_PENDING_MESSAGES.equals(action)) {
+            sendPendingMessagesForAccount(account, controller);
         }
 
         cancelNotifications(intent, account, controller);
@@ -209,6 +221,10 @@ public class NotificationActionService extends CoreService {
             String sourceFolderName = messageReference.getFolderName();
             controller.moveMessage(account, sourceFolderName, messageReference, spamFolderName);
         }
+    }
+
+    private void sendPendingMessagesForAccount(Account account, MessagingController controller) {
+        controller.sendPendingMessages(account, null);
     }
 
     private void cancelNotifications(Intent intent, Account account, MessagingController controller) {

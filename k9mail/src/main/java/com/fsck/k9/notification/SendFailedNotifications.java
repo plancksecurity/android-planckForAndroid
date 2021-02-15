@@ -61,10 +61,23 @@ class SendFailedNotifications {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_ERROR);
 
+        if(!(exception instanceof AppDidntEncryptMessageException)) {
+            addSendPendingMessagesAction(context, builder, account, notificationId);
+        }
+
         controller.configureNotification(builder, null, null, NOTIFICATION_LED_FAILURE_COLOR,
                 NOTIFICATION_LED_BLINK_FAST, true);
 
         getNotificationManager().notify(notificationId, builder.build());
+    }
+
+    private void addSendPendingMessagesAction(Context context, NotificationCompat.Builder builder, Account account, int notificationId) {
+        int icon = getSendPendingMessagesActionIcon();
+        String title = context.getString(R.string.messageview_decrypt_retry);
+        PendingIntent sendPendingMessagesPendingIntent =
+                actionBuilder.createSendPendingMessagesPendingIntent(account, notificationId);
+
+        builder.addAction(icon, title, sendPendingMessagesPendingIntent);
     }
 
     public void clearSendFailedNotification(Account account) {
@@ -75,6 +88,10 @@ class SendFailedNotifications {
     private int getSendFailedNotificationIcon() {
         //TODO: Use a different icon for send failure notifications
         return R.drawable.notification_icon_new_mail;
+    }
+
+    private int getSendPendingMessagesActionIcon() {
+        return R.drawable.ic_send_dark;
     }
 
     private NotificationManagerCompat getNotificationManager() {

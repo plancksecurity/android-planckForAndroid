@@ -219,6 +219,13 @@ class NotificationActionCreator {
                 PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
     }
 
+    public PendingIntent createSendPendingMessagesPendingIntent(Account account, int notificationId) {
+        Intent intent = NotificationActionService.createSendPendingMessagesIntent(context, account.getUuid());
+
+        return PendingIntent.getService(context, notificationId, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+    }
+
     private TaskStackBuilder buildAccountsBackStack() {
         TaskStackBuilder stack = TaskStackBuilder.create(context);
         if (!skipAccountsInBackStack()) {
