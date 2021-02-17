@@ -480,7 +480,6 @@ public class FolderList extends K9ListActivity {
         MessagingController.getInstance(getApplication()).getAccountStats(this, mAccount, mAdapter.mListener);
         onRefresh(!REFRESH_REMOTE);
 
-        MessagingController.getInstance(getApplication()).cancelNotificationsForAccount(mAccount);
         mAdapter.mListener.onResume(this);
     }
 
