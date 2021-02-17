@@ -1322,6 +1322,13 @@ public class CucumberTestSteps {
     }
 
 
+    @When("^I select Inbox from Hamburger menu$")
+    public void I_inbox_from_hamburger() {
+        testUtils.openHamburgerMenu();
+        testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
+    }
+
+
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
         accountSelected = Integer.parseInt(account);
