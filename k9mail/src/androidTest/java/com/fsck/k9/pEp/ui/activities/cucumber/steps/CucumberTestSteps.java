@@ -142,7 +142,7 @@ public class CucumberTestSteps {
                 testUtils.testReset = true;
                 try {
                     activityTestRule.launchActivity(new Intent());
-                    testUtils.waitForIdle();
+                    //testUtils.waitForIdle();
                 } catch (Exception ex) {
                     Timber.i("Cannot launch activity");
                 }
@@ -1625,9 +1625,20 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
         onView(withId(R.id.search_input)).perform(pressImeActionButton(), closeSoftKeyboard());
         testUtils.waitForIdle();
-        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+        try {
+            onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+        } catch (Exception list) {
+            Timber.i("Message list is empty");
+            if (messageListSize[0] == 0) {
+                messageListSize[0] = 1;
+            }
+        }
         if (messageListSize[0] - 1 != messages) {
             TestUtils.assertFailWithMessage("There are not " + messages + " messages in the list. There are: " + (messageListSize[0] - 1));
+        }
+        while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+            testUtils.pressBack();
+            testUtils.waitForIdle();
         }
     }
 
@@ -1706,11 +1717,13 @@ public class CucumberTestSteps {
     }
 
     @Then("^I send and remove (\\d+) messages to (\\S+) with subject (\\S+) and body (\\S+)$")
-    public void I_send_and_remove_N_messages(int totalMessages,String botName, String subject, String body){
-        I_send_message_to_address(totalMessages, botName, subject, body);
-        testUtils.clickLastMessage();
+    public void I_send_and_remove_N_messages(int totalMessages,String botName, String subject, String body) {
         for (int i = 0; i < totalMessages; i++) {
+            testUtils.getMessageListSize();
+            I_send_message_to_address(1, botName, subject, body + " message " + Integer.toString(i) + " of " + Integer.toString(totalMessages));
+            testUtils.clickLastMessage();
             testUtils.clickView(R.id.delete);
+            testUtils.goBackToMessageList();
         }
     }
 
@@ -1723,17 +1736,17 @@ public class CucumberTestSteps {
     @Then("^I test Stability for account (\\S+)$")
     public void I_test_Stability(String account){
         timeRequiredForThisMethod(40);
-        for (int i = 0; i < 50000000; i++) {
+        for (int i = 0; i < 5; i++) {
             I_select_account(account);
-            //I_wait_seconds(30);
+            I_wait_seconds(30);
             I_send_and_remove_N_messages(1, "bot1", "stability", "TestingStability " + String.valueOf(i));
             I_go_back_to_the_Inbox();
-            //I_wait_seconds(30);
+            I_wait_seconds(30);
             I_test_unified_inbox(1);
-            //I_wait_seconds(30);
-            //I_go_back_to_accounts_list();
+            I_wait_seconds(30);
+            I_go_back_to_accounts_list();
             I_walk_through_app();
-            //I_wait_seconds(30);
+            I_wait_seconds(30);
         }
 
     }
