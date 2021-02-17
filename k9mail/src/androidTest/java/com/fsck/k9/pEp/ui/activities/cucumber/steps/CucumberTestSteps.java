@@ -425,7 +425,7 @@ public class CucumberTestSteps {
     public void I_click_mistrust_words() {
         timeRequiredForThisMethod(30);
         testUtils.goToHandshakeDialog();
-        onView(withId(R.id.rejectHandshake)).perform(click());
+        testUtils.clickView(R.id.rejectHandshake);
         testUtils.waitForIdle();
         testUtils.pressBack();
     }
