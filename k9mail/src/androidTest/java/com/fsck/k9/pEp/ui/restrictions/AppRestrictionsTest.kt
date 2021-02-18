@@ -141,7 +141,6 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     @Test
     fun receiveMalformedJson(){
-        openFirstScreen()
         waitListView()
 
         openEnforcerSplitScreen(
