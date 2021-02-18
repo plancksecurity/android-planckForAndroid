@@ -1,7 +1,12 @@
 
+task removeIgnore(type: Exec) {
+    dependsOn uninstallAll
+    def command = ['./../gradle/plugins/utils/initScreenshotTest.sh', 'enable']
+    commandLine command
+}
 
 task installApk(type: Exec) {
-    dependsOn uninstallAll
+    dependsOn removeIgnore
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
     commandLine command
 }
@@ -83,7 +88,12 @@ task syncTest(type: Exec) {
     commandLine syncTestCommand
 }
 
+task addIgnore(type: Exec) {
+    dependsOn syncTest
+    def command = ['./../gradle/plugins/utils/initScreenshotTest.sh', 'disable']
+    commandLine command
+}
 
 task generateScreenshots() {
-    dependsOn syncTest
+    dependsOn addIgnore
 }
