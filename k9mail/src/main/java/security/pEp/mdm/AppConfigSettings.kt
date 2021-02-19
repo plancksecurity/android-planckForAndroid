@@ -11,8 +11,10 @@ data class AppConfigEntry(
         val value: String?,
 ) {
     inline fun <reified TYPE> getValue(): ManageableSettingMdmEntry<TYPE>? {
-        return Json.runCatching { decodeFromString<ManageableSettingMdmEntry<TYPE>>(value!!) }
-                .getOrNull()
+        return if (value != null) {
+            Json.runCatching { decodeFromString<ManageableSettingMdmEntry<TYPE>>(value) }
+                    .getOrNull()
+        } else null
 
     }
 
