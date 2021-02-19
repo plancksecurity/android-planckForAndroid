@@ -46,5 +46,7 @@ Command:
 
 Cleans the app and adds ANDROID_DEV_TEST_1_ADDRESS to app
 
+This task needs the app to be installed
+
 Command:
    ./gradlew setupAccount
