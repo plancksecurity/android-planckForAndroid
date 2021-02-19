@@ -22,7 +22,7 @@ import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
-import security.pEp.mdm.ManageableSettingMDMEntry
+import security.pEp.mdm.ManageableSettingMdmEntry
 import timber.log.Timber
 
 
@@ -44,7 +44,7 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
     }
 
     private fun pEpPrivacyJson(enabled: Boolean) =
-            Json.encodeToString(ManageableSettingMDMEntry(locked = true, value = enabled))
+            Json.encodeToString(ManageableSettingMdmEntry(locked = true, value = enabled))
 
     @Test
     fun automaticStartUp() {

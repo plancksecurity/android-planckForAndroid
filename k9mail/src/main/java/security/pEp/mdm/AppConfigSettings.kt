@@ -10,8 +10,8 @@ data class AppConfigEntry(
         val key: String,
         val value: String?,
 ) {
-    inline fun <reified TYPE> getValue(): ManageableSettingMDMEntry<TYPE>? {
-        return Json.runCatching { decodeFromString<ManageableSettingMDMEntry<TYPE>>(value!!) }
+    inline fun <reified TYPE> getValue(): ManageableSettingMdmEntry<TYPE>? {
+        return Json.runCatching { decodeFromString<ManageableSettingMdmEntry<TYPE>>(value!!) }
                 .getOrNull()
 
     }
@@ -19,7 +19,7 @@ data class AppConfigEntry(
 }
 
 @Serializable
-data class ManageableSettingMDMEntry<TYPE>(
+data class ManageableSettingMdmEntry<TYPE>(
         @SerialName("locked") val locked: Boolean,
         @SerialName("value") val value: TYPE,
 ) {
