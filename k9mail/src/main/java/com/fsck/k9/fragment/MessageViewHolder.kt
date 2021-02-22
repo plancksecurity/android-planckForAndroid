@@ -121,7 +121,9 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         fontSizes.setViewTextSize(previewTV, fontSizes.messageListPreview)
         val preview = getPreview(cursor)
         previewTV?.text = preview
-        previewTV?.maxLines = Math.max(K9.messageListPreviewLines(), 1)
+        val maxLines = K9.messageListPreviewLines().coerceAtLeast(0)
+        previewTV?.maxLines = maxLines
+        previewTV?.visibility = if (maxLines == 0) View.GONE else View.VISIBLE
     }
 
     private fun updateBackgroundColor() {
