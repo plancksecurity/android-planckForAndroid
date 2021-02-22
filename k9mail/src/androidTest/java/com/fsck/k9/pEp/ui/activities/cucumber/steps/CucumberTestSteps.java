@@ -1743,7 +1743,8 @@ public class CucumberTestSteps {
     @Then("^I test Stability for account (\\S+)$")
     public void I_test_Stability(String account){
         timeRequiredForThisMethod(40);
-        for (int i = 0; i < 5; i++) {
+        I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
+        for (int i = 0; i < 1000; i++) {
             I_select_account(account);
             I_wait_seconds(30);
             I_send_and_remove_N_messages(1, "bot1", "stability", "TestingStability " + String.valueOf(i));
@@ -1754,6 +1755,7 @@ public class CucumberTestSteps {
             I_go_back_to_accounts_list();
             I_walk_through_app();
             I_wait_seconds(30);
+            testUtils.pressBack();
         }
 
     }
@@ -1790,11 +1792,25 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
     }
 
+    @And("^I disable passive mode$")
+    public void I_disable_passive_mode(){
+        timeRequiredForThisMethod(25);
+        testUtils.waitForIdle();
+        testUtils.selectFromScreen(testUtils.stringToID("privacy_preferences"));
+        testUtils.waitForIdle();
+        testUtils.checkBoxOnScreenChecked(testUtils.stringToID("pep_passive_mode"), false);
+        testUtils.waitForIdle();
+        testUtils.pressBack();
+        testUtils.waitForIdle();
+    }
+
     @And("^I go back to accounts list$")
     public void I_go_back_to_accounts_list() {
         timeRequiredForThisMethod(25);
         testUtils.waitForIdle();
-        testUtils.selectFromMenu(R.string.action_settings);
+        if (!exists(onView(withId(R.id.available_accounts_title)))) {
+            testUtils.selectFromMenu(R.string.action_settings);
+        }
         testUtils.waitForIdle();
     }
 
