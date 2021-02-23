@@ -1,8 +1,10 @@
 package com.fsck.k9.pEp.ui.keys
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.Account
@@ -14,7 +16,9 @@ import com.fsck.k9.pEp.testutils.AssertUtils.identityThat
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import com.fsck.k9.pEp.testutils.PEpProviderStubber
 import com.nhaarman.mockito_kotlin.*
+import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Identity
+import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.*
@@ -24,6 +28,8 @@ import org.robolectric.annotation.Config
 import security.pEp.ui.keyimport.ACTIVITY_REQUEST_PICK_KEY_FILE
 import security.pEp.ui.keyimport.KeyImportPresenter
 import security.pEp.ui.keyimport.KeyImportView
+import java.io.File
+import java.io.FileInputStream
 
 
 @RunWith(AndroidJUnit4::class)
@@ -40,6 +46,7 @@ class KeyImportPresenterTest {
     private lateinit var preferences: Preferences
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val contextSpy: Context = spy(context)
+    private val resolver: ContentResolver = mock()
 
     private val email1 = "account1@ignaciotest.ch"
     private val email2 = "account2@ignaciotest.ch"
@@ -59,6 +66,36 @@ class KeyImportPresenterTest {
     // identities NOT set in device
     private lateinit var fourthIdentity: Identity
     private lateinit var fifthIdentity: Identity
+
+    private val firstImportedIdentity = Identity().apply {
+        address = email1
+        comm_type = CommType.PEP_ct_unknown
+        flags = 0
+        fpr = importedFingerPrint
+        me = false
+        user_id = null
+        username = email1
+    }
+
+    private val secondImportedIdentity = Identity().apply {
+        address = email2
+        comm_type = CommType.PEP_ct_unknown
+        flags = 0
+        fpr = importedFingerPrint
+        me = false
+        user_id = null
+        username = email2
+    }
+
+    private val thirdImportedIdentity = Identity().apply {
+        address = email3
+        comm_type = CommType.PEP_ct_unknown
+        flags = 0
+        fpr = importedFingerPrint
+        me = false
+        user_id = null
+        username = email3
+    }
 
     private lateinit var presenter: KeyImportPresenter
 
@@ -87,11 +124,11 @@ class KeyImportPresenterTest {
         fifthIdentity =
             PEpUtils.createIdentity(Address(email5), context).apply { fpr = importedFingerPrint }
 
-        pEpProviderStubber.stubProviderMethodsForIdentity(firstIdentity)
-        pEpProviderStubber.stubProviderMethodsForIdentity(secondIdentity)
-        pEpProviderStubber.stubProviderMethodsForIdentity(thirdIdentity)
-        pEpProviderStubber.stubProviderMethodsForIdentity(fourthIdentity)
-        pEpProviderStubber.stubProviderMethodsForIdentity(fifthIdentity)
+        pEpProviderStubber.stubProviderMethodsForIdentity(firstIdentity, importedFingerPrint)
+        pEpProviderStubber.stubProviderMethodsForIdentity(secondIdentity, importedFingerPrint)
+        pEpProviderStubber.stubProviderMethodsForIdentity(thirdIdentity, importedFingerPrint)
+        pEpProviderStubber.stubProviderMethodsForIdentity(fourthIdentity, importedFingerPrint)
+        pEpProviderStubber.stubProviderMethodsForIdentity(fifthIdentity, importedFingerPrint)
 
 
         presenter = KeyImportPresenter(
@@ -166,6 +203,254 @@ class KeyImportPresenterTest {
 
         verify(view).finish()
     }
+
+    @Test
+    fun `importKey from account settings best case 1 account`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val expectedResult = listOf(firstImportedIdentity)
+            pEpProviderStubber.stubImportKey(expectedResult)
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+            val result = presenter.importKey(uri)
+
+
+
+            assertForImportKey(expectedResult, result)
+        }
+
+    @Test
+    fun `importKey from account settings best case 3 accounts`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(
+                listOf(
+                    firstImportedIdentity,
+                    secondImportedIdentity,
+                    thirdImportedIdentity
+                )
+            )
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view, preferences.accounts.last().uuid)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(listOf(thirdImportedIdentity), result)
+        }
+
+    @Test
+    fun `importKey from general settings best case 1 account`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val expectedResult = listOf(firstImportedIdentity)
+            pEpProviderStubber.stubImportKey(expectedResult)
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(expectedResult, result)
+        }
+
+    @Test
+    fun `importKey removes duplicate identities from PEpProvider_importKey`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(
+                listOf(
+                    firstImportedIdentity,
+                    secondImportedIdentity,
+                    thirdImportedIdentity,
+                    firstImportedIdentity,
+                    secondImportedIdentity,
+                    thirdImportedIdentity
+                )
+            )
+
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view)
+
+
+            val result = presenter.importKey(uri)
+
+
+            verify(pEpProvider).importKey(any())
+            TestCase.assertEquals(3, result.size)
+        }
+
+    @Test
+    fun `importKey from general settings best case 3 accounts`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val expectedResult = listOf(
+                firstImportedIdentity,
+                secondImportedIdentity,
+                thirdImportedIdentity
+            )
+            pEpProviderStubber.stubImportKey(expectedResult)
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(expectedResult, result)
+        }
+
+    @Test
+    fun `importKey from account settings, fail because all accounts in file are different from given one`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(
+                listOf(
+                    secondImportedIdentity,
+                    thirdImportedIdentity
+                )
+            )
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+            val result = presenter.importKey(uri)
+
+
+
+            assertForImportKey(emptyList(), result)
+        }
+
+    /**
+     * If PEpProvider's importKey's result is an empty Vector, that means there was no private key in the file.
+     */
+    @Test
+    fun `importKey from account settings, empty Vector from provider`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(listOf())
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(emptyList(), result)
+        }
+
+    /**
+     * If PEpProvider's importKey's result is an empty Vector, that means there was no private key in the file.
+     */
+    @Test
+    fun `importKey from general settings, empty Vector from provider`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(listOf())
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+            presenter.initialize(view)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(emptyList(), result)
+        }
+
+    /**
+     * PEpProvider's importKey's result could be null. In that case we return an empty list.
+     */
+    @Test
+    fun `importKey from account settings, null Vector from provider`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(null)
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(emptyList(), result)
+        }
+
+    /**
+     * PEpProvider's importKey's result could be null. In that case we return an empty list.
+     */
+    @Test
+    fun `importKey from general settings, null Vector from provider`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(null)
+            val uri = stubContentResolverAndGetKeysFileUri()
+
+
+            presenter.initialize(view)
+
+
+            val result = presenter.importKey(uri)
+
+
+            assertForImportKey(emptyList(), result)
+        }
+
+    private fun assertForImportKey(
+        expectedResult: List<Identity>,
+        result: List<Identity>
+    ) {
+        verify(pEpProvider).importKey(any())
+        TestCase.assertEquals(expectedResult.size, result.size)
+        if (expectedResult.isNotEmpty()) {
+            expectedResult.forEachIndexed { index, identity ->
+                TestCase.assertEquals(identity, result[index])
+            }
+        }
+    }
+
+    private fun stubContentResolverAndGetKeysFileUri(): Uri {
+        val (uri: Uri, fileInputStream) = getMultipleKeyFileInputStreamAndUri()
+        stubContentResolver(fileInputStream, uri)
+        return uri
+    }
+
+    private fun stubContentResolver(fileInputStream: FileInputStream, uri: Uri) {
+        doReturn(resolver).`when`(contextSpy).contentResolver
+        doReturn(fileInputStream).`when`(resolver).openInputStream(uri)
+    }
+
+    private fun retrieveMultipleKeyFileUriFromResources(): File {
+        return File(javaClass.getResource("/keyimport/account1AsciiNoPassPhrase.asc")!!.file)
+    }
+
+    private fun getMultipleKeyFileInputStreamAndUri(): Pair<Uri, FileInputStream> {
+        val resourceFile = retrieveMultipleKeyFileUriFromResources()
+        val uri: Uri = Uri.fromFile(resourceFile)
+        val fileInputStream = FileInputStream(resourceFile)
+        return Pair(uri, fileInputStream)
+    }
+
 
     companion object {
         @JvmStatic
