@@ -105,7 +105,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onKeyImportClicked() {
-        KeyImportActivity.showImportKeyDialog(activity, "")
+        KeyImportActivity.showImportKeyDialog(activity)
     }
 
     private fun initializePgpImportKey() {

@@ -174,6 +174,12 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             intent.putExtra(ACCOUNT_UUID_EXTRA, account)
             activity?.startActivity(intent)
         }
+
+        fun showImportKeyDialog(activity: Activity?) {
+            val intent = Intent(activity, KeyImportActivity::class.java)
+            intent.putExtra(ACCOUNT_UUID_EXTRA, "")
+            activity?.startActivity(intent)
+        }
     }
 }
 
