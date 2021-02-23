@@ -97,10 +97,11 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showKeyImportResult(result: Map<Identity, Boolean>, filename: String) {
         val goodSb = StringBuilder()
         val badSb = StringBuilder()
-        result.forEach {
-            val line = getString(R.string.pep_user_address_format, it.key.username, it.key.address)
+        result.forEach { mapEntry ->
+            val line = getString(R.string.pep_user_address_format,
+                    mapEntry.key.username, mapEntry.key.address)
             val identityLine = getString(R.string.bullet_text, line)
-            if(it.value) {
+            if(mapEntry.value) {
                 goodSb.append(identityLine)
                 goodSb.append("\n")
             }

@@ -111,9 +111,11 @@ class KeyImportPresenter @Inject constructor(
             runBlocking {
                 importedIdentities.forEach { identity ->
                     val position = addresses.indexOf(identity.address)
-                    result[identity] = if(position >= 0) { // address is setup in device
+                    result[identity] = if(position >= 0) {
+                        // address is setup in device
                         tryToSetOwnIdentityForSetAccount(position, identity)
-                    } else { // address is not setup in device: create and identity to set it as own key
+                    } else {
+                        // address is not setup in device: create and identity to set it as own key
                         tryToSetOwnIdentityForUnsetAccount(identity)
                     }
                 }
@@ -203,8 +205,12 @@ class KeyImportPresenter @Inject constructor(
             keyImportMode == KeyImportMode.ACCOUNT_SETTINGS -> {
                 replyResult(result.isNotEmpty() && result.values.first(), filename)
             }
-            result.count { it.value } == 0 -> view.showFailedKeyImport(filename)
-            else -> view.showKeyImportResult(result, filename)
+            result.count { it.value } == 0 -> {
+                view.showFailedKeyImport(filename)
+            }
+            else -> {
+                view.showKeyImportResult(result, filename)
+            }
         }
     }
 
