@@ -18,6 +18,7 @@ import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PI
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -160,9 +161,12 @@ class KeyImportPresenter @Inject constructor(
             try {
                 val key = IOUtils.toByteArray(inputStream)
 
-                val importedIdentities =
-                        if(keyImportMode == KeyImportMode.GENERAL_SETTINGS) pEp.importKey(key)
-                        else pEp.importKey(key).filter { it.address in addresses }
+                val importedVector: Vector<Identity>? = pEp.importKey(key)
+                val importedIdentities: List<Identity>  = when {
+                    importedVector == null -> emptyList()
+                    keyImportMode == KeyImportMode.GENERAL_SETTINGS -> importedVector
+                    else -> importedVector.filter { it.address in addresses }
+                }
                 if (importedIdentities.isEmpty()) { // This means that the file contains a key, but not a proper private key which we need.
                     result = emptyList()
                 } else {
