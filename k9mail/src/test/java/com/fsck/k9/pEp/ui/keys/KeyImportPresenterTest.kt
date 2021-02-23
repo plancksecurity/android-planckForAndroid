@@ -459,6 +459,44 @@ class KeyImportPresenterTest {
         }
     }
 
+    @Test
+    fun `onKeyImport calls view according when importKey fails`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(null)
+            val uri = stubContentResolverAndGetKeysFileUri()
+            val filename = uri.path.toString()
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+            presenter.onKeyImport(uri)
+
+
+            verify(view).hideLoading()
+            verify(view).showFailedKeyImport(filename)
+        }
+
+    @Test
+    fun `onKeyImport calls view according when importKey succeeds`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            pEpProviderStubber.stubImportKey(listOf(firstImportedIdentity))
+            val uri = stubContentResolverAndGetKeysFileUri()
+            val filename = uri.path.toString()
+
+            presenter.initialize(view, preferences.accounts.first().uuid)
+
+
+
+            presenter.onKeyImport(uri)
+
+
+
+            verify(view).hideLoading()
+            verify(view).showKeyImportConfirmationDialog(any(), eq(filename))
+        }
+
     private fun stubContentResolverAndGetKeysFileUri(): Uri {
         val (uri: Uri, fileInputStream) = getMultipleKeyFileInputStreamAndUri()
         stubContentResolver(fileInputStream, uri)
