@@ -177,10 +177,10 @@ class KeyImportPresenter @Inject constructor(
                 throw FileNotFoundException()
             } catch (e: pEpException) {  // this means there was no right formatted key in the file.
                 result = emptyList()
+                pEp.close()
             } finally {
                 try {
                     inputStream!!.close()
-                    //pEp.close()
                 } catch (ignore: IOException) {
                 }
             }
