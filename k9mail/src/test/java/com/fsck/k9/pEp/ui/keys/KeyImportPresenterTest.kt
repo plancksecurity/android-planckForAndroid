@@ -18,6 +18,7 @@ import com.fsck.k9.pEp.testutils.PEpProviderStubber
 import com.nhaarman.mockito_kotlin.*
 import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.exceptions.pEpException
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -30,6 +31,7 @@ import security.pEp.ui.keyimport.KeyImportPresenter
 import security.pEp.ui.keyimport.KeyImportView
 import java.io.File
 import java.io.FileInputStream
+import java.io.IOException
 
 
 @RunWith(AndroidJUnit4::class)
@@ -415,6 +417,34 @@ class KeyImportPresenterTest {
 
             assertForImportKey(emptyList(), result)
         }
+
+    @Test
+    fun `importKey returns empty list and closes PEpProvider on IOException`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            runImportKeyThrowingAndVerify(IOException("test IOException"))
+        }
+
+    @Test
+    fun `importKey returns empty list and closes PEpProvider on pEpException`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+            runImportKeyThrowingAndVerify(pEpException("test pEpException"))
+        }
+
+    private suspend fun runImportKeyThrowingAndVerify(e: Throwable) {
+        // making PEpProvider.importKey throw any exception we need is convenient here
+        pEpProviderStubber.stubImportKeyThrowing(e)
+        val uri = stubContentResolverAndGetKeysFileUri()
+
+        presenter.initialize(view)
+
+
+        val result = presenter.importKey(uri)
+
+
+        verify(pEpProvider).importKey(any())
+        TestCase.assertEquals(0, result.size)
+        verify(pEpProvider).close()
+    }
 
     private fun assertForImportKey(
         expectedResult: List<Identity>,
