@@ -108,47 +108,52 @@ class KeyImportPresenter @Inject constructor(
     private suspend fun onKeyImportConfirmed(importedIdentities: List<Identity>): Map<Identity, Boolean> {
         return withContext(dispatcherProvider.io()) {
             val result: MutableMap<Identity, Boolean> = mutableMapOf()
-            var currentResult: Boolean
             runBlocking {
                 importedIdentities.forEach { identity ->
                     val position = addresses.indexOf(identity.address)
-                    if(position >= 0) { // address is setup in device
-                        val currentIdentity = accountIdentities[position]
-                        val currentFpr = currentFprs[position]
-                        try {
-                            val id = pEp.setOwnIdentity(currentIdentity, fingerprint)
-                            currentResult = if (id == null || !pEp.canEncrypt(addresses[position])) {
-                                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
-                                pEp.setOwnIdentity(currentIdentity, currentFpr)
-                                false
-                            } else {
-                                pEp.myself(id)
-                                true
-                            }
-
-                        } catch (e: pEpException) {
-                            currentResult = false
-                            pEp.setOwnIdentity(currentIdentity, currentFpr)
-                        }
+                    result[identity] = if(position >= 0) { // address is setup in device
+                        tryToSetOwnIdentityForSetAccount(position, identity)
+                    } else { // address is not setup in device: create and identity to set it as own key
+                        tryToSetOwnIdentityForUnsetAccount(identity)
                     }
-                    else { // address is not setup in device: create and identity to set it as own key
-                        currentResult = try {
-                            val id = pEp.setOwnIdentity(pEp.myself(identity), fingerprint)
-                            if (id == null) {
-                                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
-                                false
-                            } else {
-                                true
-                            }
-                        } catch (e: pEpException) {
-                            false
-                        }
-                    }
-                    result[identity] = currentResult
                 }
             }
             pEp.close()
             result
+        }
+    }
+
+    private fun tryToSetOwnIdentityForUnsetAccount(identity: Identity): Boolean {
+        return try {
+            val id = pEp.setOwnIdentity(pEp.myself(identity), fingerprint)
+            if (id == null) {
+                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
+                false
+            } else {
+                true
+            }
+        } catch (e: pEpException) {
+            false
+        }
+    }
+
+    private fun tryToSetOwnIdentityForSetAccount(position: Int, identity: Identity): Boolean {
+        val currentIdentity = accountIdentities[position]
+        val currentFpr = currentFprs[position]
+        return try {
+            val id = pEp.setOwnIdentity(currentIdentity, fingerprint)
+            if (id == null || !pEp.canEncrypt(addresses[position])) {
+                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
+                pEp.setOwnIdentity(currentIdentity, currentFpr)
+                false
+            } else {
+                pEp.myself(id)
+                true
+            }
+
+        } catch (e: pEpException) {
+            pEp.setOwnIdentity(currentIdentity, currentFpr)
+            false
         }
     }
 
