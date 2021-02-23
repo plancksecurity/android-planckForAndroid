@@ -117,7 +117,7 @@ class KeyImportPresenter @Inject constructor(
                         try {
                             val id = pEp.setOwnIdentity(currentIdentity, fingerprint)
                             currentResult = if (id == null || !pEp.canEncrypt(addresses[position])) {
-                                Timber.w("Couldn't set own key: %s", fingerprint)
+                                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
                                 pEp.setOwnIdentity(currentIdentity, currentFpr)
                                 false
                             } else {
@@ -131,25 +131,17 @@ class KeyImportPresenter @Inject constructor(
                         }
                     }
                     else { // address is not setup in device: create and identity to set it as own key
-                        var myId: Identity = PEpUtils.createIdentity(Address(identity.address), context)
-                        myId = pEp.myself(myId)
-                        val oldFpr = myId.fpr
-                        try {
-                            val id = pEp.setOwnIdentity(myId, fingerprint)
-                            currentResult = if (id == null || !pEp.canEncrypt(myId.address)) {
-                                Timber.w("Couldn't set own key: %s", fingerprint)
-                                pEp.setOwnIdentity(myId, myId.fpr)
+                        currentResult = try {
+                            val id = pEp.setOwnIdentity(pEp.myself(identity), fingerprint)
+                            if (id == null) {
+                                Timber.w("Couldn't set own key: %s :: %s", identity.address, fingerprint)
                                 false
                             } else {
-                                pEp.myself(id)
                                 true
                             }
+                        } catch (e: pEpException) {
+                            false
                         }
-                        catch (e: pEpException) {
-                            currentResult = false
-                            pEp.setOwnIdentity(myId, oldFpr)
-                        }
-
                     }
                     result[identity] = currentResult
                 }
