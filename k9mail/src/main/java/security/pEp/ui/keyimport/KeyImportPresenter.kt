@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
+import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.Identity
@@ -21,7 +23,8 @@ import javax.inject.Named
 
 class KeyImportPresenter @Inject constructor(
         private val preferences: Preferences,
-        @Named("NewInstance") private val pEp: PEpProvider
+        @Named("NewInstance") private val pEp: PEpProvider,
+        private val dispatcherProvider: DispatcherProvider
 ) {
 
     private lateinit var fingerprint: String
@@ -33,24 +36,36 @@ class KeyImportPresenter @Inject constructor(
     private lateinit var addresses: List<String>
     private var keyImportMode = KeyImportMode.GENERAL_SETTINGS // whether we are working for a single account or all of them.
 
-    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+    private val scope: CoroutineScope = CoroutineScope(dispatcherProvider.main() + SupervisorJob())
 
-    fun initialize(view: KeyImportView, accountUuid: String) {
+    fun initialize(view: KeyImportView, accountUuid: String = "") {
         this.view = view
 
         keyImportMode = if(accountUuid.isNotEmpty()) KeyImportMode.ACCOUNT_SETTINGS else KeyImportMode.GENERAL_SETTINGS
         scope.launch {
-            context = view.getApplicationContext()
-            if(accountUuid.isNotEmpty()) {
-                keyImportMode = KeyImportMode.ACCOUNT_SETTINGS
-                addresses = listOf(preferences.getAccount(accountUuid).email)
-            } else {
-                keyImportMode = KeyImportMode.GENERAL_SETTINGS
-                addresses = preferences.availableAccounts.map { it.email }
-            }
-            accountIdentities = addresses.map { address -> PEpUtils.createIdentity(Address(address), context) }
-            withContext(Dispatchers.IO) { currentFprs = accountIdentities.map { accountIdentity -> pEp.myself(accountIdentity).fpr } }
+            initializeAddresses(view, accountUuid)
+            initializeIdentities()
+            initializeFingerPrints()
             view.openFileChooser()
+        }
+    }
+
+    private fun initializeIdentities() {
+        accountIdentities = addresses.map { address -> PEpUtils.createIdentity(Address(address), context) }
+    }
+
+    private suspend fun initializeFingerPrints() = withContext(dispatcherProvider.io()) {
+        currentFprs = accountIdentities.map { accountIdentity -> pEp.myself(accountIdentity).fpr }
+    }
+
+    private fun initializeAddresses(view: KeyImportView, accountUuid: String) {
+        context = view.getApplicationContext()
+        if (accountUuid.isNotEmpty()) {
+            keyImportMode = KeyImportMode.ACCOUNT_SETTINGS
+            addresses = listOf(preferences.getAccount(accountUuid).email)
+        } else {
+            keyImportMode = KeyImportMode.GENERAL_SETTINGS
+            addresses = preferences.availableAccounts.map { it.email }
         }
     }
 
@@ -64,7 +79,8 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
-    private fun onKeyImport(uri: Uri) {
+    @VisibleForTesting
+    fun onKeyImport(uri: Uri) {
         val filename = uri.path.toString()
 
         scope.launch {
@@ -84,7 +100,7 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private suspend fun onKeyImportConfirmed(importedIdentities: List<Identity>): Map<Identity, Boolean> {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io()) {
             val result: MutableMap<Identity, Boolean> = mutableMapOf()
             var currentResult: Boolean
             runBlocking {
@@ -137,7 +153,8 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
-    private suspend fun importKey(uri: Uri): List<Identity>  = withContext(Dispatchers.IO){
+    @VisibleForTesting
+    suspend fun importKey(uri: Uri): List<Identity>  = withContext(dispatcherProvider.io()){
         var result: List<Identity>
         try {
             val resolver = context.contentResolver
