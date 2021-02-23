@@ -845,20 +845,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         activityListener.onResume(getActivity());
         messagingController.addListener(activityListener);
 
-        //Cancel pending new mail notifications when we open an account
-        List<Account> accountsWithNotification;
-
-        Account account = this.account;
-        if (account != null) {
-            accountsWithNotification = Collections.singletonList(account);
-        } else {
-            accountsWithNotification = new ArrayList<>(preferences.getAvailableAccounts());
-        }
-
-        for (Account accountWithNotification : accountsWithNotification) {
-            messagingController.cancelNotificationsForAccount(accountWithNotification);
-        }
-
         if (this.account != null && folderName != null && !search.isManualSearch()) {
             messagingController.getFolderUnreadMessageCount(this.account, folderName, activityListener);
         }
@@ -3053,6 +3039,21 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fragmentListener.updateMenu();
         }
         hideLoadingMessages(cursor.getCount());
+    }
+
+    private void cancelAllNotificationsForCurrentAccounts() {
+        List<Account> accountsWithNotification;
+
+        Account account = this.account;
+        if (account != null) {
+            accountsWithNotification = Collections.singletonList(account);
+        } else {
+            accountsWithNotification = new ArrayList<>(preferences.getAvailableAccounts());
+        }
+
+        for (Account accountWithNotification : accountsWithNotification) {
+            messagingController.cancelNotificationsForAccount(accountWithNotification);
+        }
     }
 
     private void updateToolbarColorToOriginal() {
