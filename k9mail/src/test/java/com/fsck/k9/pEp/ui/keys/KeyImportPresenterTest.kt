@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp.ui.keys
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.Account
@@ -19,6 +21,7 @@ import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.robolectric.annotation.Config
+import security.pEp.ui.keyimport.ACTIVITY_REQUEST_PICK_KEY_FILE
 import security.pEp.ui.keyimport.KeyImportPresenter
 import security.pEp.ui.keyimport.KeyImportView
 
@@ -130,6 +133,39 @@ class KeyImportPresenterTest {
             }
             verify(view).openFileChooser()
         }
+
+    @Test
+    fun `onActivityResult finishes view with bad result code`() {
+        presenter.initialize(view, preferences.accounts.first().uuid)
+
+        presenter.onActivityResult(
+            Activity.RESULT_CANCELED,
+            ACTIVITY_REQUEST_PICK_KEY_FILE,
+            Intent()
+        )
+
+        verify(view).finish()
+    }
+
+    @Test
+    fun `onActivityResult finishes view with bad request code`() {
+        presenter.initialize(view, preferences.accounts.first().uuid)
+
+        presenter.onActivityResult(Activity.RESULT_OK, 7, Intent())
+
+
+        verify(view).finish()
+    }
+
+    @Test
+    fun `onActivityResult finishes view with no data`() {
+        presenter.initialize(view, preferences.accounts.first().uuid)
+
+        presenter.onActivityResult(Activity.RESULT_OK, ACTIVITY_REQUEST_PICK_KEY_FILE, Intent())
+
+
+        verify(view).finish()
+    }
 
     companion object {
         @JvmStatic
