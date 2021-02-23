@@ -186,6 +186,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private static final String STATE_ACTIVE_MESSAGE = "activeMessage";
     private static final String STATE_REMOTE_SEARCH_PERFORMED = "remoteSearchPerformed";
     private static final String STATE_MESSAGE_LIST = "listState";
+    private static final String STATE_SHOULD_CANCEL_NOTIFICATIONS = "shouldCancelNotifications";
 
     /**
      * Maps a {@link SortType} to a {@link Comparator} implementation.
@@ -275,6 +276,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * make sure we don't access member variables before initialization is complete.
      */
     private boolean initialized = false;
+    private ShouldClearNotifications shouldCancelNotifications = ShouldClearNotifications.YES;
 
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver cacheBroadcastReceiver;
@@ -566,7 +568,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-
+        if(savedInstanceState != null) {
+            shouldCancelNotifications = ShouldClearNotifications.valueOf(savedInstanceState.getString(
+                    STATE_SHOULD_CANCEL_NOTIFICATIONS, ShouldClearNotifications.YES.name()));
+        }
         layoutInflater = inflater;
 
         View rootView = inflater.inflate(R.layout.message_list_fragment, container, false);
@@ -625,6 +630,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (activeMessage != null) {
             outState.putString(STATE_ACTIVE_MESSAGE, activeMessage.toIdentityString());
         }
+        if(requireActivity().isChangingConfigurations()) {
+            shouldCancelNotifications = ShouldClearNotifications.NO;
+        }
+        outState.putString(STATE_SHOULD_CANCEL_NOTIFICATIONS, shouldCancelNotifications.name());
     }
 
     private void initializeFabButton(View rootView) {
@@ -828,6 +837,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         super.onResume();
         ((MessageList) requireActivity()).setThreadDisplay(isThreadDisplay);
         showLoadingMessages();
+
+        if(shouldCancelNotifications.equals(ShouldClearNotifications.ALREADY_DONE)) {
+            shouldCancelNotifications = ShouldClearNotifications.YES;
+        }
 
         if(folderName == null) {
             startGlobalLayoutListener();
@@ -2149,6 +2162,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         COPY, MOVE
     }
 
+    private enum ShouldClearNotifications {
+        YES, NO, ALREADY_DONE
+    }
+
     /**
      * Display a Toast message if any message isn't synchronized
      *
@@ -3039,6 +3056,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fragmentListener.updateMenu();
         }
         hideLoadingMessages(cursor.getCount());
+    }
+
+    private void cancelNotificationsIfNeeded() {
+        if(shouldCancelNotifications.equals(ShouldClearNotifications.YES)) {
+
+        }
     }
 
     private void cancelAllNotificationsForCurrentAccounts() {
