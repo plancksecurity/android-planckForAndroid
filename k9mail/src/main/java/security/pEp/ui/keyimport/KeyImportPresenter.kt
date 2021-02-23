@@ -25,13 +25,13 @@ import javax.inject.Named
 class KeyImportPresenter @Inject constructor(
         private val preferences: Preferences,
         @Named("NewInstance") private val pEp: PEpProvider,
+        @Named("AppContext") private val context: Context,
         private val dispatcherProvider: DispatcherProvider
 ) {
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
 
-    private lateinit var context: Context
     private lateinit var accountIdentities: List<Identity>
     private lateinit var currentFprs: List<String>
     private lateinit var addresses: List<String>
@@ -60,7 +60,6 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private fun initializeAddresses(view: KeyImportView, accountUuid: String) {
-        context = view.getApplicationContext()
         if (accountUuid.isNotEmpty()) {
             keyImportMode = KeyImportMode.ACCOUNT_SETTINGS
             addresses = listOf(preferences.getAccount(accountUuid).email)

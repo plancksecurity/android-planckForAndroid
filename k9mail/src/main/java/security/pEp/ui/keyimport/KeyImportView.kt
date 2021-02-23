@@ -1,6 +1,5 @@
 package security.pEp.ui.keyimport
 
-import android.content.Context
 import foundation.pEp.jniadapter.Identity
 
 interface KeyImportView {
@@ -12,8 +11,6 @@ interface KeyImportView {
     fun showFailedKeyImport(filename: String?)
 
     fun finish()
-
-    fun getApplicationContext(): Context
 
     fun showLoading()
 
