@@ -22,7 +22,7 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
-@Suppress("BlockingMethodInNonBlockingContext")
+
 class KeyImportPresenter @Inject constructor(
         private val preferences: Preferences,
         @Named("NewInstance") private val pEp: PEpProvider,
@@ -105,6 +105,7 @@ class KeyImportPresenter @Inject constructor(
         view.finish()
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     private suspend fun onKeyImportConfirmed(importedIdentities: List<Identity>): Map<Identity, Boolean> {
         return withContext(dispatcherProvider.io()) {
             val result: MutableMap<Identity, Boolean> = mutableMapOf()
@@ -159,6 +160,7 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
+    @Suppress("BlockingMethodInNonBlockingContext")
     @VisibleForTesting
     suspend fun importKey(uri: Uri): List<Identity>  = withContext(dispatcherProvider.io()){
         var result: List<Identity>
