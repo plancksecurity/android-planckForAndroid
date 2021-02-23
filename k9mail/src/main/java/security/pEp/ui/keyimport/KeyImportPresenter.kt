@@ -21,6 +21,7 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Named
 
+@Suppress("BlockingMethodInNonBlockingContext")
 class KeyImportPresenter @Inject constructor(
         private val preferences: Preferences,
         @Named("NewInstance") private val pEp: PEpProvider,
