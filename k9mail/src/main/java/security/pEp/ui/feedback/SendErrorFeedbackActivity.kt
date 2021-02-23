@@ -65,7 +65,10 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
     }
 
     companion object {
-        private const val EXTRA_SEND_FAILED_DATA = "sendFailedData"
+        private const val EXTRA_ACCOUNT_UUID = "accountUuid"
+        private const val EXTRA_TITLE = "title"
+        private const val EXTRA_TEXT = "text"
+        private const val EXTRA_MESSAGE_REFERENCE = "messageReference"
 
         @JvmStatic
         fun createFeedbackActivityIntent(
@@ -76,13 +79,11 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
             messageReference: MessageReference? = null
         ): Intent {
             val intent = Intent(context, SendErrorFeedbackActivity::class.java)
-            val sendFailedData = SendErrorFeedbackActivityData.create(
-                account,
-                feedbackTitle,
-                feedbackText,
-                messageReference
-            )
-            intent.putExtra(EXTRA_SEND_FAILED_DATA, sendFailedData)
+            intent.putExtra(EXTRA_ACCOUNT_UUID, account.uuid)
+            intent.putExtra(EXTRA_TITLE, feedbackTitle)
+            intent.putExtra(EXTRA_TEXT, feedbackText)
+
+            intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference?.toIdentityString())
             return intent
         }
     }
