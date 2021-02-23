@@ -74,14 +74,14 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
         fun createFeedbackActivityIntent(
             context: Context,
             account: Account,
-            feedbackTitle: String,
-            feedbackText: String,
+            title: String,
+            text: String,
             messageReference: MessageReference? = null
         ): Intent {
             val intent = Intent(context, SendErrorFeedbackActivity::class.java)
             intent.putExtra(EXTRA_ACCOUNT_UUID, account.uuid)
-            intent.putExtra(EXTRA_TITLE, feedbackTitle)
-            intent.putExtra(EXTRA_TEXT, feedbackText)
+            intent.putExtra(EXTRA_TITLE, title)
+            intent.putExtra(EXTRA_TEXT, text)
 
             intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference?.toIdentityString())
             return intent
