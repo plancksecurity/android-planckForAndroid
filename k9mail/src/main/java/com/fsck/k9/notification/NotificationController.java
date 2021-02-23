@@ -90,8 +90,8 @@ public class NotificationController {
         syncNotifications.clearSendingNotification(account);
     }
 
-    public void showSendFailedNotification(Account account, Exception exception, Message message) {
-        sendFailedNotifications.showSendFailedNotification(account, exception, message);
+    public void showSendFailedNotification(Account account, Exception exception, MessageReference messageReference) {
+        sendFailedNotifications.showSendFailedNotification(account, exception, messageReference);
     }
 
     public void clearSendFailedNotification(Account account) {

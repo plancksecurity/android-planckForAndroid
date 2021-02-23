@@ -2933,7 +2933,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     protected void sendPendingMessagesSynchronous(final Account account) {
         LocalFolder localFolder = null;
         Exception lastFailure = null;
-        Message failedMessage = null;
+        LocalMessage failedMessage = null;
         boolean wasPermanentFailure = false;
         try {
             LocalStore localStore = account.getLocalStore();
@@ -2985,7 +2985,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         Timber.e("Send count for message %s can't be delivered after %d attempts. " +
                                 "Giving up until the user restarts the device", message.getUid(), MAX_SEND_ATTEMPTS);
                         notificationController.showSendFailedNotification(account,
-                                new MessagingException(message.getSubject()), message);
+                                new MessagingException(message.getSubject()), message.makeMessageReference());
                         continue;
                     }
 
@@ -3085,7 +3085,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
 
             if (lastFailure != null) {
-                notificationController.showSendFailedNotification(account, lastFailure, failedMessage);
+                notificationController.showSendFailedNotification(account, lastFailure, failedMessage.makeMessageReference());
             }
         } catch (UnavailableStorageException e) {
             Timber.i("Failed to send pending messages because storage is not available - trying again later.");

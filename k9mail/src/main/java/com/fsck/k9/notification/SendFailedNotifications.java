@@ -28,7 +28,7 @@ class SendFailedNotifications {
         this.actionBuilder = actionBuilder;
     }
 
-    public void showSendFailedNotification(Account account, Exception exception, Message message) {
+    public void showSendFailedNotification(Account account, Exception exception, MessageReference message) {
         Context context = controller.getContext();
         String title = context.getString(R.string.send_failure_subject);
         String text = ExceptionHelper.getRootCauseMessage(exception);
