@@ -26,10 +26,10 @@ class PEpProviderStubber(private val providerMock: PEpProvider) {
         identity: Identity,
         importedFingerPrint: String,
         returnOnCanEncrypt: Boolean = true,
-        setOwnIdentityBehavior: SetOwnIdentityBehavior = SetOwnIdentityBehavior.Return(identity)
+        returnBehavior: ReturnBehavior<Identity> = ReturnBehavior.Return(identity)
     ) {
         stubMyself(identity)
-        stubSetOwnIdentity(identity, setOwnIdentityBehavior, importedFingerPrint)
+        stubSetOwnIdentity(identity, returnBehavior, importedFingerPrint)
         stubCanEncrypt(identity.address, returnOnCanEncrypt)
     }
 
@@ -40,17 +40,17 @@ class PEpProviderStubber(private val providerMock: PEpProvider) {
 
     fun stubSetOwnIdentity(
         identity: Identity,
-        setOwnIdentityBehavior: SetOwnIdentityBehavior,
+        returnBehavior: ReturnBehavior<Identity>,
         importedFingerPrint: String
     ) {
-        when (setOwnIdentityBehavior) {
-            is SetOwnIdentityBehavior.Throw ->
-                doThrow(setOwnIdentityBehavior.e).`when`(providerMock).setOwnIdentity(
+        when (returnBehavior) {
+            is ReturnBehavior.Throw ->
+                doThrow(returnBehavior.e).`when`(providerMock).setOwnIdentity(
                     identityThat { it.address == identity.address },
                     eq(importedFingerPrint)
                 )
-            is SetOwnIdentityBehavior.Return ->
-                doReturn(setOwnIdentityBehavior.identity).`when`(providerMock).setOwnIdentity(
+            is ReturnBehavior.Return ->
+                doReturn(returnBehavior.value).`when`(providerMock).setOwnIdentity(
                     identityThat { it.address == identity.address },
                     eq(importedFingerPrint)
                 )
@@ -59,10 +59,5 @@ class PEpProviderStubber(private val providerMock: PEpProvider) {
 
     fun stubCanEncrypt(email: String, returnOnCanEncrypt: Boolean) {
         doReturn(returnOnCanEncrypt).`when`(providerMock).canEncrypt(eq(email))
-    }
-
-    sealed class SetOwnIdentityBehavior {
-        class Throw(val e: Throwable) : SetOwnIdentityBehavior()
-        class Return(val identity: Identity?) : SetOwnIdentityBehavior()
     }
 }

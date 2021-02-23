@@ -15,6 +15,7 @@ import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.testutils.AssertUtils.identityThat
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import com.fsck.k9.pEp.testutils.PEpProviderStubber
+import com.fsck.k9.pEp.testutils.ReturnBehavior
 import com.nhaarman.mockito_kotlin.*
 import foundation.pEp.jniadapter.CommType
 import foundation.pEp.jniadapter.Identity
@@ -504,6 +505,468 @@ class KeyImportPresenterTest {
         presenter.onKeyImportRejected()
 
         verify(view).finish()
+    }
+
+    private suspend fun runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+        identity: Identity,
+        importedIdentities: List<Identity>?,
+        accountUuid: String = "",
+        returnOnCanEncrypt: Boolean = true,
+        returnBehavior: ReturnBehavior<Identity> =
+            ReturnBehavior.Return(identity)
+
+    ): String {
+        pEpProviderStubber.stubProviderMethodsForIdentity(
+            identity, importedFingerPrint, returnOnCanEncrypt, returnBehavior
+        )
+        pEpProviderStubber.stubImportKey(importedIdentities)
+        val uri = stubContentResolverAndGetKeysFileUri()
+        val filename = uri.path.toString()
+
+        presenter.initialize(view, accountUuid)
+        val importResult = presenter.importKey(uri)
+
+
+        presenter.onKeyImportAccepted(importResult, filename)
+
+        verify(pEpProvider).close()
+
+        return filename
+    }
+
+    /**
+     * Case when we open key import from account settings and are importing a key for account 1,
+     * which is registered in the device.
+     */
+    @Test
+    fun `onKeyImportAccepted from AccountSettings success with account present in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                preferences.accounts.first().uuid
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(email1)
+            verify(view).showCorrectKeyImport(importedFingerPrint, filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and are importing a key for account 1,
+     * which is registered in the device.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings success with account present in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity)
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(email1)
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename, mapOf(email1 to true))
+        }
+
+    /**
+     * Case when we open key import from general settings and we are importing a key for an email account
+     * we do not have registered in our device. Case when we have accounts 1, 2 and 3 in Preferences
+     * and try to import an identity for account 4.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings success with account NOT present in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                fourthIdentity,
+                listOf(fourthIdentity)
+            )
+
+
+            verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email4)
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename, mapOf(email4 to true))
+        }
+
+    /**
+     * Case when we open key import from account settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.setOwnIdentity] returns null.
+     */
+    @Test
+    fun `onKeyImportAccepted from AccountSettings fail at setOwnIdentity`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                preferences.accounts.first().uuid,
+                true,
+                ReturnBehavior.Return(null)
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                setOwnIdentitySuccess = false
+            )
+            verify(view).showFailedKeyImport(filename)
+        }
+
+    /**
+     * Case when we open key import from account settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.setOwnIdentity] throws exception.
+     */
+    @Test
+    fun `onKeyImportAccepted from AccountSettings throw at setOwnIdentity`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                preferences.accounts.first().uuid,
+                true,
+                ReturnBehavior.Throw(pEpException("test exception"))
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                setOwnIdentitySuccess = false
+            )
+            verify(view).showFailedKeyImport(filename)
+        }
+
+    /**
+     * Case when we open key import from account settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.canEncrypt] returns false.
+     */
+    @Test
+    fun `onKeyImportAccepted from AccountSettings fail at canEncrypt`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                preferences.accounts.first().uuid,
+                false
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                canEncryptSuccess = false
+            )
+            verify(view).showFailedKeyImport(filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.setOwnIdentity] returns null.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings fail at setOwnIdentity with account in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                "",
+                true,
+                ReturnBehavior.Return(null)
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                setOwnIdentitySuccess = false
+            )
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.setOwnIdentity] throws exception.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings throw at setOwnIdentity with account in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                "",
+                true,
+                ReturnBehavior.Throw(pEpException("test exception"))
+            )
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                setOwnIdentitySuccess = false
+            )
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename)
+        }
+
+    /**
+     * Case when we open key import from account settings and are importing a key for account 1,
+     * which is registered in the device. Case when [PEpProvider.canEncrypt] returns false.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings fail at canEncrypt with account in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                firstIdentity,
+                listOf(firstImportedIdentity),
+                "",
+                false
+            )
+
+
+
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1,
+                canEncryptSuccess = false
+            )
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and we are importing a key for an email account
+     * we do not have registered in our device. Case when we have accounts 1, 2 and 3 in Preferences
+     * and try to import an identity for account 4. Case when [PEpProvider.setOwnIdentity] fails.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings fail at setOwnIdentity with account NOT in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                fourthIdentity,
+                listOf(fourthIdentity),
+                "",
+                true,
+                ReturnBehavior.Return(null)
+            )
+
+
+
+            verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email4)
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and we are importing a key for an email account
+     * we do not have registered in our device. Case when we have accounts 1, 2 and 3 in Preferences
+     * and try to import an identity for account 4. Case when [PEpProvider.setOwnIdentity] throws exception.
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings throw at setOwnIdentity with account NOT in device`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val filename = runOnKeyImportAcceptedForSingleAccountAndReturnFileName(
+                fourthIdentity,
+                listOf(fourthIdentity),
+                "",
+                true,
+                ReturnBehavior.Throw(pEpException("test exception"))
+            )
+
+
+
+            verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email4)
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(filename)
+        }
+
+    /**
+     * Case when we open key import from general settings and we are importing a key for several accounts, some of them are
+     * setup on the device and some others are not. Case when we have accounts 1, 2 and 3 in Preferences, and try to import
+     * a key for accounts 1, 2, 3, 4, 5.
+     * Case when PEpProvider:
+     * returns null on [PEpProvider.setOwnIdentity] when importing key for Account 1
+     * returns false on [PEpProvider.canEncrypt] when importing key for Account 2
+     * goes ok when importing key for Account 3
+     * throws [pEpException] on [PEpProvider.setOwnIdentity] when importing key for Account 4
+     * goes ok when importing key for Account 5
+     */
+    @Test
+    fun `onKeyImportAccepted from general settings successs and fail mixed`() =
+        coroutinesTestRule.testDispatcher.runBlockingTest {
+
+            val testCases = listOf(
+                OnKeyImportAcceptedTestCaseIdentityData(
+                    firstIdentity, true,
+                    ReturnBehavior.Return(null)
+                ),
+                OnKeyImportAcceptedTestCaseIdentityData(
+                    secondIdentity, false
+                ),
+                OnKeyImportAcceptedTestCaseIdentityData(
+                    thirdIdentity
+                ),
+                OnKeyImportAcceptedTestCaseIdentityData(
+                    fourthIdentity, true,
+                    ReturnBehavior.Throw(pEpException("test exception"))
+                ),
+                OnKeyImportAcceptedTestCaseIdentityData(
+                    fifthIdentity
+                )
+            )
+
+            val importedIdentities = listOf(
+                firstImportedIdentity,
+                secondImportedIdentity,
+                thirdImportedIdentity,
+                fourthIdentity,
+                fifthIdentity
+            )
+
+
+            val filename = runOnKeyImportAcceptedForSeveralAccountsAndReturnFileName(
+                testCases, importedIdentities
+            )
+
+
+            // Account 1: PEpProvider.setOwnIdentity returns null
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email1, setOwnIdentitySuccess = false
+            )
+            // Account 2: PEpProvider.canEncrypt returns false
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+                email2, canEncryptSuccess = false
+            )
+            // Account 3: ok
+            verifyOnKeyImportConfirmedResultForOneAccountOnDevice(email3)
+            // Account 4: PEpProvider.setOwnIdentity throws pEpException
+            verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email4)
+            // Account 5: ok
+            verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email5)
+
+            verifyOnKeyImportConfirmedOutputFromGeneralSettings(
+                filename,
+                mapOf(
+                    email1 to false,
+                    email2 to false,
+                    email3 to true,
+                    email4 to false,
+                    email5 to true
+                )
+            )
+        }
+
+    private fun verifyOnKeyImportConfirmedOutputFromGeneralSettings(
+        filename: String,
+        expectedMap: Map<String, Boolean> = mapOf()
+    ) {
+        if (expectedMap.count { it.value } == 0) {
+            verify(view).showFailedKeyImport(filename)
+        } else {
+            verifyOnKeyImportConfirmedOutputMap(filename, expectedMap)
+        }
+    }
+
+    private fun verifyOnKeyImportConfirmedOutputMap(
+        filename: String,
+        expectedMap: Map<String, Boolean>
+    ) {
+        val mapArgumentCaptor = argumentCaptor<Map<Identity, Boolean>>()
+        verify(view).showKeyImportResult(mapArgumentCaptor.capture(), eq(filename))
+        val resultMap = mapArgumentCaptor.firstValue
+        TestCase.assertEquals(expectedMap.size, resultMap.entries.size)
+        val resultIdentities = resultMap.keys.toList()
+        val resultBooleans = resultMap.values.toList()
+        val expectedEmails = expectedMap.keys.toList()
+        val expectedBooleans = expectedMap.values.toList()
+
+        resultIdentities.forEachIndexed { index, identity ->
+            TestCase.assertEquals(expectedEmails[index], identity.address)
+            TestCase.assertEquals(expectedBooleans[index], resultBooleans[index])
+        }
+    }
+
+    private fun verifyOnKeyImportConfirmed_SUCCESS_ForSingleAccountOnDevice(email: String) {
+        verify(pEpProvider, never()).setOwnIdentity(
+            identityThat { it.address == email },
+            eq(originalFingerPrint)
+        )
+        verify(pEpProvider, times(2)).myself(identityThat { it.address == email })
+    }
+
+    private fun verifyOnKeyImportConfirmed_FAILURE_ForSingleAccountOnDevice(email: String) {
+        verify(pEpProvider).setOwnIdentity(
+            identityThat { it.address == email },
+            eq(originalFingerPrint)
+        )
+        verify(pEpProvider).myself(identityThat { it.address == email })
+    }
+
+    private fun verifyOnKeyImportConfirmedForOneAccountNOTOnDevice(email: String) {
+        verify(pEpProvider).setOwnIdentity(
+            identityThat { it.address == email },
+            eq(importedFingerPrint)
+        )
+        verify(pEpProvider).myself(identityThat { it.address == email })
+    }
+
+    private fun verifyOnKeyImportConfirmedResultForOneAccountOnDevice(
+        email: String,
+        canEncryptSuccess: Boolean = true,
+        setOwnIdentitySuccess: Boolean = true
+    ) {
+        verify(pEpProvider).setOwnIdentity(
+            identityThat { it.address == email },
+            eq(importedFingerPrint)
+        )
+        if (setOwnIdentitySuccess) {
+            verify(pEpProvider).canEncrypt(email)
+            if (canEncryptSuccess) {
+                verifyOnKeyImportConfirmed_SUCCESS_ForSingleAccountOnDevice(email)
+            } else {
+                verifyOnKeyImportConfirmed_FAILURE_ForSingleAccountOnDevice(email)
+            }
+        } else {
+            verify(pEpProvider, never()).canEncrypt(email)
+            verifyOnKeyImportConfirmed_FAILURE_ForSingleAccountOnDevice(email)
+        }
+    }
+
+    class OnKeyImportAcceptedTestCaseIdentityData(
+        val identity: Identity,
+        val returnOnCanEncrypt: Boolean = true,
+        val returnBehavior: ReturnBehavior<Identity> =
+            ReturnBehavior.Return(identity)
+    )
+
+    private suspend fun runOnKeyImportAcceptedForSeveralAccountsAndReturnFileName(
+        testCaseList: List<OnKeyImportAcceptedTestCaseIdentityData>,
+        importedIdentities: List<Identity>?,
+        accountUuid: String = ""
+    ): String {
+        testCaseList.forEach {
+            pEpProviderStubber.stubProviderMethodsForIdentity(
+                it.identity, importedFingerPrint, it.returnOnCanEncrypt, it.returnBehavior
+            )
+        }
+        pEpProviderStubber.stubImportKey(importedIdentities)
+        val uri = stubContentResolverAndGetKeysFileUri()
+        val filename = uri.path.toString()
+
+        presenter.initialize(view, accountUuid)
+        val importResult = presenter.importKey(uri)
+
+
+        presenter.onKeyImportAccepted(importResult, filename)
+
+        verify(pEpProvider).close()
+
+        return filename
     }
 
     private fun stubContentResolverAndGetKeysFileUri(): Uri {
