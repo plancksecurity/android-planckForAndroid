@@ -97,6 +97,11 @@ class KeyImportPresenter @Inject constructor(
     }
 
     fun onKeyImportRejected() {
+        scope.launch {
+            withContext(dispatcherProvider.io()) {
+                pEp.close()
+            }
+        }
         view.finish()
     }
 
@@ -150,6 +155,7 @@ class KeyImportPresenter @Inject constructor(
                     result[identity] = currentResult
                 }
             }
+            pEp.close()
             result
         }
     }
@@ -186,6 +192,7 @@ class KeyImportPresenter @Inject constructor(
         } catch (e: FileNotFoundException) {
             Timber.w("Couldn't read content from URI %s", uri)
             result = emptyList()
+            pEp.close()
         }
         result
     }
