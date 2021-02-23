@@ -12,6 +12,7 @@ import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
+import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.message.SimpleMessageFormat
 import com.fsck.k9.pEp.PEpProvider.*
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException
@@ -466,7 +467,7 @@ class PEpProviderImplKotlin @Inject constructor(
         source.setFlag(Flag.X_PEP_WASNT_ENCRYPTED, source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED) && currentEnc == null)
         if (currentEnc == null) {
             if (source.isSet(Flag.X_PEP_SHOWN_ENCRYPTED)) {
-                throw AppDidntEncryptMessageException(source)
+                throw AppDidntEncryptMessageException((source as LocalMessage).makeMessageReference())
             }
             currentEnc = message
             currentEnc.encFormat = Message.EncFormat.None

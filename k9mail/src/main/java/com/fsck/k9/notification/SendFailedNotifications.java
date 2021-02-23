@@ -39,7 +39,8 @@ class SendFailedNotifications {
             title = context.getString(R.string.notification_failed_to_encrypt_title);
             text = context.getString(R.string.notification_failed_to_encrypt_text);
             AppDidntEncryptMessageException cannotEncryptEx = (AppDidntEncryptMessageException) exception;
-            MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
+            MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(),
+                    cannotEncryptEx.getMessageReference().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
             folderListPendingIntent = actionBuilder.createViewOutboxFolderWithErrorFeedbackIntent(
