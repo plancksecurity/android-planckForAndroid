@@ -195,7 +195,9 @@ class KeyImportPresenter @Inject constructor(
     private fun replyResult(result: Map<Identity, Boolean>, filename: String) {
         view.hideLoading()
         when {
-            keyImportMode == KeyImportMode.ACCOUNT_SETTINGS -> replyResult(result.isNotEmpty() && result.values.first(), filename)
+            keyImportMode == KeyImportMode.ACCOUNT_SETTINGS -> {
+                replyResult(result.isNotEmpty() && result.values.first(), filename)
+            }
             result.count { it.value } == 0 -> view.showFailedKeyImport(filename)
             else -> view.showKeyImportResult(result, filename)
         }
