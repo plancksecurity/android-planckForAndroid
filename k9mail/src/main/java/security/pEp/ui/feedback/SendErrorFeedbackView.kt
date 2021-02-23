@@ -4,4 +4,6 @@ interface SendErrorFeedbackView {
     fun finish()
 
     fun populateSendFailedData(data: SendErrorFeedbackActivityData)
+
+    fun showMessageLoadError()
 }

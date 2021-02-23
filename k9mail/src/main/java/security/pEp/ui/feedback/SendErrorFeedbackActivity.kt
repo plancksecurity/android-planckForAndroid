@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import com.fsck.k9.Account
+import com.fsck.k9.R
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.databinding.ActivityFeedbackBinding
 import com.fsck.k9.mail.Message
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
 
@@ -23,9 +25,17 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
         super.onCreate(savedInstanceState)
         setupViews()
 
-        val intentSendFailedData: SendErrorFeedbackActivityData? =
-            intent.extras?.getParcelable(EXTRA_SEND_FAILED_DATA)
-        presenter.initialize(this, intentSendFailedData)
+        val extras = intent.extras ?: let {
+            finish()
+            return
+        }
+
+        val accountUuid = extras.getString(EXTRA_ACCOUNT_UUID) ?: ""
+        val title = extras.getString(EXTRA_TITLE) ?: ""
+        val text = extras.getString(EXTRA_TEXT) ?: ""
+        val messageReferenceString = extras.getString(EXTRA_MESSAGE_REFERENCE) ?: ""
+
+        presenter.initialize(this, accountUuid, title, text, messageReferenceString)
     }
 
     override fun populateSendFailedData(data: SendErrorFeedbackActivityData) {
@@ -49,6 +59,10 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
             }
             messageNotSentCause.text = data.text
         }
+    }
+
+    override fun showMessageLoadError() {
+        FeedbackTools.showLongFeedback(rootView, getString(R.string.status_loading_error))
     }
 
     private fun setupViews() {
@@ -83,7 +97,7 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
             intent.putExtra(EXTRA_TITLE, title)
             intent.putExtra(EXTRA_TEXT, text)
 
-            intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference?.toIdentityString())
+            intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference?.toIdentityString() ?: "")
             return intent
         }
     }
