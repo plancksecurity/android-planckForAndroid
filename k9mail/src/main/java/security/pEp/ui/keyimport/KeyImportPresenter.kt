@@ -45,7 +45,7 @@ class KeyImportPresenter @Inject constructor(
 
         keyImportMode = if(accountUuid.isNotEmpty()) KeyImportMode.ACCOUNT_SETTINGS else KeyImportMode.GENERAL_SETTINGS
         scope.launch {
-            initializeAddresses(view, accountUuid)
+            initializeAddresses(accountUuid)
             initializeIdentities()
             initializeFingerPrints()
             view.openFileChooser()
@@ -60,7 +60,7 @@ class KeyImportPresenter @Inject constructor(
         currentFprs = accountIdentities.map { accountIdentity -> pEp.myself(accountIdentity).fpr }
     }
 
-    private fun initializeAddresses(view: KeyImportView, accountUuid: String) {
+    private fun initializeAddresses(accountUuid: String) {
         if (accountUuid.isNotEmpty()) {
             keyImportMode = KeyImportMode.ACCOUNT_SETTINGS
             addresses = listOf(preferences.getAccount(accountUuid).email)
