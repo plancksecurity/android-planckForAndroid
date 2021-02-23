@@ -42,21 +42,20 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
         binding.feedbackTitle.text = data.title
         with(binding.messageDataLayout) {
             val messageInfo = data.messageInfo
-            messageInfo?.let { msgInfo ->
-                messageSubject.text = msgInfo.subject
-                messageFrom.text = msgInfo.from
-                val recipients = msgInfo.recipients
-                messageTo.text = recipients.to
-                if (recipients.cc.isNotBlank()) {
-                    ccRow.visibility = View.VISIBLE
-                    messageCc.text = recipients.cc
-                }
-                if (recipients.bcc.isNotBlank()) {
-                    bccRow.visibility = View.VISIBLE
-                    messageBcc.text = recipients.bcc
-                }
-                messageCreationDate.text = msgInfo.date
+
+            messageSubject.text = messageInfo.subject
+            messageFrom.text = messageInfo.from
+            val recipients = messageInfo.recipients
+            messageTo.text = recipients.to
+            if (recipients.cc.isNotBlank()) {
+                ccRow.visibility = View.VISIBLE
+                messageCc.text = recipients.cc
             }
+            if (recipients.bcc.isNotBlank()) {
+                bccRow.visibility = View.VISIBLE
+                messageBcc.text = recipients.bcc
+            }
+            messageCreationDate.text = messageInfo.date
             messageNotSentCause.text = data.text
         }
     }
@@ -108,7 +107,7 @@ data class SendErrorFeedbackActivityData(
     val accountUuid: String,
     val title: String,
     val text: String,
-    val messageInfo: FeedbackMessageInfo?
+    val messageInfo: FeedbackMessageInfo
 ) : Parcelable {
     companion object {
         @JvmStatic
@@ -116,7 +115,7 @@ data class SendErrorFeedbackActivityData(
             account: Account,
             title: String,
             text: String,
-            message: Message? = null
+            message: Message
         ): SendErrorFeedbackActivityData {
             return SendErrorFeedbackActivityData(
                 account.uuid,

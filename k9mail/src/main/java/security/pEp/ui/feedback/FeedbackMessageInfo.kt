@@ -13,8 +13,7 @@ data class FeedbackMessageInfo(
 ) : Parcelable {
     companion object {
         @JvmStatic
-        fun fromMessage(message: Message?): FeedbackMessageInfo? {
-            message ?: return null
+        fun fromMessage(message: Message): FeedbackMessageInfo {
             return FeedbackMessageInfo(
                 message.subject,
                 message.from.joinToString(", ") { it.address },
