@@ -497,6 +497,15 @@ class KeyImportPresenterTest {
             verify(view).showKeyImportConfirmationDialog(any(), eq(filename))
         }
 
+    @Test
+    fun `onKeyImportRejected makes view finish`() {
+        presenter.initialize(view, preferences.accounts.first().uuid)
+
+        presenter.onKeyImportRejected()
+
+        verify(view).finish()
+    }
+
     private fun stubContentResolverAndGetKeysFileUri(): Uri {
         val (uri: Uri, fileInputStream) = getMultipleKeyFileInputStreamAndUri()
         stubContentResolver(fileInputStream, uri)
