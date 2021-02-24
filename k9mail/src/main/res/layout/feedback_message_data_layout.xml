@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Message data:"
+        android:text="@string/failed_message_feedback_message_data_title"
         android:layout_marginBottom="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="bold" />
@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Subject" />
+            android:text="@string/sort_by_subject" />
 
         <TextView
             android:id="@+id/messageSubject"
@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="From" />
+            android:text="@string/recipient_from" />
 
         <TextView
             android:id="@+id/messageFrom"
@@ -53,7 +53,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="To" />
+            android:text="@string/recipient_to" />
 
         <TextView
             android:id="@+id/messageTo"
@@ -72,7 +72,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cc" />
+            android:text="@string/recipient_cc" />
 
         <TextView
             android:id="@+id/messageCc"
@@ -91,7 +91,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bcc" />
+            android:text="@string/recipient_bcc" />
 
         <TextView
             android:id="@+id/messageBcc"
@@ -108,7 +108,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date" />
+            android:text="@string/sort_by_date" />
 
         <TextView
             android:id="@+id/messageCreationDate"
@@ -125,7 +125,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cause" />
+            android:text="@string/failed_message_feedback_cause" />
 
         <TextView
             android:id="@+id/messageNotSentCause"
