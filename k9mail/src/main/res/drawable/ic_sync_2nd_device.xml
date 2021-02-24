@@ -5,17 +5,17 @@
     android:width="133dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <path
-        android:fillColor="#00000000"
+        android:fillColor="@color/black_transparent"
         android:pathData="M18.453,1.6h57.9c1,0 1.9,0.8 1.9,1.9v43.9c0,1 -0.8,1.9 -1.9,1.9L18.453,49.3c-1,0 -1.9,-0.8 -1.9,-1.9L16.553,3.4C16.653,2.4 17.453,1.6 18.453,1.6z"
         android:strokeColor="#03AA4B"
         android:strokeWidth="1.58" />
     <path
-        android:fillColor="#00000000"
+        android:fillColor="@color/black_transparent"
         android:pathData="M0.5,53.589L94.2,53.589"
         android:strokeColor="#03AA4B"
         android:strokeWidth="1.58" />
     <path
-        android:fillColor="#00000000"
+        android:fillColor="@color/black_transparent"
         android:pathData="M103.153,4.046L128.753,4.046c1.5,0 2.8,1.2 2.8,2.8v40.8c0,1.5 -1.2,2.8 -2.8,2.8h-25.6c-1.5,0 -2.8,-1.2 -2.8,-2.8L100.353,6.746C100.353,5.246 101.553,4.046 103.153,4.046z"
         android:strokeColor="#03AA4B"
         android:strokeWidth="1.58" />

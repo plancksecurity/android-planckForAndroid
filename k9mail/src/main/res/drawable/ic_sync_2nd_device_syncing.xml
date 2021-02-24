@@ -5,12 +5,12 @@
     android:width="133dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <path
-        android:fillColor="#00000000"
+        android:fillColor="@color/black_transparent"
         android:pathData="M74.23,49.52H36a0.89,0.89 0,0 1,-0.88 -0.88V1.88A0.89,0.89 0,0 1,36 1h61.1a0.89,0.89 0,0 1,0.88 0.88V5.12"
         android:strokeColor="#00aa2b"
         android:strokeWidth="1.58" />
     <path
-        android:fillColor="#00000000"
+        android:fillColor="@color/black_transparent"
         android:pathData="M18.83,54L114.17,54"
         android:strokeColor="#00aa2b"
         android:strokeWidth="1.58" />
