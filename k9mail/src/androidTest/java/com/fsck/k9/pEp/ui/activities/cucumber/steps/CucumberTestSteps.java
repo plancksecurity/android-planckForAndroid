@@ -1512,9 +1512,9 @@ public class CucumberTestSteps {
         for (UiObject2 viewView : device.findObjects(selectorA)) {
             if (viewView.getText() != null && viewView.getText().contains("Testing")) {
                 switch (viewView.getText()) {
-                    case "Testing Heading":
+                    case "Testing Header":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top <= textBoxHeight + 2) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not heading");
+                            testUtils.assertFailWithMessage(viewView.getText() + " is not Header");
                         }
                         break;
                     case "Testing Blue":
@@ -1564,7 +1564,6 @@ public class CucumberTestSteps {
                         int bottomUnderline = testUtils.getNextVerticalColoredYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().bottom) - 1;
                         int underlineYStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         int underlineYEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, bottomUnderline);
-                        //int endOfUnderline = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, firstLetterBottomYPixel);
                         if (underlineYEnd - underlineYStart < 30) {
                             testUtils.assertFailWithMessage(viewView.getText() + " is not Underlined");
                         }
@@ -1580,6 +1579,7 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
         Rect pic1 = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
         Rect pic2 = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
+        Rect pic3 = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
         testUtils.waitForIdle();
         selectorA = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selectorA)) {
@@ -1590,17 +1590,20 @@ public class CucumberTestSteps {
         testUtils.waitForIdle();
         Rect pic1visible = null;
         Rect pic2visible = null;
-        while (pic1visible == null || pic2visible == null) {
+        Rect pic3visible = null;
+        while (pic1visible == null || pic2visible == null || pic3visible == null) {
             try {
                 testUtils.waitForIdle();
                 pic1visible = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
                 pic2visible = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
+                pic3visible = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
             } catch (Exception ex) {
                 Timber.i("Waiting for Image bounds...");
             }
         }
         if (pic1.toString().equals(pic1visible.toString()) ||
-                pic2.toString().equals(pic2visible.toString())) {
+                pic2.toString().equals(pic2visible.toString()) ||
+                pic3.toString().equals(pic3visible.toString())) {
             testUtils.assertFailWithMessage("Not showing pictures");
         }
         testUtils.waitForIdle();
