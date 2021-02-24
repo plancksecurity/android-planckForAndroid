@@ -76,5 +76,8 @@
 
     <color name="delete_email_container_background">#FF5722</color>
     <color name="archive_email_container_background">#559E6E</color>
+    <color name="message_container_unsigned">#d55</color>
+    <color name="white_trasparent">#00FFFFFF</color>
+    <color name="black_trasparent">#00000000</color>
 
 </resources>
