@@ -36,6 +36,8 @@
     <color name="light_gray">#B8B8B8</color>
     <color name="dark_gray">#737373</color>
 
+    <color name="message_icons_color">#424242</color>
+
     <color name="text_for_white_background">#212121</color>
     <color name="secondary_text_color">#757575</color>
 
@@ -79,5 +81,14 @@
     <color name="message_container_unsigned">#d55</color>
     <color name="white_transparent">#00FFFFFF</color>
     <color name="black_transparent">#00000000</color>
+
+    <color name="sync_device_green_1">#00AA2B</color>
+    <color name="sync_device_green_2">#03AA4B</color>
+    <color name="pep_logo_green">#0CA834</color>
+    <color name="line_divider">#FF999999</color>
+    <color name="adaptive_app_icon_accent">#00B28E</color>
+    <color name="seekbar_background">#888</color>
+    <color name="unread_count_background">#ffcc0000</color>
+    <color name="rounded_corners">#a0000000</color>
 
 </resources>

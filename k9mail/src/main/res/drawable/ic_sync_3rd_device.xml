@@ -7,31 +7,31 @@
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M112.401,19.235h18.7c0.3,0 0.5,0.2 0.5,0.5v33c0,0.3 -0.2,0.5 -0.5,0.5L112.401,53.235c-0.3,0 -0.5,-0.2 -0.5,-0.5v-33C111.901,19.435 112.101,19.235 112.401,19.235z"
-        android:strokeColor="#00AA2B"
+        android:strokeColor="@color/sync_device_green_1"
         android:strokeWidth="1.58" />
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M121.717,50.042m-0.6,0a0.6,0.6 0,1 1,1.2 0a0.6,0.6 0,1 1,-1.2 0"
-        android:strokeColor="#00AA2B"
+        android:strokeColor="@color/sync_device_green_1"
         android:strokeWidth="1.9387" />
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M55.7,49.556L17.5,49.556c-0.5,0 -0.9,-0.4 -0.9,-0.9v-46.6c0,-0.5 0.4,-0.9 0.9,-0.9h60.9c0.5,0 0.9,0.4 0.9,0.9v3.2"
-        android:strokeColor="#00AA2B"
+        android:strokeColor="@color/sync_device_green_1"
         android:strokeWidth="1.58" />
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M0.4,53.956L95.5,53.956"
-        android:strokeColor="#00AA2B"
+        android:strokeColor="@color/sync_device_green_1"
         android:strokeWidth="1.58" />
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M60.453,8.072h25.7c0.5,0 1,0.4 1,1v39.2c0,0.5 -0.4,1 -1,1L60.453,49.272c-0.5,0 -1,-0.4 -1,-1L59.453,9.072C59.553,8.572 59.953,8.072 60.453,8.072z"
-        android:strokeColor="#03AA4B"
+        android:strokeColor="@color/sync_device_green_2"
         android:strokeWidth="1.58" />
     <path
         android:fillColor="@color/black_transparent"
         android:pathData="M73.447,46.032m-0.6,0a0.6,0.6 0,1 1,1.2 0a0.6,0.6 0,1 1,-1.2 0"
-        android:strokeColor="#03AA4B"
+        android:strokeColor="@color/sync_device_green_2"
         android:strokeWidth="1.58" />
 </vector>

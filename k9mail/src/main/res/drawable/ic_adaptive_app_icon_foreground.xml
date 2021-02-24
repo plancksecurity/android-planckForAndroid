@@ -79,6 +79,6 @@
   <path
       android:pathData="M54,18.6c19.52,0 35.4,15.88 35.4,35.4S73.52,89.4 54,89.4S18.6,73.52 18.6,54S34.48,18.6 54,18.6M54,18c-19.88,0 -36,16.12 -36,36s16.12,36 36,36s36,-16.12 36,-36S73.88,18 54,18L54,18z"
       android:strokeAlpha="0.6"
-      android:fillColor="#00B28E"
+      android:fillColor="@color/adaptive_app_icon_accent"
       android:fillAlpha="0.6"/>
 </vector>
