@@ -16,7 +16,7 @@ class NotificationIds {
     private static final int OFFSET_NEW_MAIL_STACKED = 7;
     private static final int OFFSET_APP_DIDNT_ENCRYPT_MESSAGE_NOTIFICATION = 8;
 
-    private static final int NUMBER_OF_DEVICE_NOTIFICATIONS = 7;
+    private static final int NUMBER_OF_DEVICE_NOTIFICATIONS = 8;
     private static final int NUMBER_OF_STACKED_NOTIFICATIONS = NotificationData.MAX_NUMBER_OF_STACKED_NOTIFICATIONS;
     private static final int NUMBER_OF_NOTIFICATIONS_PER_ACCOUNT = NUMBER_OF_DEVICE_NOTIFICATIONS +
             NUMBER_OF_STACKED_NOTIFICATIONS;
