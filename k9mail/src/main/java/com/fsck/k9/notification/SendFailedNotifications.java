@@ -28,25 +28,35 @@ class SendFailedNotifications {
         this.actionBuilder = actionBuilder;
     }
 
+    public void showAppDidntEncryptMessageNotification(Account account, AppDidntEncryptMessageException exception) {
+        Context context = controller.getContext();
+        int notificationId = NotificationIds.getAppDidntEncryptMessageNotificationId(account);
+
+        String title = context.getString(R.string.notification_failed_to_encrypt_title);
+        String text = context.getString(R.string.notification_failed_to_encrypt_text);
+        MessageReference messageReference = new MessageReference(account.getUuid(),
+                account.getDraftsFolderName(), exception.getMessageReference().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
+        PendingIntent folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
+        NotificationCompat.Builder builder = prepareNotificationBuilder(account, title, text, folderListPendingIntent, notificationId);
+        getNotificationManager().notify(notificationId, builder.build());
+    }
+
     public void showSendFailedNotification(Account account, Exception exception, MessageReference message) {
         Context context = controller.getContext();
         String title = context.getString(R.string.send_failure_subject);
         String text = ExceptionHelper.getRootCauseMessage(exception);
 
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
-        PendingIntent folderListPendingIntent;
-        if (exception instanceof AppDidntEncryptMessageException) {
-            title = context.getString(R.string.notification_failed_to_encrypt_title);
-            text = context.getString(R.string.notification_failed_to_encrypt_text);
-            AppDidntEncryptMessageException cannotEncryptEx = (AppDidntEncryptMessageException) exception;
-            MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(),
-                    cannotEncryptEx.getMessageReference().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
-            folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
-        } else {
-            folderListPendingIntent = actionBuilder.createViewOutboxFolderWithErrorFeedbackIntent(
-                    account, notificationId, title, text, message);
-        }
+        PendingIntent folderListPendingIntent = actionBuilder.createViewOutboxFolderWithErrorFeedbackIntent(
+                account, notificationId, title, text, message);
 
+        NotificationCompat.Builder builder = prepareNotificationBuilder(account, title, text, folderListPendingIntent, notificationId);
+        addSendPendingMessagesAction(context, builder, account, notificationId);
+        getNotificationManager().notify(notificationId, builder.build());
+    }
+
+    private NotificationCompat.Builder prepareNotificationBuilder(Account account, String title, String text,
+                                                                  PendingIntent pendingIntent, int notificationId) {
         NotificationCompat.Builder builder = controller
                 .createNotificationBuilder(account, NotificationChannelManager.ChannelType.MISCELLANEOUS)
                 .setSmallIcon(getSendFailedNotificationIcon())
@@ -58,18 +68,13 @@ class SendFailedNotifications {
                         new NotificationCompat.BigTextStyle()
                                 .bigText(text)
                 )
-                .setContentIntent(folderListPendingIntent)
+                .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_ERROR);
 
-        if(!(exception instanceof AppDidntEncryptMessageException)) {
-            addSendPendingMessagesAction(context, builder, account, notificationId);
-        }
-
         controller.configureNotification(builder, null, null, NOTIFICATION_LED_FAILURE_COLOR,
                 NOTIFICATION_LED_BLINK_FAST, true);
-
-        getNotificationManager().notify(notificationId, builder.build());
+        return builder;
     }
 
     private void addSendPendingMessagesAction(Context context, NotificationCompat.Builder builder, Account account, int notificationId) {
@@ -83,6 +88,11 @@ class SendFailedNotifications {
 
     public void clearSendFailedNotification(Account account) {
         int notificationId = NotificationIds.getSendFailedNotificationId(account);
+        getNotificationManager().cancel(notificationId);
+    }
+
+    public void clearAppDidntEncryptMessageNotification(Account account) {
+        int notificationId = NotificationIds.getAppDidntEncryptMessageNotificationId(account);
         getNotificationManager().cancel(notificationId);
     }
 

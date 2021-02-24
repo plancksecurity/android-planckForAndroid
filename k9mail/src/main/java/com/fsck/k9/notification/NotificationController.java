@@ -15,6 +15,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.LocalMessage;
+import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 
 import java.util.List;
 
@@ -120,6 +121,14 @@ public class NotificationController {
 
     public void clearNewMailNotifications(Account account, String folderName) {
         newMailNotifications.clearNewMailNotifications(account, folderName);
+    }
+
+    public void showAppDidntEncryptMessageNotification(Account account, AppDidntEncryptMessageException exception) {
+        sendFailedNotifications.showAppDidntEncryptMessageNotification(account, exception);
+    }
+
+    public void clearAppDidntEncryptMessageNotification(Account account) {
+        sendFailedNotifications.clearAppDidntEncryptMessageNotification(account);
     }
 
     void configureNotification(NotificationCompat.Builder builder, String ringtone, long[] vibrationPattern,
