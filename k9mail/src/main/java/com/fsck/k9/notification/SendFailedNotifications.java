@@ -13,6 +13,7 @@ import com.fsck.k9.helper.ExceptionHelper;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.pEp.infrastructure.exceptions.MessageRelatedException;
 
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_BLINK_FAST;
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_FAILURE_COLOR;
@@ -28,11 +29,16 @@ class SendFailedNotifications {
         this.actionBuilder = actionBuilder;
     }
 
-    public void showAppDidntEncryptMessageNotification(Account account, AppDidntEncryptMessageException exception) {
+    public void showMessageRelatedProblemNotification(Account account, MessageRelatedException exception) {
         Context context = controller.getContext();
-        int notificationId = NotificationIds.getAppDidntEncryptMessageNotificationId(account);
+        int notificationId = NotificationIds.getMessageRelatedErrorNotificationId(account);
 
-        String title = context.getString(R.string.notification_failed_to_encrypt_title);
+        String title = context.getString(
+                (exception instanceof AppDidntEncryptMessageException)
+                ? R.string.notification_failed_to_encrypt_title
+                : R.string.notification_message_related_problem_title
+        );
+
         String text = context.getString(R.string.notification_failed_to_encrypt_text);
         MessageReference messageReference = new MessageReference(account.getUuid(),
                 account.getDraftsFolderName(), exception.getMessageReference().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
@@ -91,8 +97,8 @@ class SendFailedNotifications {
         getNotificationManager().cancel(notificationId);
     }
 
-    public void clearAppDidntEncryptMessageNotification(Account account) {
-        int notificationId = NotificationIds.getAppDidntEncryptMessageNotificationId(account);
+    public void clearMessageRelatedProblemNotification(Account account) {
+        int notificationId = NotificationIds.getMessageRelatedErrorNotificationId(account);
         getNotificationManager().cancel(notificationId);
     }
 

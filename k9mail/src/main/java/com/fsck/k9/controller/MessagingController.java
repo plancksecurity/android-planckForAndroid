@@ -106,6 +106,7 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.pEp.infrastructure.exceptions.MessageRelatedException;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -3049,7 +3050,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         AppDidntEncryptMessageException newException =
                                 new AppDidntEncryptMessageException(message.makeMessageReference());
                         newException.setStackTrace(e.getStackTrace());
-                        notificationController.showAppDidntEncryptMessageNotification(account, newException);
+                        notificationController.showMessageRelatedProblemNotification(account, newException);
                     } catch (AuthFailurePassphraseNeeded e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -3066,11 +3067,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         //PassphraseActivity.notifyRequest(context, PassphraseRequirementType.WRONG_PASSPHRASE);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (Exception e) {
-                        lastFailure = e;
-                        wasPermanentFailure = true;
-                        failedMessage = message;
-
-                        handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+                        handleSendFailure(account, localStore, localFolder, message, e, true);
+                        MessageRelatedException exception = new MessageRelatedException(e, message.makeMessageReference());
+                        notificationController.showMessageRelatedProblemNotification(account, exception);
                     }
                 } catch (Exception e) {
                     lastFailure = e;

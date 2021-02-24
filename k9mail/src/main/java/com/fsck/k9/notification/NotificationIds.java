@@ -14,7 +14,7 @@ class NotificationIds {
     private static final int OFFSET_NEW_MAIL_SUMMARY = 6;
 
     private static final int OFFSET_NEW_MAIL_STACKED = 7;
-    private static final int OFFSET_APP_DIDNT_ENCRYPT_MESSAGE_NOTIFICATION = 8;
+    private static final int OFFSET_MESSAGE_RELATED_ERROR_NOTIFICATION = 8;
 
     private static final int NUMBER_OF_DEVICE_NOTIFICATIONS = 8;
     private static final int NUMBER_OF_STACKED_NOTIFICATIONS = NotificationData.MAX_NUMBER_OF_STACKED_NOTIFICATIONS;
@@ -52,8 +52,8 @@ class NotificationIds {
         return getBaseNotificationId(account) + offset;
     }
 
-    public static int getAppDidntEncryptMessageNotificationId(Account account) {
-        return getBaseNotificationId(account) + OFFSET_APP_DIDNT_ENCRYPT_MESSAGE_NOTIFICATION;
+    public static int getMessageRelatedErrorNotificationId(Account account) {
+        return getBaseNotificationId(account) + OFFSET_MESSAGE_RELATED_ERROR_NOTIFICATION;
     }
 
     private static int getBaseNotificationId(Account account) {
