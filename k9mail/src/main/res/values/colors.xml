@@ -69,7 +69,7 @@
     <color name="message_list_selected_background_color_light">#c8e6c9</color>
     <color name="message_list_selected_background_color_dark">#666666</color>
     <color name="message_list_read_background_color">#c0cdcdcd</color>
-    <color name="message_list_unread_background_color_dark">#c05a5a5a</color>
+    <color name="message_list_unread_background_color_dark">@color/dark_theme_default_background</color>
     <color name="message_list_divider_color_light">#ffcccccc</color>
     <color name="message_list_divider_color_dark">#ff333333</color>
 
