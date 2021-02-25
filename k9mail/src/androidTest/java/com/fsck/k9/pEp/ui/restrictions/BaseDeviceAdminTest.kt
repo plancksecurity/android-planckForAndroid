@@ -30,7 +30,7 @@ open class BaseDeviceAdminTest : BaseTest() {
     }
 
     companion object {
-        const val ENFORCER_PACKAGE_NAME: String = "com.example.android.apprestrictionenforcer"
+        const val ENFORCER_PACKAGE_NAME: String = "security.pEp.demo.enforcer"
     }
 
 
