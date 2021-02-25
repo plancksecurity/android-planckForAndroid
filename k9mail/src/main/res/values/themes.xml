@@ -312,7 +312,7 @@
         <item name="iconConfigureAccount">@drawable/ic_configure_account</item>
         <item name="iconAddAccount">@drawable/ic_add_account</item>
         <item name="answeredForwardedIconColor">@color/gray</item>
-        <item name="defaultToolbarTextColor">@color/white</item>
+        <item name="defaultToolbarTextColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
         <item name="negativeButtonDefaultColor">@color/pep_red</item>
         <item name="defaultButtonTextColor">@color/white</item>
