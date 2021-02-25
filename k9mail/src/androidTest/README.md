@@ -29,21 +29,16 @@ Command:
 
 ## AppRestrictions test 
 
-- 1 Uninstall pEp app
+    1. install and run https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
+    2 get adb users:
+        adb shell pm list users
+        - example output:
+            Users:
+                 UserInfo{0:Owner:13} running
+                 UserInfo{44:pEpMdmEnforcer:30} running
+                 Use the pEpMdmEnforcer one, in this case, 44
+    3. run command:
+        ./gradlew testRestrictions -Puser=<user_id>
+        - change <user_id> to pEpMdmEnforcer created user
 
-- 2 install https://pep-security.lu/gitlab/francisco/apprestrictionenforcer
-
-- get adb users: 
-   adb shell pm list users
-
-- example :
-    Users:
-        UserInfo{0:Owner:13} running
-        UserInfo{10:AppRestrictionEnforcer:30} running <- use the one the has AppRestrictionEnforcer
-
-- add argument:
-    --user <user_id> 
-   
-- command:    
-    ./gradlew testRestrictions -Puser=<user_id>
 
