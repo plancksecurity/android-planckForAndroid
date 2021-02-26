@@ -8,6 +8,7 @@ import android.view.View
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageReference
+import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.databinding.ActivityFeedbackBinding
 import com.fsck.k9.mail.Message
 import com.fsck.k9.pEp.manualsync.WizardActivity
@@ -35,7 +36,8 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
         val text = extras.getString(EXTRA_TEXT) ?: ""
         val messageReferenceString = extras.getString(EXTRA_MESSAGE_REFERENCE) ?: ""
 
-        presenter.initialize(this, accountUuid, title, text, messageReferenceString)
+        presenter.initialize(this, MessagingController.getInstance(this),
+            accountUuid, title, text, messageReferenceString)
     }
 
     override fun populateSendFailedData(data: SendErrorFeedbackActivityData) {

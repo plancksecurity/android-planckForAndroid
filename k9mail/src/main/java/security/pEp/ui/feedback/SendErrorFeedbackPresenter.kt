@@ -22,15 +22,18 @@ class SendErrorFeedbackPresenter @Inject constructor(
     private lateinit var localMessage: LocalMessage
     private lateinit var title: String
     private lateinit var text: String
+    private lateinit var controller: MessagingController
 
     fun initialize(
         view: SendErrorFeedbackView,
+        controller: MessagingController,
         accountUuid: String,
         title: String,
         text: String,
         messageReferenceString: String
     ) {
         this.view = view
+        this.controller = controller
 
         if (accountUuid.isEmpty() || title.isEmpty() || text.isEmpty() || messageReferenceString.isEmpty()) {
             view.finish()
@@ -68,7 +71,7 @@ class SendErrorFeedbackPresenter @Inject constructor(
     }
 
     fun sendPendingMessages() {
-        MessagingController.getInstance().sendPendingMessages(account, null)
+        controller.sendPendingMessages(account, null)
         view.finish()
     }
 
