@@ -202,6 +202,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark_dark_theme</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/dark_theme_default_background</item>
         <item name="iconFolder">@drawable/ic_folder_dark</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_dark</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
