@@ -188,6 +188,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         if (inst == null) {
             Context appContext = context.getApplicationContext();
             NotificationController notificationController = NotificationController.newInstance(appContext);
+            notificationController.cancelAllNotifications();
             Contacts contacts = Contacts.getInstance(context);
             TransportProvider transportProvider = TransportProvider.getInstance();
             Preferences preferences = Preferences.getPreferences(appContext);
