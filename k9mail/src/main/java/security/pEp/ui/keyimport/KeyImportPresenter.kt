@@ -9,7 +9,7 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.Identity
-import foundation.pEp.jniadapter.pEpException
+import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
 import org.apache.commons.io.IOUtils
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PICK_KEY_FILE
