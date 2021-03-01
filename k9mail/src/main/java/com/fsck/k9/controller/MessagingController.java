@@ -4534,7 +4534,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.i("messagesArrived newCount = %d, unread count = %d", newCount, unreadMessageCount);
 
                     if (unreadMessageCount == 0) {
-                        notificationController.clearNewMailNotifications(account);
+                        notificationController.clearNewMailNotifications(account, localFolder.getName());
                     }
 
                     for (MessagingListener l : getListeners()) {
