@@ -1286,6 +1286,7 @@ public class CucumberTestSteps {
 
     @When("^I test Unified Inbox (\\d+) times")
     public void I_test_unified_inbox(int times) {
+        //I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
         for (int i = 0; i < times; i++) {
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
@@ -1752,6 +1753,7 @@ public class CucumberTestSteps {
             I_wait_seconds(30);
             I_send_and_remove_N_messages(1, "bot1", "stability", "TestingStability " + String.valueOf(i));
             I_go_back_to_the_Inbox();
+            testUtils.getMessageListSize();
             I_wait_seconds(30);
             I_test_unified_inbox(1);
             I_wait_seconds(30);
