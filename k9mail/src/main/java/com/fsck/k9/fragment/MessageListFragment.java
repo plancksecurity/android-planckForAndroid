@@ -3086,6 +3086,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         return new MessageReference(accountUuid, folder, messageUid, null);
     }
 
+    public void scheduleNotificationClearing() {
+        shouldCancelNotifications = ShouldClearNotifications.YES;
+    }
+
     private void updateToolbarColorToOriginal() {
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
         toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));

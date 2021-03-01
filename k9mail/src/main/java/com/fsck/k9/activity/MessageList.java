@@ -1693,6 +1693,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void goBack() {
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
+            mMessageListFragment.scheduleNotificationClearing();
             showMessageList();
         } else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
             if (isBackstackClear()) {
