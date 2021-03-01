@@ -3554,6 +3554,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             final List<LocalMessage> accountMessages) {
                 suppressMessages(account, accountMessages);
 
+                cancelNotificationForMessages(account, messages);
+
                 putBackground("deleteThreads", null, new Runnable() {
                     @Override
                     public void run() {
@@ -3587,6 +3589,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             final List<LocalMessage> accountMessages) {
                 suppressMessages(account, accountMessages);
 
+                cancelNotificationForMessages(account, messages);
                 putBackground("deleteMessages", null, new Runnable() {
                     @Override
                     public void run() {
@@ -4598,6 +4601,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     public void cancelNotificationForMessage(Account account, MessageReference messageReference) {
         notificationController.removeNewMailNotification(account, messageReference);
+    }
+
+    public void cancelNotificationForMessages(Account account, List<MessageReference> messages) {
+        for(MessageReference message: messages) {
+            notificationController.removeNewMailNotification(account, message);
+        }
     }
 
     public void clearCertificateErrorNotifications(Account account, CheckDirection direction) {
