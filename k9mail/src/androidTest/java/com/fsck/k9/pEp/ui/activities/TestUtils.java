@@ -283,7 +283,7 @@ public class TestUtils {
                 Timber.i("Cannot find account name field");
             }
         }
-        if (testConfig.keySync_number.equals("3")) {
+        if (testConfig.test_number.equals("3")) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
         onView(withId(R.id.done)).perform(click());
@@ -357,7 +357,7 @@ public class TestUtils {
 
     public void createAccount() {
         createNewAccountWithPermissions();
-        if (keySync_number().equals("0")) {
+        if (test_number().equals("0")) {
             getMessageListSize();
         }
     }
@@ -493,11 +493,11 @@ public class TestUtils {
                             case "keysync_password_2":
                                 testConfig.setKeySync_password(line[1], 1);
                                 break;
-                            case "keysync_number":
-                                testConfig.setKeySync_number(line[1]);
-                                if (!testConfig.getKeySync_number().equals("0")) {
+                            case "test_number":
+                                testConfig.settest_number(line[1]);
+                                if (!testConfig.gettest_number().equals("0")) {
                                     totalAccounts = 1;
-                                    if(testConfig.getKeySync_number().equals("3")) {
+                                    if(testConfig.gettest_number().equals("3")) {
                                         totalAccounts = 2;
                                     }
                                 }
@@ -714,11 +714,11 @@ public class TestUtils {
 
     }
 
-    public String keySync_number() {
-        while (testConfig.getKeySync_number().equals("-10")) {
+    public String test_number() {
+        while (testConfig.gettest_number().equals("-10")) {
             readConfigFile();
         }
-        return testConfig.getKeySync_number();}
+        return testConfig.gettest_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
@@ -802,7 +802,7 @@ public class TestUtils {
                     Timber.i("Ignored", "Ignored exception");
                 }
             }
-            switch (keySync_number()) {
+            switch (test_number()) {
                 case "0":
                     createNAccounts(getTotalAccounts(), false, false);
                     break;
@@ -886,7 +886,7 @@ public class TestUtils {
                 addAccount();
                 if (isKeySync) {
                     int account = 0;
-                    if (testConfig.keySync_number.equals("3") && !isThirdSync) {
+                    if (testConfig.test_number.equals("3") && !isThirdSync) {
                         account = 1;
                     }
                     fillAccountAddress(testConfig.getKeySync_account(account));
@@ -3426,9 +3426,9 @@ public class TestUtils {
         }
     }
 
-    public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.keySync_number) - 4);}
+    public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
 
-    public String getPassphrasePassword() { return testConfig.getPassphrase_password(Integer.parseInt(testConfig.keySync_number) - 4);}
+    public String getPassphrasePassword() { return testConfig.getPassphrase_password(Integer.parseInt(testConfig.test_number) - 4);}
 
     @NonNull
     private String getEmail() {
@@ -3502,7 +3502,7 @@ public class TestUtils {
         int total = 3;
         String[] keySync_account;
         String[] keySync_password;
-        String keySync_number;
+        String test_number;
         String[] passphrase_account;
         String[] passphrase_password;
 
@@ -3517,7 +3517,7 @@ public class TestUtils {
             this.smtp_port = new String[total];
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
-            keySync_number = "-10";
+            test_number = "-10";
             this.passphrase_account = new String[3];
             this.passphrase_password = new String[3];
         }
@@ -3532,7 +3532,7 @@ public class TestUtils {
         void setSmtp_port(String smtp_port, int account) { this.smtp_port[account] = smtp_port;}
         void setKeySync_account(String mail, int account) { this.keySync_account[account] = mail;}
         void setKeySync_password(String password, int account) { this.keySync_password[account] = password;}
-        void setKeySync_number(String number) { this.keySync_number = number;}
+        void settest_number(String number) { this.test_number = number;}
         void setPassphrase_account(String mail, int account) { this.passphrase_account[account] = mail;}
         void setPassphrase_password(String password, int account) { this.passphrase_password[account] = password;}
 
@@ -3546,7 +3546,7 @@ public class TestUtils {
         String getSmtp_port(int account) { return smtp_port[account];}
         String getKeySync_account(int account) { return keySync_account[account];}
         String getKeySync_password(int account) { return keySync_password[account];}
-        String getKeySync_number() { return keySync_number;}
+        String gettest_number() { return test_number;}
         String getPassphrase_account(int account) { return passphrase_account[account];}
         String getPassphrase_password(int account) { return passphrase_password[account];}
     }

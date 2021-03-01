@@ -699,7 +699,7 @@ public class CucumberTestSteps {
         int inboxMessages = testUtils.getListSize();
         int totalMessages = getTotalMessagesSize();
         boolean ignoreThisTest = true;
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 if (device1.equals("A") || device2.equals("A")) {
                     ignoreThisTest = false;
@@ -745,7 +745,7 @@ public class CucumberTestSteps {
     }
     @When("^I create an account for sync on device C$")
     public void I_create_an_account_for_C() {
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 testUtils.getMessageListSize();
                 testUtils.composeMessageButton();
@@ -776,7 +776,7 @@ public class CucumberTestSteps {
 
     @When("^I check devices (\\S+) and (\\S+) are sync$")
     public void I_check_1_and_2_sync(String firstDevice, String secondDevice) {
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 testUtils.checkDeviceIsSync("A", firstDevice, secondDevice, syncThirdDevice);
                 break;
@@ -795,7 +795,7 @@ public class CucumberTestSteps {
     @When("^I check account devices (\\S+) and (\\S+) are not protected$")
     public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
         testUtils.selectAccount("Inbox", 0);
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
                 break;
@@ -813,7 +813,7 @@ public class CucumberTestSteps {
 
     @When("^I check devices (\\S+) and (\\S+) are not sync$")
     public void I_check_A_B_are_not_sync(String firstDevice, String secondDevice) {
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 testUtils.checkDeviceIsNotSync("A", firstDevice, secondDevice, syncThirdDevice);
                 break;
@@ -834,7 +834,7 @@ public class CucumberTestSteps {
         if (device.equals("C")) {
             testUtils.setTrustWords("Disabled sync on device C");
         }
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 if (device.equals("A")) {
                     testUtils.disableKeySync();
@@ -883,7 +883,7 @@ public class CucumberTestSteps {
 
     @When("^I enable sync on device (\\S+)$")
     public void I_enable_sync(String device) {
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 if (device.equals("A")) {
                     testUtils.enableKeySync();
@@ -1232,7 +1232,7 @@ public class CucumberTestSteps {
                 testUtils.waitForIdle();
                 fileName = "testpicture.png";
             case "passphrase":
-                switch (testUtils.keySync_number()) {
+                switch (testUtils.test_number()) {
                     case "4":
                         raw = R.raw.passphrase_test003;
                         break;
@@ -1356,7 +1356,7 @@ public class CucumberTestSteps {
 
     @When("^I disable protection on device (\\S+)$")
     public void I_disable_protection (String device) {
-        switch (testUtils.keySync_number()) {
+        switch (testUtils.test_number()) {
             case "1":
                 if (device.equals("A")) {
                     testUtils.disableProtection(0);
