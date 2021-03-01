@@ -1763,7 +1763,7 @@ public class CucumberTestSteps {
         for (int i = 0; i < 1000; i++) {
             I_select_account(account);
             I_wait_seconds(30);
-            I_send_and_remove_N_messages(1, "bot1", "stability", "TestingStability " + String.valueOf(i));
+            I_send_and_remove_N_messages(5, "bot1", "stability", "TestingStability of message " + String.valueOf(i));
             I_go_back_to_the_Inbox();
             testUtils.getMessageListSize();
             I_wait_seconds(30);
