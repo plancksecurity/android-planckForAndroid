@@ -1266,7 +1266,7 @@ public class CucumberTestSteps {
     }
 
     @Then("^I click the send message button$")
-    public void I_click_then_send_message_button() {
+    public void I_click_the_send_message_button() {
         timeRequiredForThisMethod(5);
         while (exists(onView(withId(R.id.send)))) {
             testUtils.clickView(R.id.send);
