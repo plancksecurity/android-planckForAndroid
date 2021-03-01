@@ -2757,12 +2757,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
 
         Cursor cursor = (Cursor) adapter.getItem(adapterPosition);
-
-        String accountUuid = cursor.getString(ACCOUNT_UUID_COLUMN);
-        String folderName = cursor.getString(FOLDER_NAME_COLUMN);
-        String messageUid = cursor.getString(UID_COLUMN);
-
-        return new MessageReference(accountUuid, folderName, messageUid, null);
+        return getMessageFromCursor(cursor);
     }
 
     private List<MessageReference> getCheckedMessages() {
@@ -3054,29 +3049,41 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             }
 
             fragmentListener.updateMenu();
+            cancelNotificationsIfNeeded();
         }
         hideLoadingMessages(cursor.getCount());
     }
 
     private void cancelNotificationsIfNeeded() {
         if(shouldCancelNotifications.equals(ShouldClearNotifications.YES)) {
+            cancelNewMailNotificationsOnDemand();
+        }
+        shouldCancelNotifications = ShouldClearNotifications.ALREADY_DONE;
+    }
 
+    private void cancelNewMailNotificationsOnDemand() {
+        int messageCount = adapter.getCount();
+        for (int i = 0; i < messageCount; i ++) {
+            Account accountWithNotification;
+            Cursor cursor = (Cursor) adapter.getItem(i);
+            if (account != null) {
+                accountWithNotification = account;
+            }
+            else {
+                String accountUuid = cursor.getString(ACCOUNT_UUID_COLUMN);
+                accountWithNotification = preferences.getAccount(accountUuid);
+            }
+
+            MessageReference messageReference = getMessageFromCursor(cursor);
+            messagingController.cancelNotificationForMessage(accountWithNotification, messageReference);
         }
     }
 
-    private void cancelAllNotificationsForCurrentAccounts() {
-        List<Account> accountsWithNotification;
-
-        Account account = this.account;
-        if (account != null) {
-            accountsWithNotification = Collections.singletonList(account);
-        } else {
-            accountsWithNotification = new ArrayList<>(preferences.getAvailableAccounts());
-        }
-
-        for (Account accountWithNotification : accountsWithNotification) {
-            messagingController.cancelNotificationsForAccount(accountWithNotification);
-        }
+    private MessageReference getMessageFromCursor(Cursor cursor) {
+        String accountUuid = cursor.getString(ACCOUNT_UUID_COLUMN);
+        String folder = cursor.getString(FOLDER_NAME_COLUMN);
+        String messageUid = cursor.getString(UID_COLUMN);
+        return new MessageReference(accountUuid, folder, messageUid, null);
     }
 
     private void updateToolbarColorToOriginal() {
