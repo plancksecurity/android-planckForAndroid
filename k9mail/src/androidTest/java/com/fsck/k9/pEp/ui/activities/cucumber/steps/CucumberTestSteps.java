@@ -1492,6 +1492,16 @@ public class CucumberTestSteps {
     @And("^I test the format and it is showing the pictures$")
     public void I_test_format_and_pictures() {
         timeRequiredForThisMethod(10);
+        testUtils.clickLastMessage();
+        testUtils.selectFromMenu(R.string.single_message_options_action);
+        testUtils.clickTextOnScreen(R.string.compose_title_forward);
+        I_fill_messageTo_field("myself");
+        //I_fill_subject_field("New");
+        I_click_the_send_message_button();
+        testUtils.goBackToMessageList();
+        //I_wait_for_the_new_message();
+        testUtils.clickLastMessage();
+        //I_click_reply_message();
         testUtils.waitForIdle();
         onView(withId(R.id.message_content)).perform(click());
         int[] firstLetterCentralThickness = new int[2];
@@ -1607,6 +1617,8 @@ public class CucumberTestSteps {
                 pic3.toString().equals(pic3visible.toString())) {
             testUtils.assertFailWithMessage("Not showing pictures");
         }
+        testUtils.clickView(R.id.delete);
+        testUtils.goBackToMessageList();
         testUtils.waitForIdle();
     }
 
