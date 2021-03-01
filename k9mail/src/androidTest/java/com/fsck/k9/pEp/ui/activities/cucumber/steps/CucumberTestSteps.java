@@ -1743,7 +1743,7 @@ public class CucumberTestSteps {
     public void I_send_and_remove_N_messages(int totalMessages,String botName, String subject, String body) {
         for (int i = 0; i < totalMessages; i++) {
             testUtils.getMessageListSize();
-            I_send_message_to_address(1, botName, subject, body + " message " + Integer.toString(i) + " of " + Integer.toString(totalMessages));
+            I_send_message_to_address(1, botName, subject, body + ". Message to remove " + Integer.toString(i + 1) + " of " + Integer.toString(totalMessages));
             testUtils.clickLastMessage();
             testUtils.clickView(R.id.delete);
             testUtils.goBackToMessageList();
