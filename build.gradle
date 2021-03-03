@@ -6,9 +6,9 @@ buildscript {
                 'minSdk'               : 21,
                 'versionCode'          : 81,
                 'pEpEngineRevision'    : 'Release_2.1.13',
-                'pEpJNIAdapterRevision': 'Release_2.1.9',
+                'pEpJNIAdapterRevision': 'Release_2.1.10',
                 'versionName'          : '1.1.214',
-                'libpEpAdapterRevision': 'Release_2.1.7'
+                'libpEpAdapterRevision': 'Release_2.1.8'
         ]
 
         versions = [
