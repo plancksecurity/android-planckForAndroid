@@ -520,6 +520,12 @@ public class TestUtils {
                             case "passphrase_password_3":
                                 testConfig.setPassphrase_password(line[1], 2);
                                 break;
+                            case "format_test_account":
+                                testConfig.setFormat_test_account(line[1]);
+                                break;
+                            case "format_test_password":
+                                testConfig.setFormat_test_password(line[1]);
+                                break;
                             default:
                                 break;
                         }
