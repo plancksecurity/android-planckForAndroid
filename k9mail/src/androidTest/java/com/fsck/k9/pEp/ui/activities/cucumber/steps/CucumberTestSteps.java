@@ -1492,7 +1492,21 @@ public class CucumberTestSteps {
     @And("^I test the format and it is showing the pictures$")
     public void I_test_format_and_pictures() {
         timeRequiredForThisMethod(10);
-        testUtils.clickLastMessage();
+        switch (testUtils.test_number()) {
+            case "7":
+                testUtils.clickLastMessage();
+                break;
+            case "8":
+                testUtils.waitForNMessageInTheLIst(2);
+                testUtils.clickMessageAtPosition(2);
+                break;
+            case "9":
+                testUtils.waitForNMessageInTheLIst(3);
+                testUtils.clickMessageAtPosition(3);
+                break;
+            default:
+                break;
+        }
         testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
         I_fill_messageTo_field("myself");
@@ -1503,6 +1517,7 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
         //I_click_reply_message();
         testUtils.waitForIdle();
+        //testUtils.swipeDownScreen();
         onView(withId(R.id.message_content)).perform(click());
         int[] firstLetterCentralThickness = new int[2];
         int[] firstLetterTopThickness = new int[2];
@@ -1587,11 +1602,21 @@ public class CucumberTestSteps {
                 }
             }
         }
-        testUtils.waitForIdle();
-        Rect pic1 = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
-        Rect pic2 = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
-        Rect pic3 = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
-        testUtils.waitForIdle();
+        Rect pic1 = null;
+        Rect pic2 = null;
+        Rect pic3 = null;
+        while (pic1 == null || pic2 == null || pic3 == null) {
+            try {
+                testUtils.waitForIdle();
+                pic1 = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
+                pic2 = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
+                pic3 = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
+                testUtils.waitForIdle();
+            } catch (Exception noPic) {
+                testUtils.swipeDownScreen();
+                Timber.i("Cannot find pictures");
+            }
+        }
         selectorA = By.clazz("android.widget.TextView");
         for (UiObject2 textView : device.findObjects(selectorA)) {
             if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
@@ -1617,7 +1642,14 @@ public class CucumberTestSteps {
                 pic3.toString().equals(pic3visible.toString())) {
             testUtils.assertFailWithMessage("Not showing pictures");
         }
-        testUtils.clickView(R.id.delete);
+        if (testUtils.test_number().equals("9")) {
+            testUtils.clickView(R.id.delete);
+            testUtils.waitForIdle();
+            testUtils.clickView(R.id.delete);
+            testUtils.waitForIdle();
+            testUtils.clickView(R.id.delete);
+            testUtils.waitForIdle();
+        }
         testUtils.goBackToMessageList();
         testUtils.waitForIdle();
     }
