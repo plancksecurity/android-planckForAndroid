@@ -1792,18 +1792,18 @@ public class CucumberTestSteps {
     public void I_test_Stability(String account){
         timeRequiredForThisMethod(40);
         I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
             I_select_account(account);
-            I_wait_seconds(30);
-            I_send_and_remove_N_messages(5, "bot1", "stability", "TestingStability of message " + String.valueOf(i));
+            I_wait_seconds(5);
+            I_send_and_remove_N_messages(3, "bot1", "stability", "TestingStability of message " + String.valueOf(i));
             I_go_back_to_the_Inbox();
             testUtils.getMessageListSize();
-            I_wait_seconds(30);
+            I_wait_seconds(5);
             I_test_unified_inbox(1);
-            I_wait_seconds(30);
+            I_wait_seconds(5);
             I_go_back_to_accounts_list();
             I_walk_through_app();
-            I_wait_seconds(30);
+            I_wait_seconds(5);
             testUtils.pressBack();
         }
 
