@@ -2885,6 +2885,29 @@ public class TestUtils {
         }
     }
 
+    public void waitForNMessageInTheLIst(int messages) {
+        waitForIdle();
+        while (!exists(onView(withId(R.id.message_list)))){
+            waitForIdle();
+        }
+        while (true) {
+            try {
+                waitForIdle();
+                swipeDownMessageList();
+                waitForIdle();
+                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+                if (messages == messageListSize[0]){
+                    getMessageListSize();
+                    return;
+                }
+            } catch (Exception ex) {
+                Timber.i("Waiting for new message : " + ex);
+            }
+        }
+
+    }
+
     public void waitForNewMessage() {
         boolean newEmail = false;
         waitForIdle();
