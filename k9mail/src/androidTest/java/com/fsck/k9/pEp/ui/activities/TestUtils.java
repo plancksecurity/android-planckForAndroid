@@ -831,8 +831,14 @@ public class TestUtils {
                     automaticAccount();
                     accountDescription("importKeyWithPassphrase", "Passphrase");
                     break;
+                case "7":
+                    fillAccountAddress(testConfig.getFormat_test_account());
+                    fillAccountPassword(testConfig.getFormat_test_password());
+                    automaticAccount();
+                    accountDescription("formatTest", "Format Test");
+                    break;
                 default:
-                    Timber.i("Key sync value is not valid");
+                    Timber.i("Test is not valid");
             }
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
@@ -3505,6 +3511,8 @@ public class TestUtils {
         String test_number;
         String[] passphrase_account;
         String[] passphrase_password;
+        String format_test_account;
+        String format_test_password;
 
         TestConfig(){
             this.mail = new String[total];
@@ -3520,6 +3528,8 @@ public class TestUtils {
             test_number = "-10";
             this.passphrase_account = new String[3];
             this.passphrase_password = new String[3];
+            this.format_test_account = new String();
+            this.format_test_password = new String();
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
@@ -3535,6 +3545,8 @@ public class TestUtils {
         void settest_number(String number) { this.test_number = number;}
         void setPassphrase_account(String mail, int account) { this.passphrase_account[account] = mail;}
         void setPassphrase_password(String password, int account) { this.passphrase_password[account] = password;}
+        void setFormat_test_account(String account) { this.format_test_account = account;}
+        void setFormat_test_password(String password) { this.format_test_password = password;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
@@ -3549,5 +3561,7 @@ public class TestUtils {
         String gettest_number() { return test_number;}
         String getPassphrase_account(int account) { return passphrase_account[account];}
         String getPassphrase_password(int account) { return passphrase_password[account];}
+        String getFormat_test_account() { return format_test_account;}
+        String getFormat_test_password() { return  format_test_password;}
     }
 }
