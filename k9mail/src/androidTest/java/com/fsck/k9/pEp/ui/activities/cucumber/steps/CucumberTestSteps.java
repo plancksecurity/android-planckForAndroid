@@ -1635,7 +1635,7 @@ public class CucumberTestSteps {
         if (pic1.toString().equals(pic1visible.toString()) ||
                 pic2.toString().equals(pic2visible.toString()) ||
                 pic3.toString().equals(pic3visible.toString())) {
-            testUtils.assertFailWithMessage("Not showing pictures");
+            testUtils.assertFailWithMessage("Not showing pictures or they were shown before");
         }
         if (testUtils.test_number().equals("9")) {
             testUtils.waitForIdle();
