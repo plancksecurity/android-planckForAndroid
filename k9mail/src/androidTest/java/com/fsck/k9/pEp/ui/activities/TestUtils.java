@@ -838,6 +838,8 @@ public class TestUtils {
                     accountDescription("importKeyWithPassphrase", "Passphrase");
                     break;
                 case "7":
+                case "8":
+                case "9":
                     fillAccountAddress(testConfig.getFormat_test_account());
                     fillAccountPassword(testConfig.getFormat_test_password());
                     automaticAccount();
