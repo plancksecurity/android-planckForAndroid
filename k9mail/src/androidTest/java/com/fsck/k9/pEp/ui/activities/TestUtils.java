@@ -2917,6 +2917,22 @@ public class TestUtils {
 
     }
 
+    public void pressShowPicturesButton() {
+        while (true) {
+            try {
+                BySelector selector = By.clazz("android.widget.TextView");
+                waitForIdle();
+                for (UiObject2 textView : device.findObjects(selector)) {
+                    if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
+                        textView.click();
+                    }
+                }
+            } catch (Exception noButton) {
+                Timber.i("Cannot find SHOW PICTURES button");
+            }
+        }
+    }
+
     public void waitForNewMessage() {
         boolean newEmail = false;
         waitForIdle();
