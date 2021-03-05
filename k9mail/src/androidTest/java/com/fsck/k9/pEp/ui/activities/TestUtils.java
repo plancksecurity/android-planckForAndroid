@@ -2925,6 +2925,7 @@ public class TestUtils {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
                         textView.click();
+                        return;
                     }
                 }
             } catch (Exception noButton) {
