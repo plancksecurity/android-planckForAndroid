@@ -1617,12 +1617,7 @@ public class CucumberTestSteps {
                 Timber.i("Cannot find pictures");
             }
         }
-        selectorA = By.clazz("android.widget.TextView");
-        for (UiObject2 textView : device.findObjects(selectorA)) {
-            if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
-                textView.click();
-            }
-        }
+        testUtils.pressShowPicturesButton();
         testUtils.waitForIdle();
         Rect pic1visible = null;
         Rect pic2visible = null;
