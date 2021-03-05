@@ -1643,7 +1643,12 @@ public class CucumberTestSteps {
             testUtils.assertFailWithMessage("Not showing pictures");
         }
         if (testUtils.test_number().equals("9")) {
+            testUtils.waitForIdle();
             testUtils.clickView(R.id.delete);
+            testUtils.waitForIdle();
+            testUtils.goBackToMessageList();
+            testUtils.waitForIdle();
+            testUtils.clickLastMessage();
             testUtils.waitForIdle();
             testUtils.clickView(R.id.delete);
             testUtils.waitForIdle();
