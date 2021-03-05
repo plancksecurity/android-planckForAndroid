@@ -2905,10 +2905,11 @@ public class TestUtils {
                 waitForIdle();
                 onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
-                if (messages == messageListSize[0]){
+                if (messages + 1 == messageListSize[0]){
                     getMessageListSize();
                     return;
                 }
+                Thread.sleep(2000);
             } catch (Exception ex) {
                 Timber.i("Waiting for new message : " + ex);
             }
