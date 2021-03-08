@@ -3,6 +3,7 @@ package com.fsck.k9.fragment
 import android.database.Cursor
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.widget.AdapterView
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -48,11 +49,13 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
         previewTV = view.findViewById(R.id.preview)
     }
 
+    private fun getParent(): AdapterView<*> = view.parent.parent.parent as AdapterView<*>
+
     override fun onClick(view: View) {
         if (position != -1) {
             when (view.id) {
-                R.id.selectedCheckbox -> fragment.toggleMessageSelectWithAdapterPosition(position)
-                R.id.flaggedCheckbox -> fragment.toggleMessageFlagWithAdapterPosition(position)
+                R.id.selectedCheckbox -> fragment.viewHolderActions.toggleSelect(position)
+                R.id.flaggedCheckbox -> fragment.viewHolderActions.toggleFlag(position)
             }
         }
     }
@@ -211,6 +214,23 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
     }
 
     init {
+        view.setOnLongClickListener {
+            fragment.viewHolderActions.onItemLongClick(position)
+            true
+        }
+        view.setOnClickListener {
+            fragment.viewHolderActions.onItemClick(getParent(), view, position)
+        }
         bindViews()
+    }
+
+    interface MessageViewHolderActions {
+        fun onItemLongClick(position: Int)
+
+        fun onItemClick(parent: AdapterView<*>, view: View, position: Int)
+
+        fun toggleSelect(position: Int)
+
+        fun toggleFlag(position: Int)
     }
 }

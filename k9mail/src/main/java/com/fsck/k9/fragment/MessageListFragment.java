@@ -96,6 +96,8 @@ import com.fsck.k9.search.SearchSpecification.SearchField;
 
 import com.google.android.material.textview.MaterialTextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
@@ -135,7 +137,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
-    private static final long CLICK_THRESHOLD_MILLIS = 1000;
+    private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
     private ProgressBar loadingView;
     private Rating worstThreadRating;
@@ -301,6 +303,33 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Inject
     ResourcesProvider resourcesProvider;
 
+    MessageViewHolder.MessageViewHolderActions viewHolderActions = new MessageViewHolder.MessageViewHolderActions() {
+        @Override
+        public void onItemLongClick(int position) {
+            if (position < adapter.getCount()) {
+                onMessageLongClicked(position);
+            }
+        }
+
+        @Override
+        public void onItemClick(@NotNull AdapterView<?> parent, @NotNull View view, int position) {
+            if ((System.currentTimeMillis()-lastClicked) > CLICK_THRESHOLD_MILLIS) {
+                onMessageClick(parent, view, position);
+                lastClicked = System.currentTimeMillis();
+            }
+        }
+
+        @Override
+        public void toggleFlag(int position) {
+            toggleMessageFlagWithAdapterPosition(position);
+        }
+
+        @Override
+        public void toggleSelect(int position) {
+            toggleMessageSelectWithAdapterPosition(position);
+        }
+    };
+
     int getColorFromAttributeResource(@AttrRes int resource) {
         return resourcesProvider.getColorFromAttributeResource(resource);
     }
@@ -438,7 +467,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
     }
 
-    public void onMessageClick(AdapterView<?> parent, View view, int position, long id) {
+    public void onMessageClick(AdapterView<?> parent, View view, int position) {
         if (view == footerView) {
             if (currentFolder != null && !search.isManualSearch() && currentFolder.moreMessages) {
 
@@ -932,7 +961,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 //        swipeRefreshLayout.setEnabled(false);
 //    }
 
-    private boolean isLongClicked;
     private long lastClicked = 0;
 
     private void initializeLayout() {
@@ -940,35 +968,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         listView.setLongClickable(true);
         listView.setFastScrollEnabled(true);
         listView.setScrollingCacheEnabled(false);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                if (position < adapter.getCount()) {
-                    onMessageLongClicked(position);
-                }
-                return true;
-            }
-        });
         listView.setFastScrollEnabled(true);
         listView.setScrollingCacheEnabled(false);
-
-
-
         registerForContextMenu(listView);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!isLongClicked && (System.currentTimeMillis()-lastClicked) > CLICK_THRESHOLD_MILLIS) {
-                    onMessageClick(parent, view, position, id);
-                    lastClicked = System.currentTimeMillis();
-                }
-                isLongClicked = false;
-            }
-        });
     }
 
     private void onMessageLongClicked(int position) {
-        isLongClicked = true;
         toggleMessageSelectWithAdapterPosition(position);
         if (actionMode == null) {
             getActivity().startActionMode(new android.view.ActionMode.Callback() {
