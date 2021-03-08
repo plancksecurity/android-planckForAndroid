@@ -97,5 +97,7 @@
     <color name="toolbar_content_default_dark_theme">@color/white_transparent_90</color>
     <color name="white_transparent_90">#E6FFFFFF</color>
     <color name="fab_menu_background_tint_dark_theme">#373737</color>
+    <color name="drawer_body_icons_color_dark">#c6c6c6</color>
+    <color name="drawer_body_icons_color_light">#757575</color>
 
 </resources>

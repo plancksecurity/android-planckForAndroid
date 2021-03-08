@@ -107,6 +107,9 @@
         <attr name="messageListSeparatorColor" format="reference|color"/>
         <attr name="defaultButtonTextColor" format="reference|color"/>
         <attr name="searchBarHintColor" format="reference|color"/>
+        <attr name="unifiedInboxIcon" format="reference"/>
+        <attr name="allMessagesIcon" format="reference"/>
+        <attr name="drawer_body_icons_color" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
