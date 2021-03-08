@@ -311,17 +311,17 @@
         <item name="messageViewToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="screenDefaultBackgroundColor">@color/dark_theme_default_background</item>
-        <item name="defaultColorOnBackground">@color/white</item>
-        <item name="grayScaleColorOnBackground1">@color/white</item>
-        <item name="grayScaleColorOnBackground2">@color/white</item>
-        <item name="grayScaleColorOnBackground3">@color/white</item>
+        <item name="defaultColorOnBackground">@color/white_transparent_90</item>
+        <item name="grayScaleColorOnBackground1">@color/white_transparent_90</item>
+        <item name="grayScaleColorOnBackground2">@color/white_transparent_90</item>
+        <item name="grayScaleColorOnBackground3">@color/white_transparent_90</item>
         <item name="grayScaleColorOnBackground4">@color/light_gray</item>
         <item name="deleteEmailContainerBackground">@color/delete_email_container_background</item>
         <item name="archiveEmailContainerBackground">@color/archive_email_container_background</item>
-        <item name="introTextColor">@color/white</item>
-        <item name="introHeaderTextColor">@color/white</item>
+        <item name="introTextColor">@color/white_transparent_90</item>
+        <item name="introHeaderTextColor">@color/white_transparent_90</item>
         <item name="introPrimaryColor">@color/colorPrimary</item>
-        <item name="introSeparatorColor">@color/white</item>
+        <item name="introSeparatorColor">@color/white_transparent_90</item>
         <item name="introIndicatorColor">@color/light_gray</item>
         <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Dark</item>
         <item name="iconConfigureAccount">@drawable/ic_configure_account_24dp</item>
@@ -330,7 +330,7 @@
         <item name="defaultToolbarTextColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
         <item name="negativeButtonDefaultColor">@color/pep_red</item>
-        <item name="defaultButtonTextColor">@color/white</item>
+        <item name="defaultButtonTextColor">@color/white_transparent_90</item>
         <item name="searchBarHintColor">@color/light_primary_color</item>
         <item name="fab_menu_background_tint">@color/fab_menu_background_tint_dark_theme</item>
         <item name="unifiedInboxIcon">@drawable/ic_unified_inbox_24dp</item>
@@ -346,6 +346,7 @@
         <item name="android:dialogTheme">@style/AlertDialogStyle.Dark</item>
 
         <item name="defaultDialogBackground">@color/dark_theme_default_dialog_background</item>
+        <item name="android:textColorPrimary">@color/dark_theme_text_color_primary</item>
 
     </style>
 
