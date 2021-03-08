@@ -248,7 +248,7 @@ public class TestUtils {
         onView(withId(R.id.next)).perform(click());
     }
 
-    private void accountDescription(String description, String userName) {
+    private void accountDescription(String description, String userName, boolean isSync) {
         doWaitForResource(R.id.account_description);
         while (!viewIsDisplayed(R.id.account_description)) {
             waitForIdle();
@@ -283,9 +283,10 @@ public class TestUtils {
                 Timber.i("Cannot find account name field");
             }
         }
-        if (testConfig.test_number.equals("3")) {
+        if (testConfig.test_number.equals("3") || !isSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
+        waitForIdle();
         onView(withId(R.id.done)).perform(click());
     }
 
@@ -823,19 +824,19 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getPassphrase_account(0));
                     fillAccountPassword(testConfig.getPassphrase_password(0));
                     automaticAccount();
-                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
                     break;
                 case "5":
                     fillAccountAddress(testConfig.getPassphrase_account(1));
                     fillAccountPassword(testConfig.getPassphrase_password(1));
                     automaticAccount();
-                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
                     break;
                 case "6":
                     fillAccountAddress(testConfig.getPassphrase_account(2));
                     fillAccountPassword(testConfig.getPassphrase_password(2));
                     automaticAccount();
-                    accountDescription("importKeyWithPassphrase", "Passphrase");
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
                     break;
                 case "7":
                 case "8":
@@ -843,7 +844,7 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getFormat_test_account());
                     fillAccountPassword(testConfig.getFormat_test_password());
                     automaticAccount();
-                    accountDescription("formatTest", "Format Test");
+                    accountDescription("formatTest", "Format Test", false);
                     break;
                 default:
                     Timber.i("Test is not valid");
@@ -916,7 +917,7 @@ public class TestUtils {
                 }
                 try {
                     waitForIdle();
-                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account));
+                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), true);
                 } catch (Exception e) {
                     Timber.i("Can not fill account description");
                 }
