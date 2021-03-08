@@ -110,6 +110,7 @@
         <attr name="unifiedInboxIcon" format="reference"/>
         <attr name="allMessagesIcon" format="reference"/>
         <attr name="drawer_body_icons_color" format="reference|color"/>
+        <attr name="defaultDialogBackground" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

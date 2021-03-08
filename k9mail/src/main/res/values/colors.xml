@@ -99,5 +99,6 @@
     <color name="fab_menu_background_tint_dark_theme">#373737</color>
     <color name="drawer_body_icons_color_dark">#c6c6c6</color>
     <color name="drawer_body_icons_color_light">#757575</color>
+    <color name="dark_theme_default_dialog_background">@color/dark_theme_overlay_1</color>
 
 </resources>
