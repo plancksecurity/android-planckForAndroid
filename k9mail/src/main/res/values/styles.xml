@@ -235,17 +235,15 @@
 
     </style>
 
-    <style name="SyncDisableDialog.Light.Base" parent="Theme.AppCompat.Light.Dialog">
+    <style name="SyncDisableDialog.Light.Base" parent="AlertDialogStyle.Light">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="android:background">?attr/screenDefaultBackgroundColor</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SyncDisableDialog.Dark.Base" parent="Theme.AppCompat.Dialog">
+    <style name="SyncDisableDialog.Dark.Base" parent="AlertDialogStyle.Dark">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
-        <item name="android:background">?attr/screenDefaultBackgroundColor</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorPrimary">?attr/grayScaleColorOnBackground1</item>
         <item name="colorAccent">@color/colorAccent</item>
