@@ -29,7 +29,7 @@
                 tools:text="p≡p"
                 android:textSize="24sp"
                 android:gravity="center_vertical"
-                android:textColor="?attr/colorPrimaryDark"
+                android:textColor="?attr/colorPrimary"
                 android:id="@+id/toolbar_pEp_title"
                 android:fontFamily="@font/univers_lts_sd"/>
 
