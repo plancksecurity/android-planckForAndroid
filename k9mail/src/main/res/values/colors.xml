@@ -91,4 +91,8 @@
     <color name="unread_count_background">#ffcc0000</color>
     <color name="rounded_corners">#a0000000</color>
 
+    <color name="colorPrimaryDark_dark_theme">@color/dark_theme_overlay_1</color>
+    <color name="dark_theme_default_background">#121212</color>
+    <color name="dark_theme_overlay_1">#1F1F1F</color>
+
 </resources>

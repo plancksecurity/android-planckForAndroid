@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
@@ -3054,8 +3055,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void updateToolbarColorToOriginal() {
-        toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
-        toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
     }
 
     boolean isMessageSelected(Cursor cursor) {
