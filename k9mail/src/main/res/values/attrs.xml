@@ -111,6 +111,8 @@
         <attr name="allMessagesIcon" format="reference"/>
         <attr name="drawer_body_icons_color" format="reference|color"/>
         <attr name="defaultDialogBackground" format="reference|color"/>
+        <attr name="iconActionCheckMail" format="reference"/>
+        <attr name="iconActionFilter" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
