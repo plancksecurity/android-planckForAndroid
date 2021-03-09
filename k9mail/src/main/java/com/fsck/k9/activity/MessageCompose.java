@@ -873,6 +873,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void performSendAfterChecks() {
         currentMessageBuilder = createMessageBuilder(false);
         if (currentMessageBuilder != null) {
+            processingSend();
             changesMadeSinceLastSave = false;
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.buildAsync(this);
@@ -1076,7 +1077,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 if (isMessageRatingBeingLoaded) {
                     FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 } else if (!isProcessingSendClick) {
-                    processingSend();
                     if (isMessageRatingNotAvailable()) {
                         messageRatingIsBeingLoaded();
                     }

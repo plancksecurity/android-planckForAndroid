@@ -141,8 +141,13 @@ public class MessageWebView extends RigidWebView {
 
     private void setHtmlContent(@NonNull String htmlText) {
         String html = forceBreakWordsHeader(htmlText);
+        html = removeAllHttp(html);
         loadDataWithBaseURL("about:blank", html, "text/html", "utf-8", null);
         resumeTimers();
+    }
+
+    private String removeAllHttp(String html) {
+        return html.replace("http://", "https://");
     }
 
     /*

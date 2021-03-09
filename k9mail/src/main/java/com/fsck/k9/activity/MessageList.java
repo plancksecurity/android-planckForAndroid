@@ -2085,6 +2085,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
+        addMessageListFragment(fragment, addToBackStack, true);
+    }
+
+    private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack, boolean popPrevious) {
         mMessageListFragment.deselectAll();
 
         FragmentManager fm = getSupportFragmentManager();
@@ -2092,7 +2096,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         ft.replace(R.id.message_list_container, fragment);
 
-        fm.popBackStack();
+        if(popPrevious) {
+            fm.popBackStack();
+        }
 
         if (addToBackStack)
             ft.addToBackStack(null);
@@ -2131,7 +2137,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         tmpSearch.and(SearchField.THREAD_ID, String.valueOf(threadRootId), Attribute.EQUALS);
 
         MessageListFragment fragment = MessageListFragment.newInstance(tmpSearch, true, false);
-        addMessageListFragment(fragment, true);
+        addMessageListFragment(fragment, true, false);
     }
 
     private void showMessageViewPlaceHolder() {
