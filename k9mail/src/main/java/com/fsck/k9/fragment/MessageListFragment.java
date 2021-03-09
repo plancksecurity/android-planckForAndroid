@@ -820,20 +820,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onPause() {
         super.onPause();
 
-        localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
-        activityListener.onPause(getActivity());
-        messagingController.removeListener(activityListener);
-        destroyLoaders();
     }
 
     /**
-     * On resume we refresh messages for the folder that is currently open.
+     * On start we refresh messages for the folder that is currently open.
      * This guarantees that things like unread message count and read status
      * are updated.
      */
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         ((MessageList) requireActivity()).setThreadDisplay(isThreadDisplay);
         showLoadingMessages();
 
@@ -2578,6 +2574,10 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onStop() {
         deselectAll();
+        localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
+        activityListener.onPause(getActivity());
+        messagingController.removeListener(activityListener);
+
         // If we represent a remote search, then kill that before going back.
         if (isRemoteSearch() && remoteSearchFuture != null) {
             try {
@@ -2599,6 +2599,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 Timber.e(e, "Could not abort remote search before going back");
             }
         }
+        destroyLoaders();
         super.onStop();
     }
 
