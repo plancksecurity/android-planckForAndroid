@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_1"
+                android:textColor="@color/pep_yellow"
                 app:layout_constraintStart_toEndOf="@+id/ic_secure"
                 app:layout_constraintTop_toTopOf="@+id/ic_secure" />
 
@@ -62,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_2"
+                android:textColor="@color/pep_green"
                 app:layout_constraintStart_toEndOf="@+id/ic_secure_trusted"
                 app:layout_constraintTop_toTopOf="@+id/ic_secure_trusted" />
 
@@ -91,6 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_3"
+                android:textColor="@color/pep_red"
                 app:layout_constraintStart_toEndOf="@+id/ic_mistrusted"
                 app:layout_constraintTop_toTopOf="@+id/ic_mistrusted" />
 
