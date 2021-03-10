@@ -100,6 +100,7 @@
         <attr name="grayScaleColorOnBackground3" format="reference|color"/>
         <attr name="grayScaleColorOnBackground4" format="reference|color"/>
         <attr name="syncDisableDialogStyle" format="reference"/>
+        <attr name="resetAllAccountsDialogStyle" format="reference"/>
         <attr name="iconConfigureAccount" format="reference"/>
         <attr name="iconAddAccount" format="reference"/>
         <attr name="answeredForwardedIconColor" format="reference|color"/>

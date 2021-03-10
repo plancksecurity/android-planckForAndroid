@@ -135,7 +135,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                AlertDialog.Builder(view?.context)
+                AlertDialog.Builder(view?.context,
+                    ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
                         .setTitle(R.string.pep_key_reset_all_own_ids_summary)
                         .setCancelable(false)

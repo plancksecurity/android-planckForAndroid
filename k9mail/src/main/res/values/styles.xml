@@ -244,6 +244,11 @@
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
+    <style name="RedButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/pep_red</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
     <style name="SyncDisableDialog.Light.Base" parent="AlertDialogStyle.Light">
         <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="android:buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
@@ -264,6 +269,16 @@
     <style name="SyncDisableDialog.Dark" parent="SyncDisableDialog.Dark.Base">
         <item name="android:layout_height">@dimen/key_import_floating_height</item>
         <item name="android:layout_width">@dimen/key_import_floating_width</item>
+    </style>
+
+    <style name="ResetAllAccountsDialog.Light" parent="AlertDialogStyle.Light">
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
+    </style>
+
+    <style name="ResetAllAccountsDialog.Dark" parent="AlertDialogStyle.Dark">
+        <item name="android:buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/RedButtonStyle</item>
     </style>
 </resources>
 
