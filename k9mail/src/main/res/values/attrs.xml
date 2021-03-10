@@ -167,6 +167,8 @@
     <declare-styleable name="Buttons">
         <attr name="negativeButtonDefaultColor" format="reference|color"/>
         <attr name="fab_menu_background_tint" format="reference|color"/>
+        <attr name="compose_fab_background_tint" format="reference|color"/>
+        <attr name="compose_fab_drawable_color" format="reference|color"/>
     </declare-styleable>
 
 </resources>

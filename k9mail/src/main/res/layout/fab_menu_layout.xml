@@ -7,12 +7,10 @@
     android:layout_height="wrap_content"
     android:layout_alignParentEnd="true"
     android:layout_alignParentBottom="true"
-    android:layout_marginBottom="16dp"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingStart="8dp"
-    android:paddingTop="4dp"
-    android:paddingEnd="20dp">
+    android:paddingTop="4dp">
 
     <TextView
         android:id="@+id/textviewForward"

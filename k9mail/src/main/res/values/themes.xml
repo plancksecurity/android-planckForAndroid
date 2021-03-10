@@ -211,6 +211,8 @@
         <item name="iconActionCheckMail">@drawable/ic_check_mail_24dp</item>
         <item name="iconActionFilter">@drawable/ic_filter_list_24dp</item>
         <item name="intro_actionbar_screenshot">@drawable/intro_actionbar_screenshot_light</item>
+        <item name="compose_fab_background_tint">@color/colorAccent</item>
+        <item name="compose_fab_drawable_color">@color/white</item>
 
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
@@ -355,6 +357,8 @@
         <item name="iconActionCheckMail">@drawable/ic_check_mail_24dp</item>
         <item name="iconActionFilter">@drawable/ic_filter_list_24dp</item>
         <item name="intro_actionbar_screenshot">@drawable/intro_actionbar_screenshot_dark</item>
+        <item name="compose_fab_background_tint">@color/fab_menu_background_tint_dark_theme</item>
+        <item name="compose_fab_drawable_color">@color/colorPrimary</item>
 
     </style>
 
