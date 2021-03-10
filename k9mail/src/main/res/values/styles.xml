@@ -153,7 +153,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="OverlayTheme" parent="AppTheme.NoActionBar">
+    <style name="OverlayTheme" parent="Theme.K9.DayNight">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -163,6 +163,7 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:textColor">?attr/dialogBodyDefaultTextColor</item>
     </style>
 
     <style name="FilePickerTheme.Light" parent="NNF_BaseTheme.Light">
