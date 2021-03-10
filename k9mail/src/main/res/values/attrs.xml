@@ -161,6 +161,7 @@
         <attr name="introPrimaryColor" format="reference|color"/>
         <attr name="introIndicatorColor" format="reference|color"/>
         <attr name="introSeparatorColor" format="reference|color"/>
+        <attr name="intro_actionbar_screenshot" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="Buttons">
