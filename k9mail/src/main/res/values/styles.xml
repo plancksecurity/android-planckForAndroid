@@ -98,7 +98,7 @@
 
     <style name="PEpStyleButton.Red">
         <item name="colorControlHighlight">@color/dark_red</item>
-        <item name="colorButtonNormal">?attr/negativeButtonDefaultColor</item>
+        <item name="colorButtonNormal">?attr/rejectButtonDefaultColor</item>
     </style>
 
     <style name="PEpStyleButton.Green">
@@ -235,12 +235,12 @@
     </style>
 
     <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">?attr/grayScaleColorOnBackground2</item>
+        <item name="android:textColor">?attr/negativeButtonColor</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
     <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">?attr/intenseColorOnBackground</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 

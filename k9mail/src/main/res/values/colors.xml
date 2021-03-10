@@ -102,5 +102,6 @@
     <color name="dark_theme_default_dialog_background">@color/dark_theme_overlay_1</color>
     <color name="dark_theme_preferences_icons_color">@color/white_transparent_90</color>
     <color name="dark_theme_text_color_primary">@color/white_transparent_90</color>
+    <color name="white_transparent_70">#B3FFFFFF</color>
 
 </resources>

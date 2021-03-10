@@ -115,6 +115,7 @@
         <attr name="iconActionCheckMail" format="reference"/>
         <attr name="iconActionFilter" format="reference"/>
         <attr name="dialogBodyDefaultTextColor" format="reference|color"/>
+        <attr name="intenseColorOnBackground" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
@@ -167,10 +168,11 @@
     </declare-styleable>
 
     <declare-styleable name="Buttons">
-        <attr name="negativeButtonDefaultColor" format="reference|color"/>
+        <attr name="rejectButtonDefaultColor" format="reference|color"/>
         <attr name="fab_menu_background_tint" format="reference|color"/>
         <attr name="compose_fab_background_tint" format="reference|color"/>
         <attr name="compose_fab_drawable_color" format="reference|color"/>
+        <attr name="negativeButtonColor" format="reference|color"/>
     </declare-styleable>
 
 </resources>
