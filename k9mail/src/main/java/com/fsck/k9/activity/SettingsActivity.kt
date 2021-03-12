@@ -448,12 +448,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * @return false if unsuccessful
      */
     private fun onOpenAccount(account: BaseAccount?): Boolean {
+        account?: return false
         if (account is SearchAccount) {
-            val searchAccount = account as SearchAccount?
-            openSearchAccount(searchAccount)
+            openSearchAccount(account)
         } else {
-            val realAccount = account as Account?
-            if(!canOpenAccount(realAccount!!)) return false
+            val realAccount = account as Account
+            if(!accountWasOpenable(realAccount)) return false
             openAccount(realAccount)
         }
         return true
@@ -474,7 +474,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
     }
 
-    private fun canOpenAccount(realAccount: Account): Boolean {
+    private fun accountWasOpenable(realAccount: Account): Boolean {
         if (!realAccount.isEnabled) {
             onActivateAccount(realAccount)
             return false
@@ -1130,7 +1130,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 openSearchAccount(unifiedInboxAccount)
             } else {
                 val defaultAccount = Preferences.getPreferences(this@SettingsActivity).defaultAccount
-                if(canOpenAccount(defaultAccount)) {
+                if(accountWasOpenable(defaultAccount)) {
                     finishAffinity()
                     openAccount(defaultAccount)
                 }
