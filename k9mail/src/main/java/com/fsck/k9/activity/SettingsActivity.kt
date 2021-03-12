@@ -780,6 +780,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK)
             return
