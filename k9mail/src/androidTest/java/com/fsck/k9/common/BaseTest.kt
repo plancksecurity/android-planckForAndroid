@@ -79,7 +79,6 @@ open class BaseTest {
         device.setOrientationNatural()
 
         // Start from the home screen
-        // device.pressHome()
         Intents.init()
         waitLauncher()
         waitAppLaunch()
