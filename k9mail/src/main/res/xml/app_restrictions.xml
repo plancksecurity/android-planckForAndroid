@@ -8,4 +8,11 @@
         android:restrictionType="string"
         android:title="@string/pep_enable_privacy_protection"/>
 
+    <restriction
+        android:defaultValue="true"
+        android:description="@string/extra_key"
+        android:key="pep_extra_keys"
+        android:restrictionType="string"
+        android:title="@string/extra_key"/>
+
 </restrictions>

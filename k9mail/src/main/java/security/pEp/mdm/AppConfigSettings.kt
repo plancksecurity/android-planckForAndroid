@@ -29,3 +29,6 @@ data class ManageableSettingMdmEntry<TYPE>(
             ManageableSetting(value = value, locked = locked)
 }
 
+@Serializable
+data class ExtraKey(@SerialName("fpr") val fpr: String)
+
