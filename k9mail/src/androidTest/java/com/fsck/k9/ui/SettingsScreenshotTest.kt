@@ -175,6 +175,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("account fetching email setting scrolled")
 
         clickSettingDialog(R.string.account_settings_incoming_label, "account incoming server setting")
+        expandSetting(R.string.account_settings_mail_display_count_label)
         clickSettingDialog(R.string.account_settings_mail_display_count_label, "account local folder size setting")
         clickSettingDialog(R.string.account_settings_message_age_label, "account sync messages from setting")
         clickSettingDialog(R.string.account_settings_autodownload_message_size_label, "account fetch messages up to setting")
@@ -199,6 +200,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSettingDialog(R.string.account_settings_identities_label, "account manage identities setting")
         clickSettingDialog(R.string.account_settings_message_format_label, "account message format setting")
         clickSettingDialog(R.string.account_settings_outgoing_label, "account outgoing server setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_quote_style_label, "account reply quoting style setting")
         clickSettingDialog(R.string.account_settings_quote_prefix_label, "account quoted text preview setting")
         Espresso.pressBack()
@@ -252,6 +254,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSettingDialog(R.string.reset, "account reset setting")
         click(getString(R.string.cancel_action))
 
+        expandSetting(R.string.pep_sync_enable_account)
         importKey()
         Espresso.pressBack()
     }
