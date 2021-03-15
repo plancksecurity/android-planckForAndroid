@@ -193,7 +193,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
-        mInitialized = true;
         ((MessageList) getActivity()).hideSearchView();
     }
 
