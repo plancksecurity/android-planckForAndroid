@@ -1,5 +1,17 @@
 def workProfileUser
 
+task installApkAppConfig(type: Exec) {
+    dependsOn uninstallAll
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
+    commandLine command
+}
+
+task installTestAppConfig(type: Exec) {
+    dependsOn installApkAppConfig
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
+    commandLine command
+}
+
 task getUserProfile() {
     if (project.hasProperty("user")) {
         workProfileUser = project.getProperty("user")
