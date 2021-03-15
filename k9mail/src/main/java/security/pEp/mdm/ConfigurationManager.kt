@@ -44,9 +44,9 @@ class ConfigurationManager(
         value?.let {
             val config = AppConfigEntry(entry.key, value).getValue<List<ExtraKey>>()?.toManageableSetting()
             config?.let {newExtraKeys ->
-                val currentKeys = K9.getMasterKeys()
+                val currentKeys = K9.getMasterKeys().toSet()
                 newExtraKeys.value.forEach { extraKey ->
-                    currentKeys.add(extraKey.fpr)
+                    currentKeys.plus(extraKey.fpr)
                 }
                 K9.setMasterKeys(currentKeys)
             }
