@@ -43,9 +43,8 @@ class SendErrorFeedbackPresenter @Inject constructor(
         account = preferences.getAccount(accountUuid)
         this.title = title
         this.text = text
-        val messageReference = MessageReference.parse(messageReferenceString)
-        messageReference?.let {
-            loadMessage(it)
+        MessageReference.parse(messageReferenceString)?.let { messageReference ->
+            loadMessage(messageReference)
         }
     }
 
