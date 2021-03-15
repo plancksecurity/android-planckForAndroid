@@ -4,6 +4,7 @@ import android.content.*
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 
 class ConfigurationManager(
@@ -12,6 +13,7 @@ class ConfigurationManager(
 
     companion object {
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
+        const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
     }
 
     private var listener: RestrictionsListener? = null
@@ -32,6 +34,21 @@ class ConfigurationManager(
         entries.forEach { entry ->
             when (entry.key) {
                 RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> savePrivacyProtection(restrictions, entry)
+                RESTRICTION_PEP_EXTRA_KEYS -> saveExtrasKeys(restrictions, entry)
+            }
+        }
+    }
+
+    private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfigEntry(entry.key, value).getValue<List<ExtraKey>>()?.toManageableSetting()
+            config?.let {newExtraKeys ->
+                val currentKeys = K9.getMasterKeys()
+                newExtraKeys.value.forEach { extraKey ->
+                    currentKeys.add(extraKey.fpr)
+                }
+                K9.setMasterKeys(currentKeys)
             }
         }
     }

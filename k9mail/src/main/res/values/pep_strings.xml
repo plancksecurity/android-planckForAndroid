@@ -312,5 +312,7 @@
 
     <string name="mdm_controlled_dialog_explanation">This setting is restricted, please contact you IT Manager</string>
 
+    <string name="extra_key">Extra Key</string>
+
 
 </resources>
