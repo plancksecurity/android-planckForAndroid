@@ -10,9 +10,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- *  This 2 test need to be run in an clean app, before run it clean the app data
- */
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
