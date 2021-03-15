@@ -31,10 +31,10 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
             return
         }
 
-        val accountUuid = extras.getString(EXTRA_ACCOUNT_UUID) ?: ""
-        val title = extras.getString(EXTRA_TITLE) ?: ""
-        val text = extras.getString(EXTRA_TEXT) ?: ""
-        val messageReferenceString = extras.getString(EXTRA_MESSAGE_REFERENCE) ?: ""
+        val accountUuid = extras.getString(EXTRA_ACCOUNT_UUID, "")
+        val title = extras.getString(EXTRA_TITLE, "")
+        val text = extras.getString(EXTRA_TEXT, "")
+        val messageReferenceString = extras.getString(EXTRA_MESSAGE_REFERENCE, "")
 
         presenter.initialize(this, MessagingController.getInstance(this),
             accountUuid, title, text, messageReferenceString)
