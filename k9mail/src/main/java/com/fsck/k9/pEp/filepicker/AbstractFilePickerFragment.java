@@ -599,7 +599,13 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     }
 
     @Override
+    public int getHeaderItemViewType() {
+        return LogicHandler.VIEWTYPE_HEADER;
+    }
+
+    @Override
     public void onBindHeaderViewHolder(@NonNull HeaderViewHolder viewHolder) {
+        viewHolder.itemView.setVisibility(View.VISIBLE);
         viewHolder.text.setText("..");
     }
 

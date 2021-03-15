@@ -107,4 +107,6 @@ public interface LogicHandler<T> {
      * @return an integer greater than 0
      */
     int getItemViewType(int position, @NonNull T data);
+
+    int getHeaderItemViewType();
 }
