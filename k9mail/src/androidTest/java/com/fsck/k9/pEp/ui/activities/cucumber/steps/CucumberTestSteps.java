@@ -435,6 +435,9 @@ public class CucumberTestSteps {
     public void I_reset_handshake() {
         timeRequiredForThisMethod(10);
         testUtils.selectFromMenu(R.string.pep_title_activity_privacy_status);
+        while (!exists(onView(withId(R.id.button_identity_key_reset)))) {
+            testUtils.waitForIdle();
+        }
         onView(withId(R.id.button_identity_key_reset)).perform(click());
         testUtils.waitForIdle();
         testUtils.pressBack();
