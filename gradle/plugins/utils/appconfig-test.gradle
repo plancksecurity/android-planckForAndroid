@@ -13,6 +13,7 @@ task installTestAppConfig(type: Exec) {
 }
 
 task getUserProfile() {
+    dependsOn installTestAppConfig
     if (project.hasProperty("user")) {
         workProfileUser = project.getProperty("user")
         println "getUserProfile [" + workProfileUser + "]"
