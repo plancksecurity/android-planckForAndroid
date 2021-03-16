@@ -2576,6 +2576,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      */
     @Override
     public void onStop() {
+        deselectAll();
         // If we represent a remote search, then kill that before going back.
         if (isRemoteSearch() && remoteSearchFuture != null) {
             try {
@@ -2604,7 +2605,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setSelectionState(true);
     }
 
-    public void deselectAll() {
+    private void deselectAll() {
         setSelectionState(false);
     }
 

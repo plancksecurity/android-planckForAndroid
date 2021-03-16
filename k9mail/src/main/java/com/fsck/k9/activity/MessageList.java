@@ -533,7 +533,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void refreshMessages(LocalSearch search) {
-        mMessageListFragment.deselectAll();
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
@@ -1590,7 +1589,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack, boolean popPrevious) {
-        mMessageListFragment.deselectAll();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
