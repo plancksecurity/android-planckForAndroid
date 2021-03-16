@@ -124,6 +124,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
     private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
+    private static final String STATE_ACCOUNT_UUID = "accountUuid";
 
     // Used for navigating to next/previous message
     private static final int PREVIOUS = 1;
@@ -134,6 +135,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private boolean isThreadDisplayed;
     private MessageSwipeDirection direction;
     private String specialAccountUuid;
+    private String accountUuid;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask, boolean isFolder) {
@@ -341,6 +343,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayoutView.initDrawerView(drawerLayout, this);
+        restoreAccountUuid(savedInstanceState);
+
         if (!decodeExtras(getIntent())) {
             return;
         }
@@ -357,6 +361,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
                 R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayoutView.initializeDrawerToggle(toggle);
+    }
+
+    private void restoreAccountUuid(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            accountUuid = savedInstanceState.getString(STATE_ACCOUNT_UUID);
+        }
     }
 
     @Override
@@ -711,19 +721,19 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mSearch.searchAllAccounts()) {
             List<Account> accounts = preferences.getAccounts();
             mSingleAccountMode = (accounts.size() == 1);
-            if (mSingleAccountMode) {
-                mAccount = accounts.get(0);
-            } else {
-                mAccount = preferences.getDefaultAccount();
-            }
-            drawerLayoutView.updateAccount(mAccount);
+            mAccount = accounts.get(0);
         } else {
-            mSingleAccountMode = (accountUuids.length == 1);
-            if (mSingleAccountMode) {
-                mAccount = preferences.getAccount(accountUuids[0]);
-                drawerLayoutView.updateAccount(mAccount);
+            if (accountUuid != null) {
+                mAccount = preferences.getAccount(accountUuid);
+                mSingleAccountMode = true;
+            } else {
+                mSingleAccountMode = (accountUuids.length == 1);
+                if (mSingleAccountMode) {
+                    mAccount = preferences.getAccount(accountUuids[0]);
+                }
             }
         }
+        drawerLayoutView.updateAccount(mAccount);
         mSingleFolderMode = mSingleAccountMode && (mSearch.getFolderNames().size() == 1);
 
         if (mSingleAccountMode && (mAccount == null || !mAccount.isAvailable(this))) {
@@ -797,6 +807,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         outState.putSerializable(STATE_DISPLAY_MODE, mDisplayMode);
         outState.putBoolean(STATE_MESSAGE_LIST_WAS_DISPLAYED, mMessageListWasDisplayed);
         outState.putInt(STATE_FIRST_BACK_STACK_ID, mFirstBackStackId);
+        if (mAccount != null && !mSearch.isManualSearch()) {
+            outState.putString(STATE_ACCOUNT_UUID, mAccount.getUuid());
+        }
     }
 
     @Override
