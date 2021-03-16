@@ -2930,6 +2930,7 @@ public class TestUtils {
                         return;
                     }
                 }
+                swipeDownScreen();
             } catch (Exception noButton) {
                 Timber.i("Cannot find SHOW PICTURES button");
             }
