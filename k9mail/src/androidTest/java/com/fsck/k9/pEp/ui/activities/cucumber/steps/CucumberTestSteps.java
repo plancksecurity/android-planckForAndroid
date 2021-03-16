@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -1602,40 +1603,29 @@ public class CucumberTestSteps {
                 }
             }
         }
-        Rect pic1 = null;
-        Rect pic2 = null;
-        Rect pic3 = null;
-        while (pic1 == null || pic2 == null || pic3 == null) {
-            try {
-                testUtils.waitForIdle();
-                pic1 = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
-                pic2 = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
-                pic3 = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
-                testUtils.waitForIdle();
-            } catch (Exception noPic) {
-                testUtils.swipeDownScreen();
-                Timber.i("Cannot find pictures");
-            }
-        }
+        List<UiObject2> images = device.findObjects(By.clazz("android.widget.Image"));
+        int pic0 = testUtils.getPixelColor(images.get(0).getVisibleBounds().centerX(),
+                images.get(0).getVisibleBounds().centerY());
+        int pic1 = testUtils.getPixelColor(images.get(1).getVisibleBounds().centerX(),
+                images.get(1).getVisibleBounds().centerY());
+        int pic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
+                images.get(2).getVisibleBounds().centerY());
         testUtils.pressShowPicturesButton();
+        testUtils.goBackToMessageList();
         testUtils.waitForIdle();
-        Rect pic1visible = null;
-        Rect pic2visible = null;
-        Rect pic3visible = null;
-        while (pic1visible == null || pic2visible == null || pic3visible == null) {
-            try {
-                testUtils.waitForIdle();
-                pic1visible = device.findObjects(By.clazz("android.widget.Image")).get(0).getVisibleBounds();
-                pic2visible = device.findObjects(By.clazz("android.widget.Image")).get(1).getVisibleBounds();
-                pic3visible = device.findObjects(By.clazz("android.widget.Image")).get(2).getVisibleBounds();
-            } catch (Exception ex) {
-                Timber.i("Waiting for Image bounds...");
-            }
-        }
-        if (pic1.toString().equals(pic1visible.toString()) ||
-                pic2.toString().equals(pic2visible.toString()) ||
-                pic3.toString().equals(pic3visible.toString())) {
-            testUtils.assertFailWithMessage("Not showing pictures or they were shown before");
+        testUtils.clickLastMessage();
+        testUtils.waitForIdle();
+        testUtils.swipeUpScreen();
+        testUtils.waitForIdle();
+        images = device.findObjects(By.clazz("android.widget.Image"));
+        int newPic0 = testUtils.getPixelColor(images.get(0).getVisibleBounds().centerX(),
+                images.get(0).getVisibleBounds().centerY());
+        int newPic1 = testUtils.getPixelColor(images.get(1).getVisibleBounds().centerX(),
+                images.get(1).getVisibleBounds().centerY());
+        int newPic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
+                images.get(2).getVisibleBounds().centerY());
+        if (pic0 == newPic0 || pic1 == newPic1 || pic2 == newPic2) {
+            testUtils.assertFailWithMessage("Cannot show images or were shown before");
         }
         if (testUtils.test_number().equals("9")) {
             testUtils.waitForIdle();
