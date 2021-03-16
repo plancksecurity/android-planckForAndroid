@@ -770,7 +770,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         super.onPause();
 
         StorageManager.getInstance(getApplication()).removeListener(mStorageListener);
-        drawerLayoutView.clearFolders();
     }
 
     @Override

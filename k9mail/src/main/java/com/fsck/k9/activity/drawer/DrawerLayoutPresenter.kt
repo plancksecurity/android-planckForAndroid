@@ -74,7 +74,7 @@ class DrawerLayoutPresenter @Inject constructor(
             false
         }
         when {
-            isSameUid -> setupFolders()
+            isSameUid -> setupFolders(true)
             account != null -> getFolders()
         }
     }
@@ -120,8 +120,8 @@ class DrawerLayoutPresenter @Inject constructor(
                 })
     }
 
-    private fun setupFolders() {
-        drawerView.populateFolders(account!!, menuFolders!!)
+    private fun setupFolders(force: Boolean = false) {
+        drawerView.populateFolders(account!!, menuFolders!!, force)
         drawerView.setupMainFolders(unifiedInboxAccount, allMessagesAccount)
         loadSearchAccountStats()
     }

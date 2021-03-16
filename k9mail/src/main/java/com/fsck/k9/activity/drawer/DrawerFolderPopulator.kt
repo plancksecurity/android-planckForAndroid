@@ -55,17 +55,14 @@ class DrawerFolderPopulator @Inject constructor() {
 
     private suspend fun calculateNewUnread(newFolders: List<LocalFolder>): IntArray {
         return withContext(Dispatchers.IO) {
-            val newUnreadCounts: IntArray = IntArray(newFolders.size) {index ->
-                if(lastUnreadCounts.size == newFolders.size) {
-                    lastUnreadCounts[index]
-                } else {0}
+            val newUnreadCounts = IntArray(newFolders.size) { index ->
+                if (lastUnreadCounts.size == newFolders.size) lastUnreadCounts[index] else 0
             }
 
             newFolders.forEachIndexed { index, localFolder ->
                 try {
                     newUnreadCounts[index] = localFolder.unreadMessageCount
-                }
-                catch (e: MessagingException) {
+                } catch (e: MessagingException) {
                     Timber.e(e)
                 }
             }

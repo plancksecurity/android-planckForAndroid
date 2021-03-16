@@ -15,7 +15,7 @@ interface DrawerView {
     fun setAccountsAdapter(collection: ListAdapteeCollection<Account>)
     fun setFolderAdapter(collection: ListAdapteeCollection<FolderModel>)
     fun setFoldersDrawerVisible()
-    fun populateFolders(account: Account, menuFolders: List<LocalFolder>)
+    fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean)
     fun setupMainFolders(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount)
     fun setupUnifiedInboxUnreadMessages(stats: AccountStats)
     fun setupAllMessagesUnreadMessages(stats: AccountStats)

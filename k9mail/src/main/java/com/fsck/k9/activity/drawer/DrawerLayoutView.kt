@@ -125,8 +125,6 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    fun clearFolders() = drawerFolderPopulator.clearFolders()
-
     override fun setupNavigationHeaderListeners(showingAccountsMenu: Boolean) {
         menuHeader.setOnClickListener {
             if (!showingAccountsMenu) {
@@ -247,10 +245,10 @@ class DrawerLayoutView @Inject constructor(
                 .apply { duration = 500 }
     }
 
-    override fun populateFolders(account: Account, menuFolders: List<LocalFolder>) {
+    override fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean) {
         (context as Activity).runOnUiThread {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, account)
+            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, account, force)
         }
     }
 
