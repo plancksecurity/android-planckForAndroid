@@ -218,7 +218,7 @@ class DrawerLayoutView @Inject constructor(
     private fun changeAccountAnimation(goToView: View, fromView: View, accountClicked: Account) {
         val anim = createTranslateAnimation(fromView, goToView)
         fromView.startAnimation(anim)
-        initDrawerListenerAfterAccountChanged(fromView, accountClicked)
+        initDrawerListener(fromView, accountClicked)
         anim.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(animation: Animation) {
                 goToView.startAnimation(disappearAnimation)
@@ -300,9 +300,7 @@ class DrawerLayoutView @Inject constructor(
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
         folderRenderer.setFolderClickListener(object : OnFolderClickListener {
             override fun onClick(folder: LocalFolder) {
-                messageListView.updateFolderName(folder.name)
-                messageListView.showLoadingMessages()
-                initDrawerListenerOnFolderChanged(folder)
+                changeFolder(folder)
             }
 
             override fun onClick(position: Int) {}
@@ -311,6 +309,13 @@ class DrawerLayoutView @Inject constructor(
         navigationFolders.layoutManager = getDrawerLayoutManager()
         folderAdapter = RVRendererAdapter(rendererFolderBuilder, collection)
         navigationFolders.adapter = folderAdapter
+    }
+
+    private fun changeFolder(folder: LocalFolder) {
+        messageListView.updateFolderName(folder.name)
+        messageListView.showLoadingMessages()
+        messageListView.onDrawerClosed(folder)
+        drawerLayout.closeDrawers()
     }
 
     override fun setAccountsAdapter(collection: ListAdapteeCollection<Account>) {
@@ -328,7 +333,10 @@ class DrawerLayoutView @Inject constructor(
         messageListView.showLoadingMessages()
         messageListView.updateAccount(account)
         messageListView.updateLastUsedAccount()
-        initDrawerListenerOnAccountChanged(account)
+        drawerLayoutPresenter.onAccountClicked(account)
+        navFoldersAccountsButton.showAccounts()
+        messageListView.changeAccountsOrder()
+        drawerLayout.closeDrawers()
     }
 
     private fun setupCreateConfigAccountListeners() {
@@ -360,7 +368,7 @@ class DrawerLayoutView @Inject constructor(
         return folders.filter { folder -> folder.name != allMessagesFolderName && folder.name != unifiedFolderName }
     }
 
-    private fun initDrawerListenerAfterAccountChanged(fromView: View, accountClicked: Account) {
+    private fun initDrawerListener(fromView: View, accountClicked: Account) {
         drawerCloseListener = onDrawerClosed {
             fromView.startAnimation(scaleUpAnimation)
             drawerLayout.closeDrawers()
@@ -369,26 +377,6 @@ class DrawerLayoutView @Inject constructor(
             messageListView.changeAccountsOrder()
             drawerLayout.removeDrawerListener(drawerCloseListener)
         }
-    }
-
-    private fun initDrawerListenerOnAccountChanged(account: Account) {
-        drawerCloseListener = onDrawerClosed {
-            drawerLayoutPresenter.onAccountClicked(account)
-            navFoldersAccountsButton.showAccounts()
-            drawerLayout.removeDrawerListener(drawerCloseListener)
-            messageListView.changeAccountsOrder()
-        }
-        drawerLayout.addDrawerListener(drawerCloseListener)
-        drawerLayout.closeDrawers()
-    }
-
-    fun initDrawerListenerOnFolderChanged(folder: LocalFolder) {
-        drawerCloseListener = onDrawerClosed {
-            messageListView.onDrawerClosed(folder)
-            drawerLayout.removeDrawerListener(drawerCloseListener)
-        }
-        drawerLayout.addDrawerListener(drawerCloseListener)
-        drawerLayout.closeDrawers()
     }
 
     fun loadNavigationView() {
