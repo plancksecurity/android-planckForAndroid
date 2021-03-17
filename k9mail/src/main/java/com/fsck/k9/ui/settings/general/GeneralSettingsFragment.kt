@@ -13,7 +13,6 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
-import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.ui.settings.onClick
@@ -218,14 +217,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
             result.data?.path?.let {
                 setAttachmentDefaultPath(it)
-            }
-        }
-        //TODO: merge
-        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
-            val files = Utils.getSelectedFilesFromResult(result!!)
-            for (uri in files) {
-                val file = Utils.getFileForUri(uri)
-                setAttachmentDefaultPath(file.path)
             }
         }
     }
