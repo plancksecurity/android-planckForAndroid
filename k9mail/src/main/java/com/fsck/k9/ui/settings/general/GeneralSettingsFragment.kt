@@ -11,7 +11,6 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
-import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
@@ -31,7 +30,6 @@ import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
-    private val fileBrowserHelper: FileBrowserHelper by inject()
 
     private lateinit var attachmentDefaultPathPreference: Preference
 
