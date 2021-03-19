@@ -150,6 +150,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                     case R.id.share:
                         onMessageOptionsListener.OnMessageOptionsListener(MessageAction.SHARE);
                         break;
+                    case R.id.print:
+                        onMessageOptionsListener.OnMessageOptionsListener(MessageAction.PRINT);
+                        break;
                 }
                 return true;
             });

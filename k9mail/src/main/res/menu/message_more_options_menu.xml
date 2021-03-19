@@ -12,4 +12,7 @@
     <item
         android:id="@+id/share"
         android:title="@string/send_alternate_action"/>
+    <item
+        android:id="@+id/print"
+        android:title="@string/print_action"/>
 </menu>

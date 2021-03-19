@@ -44,16 +44,10 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
@@ -146,15 +140,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private AttachmentViewInfo currentAttachmentViewInfo;
 
-    private OnMessageOptionsListener messageOptionsListener = action -> {
-        if (action.equals(MessageAction.REPLY)) {
-            onReply();
-        } else if (action.equals(MessageAction.REPLY_ALL)) {
-            onReplyAll();
-        } else if (action.equals(MessageAction.FORWARD)) {
-            onForward();
-        } else if (action.equals(MessageAction.SHARE)) {
-            onSendAlternate();
+    private final OnMessageOptionsListener messageOptionsListener = action -> {
+        switch (action) {
+            case REPLY:
+                onReply();
+                break;
+            case REPLY_ALL:
+                onReplyAll();
+                break;
+            case FORWARD:
+                onForward();
+                break;
+            case SHARE:
+                onSendAlternate();
+                break;
+            case PRINT:
+                //onPrintMessage();
+                break;
         }
     };
 
