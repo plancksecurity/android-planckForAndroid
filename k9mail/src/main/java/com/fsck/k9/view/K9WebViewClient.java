@@ -27,7 +27,7 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 /**
  * {@link WebViewClient} that intercepts requests for {@code cid:} URIs to load the respective body part.
  */
-abstract class K9WebViewClient extends WebViewClient {
+public abstract class K9WebViewClient extends WebViewClient {
     private static final String CID_SCHEME = "cid";
     private static final WebResourceResponse RESULT_DO_NOT_INTERCEPT = null;
     private static final WebResourceResponse RESULT_DUMMY_RESPONSE = new WebResourceResponse(null, null, null);
