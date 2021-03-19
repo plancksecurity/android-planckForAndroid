@@ -22,6 +22,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.ThemeUtils;
@@ -323,4 +324,22 @@ public class MessageTopView extends RelativeLayout {
     public void setPrivacyProtected(boolean ispEpEnabled) {
         mHeaderContainer.setPrivacyProtected(ispEpEnabled);
     }
+
+    public String getCurrentHtml() {
+        View messageContainerViewCandidate = containerView.getChildAt(0);
+        if (messageContainerViewCandidate instanceof MessageContainerView) {
+            return ((MessageContainerView) messageContainerViewCandidate).getCurrentHtml();
+        }
+        return null;
+    }
+
+    public AttachmentResolver getCurrentAttachmentResolver() {
+        View messageContainerViewCandidate = containerView.getChildAt(0);
+        if (messageContainerViewCandidate instanceof MessageContainerView) {
+            return ((MessageContainerView) messageContainerViewCandidate).getCurrentAttachmentResolver();
+        }
+        return null;
+    }
+
+
 }

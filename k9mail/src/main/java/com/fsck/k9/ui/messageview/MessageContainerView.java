@@ -555,6 +555,14 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         return attachmentViewMap.get(attachment);
     }
 
+    public String getCurrentHtml() {
+        return currentHtmlText;
+    }
+
+    public AttachmentResolver getCurrentAttachmentResolver() {
+        return currentAttachmentResolver;
+    }
+
     static class SavedState extends BaseSavedState {
         boolean attachmentViewVisible;
         boolean showingPictures;
