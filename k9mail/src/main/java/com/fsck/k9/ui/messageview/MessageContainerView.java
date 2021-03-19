@@ -408,12 +408,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
             textToDisplay = HtmlConverter.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
         }
 
-        OnPageFinishedListener onPageFinishedListener = new OnPageFinishedListener() {
-            @Override
-            public void onPageFinished() {
-                onRenderingFinishedListener.onLoadFinished();
-            }
-        };
+        OnPageFinishedListener onPageFinishedListener = view -> onRenderingFinishedListener.onLoadFinished();
 
         displayHtmlContentWithInlineAttachments(
                 textToDisplay, messageViewInfo.attachmentResolver, onPageFinishedListener);

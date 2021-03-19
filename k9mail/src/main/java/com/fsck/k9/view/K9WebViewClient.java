@@ -125,7 +125,7 @@ abstract class K9WebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
         if (onPageFinishedListener != null) {
-            onPageFinishedListener.onPageFinished();
+            onPageFinishedListener.onPageFinished(view);
         }
     }
 
