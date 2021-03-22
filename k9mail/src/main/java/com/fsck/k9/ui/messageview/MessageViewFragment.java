@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -31,28 +30,20 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
-import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
+import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.helper.FileBrowserHelper;
-import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
@@ -94,7 +85,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;
     private static final int ACTIVITY_CHOOSE_FOLDER_COPY = 2;
-    private static final int ACTIVITY_CHOOSE_DIRECTORY = 3;
+    private static final int REQUEST_CODE_CREATE_DOCUMENT = 3;
 
     public static final int REQUEST_MASK_LOADER_HELPER = (1 << 8);
     public static final int REQUEST_MASK_CRYPTO_PRESENTER = (1 << 9);
@@ -536,16 +527,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         // launched through the MessageList activity, and delivered back via onPendingIntentResult()
 
         switch (requestCode) {
-            case ACTIVITY_CHOOSE_DIRECTORY: {
-                if (data != null) {
-                    // obtain the filename
-                    Uri fileUri = data.getData();
-                    if (fileUri != null) {
-                        String filePath = fileUri.getPath();
-                        if (filePath != null) {
-                            getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(filePath);
-                        }
-                    }
+            case REQUEST_CODE_CREATE_DOCUMENT: {
+                if (data != null && data.getData() != null) {
+                    getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(data.getData());
                 }
                 break;
             }
@@ -1002,29 +986,13 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         currentAttachmentViewInfo = attachment;
-        createPermissionListeners();
-        if (permissionChecker.hasWriteExternalPermission()) {
-            getAttachmentController(attachment).saveAttachment();
-        }
-    }
 
-    @Override
-    public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
-        //TODO: check if we have to download the attachment first
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.setType(attachment.mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, attachment.displayName);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
-        currentAttachmentViewInfo = attachment;
-        FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
-                ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
-                    @Override
-                    public void onPathEntered(String path) {
-                        getAttachmentController(attachment).saveAttachmentTo(path);
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        // Do nothing
-                    }
-                });
+        startActivityForResult(intent, REQUEST_CODE_CREATE_DOCUMENT);
     }
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
