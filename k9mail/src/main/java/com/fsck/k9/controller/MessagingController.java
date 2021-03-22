@@ -113,12 +113,10 @@ import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import foundation.pEp.jniadapter.exceptions.pEpException;
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
