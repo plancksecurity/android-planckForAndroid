@@ -1,12 +1,12 @@
 package com.fsck.k9.ui.settings.general
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.preference.*
+import androidx.preference.CheckBoxPreference
+import androidx.preference.MultiSelectListPreference
+import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -25,12 +25,9 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import security.pEp.ui.passphrase.PassphraseActivity
 import security.pEp.ui.passphrase.PassphraseRequirementType
-import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
-
-    private lateinit var attachmentDefaultPathPreference: Preference
 
     private var syncSwitchDialog: AlertDialog? = null
 
@@ -39,7 +36,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
-        initializeAttachmentDefaultPathPreference()
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()
         initializeNotificationQuickDelete()
@@ -60,26 +56,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(NEW_KEYS_PASSPHRASE)?.onClick {
             context?.let {
                 PassphraseActivity.notifyRequest(it, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
-            }
-        }
-    }
-
-    private fun initializeAttachmentDefaultPathPreference() {
-        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
-            attachmentDefaultPathPreference = this
-
-            summary = attachmentDefaultPath()
-            onClick {
-                fileBrowserHelper.showFileBrowserActivity(this@GeneralSettingsFragment,
-                        File(attachmentDefaultPath()), REQUEST_PICK_DIRECTORY,
-                        object : FileBrowserHelper.FileBrowserFailOverCallback {
-                            override fun onPathEntered(path: String) {
-                                setAttachmentDefaultPath(path)
-                            }
-
-                            override fun onCancel() = Unit
-                        }
-                )
             }
         }
     }
@@ -213,25 +189,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
-        if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
-            result.data?.path?.let {
-                setAttachmentDefaultPath(it)
-            }
-        }
-    }
-
-    private fun attachmentDefaultPath() = dataStore.getString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, "")
-
-    private fun setAttachmentDefaultPath(path: String) {
-        attachmentDefaultPathPreference.summary = path
-        dataStore.putString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, path)
-    }
-
     companion object {
-        private const val REQUEST_PICK_DIRECTORY = 1
-        const val FILE_CODE = 2
-        private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
         private const val PREFERENCE_CONFIRM_ACTIONS = "confirm_actions"
         private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"

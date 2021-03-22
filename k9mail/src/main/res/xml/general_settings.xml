@@ -402,10 +402,6 @@
             android:key="misc_preferences"
             android:title="@string/miscellaneous_preferences">
 
-            <Preference
-                android:key="attachment_default_path"
-                android:title="@string/settings_attachment_default_path" />
-
             <ListPreference
                 android:dialogTitle="@string/background_ops_label"
                 android:entries="@array/background_ops_entries"
