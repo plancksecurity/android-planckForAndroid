@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -1010,20 +1011,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
         currentAttachmentViewInfo = attachment;
-        FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
-                ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
-                    @Override
-                    public void onPathEntered(String path) {
-                        getAttachmentController(attachment).saveAttachmentTo(path);
-                    }
+        if(Build.VERSION.SDK_INT >= 29) {
+            getAttachmentController(attachment).saveAttachment();
+        } else {
+            FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
+                    ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
+                        @Override
+                        public void onPathEntered(String path) {
+                            getAttachmentController(attachment).saveAttachmentTo(path);
+                        }
 
-                    @Override
-                    public void onCancel() {
-                        // Do nothing
-                    }
-                });
+                        @Override
+                        public void onCancel() {
+                            // Do nothing
+                        }
+                    });
+        }
     }
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {

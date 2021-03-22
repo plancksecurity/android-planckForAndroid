@@ -70,6 +70,10 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeAttachmentDefaultPathPreference() {
         findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
             attachmentDefaultPathPreference = this
+            if(Build.VERSION.SDK_INT >= 29) {
+                isVisible = false
+                return@apply
+            }
 
             summary = attachmentDefaultPath()
             onClick {
