@@ -314,6 +314,7 @@ public class GlobalSettings {
         u.put(24, new SettingsUpgraderV24());
         u.put(31, new SettingsUpgraderV31());
         u.put(50, new SettingsUpgraderV50());
+        u.put(52, new SettingsUpgraderV52());
 
         UPGRADERS = Collections.unmodifiableMap(u);
     }
@@ -452,6 +453,24 @@ public class GlobalSettings {
             }
         }
 
+    }
+
+    /**
+     * Upgrades the settings from version 51 to 52.
+     *
+     * <p>
+     * Remove setting <em>attachmentdefaultpath</em>.
+     * </p>
+     */
+    public static class SettingsUpgraderV52 implements SettingsUpgrader {
+
+        @Override
+        public Set<String> upgrade(Map<String, Object> settings) {
+            Object obj = settings.get("attachmentdefaultpath");
+            return obj != null
+                ? new HashSet<>(Collections.singletonList("attachmentdefaultpath"))
+                : null;
+        }
     }
 
     private static class LanguageSetting extends PseudoEnumSetting<String> {
