@@ -163,18 +163,18 @@ public class CucumberTestSteps {
             testUtils.waitForIdle();
             Espresso.onIdle();
         }
-        while (!exists(onView(withId(R.id.available_accounts_title)))) {
-            testUtils.waitForIdle();
-            if (exists(onView(withText(R.string.discard_action)))) {
+        if (!exists(onView(withId(R.id.account_email)))) {
+            while (!exists(onView(withId(R.id.available_accounts_title)))) {
                 testUtils.waitForIdle();
-                onView(withText(R.string.discard_action)).perform(click());
+                if (exists(onView(withText(R.string.discard_action)))) {
+                    testUtils.waitForIdle();
+                    onView(withText(R.string.discard_action)).perform(click());
+                }
+                testUtils.pressBack();
+                testUtils.waitForIdle();
             }
-            testUtils.pressBack();
-            testUtils.waitForIdle();
         }
         testUtils.waitForIdle();
-        Espresso.onIdle();
-        onView(withId(R.id.available_accounts_title)).check(matches(isDisplayed()));
         activityTestRule.finishActivity();
         testUtils.waitForIdle();
     }
@@ -1500,12 +1500,12 @@ public class CucumberTestSteps {
                 testUtils.clickLastMessage();
                 break;
             case "8":
-                testUtils.waitForNMessageInTheLIst(2);
-                testUtils.clickMessageAtPosition(2);
-                break;
-            case "9":
                 testUtils.waitForNMessageInTheLIst(3);
                 testUtils.clickMessageAtPosition(3);
+                break;
+            case "9":
+                testUtils.waitForNMessageInTheLIst(5);
+                testUtils.clickMessageAtPosition(5);
                 break;
             default:
                 break;
@@ -1613,8 +1613,8 @@ public class CucumberTestSteps {
         int pic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
                 images.get(2).getVisibleBounds().centerY());
         testUtils.pressShowPicturesButton();
-        testUtils.goBackToMessageList();
         testUtils.waitForIdle();
+        testUtils.goBackToMessageList();
         testUtils.clickLastMessage();
         testUtils.waitForIdle();
         testUtils.swipeUpScreen();
@@ -1629,18 +1629,33 @@ public class CucumberTestSteps {
         if (pic0 == newPic0 || pic1 == newPic1 || pic2 == newPic2) {
             testUtils.assertFailWithMessage("Cannot show images or were shown before");
         }
-        if (testUtils.test_number().equals("9")) {
-            testUtils.waitForIdle();
-            testUtils.clickView(R.id.delete);
-            testUtils.waitForIdle();
-            testUtils.goBackToMessageList();
-            testUtils.waitForIdle();
-            testUtils.clickLastMessage();
-            testUtils.waitForIdle();
-            testUtils.clickView(R.id.delete);
-            testUtils.waitForIdle();
-            testUtils.clickView(R.id.delete);
-            testUtils.waitForIdle();
+        testUtils.pressBack();
+        switch (testUtils.test_number()) {
+            case "7":
+                testUtils.pressBack();
+                testUtils.clickFolder(resources.getString(R.string.special_mailbox_name_inbox));
+                I_send_message_to_address(4, "bot1", "Format_Test", "First test finished");
+                break;
+            case "8":
+                testUtils.pressBack();
+                testUtils.clickFolder(resources.getString(R.string.special_mailbox_name_inbox));
+                I_send_message_to_address(4, "bot1", "Format_Test", "Second test finished");
+                break;
+            case "9":
+                testUtils.waitForIdle();
+                testUtils.clickView(R.id.delete);
+                testUtils.waitForIdle();
+                testUtils.goBackToMessageList();
+                testUtils.waitForIdle();
+                testUtils.clickLastMessage();
+                for (int messageToRemove = 0; messageToRemove < 4; messageToRemove++) {
+                    testUtils.waitForIdle();
+                    testUtils.clickView(R.id.delete);
+                    testUtils.waitForIdle();
+                }
+                break;
+            default:
+                break;
         }
         testUtils.goBackToMessageList();
         testUtils.waitForIdle();
