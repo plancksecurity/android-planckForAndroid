@@ -2,10 +2,12 @@ package com.fsck.k9.ui.messageview;
 
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -40,6 +42,8 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
 
 
 public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener, OnCreateContextMenuListener {
@@ -191,8 +195,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                                 if (inlineImage) {
                                     attachmentCallback.onSaveAttachment(attachmentViewInfo);
                                 } else {
-                                    //TODO: Use download manager
-                                    new DownloadImageTask(getContext()).execute(uri.toString());
+                                    downloadImage(uri);
                                 }
                                 break;
                             }
@@ -319,6 +322,21 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                 break;
             }
         }
+    }
+
+    private void downloadImage(Uri uri) {
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        String url = uri.toString();
+        String titleAndName = getContext().getString(R.string.webview_contextmenu_image_title);
+        int index = url.lastIndexOf('/');
+        if (index != -1) {
+            titleAndName = url.substring(index + 1);
+        }
+        request.setTitle(titleAndName);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, titleAndName);
+        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
     }
 
     private AttachmentViewInfo getAttachmentViewInfoIfCidUri(Uri uri) {
