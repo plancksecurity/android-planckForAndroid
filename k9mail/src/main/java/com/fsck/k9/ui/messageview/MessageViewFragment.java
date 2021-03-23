@@ -67,8 +67,6 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -147,10 +145,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
     };
 
-    @Inject
-    PermissionRequester permissionRequester;
-    @Inject
-    PermissionChecker permissionChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
 
@@ -997,11 +991,5 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
-    }
-
-    private void createPermissionListeners() {
-        if(permissionChecker.doesntHaveWriteExternalPermission()) {
-            permissionRequester.requestStoragePermission(getRootView());
-        }
     }
 }

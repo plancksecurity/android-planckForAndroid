@@ -35,6 +35,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
@@ -42,6 +43,12 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
+
+import security.pEp.permissions.PermissionChecker;
+import security.pEp.permissions.PermissionRequester;
+import timber.log.Timber;
 
 import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
 
@@ -82,10 +89,17 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     private String currentHtmlText;
     private AttachmentResolver currentAttachmentResolver;
 
+    @Inject
+    PermissionRequester permissionRequester;
+    @Inject
+    PermissionChecker permissionChecker;
+
 
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+        PepActivity activity = (PepActivity) getContext();
+        activity.getpEpComponent().inject(this);
 
         mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
         if (!isInEditMode()) {
@@ -195,7 +209,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                                 if (inlineImage) {
                                     attachmentCallback.onSaveAttachment(attachmentViewInfo);
                                 } else {
-                                    downloadImage(uri);
+                                    downloadImageWithPermission(uri);
                                 }
                                 break;
                             }
@@ -324,6 +338,13 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         }
     }
 
+    private void downloadImageWithPermission(Uri uri) {
+        createPermissionListeners();
+        if (permissionChecker.hasWriteExternalPermission()) {
+            downloadImage(uri);
+        }
+    }
+
     private void downloadImage(Uri uri) {
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -337,6 +358,13 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, titleAndName);
         DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
+    }
+
+    private void createPermissionListeners() {
+        //Timber.e("==== permission checker has write permission: %s", permissionChecker.hasWriteExternalPermission());
+        if(permissionChecker.doesntHaveWriteExternalPermission()) {
+            permissionRequester.requestStoragePermission(getRootView());
+        }
     }
 
     private AttachmentViewInfo getAttachmentViewInfoIfCidUri(Uri uri) {
