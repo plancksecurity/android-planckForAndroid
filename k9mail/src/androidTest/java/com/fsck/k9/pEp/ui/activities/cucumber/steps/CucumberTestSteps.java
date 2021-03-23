@@ -982,6 +982,11 @@ public class CucumberTestSteps {
         }
     }
 
+    @And("^I test widgets$")
+    public void I_test_widgets(){
+        testUtils.waitForIdle();
+    }
+
     @And("^I select from message menu (\\S+)$")
     public void I_select_from_message_menu(String textToSelect){
         timeRequiredForThisMethod(15);
