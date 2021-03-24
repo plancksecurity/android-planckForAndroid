@@ -10,9 +10,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import androidx.annotation.WorkerThread;
-import timber.log.Timber;
+import android.os.Build;
 import android.view.View;
+
+import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -25,16 +26,18 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
+import com.fsck.k9.pEp.UriUtils;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 public class AttachmentController {
@@ -117,6 +120,13 @@ public class AttachmentController {
         new SaveAttachmentAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, documentUri);
     }
 
+    private void writeAttachmentAndNotifyIfPossible(Uri documentUri) throws IOException {
+        writeAttachment(documentUri);
+        if(Build.VERSION.SDK_INT < 29) {
+            addSavedAttachmentToDownloadsDatabase(documentUri);
+        }
+    }
+
     private void writeAttachment(Uri documentUri) throws IOException {
         ContentResolver contentResolver = context.getContentResolver();
         InputStream in = contentResolver.openInputStream(attachment.internalUri);
@@ -133,13 +143,11 @@ public class AttachmentController {
         }
     }
 
-    private void addSavedAttachmentToDownloadsDatabase(File file) {
-        String fileName = file.getName();
-        String path = file.getAbsolutePath();
-        long fileLength = file.length();
-        String mimeType = attachment.mimeType;
-
-        downloadManager.addCompletedDownload(fileName, fileName, true, mimeType, path, fileLength, true);
+    private void addSavedAttachmentToDownloadsDatabase(Uri documentUri) {
+        String path = UriUtils.getPathFromUri(context, documentUri);
+        if(path != null) { // TODO: 23/03/2021 UriUtils should return null for all unknown uris, and we will only notify for known ones.
+            downloadManager.addCompletedDownload(attachment.displayName, attachment.displayName, true, attachment.mimeType, path, attachment.size, true);
+        }
     }
 
     @WorkerThread
@@ -277,7 +285,7 @@ public class AttachmentController {
         protected Boolean doInBackground(Uri... params) {
             try {
                 Uri documentUri = params[0];
-                writeAttachment(documentUri);
+                writeAttachmentAndNotifyIfPossible(documentUri);
                 return true;
             } catch (IOException e) {
                 Timber.e(e, "Error saving attachment");
