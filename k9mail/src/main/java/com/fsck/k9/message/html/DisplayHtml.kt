@@ -1,6 +1,8 @@
 package com.fsck.k9.message.html
 
-class DisplayHtml (private val settings: HtmlSettings) {
+import javax.inject.Inject
+
+class DisplayHtml @Inject constructor(private val settings: HtmlSettings) {
 
     fun wrapStatusMessage(status: CharSequence): String {
         return wrapMessageContent("<div style=\"text-align:center; color: grey;\">$status</div>")

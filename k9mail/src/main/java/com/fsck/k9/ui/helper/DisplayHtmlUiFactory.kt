@@ -1,8 +1,9 @@
 package com.fsck.k9.ui.helper
 
 import com.fsck.k9.message.html.DisplayHtml
+import javax.inject.Inject
 
-class DisplayHtmlUiFactory (private val htmlSettingsProvider: HtmlSettingsProvider) {
+class DisplayHtmlUiFactory @Inject constructor(private val htmlSettingsProvider: HtmlSettingsProvider) {
     fun createForMessageView(): DisplayHtml {
         return DisplayHtml(htmlSettingsProvider.createForMessageView())
     }
