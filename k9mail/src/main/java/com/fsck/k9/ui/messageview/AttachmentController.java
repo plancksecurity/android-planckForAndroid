@@ -145,7 +145,7 @@ public class AttachmentController {
 
     private void addSavedAttachmentToDownloadsDatabase(Uri documentUri) {
         String path = UriUtils.getPathFromSAFCreateDocumentUri(context, documentUri);
-        if(path != null) { // TODO: 23/03/2021 UriUtils should return null for all unknown uris, and we will only notify for known ones.
+        if(path != null) {
             downloadManager.addCompletedDownload(attachment.displayName, attachment.displayName, true, attachment.mimeType, path, attachment.size, true);
         }
     }
