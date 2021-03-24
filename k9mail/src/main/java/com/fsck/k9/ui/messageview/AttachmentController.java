@@ -122,7 +122,7 @@ public class AttachmentController {
 
     private void writeAttachmentAndNotifyIfPossible(Uri documentUri) throws IOException {
         writeAttachment(documentUri);
-        if(Build.VERSION.SDK_INT < 29) {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             addSavedAttachmentToDownloadsDatabase(documentUri);
         }
     }
