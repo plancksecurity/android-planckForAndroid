@@ -13,6 +13,9 @@ import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Globals;
 import com.fsck.k9.R;
+import com.fsck.k9.message.html.DisplayHtmlFactory;
+import com.fsck.k9.message.html.HtmlProcessorFactory;
+import com.fsck.k9.message.html.HtmlSanitizer;
 import com.fsck.k9.ui.crypto.MessageCryptoStructureDetector;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Flag;
@@ -27,6 +30,8 @@ import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.message.html.HtmlProcessor;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
+import com.fsck.k9.ui.helper.HtmlSettingsProvider;
+
 import org.openintents.openpgp.util.OpenPgpUtils;
 import timber.log.Timber;
 
@@ -55,7 +60,8 @@ public class MessageViewInfoExtractor {
     public static MessageViewInfoExtractor getInstance() {
         Context context = Globals.getContext();
         AttachmentInfoExtractor attachmentInfoExtractor = AttachmentInfoExtractor.getInstance();
-        HtmlProcessor htmlProcessor = HtmlProcessor.newInstance();
+        HtmlProcessor htmlProcessor = new HtmlProcessorFactory(new HtmlSanitizer(),
+                new DisplayHtmlFactory()).create(new HtmlSettingsProvider().createForMessageView());
         return new MessageViewInfoExtractor(context, attachmentInfoExtractor, htmlProcessor);
     }
 

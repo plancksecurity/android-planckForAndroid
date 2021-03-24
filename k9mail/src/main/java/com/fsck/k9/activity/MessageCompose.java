@@ -38,7 +38,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -90,6 +89,7 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -100,6 +100,8 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
+import com.fsck.k9.ui.helper.HtmlSettingsProvider;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
@@ -368,7 +370,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
         Timber.e("P4A-941 subject-view init %d ", System.currentTimeMillis()-time);
 
-        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
+        DisplayHtml displayHtml = new DisplayHtmlUiFactory(new HtmlSettingsProvider()).createForMessageCompose();
+        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this,displayHtml);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);

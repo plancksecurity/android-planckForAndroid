@@ -27,13 +27,15 @@ import android.widget.TextView;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
+import com.fsck.k9.ui.helper.HtmlSettingsProvider;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
@@ -405,7 +407,8 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         }
 
         if (textToDisplay == null) {
-            textToDisplay = HtmlConverter.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
+            final DisplayHtml displayHtml = new DisplayHtmlUiFactory(new HtmlSettingsProvider()).createForMessageView();
+            textToDisplay = displayHtml.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
         }
 
         OnPageFinishedListener onPageFinishedListener = new OnPageFinishedListener() {
