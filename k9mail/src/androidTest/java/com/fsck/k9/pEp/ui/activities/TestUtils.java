@@ -1071,7 +1071,7 @@ public class TestUtils {
         }
     }
 
-    private void clickFolder (String folder) {
+    public void clickFolder (String folder) {
         String folderToClick = "";
         switch (folder){
             case "Inbox":
