@@ -71,7 +71,7 @@ object UriUtils {
                     } catch (e: NumberFormatException) {
                         e.printStackTrace()
                     }
-                    if(contentUri != null) {
+                    if (contentUri != null) {
                         return getDataColumn(context, contentUri, null, null)
                     }
                 }
@@ -98,9 +98,11 @@ object UriUtils {
             }
         }
         // sd card
-        val rootId = Environment.getExternalStorageDirectory().toString().substringAfter(File.separator).substringBefore(File.separator)
-        val root = File.separator+rootId
-        fullPath = root+File.separator+type+relativePath
+        val rootId =
+            Environment.getExternalStorageDirectory().toString().substringAfter(File.separator)
+                .substringBefore(File.separator)
+        val root = File.separator + rootId
+        fullPath = root + File.separator + type + relativePath
         return fullPath
     }
 
