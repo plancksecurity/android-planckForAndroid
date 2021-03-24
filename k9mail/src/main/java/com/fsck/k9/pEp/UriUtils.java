@@ -18,7 +18,10 @@ import timber.log.Timber;
 public class UriUtils {
     private static Uri contentUri = null;
 
-    public static String getPathFromUri(final Context context, final Uri uri) {
+    public static String getPathFromSAFCreateDocumentUri(final Context context, final Uri uri) {
+        if(Build.VERSION.SDK_INT >= 29) {
+            throw new IllegalStateException("Do not use after api 28!");
+        }
         // DocumentProvider
         if (DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
