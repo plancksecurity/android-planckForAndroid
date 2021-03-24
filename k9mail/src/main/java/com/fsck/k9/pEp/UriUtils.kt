@@ -9,12 +9,9 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
-import timber.log.Timber
 import java.io.File
 
-// TODO: 23/03/2021 This class needs testing with different uris and api levels, we may find an alternative.
 object UriUtils {
-    private var contentUri: Uri? = null
 
     @JvmStatic
     fun getPathFromSAFCreateDocumentUri(context: Context, uri: Uri): String? {
@@ -65,6 +62,7 @@ object UriUtils {
                     if (id.startsWith("raw:")) {
                         return id.replaceFirst("raw:", "")
                     }
+                    var contentUri: Uri? = null
                     try {
                         contentUri = ContentUris.withAppendedId(
                             Uri.parse("content://downloads/public_downloads"),
@@ -73,7 +71,7 @@ object UriUtils {
                     } catch (e: NumberFormatException) {
                         e.printStackTrace()
                     }
-                    if (contentUri != null) {
+                    if(contentUri != null) {
                         return getDataColumn(context, contentUri, null, null)
                     }
                 }
@@ -91,27 +89,24 @@ object UriUtils {
 
     private fun getPathFromExtSD(pathData: List<String>): String {
         val type = pathData[0]
-        val relativePath = "/" + pathData[1]
-        var fullPath: String? = ""
+        val relativePath = File.separator + pathData[1]
+        var fullPath = ""
         if ("primary".equals(type, ignoreCase = true)) {
             fullPath = Environment.getExternalStorageDirectory().toString() + relativePath
             if (fileExists(fullPath)) {
                 return fullPath
             }
         }
-        fullPath = System.getenv("SECONDARY_STORAGE").orEmpty() + relativePath
-        if (fileExists(fullPath)) {
-            return fullPath
-        }
-        fullPath = System.getenv("EXTERNAL_STORAGE").orEmpty() + relativePath
-        return if (fileExists(fullPath)) {
-            fullPath
-        } else fullPath
+        // sd card
+        val rootId = Environment.getExternalStorageDirectory().toString().substringAfter(File.separator).substringBefore(File.separator)
+        val root = File.separator+rootId
+        fullPath = root+File.separator+type+relativePath
+        return fullPath
     }
 
     @Suppress("SameParameterValue")
     private fun getDataColumn(
-        context: Context, uri: Uri?,
+        context: Context, uri: Uri,
         selection: String?, selectionArgs: Array<String?>?
     ): String? {
         var cursor: Cursor? = null
@@ -119,7 +114,7 @@ object UriUtils {
         val projection = arrayOf(column)
         try {
             cursor = context.contentResolver.query(
-                uri!!, projection,
+                uri, projection,
                 selection, selectionArgs, null
             )
             if (cursor != null && cursor.moveToFirst()) {
