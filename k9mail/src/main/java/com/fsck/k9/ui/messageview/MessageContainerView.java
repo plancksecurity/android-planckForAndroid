@@ -43,6 +43,9 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 
 public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener, OnCreateContextMenuListener {
     private static final int MENU_ITEM_LINK_VIEW = Menu.FIRST;
@@ -80,6 +83,9 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     private String currentHtmlText;
     private AttachmentResolver currentAttachmentResolver;
 
+    @Inject
+    @Named("MessageViewDisplayHtml")
+    DisplayHtml displayHtml;
 
     @Override
     public void onFinishInflate() {
@@ -407,7 +413,6 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         }
 
         if (textToDisplay == null) {
-            final DisplayHtml displayHtml = new DisplayHtmlUiFactory(new HtmlSettingsProvider()).createForMessageView();
             textToDisplay = displayHtml.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
         }
 

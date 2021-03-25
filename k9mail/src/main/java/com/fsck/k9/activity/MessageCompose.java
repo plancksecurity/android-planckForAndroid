@@ -100,8 +100,6 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
-import com.fsck.k9.ui.helper.HtmlSettingsProvider;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
@@ -113,6 +111,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
@@ -267,6 +266,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     ResourcesProvider resourcesProvider;
 
+    @Inject
+    @Named("ComposeDisplayHtml")
+    DisplayHtml displayHtml;
+
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
@@ -370,8 +373,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
         Timber.e("P4A-941 subject-view init %d ", System.currentTimeMillis()-time);
 
-        DisplayHtml displayHtml = new DisplayHtmlUiFactory(new HtmlSettingsProvider()).createForMessageCompose();
-        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this,displayHtml);
+        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this, displayHtml);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);
