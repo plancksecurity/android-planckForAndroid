@@ -1012,7 +1012,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         currentAttachmentViewInfo = attachment;
-        if(Build.VERSION.SDK_INT >= 29) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getAttachmentController(attachment).saveAttachment();
         } else {
             FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
