@@ -758,6 +758,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
+        refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
 
@@ -773,6 +774,13 @@ public class K9 extends MultiDexApplication {
     private void clearBodyCacheIfAppUpgrade() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
         appUpdater.clearBodyCacheIfAppUpgrade();
+    }
+
+    private void refreshFoldersForAllAccounts() {
+        List<Account> accounts = Preferences.getPreferences(this.getApplicationContext()).getAccounts();
+        for (Account account : accounts) {
+            MessagingController.getInstance(this).listFolders(account, true, null);
+        }
     }
 
     private void initJobManager(Preferences prefs) {
