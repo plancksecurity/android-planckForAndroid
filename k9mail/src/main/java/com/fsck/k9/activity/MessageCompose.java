@@ -94,6 +94,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.infrastructure.ComposeView;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -111,7 +112,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
@@ -267,7 +267,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     ResourcesProvider resourcesProvider;
 
     @Inject
-    @Named("ComposeDisplayHtml")
+    @ComposeView
     DisplayHtml displayHtml;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
