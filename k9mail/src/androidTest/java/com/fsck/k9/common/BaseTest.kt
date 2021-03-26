@@ -138,7 +138,15 @@ open class BaseTest {
     }
 
     fun click(resourceId: Int) {
-        Espresso.onView(ViewMatchers.withId(resourceId)).check(ViewAssertions.matches(ViewMatchers.isDisplayed())).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withId(resourceId))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                .perform(ViewActions.click())
+    }
+
+    fun scrollAndClick(resourceId: Int) {
+        Espresso.onView(ViewMatchers.withId(resourceId))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                .perform(ViewActions.scrollTo(), ViewActions.click())
     }
 
     fun longClick(resourceId: Int) {
