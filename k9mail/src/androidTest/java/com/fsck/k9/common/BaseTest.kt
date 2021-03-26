@@ -266,7 +266,9 @@ open class BaseTest {
         Espresso.closeSoftKeyboard()
         sleep(500)
         addTextTo(R.id.to, message.to)
+        sleep(500)
         addTextTo(R.id.subject, message.subject)
+        sleep(500)
         addTextTo(R.id.message_content, message.message)
     }
 
