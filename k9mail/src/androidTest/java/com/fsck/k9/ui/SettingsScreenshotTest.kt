@@ -1,5 +1,6 @@
 package com.fsck.k9.ui
 
+import android.os.Build
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -113,10 +114,8 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSetting(R.string.notifications_title)
         getScreenShotCurrentActivity("global notifications setting")
 
-        clickSettingDialog(R.string.global_settings_notification_quick_delete_title
-                , "global show delete button setting")
-        clickSettingDialog(R.string.global_settings_lock_screen_notification_visibility_title
-                , "global lock screen notifications setting")
+        clickSettingDialog(R.string.global_settings_notification_quick_delete_title, "global show delete button setting")
+        clickSettingDialog(R.string.global_settings_lock_screen_notification_visibility_title, "global lock screen notifications setting")
 
         Espresso.pressBack()
     }
@@ -141,7 +140,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openGlobalAdvancedSettings() {
         clickSetting(R.string.advanced)
         getScreenShotCurrentActivity("global advanced setting")
-        clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
+        }
         clickSettingDialog(R.string.background_ops_label, "global background sync setting")
         Espresso.pressBack()
     }
