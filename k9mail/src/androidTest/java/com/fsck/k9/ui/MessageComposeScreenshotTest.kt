@@ -60,7 +60,7 @@ class MessageComposeScreenshotTest : BaseScreenshotTest() {
 
     private fun openRecipientsLayout() {
         runBlocking { waitForIdle() }
-        click(R.id.recipient_expander)
+        scrollAndClick(R.id.recipient_expander)
         getScreenShotCurrentActivity("recipients expanded")
     }
 
