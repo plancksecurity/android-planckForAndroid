@@ -512,7 +512,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateMessageFormat();
 
         setTitle();
-        restoreMessageComposeConfigurationInstance();
         Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
@@ -755,6 +754,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
+        restoreMessageComposeConfigurationInstance();
     }
 
     private void setTitle() {
