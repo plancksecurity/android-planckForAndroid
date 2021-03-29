@@ -128,6 +128,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
                         .commit();
             }
         }
+        setActiveFragment(fragment);
 
         // Default to cancelled
         setResult(Activity.RESULT_CANCELED);

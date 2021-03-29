@@ -387,8 +387,6 @@ public abstract class AbstractFilePickerFragment<T> extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        ((AbstractFilePickerActivity) getActivity()).setActiveFragment(this);
         setHasOptionsMenu(true);
     }
 
