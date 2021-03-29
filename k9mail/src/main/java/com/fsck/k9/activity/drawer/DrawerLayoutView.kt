@@ -319,7 +319,6 @@ class DrawerLayoutView @Inject constructor(
 
     private fun changeFolder(folder: LocalFolder) {
         messageListView.updateFolderName(folder.name)
-        messageListView.showLoadingMessages()
         messageListView.onDrawerClosed(folder)
         drawerLayout.closeDrawers()
     }
