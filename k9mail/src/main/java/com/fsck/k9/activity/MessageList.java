@@ -1270,8 +1270,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         StorageManager.getInstance(getApplication()).addListener(mStorageListener);
 
         if (!messageViewVisible && !isThreadDisplayed) {
-            toolBarCustomizer.setToolbarColor(Rating.pEpRatingTrustedAndAnonymized);
-            toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingTrustedAndAnonymized);
+            updateToolbarColorToOriginal();
         }
 
         if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
@@ -1363,8 +1362,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void updateToolbarColorToOriginal() {
-        toolBarCustomizer.setToolbarColor(Rating.pEpRatingFullyAnonymous);
-        toolBarCustomizer.setStatusBarPepColor(Rating.pEpRatingFullyAnonymous);
+        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.DEFAULT));
     }
 
     /**

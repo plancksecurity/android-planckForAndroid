@@ -79,6 +79,8 @@ dependencies {
     implementation "com.takisoft.preferencex:preferencex-ringtone:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-datetimepicker:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-colorpicker:${versions.preferencesFix}"
+    implementation "androidx.webkit:webkit:1.4.0"
+
 
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"

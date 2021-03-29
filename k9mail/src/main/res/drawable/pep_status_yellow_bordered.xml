@@ -8,5 +8,5 @@
         android:fillColor="@color/pep_yellow"
         android:pathData="M54,1.5c28.9,0 52.5,23.6 52.5,52.5S82.9,106.5 54,106.5S1.5,82.9 1.5,54S25.1,1.5 54,1.5z"
         android:strokeWidth="3"
-        android:strokeColor="@color/white" />
+        android:strokeColor="?attr/screenDefaultBackgroundColor" />
 </vector>

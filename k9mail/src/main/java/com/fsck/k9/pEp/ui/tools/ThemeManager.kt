@@ -16,6 +16,9 @@ object ThemeManager {
     var appTheme = AppTheme.FOLLOW_SYSTEM
 
     @JvmStatic
+    fun isDarkTheme(): Boolean = legacyTheme == Theme.DARK
+
+    @JvmStatic
     val legacyTheme: Theme
         get() = when (appTheme) {
             AppTheme.DARK -> Theme.DARK

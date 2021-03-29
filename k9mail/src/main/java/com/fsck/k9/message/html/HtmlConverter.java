@@ -1263,7 +1263,7 @@ public class HtmlConverter {
     static String cssStyleTheme() {
         if (ThemeManager.getMessageViewTheme() == Theme.DARK)  {
             return "<style type=\"text/css\">" +
-                    "* { background: #303030 ! important; color: #F3F3F3 !important }" +
+                    "* { background: #121212 ! important; color: #F3F3F3 !important }" +
                     ":link, :link * { color: #CCFF33 !important }" +
                     ":visited, :visited * { color: #551A8B !important }</style> ";
         } else {

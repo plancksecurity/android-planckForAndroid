@@ -44,7 +44,11 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
-        setTheme(ThemeManager.getAppThemeResourceId());
+        setTheme(
+            ThemeManager.isDarkTheme()
+            ? R.style.Theme_K9_Dark
+            : R.style.Theme_K9_Light
+        );
         super.onCreate(icicle);
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
@@ -225,8 +229,6 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         if (dialog == null) {
             return;
         }
-
-        setTheme(ThemeManager.getAppThemeResourceId());
 
         ListView content = dialog.findViewById(android.R.id.list);
         ViewGroup root = (ViewGroup) content.getParent().getParent();

@@ -15,10 +15,10 @@
 
         <ImageView
             android:id="@+id/unified_inbox_icon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="18dp"
-            android:background="@drawable/ic_action_markunread_mailbox" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:background="?attr/unifiedInboxIcon" />
 
         <TextView
             android:id="@+id/unified_inbox_new_messages"
@@ -56,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:background="@drawable/ic_inbox_black_24dp" />
+            android:background="?attr/allMessagesIcon" />
 
         <TextView
             android:id="@+id/all_messages_new_messages"
@@ -94,5 +94,6 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/navigation_folders"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:listitem="@layout/folder_navigation_list_item"/>
 </LinearLayout>

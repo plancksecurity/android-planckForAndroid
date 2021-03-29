@@ -100,6 +100,7 @@
         <attr name="grayScaleColorOnBackground3" format="reference|color"/>
         <attr name="grayScaleColorOnBackground4" format="reference|color"/>
         <attr name="syncDisableDialogStyle" format="reference"/>
+        <attr name="resetAllAccountsDialogStyle" format="reference"/>
         <attr name="iconConfigureAccount" format="reference"/>
         <attr name="iconAddAccount" format="reference"/>
         <attr name="answeredForwardedIconColor" format="reference|color"/>
@@ -107,6 +108,14 @@
         <attr name="messageListSeparatorColor" format="reference|color"/>
         <attr name="defaultButtonTextColor" format="reference|color"/>
         <attr name="searchBarHintColor" format="reference|color"/>
+        <attr name="unifiedInboxIcon" format="reference"/>
+        <attr name="allMessagesIcon" format="reference"/>
+        <attr name="drawer_body_icons_color" format="reference|color"/>
+        <attr name="defaultDialogBackground" format="reference|color"/>
+        <attr name="iconActionCheckMail" format="reference"/>
+        <attr name="iconActionFilter" format="reference"/>
+        <attr name="dialogBodyDefaultTextColor" format="reference|color"/>
+        <attr name="intenseColorOnBackground" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
@@ -155,10 +164,15 @@
         <attr name="introPrimaryColor" format="reference|color"/>
         <attr name="introIndicatorColor" format="reference|color"/>
         <attr name="introSeparatorColor" format="reference|color"/>
+        <attr name="intro_actionbar_screenshot" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="Buttons">
-        <attr name="negativeButtonDefaultColor" format="reference|color"/>
+        <attr name="rejectButtonDefaultColor" format="reference|color"/>
+        <attr name="fab_menu_background_tint" format="reference|color"/>
+        <attr name="compose_fab_background_tint" format="reference|color"/>
+        <attr name="compose_fab_drawable_color" format="reference|color"/>
+        <attr name="negativeButtonColor" format="reference|color"/>
     </declare-styleable>
 
 </resources>

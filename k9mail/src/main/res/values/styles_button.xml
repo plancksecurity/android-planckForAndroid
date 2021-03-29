@@ -3,14 +3,18 @@
 
     <style name="PepFabButton">
         <item name="android:layout_marginStart">4dp</item>
-        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
         <item name="android:layout_marginBottom">16dp</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:elevation">4dp</item>
         <item name="elevation">4dp</item>
         <item name="fabSize">normal</item>
-        <item name="backgroundTint">?attr/screenDefaultBackgroundColor</item>
+        <item name="backgroundTint">?attr/fab_menu_background_tint</item>
         <item name="pressedTranslationZ">2dp</item>
+    </style>
+
+    <style name="PepFabButton.ComposeMessage">
+        <item name="backgroundTint">?attr/compose_fab_background_tint</item>
     </style>
 </resources>
 

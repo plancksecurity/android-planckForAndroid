@@ -38,7 +38,7 @@
     <!-- MessageList -->
     <item
         android:id="@+id/search"
-        android:icon="?attr/iconActionSearch"
+        android:icon="@drawable/ic_magnify_dark"
         app:showAsAction="always"
         android:title="@string/search_action"/>
 

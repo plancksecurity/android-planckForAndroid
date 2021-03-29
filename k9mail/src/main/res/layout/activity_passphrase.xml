@@ -5,7 +5,7 @@
     android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/screenDefaultBackgroundColor"
+    android:background="?attr/defaultDialogBackground"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingStart="@dimen/key_import_floating_horizontal_margin"

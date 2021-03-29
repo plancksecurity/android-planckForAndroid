@@ -661,7 +661,6 @@ public class K9 extends MultiDexApplication {
 
         Preferences prefs = Preferences.getPreferences(this);
         loadPrefs(prefs);
-        ThemeManager.updateAppTheme();
 
         /*
          * We have to give MimeMessage a temp directory because File.createTempFile(String, String)
@@ -1026,6 +1025,7 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpNewKeysPassphrase = storage.getPassphrase();
+        new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
