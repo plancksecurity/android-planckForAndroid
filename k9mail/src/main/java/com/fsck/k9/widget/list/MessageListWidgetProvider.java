@@ -77,11 +77,21 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
     }
 
     private void updateBackgroundColor(Context context, RemoteViews views) {
-        int background = ContextCompat.getColor(context,
+        int listBackground = ContextCompat.getColor(context,
                 ThemeManager.getLegacyTheme() == Theme.DARK
                 ? R.color.dark_theme_default_background
                 : R.color.white);
-        views.setInt(R.id.listView, "setBackgroundColor", background);
+        views.setInt(R.id.listView, "setBackgroundColor", listBackground);
+        int toolbarBackground = ContextCompat.getColor(context,
+                ThemeManager.getLegacyTheme() == Theme.DARK
+                        ? R.color.dark_theme_overlay_1
+                        : R.color.message_list_widget_header_background);
+        views.setInt(R.id.top_controls, "setBackgroundColor", toolbarBackground);
+        int toolbarText = ContextCompat.getColor(context,
+                ThemeManager.getLegacyTheme() == Theme.DARK
+                        ? R.color.toolbar_content_default_dark_theme
+                        : R.color.message_list_widget_header_text);
+        views.setTextColor(R.id.folder, toolbarText);
     }
 
     @Override
