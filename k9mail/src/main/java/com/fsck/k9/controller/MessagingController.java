@@ -3834,7 +3834,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             quotedText = MessageExtractor.getTextFromPart(part);
         }
         if (quotedText != null) {
-            if (quotedText.length() > SHARE_SIZE_THRESHOLD) {
+            if (quotedText.length() > SHARE_SIZE_THRESHOLD || message.hasAttachments()) {
                 shareEmailFile(context, message);
                 return;
             } else {
