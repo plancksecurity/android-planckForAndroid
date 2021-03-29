@@ -240,7 +240,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
                 account.setOptionsOnInstall();
             }
             account.save(Preferences.getPreferences(mActivity));
-            MessagingController.getInstance(mActivity).listFoldersSynchronous(account, true, null);
+            MessagingController.getInstance(mActivity).refreshRemoteSynchronous(account);
             MessagingController.getInstance(mActivity)
                     .synchronizeMailbox(account, account.getInboxFolderName(), null, null);
             accountKeysGenerator.generateAccountKeys();

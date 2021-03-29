@@ -469,6 +469,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         });
     }
 
+    @WorkerThread
+    public void refreshRemoteSynchronous(final Account account) {
+        refreshRemoteSynchronous(account, null);
+    }
+
     @VisibleForTesting
     void refreshRemoteSynchronous(final Account account, final MessagingListener listener) {
         List<LocalFolder> localFolders = null;

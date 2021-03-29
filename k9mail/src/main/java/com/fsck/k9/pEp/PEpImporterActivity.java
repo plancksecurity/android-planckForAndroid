@@ -800,7 +800,7 @@ public abstract class PEpImporterActivity extends PepActivity {
                 K9.setServicesEnabled(mContext);
 
                 // Get list of folders from remote server
-                MessagingController.getInstance(mApplication).listFolders(mAccount, true, null);
+                MessagingController.getInstance(mApplication).refreshRemoteSynchronous(mAccount);
             } catch (Exception e) {
                 Timber.e(e, "Something went while setting account passwords");
             }
