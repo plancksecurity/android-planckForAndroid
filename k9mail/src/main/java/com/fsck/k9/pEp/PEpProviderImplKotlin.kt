@@ -23,8 +23,9 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
-import foundation.pEp.jniadapter.Engine.decrypt_message_Return
+import foundation.pEp.jniadapter.decrypt_message_Return
 import foundation.pEp.jniadapter.Sync.*
+import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
 import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber

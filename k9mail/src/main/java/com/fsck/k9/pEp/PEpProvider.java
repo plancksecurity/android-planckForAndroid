@@ -14,7 +14,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 import timber.log.Timber;
 import java.util.Vector;
 
