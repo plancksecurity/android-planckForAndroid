@@ -77,6 +77,9 @@ class DrawerLayoutView @Inject constructor(
         this.drawerLayout = drawerLayout
         this.messageListView = messageListView
         drawerLayoutPresenter.init(this)
+        drawerLayout.addDrawerListener(onDrawerClosed {
+            drawerLayoutPresenter.resetLayoutClick()
+        })
         findViewsById()
         setupCreateConfigAccountListeners()
     }
@@ -180,12 +183,14 @@ class DrawerLayoutView @Inject constructor(
         secondAccountLayout.visibility = View.GONE
         firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
         firstAccountLayout.setOnClickListener {
-            messageListView.showLoadingMessages()
-            mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-            firstAccountText.text = PEpUIUtils.accountNameSummary(account.name)
-            mainAccountEmail.text = firstAccount.email
-            mainAccountName.text = firstAccount.name
-            changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
+            if (!drawerLayoutPresenter.layoutClick()) {
+                messageListView.showLoadingMessages()
+                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+                firstAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                mainAccountEmail.text = firstAccount.email
+                mainAccountName.text = firstAccount.name
+                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
+            }
         }
     }
 
@@ -197,8 +202,7 @@ class DrawerLayoutView @Inject constructor(
         firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
         secondAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
         firstAccountLayout.setOnClickListener {
-            if (!drawerLayoutPresenter.accountClicked) {
-                drawerLayoutPresenter.accountClicked = true
+            if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
                 mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
                 mainAccountEmail.text = firstAccount.email
@@ -209,8 +213,7 @@ class DrawerLayoutView @Inject constructor(
             }
         }
         secondAccountLayout.setOnClickListener {
-            if (!drawerLayoutPresenter.accountClicked) {
-                drawerLayoutPresenter.accountClicked = true
+            if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
                 mainAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
                 mainAccountEmail.text = lastAccount.email
@@ -263,12 +266,16 @@ class DrawerLayoutView @Inject constructor(
             val unifiedInbox = drawerLayout.findViewById<View>(R.id.unified_inbox)
             val allMessagesContainer = drawerLayout.findViewById<View>(R.id.all_messages_container)
             unifiedInbox.setOnClickListener {
-                messageListView.updateMessagesForSpecificInbox(unifiedInboxAccount)
-                drawerLayout.closeDrawers()
+                if (!drawerLayoutPresenter.layoutClick()) {
+                    messageListView.updateMessagesForSpecificInbox(unifiedInboxAccount)
+                    drawerLayout.closeDrawers()
+                }
             }
             allMessagesContainer.setOnClickListener {
-                messageListView.updateMessagesForSpecificInbox(allMessagesAccount)
-                drawerLayout.closeDrawers()
+                if (!drawerLayoutPresenter.layoutClick()) {
+                    messageListView.updateMessagesForSpecificInbox(allMessagesAccount)
+                    drawerLayout.closeDrawers()
+                }
             }
         }
     }
@@ -306,7 +313,7 @@ class DrawerLayoutView @Inject constructor(
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
         folderRenderer.setFolderClickListener(object : OnFolderClickListener {
             override fun onClick(folder: LocalFolder) {
-                changeFolder(folder)
+                folderClicked(folder)
             }
 
             override fun onClick(position: Int) {}
@@ -317,10 +324,12 @@ class DrawerLayoutView @Inject constructor(
         navigationFolders.adapter = folderAdapter
     }
 
-    private fun changeFolder(folder: LocalFolder) {
-        messageListView.updateFolderName(folder.name)
-        messageListView.onDrawerClosed(folder)
-        drawerLayout.closeDrawers()
+    private fun folderClicked(folder: LocalFolder) {
+        if (!drawerLayoutPresenter.layoutClick()) {
+            messageListView.updateFolderName(folder.name)
+            messageListView.onDrawerClosed(folder)
+            drawerLayout.closeDrawers()
+        }
     }
 
     override fun setAccountsAdapter(collection: ListAdapteeCollection<Account>) {
@@ -334,8 +343,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     private fun onAccountClick(account: Account) {
-        if (!drawerLayoutPresenter.accountClicked) {
-            drawerLayoutPresenter.accountClicked = true
+        if (!drawerLayoutPresenter.layoutClick()) {
             drawerLayoutPresenter.account = account
             messageListView.showLoadingMessages()
             messageListView.updateAccount(account)

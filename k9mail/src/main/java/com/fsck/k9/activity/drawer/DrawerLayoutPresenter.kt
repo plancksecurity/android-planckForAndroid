@@ -28,7 +28,7 @@ class DrawerLayoutPresenter @Inject constructor(
     private var menuFolders: List<LocalFolder>? = null
     private lateinit var drawerView: DrawerView
 
-    var accountClicked: Boolean = false
+    private var layoutClicked: Boolean = false
 
     fun init(drawerView: DrawerLayoutView) {
         this.drawerView = drawerView
@@ -36,7 +36,6 @@ class DrawerLayoutPresenter @Inject constructor(
 
     fun loadNavigationView() {
         account?.let {
-
             setupNavigationHeader()
             setFoldersAdapter()
             createFoldersMenu()
@@ -49,7 +48,6 @@ class DrawerLayoutPresenter @Inject constructor(
         setupNavigationHeader()
         val search = createSearchFolder(accountClicked)
         drawerView.refreshMessages(search)
-        this.accountClicked = false
     }
 
     fun onAccountClicked(account: Account) {
@@ -144,6 +142,18 @@ class DrawerLayoutPresenter @Inject constructor(
         search.addAccountUuid(account.uuid)
         search.addAllowedFolder(folder)
         return search
+    }
+
+    fun layoutClick(): Boolean {
+        return if (!layoutClicked) {
+            layoutClicked = true
+            false
+        } else
+            layoutClicked
+    }
+
+    fun resetLayoutClick() {
+        layoutClicked = false
     }
 
 }
