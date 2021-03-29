@@ -11,8 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.print.PrintAttributes;
-import android.print.PrintManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -42,7 +40,6 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
@@ -592,21 +589,11 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
 
     public void onPrintMessage() {
-        String jobName = getString(R.string.app_name) + " print_message";
-        final Contacts contacts =
-                permissionChecker.hasContactsPermission() &&
-                        K9.showContactName() ? Contacts.getInstance(requireContext()) : null;
-
-        PrintableWebViewCallback callback = printAdapter -> {
-            PrintManager printManager = (PrintManager) MessageViewFragment.this.requireActivity().getSystemService(Context.PRINT_SERVICE);
-            if (printManager != null) {
-                printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
-            }
-        };
-
-        PrintableMessage printableMessage = new PrintableMessage(requireContext(), contacts,
-                jobName, callback, mMessageView.getCurrentAttachmentResolver());
-        printableMessage.generatePrintableWebView(mMessageView.getCurrentHtml(), mMessage);
+        PrintableMessage printableMessage = new PrintableMessage(
+                requireContext(),
+                permissionChecker,
+                mMessageView.getCurrentAttachmentResolver());
+        printableMessage.generatePrintableWebView(mMessage, mMessageView.getCurrentHtml());
     }
 
     public void onToggleRead() {

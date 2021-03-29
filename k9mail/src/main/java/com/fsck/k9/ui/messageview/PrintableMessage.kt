@@ -1,9 +1,12 @@
 package com.fsck.k9.ui.messageview
 
 import android.content.Context
+import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
+import android.print.PrintManager
 import android.text.format.DateUtils
 import android.webkit.WebSettings
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
@@ -11,13 +14,16 @@ import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.AttachmentResolver
 import com.fsck.k9.view.K9WebViewClient
 import com.fsck.k9.view.MessageWebView
+import security.pEp.permissions.PermissionChecker
 
 class PrintableMessage(private val context: Context,
-                       private val contacts: Contacts?,
-                       private val jobName: String,
-                       private val printableWebViewCallback: PrintableWebViewCallback,
+                       permissionChecker: PermissionChecker,
                        private val attachmentResolver: AttachmentResolver) {
     var webView: MessageWebView = MessageWebView(context)
+    val contacts = if (permissionChecker.hasContactsPermission() &&
+            K9.showContactName()) Contacts.getInstance(context) else null
+
+    var jobName: String = "${context.getString(R.string.app_name)} print_message"
 
     init {
         setupWebView()
@@ -26,7 +32,7 @@ class PrintableMessage(private val context: Context,
     private fun setupWebView() {
         val webViewClient = K9WebViewClient.newInstance(attachmentResolver)
         webViewClient.setOnPageFinishedListener { view ->
-            printableWebViewCallback.adapterReady(view.createPrintDocumentAdapter(jobName))
+            printWebView(view.createPrintDocumentAdapter(jobName))
         }
         webView.webViewClient = webViewClient
 
@@ -37,7 +43,12 @@ class PrintableMessage(private val context: Context,
         }
     }
 
-    fun generatePrintableWebView(html: String, message: Message) {
+    private fun printWebView(printAdapter: PrintDocumentAdapter) {
+        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager?
+        printManager?.print(jobName, printAdapter, PrintAttributes.Builder().build())
+    }
+
+    fun generatePrintableWebView(message: Message, html: String) {
         val htmlWithHeader = html.replaceFirst("</head><body>", buildHeader(message))
         val htmlWithHeaderAndCss = htmlWithHeader.replaceFirst("<style type=\"text/css\">", buildCss())
         webView.loadDataWithBaseURL("about:blank", htmlWithHeaderAndCss, "text/html", "utf-8", null)
@@ -112,10 +123,4 @@ class PrintableMessage(private val context: Context,
                 "   background-color:silver\n" +
                 "}"
     }
-}
-
-
-interface PrintableWebViewCallback {
-
-    fun adapterReady(printAdapter: PrintDocumentAdapter)
 }
