@@ -55,7 +55,7 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         views.setRemoteAdapter(R.id.listView, intent);
-        updateBackgroundColor(context, views);
+        updateColorsFollowingTheme(context, views);
 
         PendingIntent viewAction = viewActionTemplatePendingIntent(context);
         views.setPendingIntentTemplate(R.id.listView, viewAction);
@@ -76,7 +76,7 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
-    private void updateBackgroundColor(Context context, RemoteViews views) {
+    private void updateColorsFollowingTheme(Context context, RemoteViews views) {
         int listBackground = ContextCompat.getColor(context,
                 ThemeManager.getLegacyTheme() == Theme.DARK
                 ? R.color.dark_theme_default_background
