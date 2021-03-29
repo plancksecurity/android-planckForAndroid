@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -40,7 +39,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import security.pEp.ui.PEpUIUtils;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -53,6 +51,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
 
     @Inject PEpStatusPresenter presenter;
+
+    @Inject PEpStatusRendererBuilder rendererBuilder;
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
@@ -120,7 +120,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initilize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
+            presenter.initialize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
 
@@ -172,8 +172,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         recipientsLayoutManager = new LinearLayoutManager(this);
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
-        RendererBuilder<PEpIdentity> rendererBuilder =
-                new PEpStatusRendererBuilder(
+        rendererBuilder.setUp(
                         getOnResetClickListener(),
                         getOnHandshakeResultListener(),
                         myself

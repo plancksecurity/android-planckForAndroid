@@ -25,13 +25,15 @@ import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
+import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
-import security.pEp.ui.keyimport.showImportKeyDialog
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import timber.log.Timber
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -66,9 +68,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeCryptoSettings(account)
         initializeFolderSettings(account)
         initializeAccountpEpKeyReset(account)
-        initializeNewRingtoneOptions()
         initializeAccountpEpSync(account)
-        initializePgpImportKey(account)
+        initializePgpImportKey()
+        initializeNotifications()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -172,12 +174,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun initializePgpImportKey(account: Account) {
-        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.onClick(::onKeyImportClicked)
+    private fun initializePgpImportKey() {
+        val app: K9 = context?.applicationContext as K9
+        findPreference<Preference>(PREFERENCE_PGP_KEY_IMPORT)?.apply {
+            if (app.isGrouped) {
+                isEnabled = false
+                summary = getString(R.string.pgp_key_import_disabled_summary)
+            } else {
+                onClick(::onKeyImportClicked)
+            }
+        }
     }
 
     private fun onKeyImportClicked() {
-        activity?.showImportKeyDialog(accountUuid)
+        showImportKeyDialog(activity, accountUuid)
     }
 
     private fun hideKeySyncOptions() {
@@ -209,9 +219,14 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         return !account.isPepSyncEnabled || enabledSyncAccount != 1
     }
 
-    private fun initializeNewRingtoneOptions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference<Preference>(PREFERENCE_RINGTONE)?.remove()
+    private fun initializeNotifications() {
+        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let { preference ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PRE_SDK26_NOTIFICATION_PREFERENCES
+                        .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
+            } else {
+                preference.remove()
+            }
         }
     }
 
@@ -222,10 +237,17 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            keyReset(account)
-            context?.applicationContext?.let {
-                FeedbackTools.showLongFeedback(view,
-                        it.getString(R.string.key_reset_own_identity_feedback))
+            val keyReset = keyReset(account)
+            if (keyReset) {
+                context?.applicationContext?.let {
+                    FeedbackTools.showLongFeedback(view,
+                            it.getString(R.string.key_reset_own_identity_feedback))
+                }
+            } else {
+                context?.applicationContext?.let {
+                    FeedbackTools.showLongFeedback(view,
+                            it.getString(R.string.key_reset_own_identity_feedback_error))
+                }
             }
             initializeAccountpEpKeyReset(account)
             loading?.visibility = View.GONE
@@ -236,13 +258,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_ACCOUNT_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun keyReset(account: Account) = withContext(Dispatchers.Default) {
+    private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
         val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
-        val address = Address(account.email, account.name)
-        var id = PEpUtils.createIdentity(address, context);
-        id = pEpProvider.updateIdentity(id)
-        pEpProvider.keyResetIdentity(id, null)
-        pEpProvider.close()
+        try {
+            val address = Address(account.email, account.name)
+            var id = PEpUtils.createIdentity(address, context)
+            id = pEpProvider.updateIdentity(id)
+            pEpProvider.keyResetIdentity(id, null)
+            true
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", "pEpEngine", "Failed to reset identity")
+            false
+        } finally {
+            pEpProvider.close()
+        }
     }
 
     private fun configureCryptoPreferences(account: Account) {
@@ -294,24 +323,19 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         return when {
             resultCode != Activity.RESULT_OK || data == null ->
                 super.onActivityResult(requestCode, resultCode, data)
             else ->
                 when (requestCode) {
-                  //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
-                       // onKeyImport(data.data, accountUuid)
+                    //TODO  ACTIVITY_REQUEST_PICK_KEY_FILE ->
+                    // onKeyImport(data.data, accountUuid)
                     else ->
                         super.onActivityResult(requestCode, resultCode, data)
 
                 }
         }
-    }
-
-    private fun onKeyImport(uri: Uri?, currentAccount: String) {
-        // TODO
     }
 
     private fun getAccount(): Account {
@@ -341,8 +365,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"
         private const val PREFERENCE_SPAM_FOLDER = "spam_folder"
         private const val PREFERENCE_TRASH_FOLDER = "trash_folder"
-        private const val PREFERENCE_RINGTONE = "account_ringtone"
         private const val PREFERENCE_PGP_KEY_IMPORT = "pgp_key_import"
+        private const val PREFERENCE_OPEN_NOTIFICATION_SETTINGS = "open_notification_settings"
 
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
@@ -357,8 +381,17 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 PREFERENCE_TRASH_FOLDER
         )
 
+        private val PRE_SDK26_NOTIFICATION_PREFERENCES = arrayOf(
+                "account_ringtone",
+                "account_vibrate",
+                "account_vibrate_pattern",
+                "account_vibrate_times",
+                "account_led",
+                "led_color"
+        )
+
         fun create(accountUuid: String, rootKey: String?) = AccountSettingsFragment().withArguments(
                 ARG_ACCOUNT_UUID to accountUuid,
-                PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to rootKey)
+                ARG_PREFERENCE_ROOT to rootKey)
     }
 }

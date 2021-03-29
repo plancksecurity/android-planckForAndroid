@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
@@ -19,6 +20,8 @@ import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
+import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Inject;
@@ -49,6 +52,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Inject
     AccountSetupNavigator accountSetupNavigator;
     private boolean isGoingBack = false;
+    private BasicsSettingsCheckCallback basicsFragmentSettingsCallback;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -98,35 +102,90 @@ public class AccountSetupBasics extends PEpImporterActivity {
         isEditingIncomingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_INCOMING, false);
         isEditingOutgoingSettings = getIntent().getBooleanExtra(EXTRA_EDIT_OUTGOING, false);
         isBackOutgoingSettings = getIntent().getBooleanExtra(EXTRA_BACK_OUTGOING, false);
-        if (isEditingIncomingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditing(true);
-        } else if (isEditingOutgoingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
-            accountSetupNavigator.setIsEditing(true);
-        } else if (isBackOutgoingSettings) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupIncomingFragment");
-            String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-            ft.add(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
-        } else if (savedInstanceState == null) {
-            accountSetupBasicsFragment = new AccountSetupBasicsFragment();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack("AccountSetupBasicsFragment");
-            ft.add(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+        if (savedInstanceState == null) {
+            if (isEditingIncomingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupIncomingFragment.actionEditIncomingSettings(accountUuid)).commit();
+                accountSetupNavigator.setIsEditing(true);
+            } else if (isEditingOutgoingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
+                accountSetupNavigator.setIsEditing(true);
+            } else if (isBackOutgoingSettings) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupIncomingFragment");
+                String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
+                ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
+            } else {
+                accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupBasicsFragment");
+                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+            }
         }
         permissionRequester.requestBatteryOptimizationPermission();
 
         // Handle activity restarts because of a configuration change (e.g. rotating the screen)
+        restoreNonConfigurationInstance();
+    }
+
+    private void restoreNonConfigurationInstance() {
         nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
         if (nonConfigurationInstance != null) {
             nonConfigurationInstance.restore(this);
+            if(nonConfigurationInstance instanceof BasicsSettingsCheckCallback) {
+                basicsFragmentSettingsCallback = (BasicsSettingsCheckCallback) nonConfigurationInstance;
+            }
+        }
+    }
+
+    public static class BasicsSettingsCheckCallback implements
+            PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>, NonConfigurationInstance {
+        private Fragment fragment;
+        private boolean cancelled;
+
+        public BasicsSettingsCheckCallback(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        public boolean retain() {
+            fragment = null;
+            return true;
+        }
+
+        @Override
+        public void restore(Activity activity) {
+            Fragment newFragment = ((AccountSetupBasics)activity).getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+            if(newFragment == null) return;
+            if(fragment != null && !fragment.getClass().equals(newFragment.getClass())) {
+                throw new IllegalStateException(fragment.getClass().getSimpleName() + " was expected but got " + newFragment.getClass().getSimpleName());
+            }
+            fragment = newFragment;
+        }
+
+        @Override
+        public void onError(PEpSetupException exception) {
+            if(cancelled) return;
+            if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
+                return;
+            }
+            ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckError(exception);
+        }
+
+        @Override
+        public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+            if(cancelled) return;
+            if(!(fragment instanceof AccountSetupSettingsCheckerFragment) || !fragment.isResumed()) {
+                return;
+            }
+            ((AccountSetupBasics)fragment.requireActivity()).accountSetupNavigator.setLoading(false);
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsChecked(redirection);
         }
     }
 
@@ -149,6 +208,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onImportFinished() {
         SettingsActivity.Companion.actionBasicStart(this);
+        finish();
     }
 
     @Override
@@ -164,13 +224,9 @@ public class AccountSetupBasics extends PEpImporterActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        AccountSetupIncomingFragment accountSetupIncomingFragment = (AccountSetupIncomingFragment) getSupportFragmentManager().findFragmentByTag("accountSetupIncomingFragment");
-        if (accountSetupIncomingFragment != null && accountSetupIncomingFragment.isVisible()) {
-            accountSetupIncomingFragment.onActivityResult(requestCode, resultCode, data);
-        } else {
-            if (accountSetupBasicsFragment != null && accountSetupBasicsFragment.isVisible()) {
-                accountSetupBasicsFragment.onActivityResult(requestCode, resultCode, data);
-            }
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        if(fragment != null && fragment.isAdded()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -199,7 +255,20 @@ public class AccountSetupBasics extends PEpImporterActivity {
         if (accountSetupNavigator.shouldDeleteAccount() && !isEditingIncomingSettings && !isEditingOutgoingSettings) {
             deleteAccount();
         }
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.account_setup_container);
+        if(basicsFragmentSettingsCallback != null) {
+            basicsFragmentSettingsCallback.cancelled = true;
+        }
+        if(accountSetupNavigator.isLoading() && fragment instanceof AccountSetupSettingsCheckerFragment) {
+            ((AccountSetupSettingsCheckerFragment) fragment).onSettingsCheckCancelled();
+        }
         accountSetupNavigator.goBack(this, getSupportFragmentManager());
+        isGoingBack = false;
+    }
+
+    public void setBasicsFragmentSettingsCallback(BasicsSettingsCheckCallback callback) {
+        basicsFragmentSettingsCallback = callback;
+        nonConfigurationInstance = basicsFragmentSettingsCallback;
     }
 
     @Override
@@ -223,6 +292,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     private void deleteAccount() {
         Preferences.getPreferences(getApplicationContext()).deleteAccount(accountSetupNavigator.getAccount());
+        // TODO: 07/07/2020 Review all Account deletion logic in AccountSetup workflow after we delay Account creation to AccountSetupNames.
     }
 
     public boolean isManualSetupRequired() {
@@ -231,5 +301,20 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     public void setManualSetupRequired(boolean manualSetupRequired) {
         isManualSetupRequired = manualSetupRequired;
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Object retain = null;
+        if(nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
+            retain = nonConfigurationInstance;
+        }
+        return retain;
+    }
+
+    public interface AccountSetupSettingsCheckerFragment {
+        void onSettingsCheckError(PEpSetupException exception);
+        void onSettingsChecked(PEpSettingsChecker.Redirection redirection);
+        void onSettingsCheckCancelled();
     }
 }

@@ -22,9 +22,9 @@ import com.fsck.k9.Account;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.misc.ContactPictureLoader;
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
-import com.fsck.k9.helper.ContactPicture;
 import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.helper.MessageHelper;
 import com.fsck.k9.helper.Utility;
@@ -47,9 +47,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
 import timber.log.Timber;
 
 
@@ -76,7 +77,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
     private SavedState mSavedState;
 
     private MessageHelper mMessageHelper;
-    private ContactPictureLoader mContactsPictureLoader;
     private PEpContactBadge mContactBadge;
 
     private OnLayoutChangedListener mOnLayoutChangedListener;
@@ -86,7 +86,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private OnMessageOptionsListener onMessageOptionsListener;
     private ImageView moreOptions;
-    private PermissionChecker permissionChecker;
+    @Inject PermissionChecker permissionChecker;
+    @Inject ContactPictureLoader contactsPictureLoader;
 
     public void setOnMessageOptionsListener(OnMessageOptionsListener onMessageOptionsListener) {
         this.onMessageOptionsListener = onMessageOptionsListener;
@@ -110,7 +111,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         super(context, attrs);
         mContext = context;
         mContacts = Contacts.getInstance(mContext);
-        permissionChecker = new PEpPermissionChecker(context.getApplicationContext());
+        getApplicationComponent().inject(this);
+
     }
 
     @Override
@@ -296,12 +298,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void populate(final Message message, final Account account) {
 
-        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
-            loadpEpRating(message, account.ispEpPrivacyProtected());
-        }
-        else {
-            loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
-        }
+        populateRating(message, account);
 
         final Contacts contacts =
                 permissionChecker.hasContactsPermission() &&
@@ -339,7 +336,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
         if (K9.showContactPicture()) {
             mContactBadge.setVisibility(View.VISIBLE);
-            mContactsPictureLoader = ContactPicture.getContactPictureLoader(mContext);
         }  else {
             mContactBadge.setVisibility(View.GONE);
         }
@@ -372,7 +368,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         if (K9.showContactPicture()) {
             if (counterpartyAddress != null) {
                 Utility.setContactForBadge(mContactBadge, counterpartyAddress);
-                mContactsPictureLoader.loadContactPicture(counterpartyAddress, mContactBadge);
+                contactsPictureLoader.setContactPicture(mContactBadge, counterpartyAddress);
             } else {
                 mContactBadge.setImageResource(R.drawable.ic_contact_picture);
             }
@@ -394,6 +390,22 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             mSavedState = null;
         } else {
             hideAdditionalHeaders();
+        }
+    }
+
+    private void populateRating(Message message, Account account) {
+        if (PEpUtils.isMessageOnOutgoingFolder(message, account)) {
+            loadpEpRating(message, account.ispEpPrivacyProtected());
+        }
+        else {
+            if (message.getFrom() != null && message.getFrom().length > 0) {
+                loadpEpRating(message.getFrom()[0], account.ispEpPrivacyProtected());
+            } else {
+                Timber.e("Message %s from is null or empty, uid = %s",
+                        message.getMessageId(), message.getUid());
+                pEpRating = Rating.pEpRatingUndefined;
+                mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
+            }
         }
     }
 
@@ -626,5 +638,9 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setPrivacyProtected(boolean enabled) {
         mContactBadge.setPepRating(pEpRating, enabled);
+    }
+
+    private ApplicationComponent getApplicationComponent() {
+        return ((K9) mContext.getApplicationContext()).getComponent();
     }
 }

@@ -8,6 +8,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="support_email" translatable="false">support@pep.security</string>
+    <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
@@ -45,12 +46,12 @@
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>
     <string name="pep_reset_trust">Stop trusting</string>
     <string name="pep_pgp_fingerprint">PGP Fingerprint</string>
-    <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you choose to proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue? </string>
-    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Proceed</string>
+    <string name="pep_dialog_weaker_forward_warning_message">You\'re about to forward a secure message as unsecure. If you proceed, confidential information might be leaked putting you and your communication partners at risk. Are you sure you want to continue\?</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Confirm</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancel</string>
     <string name="pep_dialog_confirm_forward_title">Confirm forward</string>
     <string name="pep_title_activity_privacy_status">Privacy Status</string>
-    <string name="pep_extra_addresses">Extra key ids:</string>
+    <string name="pep_extra_addresses">Extra key IDs:</string>
     <string name="pep_use_keyserver">Look up keys on key server</string>
     <string name="pep_passive_mode">Passive mode</string>
     <string name="pep_subject_protection">Protect Message subject</string>
@@ -69,12 +70,12 @@
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store mails unprotected</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store messages unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
     <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
-    <string name="pep_trust_server_description">Store serverside mails in a safe form.</string>
+    <string name="pep_trust_server_description">Store server-side mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure reply warning</string>
     <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
@@ -82,27 +83,27 @@
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="pep_app_description">K-9/p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
     <string name="pep_add_device_ask_trustwords">You are about to add a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_add_device_ask_move_trustwords">You are about to move a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
     <string name="pep_device_group">p≡p Device Group</string>
-    <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another handshake?</string>
+    <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another Handshake\?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
-    <string name="pep_keysync_timeout">p≡p sync timeout</string>
-    <string name="read_permission_first_explanation">We need your permission to read the contacts stored on your mobile phone</string>
+    <string name="pep_keysync_timeout">p≡p Sync timeout</string>
+    <string name="read_permission_first_explanation">p≡p needs permission to access the contacts on your device</string>
     <string name="button_settings">Settings</string>
-    <string name="read_snackbar_permission_rationale">We need your permission to read the contacts stored on your mobile phone</string>
-    <string name="read_snackbar_permission_permanently_denied">Not allowing us read your contacts may cause unexpected behaviour</string>
-    <string name="read_permission_rationale_title">Reading contacts</string>
-    <string name="download_permission_first_explanation">We need your permission to download files on your mobile phone</string>
-    <string name="download_snackbar_permission_rationale">We need your permission to save attachments from your emails.</string>
-    <string name="download_snackbar_permission_permanently_denied">Not allowing us download files may cause unexpected behaviour</string>
+    <string name="read_snackbar_permission_rationale">p≡p needs permission to access the contacts on your device</string>
+    <string name="read_snackbar_permission_permanently_denied">Not granting p≡p access to the contacts may cause unexpected behavior</string>
+    <string name="read_permission_rationale_title">Access contacts</string>
+    <string name="download_permission_first_explanation">p≡p needs permission to download files on your device</string>
+    <string name="download_snackbar_permission_rationale">p≡p needs permission to save attachments from your emails.</string>
+    <string name="download_snackbar_permission_permanently_denied">Not granting us permission to download files might cause unexpected behavior</string>
     <string name="download_permission_rationale_title">Download files</string>
     <string name="add_fpr">Add fingerprint</string>
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
@@ -113,11 +114,11 @@
     <string name="action_continue">Continue</string>
     <string name="battery_optimization_rationale_title">Disable battery optimizations</string>
     <string name="battery_optimiazation_explanation">In order to synchronize your emails in the background we need to disable battery optimizations</string>
-    <string name="add_account_title">Add your account</string>
+    <string name="add_account_title">Add account</string>
     <string name="add_account_message">To be able to use this account you should add it to your device</string>
     <string name="account_already_exists">Account already exists</string>
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
-    <string name="permissions_needed_message">Not granting the needed permissions may cause unexpected behaviors. Press OK to grant them to us.</string>
+    <string name="permissions_needed_message">Not granting required permissions might cause unexpected behavior. Press OK to grant the permissions.</string>
     <string-array name="pep_title">
         <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
@@ -168,26 +169,26 @@
     <string name="nnf_name">Name</string>
     <string name="nnf_select_something_first">Please select something first</string>
     <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
-    <string name="nnf_permission_external_write_denied">Permission to access filesystem denied</string>
+    <string name="nnf_permission_external_write_denied">Permission to access storage denied</string>
     <string name="nnf_filename">Filename</string>
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
-    <string name="pep_sync">p≡p sync</string>
-    <string name="pep_sync_enable_account">Synchronize this account</string>
-    <string name="pep_sync_is_enabled_global">p≡p sync is enabled</string>
-    <string name="pep_sync_is_disabled_global"> p≡p sync is disabled</string>
-    <string name="pep_sync_leave_device_group">Leave Device group</string>
+    <string name="pep_sync">p≡p Sync</string>
+    <string name="pep_sync_enable_account">p≡p Sync this account</string>
+    <string name="pep_sync_is_enabled_global">p≡p Sync is enabled</string>
+    <string name="pep_sync_is_disabled_global">p≡p Sync is disabled</string>
+    <string name="pep_sync_leave_device_group">Leave p≡p Device Group</string>
     <string name="open_pgp" translatable="false">OpenPGP</string>
     <string name="pgp" translatable="false">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
     <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your p≡p key from another device, and export your private key.</string>
     <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
-    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key into your keychain.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">In your PGP device, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">On your device with PGP, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
     <string name="key_import_wizard_from_pgp_send_handshake_request">Encrypt and sign the answer message with the public p≡p key you just imported and send it.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Please compare the PGP fingerprints of the below keys with the ones on your PGP device and confirm if they match.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">In your PGP device, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">On your device with PGP, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
     <string name="key_import_wizard_from_pgp_send_private_key_msg">Encrypt and sign the answer message again with the public p≡p key and send it.</string>
     <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public p≡p key and reply with a message that: \n\n\n
 
@@ -195,14 +196,15 @@
     2. is encrypted and signed with the p≡p key you just imported
 </string>
     <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
-    <string name="key_import_failure">Failed to import and use any key from %1$s with key id: %2$s</string>
-    <string name="key_import_success">%1$s Key imported successfully from %2$s</string>
+    <string name="key_import_failure">Error occurred. No key imported.</string>
+    <string name="key_import_success">Private key successfully imported.</string>
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Reset all</string>
     <string name="key_reset_for_identity_context_title">Reset all p≡p data for this communication partner:</string>
     <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
     <string name="key_reset_own_identity_feedback">The account has been reset.</string>
+    <string name="key_reset_own_identity_feedback_error">The account has not been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
     <string name="pep_key_reset_all_own_ids_summary">Reset all accounts</string>
@@ -215,7 +217,7 @@
     <string name="search_empty_error">Please write text to search</string>
     <!-- Welcome/Tutorial-->
     <string name="intro_frag_first_text_1"><![CDATA[Welcome to the <font color="#4caf50">p≡p</font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar.]]></string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
@@ -225,8 +227,8 @@
     <string name="intro_frag_second_text_3">If the Trustwords are not correct, your communication partner is Mistrusted.</string>
     <string name="intro_frag_third_text_1">Handshake</string>
     <string name="intro_frag_third_text_2">When you click on the Privacy Status icon in the top bar, you will get to the Handshake, where you can verify your communication partner.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
-    <string name="intro_frag_third_text_4">Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
+    <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
+    <string name="intro_frag_third_text_4">Complete a Handshake with your communication partner. A Handshake is needed only once per partner and will ensure Secure and Trusted communication.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
@@ -234,19 +236,19 @@
     <string name="pep_rating_secure">Secure</string>
     <string name="pep_rating_mistrusted">Mistrusted</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none"/>
+    <string name="pep_rating_none" translatable="false"/>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
-    <string name="keysync_wizard_handshake_message">Please make sure uou have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device?</string>
+    <string name="keysync_wizard_handshake_message">Please make sure you have both devices together so you can compare the Trustwords on both devices. Are the Trustwords below equal to the Trustwords on the other device\?</string>
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
     <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
     <!-- Group creation -->
-    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
-    <string name="keysync_wizard_group_creation_done_message">We successfully created a device group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a p≡p Device Group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a p≡p Device Group. All your privacy is now synchronized.</string>
     <!-- Group extension -->
-    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your device group to sync all your privacy on all devices. Shall we start synchronizing?</string>
-    <string name="keysync_wizard_group_joining_done_message">The device is now member of your device group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your p≡p Device Group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your p≡p Device Group. All your privacy is now synchronized.</string>
     <!-- Key sync dialog button texts -->
     <string name="keysync_wizard_action_cancel">Cancel</string>
     <string name="keysync_wizard_action_next">Next</string>
@@ -268,12 +270,15 @@
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
     <string name="account_settings_save_encrypted_summary_disabled">Encrypted messages will be decrypted and stored unencrypted on the server.</string>
     <string name="blacklist_title">Blacklist</string>
+    <string name="message_view_message_no_longer_available">This message is no longer available, probably it has been deleted using another email client.</string>
 
     <string name="change_language_title">Change Language</string>
     <string name="change_language_explanation">App will return to main screen to change language</string>
+    <string name="no_results_found">No results found</string>
 
 
     <string name="pgp_key_import_title">PGP Key import from filesystem</string>
+    <string name="pgp_key_import_disabled_summary">This device is part of a device group, cannot import key</string>
     <string name="pgp_key_import_dialog_title">PGP Key import</string>
     <string name="pgp_key_import_dialog_accept_button">Select and import key</string>
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
@@ -282,4 +287,22 @@
     <string name="pep_sync_folder">p≡p sync folder</string>
     <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
     <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
+
+    <string name="about_contact">Contact:</string>
+    <string name="about_documentation">Documentation:</string>
+
+    <string name="passhphrase_title">Passphrase</string>
+    <string name="passhphrase_input_hint">Passphrase</string>
+    <string name="passhphrase_body_insert_passphrase">Please enter your passphrase to continue</string>
+    <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase.\n Please enter the correct one to continue.</string>
+    <string name="passhphrase_body_sync_passphrase">Enter passphrase for p≡p Sync:</string>
+    <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
+    <string name="passhphrase_body_new_keys_passphrase">We recommend using device encryption instead of a passphrase. This way you are securing all data and not only keys. If you still wish to proceed with a passphrase, please enter it below and enable it.</string>
+    <string name="passhphrase_new_keys_settings_title">Use a passphrase for new keys</string>
+
+    <string name="pgp_key_import_confirmation_fingerprint_label">The fingerprint of the selected key is:</string>
+    <string name="pgp_key_import_confirmation_dialog_fingerprint_format">%1$s\n%2$s</string>
+    <string name="pgp_key_import_confirmation_dialog_question">Are you sure you want to import and use this key?</string>
+    <string name="pgp_key_import_confirmation_confirm">Yes</string>
+    <string name="pgp_key_import_confirmation_reject">No</string>
 </resources>

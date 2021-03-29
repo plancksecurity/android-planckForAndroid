@@ -8,6 +8,7 @@
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
+    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
         <item>pEpRatingUndefined</item>
@@ -196,8 +197,8 @@
 \n 1. heeft uw openbare PGP-sleutel bijgevoegd en
 \n 2. is gecodeerd en ondertekend met de p≡p-sleutel die u zojuist hebt geïmporteerd</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Als u een sleutelimport hebt gestart voor het volgende account:% s, klikt u op Start.</string>
-    <string name="key_import_failure">Kan sleutel van %1$s met sleutel-id: %2$s niet importeren en gebruiken</string>
-    <string name="key_import_success">Sleutel %1$s geïmporteerd uit %2$s</string>
+    <string name="key_import_failure">Kan sleutel niet importeren en gebruiken</string>
+    <string name="key_import_success">Sleutel geïmporteerd</string>
     <string name="key_import_from_fs_input_fpr">Voer de sleutel-ID of de vingerafdruk van de sleutel in.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Alles resetten</string>
@@ -217,8 +218,12 @@
     <!-- Folder list-->
     <string name="search_empty_error">Schrijf tekst om te zoeken</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1"><![CDATA[<font color="#4caf50">p≡p</font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[Je kunt deze tutorial op elk moment sluiten.\n\n<font color="#4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.\n\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker]]></string>
+    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> tutorial</string>
+    <string name="intro_frag_first_text_2">Je kunt deze tutorial op elk moment sluiten.
+\n
+\n<font color="# 4caf50"> p≡p </font> gebruikt een privacystatus om aan te geven hoe veilig uw communicatie is.
+\n
+\nDeze privacystatus wordt weergegeven als een pictogram in de avatar van de gebruiker</string>
     <string name="intro_frag_first_text_3">En in de bovenste balk wanneer u een e-mail opent of schrijft:</string>
     <string name="intro_frag_second_header_1">Veilig</string>
     <string name="intro_frag_second_header_2">Veilig en vertrouwd</string>
@@ -228,7 +233,7 @@
     <string name="intro_frag_second_text_3">Als de Trustwords niet correct zijn, wordt uw communicatiepartner wantrouwt.</string>
     <string name="intro_frag_third_text_1">Handdruk</string>
     <string name="intro_frag_third_text_2">Wanneer u op het pictogram Privacystatus in de bovenste balk klikt, komt u bij de Handshake, waar u uw communicatiepartner kunt verifiëren.</string>
-    <string name="intro_frag_third_text_3">OUTDISTANCE\t\t\tCORRINA\t\t\tETHIOPIA\t\t\tOUTDRAW\t\t\tFLEECER\t\t\t…</string>
+    <string name="intro_frag_third_text_3">OUTDRAW\t\t\tFLEECER\t\t\tPUPPING\t\t\tCOMFORTING\t\t\tTEATIME\t\t\t…</string>
     <string name="intro_frag_third_text_4">Maak een handdruk met je communicatiepartner. Een handdruk is slechts één keer per partner nodig en zorgt voor veilige en vertrouwde communicatie.</string>
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">Het pictogram in de bovenste balk geeft de privacystatus van het bericht weer, wat de laagste gemene deler is van alle communicatiepartners van dat bericht, bijvoorbeeld:</string>
@@ -237,7 +242,6 @@
     <string name="pep_rating_secure">Veilig</string>
     <string name="pep_rating_mistrusted">Wantrouwde</string>
     <string name="pep_rating_forced_unencrypt">Gehandicapt</string>
-    <string name="pep_rating_none">" "</string>
     <string name="action_tutorial">Zelfstudie</string>
     <string name="only_own_identities">Dit is een eigen bericht, er is geen andere communicatiepartner bij betrokken.</string>
     <string name="message_failed_to_encrypt">We konden dit bericht niet beschermen.</string>
@@ -259,5 +263,5 @@
     <string name="keysync_disable_warning_title">Schakel p≡p Sync uit</string>
     <string name="keysync_disable_warning_explanation">Als u p≡p Sync uitschakelt, worden uw accounts op uw apparaten niet meer gesynchroniseerd.
 \n<b>Weet je zeker dat je p≡p Sync wilt uitschakelen\?</b></string>
-    <string name="keysync_disable_warning_action_disable">Uitschakelen</string>
+    <string name="keysync_disable_warning_action_disable">Uitzetten</string>
 </resources>

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.IdentityFlags;
@@ -14,7 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class AddDevicePresenter implements Presenter {
+public class AddDevicePresenter {
 
     private AddDeviceView view;
     private PEpProvider pEpProvider;
@@ -130,21 +129,6 @@ public class AddDevicePresenter implements Presenter {
 
     public void basicOptionsClicked() {
         view.hideIdentities();
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void destroy() {
-
     }
 
     public boolean isPGP() {

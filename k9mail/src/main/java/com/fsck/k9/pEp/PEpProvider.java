@@ -1,19 +1,22 @@
 package com.fsck.k9.pEp;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import java.util.List;
+import java.util.Map;
+
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
-import foundation.pEp.jniadapter.pEpException;
-
-import java.util.List;
-import java.util.Map;
+import foundation.pEp.jniadapter.exceptions.pEpException;
+import timber.log.Timber;
+import java.util.Vector;
 
 /**
  * Created by dietz on 01.07.15.
@@ -64,11 +67,12 @@ public interface PEpProvider extends AutoCloseable {
      * Implications from feeding LocalMessages into decryptMessage are currently not completely understood...
      *
      * @param source the (fully qualified) message to be decrypted.
+     * @param receivedBy The email address which received the message
      * @return the decrypted message or the original message in case we cannot decrypt
      * <p/>
      * TODO: pEp: how do I get the color? Perhaps Via header value in return value?
      */
-    DecryptResult decryptMessage(MimeMessage source);
+    DecryptResult decryptMessage(MimeMessage source, String receivedBy);
 
     /**
      * Decrypts one k9 MimeMessage. Hides all the black magic associated with the real pEp library interaction.
@@ -78,7 +82,7 @@ public interface PEpProvider extends AutoCloseable {
      * @return the decrypted message or error en case we cannot decrypt or engine fails
      * <p/>
      */
-    void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback);
+    void decryptMessage(MimeMessage source, Account account, ResultCallback<DecryptResult> callback);
 
     /**
      * Encrypts one k9 message. This one hides all the black magic associated with the real
@@ -120,6 +124,8 @@ public interface PEpProvider extends AutoCloseable {
     String trustwords(Identity id, String language);
 
     String trustwords(Identity myself, Identity partner, String lang, boolean isShort);
+
+    void trustwords(Identity myself, Identity partner, String lang, boolean isShort,SimpleResultCallback<String> callback);
 
     void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
                           ResultCallback<HandshakeData> callback);
@@ -178,6 +184,10 @@ public interface PEpProvider extends AutoCloseable {
 
     void setSubjectProtection(boolean enabled);
 
+    void configPassphrase(String passphrase);
+
+    void configPassphraseForNewKeys(boolean enable, String passphrase);
+
     List<KeyListItem> getBlacklistInfo();
 
     List<KeyListItem> getMasterKeysInfo();
@@ -198,6 +208,8 @@ public interface PEpProvider extends AutoCloseable {
 
     String getLog();
 
+    String getLog(CompletedCallback callback);
+
     void printLog();
 
     void loadOwnIdentities(ResultCallback<List<Identity>> callback);
@@ -214,6 +226,8 @@ public interface PEpProvider extends AutoCloseable {
 
     Rating incomingMessageRating(MimeMessage message);
 
+    void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback);
+
     void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback);
 
     Map<String, PEpLanguage> obtainLanguages();
@@ -224,7 +238,7 @@ public interface PEpProvider extends AutoCloseable {
 
     boolean canEncrypt(String address);
 
-    void importKey(byte[] key);
+    Vector<Identity> importKey(byte[] key);
 
     void keyResetIdentity(Identity ident, String fpr);
 
@@ -270,15 +284,31 @@ public interface PEpProvider extends AutoCloseable {
 
     class DecryptResult {
         public int flags = -1;
+        final public MimeMessage msg;
+        final public Rating rating;
+        final public boolean isFormerlyEncryptedReUploadedMessage;
 
+        public DecryptResult(MimeMessage msg, Rating rating, int flags, boolean isEncrypted) {
+            this.msg = msg;
+            this.rating = rating;
+            this.flags = flags;
+            this.isFormerlyEncryptedReUploadedMessage = isFormerlyEncryptedReUploadedMessage(isEncrypted);
+        }
+
+        /**
+         * @deprecated Legacy constructor to be removed with PEpProviderImpl
+         */
+        @Deprecated
         public DecryptResult(MimeMessage msg, Rating rating, int flags) {
             this.msg = msg;
             this.rating = rating;
             this.flags = flags;
+            this.isFormerlyEncryptedReUploadedMessage = false;
         }
 
-        final public MimeMessage msg;
-        final public Rating rating;
+        private boolean isFormerlyEncryptedReUploadedMessage(boolean isEncrypted) {
+            return isEncrypted && rating.value >= Rating.pEpRatingUnreliable.value;
+        }
     }
 
      enum ProtectionScope {
@@ -297,6 +327,13 @@ public interface PEpProvider extends AutoCloseable {
 
     interface ResultCallback<Result> extends Callback {
         void onLoaded(Result result);
+    }
+
+    abstract class SimpleResultCallback<Result> implements ResultCallback<Result> {
+        @Override
+        public void onError(Throwable throwable) {
+            Timber.e(throwable);
+        }
     }
 
     interface CompletedCallback extends Callback {

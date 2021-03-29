@@ -58,7 +58,7 @@ class PEpMessageBuilder {
         return pEpMsg;
     }
 
-    private void addBody(Message pEpMsg) throws MessagingException, IOException, UnsupportedEncodingException {
+    private void addBody(Message pEpMsg) throws MessagingException, IOException {
         // fiddle message txt from MimeMsg...
         // the buildup of mm should be like the follwing:
         // - html body if any, else plain text
@@ -67,20 +67,20 @@ class PEpMessageBuilder {
         Body b = mm.getBody();
         Vector<Blob> attachments = new Vector<>();
 
-        if(!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
+        if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
-                String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
-                if ((isAnAttachment(mm))) {
-                    Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
-                    String filename = MimeUtility.getHeaderParameter(disposition, "filename");
-                    addAttachment(attachments, mm.getContentType(), filename, PEpUtils.extractBodyContent(b));
-                    pEpMsg.setLongmsg("");
-                 //   return;
-                }
+            String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
+            byte[] bodyContent = PEpUtils.extractBodyContent(b);
+            if ((isAnAttachment(mm))) {
+                Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
+                String filename = MimeUtility.getHeaderParameter(disposition, "filename");
+                addAttachment(attachments, mm.getContentType(), filename, bodyContent);
+                pEpMsg.setLongmsg("");
+            }
 
             String charset = getMessagePartCharset(mm);
-            String text = new String(PEpUtils.extractBodyContent(b), charset);
-            if(mm.isMimeType("text/html")) {
+            String text = new String(bodyContent, charset);
+            if (mm.isMimeType("text/html")) {
                 pEpMsg.setLongmsgFormatted(text);
             } else {
                 pEpMsg.setLongmsg(text);
@@ -171,20 +171,81 @@ class PEpMessageBuilder {
     }
 
     private String getFilenameUri(MimeBodyPart attachment) throws MessagingException {
-        if (hasContentTypeAndIsInline(attachment)) {
+        if (getDisposition(attachment).equals(Disposition.INLINE)) {
             return MimeHeader.CID_SCHEME + attachment.getContentId();
         } else {
             return MimeHeader.FILE_SCHEME + getFileName(attachment);
-
-
         }
     }
 
-    private Boolean hasContentTypeAndIsInline(MimeBodyPart attachment) {
-        return !TextUtils.isEmpty(attachment.getContentId())
-                && "inline".equalsIgnoreCase(attachment.getDisposition());
+    /*********************************************************************************************
+    * From RFC 2183 - Content-Disposition definition
+    *
+    * Status of this Memo
+    *
+    *    This document specifies an Internet standards track protocol for the
+    *    Internet community, and requests discussion and suggestions for
+    *    improvements.  Please refer to the current edition of the "Internet
+    *    Official Protocol Standards" (STD 1) for the standardization state
+    *    and status of this protocol.  Distribution of this memo is unlimited.
+    *
+    * Abstract
+    *
+    *    This memo provides a mechanism whereby messages conforming to the
+    *    MIME specifications [RFC 2045, RFC 2046, RFC 2047, RFC 2048, RFC
+    *    2049] can convey presentational information.  It specifies the
+    *    "Content-Disposition" header field, which is optional and valid for
+    *    any MIME entity ("message" or "body part").  Two values for this
+    *    header field are described in this memo; one for the ordinary linear
+    *    presentation of the body part, and another to facilitate the use of
+    *    mail to transfer files.  It is expected that more values will be
+    *    defined in the future, and procedures are defined for extending this
+    *     set of values.
+    *
+    * disposition := "Content-Disposition" ":"
+    *                disposition-type
+    *                *(";" disposition-parm)
+    *
+    * disposition-type := "inline"
+    *                   / "attachment"
+    *                   / extension-token
+    *                   ; values are not case-sensitive
+    *
+    * FROM RFC 2045 - Mime definition: extension-token definition
+    *
+    * extension-token := ietf-token / x-token
+    *
+    * ietf-token := <An extension token defined by a
+    *                standards-track RFC and registered
+    *                with IANA.>
+    *
+    * x-token := <The two characters "X-" or "x-" followed, with
+    *             no intervening white space, by any token>
+    *
+    * ********************************************************************************************
+    *    Disposition and getDisposition(MimeBodyPart) to follow the behaviour described above    *
+    * ********************************************************************************************/
+    private enum Disposition {
+        UNKNOWN,
+        ATTACHMENT,
+        INLINE,
     }
 
+    private Disposition getDisposition(final MimeBodyPart attachment) {
+        final boolean isDispositionDefined = attachment.getDisposition() != null;
+        final String disposition = attachment.getDisposition();
+        final String dispositionType = isDispositionDefined ? disposition.split(";")[0] : "";
+        final boolean contentIdIsEmpty = TextUtils.isEmpty(attachment.getContentId());
+
+        if (contentIdIsEmpty || ("attachment".equalsIgnoreCase(dispositionType))) {
+            return Disposition.ATTACHMENT;
+        } else if (!contentIdIsEmpty
+                && (!isDispositionDefined || "inline".equalsIgnoreCase(dispositionType))) {
+            return Disposition.INLINE;
+        } else {
+            return Disposition.UNKNOWN;
+        }
+    }
 
     private void addHeaders(Message m, Context context) {
         // headers
@@ -221,11 +282,7 @@ class PEpMessageBuilder {
         } catch (ParseException ignore) {
         }
 
-        if (mm.isSet(Flag.X_PEP_DISABLED)) {
-            m.setEncFormat(Message.EncFormat.None);
-        } else {
-            m.setEncFormat(Message.EncFormat.PEP);
-        }
+        m.setEncFormat(Message.EncFormat.None);
     }
 
     private void addOptionalField(ArrayList<Pair<String, String>> optionalFields, String headerKey) {

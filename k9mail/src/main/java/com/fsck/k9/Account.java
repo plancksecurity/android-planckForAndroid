@@ -16,6 +16,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
@@ -32,7 +33,7 @@ import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchCondition;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.larswerkman.colorpicker.ColorPicker;
 
 import java.security.cert.CertificateException;
@@ -55,11 +56,6 @@ import static com.fsck.k9.Preferences.getEnumStringPref;
  * and delete itself given a Preferences to work with. Each account is defined by a UUID.
  */
 public class Account implements BaseAccount, StoreConfig {
-    /**
-     * Default value for the inbox folder (never changes for POP3 and IMAP)
-     */
-    private static final String INBOX = "INBOX";
-    private static final String PEP_FOLDER = "pEp";
 
     /**
      * This local folder is used to store messages to be sent.
@@ -91,6 +87,20 @@ public class Account implements BaseAccount, StoreConfig {
         EXPUNGE_ON_POLL
     }
 
+    public enum SetupState {
+        INITIAL,
+        READY
+    }
+    private SetupState setupState;
+
+    public SetupState getSetupState() {
+        return setupState;
+    }
+
+    public void setSetupState(SetupState setupState) {
+        this.setupState = setupState;
+    }
+
     public enum DeletePolicy {
         NEVER(0),
         SEVEN_DAYS(1),
@@ -119,7 +129,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final MessageFormat DEFAULT_MESSAGE_FORMAT = MessageFormat.HTML;
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
-    public static final boolean DEFAULT_MESSAGE_READ_RECEIPT = false;
     public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.PREFIX;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
     public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
@@ -237,7 +246,6 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean ringNotified;
     private MessageFormat messageFormat;
     private boolean messageFormatAuto;
-    private boolean messageReadReceipt;
     private QuoteStyle quoteStyle;
     private String quotePrefix;
     private boolean defaultQuotedTextShown;
@@ -301,6 +309,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Context context) {
         accountUuid = UUID.randomUUID().toString();
+        setupState = SetupState.INITIAL;
         localStorageProviderId = StorageManager.getInstance(context).getDefaultProviderId();
         automaticCheckIntervalMinutes = INTERVAL_MINUTES_NEVER;
         idleRefreshMinutes = 24;
@@ -321,8 +330,8 @@ public class Account implements BaseAccount, StoreConfig {
         showPictures = ShowPictures.NEVER;
         isSignatureBeforeQuotedText = false;
         expungePolicy = Expunge.EXPUNGE_IMMEDIATELY;
-        autoExpandFolderName = INBOX;
-        inboxFolderName = INBOX;
+        autoExpandFolderName = Store.INBOX;
+        inboxFolderName = Store.INBOX;
         maxPushFolders = 10;
         chipColor = pickColor(context);
         goToUnreadMessageSearch = false;
@@ -331,7 +340,6 @@ public class Account implements BaseAccount, StoreConfig {
         maximumAutoDownloadMessageSize = 0;
         messageFormat = DEFAULT_MESSAGE_FORMAT;
         messageFormatAuto = DEFAULT_MESSAGE_FORMAT_AUTO;
-        messageReadReceipt = DEFAULT_MESSAGE_READ_RECEIPT;
         quoteStyle = DEFAULT_QUOTE_STYLE;
         quotePrefix = DEFAULT_QUOTE_PREFIX;
         defaultQuotedTextShown = DEFAULT_QUOTED_TEXT_SHOWN;
@@ -393,6 +401,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Preferences preferences, String uuid) {
         this.accountUuid = uuid;
+        this.setupState = SetupState.READY;
         loadAccount(preferences);
     }
 
@@ -424,7 +433,7 @@ public class Account implements BaseAccount, StoreConfig {
         notifyContactsMailOnly = storage.getBoolean(accountUuid + ".notifyContactsMailOnly", false);
         notifySync = storage.getBoolean(accountUuid + ".notifyMailCheck", false);
         deletePolicy =  DeletePolicy.fromInt(storage.getInt(accountUuid + ".deletePolicy", DeletePolicy.NEVER.setting));
-        inboxFolderName = storage.getString(accountUuid + ".inboxFolderName", INBOX);
+        inboxFolderName = storage.getString(accountUuid + ".inboxFolderName", Store.INBOX);
         draftsFolderName = storage.getString(accountUuid + ".draftsFolderName", "Drafts");
         sentFolderName = storage.getString(accountUuid + ".sentFolderName", "Sent");
         trashFolderName = storage.getString(accountUuid + ".trashFolderName", "Trash");
@@ -443,7 +452,6 @@ public class Account implements BaseAccount, StoreConfig {
         if (messageFormatAuto && messageFormat == MessageFormat.TEXT) {
             messageFormat = MessageFormat.AUTO;
         }
-        messageReadReceipt = storage.getBoolean(accountUuid + ".messageReadReceipt", DEFAULT_MESSAGE_READ_RECEIPT);
         quoteStyle = getEnumStringPref(storage, accountUuid + ".quoteStyle", DEFAULT_QUOTE_STYLE);
         quotePrefix = storage.getString(accountUuid + ".quotePrefix", DEFAULT_QUOTE_PREFIX);
         defaultQuotedTextShown = storage.getBoolean(accountUuid + ".defaultQuotedTextShown", DEFAULT_QUOTED_TEXT_SHOWN);
@@ -455,7 +463,7 @@ public class Account implements BaseAccount, StoreConfig {
             compressionMap.put(type, useCompression);
         }
 
-        autoExpandFolderName = storage.getString(accountUuid  + ".autoExpandFolderName", INBOX);
+        autoExpandFolderName = storage.getString(accountUuid  + ".autoExpandFolderName", Store.INBOX);
 
         accountNumber = storage.getInt(accountUuid + ".accountNumber", 0);
 
@@ -678,6 +686,9 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized void save(Preferences preferences) {
+        if(setupState == SetupState.INITIAL && BuildConfig.DEBUG) {
+            throw new IllegalStateException("Trying to save an account in state INITIAL");
+        }
         StorageEditor editor = preferences.getStorage().edit();
 
         if (!preferences.getStorage().getString("accountUuids", "").contains(accountUuid)) {
@@ -762,7 +773,6 @@ public class Account implements BaseAccount, StoreConfig {
             messageFormatAuto = false;
         }
         editor.putBoolean(accountUuid + ".messageFormatAuto", messageFormatAuto);
-        editor.putBoolean(accountUuid + ".messageReadReceipt", messageReadReceipt);
         editor.putString(accountUuid + ".quoteStyle", quoteStyle.name());
         editor.putString(accountUuid + ".quotePrefix", quotePrefix);
         editor.putBoolean(accountUuid + ".defaultQuotedTextShown", defaultQuotedTextShown);
@@ -844,7 +854,7 @@ public class Account implements BaseAccount, StoreConfig {
         StringBuilder query = new StringBuilder();
         List<String> queryArgs = new ArrayList<>();
         ConditionsTreeNode conditions = search.getConditions();
-        SqlQueryBuilder.buildWhereClause(this, conditions, query, queryArgs);
+        SqlQueryBuilderInvoker.buildWhereClause(this, conditions, query, queryArgs);
 
         String selection = query.toString();
         String[] selectionArgs = queryArgs.toArray(new String[0]);
@@ -1013,6 +1023,12 @@ public class Account implements BaseAccount, StoreConfig {
         } else {
             this.displayCount = K9.DEFAULT_VISIBLE_LIMIT;
         }
+        if(setupState == SetupState.READY) {
+            resetVisibleLimits();
+        }
+    }
+
+    public void setOptionsOnInstall() {
         resetVisibleLimits();
     }
 
@@ -1056,16 +1072,20 @@ public class Account implements BaseAccount, StoreConfig {
                 folderName.equals(getSpamFolderName()) ||
                 folderName.equals(getOutboxFolderName()) ||
                 folderName.equals(getSentFolderName()) ||
-                folderName.equals(getpEpSyncFolderName())
+                folderName.equals(getCurrentpEpSyncFolderName())
         ));
     }
 
-    public String getpEpSyncFolderName() {
+    public String getCurrentpEpSyncFolderName() {
         if (K9.isUsingpEpSyncFolder()) {
-            return PEP_FOLDER;
+            return Store.PEP_FOLDER;
         } else {
             return inboxFolderName;
         }
+    }
+
+    public String getDefaultpEpSyncFolderName() {
+        return Store.PEP_FOLDER;
     }
 
     public synchronized String getDraftsFolderName() {
@@ -1567,14 +1587,6 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setMessageFormat(MessageFormat messageFormat) {
         this.messageFormat = messageFormat;
-    }
-
-    public synchronized boolean isMessageReadReceiptAlways() {
-        return messageReadReceipt;
-    }
-
-    public synchronized void setMessageReadReceipt(boolean messageReadReceipt) {
-        this.messageReadReceipt = messageReadReceipt;
     }
 
     public QuoteStyle getQuoteStyle() {

@@ -2,6 +2,7 @@ package com.fsck.k9.activity;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -12,9 +13,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -64,6 +62,7 @@ import com.fsck.k9.activity.compose.RecipientPresenter;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.activity.compose.SaveMessageTask;
 import com.fsck.k9.activity.misc.Attachment;
+import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
@@ -99,15 +98,9 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +158,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             "com.fsck.k9.activity.MessageCompose.identity";
     private static final String STATE_IN_REPLY_TO = "com.fsck.k9.activity.MessageCompose.inReplyTo";
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
-    private static final String STATE_KEY_READ_RECEIPT = "com.fsck.k9.activity.MessageCompose.messageReadReceipt";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
 
@@ -236,7 +228,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private boolean alreadyNotifiedUserOfEmptySubject = false;
     private boolean changesMadeSinceLastSave = false;
     private Rating originalMessageRating = null;
-    private boolean isSendButtonLocked = false;
+    private boolean isMessageRatingBeingLoaded = false;
+    private boolean isProcessingSendClick = false;
 
     /**
      * The database ID of this message's draft. This is used when saving drafts so the message in
@@ -246,8 +239,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private long draftId = INVALID_DRAFT_ID;
 
     private Action action;
-
-    private boolean requestReadReceipt = false;
 
     private ComposeAccountRecipient accountRecipient;
     private EditText subjectView;
@@ -291,7 +282,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void onCreate(Bundle savedInstanceState) {
         long time = System.currentTimeMillis();
         super.onCreate(savedInstanceState);
-        createDynamicShortcut();
+
         uiCache = PePUIArtefactCache.getInstance(MessageCompose.this);
 
         if (UpgradeDatabases.actionUpgradeDatabases(this, getIntent())) {
@@ -467,8 +458,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             signatureView.setVisibility(View.GONE);
         }
 
-        requestReadReceipt = account.isMessageReadReceiptAlways();
-
         updateFrom();
         Timber.e("P4A-941 showed from %d ", System.currentTimeMillis()-time);
 
@@ -523,17 +512,28 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateMessageFormat();
 
         setTitle();
-
-        currentMessageBuilder = (MessageBuilder) getLastCustomNonConfigurationInstance();
-        if (currentMessageBuilder != null) {
-            setProgressBarIndeterminateVisibility(true);
-            currentMessageBuilder.reattachCallback(this);
-        }
         Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
         Timber.e("P4A-941 init privacyProtection option %d ", System.currentTimeMillis()-time);
 
+    }
+
+    private void restoreMessageComposeConfigurationInstance() {
+        MessageComposeNonConfigInstance messageComposeNonConfigInstance =
+                (MessageComposeNonConfigInstance) getLastCustomNonConfigurationInstance();
+        if(messageComposeNonConfigInstance != null) {
+            Bundle retainedState = messageComposeNonConfigInstance.retainedState;
+            attachmentPresenter.onRestoreInstanceState(retainedState);
+            recipientPresenter.onRestoreInstanceState(retainedState);
+            quotedMessagePresenter.onRestoreInstanceState(retainedState);
+
+            if(messageComposeNonConfigInstance.messageBuilder != null) {
+                currentMessageBuilder = messageComposeNonConfigInstance.messageBuilder;
+                setProgressBarIndeterminateVisibility(true);
+                currentMessageBuilder.reattachCallback(this);
+            }
+        }
     }
 
     private void startToolbar() {
@@ -551,24 +551,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
         toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
-    }
-
-    private void createDynamicShortcut() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-            Intent composeIntent = new Intent(MessageCompose.this, MessageCompose.class);
-            composeIntent.putExtra(MessageCompose.EXTRA_ACCOUNT, getAccount().getUuid());
-            composeIntent.setAction(MessageCompose.ACTION_COMPOSE);
-
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            ShortcutInfo composeShortcut = new ShortcutInfo.Builder(this, SHORTCUT_COMPOSE)
-                    .setShortLabel(getResources().getString(R.string.compose_action))
-                    .setLongLabel(getResources().getString(R.string.compose_action))
-                    .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
-                    .setIntent(composeIntent)
-                    .build();
-
-            shortcutManager.setDynamicShortcuts(Collections.singletonList(composeShortcut));
-        }
     }
 
     @Override
@@ -709,15 +691,30 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putBoolean(STATE_IDENTITY_CHANGED, identityChanged);
         outState.putString(STATE_IN_REPLY_TO, repliedToMessageId);
         outState.putString(STATE_REFERENCES, referencedMessageIds);
-        outState.putBoolean(STATE_KEY_READ_RECEIPT, requestReadReceipt);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-
-        recipientPresenter.onSaveInstanceState(outState);
-        quotedMessagePresenter.onSaveInstanceState(outState);
-        attachmentPresenter.onSaveInstanceState(outState);
         // TODO: trigger pep?
 
+    }
+
+    public static class MessageComposeNonConfigInstance implements NonConfigurationInstance {
+        MessageBuilder messageBuilder;
+        Bundle retainedState;
+
+        MessageComposeNonConfigInstance(MessageBuilder messageBuilder, Bundle retainedState) {
+            this.messageBuilder = messageBuilder;
+            this.retainedState = retainedState;
+        }
+
+        @Override
+        public boolean retain() {
+            return true;
+        }
+
+        @Override
+        public void restore(Activity activity) {
+
+        }
     }
 
     @Override
@@ -725,7 +722,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (currentMessageBuilder != null) {
             currentMessageBuilder.detachCallback();
         }
-        return currentMessageBuilder;
+        Bundle retainedState = new Bundle();
+        if(quotedMessagePresenter != null) {
+            quotedMessagePresenter.onSaveInstanceState(retainedState);
+        }
+        if(recipientPresenter != null) {
+            recipientPresenter.onSaveInstanceState(retainedState);
+        }
+        if(attachmentPresenter != null) {
+            attachmentPresenter.onSaveInstanceState(retainedState);
+        }
+        MessageComposeNonConfigInstance messageComposeNonConfigInstance =
+                new MessageComposeNonConfigInstance(currentMessageBuilder, retainedState);
+        return messageComposeNonConfigInstance;
     }
 
     @Override
@@ -733,12 +742,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onRestoreInstanceState(savedInstanceState);
 
         attachmentsView.removeAllViews();
-
-        requestReadReceipt = savedInstanceState.getBoolean(STATE_KEY_READ_RECEIPT);
-
-        recipientPresenter.onRestoreInstanceState(savedInstanceState);
-        quotedMessagePresenter.onRestoreInstanceState(savedInstanceState);
-        attachmentPresenter.onRestoreInstanceState(savedInstanceState);
 
         draftId = savedInstanceState.getLong(STATE_KEY_DRAFT_ID);
         identity = (Identity) savedInstanceState.getSerializable(STATE_IDENTITY);
@@ -751,6 +754,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
+        restoreMessageComposeConfigurationInstance();
     }
 
     private void setTitle() {
@@ -786,7 +790,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 .setBcc(recipientPresenter.getBccAddresses())
                 .setInReplyTo(repliedToMessageId)
                 .setReferences(referencedMessageIds)
-                .setRequestReadReceipt(requestReadReceipt)
                 .setIdentity(identity)
                 .setMessageFormat(currentMessageFormat)
                 .setText(messageContentView.getCharacters())
@@ -870,6 +873,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     public void performSendAfterChecks() {
         currentMessageBuilder = createMessageBuilder(false);
         if (currentMessageBuilder != null) {
+            processingSend();
             changesMadeSinceLastSave = false;
             setProgressBarIndeterminateVisibility(true);
             currentMessageBuilder.buildAsync(this);
@@ -886,18 +890,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         finish();
     }
 
-    private void onReadReceipt() {
-        CharSequence txt;
-        if (!requestReadReceipt) {
-            txt = getString(R.string.read_receipt_enabled);
-            requestReadReceipt = true;
-        } else {
-            txt = getString(R.string.read_receipt_disabled);
-            requestReadReceipt = false;
-        }
-        FeedbackTools.showShortFeedback(getRootView(), String.valueOf(txt));
-    }
-
     public void showContactPicker(int requestCode) {
         requestCode |= REQUEST_MASK_RECIPIENT_PRESENTER;
         isInSubActivity = true;
@@ -906,6 +898,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         isInSubActivity = false;
 
         if ((requestCode & REQUEST_MASK_MESSAGE_BUILDER) == REQUEST_MASK_MESSAGE_BUILDER) {
@@ -1080,13 +1074,13 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 goBack();
                 break;
             case R.id.send:
-                if (!isSendButtonLocked) {
-                    if (isLookNeeded()) {
-                        lockSendButton();
+                if (isMessageRatingBeingLoaded) {
+                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
+                } else if (!isProcessingSendClick) {
+                    if (isMessageRatingNotAvailable()) {
+                        messageRatingIsBeingLoaded();
                     }
                     checkToSendMessage();
-                } else {
-                    FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 }
                 break;
             case R.id.save:
@@ -1115,9 +1109,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             case R.id.add_attachment:
                 attachmentPresenter.onClickAddAttachment(recipientPresenter);
                 break;
-            case R.id.read_receipt:
-                onReadReceipt();
-                break;
             case R.id.privacyStatus:
                 onPEpPrivacyStatus(true);
                 break;
@@ -1125,7 +1116,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean isLookNeeded() {
+    private boolean isMessageRatingNotAvailable() {
         return !recipientPresenter.isForceUnencrypted()
                 && account.ispEpPrivacyProtected();
     }
@@ -1714,12 +1705,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                     draftId != INVALID_DRAFT_ID ? draftId : null, relatedMessageReference, new PEpProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
-                    unlockSendButton();
+                    sendFinished();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    unlockSendButton();
+                    sendFinished();
                 }
             }).execute();
             finish();
@@ -1986,12 +1977,20 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
     }
 
-    public void lockSendButton() {
-        isSendButtonLocked = true;
+    public void messageRatingIsBeingLoaded() {
+        isMessageRatingBeingLoaded = true;
     }
 
-    public void unlockSendButton() {
-        isSendButtonLocked = false;
+    public void messageRatingLoaded() {
+        isMessageRatingBeingLoaded = false;
+    }
+
+    public void processingSend() {
+        isProcessingSendClick = true;
+    }
+
+    public void sendFinished() {
+        isProcessingSendClick = false;
     }
 
     public void setToolbarColor(@ColorInt int color) {

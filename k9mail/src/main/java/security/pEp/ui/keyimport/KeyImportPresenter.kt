@@ -1,108 +1,153 @@
 package security.pEp.ui.keyimport
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.PEpProviderFactory
+import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
-import foundation.pEp.jniadapter.pEpException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import foundation.pEp.jniadapter.Identity
+import foundation.pEp.jniadapter.exceptions.pEpException
+import kotlinx.coroutines.*
 import org.apache.commons.io.IOUtils
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PICK_KEY_FILE
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Named
 
-class KeyImportPresenter @Inject constructor() {
+class KeyImportPresenter @Inject constructor(
+        private val preferences: Preferences,
+        @Named("NewInstance") private val pEp: PEpProvider
+) {
 
     private lateinit var fingerprint: String
     private lateinit var view: KeyImportView
-    private lateinit var account: String
+    private lateinit var accountUuid: String
 
-    fun initialize(view: KeyImportView, account: String) {
+    private lateinit var context: Context
+    private lateinit var accountIdentity: Identity
+    private lateinit var currentFpr: String
+    private lateinit var address: String
+
+    private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+    fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
-        this.account = account
-    }
-
-    fun onAccept(fingerprint: String) {
-        val trimmedFingerprint = fingerprint.replace(" ", "")
-        if (trimmedFingerprint.isEmpty()) {
-            view.showEmptyInputError()
-        } else {
-            this.fingerprint = trimmedFingerprint
-            view.openFileChooser()
+        this.accountUuid = accountUuid
+        scope.launch {
+            context = view.getApplicationContext()
+            address = preferences.getAccount(accountUuid).email
+            accountIdentity = PEpUtils.createIdentity(Address(address), context)
+            withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
         }
     }
 
-    fun onReject() {
-        view.finish()
-    }
-
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode != Activity.RESULT_OK || data == null) return
+        if (resultCode != Activity.RESULT_OK || data == null) {
+            view.finish()
+            return
+        }
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_KEY_FILE -> data.data?.let { onKeyImport(it) }
         }
     }
 
     private fun onKeyImport(uri: Uri) {
-        runBlocking {
-            view.showDialog()
-            val success = importKey(uri)
-            replyResult(success, uri)
-            view.removeDialog()
-        }
+        val filename = uri.path.toString()
 
+        scope.launch {
+            view.showLoading()
+            val firstIdentity = importKey(uri)
+            view.hideLoading()
+            firstIdentity?.let {
+                view.showKeyImportConfirmationDialog(firstIdentity, filename)
+            } ?: replyResult(false, filename)
+        }
     }
 
+    fun onKeyImportRejected() {
+        view.finish()
+    }
 
-    private suspend fun importKey(uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        var result = true
+    private suspend fun onKeyImportConfirmed(): Boolean {
+        return withContext(Dispatchers.IO) {
+            var result = false
+            runBlocking {
+                try {
+                    val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
+                    result = if (id == null || !pEp.canEncrypt(address)) {
+                        Timber.w("Couldn't set own key: %s", fingerprint)
+                        pEp.setOwnIdentity(accountIdentity, currentFpr)
+                        false
+                    } else {
+                        pEp.myself(id)
+                        true
+                    }
+
+                } catch (e: pEpException) {  // this means there was no right formatted key in the file.
+                    result = true
+                    pEp.setOwnIdentity(accountIdentity, currentFpr)
+                }
+            }
+            result
+        }
+    }
+
+    private suspend fun importKey(uri: Uri): Identity?  = withContext(Dispatchers.IO){
+        var result: Identity?
         try {
-            val context = view.getApplicationContext()
             val resolver = context.contentResolver
             val inputStream = resolver.openInputStream(uri)
-            val pEp = PEpProviderFactory.createAndSetupProvider(context)
-            val accountIdentity = PEpUtils.createIdentity(Address(account), context)
-            val currentFpr = pEp.myself(accountIdentity).fpr
             try {
                 val key = IOUtils.toByteArray(inputStream)
-                pEp.importKey(key)
-                val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                if (id == null || !pEp.canEncrypt(account)) {
-                    Timber.w("Couldn't set own key: %s", key)
-                    pEp.setOwnIdentity(accountIdentity, currentFpr)
-                    result = false
+
+                val importedIdentities = pEp.importKey(key)
+                if (importedIdentities.isEmpty()) { // This means that the file contains a key, but not a proper private key which we need.
+                    result = null
+                }
+                else {
+                    result = importedIdentities.firstOrNull { identity -> identity.address == address }
+                    result?.let {
+                        fingerprint = (importedIdentities[0] as Identity).fpr
+                        result = importedIdentities[0]
+                    }
                 }
             } catch (e: IOException) {
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()
-            } catch (e: pEpException) {
+            } catch (e: pEpException) {  // this means there was no right formatted key in the file.
                 pEp.setOwnIdentity(accountIdentity, currentFpr)
-                result = false
+                result = null
             } finally {
                 try {
                     inputStream!!.close()
-                    pEp.close()
+                    //pEp.close()
                 } catch (ignore: IOException) {
                 }
             }
         } catch (e: FileNotFoundException) {
             Timber.w("Couldn't read content from URI %s", uri)
-            result = false
+            result = null
         }
         result
     }
 
-    private fun replyResult(success: Boolean, uri: Uri) {
-        val filename = uri.path
+    private fun replyResult(success: Boolean, filename: String) {
+        view.hideLoading()
         when {
             success -> view.showCorrectKeyImport(fingerprint, filename)
-            else -> view.showFailedKeyImport(fingerprint, filename)
+            else -> view.showFailedKeyImport(filename)
+        }
+    }
+
+    fun onKeyImportAccepted(filename: String) {
+        scope.launch {
+            val result = onKeyImportConfirmed()
+            replyResult(result, filename)
         }
     }
 

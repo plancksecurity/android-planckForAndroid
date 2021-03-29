@@ -111,7 +111,14 @@ public class MimeMessageBuilder extends MessageBuilder {
         //if (pEpMessage.getSent() != null) mimeMsg.addSentDate(pEpMessage.getSent(), K9.hideTimeZone());
         //else Log.e("pep", "sent daten == null from engine.");       // FIXME: this should never happen
         buildHeader(mimeMsg);
-        mimeMsg.setMessageId(pEpMessage.getId());
+
+        if (pEpMessage.getId() != null) {
+            if (messageIdIncludesAngleBrackets(pEpMessage.getId())) {
+                mimeMsg.setMessageId(pEpMessage.getId());
+            } else {
+                mimeMsg.setMessageId(String.format("<%s>", pEpMessage.getId()));
+            }
+        }
 
         mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
@@ -122,6 +129,10 @@ public class MimeMessageBuilder extends MessageBuilder {
                 mimeMsg.addHeader(field.first, field.second);
             }
         }
+    }
+
+    private boolean messageIdIncludesAngleBrackets(String messageId) {
+        return messageId.startsWith("<") && messageId.endsWith(">");
     }
 
     private void buildBodyForMessage(MimeMessage mimeMsg) throws MessagingException {
@@ -147,9 +158,9 @@ public class MimeMessageBuilder extends MessageBuilder {
             // This is the compiled MIME part for an HTML message.
             MimeMultipart composedMimeMessage = MimeMultipart.newInstance();
             composedMimeMessage.setSubType("alternative");   // Let the receiver select either the text or the HTML part.
-            composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
             bodyPlain = buildText(SimpleMessageFormat.TEXT);
             composedMimeMessage.addBodyPart(new MimeBodyPart(bodyPlain, "text/plain"));
+            composedMimeMessage.addBodyPart(new MimeBodyPart(body, "text/html"));
             if (hasAttachments) {
                 // If we're HTML and have attachments, we have a MimeMultipart container to hold the
                 // whole message (mp here), of which one part is a MimeMultipart container
@@ -341,10 +352,16 @@ public class MimeMessageBuilder extends MessageBuilder {
 
     // move to peputils somewhen soon
     private String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
-        String rt = "";
+        StringBuilder builder = new StringBuilder();
         if (sv != null)
-            for (String cur : sv)
-                rt += cur + "; ";
-        return rt;
+            for (String cur : sv) {
+                if (messageIdIncludesAngleBrackets(cur)) {
+                    builder.append(cur);
+                } else {
+                    builder.append("<").append(cur).append(">");
+                }
+                builder.append(" ");
+            }
+        return builder.toString().trim();
     }
 }

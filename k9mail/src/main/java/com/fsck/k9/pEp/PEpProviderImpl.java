@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.mail.Address;
@@ -16,6 +17,8 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.message.SimpleMessageFormat;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
+import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.HandshakeData;
@@ -29,7 +32,6 @@ import foundation.pEp.jniadapter.Pair;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeResult;
-import foundation.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,12 @@ import java.util.Vector;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.decrypt_message_Return;
+import foundation.pEp.jniadapter.exceptions.pEpCannotCreateKey;
+import foundation.pEp.jniadapter.exceptions.pEpException;
+import foundation.pEp.jniadapter.exceptions.pEpPassphraseRequired;
+import foundation.pEp.jniadapter.exceptions.pEpWrongPassphrase;
+import security.pEp.ui.PassphraseProvider;
 import timber.log.Timber;
 
 /**
@@ -104,8 +112,10 @@ public class PEpProviderImpl implements PEpProvider {
         engine.config_passive_mode(K9.getPEpPassiveMode());
         configKeyServerLockup(K9.getPEpUseKeyserver());
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection());
+        engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase());
         engine.setMessageToSendCallback(MessagingController.getInstance(context));
         engine.setNotifyHandshakeCallback(((K9) context.getApplicationContext()).getNotifyHandshakeCallback());
+        engine.setPassphraseRequiredCallback(PassphraseProvider.INSTANCE.getPassphraseRequiredCallback(context));
     }
 
     private Engine getNewEngineSession() throws pEpException {
@@ -180,13 +190,12 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public synchronized DecryptResult decryptMessage(MimeMessage source) {
+    public synchronized DecryptResult decryptMessage(MimeMessage source, String email) {
         Timber.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
-        Engine.decrypt_message_Return decReturn = null;
+        decrypt_message_Return decReturn = null;
         try {
             if (engine == null) createEngineSession();
-
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
             srcMsg.setDir(Message.Direction.Incoming);
 
@@ -233,7 +242,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @org.jetbrains.annotations.Nullable
-    private DecryptResult processKeyImportSyncMessages(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
+    private DecryptResult processKeyImportSyncMessages(decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
         int flags = -1;
         Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
 
@@ -273,11 +282,11 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void decryptMessage(MimeMessage source, ResultCallback<DecryptResult> callback) {
+    public void decryptMessage(MimeMessage source, Account account, ResultCallback<DecryptResult> callback) {
         threadExecutor.execute(() -> {
             Timber.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
-            Engine.decrypt_message_Return decReturn = null;
+            decrypt_message_Return decReturn = null;
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
@@ -297,6 +306,11 @@ public class PEpProviderImpl implements PEpProvider {
 
                 Message message = decReturn.dst;
                 MimeMessage decMsg = getMimeMessage(source, message);
+
+                if (source.getFolder().getName().equals(account.getSentFolderName())
+                        || source.getFolder().getName().equals(account.getDraftsFolderName())) {
+                    decMsg.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(getRating(source)));
+                }
 
                 notifyLoaded(new DecryptResult(decMsg, decReturn.rating, decReturn.flags), callback);
 
@@ -372,7 +386,7 @@ public class PEpProviderImpl implements PEpProvider {
         return mimeMessage;
     }
 
-    private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
+    private boolean isUsablePrivateKey(decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
                 && result.flags == 0x01;
@@ -397,6 +411,12 @@ public class PEpProviderImpl implements PEpProvider {
             }
             resultMessages.add(getEncryptedCopy(source, message, extraKeys));
             return resultMessages;
+        } catch (pEpPassphraseRequired e) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:");
+            throw new AuthFailurePassphraseNeeded();
+        } catch (pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "while encrypting message:");
+            throw new AuthFailureWrongPassphrase();
         } catch (AppDidntEncryptMessageException e) {
             throw e;
         } catch (Throwable t) {
@@ -622,6 +642,17 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void trustwords(Identity myself, Identity partner, String lang, boolean isShort, SimpleResultCallback<String> callback) {
+        try {
+            String result = engine.get_trustwords(myself, partner, lang, !isShort);
+            callback.onLoaded(result);
+        } catch (pEpException e) {
+            Timber.e(e, "%s %s", TAG, "trustwords: ");
+            callback.onError(e);
+        }
+    }
+
+    @Override
     public void obtainTrustwords(Identity self, Identity other, String lang,
                                  Boolean areKeysyncTrustwords,
                                  ResultCallback<HandshakeData> callback) {
@@ -725,6 +756,13 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public String getLog(CompletedCallback callback) {
+        String result = engine.getCrashdumpLog(100);
+        callback.onComplete();
+        return result;
+    }
+
+    @Override
     public synchronized void printLog() {
         String[] logLines = getLog().split("\n");
         for (String logLine : logLines) {
@@ -737,7 +775,13 @@ public class PEpProviderImpl implements PEpProvider {
         createEngineInstanceIfNeeded();
         myId.user_id = PEP_OWN_USER_ID;
         myId.me = true;
-        return engine.myself(myId);
+        try {
+            return engine.myself(myId);
+        }
+        catch(pEpCannotCreateKey exception) {
+            Timber.e(exception, "%s %s", TAG, "could not create key in PEpProviderImpl.myself");
+            return myId;
+        }
     }
 
     @Override
@@ -798,30 +842,22 @@ public class PEpProviderImpl implements PEpProvider {
         }
     }
 
-//    private String buildImportDialogText(Context context, Identity id, String fromAddress) {
-//        StringBuilder stringBuilder = new StringBuilder();
-//        String formattedFpr = PEpUtils.formatFpr(id.fpr);
-//        stringBuilder.append(context.getString(R.string.pep_receivedSecretKey))
-//                .append("\n")
-//                .append(context.getString(R.string.pep_username)).append(": ")
-//                .append(id.username).append("\n")
-//                .append(context.getString(R.string.pep_userAddress)).append(": ")
-//                .append(id.address).append("\n")
-//                .append("\n")
-//                .append(formattedFpr.substring(0, formattedFpr.length()/2))
-//                .append("\n")
-//                .append(formattedFpr.substring(formattedFpr.length()/2))
-//                .append("\n").append("\n")
-//                .append(context.getString(R.string.recipient_from)).append(": ")
-//                .append(fromAddress);
-//
-//        return stringBuilder.toString();
-//    }
-
     @Override
     public synchronized void setSubjectProtection(boolean isProtected) {
         createEngineInstanceIfNeeded();
         engine.config_unencrypted_subject(!isProtected);
+    }
+
+    @Override
+    public synchronized void configPassphrase(String passphrase) {
+        createEngineInstanceIfNeeded();
+        engine.config_passphrase(passphrase);
+    }
+
+    @Override
+    public void configPassphraseForNewKeys(boolean enable, String passphrase) {
+        createEngineInstanceIfNeeded();
+        engine.config_passphrase_for_new_keys(enable, passphrase);
     }
 
     @Override
@@ -1033,6 +1069,17 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void incomingMessageRating(MimeMessage message, ResultCallback<Rating> callback) {
+        Message pEpMessage = new PEpMessageBuilder(message).createMessage(context);
+        try {
+            callback.onLoaded(engine.re_evaluate_message_rating(pEpMessage));
+        } catch (pEpException e) {
+            Timber.e(e);
+            callback.onLoaded(Rating.pEpRatingUndefined);
+        }
+    }
+
+    @Override
     public void loadOutgoingMessageRatingAfterResetTrust(Identity identity, Address from, List<Address> toAddresses, List<Address> ccAddresses, List<Address> bccAddresses, ResultCallback<Rating> callback) {
         getRating(identity, from, toAddresses, ccAddresses, bccAddresses, callback);
     }
@@ -1156,29 +1203,40 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
-    public void importKey(byte[] key) {
+    public Vector<Identity> importKey(byte[] key) {
         createEngineInstanceIfNeeded();
-        engine.importKey(key);
+        return engine.importKey(key);
     }
 
     @Override
     public void keyResetIdentity(Identity ident, String fpr) {
         createEngineInstanceIfNeeded();
         ident = updateIdentity(ident);
-        engine.key_reset_identity(ident,
-                fpr);
+        try {
+            engine.key_reset_identity(ident, fpr);
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetIdentity:");
+        }
     }
 
     @Override
     public void keyResetUser(String userId, String fpr) {
         createEngineInstanceIfNeeded();
-        engine.key_reset_user(userId, fpr);
+        try {
+            engine.key_reset_user(userId, fpr);
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetUser:");
+        }
     }
 
     @Override
     public void keyResetAllOwnKeys() {
         createEngineInstanceIfNeeded();
-        engine.key_reset_all_own_keys();
+        try {
+            engine.key_reset_all_own_keys();
+        } catch (pEpPassphraseRequired | pEpWrongPassphrase e) {
+            Timber.e(e, "%s %s", TAG, "passphrase issue during keyResetAllOwnKeys:");
+        }
     }
 
     @Override

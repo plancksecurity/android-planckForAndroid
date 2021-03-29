@@ -21,6 +21,12 @@ public class AuthTypeHolder {
 
     @Override
     public String toString() {
+        if (authType == AuthType.EXTERNAL_PLAIN) {
+            return String.format("%s & %s",
+                    resources.getString(R.string.account_setup_auth_type_normal_password),
+                    resources.getString(R.string.account_setup_auth_type_tls_client_certificate));
+        }
+
         final int resourceId = resourceId();
         if (resourceId == 0) {
             return authType.name();

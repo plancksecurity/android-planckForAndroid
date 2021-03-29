@@ -236,10 +236,11 @@ public class PEpUtils {
         InputStream is = MimeUtility.decodeBody(body);
         if (is != null) {
             byte[] rv = IOUtils.toByteArray(is);
+            // Forcing the file to be erased
+            body.writeTo(new ByteArrayOutputStream());
             is.close();
             return rv;
-        }
-        else if (body instanceof TextBody) {
+        } else if (body instanceof TextBody) {
             return ((TextBody) body).getRawText().getBytes();
         }
         return new ByteArrayOutputStream().toByteArray();
@@ -590,13 +591,15 @@ public class PEpUtils {
         return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
     }
 
-    public static void updateSyncAccountsConfig(Context context, PEpProvider pEpSyncProvider) {
+    public static void updateSyncAccountsConfig(Context context) {
+        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
         // Accounts config is stored by the app and needs to told to the engine
         for (Account account : Preferences.getPreferences(context).getAccounts()) {
             Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
             //pEpSyncProvider.stopSync();
-            id = pEpSyncProvider.myself(id);
-            pEpSyncProvider.setIdentityFlag(id, account.isPepSyncEnabled());
+            // TODO: 04/08/2020 Move to PepProvider.
+            id = pEp.myself(id);
+            pEp.setIdentityFlag(id, account.isPepSyncEnabled());
             //pEpSyncProvider.startSync();
         }
     }

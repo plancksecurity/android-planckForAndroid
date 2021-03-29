@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
+
 import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -77,7 +77,7 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupIncomingFragment extends PEpFragment {
+public class AccountSetupIncomingFragment extends PEpFragment implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -85,11 +85,14 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
+    private static final String WAS_LOADING = "wasLoading";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
-    @Inject
-    ToolBarCustomizer toolBarCustomizer;
-    
+    @Inject ToolBarCustomizer toolBarCustomizer;
+
     @Inject Preferences preferences;
 
     private ServerSettings.Type mStoreType;
@@ -123,6 +126,11 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
+    private androidx.appcompat.app.AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
+    private boolean wasLoading;
 
 
     private final K9JobManager jobManager = K9.jobManager;
@@ -211,8 +219,10 @@ public class AccountSetupIncomingFragment extends PEpFragment {
          */
         mPortView.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
 
+        editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
+
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -221,10 +231,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = preferences.getAccount(accountUuid);
+            mAccount = getAccountFromPreferences(accountUuid);
         }
-
-        editSettings = Intent.ACTION_EDIT.equals(getArguments().getString(EXTRA_ACTION));
 
         try {
             Log.i(K9.LOG_TAG, "Setting up based on settings: " + mAccount.getStoreUri());
@@ -364,7 +372,23 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         if (editSettings) {
             mNextButton.setText(R.string.done_action);
         }
+        if(savedInstanceState != null) {
+            restoreErrorDialogState(savedInstanceState);
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
+        }
         return rootView;
+    }
+
+    private Account getAccountFromPreferences(String accountUuid) {
+        return editSettings
+                ? preferences.getAccount(accountUuid)
+                : preferences.getAccountAllowingIncomplete(accountUuid);
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     @Override
@@ -421,7 +445,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 AuthType selection = getSelectedAuthType();
 
                 // Have the user select (or confirm) the client certificate
-                if (AuthType.EXTERNAL == selection) {
+                if (selection.isExternalAuth()) {
 
                     // This may again invoke validateFields()
                     mClientCertificateSpinner.chooseCertificate();
@@ -444,9 +468,19 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        if(mAccount != null) {
+            outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
+        saveErrorDialogState(outState);
+        outState.putBoolean(WAS_LOADING, wasLoading);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     /**
@@ -454,13 +488,15 @@ public class AccountSetupIncomingFragment extends PEpFragment {
      */
     private void updateViewFromAuthType() {
         AuthType authType = getSelectedAuthType();
-        boolean isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+        boolean isAuthTypeExternal = authType.isExternalAuth();
         boolean isAuthTypeXOAuth2 = (AuthType.XOAUTH2 == authType);
 
         if (isAuthTypeExternal) {
             // hide password fields, show client certificate fields
-            mPasswordView.setVisibility(View.GONE);
-            mPasswordLabelView.setVisibility(View.GONE);
+            if (authType != AuthType.EXTERNAL_PLAIN) {
+                mPasswordView.setVisibility(View.GONE);
+                mPasswordLabelView.setVisibility(View.GONE);
+            }
             mClientCertificateLabelView.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
         } else if (isAuthTypeXOAuth2) {
@@ -484,7 +520,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
      */
     private void validateFields() {
         AuthType authType = getSelectedAuthType();
-        boolean isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+        boolean isAuthTypeExternal = authType.isExternalAuth();
         boolean isAuthTypeXOAuth2 = (AuthType.XOAUTH2 == authType);
 
         ConnectionSecurity connectionSecurity = getSelectedSecurity();
@@ -518,7 +554,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
             mPortView.addTextChangedListener(validationTextWatcher);
 
             authType = getSelectedAuthType();
-            isAuthTypeExternal = (AuthType.EXTERNAL == authType);
+            isAuthTypeExternal =authType.isExternalAuth();
 
             connectionSecurity = getSelectedSecurity();
             hasConnectionSecurity = (connectionSecurity != ConnectionSecurity.NONE);
@@ -540,13 +576,31 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 && hasConnectionSecurity
                 && hasValidCertificateAlias;
 
+        if (authType == AuthType.EXTERNAL_PLAIN) {
+            hasValidExternalAuthSettings = hasValidExternalAuthSettings
+               && Utility.requiredFieldValid(mPasswordView);
+        }
+
         boolean hasValidXOAuth2Settings = hasValidUserName
                 && isAuthTypeXOAuth2;
 
+        boolean hasValidPort = validatePortEditText();
+
         mNextButton.setEnabled(Utility.domainFieldValid(mServerView)
-                && Utility.requiredFieldValid(mPortView)
+                && hasValidPort
                 && (hasValidPasswordSettings || hasValidExternalAuthSettings || hasValidXOAuth2Settings));
         Utility.setCompoundDrawablesAlpha(mNextButton, mNextButton.isEnabled() ? 255 : 128);
+    }
+
+    private boolean validatePortEditText() {
+       boolean isNotEmpty = Utility.requiredFieldValid(mPortView) ;
+       boolean isWithinRange = isNotEmpty && Integer.parseInt(mPortView.getText().toString()) < 65354;
+        if (!isNotEmpty) {
+            mPortView.setError(getString(R.string.port_is_empty));
+        }else if(!isWithinRange){
+            mPortView.setError(getString(R.string.port_is_out_of_range));
+        }
+        return isWithinRange;
     }
 
     private void updatePortFromSecurityType() {
@@ -593,6 +647,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     AuthType authType = getSelectedAuthType();
                     if (AuthType.EXTERNAL == authType) {
                         clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                    } else if (AuthType.EXTERNAL_PLAIN == authType) {
+                        clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                        password = mPasswordView.getText().toString();
                     } else {
                         password = mPasswordView.getText().toString();
                     }
@@ -615,22 +672,16 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void checkSettings() {
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
         pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
-                false,
-                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                    @Override
-                    public void onError(PEpSetupException exception) {
-                        handleErrorCheckingSettings(exception);
-                    }
-
-                    @Override
-                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        goForward();
-                    }
-                });
+                false, basicsSettingsCheckCallback);
     }
 
     private void goForward() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        rootView.setEnabled(true);
         if (editSettings) {
             if (getActivity() != null) {
                 getActivity().finish();
@@ -642,8 +693,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
     protected void onNext() {
         nextProgressBar.show();
-        mNextButton.setVisibility(View.GONE);
-        rootView.setEnabled(false);
+        mNextButton.setVisibility(View.INVISIBLE);
+        accountSetupNavigator.setLoading(true);
+        enableViewGroup(false, (ViewGroup) rootView);
         AuthType authType = getSelectedAuthType();
         if (authType == AuthType.XOAUTH2) {
             K9.oAuth2TokenStore.authorizeApi(mAccount.getEmail(), getActivity(),
@@ -703,7 +755,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         String username = mUsernameView.getText().toString();
         String clientCertificateAlias = null;
         AuthType authType = getSelectedAuthType();
-        if (authType == AuthType.EXTERNAL) {
+        if (authType.isExternalAuth()) {
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         }
         String host = mServerView.getText().toString();
@@ -731,8 +783,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mAccount.setCompression(NetworkType.MOBILE, mCompressionMobile.isChecked());
         mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
         mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
-        mAccount.setSubscribedFoldersOnly(mSubscribedFoldersOnly.isChecked());
-        mAccount.save(preferences);
     }
 
     public void onClick(View v) {
@@ -794,6 +844,44 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
+        restoreErrorDialogIfNeeded();
+        restoreViewsEnabledState();
+    }
+
+    private void restoreViewsEnabledState() {
+        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
+        enableViewGroup(!wasLoading, (ViewGroup)rootView);
+
+        if(wasLoading) {
+            nextProgressBar.setVisibility(View.VISIBLE);
+            nextProgressBar.show();
+            wasLoading = false;
+        }
+        else {
+            nextProgressBar.hide();
+        }
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
     }
 
     private void handleErrorCheckingSettings(PEpSetupException exception) {
@@ -822,9 +910,10 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        String title = extractErrorDialogTitle(stringResource);
-        new AlertDialog.Builder(getActivity())
-                .setTitle(title)
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
+                .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
     }
@@ -1010,5 +1099,22 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                     e.getMessage() == null ? "" : e.getMessage());
         }
         goForward();
+    }
+
+    @Override
+    public void onSettingsCheckError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
+        goForward();
+    }
+
+    @Override
+    public void onSettingsCheckCancelled() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 }

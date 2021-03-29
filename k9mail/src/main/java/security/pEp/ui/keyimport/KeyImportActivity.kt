@@ -5,16 +5,19 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.core.widget.doAfterTextChanged
+import android.view.View
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
-import security.pEp.ui.dialog.PEpProgressDialog
-import security.pEp.ui.dialog.showProgressDialog
+import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
 
-const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
 const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
 const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
@@ -24,8 +27,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     @Inject
     internal lateinit var presenter: KeyImportPresenter
 
-    private var progressDialog: PEpProgressDialog? = null
-
     override fun inject() {
         getpEpComponent().inject(this)
     }
@@ -34,19 +35,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_key_dialog)
         if (isValidKeyImportIntent(intent)) {
-            val account: String = intent.getStringExtra(ACCOUNT_EXTRA) ?: ""
-            presenter.initialize(this, account)
+            val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
+            presenter.initialize(this, accountUuid)
         }
-        startLayoutViews()
-    }
-
-    private fun startLayoutViews() {
-        cancelButton.setOnClickListener { presenter.onReject() }
-        acceptButton.setOnClickListener { presenter.onAccept(fingerprintEditText.text.toString()) }
-        fingerprintEditText.doAfterTextChanged { text ->
-            fingerprintEditText.error = null
-            acceptButton.isEnabled = text.toString().isNotEmpty()
-        }
+        openFileChooser()
     }
 
     override fun openFileChooser() {
@@ -70,31 +62,40 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .setNegativeButton(R.string.close) { dialogInterface, _ -> dialogInterface.dismiss() }
                 .setPositiveButton(R.string.open_market) { dialogInterface, _ ->
                     dialogInterface.dismiss()
-                    openMarketIntent()
+                    openMarketIntent(this@KeyImportActivity)
                 }
                 .create()
                 .show()
     }
 
-
-    override fun showEmptyInputError() {
-        fingerprintEditText.error = getString(R.string.pgp_key_import_dialog_empty_edittext)
+    override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
+        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+        acceptButton.setOnClickListener {
+            layout.visibility = View.GONE
+            presenter.onKeyImportAccepted(filename)
+        }
+        cancelButton.setOnClickListener {
+            layout.visibility = View.GONE
+            presenter.onKeyImportRejected()
+        }
+        layout.visibility = View.VISIBLE
     }
 
     override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
-                .setMessage(getString(R.string.key_import_success, fingerprint, filename))
+                .setMessage(getString(R.string.key_import_success))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
                 .show()
     }
 
-    override fun showFailedKeyImport(fingerprint: String, filename: String?) {
+    override fun showFailedKeyImport(filename: String?) {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
-                .setMessage(getString(R.string.key_import_failure, filename, fingerprint))
+                .setMessage(getString(R.string.key_import_failure))
                 .setCancelable(false)
                 .setPositiveButton(R.string.okay_action) { _, _ -> finish() }
                 .create()
@@ -102,18 +103,21 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     }
 
-    override fun showDialog() {
+    override fun showLoading() {
         val title = getString(R.string.settings_import_dialog_title)
         val message = getString(R.string.settings_import_scanning_file)
-        progressDialog = showProgressDialog(title, message, true)
+
+        confirmationLayout.visibility = View.INVISIBLE
+        keyImportLoadingLayout.visibility = View.VISIBLE
     }
 
-    override fun removeDialog() {
-        progressDialog?.closeDialog()
+    override fun hideLoading() {
+        keyImportLoadingLayout.visibility = View.GONE
+        confirmationLayout.visibility = View.VISIBLE
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
-        intent.hasExtra(ACCOUNT_EXTRA) -> true
+        intent.hasExtra(ACCOUNT_UUID_EXTRA) -> true
         else -> throw IllegalArgumentException("The provided intent does not contain the required extras")
     }
 
@@ -121,18 +125,25 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         super.onActivityResult(requestCode, resultCode, data)
         presenter.onActivityResult(requestCode, resultCode, data)
     }
+
+    companion object {
+        const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+        const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
+        const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
+
+        private fun openMarketIntent(activity: Activity) {
+            val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            activity.startActivity(intent)
+        }
+
+        fun showImportKeyDialog(activity: Activity?, account: String) {
+            val intent = Intent(activity, KeyImportActivity::class.java)
+            intent.putExtra(ACCOUNT_UUID_EXTRA, account)
+            activity?.startActivity(intent)
+        }
+    }
 }
 
 
-private fun Activity.openMarketIntent() {
-    val uri = Uri.parse(ANDROID_MARKET_URL)
-    val intent = Intent(Intent.ACTION_VIEW, uri)
-    startActivity(intent)
-}
-
-fun Activity.showImportKeyDialog(account: String) {
-    val intent = Intent(this, KeyImportActivity::class.java)
-    intent.putExtra(ACCOUNT_EXTRA, account)
-    startActivity(intent)
-}
 

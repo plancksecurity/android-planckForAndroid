@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +24,15 @@ import com.fsck.k9.controller.MessagingListener;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.helper.RetainFragment;
 import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.internet.MessageExtractor;
+import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -31,6 +40,8 @@ import com.fsck.k9.ui.message.LocalMessageExtractorLoader;
 import com.fsck.k9.ui.message.LocalMessageLoader;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
+
+import static com.fsck.k9.pEp.PEpProvider.KEY_MIOSSING_ERORR_MESSAGE;
 
 
 /** This class is responsible for loading a message start to finish, and
@@ -78,7 +89,10 @@ public class MessageLoaderHelper {
     private LoaderManager loaderManager;
     @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
     private MessageLoaderCallbacks callback;
+    @Nullable // make this explicitly nullable, make sure to cancel/ignore any operation if this is null
+    private MessageLoaderDecryptCallbacks decryptCallback;
 
+    private PEpProvider pEpProvider;
 
     // transient state
     private MessageReference messageReference;
@@ -89,6 +103,7 @@ public class MessageLoaderHelper {
     private OpenPgpDecryptionResult cachedDecryptionResult;
 
     private MessageCryptoHelper messageCryptoHelper;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
 
     public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
@@ -97,6 +112,14 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
+        this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+    }
+
+    public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
+                               @NonNull MessageLoaderCallbacks callback,
+                               @NonNull MessageLoaderDecryptCallbacks decryptCallback) {
+        this(context, loaderManager, fragmentManager, callback);
+        this.decryptCallback = decryptCallback;
     }
 
     // public interface
@@ -198,10 +221,13 @@ public class MessageLoaderHelper {
             throw new IllegalStateException("unexpected call when callback is already detached");
         }
 
+        if (hasToBeDecrypted(localMessage)) {
+            decryptMessage(localMessage);
+        }
+
         callback.onMessageDataLoadFinished(localMessage);
 
-        boolean messageIncomplete =
-                !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+        boolean messageIncomplete = isMessageIncomplete();
         if (messageIncomplete) {
             startDownloadingMessageBody(false);
             return;
@@ -220,6 +246,18 @@ public class MessageLoaderHelper {
         }*/
 
         startOrResumeDecodeMessage();
+    }
+
+    public boolean hasToBeDecrypted(LocalMessage localMessage) {
+        return EncryptionVerifier.isEncrypted(localMessage) && isMessageFullDownloaded();
+    }
+
+    private boolean isMessageIncomplete() {
+        return !localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !localMessage.isSet(Flag.X_DOWNLOADED_PARTIAL);
+    }
+
+    private boolean isMessageFullDownloaded() {
+        return localMessage.isSet(Flag.X_DOWNLOADED_FULL) && !MessageExtractor.hasMissingParts(localMessage);
     }
 
     private void onLoadMessageFromDatabaseFailed() {
@@ -265,7 +303,6 @@ public class MessageLoaderHelper {
             // Do nothing
         }
     };
-
 
     // process with crypto helper
 
@@ -334,7 +371,6 @@ public class MessageLoaderHelper {
                     flagsMask, flagValues, extraFlags);
         }
     };
-
 
     // decode message
 
@@ -441,21 +477,53 @@ public class MessageLoaderHelper {
 
     MessagingListener downloadMessageListener = new SimpleMessagingListener() {
         @Override
-        public void loadMessageRemoteFinished(Account account, String folder, String uid) {
-            if (!messageReference.equals(account.getUuid(), folder, uid)) {
-                return;
-            }
-            onMessageDownloadFinished();
+        public void loadMessageRemoteFinished(final Account account, final String folder, final String uid) {
+            handler.post(() -> {
+                if (!messageReference.equals(account.getUuid(), folder, uid)) {
+                    return;
+                }
+                onMessageDownloadFinished();
+            });
         }
 
         @Override
         public void loadMessageRemoteFailed(Account account, String folder, String uid, final Throwable t) {
-            onDownloadMessageFailed(t);
+            handler.post(() -> onDownloadMessageFailed(t));
         }
     };
 
+    // decrypt message
 
-    // callback interface
+    private void decryptMessage(LocalMessage message) {
+        pEpProvider.decryptMessage(message, account, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
+            @Override
+            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
+                try {
+                    MimeMessage decryptedMessage = decryptResult.msg;
+                    // sync UID so we know our mail...
+                    decryptedMessage.setUid(message.getUid());
+                    // Store the updated message locally
+                    LocalFolder folder = message.getFolder();
+                    folder.storeSmallMessage(decryptedMessage, () -> {
+                        if (decryptCallback != null)
+                            decryptCallback.onMessageDecrypted();
+                    });
+                } catch (MessagingException e) {
+                    Timber.e("pEp %s", "decryptMessage: view", e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                if (decryptCallback != null && throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
+                }
+            }
+        });
+    }
+
+
+    // main callback interface
 
     public interface MessageLoaderCallbacks {
         void onMessageDataLoadFinished(LocalMessage message);
@@ -471,6 +539,13 @@ public class MessageLoaderHelper {
 
         void onDownloadErrorMessageNotFound();
         void onDownloadErrorNetworkError();
+    }
+
+    // decrypt callback interface
+
+    public interface MessageLoaderDecryptCallbacks {
+        void onMessageDecrypted();
+        void onMessageDataDecryptFailed(String errorMessage);
     }
 
 }

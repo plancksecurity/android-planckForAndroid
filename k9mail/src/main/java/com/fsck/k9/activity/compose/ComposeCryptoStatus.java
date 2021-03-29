@@ -8,8 +8,7 @@ import com.fsck.k9.activity.compose.RecipientMvpView.CryptoSpecialModeDisplayTyp
 import com.fsck.k9.activity.compose.RecipientMvpView.CryptoStatusDisplayType;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
-import com.fsck.k9.view.RecipientSelectView.RecipientCryptoStatus;
+import com.fsck.k9.activity.compose.RecipientSelectView.RecipientCryptoStatus;
 
 /** This is an immutable object which contains all relevant metadata entered
  * during e-mail composition to apply cryptographic operations before sending
@@ -205,7 +204,7 @@ public class ComposeCryptoStatus {
             boolean hasRecipients = !recipients.isEmpty();
             for (Recipient recipient : recipients) {
                 RecipientCryptoStatus cryptoStatus = recipient.getCryptoStatus();
-                recipientAddresses.add(recipient.address.getAddress());
+                recipientAddresses.add(recipient.getAddress().getAddress());
                 if (cryptoStatus.isAvailable()) {
                     if (cryptoStatus == RecipientCryptoStatus.AVAILABLE_UNTRUSTED) {
                         allKeysVerified = false;

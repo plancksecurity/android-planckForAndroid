@@ -68,6 +68,7 @@
         android:name=".K9"
         android:allowBackup="false"
         android:allowTaskReparenting="false"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_pep_launcher"
         android:roundIcon="@mipmap/ic_pep_launcher_round"
         android:label="@string/app_name"
@@ -479,14 +480,6 @@
             android:label="@string/blacklist_title"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name=".pEp.ui.privacy.status.PEpTrustwords"
-            android:label="@string/pep_handshake"
-            android:parentActivityName=".pEp.ui.privacy.status.PEpStatus">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pEp.ui.privacy.status.PEpStatus" />
-        </activity>
-        <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"
@@ -499,9 +492,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".activity.K9ActivityCommon$PrivateKeyReceiver">
+        <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver">
             <intent-filter>
-                <action android:name="PRIVATE_KEY" />
+                <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
         <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver">
@@ -547,12 +540,18 @@
         </activity>
         <activity
             android:name="security.pEp.ui.keyimport.KeyImportActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.Dialog"
+            android:theme="@style/OverlayTheme"
             android:screenOrientation="portrait"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
+
+        <activity android:name="security.pEp.ui.passphrase.PassphraseActivity"
+            android:launchMode="singleTask"
+            android:label="@string/passhphrase_title"
+            android:theme="@style/OverlayTheme"
+        />
     </application>
 
 </manifest>

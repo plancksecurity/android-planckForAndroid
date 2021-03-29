@@ -6,87 +6,94 @@
     android:background="@color/white"
     android:padding="@dimen/intro_fragment_padding">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        tools:context="com.fsck.k9.security.pEp.ui.intro.IntroThirdFragment">
+        android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/header_handshake"
-            style="@style/IntroHeaderText"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/intro_frag_third_text_1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroThirdFragment"
+            android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_handshake"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_small"
-            android:text="@string/intro_frag_third_text_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/header_handshake" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/header_handshake"
+                style="@style/IntroHeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/intro_frag_third_text_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:adjustViewBounds="true"
-            android:src="@drawable/intro_actionbar_screenshot"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_handshake" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_handshake"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_small"
+                android:text="@string/intro_frag_third_text_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/header_handshake" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_2_handshake"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_large"
-            android:text="@string/intro_frag_third_text_3"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/image" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:adjustViewBounds="true"
+                android:src="@drawable/intro_actionbar_screenshot"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_handshake" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_2_handshake"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_large"
+                android:text="@string/intro_frag_third_text_3"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/image" />
 
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/rejectButton"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="@dimen/intro_margin_top_small"
-            android:text="@string/pep_wrong_trustwords"
-            android:textColor="@color/white"
-            app:backgroundTint="@color/pep_red"
-            app:layout_constraintEnd_toStartOf="@+id/accept_button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/rejectButton"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="@dimen/intro_margin_top_small"
+                android:text="@string/pep_wrong_trustwords"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/pep_red"
+                app:layout_constraintEnd_toStartOf="@+id/accept_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/accept_button"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="@dimen/intro_margin_top_small"
-            android:text="@string/pep_confirm_trustwords"
-            android:textColor="@color/white"
-            app:backgroundTint="@color/pep_green"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/rejectButton"
-            app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/accept_button"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="@dimen/intro_margin_top_small"
+                android:text="@string/pep_confirm_trustwords"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/pep_green"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/rejectButton"
+                app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_3_handshake"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_large"
-            android:text="@string/intro_frag_third_text_4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rejectButton" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_3_handshake"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_large"
+                android:text="@string/intro_frag_third_text_4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rejectButton" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </RelativeLayout>

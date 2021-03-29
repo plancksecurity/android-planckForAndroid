@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="intro_fragment_padding">24dp</dimen>
+    <dimen name="intro_fragment_bottom_padding">16dp</dimen>
 
     <dimen name="intro_contact_badge_width_height">52dp</dimen>
 

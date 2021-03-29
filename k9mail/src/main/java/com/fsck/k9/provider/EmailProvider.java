@@ -28,7 +28,7 @@ import com.fsck.k9.mailstore.LockableDatabase;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.mailstore.UnavailableStorageException;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 
 /**
@@ -334,9 +334,9 @@ public class EmailProvider extends ContentProvider {
                                 "JOIN threads t ON (t.message_id = m.id) " +
                                 "LEFT JOIN folders f ON (m.folder_id = f.id) " +
                                 "WHERE ");
-                        query.append(SqlQueryBuilder.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", where));
+                        query.append(SqlQueryBuilderInvoker.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", where));
                         query.append(" ORDER BY ");
-                        query.append(SqlQueryBuilder.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", sortOrder));
+                        query.append(SqlQueryBuilderInvoker.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", sortOrder));
 
                         cursor = db.rawQuery(query.toString(), selectionArgs);
                     } else {
@@ -415,7 +415,7 @@ public class EmailProvider extends ContentProvider {
 
                     if (!TextUtils.isEmpty(sortOrder)) {
                         query.append(" ORDER BY ");
-                        query.append(SqlQueryBuilder.addPrefixToSelection(
+                        query.append(SqlQueryBuilderInvoker.addPrefixToSelection(
                                 FIXUP_AGGREGATED_MESSAGES_COLUMNS, "a.", sortOrder));
                     }
 
@@ -528,7 +528,7 @@ public class EmailProvider extends ContentProvider {
                             "AND " + InternalMessageColumns.AUTO_CONSUME + " = 0");
 
                     query.append(" ORDER BY ");
-                    query.append(SqlQueryBuilder.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", sortOrder));
+                    query.append(SqlQueryBuilderInvoker.addPrefixToSelection(FIXUP_MESSAGES_COLUMNS, "m.", sortOrder));
 
                     return db.rawQuery(query.toString(), new String[] { threadId });
                 }

@@ -72,8 +72,6 @@ dependencies {
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}"
-    implementation "uk.co.chrisjenx:calligraphy:${versions.callygraphy}"
-    //implementation "com.klinkerapps:floating-tutorial:1.0.4"
     implementation "androidx.preference:preference:${versions.androidX}"
     implementation "com.takisoft.preferencex:preferencex:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-ringtone:${versions.preferencesFix}"
@@ -82,6 +80,7 @@ dependencies {
 
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
+    implementation "androidx.security:security-crypto:${versions.crypto}"
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
@@ -176,9 +175,8 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
-
-        buildConfigField "int", "ENGINE_REVISION", "$buildConfig.pEpEngineRevision"
-        buildConfigField "int", "ADAPTER_REVISION", "$buildConfig.pEpJNIAdapterRevision"
+        buildConfigField "String", "ENGINE_REVISION", "\"${buildConfig.pEpEngineRevision}\""
+        buildConfigField "String", "ADAPTER_REVISION", "\"${buildConfig.pEpJNIAdapterRevision}\""
         buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
         buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
         buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"

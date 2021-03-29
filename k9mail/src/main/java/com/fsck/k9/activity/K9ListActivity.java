@@ -21,7 +21,6 @@ import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 
 import butterknife.Bind;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public abstract class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
@@ -99,8 +98,14 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        mBase.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
-        mBase.onDestroy();
+        mBase = null;
         mHandler.removeCallbacks(mRequestFocus);
         super.onDestroy();
     }
@@ -240,11 +245,5 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
 
     public View getRootView() {
         return mList;
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-
     }
 }

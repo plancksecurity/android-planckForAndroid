@@ -4,7 +4,6 @@ package com.fsck.k9.pEp.manualsync;
 import com.fsck.k9.K9;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.infrastructure.Presenter;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.SyncState;
 import timber.log.Timber;
 
-public class ImportWizardPresenter implements Presenter {
+public class ImportWizardPresenter {
 
     private static final String DEFAULT_TRUSTWORDS_LANGUAGE = "en";
     private boolean formingGroup;
@@ -117,8 +116,12 @@ public class ImportWizardPresenter implements Presenter {
         showInitialScreen(isFormingGroup);
 
         fixUnsupportedLanguage();
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, true);
-
+        pEp.trustwords(myself, partner, trustwordsLanguage, true, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String newTrustwords) {
+                trustWords = newTrustwords;
+            }
+        });
     }
 
     private void fixUnsupportedLanguage() {
@@ -141,8 +144,7 @@ public class ImportWizardPresenter implements Presenter {
         } else {
             view.hideLongTrustwordsIndicator();
         }
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
-        view.showHandshake(trustWords);
+        refreshTrustWords();
     }
 
     private void showDebugInfo() {
@@ -155,41 +157,34 @@ public class ImportWizardPresenter implements Presenter {
 
     boolean changeTrustwordsLanguage(int languagePosition) {
         showDebugInfo();
-        final List pEpLanguages = PEpUtils.getPEpLocales();
-        String language = pEpLanguages.get(languagePosition).toString();
+        final List<String> pEpLanguages = PEpUtils.getPEpLocales();
+        String language = pEpLanguages.get(languagePosition);
         changeTrustwords(language);
         return true;
     }
 
     private void changeTrustwords(String language) {
         trustwordsLanguage = language;
-        trustWords = pEp.trustwords(myself, partner, trustwordsLanguage, showingShort);
-        view.showHandshake(trustWords);
+        refreshTrustWords();
     }
 
+    private void refreshTrustWords(){
+        pEp.trustwords(myself, partner, trustwordsLanguage, showingShort, new PEpProvider.SimpleResultCallback<String>() {
+            @Override
+            public void onLoaded(String newTrustwords) {
+                trustWords = newTrustwords;
+                view.showHandshake(trustWords);
+
+            }
+        });
+    }
     public void acceptHandshake() {
         pEp.acceptSync();
         next();
     }
 
     public void leaveDeviceGroup() {
-        view.disableSync();
-    }
-
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void pause() {
-
-
-    }
-
-    @Override
-    public void destroy() {
+        view.leaveDeviceGroup();
     }
 
     public void processSignal(SyncHandshakeSignal signal) {

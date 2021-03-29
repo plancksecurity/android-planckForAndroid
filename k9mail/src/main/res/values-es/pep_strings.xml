@@ -6,7 +6,7 @@
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_account_setup_generating_keys">"Configurando su Privacidad por Defecto "</string>
     <string name="pep_dialog_weaker_forward_warning_message">Esta a punto de reenviar un mensaje seguro como no seguro. Si elige continuar, se puede filtrar información confidencial que lo pone a usted y a sus interlocutores en riesgo ¿Seguro que desea continuar\?</string>
-    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Continuar</string>
+    <string name="pep_dialog_confirm_forward_weaker_trust_level_confirm_button">Confirmar</string>
     <string name="pep_dialog_confirm_forward_weaker_trust_level_cancel_button">Cancelar</string>
     <string name="pep_dialog_confirm_forward_title">Confirmar reenvio</string>
     <string name="pep_title_activity_privacy_status">Grado de privacidad</string>
@@ -127,16 +127,15 @@
     <string name="pep_sync">p≡p sync</string>
     <string name="search_empty_error">Por favor escriba el texto para buscar</string>
     <string name="mistrust_identity_feedback">%s ahora ya no es de confianza</string>
-    <string name="key_import_success">La Clave %1$s se ha importado correctamente de %2$s</string>
+    <string name="key_import_success">La Clave se ha importado correctamente.</string>
     <string name="message_loading_error">La calificación del mensaje aún se está cargando, vuelva a intentarlo</string>
     <string name="nnf_filename">Nombre del archivo</string>
     <string name="nnf_select_something_first">Por favor, primero seleccione algo</string>
     <string name="nnf_create_folder_error">Error al crear la carpeta</string>
     <string name="add_account_message">Para poder usar esta cuenta, deberia agregarla a su dispositivo</string>
-    <string name="pep_rating_none">" "</string>
     <string name="notification_failed_to_encrypt_title">No pudimos proteger este mensaje.</string>
     <string name="message_failed_to_encrypt">No pudimos proteger este mensaje.</string>
-    <string name="only_own_identities">Este es un mensaje propio, sin que participe ningun interlocutor.</string>
+    <string name="only_own_identities">Este es un mensaje propio, sin que participe ningún interlocutor.</string>
     <string name="action_tutorial">Tutorial</string>
     <string name="pep_rating_forced_unencrypt">Deshabilitado</string>
     <string name="pep_rating_mistrusted">Sospechoso</string>
@@ -144,7 +143,6 @@
     <string name="pep_rating_secure_trusted">Seguro y de confianza</string>
     <string name="intro_frag_fourth_text_3">En este caso el Estado de Privacidad es \"Seguro\", ya que éste es el mínimo común denominador de los dos interlocutores.</string>
     <string name="intro_frag_fourth_text_2">El icono en la barra superior representa el Estado de Privacidad del mensaje, el cual es el denominador común más bajo de todos los interlocutores que participan en el mensaje, por ejemplo:</string>
-    <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_third_text_4">Complete un handshake con su interlocutor. Un handshake se necesita solo una vez por interlocutor y garantiza una comunicación Segura y de Confianza.</string>
     <string name="intro_frag_third_text_3">"DISYUNTIVO    ESTALINIANO    POSTOPERATORIO    IRRÍTAME    CALIMA    …"</string>
     <string name="intro_frag_third_text_2">Al hacer clic en el ícono Estado de Privacidad en la barra superior, accederá al Handshake, donde podrá verificar a su interlocutor.</string>
@@ -155,8 +153,12 @@
     <string name="intro_frag_second_header_2">Seguro y de confianza</string>
     <string name="intro_frag_second_header_1">Seguro</string>
     <string name="intro_frag_first_text_3">Y también en la barra superior, cuando abre o redacta un correo electrónico:</string>
-    <string name="intro_frag_first_text_2"><![CDATA[Puedes cerrar este tutorial en cualquier momento.\n\n<font color="#4caf50">p≡p</font> utiliza un Estado de Privacidad para indicar qué tan segura es su comunicación.\n\nEste Estado de Privacidad se muestra como un icono en el avatar del usuario]]></string>
-    <string name="intro_frag_first_text_1"><![CDATA[Bienvenidos al tutorial <font color="#4caf50">p≡p</font>]]></string>
+    <string name="intro_frag_first_text_2">Puedes cerrar este tutorial en cualquier momento.
+\n
+\n<font color="# 4caf50">p≡p</font> utiliza un Estado de Privacidad para indicar qué tan segura es su comunicación.
+\n
+\nEste Estado de Privacidad se muestra como un icono en el avatar del usuario</string>
+    <string name="intro_frag_first_text_1">Bienvenidos al tutorial <font color="#4caf50">p≡p</font></string>
     <string name="pep_key_reset_own_id_warning_title">Restablecer la cuenta %s</string>
     <string name="pep_key_reset_own_id_warning">Esta acción restablecerá su cuenta. 
 \n¿Confirma que quiere restablecer\?</string>
@@ -164,14 +166,14 @@
 \n¿Confirma que quiere restablecer\?</string>
     <string name="key_reset_all_own_identitities_feedback">Todas las cuentas p≡p se han restablecido.</string>
     <string name="pep_key_reset_all_own_ids_summary">Restablecer todas las cuentas</string>
-    <string name="trust_identity_feedback">% s ahora es de confianza</string>
+    <string name="trust_identity_feedback">%s ahora es de confianza</string>
     <string name="key_reset_own_identity_feedback">La cuenta ha sido restablecida.</string>
     <string name="key_reset_identity_feedback">Todos los datos p≡p para este interlocutor se han restablecido.</string>
     <string name="key_reset_for_identity_context_title">Restablece todos los datos de p≡p relativos a este interlocutor:</string>
     <string name="reset_all">Restablecer todo</string>
     <string name="reset">Restablecer</string>
     <string name="key_import_from_fs_input_fpr">Por favor ingrese el identificador o la huella digital de la clave.</string>
-    <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave de %1$s con el identificador de clave: %2$s</string>
+    <string name="key_import_failure">No se ha podido importar ni utilizar ninguna clave</string>
     <string name="key_import_wizard_pep_not_initial_explanation">Si ha iniciado una importación de la clave para la cuenta %s, por favor haga clic en Iniciar.</string>
     <string name="pgp_key_import_instructions">Para continuar con la Importación de la Clave, por favor importe la clave pública p≡p adjunta y responda con un mensaje que:
 \n
@@ -205,6 +207,7 @@
     <string name="account_already_exists">La cuenta ya existe</string>
     <string name="add_account_title">Agregue su cuenta</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
+    <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
@@ -225,5 +228,5 @@
     <string name="keysync_disable_warning_title">Deshabilitar la sincronización de p≡p</string>
     <string name="keysync_disable_warning_explanation">Si desactiva p≡p Sync, sus cuentas en sus dispositivos ya no se sincronizarán.
 \n<b> ¿Está seguro de que desea desactivar la sincronización p≡p\? </b></string>
-    <string name="keysync_disable_warning_action_disable">Inhabilitar</string>
+    <string name="keysync_disable_warning_action_disable">Desactivar</string>
 </resources>

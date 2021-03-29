@@ -10,9 +10,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
-import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
-import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 
 import javax.inject.Named;
 
@@ -39,11 +38,6 @@ public class PEpModule {
     }
 
     @Provides
-    public PEpSettingsChecker providepEpSettingsCheck() {
-        return new PEpSettingsCheck(context.getApplicationContext());
-    }
-
-    @Provides
     public PermissionChecker providepEpPermissionChecker() {
         return new PEpPermissionChecker(context.getApplicationContext());
     }
@@ -52,6 +46,12 @@ public class PEpModule {
     @Named("MainUI")
     public PEpProvider providepEpProvider() {
         return ((K9) context.getApplicationContext()).getpEpProvider();
+    }
+
+    @Provides
+    @Named("NewInstance")
+    public PEpProvider providepEpProviderNewInstance() {
+        return (PEpProviderFactory.createAndSetupProvider(context));
     }
 
     @Provides

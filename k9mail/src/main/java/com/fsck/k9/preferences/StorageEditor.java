@@ -9,19 +9,24 @@ import java.util.Map.Entry;
 
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
+
 import timber.log.Timber;
 
 
 public class StorageEditor {
     private Storage storage;
-    private Map<String, String> changes = new HashMap<String, String>();
-    private List<String> removals = new ArrayList<String>();
+    private PassphraseStorage passphraseStorage;
 
-    Map<String, String> snapshot = new HashMap<String, String>();
+    private Map<String, String> changes = new HashMap<>();
+    private List<String> removals = new ArrayList<>();
+
+    Map<String, String> snapshot = new HashMap<>();
 
 
-    StorageEditor(Storage storage) {
+    StorageEditor(Storage storage,PassphraseStorage passphraseStorage) {
         this.storage = storage;
+        this.passphraseStorage = passphraseStorage;
         snapshot.putAll(storage.getAll());
     }
 
@@ -52,22 +57,20 @@ public class StorageEditor {
     private void commitChanges() {
         long startTime = SystemClock.elapsedRealtime();
         Timber.i("Committing preference changes");
-        Runnable committer = new Runnable() {
-            public void run() {
-                for (String removeKey : removals) {
-                    storage.remove(removeKey);
-                }
-                Map<String, String> insertables = new HashMap<String, String>();
-                for (Entry<String, String> entry : changes.entrySet()) {
-                    String key = entry.getKey();
-                    String newValue = entry.getValue();
-                    String oldValue = snapshot.get(key);
-                    if (removals.contains(key) || !newValue.equals(oldValue)) {
-                        insertables.put(key, newValue);
-                    }
-                }
-                storage.put(insertables);
+        Runnable committer = () -> {
+            for (String removeKey : removals) {
+                storage.remove(removeKey);
             }
+            Map<String, String> insertables = new HashMap<>();
+            for (Entry<String, String> entry : changes.entrySet()) {
+                String key = entry.getKey();
+                String newValue = entry.getValue();
+                String oldValue = snapshot.get(key);
+                if (removals.contains(key) || !newValue.equals(oldValue)) {
+                    insertables.put(key, newValue);
+                }
+            }
+            storage.put(insertables);
         };
         storage.doInTransaction(committer);
         long endTime = SystemClock.elapsedRealtime();
@@ -98,6 +101,10 @@ public class StorageEditor {
             changes.put(key, value);
         }
         return this;
+    }
+
+    public void putPassphrase(String passphrase){
+        passphraseStorage.putPassphrase(passphrase);
     }
 
     public StorageEditor remove(String key) {

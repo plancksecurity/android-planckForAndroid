@@ -27,19 +27,20 @@ class TrustedMessageController {
                 && !account.isUntrustedSever()
                 && result.flags == -1
                 && !decryptedMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
-                && !alreadyDecrypted;
+                && !alreadyDecrypted
+                && result.rating.value >= Rating.pEpRatingUnreliable.value;
     }
 
     <T extends Message> boolean shouldAppendMessageInTrustedServer(T message, Account account) {
         return !account.isUntrustedSever() && !message.isSet(Flag.X_PEP_NEVER_UNSECURE);
     }
 
-    boolean getAlreadyDecrypted(Message message, Account account, Rating rating) {
+    boolean getAlreadyDecrypted(Message sourceMessage, PEpProvider.DecryptResult decryptResult, Account account, Rating rating) {
         return account.ispEpPrivacyProtected()
                 && !account.isUntrustedSever()
-                && !message.isSet(Flag.X_PEP_NEVER_UNSECURE)
+                && !sourceMessage.isSet(Flag.X_PEP_NEVER_UNSECURE)
                 && !rating.equals(Rating.pEpRatingUndefined)
-                && rating.value > Rating.pEpRatingUnencrypted.value;
+                && !decryptResult.isFormerlyEncryptedReUploadedMessage;
     }
 
     boolean shouldAppendMessageOnUntrustedServer(Account account, Rating rating) {

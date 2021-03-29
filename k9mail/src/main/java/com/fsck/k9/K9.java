@@ -30,6 +30,7 @@ import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.helper.AppUpdater;
 import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
 import com.fsck.k9.job.MailSyncJobManager;
@@ -49,6 +50,8 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import security.pEp.network.ConnectionMonitorCallback;
+import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -81,6 +84,8 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.KeySyncCleaner;
+import security.pEp.ui.passphrase.PassphraseActivity;
+import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -97,6 +102,7 @@ public class K9 extends MultiDexApplication {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
+    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
 
     public static K9JobManager jobManager;
 
@@ -128,6 +134,9 @@ public class K9 extends MultiDexApplication {
 
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+
+    public static String password = null;
+
 
     /**
      * Components that are interested in knowing when the K9 instance is
@@ -337,7 +346,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
-
+    private static long appVersionCode = -1;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
 
@@ -345,6 +354,7 @@ public class K9 extends MultiDexApplication {
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
 
+    private static String pEpNewKeysPassphrase;
 
     /**
      * @see #areDatabasesUpToDate()
@@ -611,6 +621,8 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("shallRequestPermissions", shallRequestPermissions);
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
+        editor.putLong("appVersionCode", appVersionCode);
+        editor.putPassphrase(pEpNewKeysPassphrase);
 
         fontSizes.save(editor);
     }
@@ -655,6 +667,7 @@ public class K9 extends MultiDexApplication {
          * doesn't work in Android and MimeMessage does not have access to a Context.
          */
         BinaryTempFileBody.setTempDirectory(getCacheDir());
+        clearBodyCacheIfAppUpgrade();
 
         LocalKeyStore.setKeyStoreLocation(getDir("KeyStore", MODE_PRIVATE).toString());
 
@@ -665,6 +678,7 @@ public class K9 extends MultiDexApplication {
          */
 
         setServicesEnabled(this);
+        startConnectivityMonitor();
         registerReceivers();
 
         MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
@@ -748,11 +762,8 @@ public class K9 extends MultiDexApplication {
 
         });
 
-        pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
-        for (Account account : prefs.getAccounts()) {
-            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
-        }
-        pEpInitSyncEnvironment();
+        refreshFoldersForAllAccounts();
+        //pEpInitSyncEnvironment();
         setupFastPoller();
 
         notifyObservers();
@@ -761,6 +772,18 @@ public class K9 extends MultiDexApplication {
             PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
             String packageName = getPackageName();
             batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
+        }
+    }
+
+    private void clearBodyCacheIfAppUpgrade() {
+        AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
+        appUpdater.clearBodyCacheIfAppUpgrade();
+    }
+
+    private void refreshFoldersForAllAccounts() {
+        List<Account> accounts = Preferences.getPreferences(this.getApplicationContext()).getAccounts();
+        for (Account account : accounts) {
+            MessagingController.getInstance(this).listFolders(account, true, null);
         }
     }
 
@@ -776,6 +799,13 @@ public class K9 extends MultiDexApplication {
     }
 
     public void pEpInitSyncEnvironment() {
+        if (pEpSyncProvider == null) {
+            pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        }
+//        for (Account account : prefs.getAccounts()) {
+//            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
+//        }
+
         KeySyncCleaner.queueAutoConsumeMessages();
 
         if (Preferences.getPreferences(this.getApplicationContext()).getAccounts().size() > 0) {
@@ -797,23 +827,7 @@ public class K9 extends MultiDexApplication {
 
     private void initSync() {
 
-        pEpSyncProvider.setSyncHandshakeCallback(notifyHandshakeCallback);
-
-        pEpSyncProvider.setSyncSendMessageCallback(MessagingController.getInstance(K9.this));
-
-        pEpSyncProvider.setFastPollingCallback(new Sync.NeedsFastPollCallback() {
-            @Override
-            public void needsFastPollCallFromC(Boolean fast_poll_needed) {
-                needsFastPoll = fast_poll_needed;
-                if (needsFastPoll) {
-                    poller.startPolling();
-                } else {
-                    poller.stopPolling();
-                }
-            }
-        });
-//        if (Preferences.getPreferences(this).getAccounts().size() > 0) {
-        PEpUtils.updateSyncAccountsConfig(this, pEpSyncProvider);
+        PEpUtils.updateSyncAccountsConfig(this);
         if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
@@ -972,6 +986,7 @@ public class K9 extends MultiDexApplication {
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
+        appVersionCode = storage.getLong("appVersionCode", -1);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
@@ -1016,6 +1031,7 @@ public class K9 extends MultiDexApplication {
         K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        pEpNewKeysPassphrase = storage.getPassphrase();
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
@@ -1513,6 +1529,18 @@ public class K9 extends MultiDexApplication {
         K9.mAttachmentDefaultPath = attachmentDefaultPath;
     }
 
+    public static String getpEpNewKeysPassphrase(){
+        return pEpNewKeysPassphrase;
+    }
+
+    public static void setpEpNewKeysPassphrase(String passphrase){
+        K9.pEpNewKeysPassphrase = passphrase;
+    }
+
+    public static boolean ispEpUsingPassphraseForNewKey() {
+        return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
+    }
+
     public static synchronized SortType getSortType() {
         return mSortType;
     }
@@ -1636,6 +1664,14 @@ public class K9 extends MultiDexApplication {
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
     }
 
+    public static long getAppVersionCode() {
+        return appVersionCode;
+    }
+
+    public static void setAppVersionCode(long appVersionCode) {
+        K9.appVersionCode = appVersionCode;
+    }
+
     /**
      * Check if we already know whether all databases are using the current database schema.
      *
@@ -1693,7 +1729,7 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
                 pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                pEpInitSyncEnvironment();
+                //pEpInitSyncEnvironment();
             }
             ++activityCount;
         }
@@ -1727,9 +1763,12 @@ public class K9 extends MultiDexApplication {
         public void onActivityDestroyed(@NotNull Activity activity) {
             --activityCount;
             if (activityCount == 0) {
+                PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
                 KeySyncCleaner.queueAutoConsumeMessages();
-                pEpSyncProvider.stopSync();
+                if (provider.isSyncRunning()) provider.stopSync();
+                provider.close();
                 pEpProvider.close();
+                provider = null;
                 pEpProvider = null;
             }
         }
@@ -1758,11 +1797,14 @@ public class K9 extends MultiDexApplication {
 
     }
 
+    /**
+     * @deprecated "Sequoia does not support SeverLookup"
+     */
+    @Deprecated
     public static boolean getPEpUseKeyserver() {
         // return pEpUseKeyserver;
         return false;
     }
-
 
     public static boolean getPEpPassiveMode() {
         return pEpPassiveMode;
@@ -1770,9 +1812,6 @@ public class K9 extends MultiDexApplication {
 
     public void setPEpPassiveMode(boolean enabled) {
         K9.pEpPassiveMode = enabled;
-        pEpProvider.setPassiveModeEnabled(enabled);
-        MessagingController.getInstance(this).setPassiveModeEnabled(enabled);
-
     }
 
     public static boolean ispEpSubjectProtection() {
@@ -1909,6 +1948,13 @@ public class K9 extends MultiDexApplication {
                     pEpSyncEnabled = true;
                     ImportWizardFrompEp.notifyNewSignal(getApplicationContext(), signal);
                     break;
+                case SyncPassphraseRequired:
+                    needsFastPoll = false;
+                    Timber.e("Showing passphrase dialog for sync");
+                   // PassphraseProvider.INSTANCE.passphraseFromUser(K9.this);
+                    new Handler(Looper.getMainLooper()).postDelayed(() ->
+                            PassphraseActivity.notifyRequest(K9.this, PassphraseRequirementType.SYNC_PASSPHRASE), 4000);
+                    break;
             }
 
 
@@ -1936,10 +1982,29 @@ public class K9 extends MultiDexApplication {
     }
 
     public void shutdownSync() {
-        if (pEpSyncProvider.isSyncRunning()) {
-            pEpSyncProvider.stopSync();
+        Log.e("pEpEngine", "shutdownSync: start" );
+        if (pEpProvider.isSyncRunning()) {
+            pEpProvider.stopSync();
         }
         pEpSyncEnabled = false;
+        Log.e("pEpEngine", "shutdownSync: end" );
+    }
+
+    public void persistentShutDown() {
+        shutdownSync();
+        forceSaveAppSettings();
+    }
+
+    public void shutdownSync(PEpProvider pEpProvider) {
+        Log.e("pEpEngine", "shutdownSync: start" );
+        if (pEpProvider.isSyncRunning()) {
+            Log.e("pEpEngine", "shutdownSync: stopping" );
+
+            pEpProvider.stopSync();
+        }
+        pEpSyncEnabled = false;
+        Log.e("pEpEngine", "shutdownSync: end" );
+
     }
 
     private void forceSaveAppSettings() {
@@ -1948,6 +2013,8 @@ public class K9 extends MultiDexApplication {
         editor.commit();
     }
 
-
+    private void startConnectivityMonitor() {
+        connectivityMonitor.register(this);
+    }
 
 }

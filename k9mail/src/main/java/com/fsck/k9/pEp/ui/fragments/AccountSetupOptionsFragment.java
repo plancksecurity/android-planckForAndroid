@@ -78,12 +78,6 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         SpinnerOption checkFrequencies[] = {
                 new SpinnerOption(-1,
                         getString(R.string.account_setup_options_mail_check_frequency_never)),
-                new SpinnerOption(1,
-                        getString(R.string.account_setup_options_mail_check_frequency_1min)),
-                new SpinnerOption(5,
-                        getString(R.string.account_setup_options_mail_check_frequency_5min)),
-                new SpinnerOption(10,
-                        getString(R.string.account_setup_options_mail_check_frequency_10min)),
                 new SpinnerOption(15,
                         getString(R.string.account_setup_options_mail_check_frequency_15min)),
                 new SpinnerOption(30,
@@ -125,7 +119,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         mDisplayCountView.setAdapter(displayCountsAdapter);
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
 
         mNotifyView.setChecked(mAccount.isNotifyNewMail());
         mNotifySyncView.setChecked(mAccount.isShowOngoing());
@@ -174,13 +168,11 @@ public class AccountSetupOptionsFragment extends PEpFragment {
 
         mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
-        mAccount.save(Preferences.getPreferences(getActivity()));
         if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount()) ||
                 getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false)) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);
         }
-        K9.setServicesEnabled(getActivity());
-        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+        AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
     }
 
     public void onClick(View v) {

@@ -110,9 +110,6 @@
     <string name="message_view_theme_action_dark">Canvia a la vista fosca</string>
     <string name="message_view_theme_action_light">Canvia a la vista clara</string>
     <string name="mark_as_unread_action">Marca com a no llegit</string>
-    <string name="read_receipt">Llegeix la confirmació de lectura</string>
-    <string name="read_receipt_enabled">Es farà una petició per la confirmació de lectura</string>
-    <string name="read_receipt_disabled">No es faran més peticions per les confirmacions de lectura</string>
     <string name="add_attachment_action">Afegeix adjunt</string>
     <string name="empty_trash_action">Buida paperera</string>
     <string name="expunge_action">Elimina</string>
@@ -402,8 +399,6 @@
     <string name="account_settings_message_format_html">HTML (es conservaran el format i les imatges)</string>
     <string name="account_settings_message_format_auto">Automàtic (text net excepte per missatges HTML)</string>
     <string name="account_settings_always_show_cc_bcc_label">Mostra sempre C/a i C/a ocults</string>
-    <string name="account_settings_message_read_receipt_label">Confirmació de lectura</string>
-    <string name="account_settings_message_read_receipt_summary">Sempre es realitzen peticions de confirmació de lectura.</string>
     <string name="account_settings_quote_style_label">Contesta amb estil cita</string>
     <string name="account_settings_quote_style_prefix">Prefix (com a Gmail, Pine)</string>
     <string name="account_settings_quote_style_header">Capçalera (com a l\'Outlook, Yahoo!, Hotmail)</string>
@@ -841,7 +836,6 @@
     <string name="status_syncing_blocked">La sincronització està bloquejada</string>
     <string name="status_syncing">Sincronització de missatges</string>
     <string name="empty_subject">L\'assumpte està buit, feu clic de nou per enviar-lo</string>
-    <string name="app_copyright_fmt" translatable="false">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
     <plurals name="copy_address_to_clipboard">
         <item quantity="one">Adreça copiada al porta-retalls</item>
         <item quantity="other"></item>
@@ -977,7 +971,6 @@
     <string name="messageview_crypto_warning_show_anyway">Mostra el missatge de totes maneres</string>
     <string name="recipient_error_non_ascii">En aquest moment no s\'admeten caràcters especials.</string>
     <string name="recipient_error_parse_failed">S\'ha produït un error en analitzar l\'adreça.</string>
-    <string name="error_sign_only_no_encryption">El xifrat no està disponible en el mode només de signes.</string>
     <string name="unsigned_text_divider_label">Text no signat</string>
     <string name="no_crypto_provider_see_global">No hi ha cap aplicació OpenPGP configurada, consulteu la configuració global.</string>
     <string name="xoauth2_auth_cancelled_by_user">S\'ha cancel·lat l\'autenticació</string>

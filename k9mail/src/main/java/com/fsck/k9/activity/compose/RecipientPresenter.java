@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -37,7 +36,6 @@ import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.Poller;
-import com.fsck.k9.view.RecipientSelectView.Recipient;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
@@ -891,7 +889,7 @@ public class RecipientPresenter {
         bccAdresses = initializeAdresses(bccAdresses);
         if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
             showDefaultStatus();
-            recipientMvpView.unlockSendButton();
+            recipientMvpView.messageRatingLoaded();
             return;
         }
         if (fromAddress != null
@@ -903,7 +901,7 @@ public class RecipientPresenter {
             toAdresses = newToAdresses;
             ccAdresses = newCcAdresses;
             bccAdresses = newBccAdresses;
-            recipientMvpView.lockSendButton();
+            recipientMvpView.messageRatingIsBeingLoaded();
             pEp = ((K9) context.getApplicationContext()).getpEpProvider();
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
@@ -914,17 +912,17 @@ public class RecipientPresenter {
                         privacyState = rating;
                         showRatingFeedback(rating);
                     }
-                    recipientMvpView.unlockSendButton();
+                    recipientMvpView.messageRatingLoaded();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
                     showDefaultStatus();
-                    recipientMvpView.unlockSendButton();
+                    recipientMvpView.messageRatingLoaded();
                 }
             });
         }
-        recipientMvpView.unlockSendButton();
+        recipientMvpView.messageRatingLoaded();
     }
 
     private void showDefaultStatus() {

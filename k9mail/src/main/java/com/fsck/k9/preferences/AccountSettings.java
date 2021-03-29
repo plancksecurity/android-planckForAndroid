@@ -130,9 +130,6 @@ public class AccountSettings {
         s.put("messageFormatAuto", Settings.versions(
                 new V(2, new BooleanSetting(Account.DEFAULT_MESSAGE_FORMAT_AUTO))
         ));
-        s.put("messageReadReceipt", Settings.versions(
-                new V(1, new BooleanSetting(Account.DEFAULT_MESSAGE_READ_RECEIPT))
-        ));
         s.put("notifyMailCheck", Settings.versions(
                 new V(1, new BooleanSetting(false))
         ));

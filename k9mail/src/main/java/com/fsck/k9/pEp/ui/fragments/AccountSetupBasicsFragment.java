@@ -85,7 +85,8 @@ import static android.app.Activity.RESULT_OK;
 import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 
 public class AccountSetupBasicsFragment extends PEpFragment
-        implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener, ClientCertificateSpinner.OnClientCertificateChangedListener {
+        implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener,
+        ClientCertificateSpinner.OnClientCertificateChangedListener, AccountSetupBasics.AccountSetupSettingsCheckerFragment {
     private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
@@ -94,6 +95,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private final static String STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming";
     public static final String GMAIL = "gmail";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
+    private static final String WAS_LOADING = "wasLoading";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -119,7 +124,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
         return mCheckedIncoming;
     }
 
-    private CheckBox mShowPasswordCheckBox;
+    private AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
+    private boolean wasLoading;
 
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
@@ -145,7 +154,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mNextButton = rootView.findViewById(R.id.next);
         nextProgressBar = rootView.findViewById(R.id.next_progressbar);
         mManualSetupButton = rootView.findViewById(R.id.manual_setup);
-        mShowPasswordCheckBox = rootView.findViewById(R.id.show_password);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
         mAccountSpinner = rootView.findViewById(R.id.account_spinner);
@@ -184,14 +192,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mClientCertificateSpinner.setOnClientCertificateChangedListener(this);
 
         mOAuth2CheckBox.setOnCheckedChangeListener(this);
-
-        mShowPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showPassword(isChecked);
-            }
-        });
-
     }
 
     @Override
@@ -204,6 +204,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
             outState.putSerializable(STATE_KEY_PROVIDER, mProvider);
         }
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming);
+        saveErrorDialogState(outState);
+        outState.putBoolean(WAS_LOADING, wasLoading);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     @Override
@@ -212,7 +220,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
                 String accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-                mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+                mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
             }
 
             if (savedInstanceState.containsKey(STATE_KEY_PROVIDER)) {
@@ -222,9 +230,15 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING);
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-
-            showPassword(mShowPasswordCheckBox.isChecked());
+            restoreErrorDialogState(savedInstanceState);
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
         }
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     public void afterTextChanged(Editable s) {
@@ -280,37 +294,22 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
         if (usingCertificates) {
-            // hide password fields, show client certificate spinner
-            mPasswordView.setVisibility(View.GONE);
-            mShowPasswordCheckBox.setVisibility(View.GONE);
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
             mOAuth2CheckBox.setEnabled(false);
         } else if (usingXoauth) {
             // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.GONE);
             mAccountSpinner.setVisibility(View.VISIBLE);
-            mShowPasswordCheckBox.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
             mEmailView.setVisibility(View.VISIBLE);
             mAccountSpinner.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.VISIBLE);
-            mShowPasswordCheckBox.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
             mOAuth2CheckBox.setEnabled(true);
         }
-    }
-
-    private void showPassword(boolean show) {
-        int cursorPosition = mPasswordView.getSelectionStart();
-        if (show) {
-            mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        } else {
-            mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        }
-        mPasswordView.setSelection(cursorPosition);
     }
 
     private void validateFields() {
@@ -471,21 +470,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
-                    false,
-                    new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-
-                        @Override
-                        public void onError(PEpSetupException exception) {
-                            handleErrorCheckingSettings(exception);
-                        }
-
-                        @Override
-                        public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                            AccountSetupNames.actionSetNames(getActivity(), mAccount);
-                            getActivity().finish();
-                        }
-                    });
+            checkSettings();
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -493,6 +478,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
              */
             onManualSetup();
         }
+    }
+
+    private void checkSettings() {
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                false, basicsSettingsCheckCallback);
     }
 
     private void saveCredentialsInPreferences() {
@@ -504,19 +496,40 @@ public class AccountSetupBasicsFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
-        enableViewGroup(true, (ViewGroup) rootView);
         accountTokenStore = K9.oAuth2TokenStore;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
         mAccountSpinner.setAdapter(adapter);
-        mNextButton.setVisibility(View.VISIBLE);
-        nextProgressBar.hide();
         validateFields();
+        restoreErrorDialogIfNeeded();
+        restoreViewsEnabledState();
+    }
+
+    private void restoreViewsEnabledState() {
+        mNextButton.setVisibility(wasLoading ? View.GONE : View.VISIBLE);
+        mManualSetupButton.setEnabled(!wasLoading);
+        enableViewGroup(!wasLoading, (ViewGroup)rootView);
+        if(wasLoading) {
+            nextProgressBar.setVisibility(View.VISIBLE);
+            nextProgressBar.show();
+            wasLoading = false;
+        }
+        else {
+            nextProgressBar.hide();
+        }
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
     }
 
     private void onNext() {
         nextProgressBar.show();
         mNextButton.setVisibility(View.GONE);
+        accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
 
         String email;
@@ -660,7 +673,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     mAccount.setDescription(mAccount.getEmail());
                     mAccount.save(Preferences.getPreferences(getActivity()));
                     K9.setServicesEnabled(getActivity());
-                    AccountSetupNames.actionSetNames(getActivity(), mAccount);
+                    AccountSetupNames.actionSetNames(getActivity(), mAccount, false);
                     getActivity().finish();
                 }
             }
@@ -699,7 +712,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
         String smtpHost = "mail." + domain;
 
         if (mClientCertificateCheckBox.isChecked()) {
-            authenticationType = AuthType.EXTERNAL;
+            if (mPasswordView.getText().toString().trim().isEmpty()) {
+                authenticationType = AuthType.EXTERNAL;
+            } else {
+                authenticationType = AuthType.EXTERNAL_PLAIN;
+                password = mPasswordView.getText().toString();
+            }
             clientCertificateAlias = mClientCertificateSpinner.getAlias();
         } else if (mOAuth2CheckBox.isChecked()) {
             authenticationType = AuthType.XOAUTH2;
@@ -733,7 +751,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void initializeAccount() {
-        if (mAccount == null || Preferences.getPreferences(getActivity()).getAccount(mAccount.getUuid()) == null) {
+        if (mAccount == null || Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(mAccount.getUuid()) == null) {
             mAccount = Preferences.getPreferences(getActivity()).newAccount();
         }
     }
@@ -854,11 +872,30 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        new AlertDialog.Builder(getActivity())
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new AlertDialog.Builder(getActivity())
                 .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
+        nextProgressBar.hide();
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
+    }
+
 
     private void handleCertificateValidationException(PEpSetupException cve) {
         PEpCertificateException certificateException = (PEpCertificateException) cve;
@@ -1051,6 +1088,24 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
                 .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
                 .commit();
+    }
+
+    @Override
+    public void onSettingsCheckError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
+        AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
+        requireActivity().finish();
+    }
+
+    @Override
+    public void onSettingsCheckCancelled() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     static class Provider implements Serializable {

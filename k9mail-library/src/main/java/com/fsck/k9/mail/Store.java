@@ -13,6 +13,16 @@ import java.util.List;
  * making as few network connections as possible.
  */
 public abstract class Store {
+    /**
+     * Default value for the inbox folder (never changes for POP3 and IMAP)
+     */
+    public static final String INBOX = "INBOX";
+
+    /**
+     * Folder name for the pEp management messages
+     */
+    public static final String PEP_FOLDER = "pEp";
+
     public abstract Folder<? extends Message> getFolder(String name);
 
     public abstract List <? extends Folder > getPersonalNamespaces(boolean forceListAll) throws MessagingException;

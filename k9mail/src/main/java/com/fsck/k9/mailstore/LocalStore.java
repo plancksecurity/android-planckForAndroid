@@ -46,7 +46,7 @@ import com.fsck.k9.provider.EmailProvider.MessageColumns;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchSpecification.Attribute;
 import com.fsck.k9.search.SearchSpecification.SearchField;
-import com.fsck.k9.search.SqlQueryBuilder;
+import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.Base64InputStream;
@@ -583,10 +583,10 @@ public class LocalStore extends Store implements Serializable {
 
         StringBuilder query = new StringBuilder();
         List<String> queryArgs = new ArrayList<>();
-        SqlQueryBuilder.buildWhereClause(mAccount, search.getConditions(), query, queryArgs);
+        SqlQueryBuilderInvoker.buildWhereClause(mAccount, search.getConditions(), query, queryArgs);
 
         // Avoid "ambiguous column name" error by prefixing "id" with the message table name
-        String where = SqlQueryBuilder.addPrefixToSelection(new String[] { "id" },
+        String where = SqlQueryBuilderInvoker.addPrefixToSelection(new String[] { "id" },
                 "messages.", query.toString());
 
         String[] selectionArgs = queryArgs.toArray(new String[queryArgs.size()]);
@@ -961,7 +961,7 @@ public class LocalStore extends Store implements Serializable {
 
                     // When created, special folders should always be displayed
                     // inbox should be integrated
-                    // and the inbox and drafts folders should be syncced by default
+                    // and the inbox,  drafts and pEp folders should be synced by default
                     if (mAccount.isSpecialFolder(name)) {
                         prefHolder.inTopGroup = true;
                         prefHolder.displayClass = LocalFolder.FolderClass.FIRST_CLASS;
@@ -975,7 +975,7 @@ public class LocalStore extends Store implements Serializable {
                         }
                         if (name.equalsIgnoreCase(mAccount.getInboxFolderName()) ||
                                 name.equalsIgnoreCase(mAccount.getDraftsFolderName()) ||
-                                name.equalsIgnoreCase(mAccount.getpEpSyncFolderName())) {
+                                name.equalsIgnoreCase(mAccount.getCurrentpEpSyncFolderName())) {
                             prefHolder.syncClass = LocalFolder.FolderClass.FIRST_CLASS;
                         } else {
                             prefHolder.syncClass = LocalFolder.FolderClass.NO_CLASS;

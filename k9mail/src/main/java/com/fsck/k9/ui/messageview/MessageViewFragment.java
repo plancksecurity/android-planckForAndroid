@@ -1,7 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +31,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
+import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -45,7 +45,6 @@ import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalFolder;
@@ -61,18 +60,12 @@ import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.privacy.status.PEpTrustwords;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +102,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
-    private boolean isMessageFullDownloaded;
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
@@ -196,14 +188,11 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
 
-        setupSwipeDetector();
 
         Context context = getActivity().getApplicationContext();
         mController = MessagingController.getInstance(context);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
-        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
-        mInitialized = true;
         ((MessageList) getActivity()).hideSearchView();
     }
 
@@ -224,6 +213,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         mMessageView.setOnDownloadButtonClickListener(v -> {
             mMessageView.disableDownloadButton();
+            mMessageView.setToLoadingState();
             messageLoaderHelper.downloadCompleteMessage();
         });
         // onDownloadRemainder();;
@@ -238,23 +228,36 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onResume() {
         super.onResume();
+        ((MessageList) getActivity()).setMessageViewVisible(true);
+        setupSwipeDetector();
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
-        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this), getFragmentManager(), messageLoaderCallbacks);
+        messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
+                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks);
 
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);
         MessageReference messageReference = MessageReference.parse(messageReferenceString);
 
         displayMessage(messageReference);
+
         mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
         pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mFragmentListener = null;
+        mContext = null;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Activity activity = getActivity();
+        pEpSecurityStatusLayout.setOnClickListener(null);
+
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
             messageLoaderHelper.onDestroyChangingConfigurations();
@@ -298,7 +301,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null);
-
+        mInitialized = true;
         mFragmentListener.updateMenu();
     }
 
@@ -306,6 +309,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onPause() {
         super.onPause();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
+    }
+
+    @Override
+    public void onStop() {
+        pEpSecurityStatusLayout.setVisibility(View.GONE);
+        super.onStop();
     }
 
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
@@ -320,17 +329,27 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
 
-        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS || requestCode == PEpTrustwords.REQUEST_HANDSHAKE) {
+        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
             if (requestCode == PEpStatus.REQUEST_STATUS) {
-                pEpRating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+                Rating rating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+                refreshRating(rating);
             } else {
-                pEpRating = ((K9) getApplicationContext()).getpEpProvider().incomingMessageRating(mMessage);
+                ((K9) getApplicationContext()).getpEpProvider()
+                        .incomingMessageRating(mMessage, new PEpProvider.SimpleResultCallback<Rating>() {
+                            @Override
+                            public void onLoaded(Rating rating) {
+                                refreshRating(rating);
+                            }
+                        });
             }
-
-            setToolbar();
-            mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-            mMessageView.setHeaders(mMessage, mAccount);
         }
+    }
+
+    private void refreshRating(Rating rating) {
+        pEpRating = rating;
+        setToolbar();
+        mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+        mMessageView.setHeaders(mMessage, mAccount);
     }
 
     private void setToolbar() {
@@ -344,12 +363,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         FeedbackTools.showShortFeedback(getView(), getString(R.string.message_view_toast_unable_to_display_message));
     }
 
-    private void showMessage(MessageViewInfo messageViewInfo) {
+    private void showMessage(MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
         KeyboardUtils.hideKeyboard(getActivity());
         boolean handledByCryptoPresenter = messageCryptoPresenter.maybeHandleShowMessage(
                 mMessageView, mAccount, messageViewInfo);
         if (!handledByCryptoPresenter) {
-            mMessageView.showMessage(mAccount, messageViewInfo);
+            if (messageViewInfo.message.isSet(Flag.DELETED)) {
+                requireActivity().onBackPressed();
+                FeedbackTools.showLongFeedback(requireView(), getString(R.string.message_view_message_no_longer_available));
+            } else {
+                mMessageView.showMessage(mAccount, messageViewInfo, shouldStopProgressDialog);
+            }
             /*if (mAccount.isOpenPgpProviderConfigured()) {
                 mMessageView.getMessageHeaderView().setCryptoStatusDisabled();
             } else {
@@ -844,28 +868,37 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         return mInitialized;
     }
 
+    private MessageLoaderDecryptCallbacks messageLoaderDecryptCallbacks = new MessageLoaderDecryptCallbacks() {
+
+        @Override
+        public void onMessageDecrypted() {
+            refreshMessage();
+        }
+
+        @Override
+        public void onMessageDataDecryptFailed(String errorMessage) {
+            if (errorMessage.equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
+                showKeyNotFoundFeedback();
+            }
+        }
+    };
+
     private MessageLoaderCallbacks messageLoaderCallbacks = new MessageLoaderCallbacks() {
         @Override
         public void onMessageDataLoadFinished(LocalMessage message) {
             mMessage = message;
-            isMessageFullDownloaded = mMessage.isSet(Flag.X_DOWNLOADED_FULL) &&
-                    !MessageExtractor.hasMissingParts(mMessage);
 
             displayHeaderForLoadingMessage(message);
-            mMessageView.setToLoadingState();
             recoverRating(message);
-
-
             ((MessageList) getActivity()).setMessageViewVisible(true);
-
-            boolean hasToBeDecrypted = hasToBeDecrypted(message);
-            if (hasToBeDecrypted) {
-                showNeedsDecryptionFeedback(message);
-            }
 
             if (!mAccount.ispEpPrivacyProtected()) {
                 pEpRating = pEpRatingUndefined;
             }
+
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            if (shouldStopProgressDialog)
+                mMessageView.displayViewOnLoadFinished(true);
 
             setToolbar();
         }
@@ -877,12 +910,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-            showMessage(messageViewInfo);
+            //At this point MessageTopView is ready, but the message may be going through decryption
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            showMessage(messageViewInfo, shouldStopProgressDialog);
+
         }
 
         @Override
         public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-            showMessage(messageViewInfo);
+            //At this point MessageTopView is ready, but the message may be going through decryption
+            boolean shouldStopProgressDialog = !messageLoaderHelper.hasToBeDecrypted(mMessage);
+            showMessage(messageViewInfo, shouldStopProgressDialog);
         }
 
         @Override
@@ -892,14 +930,20 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onDownloadErrorMessageNotFound() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_invalid_id_error));
+                    }
+            );
         }
 
         @Override
         public void onDownloadErrorNetworkError() {
-            mMessageView.enableDownloadButton();
-            getActivity().runOnUiThread(() -> FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error)));
+            runOnMainThread(() -> {
+                        mMessageView.enableDownloadButton();
+                        FeedbackTools.showLongFeedback(getView(), getString(R.string.status_network_error));
+                    }
+            );
         }
 
         @Override
@@ -926,70 +970,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void showKeyNotFoundFeedback() {
-        String title = pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey);
-        String message = pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey);
-        Activity activity = getActivity();
-        if (activity != null) {
-            new AlertDialog.Builder(activity)
-                    .setTitle(title)
-                    .setMessage(message)
-                    .setPositiveButton(getString(R.string.okay_action), null)
-                    .create().show();
-        }
-    }
-
-    private void showNeedsDecryptionFeedback(final LocalMessage message) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.decrypt_message_explanation)
-                .setPositiveButton(getString(R.string.okay_action), (dialogInterface, i) -> decryptMessage(message))
-                .setNegativeButton(getString(R.string.cancel_action), null)
-                .create().show();
-    }
-
-    private boolean hasToBeDecrypted(LocalMessage message) {
-        return EncryptionVerifier.isEncrypted(message) && isMessageFullDownloaded;
+        mMessageView.setToErrorState(
+                pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey),
+                pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
+        );
     }
 
     private boolean canDecrypt() {
         return pEpRating.value != Rating.pEpRatingCannotDecrypt.value;
-    }
-
-    private void decryptMessage(LocalMessage message) {
-        PEpProvider pEpProvider = PEpProviderFactory.createAndSetupProvider(getActivity());
-        pEpProvider.decryptMessage(mMessage, new PEpProvider.ResultCallback<PEpProvider.DecryptResult>() {
-            @Override
-            public void onLoaded(PEpProvider.DecryptResult decryptResult) {
-                try {
-
-                    MimeMessage decryptedMessage = decryptResult.msg;
-                    if (message.getFolder().getName().equals(mAccount.getSentFolderName())
-                            || message.getFolder().getName().equals(mAccount.getDraftsFolderName())) {
-                        decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpProvider.getRating(message)));
-                    }
-
-                    decryptedMessage.setUid(message.getUid());      // sync UID so we know our mail...
-
-                    // Store the updated message locally
-                    LocalFolder folder = mMessage.getFolder();
-                    LocalMessage localMessage;
-
-                    localMessage = folder.storeSmallMessage(decryptedMessage, () -> {
-                    });
-                    mMessage = localMessage;
-                    refreshMessage();
-
-                } catch (MessagingException e) {
-                    Timber.e("pEp %s", "decryptMessage: view", e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                if (throwable.getMessage().equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
-                    showKeyNotFoundFeedback();
-                }
-            }
-        });
     }
 
     private void refreshMessage() {
@@ -1002,17 +990,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
     }
 
-
     @Override
     public void onViewAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
+        currentAttachmentViewInfo = attachment;
         getAttachmentController(attachment).viewAttachment();
     }
 
     @Override
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
+        currentAttachmentViewInfo = attachment;
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();

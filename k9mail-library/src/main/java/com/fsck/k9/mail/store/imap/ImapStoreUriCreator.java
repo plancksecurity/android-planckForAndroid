@@ -47,6 +47,8 @@ class ImapStoreUriCreator {
         String userInfo;
         if (authType == AuthType.EXTERNAL) {
             userInfo = authType.name() + ":" + userEnc + ":" + clientCertificateAliasEnc;
+        } else if(authType == AuthType.EXTERNAL_PLAIN) {
+            userInfo = authType.name() + ":" + userEnc + ":" + passwordEnc + ":" + clientCertificateAliasEnc;
         } else {
             userInfo = authType.name() + ":" + userEnc + ":" + passwordEnc;
         }

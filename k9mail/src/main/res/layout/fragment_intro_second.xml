@@ -6,97 +6,104 @@
     android:background="@color/white"
     android:padding="@dimen/intro_fragment_padding">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        tools:context="com.fsck.k9.security.pEp.ui.intro.IntroSecondFragment">
+        android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ic_secure"
-            android:layout_width="@dimen/intro_icon_width_height_standard"
-            android:layout_height="@dimen/intro_icon_width_height_standard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pep_status_yellow" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/header_secure"
-            style="@style/IntroHeaderText"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/intro_margin_start_standard"
-            android:text="@string/intro_frag_second_header_1"
-            app:layout_constraintStart_toEndOf="@+id/ic_secure"
-            app:layout_constraintTop_toTopOf="@+id/ic_secure" />
+            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroSecondFragment"
+            android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_secure"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:text="@string/intro_frag_second_text_1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_secure" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ic_secure"
+                android:layout_width="@dimen/intro_icon_width_height_standard"
+                android:layout_height="@dimen/intro_icon_width_height_standard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/pep_status_yellow" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ic_secure_trusted"
-            android:layout_width="@dimen/intro_icon_width_height_standard"
-            android:layout_height="@dimen/intro_icon_width_height_standard"
-            android:layout_marginTop="@dimen/intro_margin_top_large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_secure"
-            app:srcCompat="@drawable/pep_status_green" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/header_secure"
+                style="@style/IntroHeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/intro_margin_start_standard"
+                android:text="@string/intro_frag_second_header_1"
+                app:layout_constraintStart_toEndOf="@+id/ic_secure"
+                app:layout_constraintTop_toTopOf="@+id/ic_secure" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/header_secure_trusted"
-            style="@style/IntroHeaderText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/intro_margin_start_standard"
-            android:text="@string/intro_frag_second_header_2"
-            app:layout_constraintStart_toEndOf="@+id/ic_secure_trusted"
-            app:layout_constraintTop_toTopOf="@+id/ic_secure_trusted" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_secure"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:text="@string/intro_frag_second_text_1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ic_secure" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_secure_trusted"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:text="@string/intro_frag_second_text_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_secure_trusted" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ic_secure_trusted"
+                android:layout_width="@dimen/intro_icon_width_height_standard"
+                android:layout_height="@dimen/intro_icon_width_height_standard"
+                android:layout_marginTop="@dimen/intro_margin_top_large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_secure"
+                app:srcCompat="@drawable/pep_status_green" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ic_mistrusted"
-            android:layout_width="@dimen/intro_icon_width_height_standard"
-            android:layout_height="@dimen/intro_icon_width_height_standard"
-            android:layout_marginTop="@dimen/intro_margin_top_large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_secure_trusted"
-            app:srcCompat="@drawable/pep_status_red" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/header_secure_trusted"
+                style="@style/IntroHeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/intro_margin_start_standard"
+                android:text="@string/intro_frag_second_header_2"
+                app:layout_constraintStart_toEndOf="@+id/ic_secure_trusted"
+                app:layout_constraintTop_toTopOf="@+id/ic_secure_trusted" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/header_mistrusted"
-            style="@style/IntroHeaderText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/intro_margin_start_standard"
-            android:text="@string/intro_frag_second_header_3"
-            app:layout_constraintStart_toEndOf="@+id/ic_mistrusted"
-            app:layout_constraintTop_toTopOf="@+id/ic_mistrusted" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_secure_trusted"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:text="@string/intro_frag_second_text_2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ic_secure_trusted" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/text_mistrusted"
-            style="@style/IntroText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/intro_margin_top_standard"
-            android:text="@string/intro_frag_second_text_3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_mistrusted" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ic_mistrusted"
+                android:layout_width="@dimen/intro_icon_width_height_standard"
+                android:layout_height="@dimen/intro_icon_width_height_standard"
+                android:layout_marginTop="@dimen/intro_margin_top_large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_secure_trusted"
+                app:srcCompat="@drawable/pep_status_red" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/header_mistrusted"
+                style="@style/IntroHeaderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/intro_margin_start_standard"
+                android:text="@string/intro_frag_second_header_3"
+                app:layout_constraintStart_toEndOf="@+id/ic_mistrusted"
+                app:layout_constraintTop_toTopOf="@+id/ic_mistrusted" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_mistrusted"
+                style="@style/IntroText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/intro_margin_top_standard"
+                android:text="@string/intro_frag_second_text_3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ic_mistrusted" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </RelativeLayout>

@@ -7,6 +7,9 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -19,6 +22,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
+import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
@@ -50,8 +54,8 @@ import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
-import security.pEp.ui.keyimport.ANDROID_MARKET_URL
-import security.pEp.ui.keyimport.showImportKeyDialog
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
 import timber.log.Timber
 import java.util.*
@@ -204,6 +208,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = Preferences.getPreferences(this).accounts
+        if(accounts.size > 0) {
+            createComposeDynamicShortcut()
+        }
+
+        // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        scope.launch {
+            val app = application as K9
+            app.pEpInitSyncEnvironment()
+        }
+
         val intent = intent
         //onNewIntent(intent);
 
@@ -311,7 +326,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         outState.putBoolean(STATE_EXPORT_GLOBAL_SETTINGS, exportGlobalSettings)
         outState.putStringArrayList(STATE_EXPORT_ACCOUNTS, exportAccountUuids)
-        outState.putString(CURRENT_ACCOUNT, currentAccount)
+        outState.putString(CURRENT_ACCOUNT_UUID, currentAccountUuid)
     }
 
     override fun onRestoreInstanceState(state: Bundle) {
@@ -319,7 +334,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         exportGlobalSettings = state.getBoolean(STATE_EXPORT_GLOBAL_SETTINGS, false)
         exportAccountUuids = state.getStringArrayList(STATE_EXPORT_ACCOUNTS)
-        currentAccount = state.getString(CURRENT_ACCOUNT)
+        currentAccountUuid = state.getString(CURRENT_ACCOUNT_UUID)
     }
 
     public override fun onResume() {
@@ -358,8 +373,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.addAll(Preferences.getPreferences(this).accounts)
 
         if (accounts.size < 1) {
+            removeComposeDynamicShortcut()
             AccountSetupBasics.actionNewAccount(this)
             finishAffinity()
+            return
         }
 
         val newAccounts: MutableList<BaseAccount>
@@ -431,31 +448,45 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * @return false if unsuccessful
      */
     private fun onOpenAccount(account: BaseAccount?): Boolean {
+        account?: return false
         if (account is SearchAccount) {
-            val searchAccount = account as SearchAccount?
-            MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+            openSearchAccount(account)
         } else {
-            val realAccount = account as Account?
-            if (!realAccount!!.isEnabled) {
-                onActivateAccount(realAccount)
-                return false
-            } else if (!realAccount.isAvailable(this)) {
-                val toastText = getString(R.string.account_unavailable, account!!.description)
-                FeedbackTools.showShortFeedback(accountsList, toastText)
-                Timber.i("refusing to open account that is not available")
-                return false
-            }
-            if (K9.FOLDER_NONE == realAccount.autoExpandFolderName) {
-                FolderList.actionHandleAccount(this, realAccount)
-            } else {
-                val search = LocalSearch(realAccount.autoExpandFolderName)
-                search.addAllowedFolder(realAccount.autoExpandFolderName)
-                search.addAccountUuid(realAccount.uuid)
-                MessageList.actionDisplaySearch(this, search, false, true)
-            }
+            val realAccount = account as Account
+            if(!accountWasOpenable(realAccount)) return false
+            openAccount(realAccount)
         }
         return true
     }
+
+    private fun openAccount(realAccount: Account) {
+        if (K9.FOLDER_NONE == realAccount.autoExpandFolderName) {
+            FolderList.actionHandleAccount(this, realAccount)
+        } else {
+            val search = LocalSearch(realAccount.autoExpandFolderName)
+            search.addAllowedFolder(realAccount.autoExpandFolderName)
+            search.addAccountUuid(realAccount.uuid)
+            MessageList.actionDisplaySearch(this, search, false, true)
+        }
+    }
+
+    private fun openSearchAccount(searchAccount: SearchAccount?) {
+        MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+    }
+
+    private fun accountWasOpenable(realAccount: Account): Boolean {
+        if (!realAccount.isEnabled) {
+            onActivateAccount(realAccount)
+            return false
+        } else if (!realAccount.isAvailable(this)) {
+            val toastText = getString(R.string.account_unavailable, realAccount.description)
+            FeedbackTools.showShortFeedback(accountsList, toastText)
+            Timber.i("refusing to open account that is not available")
+            return false
+        }
+        return true
+    }
+
 
     private fun onActivateAccount(account: Account) {
         val disabledAccounts = ArrayList<Account>()
@@ -562,7 +593,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                         R.string.open_market,
                         R.string.close
                 ) {
-                    val uri = Uri.parse(ANDROID_MARKET_URL)
+                    val uri = Uri.parse(ANDROID_FILE_MANAGER_MARKET_URL)
                     val intent = Intent(Intent.ACTION_VIEW, uri)
                     startActivity(intent)
                     selectedContextAccount = null
@@ -653,8 +684,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun onImportPGPKeyFromFileSystem(realAccount: Account) {
-        currentAccount = realAccount.email
-        showImportKeyDialog(currentAccount)
+        currentAccountUuid = realAccount.uuid
+        showImportKeyDialog(this, currentAccountUuid)
 
     }
 
@@ -742,9 +773,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             menu.findItem(R.id.move_up).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.TOP)
             menu.findItem(R.id.move_down).isEnabled = !accountLocation.contains(ACCOUNT_LOCATION.BOTTOM)
         }
+        val app: K9 = applicationContext as K9
+        if (app.isGrouped) {
+            menu.findItem(R.id.import_PGP_key_from_SD)?.isEnabled = false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_OK)
             return
@@ -1091,18 +1127,40 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     override fun onBackPressed() {
         if(anyAccountWasDeleted) {
             if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
-                if(onOpenAccount(unifiedInboxAccount)) {
-                    anyAccountWasDeleted = false
-                    finish()
+                finishAffinity()
+                openSearchAccount(unifiedInboxAccount)
+            } else {
+                val defaultAccount = Preferences.getPreferences(this@SettingsActivity).defaultAccount
+                if(accountWasOpenable(defaultAccount)) {
+                    finishAffinity()
+                    openAccount(defaultAccount)
                 }
-            } else if (onOpenAccount(Preferences.getPreferences(this@SettingsActivity).defaultAccount)) {
-                anyAccountWasDeleted = false
-                finish()
             }
+            anyAccountWasDeleted = false
         }
         else {
             super.onBackPressed()
         }
     }
 
+    private fun createComposeDynamicShortcut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
+            val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
+                .setShortLabel(resources.getString(R.string.compose_action))
+                .setLongLabel(resources.getString(R.string.compose_action))
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
+                .setIntent(composeIntent)
+                .build()
+            val shortcutManager = getSystemService(ShortcutManager::class.java)
+            shortcutManager.dynamicShortcuts = listOf(composeShortcut)
+        }
+    }
+
+    private fun removeComposeDynamicShortcut() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            val shortcutManager = getSystemService(ShortcutManager::class.java)
+            shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
+        }
+    }
 }
