@@ -19,7 +19,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
+import com.fsck.k9.pEp.ui.listeners.folderClickListener
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
@@ -311,13 +311,7 @@ class DrawerLayoutView @Inject constructor(
     override fun setFolderAdapter(collection: ListAdapteeCollection<FolderModel>) {
         val folderRenderer = FolderRenderer()
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
-        folderRenderer.setFolderClickListener(object : OnFolderClickListener {
-            override fun onClick(folder: LocalFolder) {
-                folderClicked(folder)
-            }
-
-            override fun onClick(position: Int) {}
-        })
+        folderRenderer.setFolderClickListener(folderClickListener(this::folderClicked))
 
         navigationFolders.layoutManager = getDrawerLayoutManager()
         folderAdapter = RVRendererAdapter(rendererFolderBuilder, collection)
