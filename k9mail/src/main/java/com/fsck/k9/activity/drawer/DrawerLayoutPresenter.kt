@@ -28,6 +28,8 @@ class DrawerLayoutPresenter @Inject constructor(
     private var menuFolders: List<LocalFolder>? = null
     private lateinit var drawerView: DrawerView
 
+    var accountClicked: Boolean = false
+
     fun init(drawerView: DrawerLayoutView) {
         this.drawerView = drawerView
     }
@@ -47,6 +49,7 @@ class DrawerLayoutPresenter @Inject constructor(
         setupNavigationHeader()
         val search = createSearchFolder(accountClicked)
         drawerView.refreshMessages(search)
+        this.accountClicked = false
     }
 
     fun onAccountClicked(account: Account) {

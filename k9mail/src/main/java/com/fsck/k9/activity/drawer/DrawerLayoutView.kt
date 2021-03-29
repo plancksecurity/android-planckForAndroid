@@ -197,21 +197,27 @@ class DrawerLayoutView @Inject constructor(
         firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
         secondAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
         firstAccountLayout.setOnClickListener {
-            messageListView.showLoadingMessages()
-            mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-            mainAccountEmail.text = firstAccount.email
-            mainAccountName.text = firstAccount.name
-            firstAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
-            secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
-            changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
+            if (!drawerLayoutPresenter.accountClicked) {
+                drawerLayoutPresenter.accountClicked = true
+                messageListView.showLoadingMessages()
+                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+                mainAccountEmail.text = firstAccount.email
+                mainAccountName.text = firstAccount.name
+                firstAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
+            }
         }
         secondAccountLayout.setOnClickListener {
-            messageListView.showLoadingMessages()
-            mainAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
-            mainAccountEmail.text = lastAccount.email
-            mainAccountName.text = lastAccount.name
-            secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
-            changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount)
+            if (!drawerLayoutPresenter.accountClicked) {
+                drawerLayoutPresenter.accountClicked = true
+                messageListView.showLoadingMessages()
+                mainAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+                mainAccountEmail.text = lastAccount.email
+                mainAccountName.text = lastAccount.name
+                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount)
+            }
         }
     }
 
@@ -329,14 +335,17 @@ class DrawerLayoutView @Inject constructor(
     }
 
     private fun onAccountClick(account: Account) {
-        drawerLayoutPresenter.account = account
-        messageListView.showLoadingMessages()
-        messageListView.updateAccount(account)
-        messageListView.updateLastUsedAccount()
-        drawerLayoutPresenter.onAccountClicked(account)
-        navFoldersAccountsButton.showAccounts()
-        messageListView.changeAccountsOrder()
-        drawerLayout.closeDrawers()
+        if (!drawerLayoutPresenter.accountClicked) {
+            drawerLayoutPresenter.accountClicked = true
+            drawerLayoutPresenter.account = account
+            messageListView.showLoadingMessages()
+            messageListView.updateAccount(account)
+            messageListView.updateLastUsedAccount()
+            drawerLayoutPresenter.onAccountClicked(account)
+            navFoldersAccountsButton.showAccounts()
+            messageListView.changeAccountsOrder()
+            drawerLayout.closeDrawers()
+        }
     }
 
     private fun setupCreateConfigAccountListeners() {
