@@ -197,7 +197,6 @@
         <item name="allMessagesIcon">@drawable/ic_all_messages_24dp</item>
         <item name="drawer_body_icons_color">@color/drawer_body_icons_color_light</item>
 
-        <item name="alertDialogStyle">@style/AlertDialogStyle.Light</item>
         <item name="alertDialogTheme">@style/AlertDialogStyle.Light</item>
         <item name="dialogTheme">@style/AlertDialogStyle.Light</item>
 
@@ -344,7 +343,6 @@
         <item name="allMessagesIcon">@drawable/ic_all_messages_24dp</item>
         <item name="drawer_body_icons_color">@color/drawer_body_icons_color_dark</item>
 
-        <item name="alertDialogStyle">@style/AlertDialogStyle.Dark</item>
         <item name="alertDialogTheme">@style/AlertDialogStyle.Dark</item>
         <item name="dialogTheme">@style/AlertDialogStyle.Dark</item>
 
