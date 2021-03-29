@@ -9,7 +9,6 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.Theme
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.view.MessageWebView
 import security.pEp.ui.toolbar.ToolBarCustomizer
@@ -32,7 +31,7 @@ class LicenseActivity : PepActivity() {
 
         val webView = findViewById<MessageWebView>(R.id.license_webview)
         webView.blockNetworkData(false)
-        if(ThemeManager.legacyTheme == Theme.DARK && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if(ThemeManager.isDarkTheme() && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
         }
 

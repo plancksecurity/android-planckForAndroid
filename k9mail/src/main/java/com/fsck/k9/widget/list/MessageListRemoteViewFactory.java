@@ -54,7 +54,7 @@ public class MessageListRemoteViewFactory implements RemoteViewsService.RemoteVi
     public void onCreate() {
         senderAboveSubject = K9.messageListSenderAboveSubject();
         readTextColor = ContextCompat.getColor(context,
-                ThemeManager.getLegacyTheme() == Theme.DARK
+                ThemeManager.isDarkTheme()
                 ? R.color.message_list_widget_header_text
                 : R.color.message_list_widget_text_read
         );

@@ -24,7 +24,6 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import security.pEp.ui.toolbar.PEpToolbarCustomizer;
@@ -46,7 +45,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
         setTheme(
-            ThemeManager.getLegacyTheme() == Theme.DARK
+            ThemeManager.isDarkTheme()
             ? R.style.Theme_K9_Dark
             : R.style.Theme_K9_Light
         );

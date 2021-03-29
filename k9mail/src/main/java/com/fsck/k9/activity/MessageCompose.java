@@ -1271,7 +1271,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
-                        (ThemeManager.getLegacyTheme() == Theme.LIGHT) ?
+                        ThemeManager.isDarkTheme() ?
                                 R.style.Theme_K9_Dialog_Light :
                                 R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);

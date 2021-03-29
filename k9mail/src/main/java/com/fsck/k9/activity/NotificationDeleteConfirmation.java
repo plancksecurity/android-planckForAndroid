@@ -54,7 +54,7 @@ public class NotificationDeleteConfirmation extends Activity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        setTheme(ThemeManager.getLegacyTheme() == Theme.LIGHT ?
+        setTheme(!ThemeManager.isDarkTheme() ?
                 R.style.Theme_K9_Dialog_Translucent_Light : R.style.Theme_K9_Dialog_Translucent_Dark);
 
         extractExtras();

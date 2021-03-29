@@ -17,7 +17,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
-import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.search.SearchAccount;
 
@@ -78,17 +77,17 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
 
     private void updateColorsFollowingTheme(Context context, RemoteViews views) {
         int listBackground = ContextCompat.getColor(context,
-                ThemeManager.getLegacyTheme() == Theme.DARK
+                ThemeManager.isDarkTheme()
                 ? R.color.dark_theme_default_background
                 : R.color.white);
         views.setInt(R.id.listView, "setBackgroundColor", listBackground);
         int toolbarBackground = ContextCompat.getColor(context,
-                ThemeManager.getLegacyTheme() == Theme.DARK
+                ThemeManager.isDarkTheme()
                         ? R.color.dark_theme_overlay_1
                         : R.color.message_list_widget_header_background);
         views.setInt(R.id.top_controls, "setBackgroundColor", toolbarBackground);
         int toolbarText = ContextCompat.getColor(context,
-                ThemeManager.getLegacyTheme() == Theme.DARK
+                ThemeManager.isDarkTheme()
                         ? R.color.toolbar_content_default_dark_theme
                         : R.color.message_list_widget_header_text);
         views.setTextColor(R.id.folder, toolbarText);
