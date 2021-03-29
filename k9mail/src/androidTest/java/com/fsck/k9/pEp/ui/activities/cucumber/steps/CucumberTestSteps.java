@@ -34,12 +34,15 @@ import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assume;
 import org.junit.Rule;
+import org.junit.runner.RunWith;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -59,6 +62,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import cucumber.api.junit.Cucumber;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
@@ -94,7 +98,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
-
+@RunWith(Cucumber.class)
 public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";
@@ -1639,25 +1643,29 @@ public class CucumberTestSteps {
             case "7":
                 testUtils.pressBack();
                 testUtils.clickFolder(resources.getString(R.string.special_mailbox_name_inbox));
-                I_send_message_to_address(4, "bot1", "Format_Test", "First test finished");
+                I_send_message_to_address(1, "bot1", "Format_Test", "First test finished");
                 break;
             case "8":
                 testUtils.pressBack();
                 testUtils.clickFolder(resources.getString(R.string.special_mailbox_name_inbox));
-                I_send_message_to_address(4, "bot1", "Format_Test", "Second test finished");
+                I_send_message_to_address(1, "bot1", "Format_Test", "Second test finished");
                 break;
             case "9":
                 testUtils.waitForIdle();
-                testUtils.clickView(R.id.delete);
+                testUtils.pressBack();
                 testUtils.waitForIdle();
-                testUtils.goBackToMessageList();
+                testUtils.clickFolder(resources.getString(R.string.special_mailbox_name_inbox));
                 testUtils.waitForIdle();
-                testUtils.clickLastMessage();
+                testUtils.clickMessageAtPosition(2);
+                testUtils.waitForIdle();
                 for (int messageToRemove = 0; messageToRemove < 4; messageToRemove++) {
                     testUtils.waitForIdle();
                     testUtils.clickView(R.id.delete);
                     testUtils.waitForIdle();
                 }
+                testUtils.clickLastMessage();
+                testUtils.waitForIdle();
+                testUtils.clickView(R.id.delete);
                 break;
             default:
                 break;
