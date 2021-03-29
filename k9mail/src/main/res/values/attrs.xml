@@ -88,6 +88,25 @@
         <attr name="openpgp_grey" format="reference|color" />
         <attr name="openpgp_dark_grey" format="reference|color" />
         <attr name="iconPepLogo" format="reference|color" />
+        <attr name="toolbarDefaultColor" format="reference|color" />
+        <attr name="messageViewToolbarColor" format="reference|color" />
+        <attr name="messageViewStatusBarColor" format="reference|color"/>
+        <attr name="messageViewToolbarIconsColor" format="reference|color"/>
+        <attr name="messageListToolbarIconsColor" format="reference|color"/>
+        <attr name="screenDefaultBackgroundColor" format="reference|color"/>
+        <attr name="defaultColorOnBackground"  format="reference|color"/>
+        <attr name="grayScaleColorOnBackground1" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground2" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground3" format="reference|color"/>
+        <attr name="grayScaleColorOnBackground4" format="reference|color"/>
+        <attr name="syncDisableDialogStyle" format="reference"/>
+        <attr name="iconConfigureAccount" format="reference"/>
+        <attr name="iconAddAccount" format="reference"/>
+        <attr name="answeredForwardedIconColor" format="reference|color"/>
+        <attr name="defaultToolbarTextColor" format="reference|color"/>
+        <attr name="messageListSeparatorColor" format="reference|color"/>
+        <attr name="defaultButtonTextColor" format="reference|color"/>
+        <attr name="searchBarHintColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
@@ -123,6 +142,23 @@
     <declare-styleable name="AutocryptPreferEncryptPreference">
         <attr name="summaryOn" format="string" />
         <attr name="summaryOff" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="MessageListItem">
+        <attr name="deleteEmailContainerBackground" format="reference|color"/>
+        <attr name="archiveEmailContainerBackground" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="Intro">
+        <attr name="introTextColor" format="reference|color"/>
+        <attr name="introHeaderTextColor" format="reference|color"/>
+        <attr name="introPrimaryColor" format="reference|color"/>
+        <attr name="introIndicatorColor" format="reference|color"/>
+        <attr name="introSeparatorColor" format="reference|color"/>
+    </declare-styleable>
+
+    <declare-styleable name="Buttons">
+        <attr name="negativeButtonDefaultColor" format="reference|color"/>
     </declare-styleable>
 
 </resources>

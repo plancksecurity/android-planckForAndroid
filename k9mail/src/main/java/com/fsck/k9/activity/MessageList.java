@@ -66,6 +66,8 @@ import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -1761,7 +1763,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mDisplayMode == DisplayMode.MESSAGE_LIST
                 || mMessageViewFragment == null
                 || !mMessageViewFragment.isInitialized()) {
-            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.white));
+            int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageListToolbarIconsColor);
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             menu.findItem(R.id.next_message).setVisible(false);
             menu.findItem(R.id.previous_message).setVisible(false);
             menu.findItem(R.id.single_message_options).setVisible(false);
@@ -1778,8 +1781,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
         } else {
-            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this,R.color.light_black));
-            menu.findItem(R.id.delete).setIcon(R.drawable.ic_delete_black_24dp);
+            int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
+            toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
                 menu.findItem(R.id.next_message).setVisible(false);
@@ -2356,10 +2359,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void onToggleTheme() {
-        if (K9.getK9MessageViewTheme() == K9.Theme.DARK) {
-            K9.setK9MessageViewThemeSetting(K9.Theme.LIGHT);
+        if (ThemeManager.getMessageViewTheme() == Theme.DARK) {
+            ThemeManager.setK9MessageViewTheme(Theme.LIGHT);
         } else {
-            K9.setK9MessageViewThemeSetting(K9.Theme.DARK);
+            ThemeManager.setK9MessageViewTheme(Theme.DARK);
         }
 
         new Thread(new Runnable() {

@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -15,7 +16,7 @@ import security.pEp.ui.PEpUIUtils;
 
 public class PEpContactBadge extends QuickContactBadge {
     Rating pEpRating;
-    int color = 0x00000000;
+    int color = Color.TRANSPARENT;
     private Context context;
     Paint paint;
     Rect contactBoundsBadgeRect, pEpBadgeRect;

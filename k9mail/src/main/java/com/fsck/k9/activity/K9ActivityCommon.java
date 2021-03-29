@@ -18,6 +18,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.LangUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import java.util.Locale;
 
@@ -99,7 +100,7 @@ public class K9ActivityCommon {
     private K9ActivityCommon(Activity activity) {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
-        mActivity.setTheme(K9.getK9ThemeResourceId());
+        mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
     }
 

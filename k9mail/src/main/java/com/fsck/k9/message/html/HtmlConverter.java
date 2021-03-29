@@ -2,12 +2,9 @@ package com.fsck.k9.message.html;
 
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.text.Annotation;
@@ -19,6 +16,9 @@ import android.text.Spanned;
 import android.text.TextUtils;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
+
 import org.xml.sax.XMLReader;
 
 /**
@@ -1261,7 +1261,7 @@ public class HtmlConverter {
     }
 
     static String cssStyleTheme() {
-        if (K9.getK9MessageViewTheme() == K9.Theme.DARK)  {
+        if (ThemeManager.getMessageViewTheme() == Theme.DARK)  {
             return "<style type=\"text/css\">" +
                     "* { background: #303030 ! important; color: #F3F3F3 !important }" +
                     ":link, :link * { color: #CCFF33 !important }" +

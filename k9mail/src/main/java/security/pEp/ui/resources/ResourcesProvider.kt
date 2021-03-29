@@ -6,6 +6,7 @@ import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import com.fsck.k9.K9
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 
 interface ResourcesProvider {
 
@@ -18,7 +19,7 @@ interface ResourcesProvider {
 class PEpResourcesProvider(private val context: Activity) : ResourcesProvider {
 
     override fun getAttributeResource(@AttrRes resource: Int): Int {
-        val a: TypedArray = context.theme.obtainStyledAttributes(K9.getK9ThemeResourceId(), intArrayOf(resource))
+        val a: TypedArray = context.theme.obtainStyledAttributes(ThemeManager.appThemeResourceId, intArrayOf(resource))
         return a.getResourceId(0, 0)
     }
 

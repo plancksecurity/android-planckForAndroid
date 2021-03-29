@@ -13,7 +13,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        tools:background="@color/colorPrimary">
+        tools:background="?attr/toolbarDefaultColor">
 
         <LinearLayout
             android:id="@+id/title_layout"
@@ -31,7 +31,7 @@
                 android:fontFamily="sans-serif-medium"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultToolbarTextColor"
                 android:textSize="18dp"
                 tools:text="actionbar_title_first" />
 
@@ -42,7 +42,7 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultToolbarTextColor"
                 android:visibility="gone"
                 tools:text="actionbar_title_sub"
                 tools:visibility="visible" />
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="12dip"
             android:paddingRight="12dip"
-            android:textColor="@color/white"
+            android:textColor="?attr/defaultToolbarTextColor"
             android:textSize="36sp"
             android:visibility="gone" />
     </LinearLayout>

@@ -12,7 +12,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="?attr/screenDefaultBackgroundColor"
         tools:backgroundTint="@color/white"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/HandshakeToolbarTheme">
@@ -29,7 +29,7 @@
                 tools:text="p≡p"
                 android:textSize="24sp"
                 android:gravity="center_vertical"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="?attr/colorPrimaryDark"
                 android:id="@+id/toolbar_pEp_title"
                 android:fontFamily="@font/univers_lts_sd"/>
 
@@ -41,7 +41,7 @@
                 android:text="Sync"
                 android:textStyle="bold"
                 android:textSize="24sp"
-                android:textColor="@color/light_black"
+                android:textColor="?attr/grayScaleColorOnBackground1"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/toolbar_pEp_title"
                 android:id="@+id/toolbar_pEp_title_detail" />

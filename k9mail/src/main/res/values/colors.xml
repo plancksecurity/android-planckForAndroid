@@ -29,6 +29,7 @@
     <color name="pep_yellow">#ffc107</color>
     <color name="pep_red">#f44336</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
     <color name="gray">#9e9e9e</color>
     <color name="nav_contact_background">#ABABAB</color>
@@ -63,7 +64,8 @@
 
     <color name="message_list_active_background_color_dark">#42A044</color>
     <color name="message_list_active_background_color_light">#59D85D</color>
-    <color name="message_list_selected_background_color">#c8e6c9</color>
+    <color name="message_list_selected_background_color_light">#c8e6c9</color>
+    <color name="message_list_selected_background_color_dark">#666666</color>
     <color name="message_list_read_background_color">#c0cdcdcd</color>
     <color name="message_list_unread_background_color_dark">#c05a5a5a</color>
     <color name="message_list_divider_color_light">#ffcccccc</color>
@@ -72,5 +74,10 @@
     <color name="keysync_disable_warning_cancel_color">#969696</color>
     <color name="keysync_disable_warning_text_color">#c8c8c8</color>
 
+    <color name="delete_email_container_background">#FF5722</color>
+    <color name="archive_email_container_background">#559E6E</color>
+    <color name="message_container_unsigned">#d55</color>
+    <color name="white_trasparent">#00FFFFFF</color>
+    <color name="black_trasparent">#00000000</color>
 
 </resources>

@@ -27,7 +27,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:text="@string/global_settings_title"
-                android:textColor="@color/colorPrimaryDark" />
+                android:textColor="?attr/colorAccent" />
 
             <FrameLayout
                 android:id="@+id/generalSettingsContainer"
@@ -69,7 +69,7 @@
                         android:paddingBottom="16dp"
                         android:text="@string/add_account_action"
                         android:textAllCaps="true"
-                        android:textColor="@color/colorPrimaryDark"
+                        android:textColor="?attr/colorAccent"
                         android:textStyle="bold" />
 
                 </FrameLayout>
@@ -84,7 +84,7 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:text="@string/available_accounts_title"
-                    android:textColor="@color/colorPrimaryDark" />
+                    android:textColor="?attr/colorAccent" />
 
                 <com.fsck.k9.pEp.ui.tools.NestedListView
                     android:id="@+id/accounts_list"

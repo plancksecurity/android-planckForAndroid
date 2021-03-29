@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:orientation="vertical">
 
     <include layout="@layout/simple_toolbar_layout" />
@@ -32,7 +32,7 @@
 
             <TextView
                 android:id="@+id/aboutText"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -43,7 +43,7 @@
 
             <TextView
                 android:id="@+id/contact_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -58,14 +58,14 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="4dp"
                 android:text="@string/support_email"
-                android:textColor="@color/colorPrimary"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/contact_label"
                 app:layout_constraintTop_toTopOf="@+id/contact_label" />
 
 
             <TextView
                 android:id="@+id/documentation_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -81,14 +81,14 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="4dp"
                 android:text="@string/pEp_documentation_url"
-                android:textColor="@color/colorPrimary"
+                android:textColor="?attr/colorPrimary"
                 app:layout_constraintStart_toEndOf="@+id/documentation_label"
                 app:layout_constraintTop_toTopOf="@+id/documentation_label" />
 
 
             <TextView
                 android:id="@+id/librariesText"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -99,7 +99,7 @@
 
             <TextView
                 android:id="@+id/license_label"
-                style="@style/LightBlackText"
+                style="@style/GrayScaleColorText1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

@@ -12,6 +12,7 @@ import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.pEp.PepActivity
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.activity_about.*
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import java.util.*
@@ -41,7 +42,7 @@ class AboutActivity : PepActivity() {
         bindViews(R.layout.activity_about)
         setUpToolbar(true)
 
-        toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        toolbarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT))
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
         initializeToolbar(true, about)
 

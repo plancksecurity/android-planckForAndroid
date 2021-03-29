@@ -52,7 +52,7 @@ dependencies {
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.androidXLegacy}"
-    implementation "androidx.appcompat:appcompat:${versions.androidX}"
+    implementation "androidx.appcompat:appcompat:${versions.androidXAppCompat}"
     implementation "androidx.cardview:cardview:${versions.androidXCardView}"
     implementation "com.google.android.material:material:${versions.androidX}"
     implementation "androidx.appcompat:appcompat:${versions.androidX}"

@@ -56,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/contact_badge"
                     android:src="?attr/iconActionReply"
-                    android:tint="@color/pep_no_color" />
+                    android:tint="?attr/answeredForwardedIconColor" />
 
                 <ImageView
                     android:id="@+id/forwarded"
@@ -65,7 +65,7 @@
                     android:layout_below="@+id/contact_badge"
                     android:layout_toEndOf="@+id/answered"
                     android:src="?attr/iconActionForward"
-                    android:tint="@color/pep_no_color" />
+                    android:tint="?attr/answeredForwardedIconColor" />
 
             </RelativeLayout>
 

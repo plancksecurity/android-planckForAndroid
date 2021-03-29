@@ -19,6 +19,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.SizeFormatter;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import timber.log.Timber;
 
@@ -112,9 +113,10 @@ public class AttachmentView extends ConstraintLayout {
 
     public void refreshThumbnail() {
         ImageView thumbnailView = findViewById(R.id.attachment_icon);
+        int fileIconResource = ThemeManager.getAttributeResource(getContext(), R.attr.iconFile);
         Glide.with(getContext())
                 .load(attachment.internalUri)
-                .placeholder(ContextCompat.getDrawable(getContext(), R.drawable.ic_file_light))
+                .placeholder(ContextCompat.getDrawable(getContext(), fileIconResource))
                 .centerCrop()
                 .listener(new RequestListener<Uri, GlideDrawable>() {
                     @Override

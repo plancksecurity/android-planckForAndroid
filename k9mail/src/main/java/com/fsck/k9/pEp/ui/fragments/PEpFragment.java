@@ -13,6 +13,9 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent;
 import com.fsck.k9.pEp.infrastructure.components.PEpComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
+
+import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public abstract class PEpFragment extends Fragment {
 
@@ -26,6 +29,15 @@ public abstract class PEpFragment extends Fragment {
     }
 
     protected abstract void inject();
+
+    protected void setupPEpFragmentToolbar() {
+        setupCustomPEpFragmentToolbar(ThemeManager.ToolbarType.DEFAULT);
+    }
+
+    protected void setupCustomPEpFragmentToolbar(ThemeManager.ToolbarType toolbarType) {
+        getToolbarCustomizer().setStatusBarPepColor(
+                ThemeManager.getToolbarColor(requireContext(), toolbarType));
+    }
 
     private ApplicationComponent getApplicationComponent() {
         return getK9().getComponent();
@@ -46,6 +58,10 @@ public abstract class PEpFragment extends Fragment {
 
     public PEpComponent getpEpComponent() {
         return pEpComponent;
+    }
+
+    protected ToolBarCustomizer getToolbarCustomizer() {
+        return pEpComponent.toolbarCustomizer();
     }
 
     @NonNull

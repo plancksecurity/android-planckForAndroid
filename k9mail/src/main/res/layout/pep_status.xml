@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/pep_status_layout"
-    android:background="@color/white">
+    android:background="?attr/screenDefaultBackgroundColor">
 
     <include layout="@layout/big_pep_toolbar_layout" />
 

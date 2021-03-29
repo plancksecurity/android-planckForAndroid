@@ -10,9 +10,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="?attr/toolbarDefaultColor"
         android:elevation="4dp"
-        tools:backgroundTint="@color/colorPrimary"
+        tools:backgroundTint="?attr/toolbarDefaultColor"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ToolbarTheme">
     </androidx.appcompat.widget.Toolbar>
@@ -23,7 +23,7 @@
         android:layout_height="?attr/actionBarSize"
         android:clipChildren="false"
         android:visibility="gone"
-        android:background="@color/colorPrimary">
+        android:background="?attr/toolbarDefaultColor">
 
         <include layout="@layout/include_search_bar" />
     </FrameLayout>

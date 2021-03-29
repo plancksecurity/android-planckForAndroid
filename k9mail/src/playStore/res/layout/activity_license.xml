@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:orientation="vertical">
 
     <include layout="@layout/simple_toolbar_layout" />
@@ -16,7 +16,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/licenseText"
-            style="@style/LightBlackText"
+            style="@style/GrayScaleColorText1"
             android:layout_width="match_parent"
             android:padding="16dp"
             android:layout_height="wrap_content"

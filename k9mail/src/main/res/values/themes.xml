@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.K9.Startup" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.K9.Startup" parent="Theme.K9.Dark">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
@@ -9,101 +9,9 @@
     <style name="Theme.K9.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" />
     <style name="Theme.K9.Dark.Base" parent="Theme.AppCompat.NoActionBar" />
 
-    <style name="Theme.K9.Light" parent="Theme.K9.Light.Base">
-    <!--style name="Theme.K9.Light.Common" parent="Theme.K9.Light.Base"-->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="Theme.K9.Light" parent="Theme.K9.Light.Common">
         <item name="windowActionModeOverlay">true</item>
-        <item name="iconFolder">@drawable/ic_folder_light</item>
-        <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_light</item>
-        <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
-        <item name="iconActionAddAttachment">@drawable/ic_attachment_light</item>
-        <item name="iconActionAddCcBcc">@drawable/ic_group_plus_light</item>
-        <item name="iconActionArchive">@drawable/ic_archive_light</item>
-        <item name="iconActionCompose">@drawable/ic_compose_message</item>
-        <item name="iconActionDelete">@drawable/ic_trash_can_light</item>
-        <item name="iconActionMove">@drawable/ic_folder_light</item>
-        <item name="iconActionCopy">@drawable/ic_content_copy_light</item>
-        <item name="iconActionNextMessage">@drawable/ic_chevron_right_light</item>
-        <item name="iconActionPreviousMessage">@drawable/ic_chevron_left_light</item>
-        <item name="iconActionRefresh">@drawable/ic_refresh_light</item>
-        <item name="iconActionSearch">@drawable/ic_magnify_light</item>
-        <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_light</item>
-        <item name="iconActionSend">@drawable/ic_send_light</item>
-        <item name="iconActionSettings">@drawable/ic_cog_light</item>
-        <item name="iconActionReply">@drawable/ic_reply_light</item>
-        <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_light</item>
-        <item name="iconActionForward">@drawable/ic_forward_light</item>
-        <item name="iconActionSort">@drawable/ic_sort_light</item>
-        <item name="iconActionSpam">@drawable/ic_alert_octagon_light</item>
-        <item name="iconActionFlag">@drawable/ic_flag_light</item>
-        <item name="iconActionUnflag">@drawable/ic_flag_border_light</item>
-        <item name="iconActionMarkAsRead">@drawable/ic_opened_envelope_light</item>
-        <item name="iconActionMarkAsUnread">@drawable/ic_envelope_light</item>
-        <item name="iconActionRemoteSearch">@drawable/ic_magnify_cloud_light</item>
-        <item name="iconActionAbout">@drawable/ic_info_outline_light</item>
-        <item name="iconActionAdd">@drawable/ic_plus_light</item>
-        <item name="iconActionImportExport">@drawable/ic_arrow_up_down_light</item>
-        <item name="iconActionUpload">@drawable/ic_file_upload_light</item>
-        <item name="iconActionDownload">@drawable/ic_file_download_light</item>
-        <item name="iconFile">@drawable/ic_file_light</item>
-        <item name="iconActionSelectAll">@drawable/ic_select_all_light</item>
-        <item name="iconActionSave">@drawable/ic_floppy_light</item>
-        <item name="iconActionCancel">@drawable/ic_clear_light</item>
-        <item name="iconActionRequestReadReceipt">@drawable/ic_action_request_read_receipt_light</item>
-        <item name="iconActionExpand">@drawable/ic_chevron_down_light</item>
-        <item name="iconActionCollapse">@drawable/ic_chevron_up_light</item>
-        <item name="iconPreferencesDisplay">@drawable/ic_tv_light</item>
-        <item name="iconPreferencesInteraction">@drawable/ic_touch_light</item>
-        <item name="iconPreferencesNotifications">@drawable/ic_notifications_light</item>
-        <item name="iconPreferencesNetwork">@drawable/ic_arrow_up_down_light</item>
-        <item name="iconPreferencesVarious">@drawable/ic_widgets_light</item>
-        <item name="iconPreferencesPrivacy">@drawable/ic_shield_light</item>
-        <item name="iconPreferencesDebug">@drawable/ic_bug_light</item>
-        <item name="iconLanguage">@drawable/ic_language_light</item>
-        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
-        <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_light</item>
-        <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_light</item>
-        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
-        <item name="messageListReadItemBackgroundColor">@color/message_list_read_background_color</item>
-        <item name="messageListUnreadItemBackgroundColor">@android:color/transparent</item>
-        <item name="messageListThreadCountForegroundColor">?android:attr/colorBackground</item>
-        <item name="messageListThreadCountBackground">@drawable/thread_count_box_light</item>
-        <item name="messageListActiveItemBackgroundColor">@color/message_list_active_background_color_light</item>
-        <item name="messageListDividerColor">@color/message_list_divider_color_light</item>
-        <item name="messageListCheckbox">@drawable/btn_check_message_list_light</item>
-        <item name="messageViewBackgroundColor">@color/white</item>
-        <item name="messageViewAttachmentBackground">@color/attachment_background_light</item>
-        <item name="messageComposeAddContactImage">@drawable/ic_person_plus_light</item>
-        <item name="contactPictureFallbackDefaultBackgroundColor">#ffababab</item>
-        <item name="contactTokenBackgroundColor">#ccc</item>
-        <item name="composerBackgroundColor">@android:color/background_light</item>
-        <item name="tintColorBulletPointPositive">#77aa22</item>
-        <item name="tintColorBulletPointNegative">#dd2222</item>
-        <item name="tintColorBulletPointNeutral">#888</item>
-
-        <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
-
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
-        <item name="openpgp_dark_grey">#888</item>
-
         <item name="background">@android:color/background_light</item>
-        <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
-
-        <item name="iconpEpShield">@drawable/pep_status_green_light</item>
-        <item name="iconAdavancedSettings">@drawable/ic_advanced_light</item>
-        <item name="iconFlagButton">@drawable/ic_flag_button_light</item>
-        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
-        <item name="flagOpaqueCheckedIcon">@drawable/ic_flag_opaque_light</item>
-        <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_opaque_light</item>
-        <item name="iconPepLogo">@drawable/ic_pep_logo_light</item>
-
     </style>
 
     <style name="Theme.K9.Light.NoActionBar" parent="Theme.K9.Light">
@@ -112,101 +20,17 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
-    <style name="Theme.K9.Dark" parent="Theme.K9.Dark.Base">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
-        <item name="iconFolder">@drawable/ic_folder_dark</item>
-        <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_dark</item>
-        <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
-        <item name="iconActionAddAttachment">@drawable/ic_attachment_dark</item>
-        <item name="iconActionAddCcBcc">@drawable/ic_group_plus_dark</item>
-        <item name="iconActionArchive">@drawable/ic_archive_dark</item>
-        <item name="iconActionCompose">@drawable/ic_compose_message</item>
-        <item name="iconActionDelete">@drawable/ic_trash_can_dark</item>
-        <item name="iconActionMove">@drawable/ic_folder_dark</item>
-        <item name="iconActionCopy">@drawable/ic_content_copy_dark</item>
-        <item name="iconActionNextMessage">@drawable/ic_chevron_right_dark</item>
-        <item name="iconActionPreviousMessage">@drawable/ic_chevron_left_dark</item>
-        <item name="iconActionRefresh">@drawable/ic_refresh_dark</item>
-        <item name="iconActionSearch">@drawable/ic_magnify_dark</item>
-        <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_dark</item>
-        <item name="iconActionSend">@drawable/ic_send_dark</item>
-        <item name="iconActionSettings">@drawable/ic_cog_dark</item>
-        <item name="iconActionReply">@drawable/ic_reply_dark</item>
-        <item name="iconActionSingleMessageOptions">@drawable/ic_reply_all_dark</item>
-        <item name="iconActionForward">@drawable/ic_forward_dark</item>
-        <item name="iconActionSort">@drawable/ic_sort_dark</item>
-        <item name="iconActionSpam">@drawable/ic_alert_octagon_dark</item>
-        <item name="iconActionFlag">@drawable/ic_flag_dark</item>
-        <item name="iconActionUnflag">@drawable/ic_flag_border_dark</item>
-        <item name="iconActionMarkAsRead">@drawable/ic_opened_envelope_dark</item>
-        <item name="iconActionMarkAsUnread">@drawable/ic_envelope_dark</item>
-        <item name="iconActionRemoteSearch">@drawable/ic_magnify_cloud_dark</item>
-        <item name="iconActionAbout">@drawable/ic_info_outline_dark</item>
-        <item name="iconActionAdd">@drawable/ic_plus_dark</item>
-        <item name="iconActionImportExport">@drawable/ic_arrow_up_down_dark</item>
-        <item name="iconActionUpload">@drawable/ic_file_upload_dark</item>
-        <item name="iconActionDownload">@drawable/ic_file_download_dark</item>
-        <item name="iconFile">@drawable/ic_file_dark</item>
-        <item name="iconActionSelectAll">@drawable/ic_select_all_dark</item>
-        <item name="iconActionSave">@drawable/ic_floppy_dark</item>
-        <item name="iconActionCancel">@drawable/ic_clear_dark</item>
-        <item name="iconActionRequestReadReceipt">@drawable/ic_action_request_read_receipt_dark</item>
-        <item name="iconActionExpand">@drawable/ic_chevron_down_dark</item>
-        <item name="iconActionCollapse">@drawable/ic_chevron_up_dark</item>
-        <item name="iconPreferencesDisplay">@drawable/ic_tv_dark</item>
-        <item name="iconPreferencesInteraction">@drawable/ic_touch_dark</item>
-        <item name="iconPreferencesNotifications">@drawable/ic_notifications_dark</item>
-        <item name="iconPreferencesNetwork">@drawable/ic_arrow_up_down_dark</item>
-        <item name="iconPreferencesVarious">@drawable/ic_widgets_dark</item>
-        <item name="iconPreferencesPrivacy">@drawable/ic_shield_dark</item>
-        <item name="iconPreferencesDebug">@drawable/ic_bug_dark</item>
-        <item name="iconLanguage">@drawable/ic_language_dark</item>
-        <item name="iconLanguageGray">@drawable/ic_language_gray</item>
-        <item name="windowActionModeOverlay">true</item>
-        <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_dark</item>
-        <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_dark</item>
-        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
-        <item name="messageListReadItemBackgroundColor">@color/message_list_read_background_color</item>
-        <item name="messageListUnreadItemBackgroundColor">@color/message_list_unread_background_color_dark</item>
-        <item name="messageListThreadCountForegroundColor">?android:attr/colorBackground</item>
-        <item name="messageListThreadCountBackground">@drawable/thread_count_box_light</item>
-        <item name="messageListActiveItemBackgroundColor">@color/message_list_active_background_color_dark</item>
-        <item name="messageListDividerColor">@color/message_list_divider_color_dark</item>
-        <item name="messageListCheckbox">@drawable/btn_check_message_list_light</item>
-        <item name="messageViewBackgroundColor">?android:attr/colorBackground</item>
-        <item name="messageViewAttachmentBackground">@color/attachment_background_dark</item>
-        <item name="messageComposeAddContactImage">@drawable/ic_person_plus_dark</item>
+    <style name="Theme.K9.Dark" parent="Theme.K9.Dark.Common">
         <item name="contactPictureFallbackDefaultBackgroundColor">#ffababab</item>
         <item name="contactTokenBackgroundColor">#ccc</item>
-        <item name="composerBackgroundColor">@android:color/background_dark</item>
-        <item name="tintColorBulletPointPositive">#77aa22</item>
-        <item name="tintColorBulletPointNegative">#dd2222</item>
         <item name="tintColorBulletPointNeutral">#888</item>
-
-        <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
-
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
+        <item name="openpgp_black">@color/openpgp_black</item>
+        <item name="openpgp_orange">@color/openpgp_orange</item>
+        <item name="openpgp_green">@color/openpgp_green</item>
+        <item name="openpgp_blue">@color/openpgp_blue</item>
+        <item name="openpgp_grey">@color/openpgp_grey</item>
         <item name="openpgp_dark_grey">#888</item>
-
         <item name="background">@android:color/background_dark</item>
-        <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
-
-        <item name="iconpEpShield">@drawable/pep_status_green_dark</item>
-        <item name="iconAdavancedSettings">@drawable/ic_advanced_dark</item>
-
-        <item name="iconFlagButton">@drawable/ic_flag_button_dark</item>
-        <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
-        <item name="flagOpaqueCheckedIcon">@drawable/ic_flag_dark</item>
-        <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_dark</item>
-        <item name="iconPepLogo">@drawable/ic_pep_logo_dark</item>
     </style>
 
     <style name="Theme.K9.Dialog.Light" parent="Theme.K9.Light">
@@ -266,7 +90,7 @@
         <item name="iconActionNextMessage">@drawable/ic_chevron_right_light</item>
         <item name="iconActionPreviousMessage">@drawable/ic_chevron_left_light</item>
         <item name="iconActionRefresh">@drawable/ic_refresh_light</item>
-        <item name="iconActionSearch">@drawable/ic_magnify_light</item>
+        <item name="iconActionSearch">@drawable/ic_magnify_dark</item>
         <item name="iconActionSearchFolder">@drawable/ic_folder_magnify_light</item>
         <item name="iconActionSend">@drawable/ic_send_light</item>
         <item name="iconActionSettings">@drawable/ic_cog_light</item>
@@ -303,7 +127,7 @@
         <item name="iconLanguageGray">@drawable/ic_language_gray</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_light</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_light</item>
-        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
+        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color_light</item>
         <item name="messageListReadItemBackgroundColor">@color/message_list_read_background_color</item>
         <item name="messageListUnreadItemBackgroundColor">@android:color/transparent</item>
         <item name="messageListThreadCountForegroundColor">?android:attr/colorBackground</item>
@@ -323,12 +147,12 @@
 
         <item name="iconpEpDeviceGroup">@drawable/ic_devicegroup_24px</item>
 
-        <item name="openpgp_black">#000</item>
-        <item name="openpgp_orange">#FF8800</item>
-        <item name="openpgp_red">#CC0000</item>
-        <item name="openpgp_green">#669900</item>
-        <item name="openpgp_blue">#336699</item>
-        <item name="openpgp_grey">#bbb</item>
+        <item name="openpgp_black">@color/openpgp_black</item>
+        <item name="openpgp_orange">@color/openpgp_orange</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
+        <item name="openpgp_green">@color/openpgp_green</item>
+        <item name="openpgp_blue">@color/openpgp_blue</item>
+        <item name="openpgp_grey">@color/openpgp_grey</item>
         <item name="openpgp_dark_grey">#888</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_light</item>
 
@@ -341,8 +165,42 @@
         <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_opaque_light</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_light</item>
 
+        <item name="toolbarDefaultColor">@color/pep_green</item>
+        <item name="messageViewToolbarColor">@color/white</item>
+        <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
+        <item name="messageViewToolbarIconsColor">@color/light_black</item>
+        <item name="messageListToolbarIconsColor">@color/white</item>
+        <item name="screenDefaultBackgroundColor">@color/white</item>
+        <item name="defaultColorOnBackground">@color/black</item>
+        <item name="grayScaleColorOnBackground1">@color/light_black</item>
+        <item name="grayScaleColorOnBackground2">@color/dark_gray</item>
+        <item name="grayScaleColorOnBackground3">@color/gray</item>
+        <item name="grayScaleColorOnBackground4">@color/light_gray</item>
+        <item name="deleteEmailContainerBackground">@color/delete_email_container_background</item>
+        <item name="archiveEmailContainerBackground">@color/archive_email_container_background</item>
+
+        <item name="introTextColor">@color/dark_gray</item>
+        <item name="introHeaderTextColor">@color/light_black</item>
+        <item name="introPrimaryColor">@color/colorPrimary</item>
+        <item name="introSeparatorColor">@color/white</item>
+        <item name="introIndicatorColor">@color/light_gray</item>
+
+        <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Light</item>
+        <item name="iconConfigureAccount">@drawable/ic_configure_account</item>
+        <item name="iconAddAccount">@drawable/ic_add_account</item>
+        <item name="answeredForwardedIconColor">@color/gray</item>
+        <item name="defaultToolbarTextColor">@color/white</item>
+        <item name="messageListSeparatorColor">@color/white</item>
+        <item name="negativeButtonDefaultColor">@color/pep_red</item>
+        <item name="defaultButtonTextColor">@color/white</item>
+        <item name="searchBarHintColor">@color/light_primary_color</item>
+
     </style>
     <style name="Theme.K9.Dark.Common" parent="Theme.K9.Dark.Base">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="iconFolder">@drawable/ic_folder_dark</item>
         <item name="iconListItemMenu">@drawable/dropdown_ic_arrow_normal_holo_dark</item>
         <item name="iconMenuInfoDetails">@android:drawable/ic_menu_info_details</item>
@@ -394,7 +252,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="textColorPrimaryRecipientDropdown">@android:color/primary_text_dark</item>
         <item name="textColorSecondaryRecipientDropdown">@android:color/secondary_text_dark</item>
-        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color</item>
+        <item name="messageListSelectedBackgroundColor">@color/message_list_selected_background_color_dark</item>
         <item name="messageListReadItemBackgroundColor">@color/message_list_read_background_color</item>
         <item name="messageListUnreadItemBackgroundColor">@color/message_list_unread_background_color_dark</item>
         <item name="messageListThreadCountForegroundColor">?android:attr/colorBackground</item>
@@ -417,11 +275,11 @@
 
         <item name="openpgp_black">#fff</item>
         <item name="openpgp_orange">#ee7700</item>
-        <item name="openpgp_red">#CC0000</item>
+        <item name="openpgp_red">@color/openpgp_red</item>
         <item name="openpgp_green">#77aa00</item>
         <item name="openpgp_blue">#6699cc</item>
         <item name="openpgp_grey">#888</item>
-        <item name="openpgp_dark_grey">#bbb</item>
+        <item name="openpgp_dark_grey">@color/openpgp_grey</item>
         <item name="recipientTokenBackground">@color/recipient_token_background_dark</item>
 
         <item name="iconpEpShield">@drawable/pep_status_green_dark</item>
@@ -432,5 +290,49 @@
         <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_dark</item>
 
+        <item name="toolbarDefaultColor">@color/pep_green</item>
+        <item name="messageViewToolbarColor">@color/light_black</item>
+        <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
+        <item name="messageViewToolbarIconsColor">@color/white</item>
+        <item name="messageListToolbarIconsColor">@color/white</item>
+        <item name="screenDefaultBackgroundColor">@android:color/background_dark</item>
+        <item name="defaultColorOnBackground">@color/white</item>
+        <item name="grayScaleColorOnBackground1">@color/white</item>
+        <item name="grayScaleColorOnBackground2">@color/white</item>
+        <item name="grayScaleColorOnBackground3">@color/white</item>
+        <item name="grayScaleColorOnBackground4">@color/light_gray</item>
+        <item name="deleteEmailContainerBackground">@color/delete_email_container_background</item>
+        <item name="archiveEmailContainerBackground">@color/archive_email_container_background</item>
+        <item name="introTextColor">@color/white</item>
+        <item name="introHeaderTextColor">@color/white</item>
+        <item name="introPrimaryColor">@color/colorPrimary</item>
+        <item name="introSeparatorColor">@color/white</item>
+        <item name="introIndicatorColor">@color/light_gray</item>
+        <item name="syncDisableDialogStyle">@style/SyncDisableDialog.Dark</item>
+        <item name="iconConfigureAccount">@drawable/ic_configure_account</item>
+        <item name="iconAddAccount">@drawable/ic_add_account</item>
+        <item name="answeredForwardedIconColor">@color/gray</item>
+        <item name="defaultToolbarTextColor">@color/white</item>
+        <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
+        <item name="negativeButtonDefaultColor">@color/pep_red</item>
+        <item name="defaultButtonTextColor">@color/white</item>
+        <item name="searchBarHintColor">@color/light_primary_color</item>
+
     </style>
+
+    <style name="Theme.K9.Light.ActionBar" parent="Theme.K9.Light.Common" >
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
+    <style name="Theme.K9.Dark.ActionBar" parent="Theme.K9.Dark.Common" >
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
+    <style name="Theme.K9.DayNight" parent="Theme.K9.Light.NoActionBar" />
+    <style name="Theme.K9.DayNight.ActionBar" parent="Theme.K9.Light.ActionBar" />
+    <style name="Theme.K9.Dialog.DayNight" parent="Theme.K9.Dialog.Light" />
+    <style name="Theme.K9.Dialog.Translucent.DayNight" parent="Theme.K9.Dialog.Translucent.Light" />
+
 </resources>

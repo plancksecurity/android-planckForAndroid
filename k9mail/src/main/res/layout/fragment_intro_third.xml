@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:padding="@dimen/intro_fragment_padding">
 
     <ScrollView
@@ -66,8 +66,8 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="@dimen/intro_margin_top_small"
                 android:text="@string/pep_wrong_trustwords"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/pep_red"
+                android:textColor="?attr/defaultButtonTextColor"
+                app:backgroundTint="?attr/negativeButtonDefaultColor"
                 app:layout_constraintEnd_toStartOf="@+id/accept_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
@@ -78,8 +78,8 @@
                 android:layout_height="40dp"
                 android:layout_marginTop="@dimen/intro_margin_top_small"
                 android:text="@string/pep_confirm_trustwords"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/pep_green"
+                android:textColor="?attr/defaultButtonTextColor"
+                app:backgroundTint="?attr/colorAccent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/rejectButton"
                 app:layout_constraintTop_toBottomOf="@+id/text_2_handshake" />
