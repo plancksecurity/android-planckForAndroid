@@ -1450,7 +1450,9 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getAttachmentDefaultPath() {
-        return mAttachmentDefaultPath;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+                : mAttachmentDefaultPath;
     }
 
     public static void setAttachmentDefaultPath(String attachmentDefaultPath) {
