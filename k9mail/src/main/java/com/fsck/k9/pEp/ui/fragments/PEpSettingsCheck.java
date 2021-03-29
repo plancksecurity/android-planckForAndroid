@@ -25,9 +25,11 @@ import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpMessagingException;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import timber.log.Timber;
 
+@Singleton
 public class PEpSettingsCheck implements PEpSettingsChecker {
     public static final String INCOMING = "INCOMING";
     public static final String OUTGOING = "OUTGOING";
@@ -45,8 +47,10 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     private PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection> callback;
     private Boolean isEditing;
 
-    @Inject public PEpSettingsCheck(Context context) {
+    @Inject public PEpSettingsCheck(Context context, ThreadExecutor threadExecutor, UIThread uiThread) {
         this.context = context;
+        this.threadExecutor = threadExecutor;
+        this.postExecutionThread = uiThread;
     }
 
     @Override
@@ -54,8 +58,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                               AccountSetupCheckSettings.CheckDirection checkDirection,
                               Boolean makeDefault, String procedence, Boolean isEditing,
                               ResultCallback<Redirection> callback) {
-        this.threadExecutor = new JobExecutor();
-        this.postExecutionThread = new UIThread();
         this.account = account;
         this.direction = checkDirection;
         this.makeDefault = makeDefault;
@@ -76,7 +78,7 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                 } else if (this.procedence.equals(INCOMING)) {
                     notifyLoaded(PEpSettingsChecker.Redirection.OUTGOING);
                 } else if (this.procedence.equals(OUTGOING) || this.procedence.equals(LOGIN) ){
-                    savePreferences();
+                    account.setDescription(account.getEmail());
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
                 }
             } catch (AuthenticationFailedException exception) {
@@ -137,10 +139,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     private void checkIncoming() throws MessagingException {
         Store store = account.getRemoteStore();
         store.checkSettings();
-
-        MessagingController.getInstance(context).listFoldersSynchronous(account, true, null);
-        MessagingController.getInstance(context)
-                .synchronizeMailbox(account, account.getInboxFolderName(), null, null);
     }
 
     private void savePreferences() {

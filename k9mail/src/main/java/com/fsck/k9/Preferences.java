@@ -81,7 +81,19 @@ public class Preferences {
         if (accounts == null) {
             loadAccounts();
         }
+        List<Account> theAccounts = new ArrayList<>();
+        for(Account account : accountsInOrder) {
+            if(account.getSetupState() == Account.SetupState.READY) {
+                theAccounts.add(account);
+            }
+        }
+        return Collections.unmodifiableList(new ArrayList<>(theAccounts));
+    }
 
+    public synchronized List<Account> getAccountsAllowingIncomplete() {
+        if (accounts == null) {
+            loadAccounts();
+        }
         return Collections.unmodifiableList(new ArrayList<>(accountsInOrder));
     }
 
@@ -107,7 +119,17 @@ public class Preferences {
         if (accounts == null) {
             loadAccounts();
         }
+        Account account = accounts.get(uuid);
+        if(account != null && account.getSetupState() == Account.SetupState.READY) {
+            return account;
+        }
+        else return null;
+    }
 
+    public synchronized Account getAccountAllowingIncomplete(String uuid) {
+        if (accounts == null) {
+            loadAccounts();
+        }
         return accounts.get(uuid);
     }
 

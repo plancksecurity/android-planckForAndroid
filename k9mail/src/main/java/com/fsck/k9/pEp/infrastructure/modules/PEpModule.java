@@ -12,8 +12,6 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
-import com.fsck.k9.pEp.ui.fragments.PEpSettingsCheck;
-import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 
 import javax.inject.Named;
 
@@ -37,11 +35,6 @@ public class PEpModule {
     @Provides
     public SimpleMessageLoaderHelper providesSimpleMessageLoaderHelper() {
         return new SimpleMessageLoaderHelper(context, loaderManager, fragmentManager);
-    }
-
-    @Provides
-    public PEpSettingsChecker providepEpSettingsCheck() {
-        return new PEpSettingsCheck(context.getApplicationContext());
     }
 
     @Provides
