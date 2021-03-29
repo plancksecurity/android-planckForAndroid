@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.messageview
+package security.pEp.print
 
 import android.content.Context
 import android.print.PrintAttributes
@@ -127,7 +127,3 @@ class PrintMessage(private val context: Context,
     }
 }
 
-interface Print {
-
-    fun print()
-}
