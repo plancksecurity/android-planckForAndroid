@@ -589,11 +589,13 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
 
     public void onPrintMessage() {
-        PrintableMessage printableMessage = new PrintableMessage(
+        Print printMessage = new PrintMessage(
                 requireContext(),
                 permissionChecker,
-                mMessageView.getCurrentAttachmentResolver());
-        printableMessage.generatePrintableWebView(mMessage, mMessageView.getCurrentHtml());
+                mMessageView.getCurrentAttachmentResolver(),
+                mMessage,
+                mMessageView.getCurrentHtml());
+        printMessage.print();
     }
 
     public void onToggleRead() {

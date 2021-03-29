@@ -12,18 +12,20 @@ import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.AttachmentResolver
+import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.view.K9WebViewClient
 import com.fsck.k9.view.MessageWebView
 import security.pEp.permissions.PermissionChecker
 
-class PrintableMessage(private val context: Context,
-                       permissionChecker: PermissionChecker,
-                       private val attachmentResolver: AttachmentResolver) {
-    var webView: MessageWebView = MessageWebView(context)
-    val contacts = if (permissionChecker.hasContactsPermission() &&
+class PrintMessage(private val context: Context,
+                   permissionChecker: PermissionChecker,
+                   private val attachmentResolver: AttachmentResolver,
+                   private val message: LocalMessage,
+                   private val html: String) : Print {
+    private var webView: MessageWebView = MessageWebView(context)
+    private var jobName: String = "${context.getString(R.string.app_name)} print_message"
+    private val contacts = if (permissionChecker.hasContactsPermission() &&
             K9.showContactName()) Contacts.getInstance(context) else null
-
-    var jobName: String = "${context.getString(R.string.app_name)} print_message"
 
     init {
         setupWebView()
@@ -48,7 +50,7 @@ class PrintableMessage(private val context: Context,
         printManager?.print(jobName, printAdapter, PrintAttributes.Builder().build())
     }
 
-    fun generatePrintableWebView(message: Message, html: String) {
+    override fun print() {
         val htmlWithHeader = html.replaceFirst("</head><body>", buildHeader(message))
         val htmlWithHeaderAndCss = htmlWithHeader.replaceFirst("<style type=\"text/css\">", buildCss())
         webView.loadDataWithBaseURL("about:blank", htmlWithHeaderAndCss, "text/html", "utf-8", null)
@@ -123,4 +125,9 @@ class PrintableMessage(private val context: Context,
                 "   background-color:silver\n" +
                 "}"
     }
+}
+
+interface Print {
+
+    fun print()
 }
