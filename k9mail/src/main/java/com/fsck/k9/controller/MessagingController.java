@@ -142,6 +142,7 @@ import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
 public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
+    public static final long SHARE_SIZE_THRESHOLD = 64000;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -3833,7 +3834,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             quotedText = MessageExtractor.getTextFromPart(part);
         }
         if (quotedText != null) {
-            if (quotedText.length() > 64000) {
+            if (quotedText.length() > SHARE_SIZE_THRESHOLD) {
                 shareEmailFile(context, message);
                 return;
             } else {
