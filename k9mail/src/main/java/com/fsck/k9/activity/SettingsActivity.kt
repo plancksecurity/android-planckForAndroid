@@ -399,8 +399,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             }
 
-            override fun onClick(position: Int?) {
-                val account = accountsList!!.getItemAtPosition(position!!) as BaseAccount
+            override fun onClick(position: Int) {
+                val account = accountsList!!.getItemAtPosition(position) as BaseAccount
                 onEditAccount(account as Account)
             }
         }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@SettingsActivity, baseAccount.uuid) })
