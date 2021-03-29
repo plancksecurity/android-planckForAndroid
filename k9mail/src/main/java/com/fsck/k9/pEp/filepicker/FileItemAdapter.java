@@ -32,8 +32,10 @@ public class FileItemAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     @SuppressWarnings("unchecked")
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int headerPosition) {
-        if (headerPosition != mList.size()) {
-            mLogic.onBindViewHolder((AbstractFilePickerFragment<T>.DirViewHolder) viewHolder, headerPosition, mList.get(headerPosition));
+        if(headerPosition == 0) {
+            mLogic.onBindHeaderViewHolder((AbstractFilePickerFragment<T>.HeaderViewHolder) viewHolder);
+        } else {
+            mLogic.onBindViewHolder((AbstractFilePickerFragment<T>.DirViewHolder) viewHolder, headerPosition, mList.get(headerPosition-1));
         }
     }
 
@@ -43,10 +45,7 @@ public class FileItemAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (pos >= 0) {
             return mLogic.getItemViewType(pos, mList.get(pos));
         } else {
-            if (mList.size() == 0) {
-                return 1;
-            }
-            return mLogic.getItemViewType(headerPosition, mList.get(headerPosition));
+            return mLogic.getHeaderItemViewType();
         }
     }
 
