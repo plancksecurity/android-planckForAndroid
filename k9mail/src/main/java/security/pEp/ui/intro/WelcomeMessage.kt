@@ -16,6 +16,7 @@ import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.ui.fragments.PEpFragment
@@ -51,6 +52,7 @@ class WelcomeMessage : AppIntro() {
             window.decorView.systemUiVisibility =
                     FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
+        K9ActivityCommon.configureNavigationBar(this)
         addSlide(IntroFirstFragment())
         addSlide(IntroSecondFragment())
         addSlide(IntroThirdFragment())

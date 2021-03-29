@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 
 import com.fsck.k9.K9;
@@ -102,6 +103,17 @@ public class K9ActivityCommon {
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
+
+        configureNavigationBar(activity);
+    }
+
+    public static void configureNavigationBar(Activity activity) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            View decorView = activity.getWindow().getDecorView();
+            int vis = decorView.getSystemUiVisibility();
+            vis &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            decorView.setSystemUiVisibility(vis);
+        }
     }
 
     /**
