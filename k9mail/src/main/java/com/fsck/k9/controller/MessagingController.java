@@ -3879,7 +3879,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        intent.setType("message/rfc822");
+        intent.setType("*/*");
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
     }
 
