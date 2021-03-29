@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import androidx.appcompat.app.AlertDialog.Builder;
 import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,7 +64,8 @@ import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AccountSetupOutgoingFragment extends PEpFragment {
+public class AccountSetupOutgoingFragment extends PEpFragment
+        implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
 
@@ -72,6 +74,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
     private static String EXTRA_BACK = "back";
+    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
+    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
+    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
+    private static final String WAS_LOADING = "wasLoading";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -101,6 +107,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean mBack;
+    private androidx.appcompat.app.AlertDialog errorDialog;
+    private int errorDialogTitle;
+    private String errorDialogMessage;
+    private boolean errorDialogWasShowing;
+    private boolean wasLoading;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -149,7 +160,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
         mBack = getArguments().getBoolean(EXTRA_BACK);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
                 mAccount.setTransportUri(mAccount.getStoreUri());
@@ -194,7 +205,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         //FIXME: get Account object again?
         accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = preferences.getAccount(accountUuid);
+        mAccount = getAccountFromPreferences(accountUuid);
         mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
@@ -203,7 +214,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
          */
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
             accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT);
-            mAccount = preferences.getAccount(accountUuid);
+            mAccount = getAccountFromPreferences(accountUuid);
         }
 
         try {
@@ -276,7 +287,23 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         if (mBack) {
             ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
+        if(savedInstanceState != null) {
+            restoreErrorDialogState(savedInstanceState);
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
+        }
         return rootView;
+    }
+
+    private Account getAccountFromPreferences(String accountUuid) {
+         return mEdit
+                ? preferences.getAccount(accountUuid)
+                : preferences.getAccountAllowingIncomplete(accountUuid);
+    }
+
+    private void restoreErrorDialogState(Bundle savedInstanceState) {
+        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
+        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
+        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     @Override
@@ -285,19 +312,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void checkSettings() {
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
-                false,
-                new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                    @Override
-                    public void onError(PEpSetupException exception) {
-                        handleErrorCheckingSettings(exception);
-                    }
+        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
+        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
 
-                    @Override
-                    public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                        goForward();
-                    }
-                });
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
+                false, basicsSettingsCheckCallback);
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
@@ -438,9 +457,19 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        if(mAccount != null) {
+            outState.putString(EXTRA_ACCOUNT, mAccount.getUuid());
+        }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
+        saveErrorDialogState(outState);
+        outState.putBoolean(WAS_LOADING, wasLoading);
+    }
+
+    private void saveErrorDialogState(Bundle outState) {
+        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
+        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
+        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     /**
@@ -598,6 +627,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void goForward() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        rootView.setEnabled(true);
         if (mEdit) {
             if (getActivity() != null)  {
                 getActivity().finish();
@@ -609,8 +641,9 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     protected void onNext() {
         nextProgressBar.show();
-        mNextButton.setVisibility(View.GONE);
-        rootView.setEnabled(false);
+        mNextButton.setVisibility(View.INVISIBLE);
+        accountSetupNavigator.setLoading(true);
+        enableViewGroup(false, (ViewGroup) rootView);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
         String username = null;
@@ -635,7 +668,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         uri = Transport.createTransportUri(server);
         mAccount.deleteCertificate(newHost, newPort, AccountSetupCheckSettings.CheckDirection.OUTGOING);
         mAccount.setTransportUri(uri);
-        mAccount.save(preferences);
         checkSettings();
     }
 
@@ -684,6 +716,29 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
+        restoreErrorDialogIfNeeded();
+        restoreViewsEnabledState();
+    }
+
+    private void restoreViewsEnabledState() {
+        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
+        enableViewGroup(!wasLoading, (ViewGroup)rootView);
+
+        if(wasLoading) {
+            nextProgressBar.setVisibility(View.VISIBLE);
+            nextProgressBar.show();
+            wasLoading = false;
+        }
+        else {
+            nextProgressBar.hide();
+        }
+    }
+
+    private void restoreErrorDialogIfNeeded() {
+        if(errorDialogWasShowing) {
+            showErrorDialog(errorDialogTitle, errorDialogMessage);
+            errorDialogWasShowing = false;
+        }
     }
 
     private void handleCertificateValidationException(PEpSetupException cve) {
@@ -703,11 +758,27 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void showErrorDialog(int stringResource, String message) {
-        String title = extractErrorDialogTitle(stringResource);
-        new AlertDialog.Builder(getActivity())
-                .setTitle(title)
+        errorDialogTitle = stringResource;
+        errorDialogMessage = message;
+        errorDialog = new Builder(getActivity())
+                .setTitle(getResources().getString(stringResource))
                 .setMessage(message)
                 .show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dismissErrorDialogIfNeeded();
+        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
+    }
+
+    private void dismissErrorDialogIfNeeded() {
+        if(errorDialog != null && errorDialog.isShowing()) {
+            errorDialog.dismiss();
+            errorDialog = null;
+            errorDialogWasShowing = true;
+        }
     }
 
     private void handleCertificateValidationException(CertificateValidationException cve) {
@@ -890,5 +961,22 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                     e.getMessage() == null ? "" : e.getMessage());
         }
         goForward();
+    }
+
+    @Override
+    public void onSettingsCheckError(PEpSetupException exception) {
+        handleErrorCheckingSettings(exception);
+    }
+
+    @Override
+    public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
+        goForward();
+    }
+
+    @Override
+    public void onSettingsCheckCancelled() {
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        enableViewGroup(true, (ViewGroup) rootView);
     }
 }

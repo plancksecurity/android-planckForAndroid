@@ -116,7 +116,7 @@ import foundation.pEp.jniadapter.Sync;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import foundation.pEp.jniadapter.pEpException;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
@@ -467,6 +467,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 refreshRemoteSynchronous(account, listener);
             }
         });
+    }
+
+    @WorkerThread
+    public void refreshRemoteSynchronous(final Account account) {
+        refreshRemoteSynchronous(account, null);
     }
 
     @VisibleForTesting

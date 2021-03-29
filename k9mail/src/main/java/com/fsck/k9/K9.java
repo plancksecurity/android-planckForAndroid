@@ -50,6 +50,8 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import security.pEp.network.ConnectionMonitorCallback;
+import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -103,6 +105,7 @@ public class K9 extends MultiDexApplication {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
+    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
 
     public static K9JobManager jobManager;
 
@@ -676,6 +679,7 @@ public class K9 extends MultiDexApplication {
          */
 
         setServicesEnabled(this);
+        startConnectivityMonitor();
         registerReceivers();
 
         MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
@@ -759,6 +763,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
+        refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
 
@@ -774,6 +779,13 @@ public class K9 extends MultiDexApplication {
     private void clearBodyCacheIfAppUpgrade() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
         appUpdater.clearBodyCacheIfAppUpgrade();
+    }
+
+    private void refreshFoldersForAllAccounts() {
+        List<Account> accounts = Preferences.getPreferences(this.getApplicationContext()).getAccounts();
+        for (Account account : accounts) {
+            MessagingController.getInstance(this).listFolders(account, true, null);
+        }
     }
 
     private void initJobManager(Preferences prefs) {
@@ -1929,6 +1941,8 @@ public class K9 extends MultiDexApplication {
         editor.commit();
     }
 
-
+    private void startConnectivityMonitor() {
+        connectivityMonitor.register(this);
+    }
 
 }

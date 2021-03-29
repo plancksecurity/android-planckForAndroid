@@ -87,6 +87,20 @@ public class Account implements BaseAccount, StoreConfig {
         EXPUNGE_ON_POLL
     }
 
+    public enum SetupState {
+        INITIAL,
+        READY
+    }
+    private SetupState setupState;
+
+    public SetupState getSetupState() {
+        return setupState;
+    }
+
+    public void setSetupState(SetupState setupState) {
+        this.setupState = setupState;
+    }
+
     public enum DeletePolicy {
         NEVER(0),
         SEVEN_DAYS(1),
@@ -296,6 +310,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Context context) {
         accountUuid = UUID.randomUUID().toString();
+        setupState = SetupState.INITIAL;
         localStorageProviderId = StorageManager.getInstance(context).getDefaultProviderId();
         automaticCheckIntervalMinutes = INTERVAL_MINUTES_NEVER;
         idleRefreshMinutes = 24;
@@ -387,6 +402,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     protected Account(Preferences preferences, String uuid) {
         this.accountUuid = uuid;
+        this.setupState = SetupState.READY;
         loadAccount(preferences);
     }
 
@@ -671,6 +687,9 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized void save(Preferences preferences) {
+        if(setupState == SetupState.INITIAL && BuildConfig.DEBUG) {
+            throw new IllegalStateException("Trying to save an account in state INITIAL");
+        }
         StorageEditor editor = preferences.getStorage().edit();
 
         if (!preferences.getStorage().getString("accountUuids", "").contains(accountUuid)) {
@@ -1005,6 +1024,12 @@ public class Account implements BaseAccount, StoreConfig {
         } else {
             this.displayCount = K9.DEFAULT_VISIBLE_LIMIT;
         }
+        if(setupState == SetupState.READY) {
+            resetVisibleLimits();
+        }
+    }
+
+    public void setOptionsOnInstall() {
         resetVisibleLimits();
     }
 
