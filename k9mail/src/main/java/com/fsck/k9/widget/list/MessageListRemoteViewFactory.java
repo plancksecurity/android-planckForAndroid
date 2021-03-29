@@ -20,6 +20,8 @@ import android.widget.RemoteViewsService;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.provider.MessageProvider;
 
 
@@ -51,8 +53,15 @@ public class MessageListRemoteViewFactory implements RemoteViewsService.RemoteVi
     @Override
     public void onCreate() {
         senderAboveSubject = K9.messageListSenderAboveSubject();
-        readTextColor = ContextCompat.getColor(context, R.color.message_list_widget_text_read);
-        unreadTextColor = ContextCompat.getColor(context, R.color.message_list_widget_text_unread);
+        readTextColor = ContextCompat.getColor(context,
+                ThemeManager.getLegacyTheme() == Theme.DARK
+                ? R.color.white
+                : R.color.message_list_widget_text_read
+        );
+        unreadTextColor = ContextCompat.getColor(context,
+                ThemeManager.getLegacyTheme() == Theme.DARK
+                        ? R.color.white
+                        : R.color.message_list_widget_text_unread);
     }
 
     @Override

@@ -10,11 +10,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.RemoteViews;
 
+import androidx.core.content.ContextCompat;
+
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.search.SearchAccount;
 
 
@@ -51,6 +55,7 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         views.setRemoteAdapter(R.id.listView, intent);
+        updateBackgroundColor(context, views);
 
         PendingIntent viewAction = viewActionTemplatePendingIntent(context);
         views.setPendingIntentTemplate(R.id.listView, viewAction);
@@ -69,6 +74,14 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    private void updateBackgroundColor(Context context, RemoteViews views) {
+        int background = ContextCompat.getColor(context,
+                ThemeManager.getLegacyTheme() == Theme.DARK
+                ? R.color.dark_theme_default_background
+                : R.color.white);
+        views.setInt(R.id.listView, "setBackgroundColor", background);
     }
 
     @Override
