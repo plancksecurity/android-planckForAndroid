@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/screenDefaultBackgroundColor"
     android:padding="@dimen/intro_fragment_padding">
 
     <ScrollView
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/intro_margin_top_standard"
                 android:adjustViewBounds="true"
-                android:src="@drawable/intro_actionbar_screenshot"
+                android:src="?attr/intro_actionbar_screenshot"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_privacy_status" />

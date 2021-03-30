@@ -18,6 +18,8 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.notification.NotificationActionService;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import static com.fsck.k9.activity.MessageReferenceHelper.toMessageReferenceList;
 import static com.fsck.k9.activity.MessageReferenceHelper.toMessageReferenceStringList;
@@ -52,7 +54,7 @@ public class NotificationDeleteConfirmation extends Activity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        setTheme(K9.getK9Theme() == K9.Theme.LIGHT ?
+        setTheme(!ThemeManager.isDarkTheme() ?
                 R.style.Theme_K9_Dialog_Translucent_Light : R.style.Theme_K9_Dialog_Translucent_Dark);
 
         extractExtras();

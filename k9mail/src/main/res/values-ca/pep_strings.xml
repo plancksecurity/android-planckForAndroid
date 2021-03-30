@@ -188,10 +188,10 @@
 \n Esteu segur que voleu reiniciar-lo\?</string>
     <string name="pep_key_reset_own_id_warning_title">Restableix el compte% s</string>
     <string name="search_empty_error">Escriviu el text per cercar-lo</string>
-    <string name="intro_frag_first_text_1">Benvingut al <font color="# 4caf50"> p≡p </font> tutorial</string>
+    <string name="intro_frag_first_text_1">Benvingut al &lt;font color="%s"&gt;p≡p&lt;/font&gt; tutorial</string>
     <string name="intro_frag_first_text_2">Podeu tancar aquest tutorial en qualsevol moment.
 \n
-\n<font color="# 4caf50"> p≡p </font> utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.
+\n&lt;font color="%s"&gt;p≡p&lt;/font&gt; utilitza un estat de privadesa per indicar la seguretat de la vostra comunicació.
 \n
 \nAquest estat de privadesa es mostra com a icona a l’avatar de l’usuari</string>
     <string name="intro_frag_first_text_3">I a la barra superior quan obriu o escriviu un correu electrònic:</string>

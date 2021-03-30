@@ -1,6 +1,5 @@
 package com.fsck.k9.activity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -19,6 +18,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import butterknife.Bind;
 
@@ -117,7 +117,7 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
-            if (K9.getK9Theme() == K9.Theme.DARK) {
+            if (ThemeManager.isDarkTheme()) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }

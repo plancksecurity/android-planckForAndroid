@@ -13,10 +13,11 @@ import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebView;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.K9.Theme;
+import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 
 public class MessageWebView extends RigidWebView {
@@ -64,10 +65,11 @@ public class MessageWebView extends RigidWebView {
         this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
         this.setLongClickable(true);
 
-        if (K9.getK9MessageViewTheme() == Theme.DARK) {
+        if (ThemeManager.getMessageViewTheme() == Theme.DARK) {
             // Black theme should get a black webview background
             // we'll set the background of the messages on load
-            this.setBackgroundColor(0xff000000);
+            int color = ThemeManager.getColorFromAttributeResource(getContext(), R.attr.screenDefaultBackgroundColor);
+            this.setBackgroundColor(color);
         }
 
         final WebSettings webSettings = this.getSettings();

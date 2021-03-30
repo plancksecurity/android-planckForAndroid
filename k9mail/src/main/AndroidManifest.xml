@@ -73,7 +73,7 @@
         android:roundIcon="@mipmap/ic_pep_launcher_round"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/Theme.K9.Light.NoActionBar"
+        android:theme="@style/Theme.K9.Startup"
         tools:replace="android:allowBackup">
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -200,8 +200,7 @@
         <activity
             android:name=".activity.setup.FolderSettings"
             android:configChanges="locale"
-            android:label="@string/folder_settings_title"
-            android:theme="@android:style/Theme.Dialog" />
+            android:label="@string/folder_settings_title" />
         <activity
             android:name=".ui.endtoend.AutocryptKeyTransferActivity"
             android:configChanges="locale"
@@ -478,7 +477,7 @@
         <activity
             android:name=".pEp.ui.blacklist.PepBlacklist"
             android:label="@string/blacklist_title"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+            android:theme="@style/Theme.K9.DayNight" />
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
@@ -530,8 +529,7 @@
         <activity android:name="security.pEp.ui.permissions.PermissionsActivity" />
         <activity
             android:name=".pEp.filepicker.FilePickerActivity"
-            android:label="@string/app_name"
-            android:theme="@style/FilePickerTheme">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 

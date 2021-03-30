@@ -30,9 +30,9 @@ class BootReceiver : CoreReceiver() {
             }
         } else if (FIRE_INTENT == action) {
             val alarmedIntent = intent.getParcelableExtra<Intent>(ALARMED_INTENT)
-            val alarmedAction = alarmedIntent.action
+            val alarmedAction = alarmedIntent?.action
             Timber.i("BootReceiver Got alarm to fire alarmedIntent %s", alarmedAction)
-            alarmedIntent.putExtra(CoreReceiver.WAKE_LOCK_ID, tmpWakeLockId)
+            alarmedIntent?.putExtra(CoreReceiver.WAKE_LOCK_ID, tmpWakeLockId)
             tmpWakeLockId = null
             context.startService(alarmedIntent)
         } else if (SCHEDULE_INTENT == action) {
@@ -52,7 +52,7 @@ class BootReceiver : CoreReceiver() {
 
     private fun buildPendingIntent(context: Context, intent: Intent): PendingIntent {
         val alarmedIntent = intent.getParcelableExtra<Intent>(ALARMED_INTENT)
-        val alarmedAction = alarmedIntent.action
+        val alarmedAction = alarmedIntent?.action
 
         val i = Intent(context, BootReceiver::class.java)
         i.action = FIRE_INTENT

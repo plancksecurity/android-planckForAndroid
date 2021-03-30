@@ -218,14 +218,12 @@
     <!-- Folder list-->
     <string name="search_empty_error">Ak chcete hľadať, napíšte text</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1">Vitajte v tutoriále &lt;font color=#4caf50&gt;p≡p&lt;/font&gt;<font color="#4caf50">p≡p</font></string>
+    <string name="intro_frag_first_text_1">Vitajte v tutoriále &lt;font color="%s"&gt;p≡p&lt;/font&gt;</string>
     <string name="intro_frag_first_text_2">Túto príručku môžete kedykoľvek zavrieť. 
 \n 
-\n&lt;font color=\"4caf50&gt;p≡p&lt;/font&gt; používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie. 
+\n&lt;font color="%s"&gt;p≡p&lt;/font&gt; používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie.
 \n 
-\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa.<font color="#4caf50">p≡p</font> používa stav ochrany osobných údajov na označenie bezpečnosti vašej komunikácie.
-\n
-\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa</string>
+\nTento stav ochrany osobných údajov sa zobrazuje ako ikona v avatar používateľa.</string>
     <string name="intro_frag_first_text_3">A pri otvorení alebo napísaní e-mailu na hornom paneli:</string>
     <string name="intro_frag_second_header_1">Zabezpečiť</string>
     <string name="intro_frag_second_header_2">Zabezpečené a dôveryhodné</string>

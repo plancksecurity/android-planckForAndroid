@@ -72,9 +72,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-
-import security.pEp.ui.toolbar.ToolBarCustomizer;
-
 import static android.app.Activity.RESULT_OK;
 
 public class AccountSetupIncomingFragment extends PEpFragment implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
@@ -91,7 +88,6 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private static final String WAS_LOADING = "wasLoading";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
-    @Inject ToolBarCustomizer toolBarCustomizer;
 
     @Inject Preferences preferences;
 
@@ -165,10 +161,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
 
         mUsernameView = (EditText) rootView.findViewById(R.id.account_username);
         mPasswordView = (EditText) rootView.findViewById(R.id.account_password);

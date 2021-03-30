@@ -23,6 +23,7 @@ import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
@@ -355,7 +356,8 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         } else {
             mSubjectView.setText(subject);
         }
-        mSubjectView.setTextColor(0xff000000 | defaultSubjectColor);
+        int color = ThemeManager.getColorFromAttributeResource(getContext(), R.attr.defaultColorOnBackground);
+        mSubjectView.setTextColor(color | defaultSubjectColor);
 
         String dateTime = DateUtils.formatDateTime(mContext,
                 message.getSentDate().getTime(),

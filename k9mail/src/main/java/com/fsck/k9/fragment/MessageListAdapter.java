@@ -22,6 +22,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import foundation.pEp.jniadapter.Rating;
 
 import static android.view.View.GONE;
@@ -60,13 +61,14 @@ public class MessageListAdapter extends CursorAdapter {
     private void startDrawables() {
         Context context = fragment.getContext();
         if (context != null) {
-            mAnsweredIcon = ContextCompat.getDrawable(context, fragment.getAttributeResource(R.attr.iconActionReply));
+            mAnsweredIcon = ContextCompat.getDrawable(context, ThemeManager.getAttributeResource(context, R.attr.iconActionReply));
+            int answeredForwardedColor = ThemeManager.getColorFromAttributeResource(context, R.attr.answeredForwardedIconColor);
             if (mAnsweredIcon != null) {
-                mAnsweredIcon.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
+                mAnsweredIcon.setColorFilter(answeredForwardedColor, android.graphics.PorterDuff.Mode.SRC_IN);
             }
-            mForwardedIcon = ContextCompat.getDrawable(context, fragment.getAttributeResource(R.attr.iconActionForward));
+            mForwardedIcon = ContextCompat.getDrawable(context, ThemeManager.getAttributeResource(context, R.attr.iconActionForward));
             if (mForwardedIcon != null) {
-                mForwardedIcon.setColorFilter(ContextCompat.getColor(context, R.color.gray), android.graphics.PorterDuff.Mode.SRC_IN);
+                mForwardedIcon.setColorFilter(answeredForwardedColor, android.graphics.PorterDuff.Mode.SRC_IN);
             }
             mForwardedAnsweredIcon = fragment.getResources().getDrawable(R.drawable.ic_email_forwarded_answered_small);
         }

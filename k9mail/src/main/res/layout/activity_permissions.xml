@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:text="@string/action_continue"
-                android:textColor="@color/white"
+                android:textColor="?attr/defaultButtonTextColor"
                 android:background="@drawable/pep_button_selector" />
 
         </LinearLayout>

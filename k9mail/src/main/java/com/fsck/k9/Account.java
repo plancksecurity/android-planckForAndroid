@@ -146,6 +146,7 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final boolean DEFAULT_PEP_ENC_ON_SERVER = true;
     public static final boolean DEFAULT_PEP_PRIVACY_PROTECTED = true;
+    public static final int DEFAULT_CHIP_COLOR = 0xFF0000FF;
     /*
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.

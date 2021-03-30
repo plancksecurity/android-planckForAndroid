@@ -35,7 +35,7 @@
                 android:layout_height="4dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="1dp"
-                android:background="#d55" />
+                android:background="@color/message_container_unsigned" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -44,14 +44,14 @@
                 android:layout_marginRight="8dp"
                 android:text="@string/unsigned_text_divider_label"
                 android:textAppearance="?android:textAppearanceSmall"
-                android:textColor="#d55" />
+                android:textColor="@color/message_container_unsigned" />
 
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="4dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="1dp"
-                android:background="#d55" />
+                android:background="@color/message_container_unsigned" />
 
         </LinearLayout>
 

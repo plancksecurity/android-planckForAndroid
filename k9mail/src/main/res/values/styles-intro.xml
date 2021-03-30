@@ -3,14 +3,14 @@
 
     <style name="IntroHeaderText" parent="IntroText">
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">@color/light_black</item>
+        <item name="android:textColor">?attr/grayScaleColorOnBackground1</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/univers_lts_sd</item>
     </style>
 
     <style name="IntroText">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/dark_gray</item>
+        <item name="android:textColor">?attr/grayScaleColorOnBackground2</item>
         <item name="android:textStyle">normal</item>
     </style>
 

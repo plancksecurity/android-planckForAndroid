@@ -218,8 +218,8 @@
     <!-- Folder list-->
     <string name="search_empty_error">Escreva um texto para pesquisar</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1"><font color="#4caf50">p≡p</font> tutorial</string>
-    <string name="intro_frag_first_text_2"><font color="#4caf50">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
+    <string name="intro_frag_first_text_1">&lt;font color="%s"&gt;p≡p&lt;/font&gt; tutorial</string>
+    <string name="intro_frag_first_text_2">&lt;font color="%s"&gt;p≡p&lt;/font&gt; uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar</string>
     <string name="intro_frag_first_text_3">E na barra superior, quando você abre ou escreve um email:</string>
     <string name="intro_frag_second_header_1">Seguro</string>
     <string name="intro_frag_second_header_2">Seguro e confiável</string>

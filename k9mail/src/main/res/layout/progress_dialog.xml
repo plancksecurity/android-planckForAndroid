@@ -5,7 +5,8 @@
     android:layout_width="@dimen/progressbar_layout_width"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:padding="@dimen/progressbar_padding">
+    android:padding="@dimen/progressbar_padding"
+    android:theme="@style/Theme.AppCompat.Dialog">
 
     <TextView
         android:id="@+id/title"
@@ -30,7 +31,7 @@
 
     <TextView
         android:id="@+id/message"
-        style="@style/DarkGreyText"
+        style="@style/GrayScaleColorText2"
         android:layout_width="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_height="wrap_content"

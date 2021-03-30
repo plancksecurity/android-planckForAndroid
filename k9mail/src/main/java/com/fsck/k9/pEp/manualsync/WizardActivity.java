@@ -17,7 +17,7 @@ public abstract class WizardActivity extends PepActivity {
         params.width = getResources().getDimensionPixelSize(widthDimen);
         params.height = getResources().getDimensionPixelSize(heightDimen);
         params.alpha = 1;
-        params.dimAmount = 0.4f;
+        params.dimAmount = 0.6f;
         params.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         getWindow().setAttributes(params);
     }

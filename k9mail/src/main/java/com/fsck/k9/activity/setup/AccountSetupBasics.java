@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
@@ -23,6 +24,8 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
+
+import java.util.List;
 
 import javax.inject.Inject;
 

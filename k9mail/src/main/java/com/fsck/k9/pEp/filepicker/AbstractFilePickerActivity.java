@@ -8,13 +8,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ public abstract class AbstractFilePickerActivity<T> extends AppCompatActivity
     @Override
     @SuppressWarnings("unchecked")
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(ThemeManager.getFilePickerThemeResourceId());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.nnf_activity_filepicker);

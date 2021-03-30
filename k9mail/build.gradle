@@ -4,6 +4,7 @@ def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
 def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
 def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
 
+
 def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
 def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
 def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
@@ -21,6 +22,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
+apply from: '../gradle/plugins/utils/screenshots.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -50,7 +52,7 @@ dependencies {
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.androidXLegacy}"
-    implementation "androidx.appcompat:appcompat:${versions.androidX}"
+    implementation "androidx.appcompat:appcompat:${versions.androidXAppCompat}"
     implementation "androidx.cardview:cardview:${versions.androidXCardView}"
     implementation "com.google.android.material:material:${versions.androidX}"
     implementation "androidx.appcompat:appcompat:${versions.androidX}"
@@ -77,6 +79,8 @@ dependencies {
     implementation "com.takisoft.preferencex:preferencex-ringtone:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-datetimepicker:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-colorpicker:${versions.preferencesFix}"
+    implementation "androidx.webkit:webkit:1.4.0"
+
 
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
@@ -91,7 +95,7 @@ dependencies {
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
     implementation "org.koin:koin-android-architecture:${versions.koin}"
-    implementation "androidx.core:core-ktx:${versions.androidX}"
+    implementation "androidx.core:core-ktx:${versions.androidXcore}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
@@ -169,8 +173,8 @@ android {
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        //testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

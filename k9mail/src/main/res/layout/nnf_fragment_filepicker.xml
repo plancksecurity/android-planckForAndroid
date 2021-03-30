@@ -10,9 +10,9 @@
         android:id="@+id/nnf_picker_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="?attr/toolbarDefaultColor"
         android:elevation="4dp"
-        tools:backgroundTint="@color/colorPrimary"
+        tools:backgroundTint="?attr/toolbarDefaultColor"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ToolbarTheme">
 

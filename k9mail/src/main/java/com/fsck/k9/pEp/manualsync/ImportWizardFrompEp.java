@@ -255,11 +255,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     private void showKeySyncDone() {
         loading.setVisibility(View.GONE);
-        cancel.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        cancel.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.grayScaleColorOnBackground3));
         cancel.setText(R.string.keysync_wizard_action_leave);
         cancel.setOnClickListener(v -> presenter.leaveDeviceGroup());
         action.setVisibility(View.VISIBLE);
-        action.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+
+        action.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.defaultColorOnBackground));
         action.setOnClickListener(v -> finish());
         currentState.setVisibility(View.VISIBLE);
     }
@@ -268,12 +269,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public void showSomethingWentWrong() {
         description.setText(R.string.keysync_wizard_error_message);
         cancel.setVisibility(View.VISIBLE);
-        cancel.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        cancel.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.grayScaleColorOnBackground3));
         cancel.setText(R.string.cancel_action);
         cancel.setOnClickListener(v -> presenter.leaveDeviceGroup());
 
         action.setVisibility(View.VISIBLE);
-        action.setTextColor(ContextCompat.getColor(this, android.R.color.black));
+        action.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.defaultColorOnBackground));
         action.setOnClickListener(v -> presenter.cancel());
 
         reject.setVisibility(View.GONE);

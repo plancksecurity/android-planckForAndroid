@@ -19,7 +19,7 @@
                 android:key="language"
                 android:summary="%s"
                 android:title="@string/settings_language_label" />
-            <!--
+
             <ListPreference
                 android:dialogTitle="@string/settings_theme_label"
                 android:entries="@array/theme_entries"
@@ -27,7 +27,7 @@
                 android:key="theme"
                 android:summary="%s"
                 android:title="@string/settings_theme_label" />
-
+            <!--
             <CheckBoxPreference
                 android:key="fixed_message_view_theme"
                 android:summaryOff="@string/settings_message_theme_selection_summary_off"
@@ -395,7 +395,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="@drawable/ic_advanced_light"
+        android:icon="?attr/iconAdavancedSettings"
         android:key="advanced_preferences"
         android:title="@string/advanced">
         <PreferenceCategory

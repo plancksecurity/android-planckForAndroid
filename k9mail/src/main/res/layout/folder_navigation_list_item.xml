@@ -4,7 +4,7 @@
     android:id="@+id/folder_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/gray"
+    tools:background="?attr/grayScaleColorOnBackground3"
     android:paddingTop="16dp"
     android:paddingBottom="16dp">
 

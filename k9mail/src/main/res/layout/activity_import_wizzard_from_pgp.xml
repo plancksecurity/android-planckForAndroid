@@ -7,7 +7,7 @@
     tools:layout_width="@dimen/key_import_floating_width"
     tools:layout_height="@dimen/key_import_floating_height"
     tools:layout_gravity="center"
-    android:background="@color/white"
+    android:background="?attr/defaultDialogBackground"
     android:clipChildren="false"
     android:clipToPadding="false"
     tools:context="com.fsck.k9.pEp.manualsync.ImportWizardFrompEp"
@@ -104,6 +104,7 @@
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_next"
         tools:text="next"
+        android:textColor="?attr/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dissmissActionButton" />
@@ -129,7 +130,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_cancel"
-        android:textColor="@android:color/black"
+        android:textColor="?attr/defaultColorOnBackground"
         android:visibility="visible"
 
         app:layout_constraintBottom_toBottomOf="parent"
