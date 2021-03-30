@@ -181,7 +181,8 @@ public class StoreSchemaDefinitionTest {
                 "html_content TEXT, " +
                 "text_content TEXT, " +
                 "preview_type TEXT default \"none\", " +
-                "message_part_id INTEGER" +
+                "message_part_id INTEGER, " +
+                "pep_color TEXT" +
                 ")");
 
         db.execSQL("CREATE TABLE attachments (" +
