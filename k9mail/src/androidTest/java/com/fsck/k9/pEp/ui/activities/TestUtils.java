@@ -14,16 +14,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -40,12 +44,15 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
 
+import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,20 +79,24 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Checks.checkNotNull;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.isInternal;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import androidx.test.platform.app.InstrumentationRegistry ;
 
@@ -101,7 +112,9 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
+import static java.lang.Thread.sleep;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -139,9 +152,6 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
 
-    public String passphraseAccount;
-    public String passphraseAccountPassword;
-    public String passphrasePassword;
 
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
@@ -175,21 +185,21 @@ public class TestUtils {
 
     private void trustedServer() {
         if (testConfig.getTrusted_server(account)) {
-            device.waitForIdle();
+            waitForIdle();
             clickView(R.id.manual_setup);
-            device.waitForIdle();
+            waitForIdle();
             while (true) {
                 try {
                     while (exists(onView(withId(R.id.account_trust_server)))) {
                         setCheckBox("Trust server", true);
-                        device.waitForIdle();
+                        waitForIdle();
                         onView(withId(R.id.next)).perform(click());
-                        device.waitForIdle();
+                        waitForIdle();
                         return;
                     }
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.next)).perform(click());
-                    device.waitForIdle();
+                    waitForIdle();
                 } catch (Exception eNext) {
                     Timber.i("Trust server not enabled yet");
                 }
@@ -200,16 +210,16 @@ public class TestUtils {
     }
 
     private void clickNextButton () {
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
+        waitForIdle();
         try {
             UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             while (uiObject.getText() != null) {
                 pressBack();
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.next)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
                 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             }
         } catch (Exception ex) {
@@ -220,9 +230,9 @@ public class TestUtils {
     private void fillAccountAddress(String accountAddress) {
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.account_email)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.account_email)).perform(typeText(accountAddress), closeSoftKeyboard());
             } catch (Exception ex) {
                 Timber.i("Cannot fill account email: " + ex.getMessage());
@@ -234,50 +244,51 @@ public class TestUtils {
         onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
-    private void accountDescription(String description, String userName) {
+    private void accountDescription(String description, String userName, boolean isSync) {
         doWaitForResource(R.id.account_description);
         while (!viewIsDisplayed(R.id.account_description)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         while (getTextFromView(onView(withId(R.id.account_description))).equals("")) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.account_description)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
                 if (!description.equals("")) {
                     onView(withId(R.id.account_description)).perform(typeText(description), closeSoftKeyboard());
                 } else {
                     onView(withId(R.id.account_description)).perform(typeText("TEST"), closeSoftKeyboard());
                 }
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot find account description field");
             }
         }
         while (getTextFromView(onView(withId(R.id.account_name))).equals("")) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.account_name)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
                 if (!userName.equals("")) {
                     onView(withId(R.id.account_name)).perform(typeText(userName), closeSoftKeyboard());
                 } else {
                     onView(withId(R.id.account_name)).perform(typeText("USER"), closeSoftKeyboard());
                 }
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Cannot find account name field");
             }
         }
-        if (testConfig.keySync_number.equals("3")) {
+        if (testConfig.test_number.equals("3") || !isSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
+        waitForIdle();
         onView(withId(R.id.done)).perform(click());
     }
 
@@ -293,7 +304,7 @@ public class TestUtils {
         boolean backToMessageCompose = false;
         while (!backToMessageCompose){
             pressBack();
-            device.waitForIdle();
+            waitForIdle();
             if (exists(onView(withId(R.id.send)))){
                 backToMessageCompose = true;
             }
@@ -303,7 +314,7 @@ public class TestUtils {
     public void clickView(int viewId) {
         boolean buttonClicked = false;
         while (!viewIsDisplayed(viewId)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         doWaitForResource(viewId);
         if (exists(onView(withId(R.id.toolbar)))) {
@@ -311,11 +322,11 @@ public class TestUtils {
         }
         while (!buttonClicked) {
             if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)){
-                device.waitForIdle();
+                waitForIdle();
                 try {
                     onView(withId(viewId)).check(matches(isDisplayed()));
                     onView(withId(viewId)).perform(click());
-                    device.waitForIdle();
+                    waitForIdle();
                     buttonClicked = true;
                     Timber.i("View found, can click it");
                 } catch (Exception ex) {
@@ -349,30 +360,8 @@ public class TestUtils {
 
     public void createAccount() {
         createNewAccountWithPermissions();
-        if (keySync_number().equals("0")) {
+        if (test_number().equals("0")) {
             getMessageListSize();
-        }
-    }
-
-    public void setPassphraseAccount() {
-        switch (keySync_number()) {
-            case "4":
-                passphraseAccount = "test003@peptest.ch";
-                passphraseAccountPassword = "";
-                passphrasePassword = "";
-                break;
-            case "5":
-                passphraseAccount = "test004@peptest.ch";
-                passphraseAccountPassword = "";
-                passphrasePassword = "";
-                break;
-            case "6":
-                passphraseAccount = "test005@peptest.ch";
-                passphraseAccountPassword = "";
-                passphrasePassword = "";
-                break;
-            default:
-                Timber.i("Wrong passphrase Account");
         }
     }
 
@@ -507,14 +496,38 @@ public class TestUtils {
                             case "keysync_password_2":
                                 testConfig.setKeySync_password(line[1], 1);
                                 break;
-                            case "keysync_number":
-                                testConfig.setKeySync_number(line[1]);
-                                if (!testConfig.getKeySync_number().equals("0")) {
+                            case "test_number":
+                                testConfig.settest_number(line[1]);
+                                if (!testConfig.gettest_number().equals("0")) {
                                     totalAccounts = 1;
-                                    if(testConfig.getKeySync_number().equals("3")) {
+                                    if(testConfig.gettest_number().equals("3")) {
                                         totalAccounts = 2;
                                     }
                                 }
+                                break;
+                            case "passphrase_account_1":
+                                testConfig.setPassphrase_account(line[1], 0);
+                                break;
+                            case "passphrase_password_1":
+                                testConfig.setPassphrase_password(line[1], 0);
+                                break;
+                            case "passphrase_account_2":
+                                testConfig.setPassphrase_account(line[1], 1);
+                                break;
+                            case "passphrase_password_2":
+                                testConfig.setPassphrase_password(line[1], 1);
+                                break;
+                            case "passphrase_account_3":
+                                testConfig.setPassphrase_account(line[1], 2);
+                                break;
+                            case "passphrase_password_3":
+                                testConfig.setPassphrase_password(line[1], 2);
+                                break;
+                            case "format_test_account":
+                                testConfig.setFormat_test_account(line[1]);
+                                break;
+                            case "format_test_password":
+                                testConfig.setFormat_test_password(line[1]);
                                 break;
                             default:
                                 break;
@@ -552,10 +565,10 @@ public class TestUtils {
     }
 
     public void waitForSyncPopUp () {
-        device.waitForIdle();
+        waitForIdle();
         Espresso.onIdle();
         while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
-            device.waitForIdle();
+            waitForIdle();
             Espresso.onIdle();
         }}
 
@@ -710,11 +723,11 @@ public class TestUtils {
 
     }
 
-    public String keySync_number() {
-        while (testConfig.getKeySync_number().equals("-10")) {
+    public String test_number() {
+        while (testConfig.gettest_number().equals("-10")) {
             readConfigFile();
         }
-        return testConfig.getKeySync_number();}
+        return testConfig.gettest_number();}
 
     public boolean keySyncAccountsExist () {
         return testConfig.getKeySync_password(0) != null
@@ -729,7 +742,7 @@ public class TestUtils {
                 compareMessageBody("");
                 break;
             case "longText":
-                device.waitForIdle();
+                waitForIdle();
                 cucumberBody = longText();
                 compareMessageBodyLongText(cucumberBody);
                 break;
@@ -744,7 +757,6 @@ public class TestUtils {
     }
 
     public void readBotList(){
-        Timber.i("Lee la lista");
         File directory = new File(Environment.getExternalStorageDirectory().toString());
 
         File newFile = new File(directory, "test/botlist.txt");
@@ -774,18 +786,18 @@ public class TestUtils {
         testReset = false;
         try {
             onView(withId(R.id.next)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ignoredException) {
                 Timber.i("Ignored", "Ignored exception");
             }
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.action_continue)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ignoredException) {
                 Timber.i("Ignored", "Ignored exception");
             }
@@ -794,21 +806,12 @@ public class TestUtils {
             while (exists(onView(withId(R.id.action_continue)))) {
                 try {
                     onView(withId(R.id.action_continue)).perform(click());
-                    device.waitForIdle();
+                    waitForIdle();
                 } catch (Exception ignoredException) {
                     Timber.i("Ignored", "Ignored exception");
                 }
             }
-            switch (keySync_number()) {
-                case "6":
-                case "5":
-                case "4":
-                    setPassphraseAccount();
-                    fillAccountAddress(passphraseAccount);
-                    fillAccountPassword(passphraseAccountPassword);
-                    automaticAccount();
-                    accountDescription("importKeyWithPassphrase", "Passphrase");
-                    break;
+            switch (test_number()) {
                 case "0":
                     createNAccounts(getTotalAccounts(), false, false);
                     break;
@@ -819,8 +822,34 @@ public class TestUtils {
                 case "3":
                     createNAccounts(1, true, false);
                     break;
+                case "4":
+                    fillAccountAddress(testConfig.getPassphrase_account(0));
+                    fillAccountPassword(testConfig.getPassphrase_password(0));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
+                    break;
+                case "5":
+                    fillAccountAddress(testConfig.getPassphrase_account(1));
+                    fillAccountPassword(testConfig.getPassphrase_password(1));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
+                    break;
+                case "6":
+                    fillAccountAddress(testConfig.getPassphrase_account(2));
+                    fillAccountPassword(testConfig.getPassphrase_password(2));
+                    automaticAccount();
+                    accountDescription("importKeyWithPassphrase", "Passphrase", true);
+                    break;
+                case "7":
+                case "8":
+                case "9":
+                    fillAccountAddress(testConfig.getFormat_test_account());
+                    fillAccountPassword(testConfig.getFormat_test_password());
+                    automaticAccount();
+                    accountDescription("formatTest", "Format Test", false);
+                    break;
                 default:
-                    Timber.i("Key sync value is not valid");
+                    Timber.i("Test is not valid");
             }
         } catch (Exception ex) {
             if (!exists(onView(withId(R.id.accounts_list)))) {
@@ -833,7 +862,7 @@ public class TestUtils {
     public void clickHandShakeButton () {
         if (exists(onView(withId(R.id.buttonHandshake)))) {
             onView(withId(R.id.buttonHandshake)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
         }
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
@@ -841,17 +870,17 @@ public class TestUtils {
     }
 
     public void goToHandshakeDialog (){
-        device.waitForIdle();
+        waitForIdle();
         clickStatus();
         doWaitForResource(R.id.toolbar);
         clickHandShakeButton();
     }
 
     public void resetHandshake(){
-        device.waitForIdle();
+        waitForIdle();
         try {
            onView(withId(R.id.recipientContainer)).perform(ViewActions.longClick());
-            device.waitForIdle();
+            waitForIdle();
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ListView"));
             scroll.click();
         } catch (Exception ex) {
@@ -865,16 +894,16 @@ public class TestUtils {
     public void createNAccounts (int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
-                device.waitForIdle();
+                waitForIdle();
                 while(exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
                     selectFromMenu(R.string.action_settings);
-                    device.waitForIdle();
+                    waitForIdle();
                 }
                 addAccount();
                 if (isKeySync) {
                     int account = 0;
-                    if (testConfig.keySync_number.equals("3") && !isThirdSync) {
+                    if (testConfig.test_number.equals("3") && !isThirdSync) {
                         account = 1;
                     }
                     fillAccountAddress(testConfig.getKeySync_account(account));
@@ -889,8 +918,8 @@ public class TestUtils {
                     automaticAccount();
                 }
                 try {
-                    device.waitForIdle();
-                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account));
+                    waitForIdle();
+                    accountDescription(testConfig.getUsername(account), testConfig.getUsername(account), true);
                 } catch (Exception e) {
                     Timber.i("Can not fill account description");
                 }
@@ -904,7 +933,7 @@ public class TestUtils {
         try {
             swipeUpScreen();
             onView(withId(R.id.add_account_container)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
         } catch (Exception list) {
             Timber.i("Cannot add a new account");
         }
@@ -923,36 +952,36 @@ public class TestUtils {
         }
     }
 
-    public void selectAccount (int accountToSelect) {
+    public void selectAccount (String folder, int accountToSelect) {
         while (true) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                device.waitForIdle();
+                waitForIdle();
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                     getMessageListSize();
                     return;
                 } else if (exists(onView(withId(R.id.accounts_list)))) {
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                 } else if (exists(onView(withId(android.R.id.list)))) {
-                    clickInbox();
+                    clickFolder(folder);
                     return;
                 } else if (!exists(onView(withId(R.id.available_accounts_title)))){
                     selectFromMenu(R.string.action_settings);
-                    selectAccountFromList(accountToSelect);
+                    selectAccountFromList(folder, accountToSelect);
                     getMessageListSize();
                     return;
                 } else {
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                    device.waitForIdle();
+                    waitForIdle();
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot click account " +accountToSelect +": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
                     pressBack();
-                    device.waitForIdle();
+                    waitForIdle();
                 }
             }
         }
@@ -961,9 +990,9 @@ public class TestUtils {
     public static void swipeDownScreen () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            device.waitForIdle();
+            waitForIdle();
             scroll.swipe(Direction.DOWN, 1.0f);
-            device.waitForIdle();
+            waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeDown");
         }
@@ -972,28 +1001,28 @@ public class TestUtils {
     public static void swipeUpScreen () {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-            device.waitForIdle();
+            waitForIdle();
             scroll.swipe(Direction.UP, 1.0f);
-            device.waitForIdle();
+            waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeUp");
         }
     }
 
     private void selectAccountFromHamburgerMenu (int accountToSelect) {
-        /*device.waitForIdle();
+        /*waitForIdle();
         openHamburgerMenu();
         clickView(R.id.nav_header_accounts);
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
     */}
 
-    private void selectAccountFromList (int accountToSelect) {
+    private void selectAccountFromList (String folder, int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
             swipeUpScreen();
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
-        goToTheInbox(accountToSelect);
+        goToFolder(folder, accountToSelect);
         if (exists(onView(withId(R.id.message_list)))) {
             getMessageListSize();
         }
@@ -1011,30 +1040,30 @@ public class TestUtils {
         waitForIdle();
     }
 
-    private void goToTheInbox (int accountToSelect){
+    private void goToFolder(String folder, int accountToSelect){
         while (true) {
-            device.waitForIdle();
+            waitForIdle();
             try {
                 UiObject2 wb;
                 wb = device.findObject(By.clazz("android.widget.ListView"));
-                device.waitForIdle();
+                waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(1).click();
-                clickInbox();
+                clickFolder(folder);
                 return;
             } catch (Exception e) {
                 Timber.i("Cannot click account from list: " + e.getMessage());
             }
-            device.waitForIdle();
+            waitForIdle();
         }
     }
 
     private void goToTheAccountSettings (int accountToSelect){
         while (true) {
-            device.waitForIdle();
+            waitForIdle();
             try {
                 UiObject2 wb;
                 wb = device.findObject(By.clazz("android.widget.ListView"));
-                device.waitForIdle();
+                waitForIdle();
                 wb.getChildren().get(accountToSelect).getChildren().get(0).click();
                 return;
             } catch (Exception e) {
@@ -1044,13 +1073,40 @@ public class TestUtils {
         }
     }
 
-    private void clickInbox () {
+    private void clickFolder (String folder) {
+        String folderToClick = "";
+        switch (folder){
+            case "Inbox":
+                folderToClick = resources.getString(R.string.special_mailbox_name_inbox);
+                break;
+            case "Sent":
+                folderToClick = resources.getString(R.string.special_mailbox_name_sent);
+                break;
+            case "Drafts":
+                folderToClick = resources.getString(R.string.special_mailbox_name_drafts);
+                break;
+            case "Outbox":
+                folderToClick = resources.getString(R.string.special_mailbox_name_outbox);
+                break;
+            case "Archive":
+                folderToClick = resources.getString(R.string.special_mailbox_name_archive);
+                break;
+            case "Spam":
+                folderToClick = resources.getString(R.string.special_mailbox_name_spam)
+                 + " (" + resources.getString(R.string.special_mailbox_name_spam) + ")";
+                break;
+            case "Trash":
+                folderToClick = resources.getString(R.string.special_mailbox_name_trash);
+                break;
+            default:
+                Timber.e("Is not possible to select folder: " + folder);
+        }
         waitForToolbar();
-        device.waitForIdle();
+        waitForIdle();
         while (true) {
             try {
-                selectFromScreen(R.string.special_mailbox_name_inbox);
-                device.waitForIdle();
+                selectFromScreen(folderToClick);
+                waitForIdle();
                 waitForToolbar();
                 return;
             } catch (Exception noInbox) {
@@ -1060,17 +1116,17 @@ public class TestUtils {
     }
 
     public void clickSearch() {
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.search)).perform(click());
-        device.waitForIdle();
+        waitForIdle();
     }
 
     private void fillAccountPassword(String accountPassword) {
         while (exists(onView(withId(R.id.account_password))) && getTextFromView(onView(withId(R.id.account_password))).equals("")) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.account_password)).perform(typeText(accountPassword), closeSoftKeyboard());
-                device.waitForIdle();
+                waitForIdle();
                 if (viewWithTextIsDisplayed(resources.getString(R.string.account_already_exists))) {
                     pressBack();
                     return;
@@ -1083,23 +1139,23 @@ public class TestUtils {
 
     private void manualAccount() {
         while (!viewIsDisplayed(R.id.manual_setup)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         while (exists(onView(withId(R.id.manual_setup)))) {
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.manual_setup)).perform(click());
         }
         setupImapServer();
         setupSMTPServer();
-        device.waitForIdle();
+        waitForIdle();
         /*while (exists(onView(withId(R.id.account_server)))) {
-            device.waitForIdle();
+            waitForIdle();
         }*/
         while (!exists(onView(withId(R.id.account_description)))) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.next)).perform(click());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception e) {
                 Timber.i("Cannot find Description");
             }
@@ -1115,38 +1171,38 @@ public class TestUtils {
     }
 
     private void setupAccountIMAPServer(String accountServer, String server) {
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.account_server_label)).check(matches(isCompletelyDisplayed()));
         while (!viewIsDisplayed(R.id.account_server_label) &&
                 !getTextFromView(onView(withId(R.id.account_server_label))).equals(server)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) &&
             exists(onView(withId(R.id.account_server_label)))) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
                     removeTextFromTextView("account_server");
                 }
-                device.waitForIdle();
+                waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
                     onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.account_server)).check(matches(isDisplayed()));
-                    device.waitForIdle();
+                    waitForIdle();
                 }
                 setupPort(testConfig.getImap_port(account));
-                device.waitForIdle();
+                waitForIdle();
                 while (exists(onView(withId(R.id.account_server_label)))) {
                     try {
                         onView(withId(R.id.next)).perform(click());
                         while (exists(onView(withId(R.id.account_server_label)))) {
-                            device.waitForIdle();
+                            waitForIdle();
                         }
                         waitUntilIdle();
                         if (exists(onView(withId(R.id.alertTitle)))) {
                             pressBack();
-                            device.waitForIdle();
+                            waitForIdle();
                         }
                     } catch (Exception ex) {
                         Timber.i("Cannot click next button: " + ex.getMessage());
@@ -1161,50 +1217,50 @@ public class TestUtils {
 
     private void setupPort(String port) {
         if (port != null && !getTextFromView(onView(withId(R.id.account_port))).equals(port)) {
-            device.waitForIdle();
+            waitForIdle();
             removeTextFromTextView("account_port");
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.account_port)).perform(click());
             onView(withId(R.id.account_port)).perform(typeText(port), closeSoftKeyboard());
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.account_port)).check(matches(isDisplayed()));
-            device.waitForIdle();
+            waitForIdle();
         }
     }
 
     private void setupAccountSMTPServer(String accountServer, String server) {
-        device.waitForIdle();
+        waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.account_server)).check(matches(isDisplayed()));
         while (!exists(onView(withId(R.id.account_server)))) {
-            device.waitForIdle();
+            waitForIdle();
         }
         while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
             removeTextFromTextView("account_server");
         }
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        waitForIdle();
         while (exists(onView(withId(R.id.account_server))) && !getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)){
             try {
-                device.waitForIdle();
-                device.waitForIdle();
+                waitForIdle();
+                waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
                     onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
-                    device.waitForIdle();
+                    waitForIdle();
                 }
                 setupPort(testConfig.getSmtp_port(account));
-                device.waitForIdle();
+                waitForIdle();
                 while (viewIsDisplayed(R.id.account_server)) {
-                    device.waitForIdle();
+                    waitForIdle();
                     if (exists(onView(withId(R.id.alertTitle)))) {
                         pressBack();
-                        device.waitForIdle();
+                        waitForIdle();
                     }else if (!exists(onView(withId(R.id.account_server)))) {
                         return;
                     } else {
                         onView(withId(R.id.next)).perform(click());
                         while (viewIsDisplayed(R.id.account_server)) {
-                            device.waitForIdle();
+                            waitForIdle();
                         }
                     }
                 }
@@ -1215,7 +1271,7 @@ public class TestUtils {
     }
 
     private void allowPermissions(){
-        device.waitForIdle();
+        waitForIdle();
         try {
             BySelector popUpMessage = By.clazz("android.widget.Button");
             boolean buttonExists = true;
@@ -1240,14 +1296,14 @@ public class TestUtils {
     private void allowPermissions(int index) {
         while (true){
             try {
-                device.waitForIdle();
+                waitForIdle();
                 UiObject allowPermissions = device.findObject(new UiSelector()
                         .clickable(true)
                         .checkable(false)
                         .index(index));
                 if (allowPermissions.exists()) {
                     allowPermissions.click();
-                    device.waitForIdle();
+                    waitForIdle();
                 } else {
                     Timber.i("There is no permissions dialog to interact with ");
                     return;
@@ -1263,15 +1319,15 @@ public class TestUtils {
     }
 
     public void fillMessage(BasicMessage inputMessage, boolean attachFilesToMessage) {
-        device.waitForIdle();
+        waitForIdle();
         while (!viewIsDisplayed(R.id.to)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         UiObject2 list = null;
         Rect bounds = null;
         while (list == null || bounds == null) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 list = device.findObject(By.res(APP_ID, "to"));
                 bounds = list.getVisibleBounds();
             } catch (Exception ex) {
@@ -1281,25 +1337,25 @@ public class TestUtils {
         if (!inputMessage.getTo().equals("")) {
             onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
             device.click(bounds.left - 1, bounds.centerY());
-            device.waitForIdle();
+            waitForIdle();
             device.click(bounds.left - 1, bounds.centerY());
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.to)).perform(appendTextInTextView(inputMessage.getTo()), closeSoftKeyboard());
 
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
                 || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())) {
             try {
-                device.waitForIdle();
-                device.waitForIdle();
+                waitForIdle();
+                waitForIdle();
                 device.findObject(By.res(APP_ID, "subject")).click();
-                device.waitForIdle();
+                waitForIdle();
                 device.findObject(By.res(APP_ID, "message_content")).click();
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Could not fill message: " + ex);
             }
@@ -1320,9 +1376,9 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.e("Intending: " +ex);
             }
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.add_attachment)).perform(click());
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName + fileNumber + extension))));
         }
     }
@@ -1337,7 +1393,7 @@ public class TestUtils {
         onView(withId(R.id.attachments)).check(matches(hasDescendant(withText(fileName))));
     }
 
-    void externalAppRespondWithFile(int id) {
+    public void externalAppRespondWithFile(int id) {
         intending(not(isInternal()))
                 .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(id)));
     }
@@ -1389,7 +1445,7 @@ public class TestUtils {
 
                 outputStream.flush();
                 outputStream.close();
-                device.waitForIdle();
+                waitForIdle();
                 waitUntilIdle();
                 intending(not(isInternal()))
                         .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, insertFileIntoIntentAsData(fileName)));
@@ -1407,7 +1463,7 @@ public class TestUtils {
         for (File fileOpen : files) {
             if (fileOpen.getName().equals(fileName)) {
                 File file = new File(Environment.getExternalStorageDirectory().toString() + folder + fileOpen.getName());
-                device.waitForIdle();
+                waitForIdle();
                 try {
                     FileInputStream fin = new FileInputStream(fileOpen);
                     InputStreamReader inputStreamReader = new InputStreamReader(fin);
@@ -1468,6 +1524,99 @@ public class TestUtils {
         }
     }
 
+    public void setupAccountIfNeeded() {
+        skipTutorialAndAllowPermissionsIfNeeded();
+        if(exists(onView(withText(R.string.account_setup_basics_title)))) {
+            setupAccountAutomatically(false);
+        }
+    }
+
+    public void setupAccountAutomatically(boolean withSync) {
+        setupEmailAndPassword();
+        onView(withId(R.id.next)).perform(click());
+        doWait(5000);
+        onView(withId(R.id.account_name)).perform(replaceText("test"));
+        if(!withSync) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        }
+        onView(withId(R.id.done)).perform(click());
+        doWait(5000);
+    }
+
+    private void setupEmailAndPassword() {
+        onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
+        onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class))))
+                .check(matches(withText(R.string.account_setup_basics_title)));
+
+        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        onView(withId(R.id.account_email)).perform(replaceText(email));
+        onView(withId(R.id.account_password)).perform(replaceText(pass));
+    }
+
+    public void goToSettingsAndRemoveAllAccounts() {
+        selectFromMenu(R.string.action_settings);
+        removeAllAccounts();
+    }
+
+    public void goToSettingsAndRemoveAllAccountsIfNeeded() {
+        if(!exists(onView(withText(R.string.account_setup_basics_title)))) {
+            goToSettingsAndRemoveAllAccounts();
+        }
+    }
+
+    public void removeAllAccounts() {
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
+        while(!preferences.getAccounts().isEmpty()) {
+            removeAccountAtPosition(0);
+            doWait(5000);
+        }
+    }
+
+    private void doWait(int millis) {
+        try {
+            sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAccountAtPosition(int position) {
+        waitForIdle();
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        waitForIdle();
+        selectFromScreen(R.string.remove_account_action);
+        waitForIdle();
+
+        clickAcceptButton();
+        waitForIdle();
+    }
+
+    public void skipTutorialAndAllowPermissionsIfNeeded() {
+        if(exists(onView(withId(R.id.skip)))) {
+            skipTutorialAndAllowPermissions();
+        }
+    }
+
+    public void skipTutorialAndAllowPermissions() {
+        try {
+            waitForIdle();
+            onView(withId(R.id.skip)).perform(click());
+            waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        try {
+            waitForIdle();
+            onView(withId(R.id.action_continue)).perform(click());
+            waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
+        }
+        allowPermissions();
+    }
+
     public void goBackAndRemoveAccount() {
         goBackAndRemoveAccount(false);
     }
@@ -1476,13 +1625,13 @@ public class TestUtils {
         Activity currentActivity = getCurrentActivity();
         while (true) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 removeLastAccount();
                 return;
             } catch (Exception ex) {
                 while (currentActivity == getCurrentActivity()) {
                     pressBack();
-                    device.waitForIdle();
+                    waitForIdle();
                     try {
                         if (discardMessage) {
                             onView(withText(R.string.discard_action)).check(matches(isCompletelyDisplayed()));
@@ -1500,10 +1649,10 @@ public class TestUtils {
     }
 
     public void clickAcceptButton() {
-        device.waitForIdle();
+        waitForIdle();
         doWaitForObject("android.widget.Button");
         onView(withText(R.string.okay_action)).perform(click());
-        device.waitForIdle();
+        waitForIdle();
     }
 
     void clickCancelButton() {
@@ -1517,9 +1666,9 @@ public class TestUtils {
             if (device.findObject(By.clazz(object)) != null) {
                 finish = true;
             } else {
-                device.waitForIdle();
+                waitForIdle();
                 pressBack();
-                device.waitForIdle();
+                waitForIdle();
             }
         }
     }
@@ -1551,7 +1700,7 @@ public class TestUtils {
             UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/attachment"));
             position = -1;
             for (UiObject2 frameLayout : device.findObjects(selector)) {
-                device.waitForIdle();
+                waitForIdle();
                 try {
                     if (frameLayout.getResourceName().equals(uiObject.getResourceName())) {
                         position++;
@@ -1564,7 +1713,7 @@ public class TestUtils {
                             e.printStackTrace();
                         }
                         while (getCurrentActivity() != sentFolderActivity) {
-                            device.waitForIdle();
+                            waitForIdle();
                             pressBack();
                         }
                     }
@@ -1583,10 +1732,10 @@ public class TestUtils {
     }
 
     public void removeTextFromTextView(String viewId) {
-        device.waitForIdle();
+        waitForIdle();
         int view = intToID(viewId);
         while (!exists(onView(withId(view)))) {
-            device.waitForIdle();
+            waitForIdle();
         }
         onView(withId(view)).perform(closeSoftKeyboard());
         onView(withId(view)).perform(click());
@@ -1594,11 +1743,26 @@ public class TestUtils {
         while (!(hasValueEqualTo(onView(withId(view)), " ")
                 || hasValueEqualTo(onView(withId(view)), ""))) {
             try {
-                device.waitForIdle();
-                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-                device.waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-                device.waitForIdle();
+                waitForIdle();
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                waitForIdle();
                 onView(withId(view)).perform(click());
+            } catch (Exception ex) {
+                pressBack();
+                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+            }
+        }
+    }
+
+    public void removeTextFromTextView(int viewId, String target) {
+        waitForIdle();
+        int size = target.length();
+        for (int i  = 0; i < size; i ++) {
+            try {
+                waitForIdle();
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                waitForIdle();
             } catch (Exception ex) {
                 pressBack();
                 Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
@@ -1614,30 +1778,20 @@ public class TestUtils {
                 device.click(bounds.left - 1, bounds.centerY());
                 return;
             } catch (Exception ex) {
-                device.waitForIdle();
+                waitForIdle();
                 Timber.i("Cannot click " + viewId + ": " + ex.getMessage());
             }
         }
     }
 
     void testStatusEmpty() {
-        checkStatus(Rating.pEpRatingUndefined);
-        pressBack();
-    }
-
-    void testStatusMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
-        fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
-        pressBack();
+        assertMessageStatus(Rating.pEpRatingUndefined, false);
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
         fillMessage(inputMessage, false);
-        typeTextToForceRatingCaltulation(R.id.subject);
-        checkStatus(expectedIdentity.getRating());
-        onView(withText(expectedIdentity.getAddress())).check(doesNotExist());
-        pressBack();
+        assertMessageStatus(expectedIdentity.getRating(), false);
+        goBack(false);
     }
 
     void checkStatus(Rating rating) {
@@ -1648,11 +1802,11 @@ public class TestUtils {
         int statusColor;
         clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         /*while (!viewIsDisplayed(R.id.pEpTitle)) {
-            device.waitForIdle();
+            waitForIdle();
         }*/
         waitForToolbar();
         statusColor = getSecurityStatusDrawableColor(status);
@@ -1671,6 +1825,50 @@ public class TestUtils {
         }
     }
 
+    public void assertMessageStatus(Rating status, boolean clickableExpected){
+        assertMessageStatus(status, true, clickableExpected);
+    }
+
+    public void assertMessageStatus(Rating status, boolean enabledForThisMessage, boolean clickableExpected){
+        int statusColor;
+
+        waitForToolbar();
+        if(!enabledForThisMessage) {
+            onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+        }
+
+        statusColor = getSecurityStatusDrawableColor(status);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            if (R.drawable.pep_status_green != statusColor
+                    && R.drawable.pep_status_red != statusColor
+                    && R.drawable.pep_status_yellow != statusColor
+            ) {
+                assertFailWithMessage("Wrong Status color");
+            }
+
+            if(!enabledForThisMessage) {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
+            }
+            else {
+                onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+            }
+        }
+
+        clickStatus();
+        if(clickableExpected) {
+            waitForIdle();
+            waitForToolbar();
+            checkToolBarColor(getPEpStatusDueColor(status));
+            waitForIdle();
+            pressBack();
+        }
+    }
+
     private int getSecurityStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
@@ -1683,6 +1881,24 @@ public class TestUtils {
             color = R.drawable.pep_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
+        } else {
+            color = -10;
+        }
+        return color;
+    }
+
+    private int getPEpStatusDueColor(Rating rating) {
+        int color;
+        if (rating == null) {
+            color = -10;
+        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+            color = R.color.pep_no_color;
+        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+            color = R.color.pep_red;
+        } else if (rating.value >= Rating.pEpRatingTrusted.value) {
+            color = R.color.pep_green;
+        } else if (rating.value == Rating.pEpRatingReliable.value) {
+            color = R.color.pep_yellow;
         } else {
             color = -10;
         }
@@ -1708,42 +1924,49 @@ public class TestUtils {
     }
 
     public void clickStatus() {
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         if (viewIsDisplayed(R.id.securityStatusText)) {
-            device.waitForIdle();
+            waitForIdle();
             onView(withId(R.id.securityStatusText)).check(matches(isDisplayed()));
             onView(withId(R.id.securityStatusText)).perform(click());
         }
-        device.waitForIdle();
+        waitForIdle();
     }
 
     public void goBackAndSaveAsDraft (IntentsTestRule activity){
         goBack(true);
     }
 
+    public void goBackFromMessageCompose(boolean saveAsDraft) {
+        goBack(saveAsDraft);
+    }
+
     private void goBack (boolean saveAsDraft) {
         Activity currentActivity = getCurrentActivity();
-        while (currentActivity == getCurrentActivity()){
+        while (currentActivity == getCurrentActivity()) {
             try {
+                waitForIdle();
                 if (saveAsDraft) {
-                    device.waitForIdle();
                     while (!viewIsDisplayed(R.id.message_content)) {
                         onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                        device.waitForIdle();
+                        waitForIdle();
                     }
                 }
-                device.waitForIdle();
+                waitForIdle();
                 pressBack();
-                device.waitForIdle();
+                waitForIdle();
                 if (saveAsDraft) {
                     onView(withText(R.string.save_draft_action)).perform(click());
+                } else {
+                    onView(withText(R.string.discard_action)).perform(click());
                 }
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 Timber.i("Ignored exception: " + ex);
             }
         }
-        device.waitForIdle();}
+        waitForIdle();
+    }
 
     public void assertsTextsOnScreenAreEqual(int resourceOnScreen, int comparedWith) {
         BySelector selector = By.clazz("android.widget.TextView");
@@ -1751,9 +1974,9 @@ public class TestUtils {
         for (UiObject2 object : device.findObjects(selector)) {
             try {
                 if (object.getText().contains(resources.getString(resourceOnScreen))) {
-                    device.waitForIdle();
+                    waitForIdle();
                     textOnScreen = object.getText();
-                    device.waitForIdle();
+                    waitForIdle();
                     break;
                 }
             } catch (Exception ex){
@@ -1767,12 +1990,12 @@ public class TestUtils {
     public void assertsTextExistsOnScreen (String textToCompare) {
         BySelector selector = By.clazz("android.widget.TextView");
         boolean exists = false;
-        device.waitForIdle();
+        waitForIdle();
         for (UiObject2 object : device.findObjects(selector)) {
             try {
                 if (object.getText().contains(textToCompare)) {
                     exists = true;
-                    device.waitForIdle();
+                    waitForIdle();
                     break;
                 }
             } catch (Exception ex){
@@ -1802,17 +2025,15 @@ public class TestUtils {
     }
 
     public void checkToolbarColor(int color) {
-        device.waitForIdle();
+        waitForIdle();
         while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
-            device.waitForIdle();
-            waitUntilIdle();
-            device.waitForIdle();
+            waitForIdle();
         }
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
-            waitUntilIdle();
-            device.waitForIdle();
+            waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
-                waitForToolbar();
+                waitForIdle();
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
                 //checkUpperToolbar(color);
                 return;
@@ -1876,7 +2097,7 @@ public class TestUtils {
         while (!assertedBadgeColor) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getResourceName().equals("security.pEp.debug:id/securityBadge")) {
+                    if (object.getResourceName().equals("security.pEp.debug:id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
                         }
@@ -1900,9 +2121,79 @@ public class TestUtils {
         }
     }
 
+    public int getPixelColor (int x, int y) {
+        View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
+        currentViewActivity.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
+        return bitmap.getPixel(x, y);
+    }
+
+    public int getNextHorizontalColoredXPixelToTheRight(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X + 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return X - 1;
+    }
+
+    public int getNextHorizontalWhiteXPixelToTheRight(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X + 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return X - 1;
+    }
+
+    public int getNextVerticalWhiteYPixelToTheTop(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y - 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return Y + 1;
+    }
+
+    public int getNextVerticalColoredYPixelToTheTop(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y - 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return Y + 1;
+    }
+
+    public int getNextVerticalWhiteYPixelToTheBottom(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y + 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return Y - 1;
+    }
+
+    public int getNextVerticalColoredYPixelToTheBottom(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            Y = Y + 1;
+        } while (Color.valueOf(color).green() == 1.0 && Color.valueOf(color).blue() == 1.0 && Color.valueOf(color).red() == 1.0);
+        return Y - 1;
+    }
+
+    public int getNextHorizontalWhiteXPixelToTheLeft(int X, int Y) {
+        int color;
+        do {
+            color = getPixelColor(X, Y);
+            X = X - 1;
+        } while (Color.valueOf(color).green() != 1.0 || Color.valueOf(color).blue() != 1.0 || Color.valueOf(color).red() != 1.0);
+        return X + 1;
+    }
+
     public void checkBadgeColor(int color, int messageFromList) {
         waitForIdle();
-        onView(withId(R.id.securityBadge)).check(matches(withTextColor(color)));
+        onView(withId(R.id.privacyBadge)).check(matches(withTextColor(color)));
     }
 
     public void openHamburgerMenu () {
@@ -1915,27 +2206,27 @@ public class TestUtils {
     }
 
     public void typeTextToForceRatingCaltulation (int view) {
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(view)).perform(click(), closeSoftKeyboard());
         onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
-        device.waitForIdle();
+        waitForIdle();
         if (getTextFromView(onView(withId(view))).contains(" ")) {
             device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         }
-        device.waitForIdle();
+        waitForIdle();
     }
 
     public static void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
-            device.waitForIdle();
+            waitForIdle();
             Espresso.onIdle();
             while (!viewIsDisplayed(R.id.toolbar)) {
-                device.waitForIdle();
+                waitForIdle();
             }
-            device.waitForIdle();
+            waitForIdle();
             waitUntilIdle();
             onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-            device.waitForIdle();
+            waitForIdle();
             waitUntilIdle();
             Espresso.onIdle();
         }}
@@ -1955,12 +2246,12 @@ public class TestUtils {
     }
 
     public void selectFromMenu(int viewId){
-        device.waitForIdle();
+        waitForIdle();
         while (true) {
             try {
                 openOptionsMenu();
                 selectFromScreen(viewId);
-                device.waitForIdle();
+                waitForIdle();
                 Espresso.onIdle();
                 return;
             } catch (Exception ex) {
@@ -1969,7 +2260,20 @@ public class TestUtils {
         }
     }
 
-    public void waitForIdle() {
+    public void selectFromStatusPopupMenu(int itemId) {
+        onView(withId(R.id.actionbar_message_view)).perform(ViewActions.longClick());
+        selectFromPopupMenu(itemId);
+    }
+
+    public void selectFromPopupMenu(int itemId) {
+        onView(withText(itemId)).inRoot(isPopupWindow()).perform(click());
+    }
+
+    public Matcher<Root> isPopupWindow() {
+        return isPlatformPopup();
+    }
+
+    public static void waitForIdle() {
         device.waitForIdle();
         Espresso.onIdle();
         waitUntilIdle();
@@ -1987,7 +2291,7 @@ public class TestUtils {
 
     public boolean textExistsOnScreen (String text) {
         boolean viewExists = false;
-        device.waitForIdle();
+        waitForIdle();
         BySelector selector = By.clazz("android.view.View");
         while (!viewExists) {
             for (UiObject2 view : device.findObjects(selector)) {
@@ -2004,7 +2308,7 @@ public class TestUtils {
 
     private boolean textExistsOnScreenTextView(String text) {
         boolean viewExists = false;
-        device.waitForIdle();
+        waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         while (!viewExists) {
             for (UiObject2 view : device.findObjects(selector)) {
@@ -2026,22 +2330,26 @@ public class TestUtils {
 
     private void waitForExternalApp() {
         while (APP_ID.equals(device.getCurrentPackageName())) {
-            device.waitForIdle();
+            waitForIdle();
         }
     }
 
     private void goBackToOriginalApp() {
         while (!APP_ID.equals(device.getCurrentPackageName())) {
-            pressBack();
+            waitForIdle();
+            Espresso.onIdle();
+            device.pressBack();
+            waitForIdle();
+            Espresso.onIdle();
         }
     }
 
     public void openOptionsMenu() {
         while (true) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-                device.waitForIdle();
+                waitForIdle();
                 openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
                 waitForIdle();
             } catch (Exception ex) {
@@ -2058,14 +2366,14 @@ public class TestUtils {
                 try {
                     if (object.getText().equals(resources.getString(resource))) {
                         try {
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             object.longClick();
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         }
@@ -2085,17 +2393,55 @@ public class TestUtils {
                     if (object.getText().equals(resources.getString(resource))) {
                         try {
                             while (object.getText().equals(resources.getString(resource))) {
-                                device.waitForIdle();
+                                waitForIdle();
                                 Espresso.onIdle();
                                 object.longClick();
-                                device.waitForIdle();
+                                waitForIdle();
+                                Espresso.onIdle();
+                                boolean exists = false;
+                                for (UiObject2 object2 : device.findObjects(selector)) {
+                                    if (object.getText().equals(resources.getString(resource))) {
+                                        exists = true;
+                                    }
+                                }
+                                if (exists) {
+                                    waitForIdle();
+                                    return;
+                                }
+                            }
+                            return;
+                        } catch (Exception ex1) {
+                            waitForIdle();
+                            Espresso.onIdle();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void selectFromScreen(String text) {
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (true) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().equals(text)) {
+                        try {
+                            while (object.getText().equals(text)) {
+                                waitForIdle();
+                                Espresso.onIdle();
+                                object.longClick();
+                                waitForIdle();
                                 Espresso.onIdle();
                             }
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         }
@@ -2122,14 +2468,14 @@ public class TestUtils {
                 try {
                     if (object.getText().equals(text)) {
                         try {
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             object.longClick();
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         } catch (Exception ex1) {
-                            device.waitForIdle();
+                            waitForIdle();
                             Espresso.onIdle();
                             return;
                         }
@@ -2215,7 +2561,7 @@ public class TestUtils {
     }
 
     public void doWaitForResource(int resource) {
-        device.waitForIdle();
+        waitForIdle();
         IdlingResource idlingResourceVisibility = null;
         Activity currentActivity = getCurrentActivity();
             try {
@@ -2231,7 +2577,7 @@ public class TestUtils {
 
     private void doWaitForIdlingListViewResource(int resource){
         IdlingResource idlingResourceListView;
-        device.waitForIdle();
+        waitForIdle();
         idlingResourceListView = new ListViewIdlingResource(instrumentation,
                 getCurrentActivity().findViewById(resource));
             try {
@@ -2252,6 +2598,14 @@ public class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
+    public void doWaitForAlertDialog(int displayText) {
+        onView(withId(getCurrentActivity().getResources()
+                .getIdentifier("alertTitle", "id", "android")))
+                .inRoot(isDialog())
+                .check(matches(withText(displayText)))
+                .check(matches(isDisplayed()));
+    }
+
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
@@ -2266,9 +2620,13 @@ public class TestUtils {
             backToMessageCompose = true;
         }
         while (!backToMessageCompose){
-            pressBack();
-            device.waitForIdle();
+            goBack(false);
+            waitForIdle();
             waitForToolbar();
+            if (exists(onView(withId(android.R.id.list)))) {
+                clickFolder("Inbox");
+            }
+            waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
                 backToMessageCompose = true;
             }
@@ -2280,13 +2638,13 @@ public class TestUtils {
         BySelector textViewSelector;
         textViewSelector = By.clazz("android.widget.TextView");
         selectFromMenu(R.string.folders_title);
-        device.waitForIdle();
+        waitForIdle();
         while (true) {
             for (UiObject2 textView : device.findObjects(textViewSelector)) {
                 try {
                     if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
                         textView.findObject(textViewSelector).longClick();
-                        device.waitForIdle();
+                        waitForIdle();
                         waitForToolbar();
                         if (hashCode == 0) {
                             hashCode = textView.findObject(textViewSelector).hashCode();
@@ -2294,7 +2652,7 @@ public class TestUtils {
                             return;
                         }
                     }
-                    device.waitForIdle();
+                    waitForIdle();
                 } catch (Exception e) {
                     Timber.i("View is not sent folder");
                     try {
@@ -2312,7 +2670,7 @@ public class TestUtils {
     private void waitForTextOnScreen(String text) {
         boolean textIsOk = false;
         do {
-            device.waitForIdle();
+            waitForIdle();
             try {
                 textIsOk = getTextFromTextViewThatContainsText(text).contains(resources.getString(R.string.special_mailbox_name_sent));
             } catch (Exception e) {
@@ -2337,15 +2695,15 @@ public class TestUtils {
         boolean messageClicked = false;
         boolean encrypted = false;
         while (!messageClicked) {
-            device.waitForIdle();
+            waitForIdle();
             if (!viewIsDisplayed(R.id.openCloseButton)) {
                 try {
                     swipeDownMessageList();
-                    device.waitForIdle();
+                    waitForIdle();
                     while (viewIsDisplayed(R.id.message_list)) {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         messageClicked = true;
-                        device.waitForIdle();
+                        waitForIdle();
                         waitUntilIdle();
                     }
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
@@ -2359,7 +2717,7 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("No message found");
                 }
-                device.waitForIdle();
+                waitForIdle();
             } else {
                 messageClicked = true;
             }
@@ -2375,7 +2733,7 @@ public class TestUtils {
         } catch (Exception noJSON) {
             Timber.i("There are no JSON files attached");
         }
-        device.waitForIdle();
+        waitForIdle();
         Espresso.onIdle();
         return encrypted;
     }
@@ -2383,24 +2741,24 @@ public class TestUtils {
     public void clickMessageAtPosition(int position) {
         boolean messageClicked = false;
         while (!messageClicked) {
-            device.waitForIdle();
+            waitForIdle();
             if (!viewIsDisplayed(R.id.openCloseButton)) {
                 try {
                     swipeDownMessageList();
-                    device.waitForIdle();
+                    waitForIdle();
                     while (viewIsDisplayed(R.id.message_list) || messageClicked) {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(click());
                         messageClicked = true;
-                        device.waitForIdle();
+                        waitForIdle();
                         waitUntilIdle();
                     }
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
                         try {
                             messageClicked = false;
                             while (exists(onView(withId(R.id.delete)))) {
-                                device.waitForIdle();
+                                waitForIdle();
                                 pressBack();
-                                device.waitForIdle();
+                                waitForIdle();
                             }
                         } catch (Exception ex) {
                             Timber.i("Last message has been clicked");
@@ -2409,7 +2767,7 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("No message found");
                 }
-                device.waitForIdle();
+                waitForIdle();
             } else {
                 messageClicked = true;
             }
@@ -2424,13 +2782,18 @@ public class TestUtils {
         } catch (Exception noJSON) {
             Timber.i("There are no JSON files attached");
         }
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-        device.waitForIdle();
+        waitForIdle();
+    }
+
+    public void longClickMessageAtPosition(int position) {
+        waitForIdle();
+        onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(position - 1).perform(ViewActions.longClick());
     }
 
     public void emptyFolder (String folderName) {
-        device.waitForIdle();
+        waitForIdle();
         File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
         if (dir.isDirectory())
         {
@@ -2452,37 +2815,37 @@ public class TestUtils {
     }
 
     private void downloadJSon() {
-        device.waitForIdle();
+        waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         for (int i=0; i<5; i++){
-            device.waitForIdle();
+            waitForIdle();
             waitUntilIdle();
             onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
             swipeUpScreen();
         }
         json = null;
-        device.waitForIdle();
+        waitForIdle();
         waitUntilIdle();
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        waitForIdle();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         for (UiObject2 object : device.findObjects(selector)) {
             try {
                 if (object.getText().contains("results.json")) {
-                    device.waitForIdle();
+                    waitForIdle();
                     while (json == null) {
                         try {
                             downloadAttachedFile("results.json");
-                            device.waitForIdle();
+                            waitForIdle();
                             String js = readJsonFile("results.json");
                             json = new JSONObject(js);
                         } catch (Exception ex) {
                             swipeUpScreen();
                             boolean jsonExists = false;
                                 try {
-                                    device.waitForIdle();
+                                    waitForIdle();
                                     if (object.getText().contains("results.json")) {
                                         jsonExists = true;
                                     }
@@ -2490,7 +2853,7 @@ public class TestUtils {
                                     Timber.i("Cannot find json file on the screen: " + json);
                                 }
                             if (!jsonExists) {
-                                device.waitForIdle();
+                                waitForIdle();
                                 return;
                             }
                         }
@@ -2510,11 +2873,11 @@ public class TestUtils {
         for (UiObject2 object : device.findObjects(selector)) {
             try {
                 if (object.getText().contains(fileName)) {
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-                    device.waitForIdle();
+                    waitForIdle();
                     object.getParent().getChildren().get(0).click();
-                    device.waitForIdle();
+                    waitForIdle();
                     waitForToolbar();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     return;
@@ -2532,6 +2895,48 @@ public class TestUtils {
     public void waitForNewMessages(int totalMessages) {
         for (int waitMessage = 0; waitMessage < totalMessages; waitMessage++){
             waitForNewMessage();
+        }
+    }
+
+    public void waitForNMessageInTheLIst(int messages) {
+        waitForIdle();
+        while (!exists(onView(withId(R.id.message_list)))){
+            waitForIdle();
+        }
+        while (true) {
+            try {
+                waitForIdle();
+                swipeDownMessageList();
+                waitForIdle();
+                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+                if (messages + 1 == messageListSize[0]){
+                    getMessageListSize();
+                    return;
+                }
+                Thread.sleep(2000);
+            } catch (Exception ex) {
+                Timber.i("Waiting for new message : " + ex);
+            }
+        }
+
+    }
+
+    public void pressShowPicturesButton() {
+        while (true) {
+            try {
+                BySelector selector = By.clazz("android.widget.TextView");
+                waitForIdle();
+                for (UiObject2 textView : device.findObjects(selector)) {
+                    if (textView.getText() != null && textView.getText().contains("SHOW PICTURES")) {
+                        textView.click();
+                        return;
+                    }
+                }
+                swipeDownScreen();
+            } catch (Exception noButton) {
+                Timber.i("Cannot find SHOW PICTURES button");
+            }
         }
     }
 
@@ -2561,13 +2966,28 @@ public class TestUtils {
         }
         if (viewIsDisplayed(R.id.delete)) {
             pressBack();
-            device.waitForIdle();
+            waitForIdle();
         }
         getMessageListSize();
         if (viewIsDisplayed(R.id.delete)) {
             pressBack();
-            device.waitForIdle();
+            waitForIdle();
         }
+    }
+
+    public void assertThereAreXMessages(int numberOfMessages) {
+        waitForIdle();
+        while (!exists(onView(withId(R.id.message_list)))) {
+            waitForIdle();
+        }
+        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        waitForIdle();
+        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+        if (messageListSize[1] != numberOfMessages) {
+            assertFailWithMessage("Wrong number of messages");
+        }
+        getMessageListSize();
     }
 
     public void getMessageListSize() {
@@ -2594,9 +3014,9 @@ public class TestUtils {
         while (true) {
             try {
                 Thread.sleep(2000);
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.message_list)).perform(swipeDown());
-                device.waitForIdle();
+                waitForIdle();
                 Thread.sleep(2000);
                 return;
             } catch (Exception e) {
@@ -2612,18 +3032,18 @@ public class TestUtils {
             boolean emptyList = false;
             while (!emptyList) {
                 try {
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withText(R.string.cancel_action)).perform(click());
                 } catch (NoMatchingViewException ignoredException) {
                     Timber.i("Ignored exception");
                 }
                 try {
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.delete)).perform(click());
                 } catch (NoMatchingViewException ignoredException) {
                     emptyList = true;
                 }
-                device.waitForIdle();
+                waitForIdle();
                 if (exists(onView(withId(android.R.id.message)))) {
                     emptyList = false;
                 }
@@ -2633,38 +3053,38 @@ public class TestUtils {
 
     public void clickFirstMessage(){
         while (!viewIsDisplayed(R.id.message_list)) {
-            device.waitForIdle();
+            waitForIdle();
         }
         while ((exists(onView(withId(R.id.message_list))) || viewIsDisplayed(R.id.message_list))
          && (!viewIsDisplayed(R.id.openCloseButton))){
             try{
-                    device.waitForIdle();
+                    waitForIdle();
                     swipeDownMessageList();
-                    device.waitForIdle();
+                    waitForIdle();
                     getMessageListSize();
                     if (viewIsDisplayed(R.id.openCloseButton)) {
                         return;
                     }
                     else {
-                        device.waitForIdle();
+                        waitForIdle();
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
-                        device.waitForIdle();
+                        waitForIdle();
                     }
             } catch (Exception ex){
                 Timber.i("Cannot find list: " + ex);
             }
         }
-        device.waitForIdle();
+        waitForIdle();
     }
 
     void checkToolBarColor(int color) {
-        device.waitForIdle();
+        waitForIdle();
         while (!exists(onView(withId(R.id.toolbar)))) {
             doWaitForResource(R.id.toolbar);
-            device.waitForIdle();
+            waitForIdle();
         }
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        waitForIdle();
         onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
@@ -2674,7 +3094,7 @@ public class TestUtils {
         while (!backToMessageList){
             try {
                 pressBack();
-                device.waitForIdle();
+                waitForIdle();
                 try {
                     if (currentActivity == getCurrentActivity() && exists(onView(withText(R.string.discard_action)))) {
                         onView(withText(R.string.discard_action)).check(matches(isDisplayed()));
@@ -2699,27 +3119,26 @@ public class TestUtils {
         while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
             device.waitForIdle();
             clipboard.setPrimaryClip(clip);
-            device.waitForIdle();
         }
     }
 
     public void pasteClipboard() {
-        device.waitForIdle();
+        waitForIdle();
         UiDevice.getInstance(getInstrumentation())
                 .pressKeyCode(KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_MASK);
-        device.waitForIdle();
+        waitForIdle();
     }
 
     public void compareMessageBody(String cucumberBody) {
         String [] body;
+        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
+            waitForIdle();
+        }
         swipeUpScreen();
         waitUntilIdle();
-        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
-            device.waitForIdle();
-        }
         doWaitForResource(R.id.message_container);
         while (true) {
-            device.waitForIdle();
+            waitForIdle();
             if (exists(onView(withId(R.id.message_container)))) {
                 onView(withId(R.id.message_container)).check(matches(isDisplayed()));
                 if (cucumberBody.equals("Rating/DecodedRating")) {
@@ -2738,7 +3157,7 @@ public class TestUtils {
                 if (text[0].contains(cucumberBody)) {
                     return;
                 } else {
-                    device.waitForIdle();
+                    waitForIdle();
                     onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
                     assertFailWithMessage("Error: BODY TEXT=" + text[0] + " ---*****--- TEXT TO COMPARE=" + cucumberBody);
                 }
@@ -2754,15 +3173,15 @@ public class TestUtils {
         UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-                device.waitForIdle();
+                waitForIdle();
                 if (!object.getText().contains(cucumberBody)) {
                     assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
                 return;
             } else {
-                device.waitForIdle();
+                waitForIdle();
                 onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
             }
         }
@@ -2771,12 +3190,12 @@ public class TestUtils {
     private void compareTextWithWebViewText(String textToCompare) {
         UiObject2 wb;
         String[] webViewText = new String[1];
-        device.waitForIdle();
+        waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        device.waitForIdle();
+        waitForIdle();
         while (true) {
             try {
-                device.waitForIdle();
+                waitForIdle();
                 waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
@@ -2786,7 +3205,7 @@ public class TestUtils {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
             if (webViewText[0].contains(textToCompare)) {
-                device.waitForIdle();
+                waitForIdle();
                 return;
             } else {
                 assertFailWithMessage("Message Body text is different");
@@ -2829,15 +3248,15 @@ public class TestUtils {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
                     if (object.getText().contains(resources.getString(resource))) {
-                        device.waitForIdle();
+                        waitForIdle();
                         UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
                         if (checkbox.isChecked() != check){
-                            device.waitForIdle();
+                            waitForIdle();
                             checkbox.longClick();
-                            device.waitForIdle();
+                            waitForIdle();
                         }
                         if (checkbox.isChecked() == check) {
-                            device.waitForIdle();
+                            waitForIdle();
                             textViewFound = true;
                             break;
                         }
@@ -2849,14 +3268,23 @@ public class TestUtils {
         }
     }
 
+    public void getScreenShot() {
+        waitForIdle();
+        File imageDir = new File(Environment.getExternalStorageDirectory().toString());
+        if (!imageDir.exists()) {
+            imageDir.mkdir();
+        }
+        device.takeScreenshot(new File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25);
+    }
+
     public void scrollUpToSubject (){
         UiObject2 scroll;
         do {
             try {
                 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                device.waitForIdle();
+                waitForIdle();
                 scroll.swipe(Direction.DOWN, 1.0f);
-                device.waitForIdle();
+                waitForIdle();
             } catch (Exception e) {
                 pressBack();
             }
@@ -2865,7 +3293,7 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToCehckBoxAndCheckIt(boolean isChecked, int view) {
+    public void scrollToCheckBoxAndCheckIt(boolean isChecked, int view) {
         scrollToView(resources.getString(view));
         if (isChecked) {
             checkBoxOnScreenChecked(view, false);
@@ -2883,7 +3311,7 @@ public class TestUtils {
 
     public void scrollToView (String text){
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
-            device.waitForIdle();
+            waitForIdle();
             Espresso.onIdle();
         try {
             textView.dragTo(500,500,30);
@@ -2898,14 +3326,14 @@ public class TestUtils {
             for (UiObject2 checkbox : device.findObjects(selector)) {
                 try {
                     if (checkbox.getText().contains(resourceText)) {
-                        device.waitForIdle();
+                        waitForIdle();
                         if (checkbox.isChecked() != checked){
-                            device.waitForIdle();
+                            waitForIdle();
                             checkbox.longClick();
-                            device.waitForIdle();
+                            waitForIdle();
                         }
                         if (checkbox.isChecked() == checked) {
-                            device.waitForIdle();
+                            waitForIdle();
                             return;
                         }
                     }
@@ -3005,7 +3433,7 @@ public class TestUtils {
                         jsonArray.put(json.get((String) x.next()));
                     }
                 } catch (JSONException e) {
-                    Timber.i("");
+                    Timber.i("Cannot find json object");
                 }
         }
     }
@@ -3017,7 +3445,7 @@ public class TestUtils {
             swipeUpScreen();
             downloadAttachedFile(fileName);
             waitUntilIdle();
-            device.waitForIdle();
+            waitForIdle();
         }
         StringBuilder jsonText = new StringBuilder();
             try {
@@ -3058,6 +3486,10 @@ public class TestUtils {
             Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
         }
     }
+
+    public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
+
+    public String getPassphrasePassword() { return testConfig.getPassphrase_password(Integer.parseInt(testConfig.test_number) - 4);}
 
     @NonNull
     private String getEmail() {
@@ -3131,7 +3563,11 @@ public class TestUtils {
         int total = 3;
         String[] keySync_account;
         String[] keySync_password;
-        String keySync_number;
+        String test_number;
+        String[] passphrase_account;
+        String[] passphrase_password;
+        String format_test_account;
+        String format_test_password;
 
         TestConfig(){
             this.mail = new String[total];
@@ -3144,7 +3580,11 @@ public class TestUtils {
             this.smtp_port = new String[total];
             this.keySync_account = new String[2];
             this.keySync_password = new String[2];
-            keySync_number = "-10";
+            test_number = "-10";
+            this.passphrase_account = new String[3];
+            this.passphrase_password = new String[3];
+            this.format_test_account = new String();
+            this.format_test_password = new String();
         }
 
         void setMail(String mail, int account) { this.mail[account] = mail;}
@@ -3157,7 +3597,11 @@ public class TestUtils {
         void setSmtp_port(String smtp_port, int account) { this.smtp_port[account] = smtp_port;}
         void setKeySync_account(String mail, int account) { this.keySync_account[account] = mail;}
         void setKeySync_password(String password, int account) { this.keySync_password[account] = password;}
-        void setKeySync_number(String number) { this.keySync_number = number;}
+        void settest_number(String number) { this.test_number = number;}
+        void setPassphrase_account(String mail, int account) { this.passphrase_account[account] = mail;}
+        void setPassphrase_password(String password, int account) { this.passphrase_password[account] = password;}
+        void setFormat_test_account(String account) { this.format_test_account = account;}
+        void setFormat_test_password(String password) { this.format_test_password = password;}
 
         String getMail(int account) { return mail[account];}
         String getPassword(int account) { return password[account];}
@@ -3169,7 +3613,11 @@ public class TestUtils {
         String getSmtp_port(int account) { return smtp_port[account];}
         String getKeySync_account(int account) { return keySync_account[account];}
         String getKeySync_password(int account) { return keySync_password[account];}
-        String getKeySync_number() { return keySync_number;}
+        String gettest_number() { return test_number;}
+        String getPassphrase_account(int account) { return passphrase_account[account];}
+        String getPassphrase_password(int account) { return passphrase_password[account];}
+        String getFormat_test_account() { return format_test_account;}
+        String getFormat_test_password() { return  format_test_password;}
     }
 
     public String getString(int stringId) {
