@@ -24,6 +24,7 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -43,7 +44,11 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     @Override
     public void onCreate(Bundle icicle) {
         K9ActivityCommon.setLanguage(this, K9.getK9Language());
-        setTheme(K9.getK9ThemeResourceId());
+        setTheme(
+            ThemeManager.isDarkTheme()
+            ? R.style.Theme_K9_Dark
+            : R.style.Theme_K9_Light
+        );
         super.onCreate(icicle);
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
@@ -127,9 +132,9 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     }
 
     public void setStatusBar() {
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        toolBarCustomizer.setToolbarColor(getResources().getColor(R.color.colorPrimary));
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolbar.setTitleTextColor(ThemeManager.getColorFromAttributeResource(this, R.attr.defaultToolbarTextColor));
+        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
     }
 
     /**
@@ -224,8 +229,6 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         if (dialog == null) {
             return;
         }
-
-        setTheme(K9.getK9ThemeResourceId());
 
         ListView content = dialog.findViewById(android.R.id.list);
         ViewGroup root = (ViewGroup) content.getParent().getParent();

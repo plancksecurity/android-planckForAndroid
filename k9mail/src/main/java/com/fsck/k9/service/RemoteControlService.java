@@ -3,7 +3,6 @@ package com.fsck.k9.service;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 
 import com.fsck.k9.Account;
@@ -13,21 +12,14 @@ import com.fsck.k9.K9.BACKGROUND_OPS;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.job.K9JobManager;
+import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.remotecontrol.K9RemoteControl;
-import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
-import com.fsck.k9.Account.FolderMode;
-import com.fsck.k9.K9.BACKGROUND_OPS;
 
-import static com.fsck.k9.remotecontrol.K9RemoteControl.*;
-
-import android.content.Context;
-import android.content.Intent;
 import timber.log.Timber;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -144,7 +136,7 @@ public class RemoteControlService extends CoreService {
 
                         String theme = intent.getStringExtra(K9_THEME);
                         if (theme != null) {
-                            K9.setK9Theme(K9RemoteControl.K9_THEME_DARK.equals(theme) ? K9.Theme.DARK : K9.Theme.LIGHT);
+                            ThemeManager.setAppTheme(K9RemoteControl.K9_THEME_DARK.equals(theme) ? AppTheme.DARK : AppTheme.LIGHT);
                         }
 
                         Storage storage = preferences.getStorage();

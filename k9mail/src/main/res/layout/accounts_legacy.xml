@@ -45,7 +45,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:paddingLeft="16dp"
                             android:text="@string/account_settings_folders"
-                            android:textColor="@color/colorPrimaryDark" />
+                            android:textColor="?attr/colorPrimaryDark" />
 
                         <com.fsck.k9.pEp.ui.tools.NestedListView
                             android:id="@+id/folders_list"
@@ -79,7 +79,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:paddingLeft="16dp"
                             android:text="@string/available_accounts_title"
-                            android:textColor="@color/colorPrimaryDark" />
+                            android:textColor="?attr/colorPrimaryDark" />
 
                         <com.fsck.k9.pEp.ui.tools.NestedListView
                             android:id="@+id/accounts_list"
@@ -103,7 +103,7 @@
                                 android:paddingTop="16dp"
                                 android:text="@string/add_account_action"
                                 android:textAllCaps="true"
-                                android:textColor="@color/colorPrimaryDark"
+                                android:textColor="?attr/colorPrimaryDark"
                                 android:textStyle="bold" />
 
                         </FrameLayout>
@@ -132,7 +132,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:paddingLeft="16dp"
                             android:text="@string/global_settings_title"
-                            android:textColor="@color/colorPrimaryDark" />
+                            android:textColor="?attr/colorPrimaryDark" />
 
                         <LinearLayout
                             android:id="@+id/settings_container"
@@ -148,7 +148,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingLeft="16dp"
-                                android:src="@drawable/ic_configure_account" />
+                                android:src="@drawable/ic_configure_account_24dp" />
 
                             <TextView
                                 android:id="@+id/textView2"

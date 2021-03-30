@@ -29,11 +29,14 @@
     <color name="pep_yellow">#ffc107</color>
     <color name="pep_red">#f44336</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
     <color name="gray">#9e9e9e</color>
     <color name="nav_contact_background">#ABABAB</color>
     <color name="light_gray">#B8B8B8</color>
     <color name="dark_gray">#737373</color>
+
+    <color name="message_icons_color">#424242</color>
 
     <color name="text_for_white_background">#212121</color>
     <color name="secondary_text_color">#757575</color>
@@ -63,14 +66,42 @@
 
     <color name="message_list_active_background_color_dark">#42A044</color>
     <color name="message_list_active_background_color_light">#59D85D</color>
-    <color name="message_list_selected_background_color">#c8e6c9</color>
+    <color name="message_list_selected_background_color_light">#c8e6c9</color>
+    <color name="message_list_selected_background_color_dark">#666666</color>
     <color name="message_list_read_background_color">#c0cdcdcd</color>
-    <color name="message_list_unread_background_color_dark">#c05a5a5a</color>
+    <color name="message_list_unread_background_color_dark">@color/dark_theme_default_background</color>
     <color name="message_list_divider_color_light">#ffcccccc</color>
     <color name="message_list_divider_color_dark">#ff333333</color>
 
     <color name="keysync_disable_warning_cancel_color">#969696</color>
     <color name="keysync_disable_warning_text_color">#c8c8c8</color>
 
+    <color name="delete_email_container_background">#FF5722</color>
+    <color name="archive_email_container_background">#559E6E</color>
+    <color name="message_container_unsigned">#d55</color>
+    <color name="white_transparent">#00FFFFFF</color>
+    <color name="black_transparent">#00000000</color>
+
+    <color name="sync_device_green_1">#00AA2B</color>
+    <color name="sync_device_green_2">#03AA4B</color>
+    <color name="pep_logo_green">#0CA834</color>
+    <color name="line_divider">#FF999999</color>
+    <color name="adaptive_app_icon_accent">#00B28E</color>
+    <color name="seekbar_background">#888</color>
+    <color name="unread_count_background">#ffcc0000</color>
+    <color name="rounded_corners">#a0000000</color>
+
+    <color name="colorPrimaryDark_dark_theme">@color/dark_theme_overlay_1</color>
+    <color name="dark_theme_default_background">#121212</color>
+    <color name="dark_theme_overlay_1">#1F1F1F</color>
+    <color name="toolbar_content_default_dark_theme">@color/white_transparent_90</color>
+    <color name="white_transparent_90">#E6FFFFFF</color>
+    <color name="fab_menu_background_tint_dark_theme">#373737</color>
+    <color name="drawer_body_icons_color_dark">#c6c6c6</color>
+    <color name="drawer_body_icons_color_light">#757575</color>
+    <color name="dark_theme_default_dialog_background">@color/dark_theme_overlay_1</color>
+    <color name="dark_theme_preferences_icons_color">@color/white_transparent_90</color>
+    <color name="dark_theme_text_color_primary">@color/white_transparent_90</color>
+    <color name="white_transparent_70">#B3FFFFFF</color>
 
 </resources>

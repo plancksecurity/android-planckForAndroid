@@ -11,7 +11,7 @@
         android:id="@+id/delete_email_container"
         android:layout_width="160dp"
         android:layout_height="match_parent"
-        android:background="#FF5722"
+        android:background="?attr/deleteEmailContainerBackground"
         android:orientation="horizontal"
         android:visibility="gone"
         android:weightSum="1"
@@ -33,7 +33,7 @@
         android:id="@+id/archive_email_container"
         android:layout_width="160dp"
         android:layout_height="match_parent"
-        android:background="#559E6E"
+        android:background="?attr/archiveEmailContainerBackground"
         android:orientation="horizontal"
         android:visibility="gone"
         android:weightSum="1">

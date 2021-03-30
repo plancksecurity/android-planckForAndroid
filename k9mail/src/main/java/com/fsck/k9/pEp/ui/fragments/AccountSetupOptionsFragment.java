@@ -57,6 +57,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.account_setup_options, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_settings_title_fmt);
@@ -119,7 +120,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
         mDisplayCountView.setAdapter(displayCountsAdapter);
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
 
         mNotifyView.setChecked(mAccount.isNotifyNewMail());
         mNotifySyncView.setChecked(mAccount.isShowOngoing());
@@ -168,13 +169,11 @@ public class AccountSetupOptionsFragment extends PEpFragment {
 
         mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
-        mAccount.save(Preferences.getPreferences(getActivity()));
         if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount()) ||
                 getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false)) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);
         }
-        K9.setServicesEnabled(getActivity());
-        AccountSetupNames.actionSetNames(getActivity(), mAccount);
+        AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
     }
 
     public void onClick(View v) {

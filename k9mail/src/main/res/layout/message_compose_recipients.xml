@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="8dp"
-            android:tint="@color/light_black"
+            android:tint="?attr/grayScaleColorOnBackground1"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/crypto_special_mode"
@@ -71,7 +71,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
-                android:tint="@color/light_black"
+                android:tint="?attr/grayScaleColorOnBackground1"
                 app:srcCompat="@drawable/compatibility" />
 
             <ImageView
@@ -98,7 +98,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:layout_gravity="end|bottom"
-                    android:tint="@color/light_black"
+                    android:tint="?attr/grayScaleColorOnBackground1"
                     app:srcCompat="@drawable/compatibility" />
             </FrameLayout>
 

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
 import com.fsck.k9.R
@@ -195,6 +196,10 @@ object PEpUIUtils {
                 .toMutableList()
                 .addSpecialFoldersOrderedToTopOfList(specialFolders)
     }
+
+    @JvmStatic
+    fun getColorAsString(context: Context, @ColorRes color: Int): String =
+            "#${Integer.toHexString(ContextCompat.getColor(context, color) and 0x00ffffff)}"
 
     private fun <E : Any> MutableList<E>.getSpecialFolders(account: Account): List<E?> {
         val inboxFolderName = account.inboxFolderName

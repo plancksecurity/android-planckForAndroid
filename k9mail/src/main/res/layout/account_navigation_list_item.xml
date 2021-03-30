@@ -4,7 +4,7 @@
     android:id="@+id/account_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@color/gray"
+    tools:background="?attr/grayScaleColorOnBackground3"
     android:paddingBottom="16dp"
     android:paddingTop="16dp">
 
@@ -17,7 +17,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="center_vertical"
-            android:src="@color/colorPrimary" />
+            android:src="?attr/colorPrimary" />
 
         <TextView
             android:id="@+id/account_letter"
@@ -25,7 +25,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="24sp"
-            android:textColor="@color/white"
+            android:textColor="?attr/defaultButtonTextColor"
             tools:text="A" />
     </FrameLayout>
 

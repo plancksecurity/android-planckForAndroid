@@ -173,14 +173,26 @@
         <item>ko</item>
     </string-array>
 
+    <string-array name="theme_entries_legacy">
+        <item>@string/setting_theme_light</item>
+        <item>@string/setting_theme_dark</item>
+    </string-array>
+
     <string-array name="theme_entries">
         <item>@string/setting_theme_light</item>
         <item>@string/setting_theme_dark</item>
+        <item>@string/setting_theme_follow_system</item>
+    </string-array>
+
+    <string-array name="theme_values_legacy" translatable="false">
+        <item>follow_system</item>
+        <item>dark</item>
     </string-array>
 
     <string-array name="theme_values" translatable="false">
         <item>light</item>
         <item>dark</item>
+        <item>follow_system</item>
     </string-array>
 
     <string-array name="message_theme_entries">

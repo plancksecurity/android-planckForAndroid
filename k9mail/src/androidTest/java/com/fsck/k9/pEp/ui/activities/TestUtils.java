@@ -49,6 +49,8 @@ import android.widget.TextView;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.common.GetListSizeAction;
+import com.fsck.k9.pEp.PEpColorUtils;
 
 import org.hamcrest.Matcher;
 import org.json.JSONArray;
@@ -2230,7 +2232,8 @@ public class TestUtils {
         }}
 
     private void checkUpperToolbar (int color){
-        int colorFromResource = (ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color) & 0x00FFFFFF);
+        int colorFromResource = PEpColorUtils.makeColorTransparent(
+                ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color));
         float[] hsv = new float[3];
         Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
         hsv[2] = hsv[2]*0.9f;
@@ -3496,7 +3499,7 @@ public class TestUtils {
 
     @NonNull
     private String getPassword() {
-        return "pEpdichauf5MailPassword";
+        return "";
         //return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
     }
 
@@ -3615,5 +3618,18 @@ public class TestUtils {
         String getPassphrase_password(int account) { return passphrase_password[account];}
         String getFormat_test_account() { return format_test_account;}
         String getFormat_test_password() { return  format_test_password;}
+    }
+
+    public String getString(int stringId) {
+        return resources.getString(stringId);
+    }
+
+    public int getListSize(int listId) {
+        GetListSizeAction listSize = new GetListSizeAction();
+        device.waitForIdle();
+        onView(withId(listId))
+                .check(matches(isDisplayed()))
+                .perform(listSize);
+        return listSize.getSize();
     }
 }

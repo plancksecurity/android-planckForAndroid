@@ -17,12 +17,12 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,7 +30,6 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import org.jetbrains.annotations.NotNull;
-import timber.log.Timber;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic {
 
@@ -104,7 +103,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             if (getSupportActionBar() != null) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
-            if (K9.getK9Theme() == K9.Theme.DARK) {
+            if (ThemeManager.isDarkTheme()) {
                 toolbar.setPopupTheme(R.style.PEpThemeOverlay);
             }
         }

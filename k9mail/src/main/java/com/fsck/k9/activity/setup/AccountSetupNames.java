@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,14 +25,15 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
+import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
@@ -41,6 +41,7 @@ import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";
+    private static final String EXTRA_MANUAL_SETUP = "manualSetup";
 
     private EditText mDescription;
 
@@ -66,9 +67,10 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     }
 
 
-    public static void actionSetNames(Context context, Account account) {
+    public static void actionSetNames(Context context, Account account, boolean manualSetup) {
         Intent i = new Intent(context, AccountSetupNames.class);
         i.putExtra(EXTRA_ACCOUNT, account.getUuid());
+        i.putExtra(EXTRA_MANUAL_SETUP, manualSetup);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(i);
     }
@@ -79,7 +81,8 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         bindViews(R.layout.account_setup_names);
 
         initializeToolbar(true, R.string.account_setup_names_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.colorPrimary));
+        toolBarCustomizer.setStatusBarPepColor(
+                ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
 
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
@@ -103,7 +106,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         mName.setKeyListener(TextKeyListener.getInstance(false, Capitalize.WORDS));
 
         String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(this).getAccount(accountUuid);
+        mAccount = Preferences.getPreferences(this).getAccountAllowingIncomplete(accountUuid);
 
         /*
          * Since this field is considered optional, we don't set this here. If
@@ -171,16 +174,15 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         }
         mAccount.setName(mName.getText().toString());
         mAccount.setPEpSyncAccount(pepSyncAccount.isChecked());
-        mAccount.save(Preferences.getPreferences(this));
-
+        boolean isManualSetup = getIntent().getBooleanExtra(EXTRA_MANUAL_SETUP, false);
         pEpGenerateAccountKeysTask accountGenerationTask = new pEpGenerateAccountKeysTask(this, mAccount);
-        launchGenerateAccountKeysTask(accountGenerationTask);
+        launchGenerateAccountKeysTask(accountGenerationTask, isManualSetup);
     }
 
     @VisibleForTesting
-    public void launchGenerateAccountKeysTask(pEpGenerateAccountKeysTask accountGenerationTask) {
+    public void launchGenerateAccountKeysTask(pEpGenerateAccountKeysTask accountGenerationTask, boolean manualSetup) {
         nonConfigurationInstance = accountGenerationTask;
-        accountGenerationTask.execute();
+        accountGenerationTask.execute(manualSetup);
     }
 
     public void onClick(View v) {
@@ -192,7 +194,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     }
 
     @VisibleForTesting
-    public static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Void, Void, Void> {
+    public static class pEpGenerateAccountKeysTask extends ExtendedAsyncTask<Boolean, Void, Void> {
         Account account;
 
         @VisibleForTesting public AccountKeysGenerator accountKeysGenerator = new AccountKeysGenerator() {
@@ -233,7 +235,16 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         }
 
         @Override
-        public Void doInBackground(Void... params) {
+        public Void doInBackground(Boolean... params) {
+            account.setSetupState(Account.SetupState.READY);
+            boolean manualSetup = params[0];
+            if(manualSetup) {
+                account.setOptionsOnInstall();
+            }
+            account.save(Preferences.getPreferences(mActivity));
+            MessagingController.getInstance(mActivity).refreshRemoteSynchronous(account);
+            MessagingController.getInstance(mActivity)
+                    .synchronizeMailbox(account, account.getInboxFolderName(), null, null);
             accountKeysGenerator.generateAccountKeys();
             return null;
         }

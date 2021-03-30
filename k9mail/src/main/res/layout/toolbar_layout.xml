@@ -10,7 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="?attr/toolbarDefaultColor"
         android:contentInsetStart="0dp"
         android:contentInsetLeft="0dp"
         android:elevation="4dp"
@@ -18,7 +18,7 @@
         app:contentInsetStart="0dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        tools:backgroundTint="@color/colorPrimary"
+        tools:backgroundTint="?attr/toolbarDefaultColor"
         tools:title="title">
 
         <include layout="@layout/actionbar_custom" />
@@ -28,7 +28,7 @@
         android:id="@+id/toolbar_search_container"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="?attr/toolbarDefaultColor"
         android:clipChildren="false"
         android:visibility="gone">
 

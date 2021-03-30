@@ -3,7 +3,7 @@
 
     <item android:id="@android:id/background">
         <shape android:shape="line">
-            <stroke android:width="2dp" android:color="#888" />
+            <stroke android:width="2dp" android:color="@color/seekbar_background" />
         </shape>
     </item>
 

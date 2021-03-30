@@ -95,6 +95,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
@@ -291,10 +293,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         Timber.e("P4A-941 took %d to before rendering", System.currentTimeMillis()-time);
-        if (K9.getK9ComposerThemeSetting() != K9.Theme.USE_GLOBAL) {
+        if (ThemeManager.getComposerTheme() != Theme.USE_GLOBAL) {
             // theme the whole content according to the theme (except the action bar)
             ContextThemeWrapper themeContext = new ContextThemeWrapper(this,
-                    K9.getK9ThemeResourceId(K9.getK9ComposerTheme()));
+                    ThemeManager.getComposerThemeResourceId());
             @SuppressLint("InflateParams") // this is the top level activity element, it has no root
                     View v = LayoutInflater.from(themeContext).inflate(R.layout.message_compose, null);
             TypedValue outValue = new TypedValue();
@@ -512,7 +514,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateMessageFormat();
 
         setTitle();
-        restoreMessageComposeConfigurationInstance();
         Timber.e("P4A-941 builder set %d ", System.currentTimeMillis()-time);
 
         recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.ACCOUNT, account.ispEpPrivacyProtected());
@@ -544,14 +545,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             pEpSecurityStatusLayout.setOnLongClickListener( view -> {
-                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(getApplicationContext(),
+                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                         view, recipientPresenter);
                 statusMenu.show();
                 return true;
             });
         }
-        toolBarCustomizer.setToolbarColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
-        toolBarCustomizer.setStatusBarPepColor(ContextCompat.getColor(getApplicationContext(), R.color.nav_contact_background));
+        toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
+        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
     }
 
     @Override
@@ -755,6 +756,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         updateFrom();
 
         updateMessageFormat();
+        restoreMessageComposeConfigurationInstance();
     }
 
     private void setTitle() {
@@ -1182,7 +1184,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onPrepareOptionsMenu(menu);
 
         recipientPresenter.onPrepareOptionsMenu(menu);
-        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(ContextCompat.getColor(this, R.color.light_black));
+        toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor));
 
         return true;
     }
@@ -1269,7 +1271,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                         .create();
             case DIALOG_CHOOSE_IDENTITY:
                 Context context = new ContextThemeWrapper(this,
-                        (K9.getK9Theme() == K9.Theme.LIGHT) ?
+                        ThemeManager.isDarkTheme() ?
                                 R.style.Theme_K9_Dialog_Light :
                                 R.style.Theme_K9_Dialog_Dark);
                 Builder builder = new AlertDialog.Builder(context);

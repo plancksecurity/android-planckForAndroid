@@ -32,8 +32,6 @@ import foundation.pEp.jniadapter.Pair;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeResult;
-import foundation.pEp.jniadapter.pEpCannotCreateKey;
-import foundation.pEp.jniadapter.pEpException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +46,11 @@ import java.util.Vector;
 
 import javax.inject.Inject;
 
-import foundation.pEp.jniadapter.pEpPassphraseRequired;
-import foundation.pEp.jniadapter.pEpWrongPassphrase;
+import foundation.pEp.jniadapter.decrypt_message_Return;
+import foundation.pEp.jniadapter.exceptions.pEpCannotCreateKey;
+import foundation.pEp.jniadapter.exceptions.pEpException;
+import foundation.pEp.jniadapter.exceptions.pEpPassphraseRequired;
+import foundation.pEp.jniadapter.exceptions.pEpWrongPassphrase;
 import security.pEp.ui.PassphraseProvider;
 import timber.log.Timber;
 
@@ -192,7 +193,7 @@ public class PEpProviderImpl implements PEpProvider {
     public synchronized DecryptResult decryptMessage(MimeMessage source, String email) {
         Timber.d(TAG, "decryptMessage() enter");
         Message srcMsg = null;
-        Engine.decrypt_message_Return decReturn = null;
+        decrypt_message_Return decReturn = null;
         try {
             if (engine == null) createEngineSession();
             srcMsg = new PEpMessageBuilder(source).createMessage(context);
@@ -241,7 +242,7 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @org.jetbrains.annotations.Nullable
-    private DecryptResult processKeyImportSyncMessages(Engine.decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
+    private DecryptResult processKeyImportSyncMessages(decrypt_message_Return decReturn, MimeMessage decryptedMimeMessage) {
         int flags = -1;
         Date lastValidDate = new Date(System.currentTimeMillis() - (TIMEOUT));
 
@@ -285,7 +286,7 @@ public class PEpProviderImpl implements PEpProvider {
         threadExecutor.execute(() -> {
             Timber.d(TAG, "decryptMessage() enter");
             Message srcMsg = null;
-            Engine.decrypt_message_Return decReturn = null;
+            decrypt_message_Return decReturn = null;
             Engine engine = null;
             try {
                 engine = getNewEngineSession();
@@ -385,7 +386,7 @@ public class PEpProviderImpl implements PEpProvider {
         return mimeMessage;
     }
 
-    private boolean isUsablePrivateKey(Engine.decrypt_message_Return result) {
+    private boolean isUsablePrivateKey(decrypt_message_Return result) {
         // TODO: 13/06/16 Check if is necesary check own id
         return result.rating.value >= Rating.pEpRatingTrusted.value
                 && result.flags == 0x01;
@@ -777,7 +778,7 @@ public class PEpProviderImpl implements PEpProvider {
         try {
             return engine.myself(myId);
         }
-        catch( pEpCannotCreateKey exception) {
+        catch(pEpCannotCreateKey exception) {
             Timber.e(exception, "%s %s", TAG, "could not create key in PEpProviderImpl.myself");
             return myId;
         }

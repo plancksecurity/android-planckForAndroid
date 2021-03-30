@@ -17,6 +17,8 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.pEp.ui.tools.Theme
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
@@ -51,12 +53,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
         initializeNewKeysPassphrase()
+        initializeTheme()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeTheme() {
+        (findPreference(PREFERENCE_THEME) as? ListPreference)?.apply {
+            if (Build.VERSION.SDK_INT < 28) {
+                setEntries(R.array.theme_entries_legacy)
+                setEntryValues(R.array.theme_values_legacy)
+            }
+        }
     }
 
     private fun initializeNewKeysPassphrase() {
@@ -123,7 +135,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.apply {
             widgetLayoutResource = R.layout.preference_loading_widget
             setOnPreferenceClickListener {
-                AlertDialog.Builder(view?.context)
+                AlertDialog.Builder(view?.context,
+                    ThemeManager.getAttributeResource(requireContext(), R.attr.resetAllAccountsDialogStyle))
                         .setMessage(R.string.pep_key_reset_all_own_ids_warning)
                         .setTitle(R.string.pep_key_reset_all_own_ids_summary)
                         .setCancelable(false)
@@ -154,7 +167,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
             if (!newValue) {
                 if (syncSwitchDialog == null) {
-                    syncSwitchDialog = AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+                    syncSwitchDialog = AlertDialog.Builder(view?.context,
+                            ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
                             .setTitle(R.string.keysync_disable_warning_title)
                             .setMessage(R.string.keysync_disable_warning_explanation)
                             .setCancelable(false)
@@ -254,6 +268,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
+        private const val PREFERENCE_THEME = "theme"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

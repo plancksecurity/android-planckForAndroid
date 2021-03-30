@@ -50,6 +50,11 @@ import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+import security.pEp.network.ConnectionMonitorCallback;
+import security.pEp.network.ConnectionMonitor;
+import com.fsck.k9.pEp.ui.tools.AppTheme;
+import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.power.DeviceIdleManager;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -100,6 +105,7 @@ public class K9 extends MultiDexApplication {
     public PEpProvider pEpProvider, pEpSyncProvider;
     private Account currentAccount;
     private ApplicationComponent component;
+    private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
 
     public static K9JobManager jobManager;
 
@@ -131,6 +137,7 @@ public class K9 extends MultiDexApplication {
 
 
     public static final int VERSION_MIGRATE_OPENPGP_TO_ACCOUNTS = 63;
+    public static final int DEFAULT_CONTACT_NAME_COLOR = 0xff00008f;
 
     public static String password = null;
 
@@ -195,10 +202,6 @@ public class K9 extends MultiDexApplication {
     }
 
     private static String language = "";
-    private static Theme theme = Theme.LIGHT;
-    private static Theme messageViewTheme = Theme.USE_GLOBAL;
-    private static Theme composerTheme = Theme.USE_GLOBAL;
-    private static boolean useFixedMessageTheme = true;
 
     private static final FontSizes fontSizes = new FontSizes();
 
@@ -300,7 +303,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mMessageListSenderAboveSubject = false;
     private static boolean mShowContactName = false;
     private static boolean mChangeContactNameColor = false;
-    private static int mContactNameColor = 0xff00008f;
+    private static int mContactNameColor = DEFAULT_CONTACT_NAME_COLOR;
     private static boolean sShowContactPicture = true;
     private static boolean mMessageViewFixedWidthFont = false;
     private static boolean mMessageViewReturnToList = false;
@@ -575,10 +578,10 @@ public class K9 extends MultiDexApplication {
 
 
         editor.putString("language", language);
-        editor.putInt("theme", theme.ordinal());
-        editor.putInt("messageViewTheme", messageViewTheme.ordinal());
-        editor.putInt("messageComposeTheme", composerTheme.ordinal());
-        editor.putBoolean("fixedMessageViewTheme", useFixedMessageTheme);
+        editor.putInt("theme", ThemeManager.getAppTheme().ordinal());
+        editor.putInt("messageViewTheme", ThemeManager.getK9MessageViewTheme().ordinal());
+        editor.putInt("messageComposeTheme", ThemeManager.getK9ComposerTheme().ordinal());
+        editor.putBoolean("fixedMessageViewTheme", ThemeManager.getUseFixedMessageViewTheme());
 
         editor.putBoolean("confirmDelete", mConfirmDelete);
         editor.putBoolean("confirmDiscardMessage", mConfirmDiscardMessage);
@@ -675,6 +678,7 @@ public class K9 extends MultiDexApplication {
          */
 
         setServicesEnabled(this);
+        startConnectivityMonitor();
         registerReceivers();
 
         MessagingController.getInstance(this).addListener(new SimpleMessagingListener() {
@@ -758,6 +762,7 @@ public class K9 extends MultiDexApplication {
 
         });
 
+        refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
 
@@ -773,6 +778,13 @@ public class K9 extends MultiDexApplication {
     private void clearBodyCacheIfAppUpgrade() {
         AppUpdater appUpdater = new AppUpdater(this, getCacheDir());
         appUpdater.clearBodyCacheIfAppUpgrade();
+    }
+
+    private void refreshFoldersForAllAccounts() {
+        List<Account> accounts = Preferences.getPreferences(this.getApplicationContext()).getAccounts();
+        for (Account account : accounts) {
+            MessagingController.getInstance(this).listFolders(account, true, null);
+        }
     }
 
     private void initJobManager(Preferences prefs) {
@@ -917,7 +929,7 @@ public class K9 extends MultiDexApplication {
         mShowContactName = storage.getBoolean("showContactName", false);
         sShowContactPicture = storage.getBoolean("showContactPicture", true);
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
-        mContactNameColor = storage.getInt("registeredNameColor", 0xff00008f);
+        mContactNameColor = storage.getInt("registeredNameColor", DEFAULT_CONTACT_NAME_COLOR);
         mMessageViewFixedWidthFont = storage.getBoolean("messageViewFixedWidthFont", false);
         boolean returnToList = storage.getBoolean("messageViewReturnToList", false);
         boolean showNext = storage.getBoolean("messageViewShowNext", true);
@@ -1004,22 +1016,16 @@ public class K9 extends MultiDexApplication {
 
         K9.setK9Language(storage.getString("language", ""));
 
-        int themeValue = Theme.LIGHT.ordinal();
-        // We used to save the resource ID of the theme. So convert that to the new format if
-        // necessary.
-        if (themeValue == Theme.DARK.ordinal() || themeValue == android.R.style.Theme) {
-            K9.setK9Theme(Theme.DARK);
-        } else {
-            K9.setK9Theme(Theme.LIGHT);
-        }
+        int themeValue = storage.getInt("theme", AppTheme.FOLLOW_SYSTEM.ordinal());
+        ThemeManager.setAppTheme(AppTheme.values()[themeValue]);
 
         themeValue = storage.getInt("messageViewTheme", Theme.USE_GLOBAL.ordinal());
-        K9.setK9MessageViewThemeSetting(Theme.values()[themeValue]);
+        ThemeManager.setK9MessageViewTheme(Theme.values()[themeValue]);
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
-        K9.setK9ComposerThemeSetting(Theme.values()[themeValue]);
-        K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
-        K9.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
+        ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpNewKeysPassphrase = storage.getPassphrase();
+        new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
@@ -1092,72 +1098,6 @@ public class K9 extends MultiDexApplication {
 
     public static void setK9Language(String nlanguage) {
         language = nlanguage;
-    }
-
-    /**
-     * Possible values for the different theme settings.
-     *
-     * <p><strong>Important:</strong>
-     * Do not change the order of the items! The ordinal value (position) is used when saving the
-     * settings.</p>
-     */
-    public enum Theme {
-        LIGHT,
-        DARK,
-        USE_GLOBAL
-    }
-
-    public static int getK9ThemeResourceId(Theme themeId) {
-        return (themeId == Theme.LIGHT) ? R.style.Theme_K9_Light_NoActionBar : R.style.Theme_K9_Dark;
-    }
-
-    public static int getK9ThemeResourceId() {
-        return getK9ThemeResourceId(theme);
-    }
-
-    public static Theme getK9MessageViewTheme() {
-        return messageViewTheme == Theme.USE_GLOBAL ? theme : messageViewTheme;
-    }
-
-    public static Theme getK9MessageViewThemeSetting() {
-        return messageViewTheme;
-    }
-
-    public static Theme getK9ComposerTheme() {
-        return composerTheme == Theme.USE_GLOBAL ? theme : composerTheme;
-    }
-
-    public static Theme getK9ComposerThemeSetting() {
-        return composerTheme;
-    }
-
-    public static Theme getK9Theme() {
-        return K9.Theme.LIGHT;
-    }
-
-    public static void setK9Theme(Theme ntheme) {
-        if (ntheme != Theme.USE_GLOBAL) {
-            theme = ntheme;
-        }
-    }
-
-    public static void setK9MessageViewThemeSetting(Theme nMessageViewTheme) {
-        messageViewTheme = nMessageViewTheme;
-    }
-
-    public static boolean useFixedMessageViewTheme() {
-        return useFixedMessageTheme;
-    }
-
-    public static void setK9ComposerThemeSetting(Theme compTheme) {
-        composerTheme = compTheme;
-    }
-
-    public static void setUseFixedMessageViewTheme(boolean useFixed) {
-        useFixedMessageTheme = useFixed;
-        if (!useFixedMessageTheme && messageViewTheme == Theme.USE_GLOBAL) {
-            messageViewTheme = theme;
-        }
     }
 
     public static BACKGROUND_OPS getBackgroundOps() {
@@ -2001,6 +1941,8 @@ public class K9 extends MultiDexApplication {
         editor.commit();
     }
 
-
+    private void startConnectivityMonitor() {
+        connectivityMonitor.register(this);
+    }
 
 }

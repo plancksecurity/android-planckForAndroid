@@ -21,6 +21,7 @@ import javax.inject.Singleton;
 public class AccountSetupNavigator {
 
     private Boolean isEditing = false;
+    private boolean loading;
 
     public enum Step {
         BASICS,
@@ -40,6 +41,7 @@ public class AccountSetupNavigator {
     }
 
     public void goForward(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
+        loading = false;
         if (currentStep.equals(Step.BASICS)) {
             goFromChooseAccountTypeToIncomingSettings(fragmentManager, account, makeDefault);
         } else if(currentStep.equals(Step.INCOMING)) {
@@ -103,6 +105,10 @@ public class AccountSetupNavigator {
     }
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
+        if(loading) {
+            loading = false;
+            return;
+        }
         if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditing) {
             fragmentManager.popBackStack();
         } else {
@@ -115,7 +121,7 @@ public class AccountSetupNavigator {
     }
 
     public Boolean shouldDeleteAccount() {
-        return currentStep.equals(Step.INCOMING);
+        return currentStep.equals(Step.INCOMING) && !loading; // TODO review this
     }
 
     public void setCurrentStep(Step currentStep, Account account) {
@@ -133,5 +139,13 @@ public class AccountSetupNavigator {
 
     public Step getCurrentStep() {
         return currentStep;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+    }
+
+    public boolean isLoading() {
+        return loading;
     }
 }

@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class LicenseActivity : PepActivity() {
         bindViews(R.layout.activity_license)
         setUpToolbar(true)
 
-        toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        toolbarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT))
         initializeToolbar(true, getString(R.string.license))
 
         findViewById<TextView>(R.id.licenseText).text = HtmlCompat.fromHtml(getString(R.string.eula_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
