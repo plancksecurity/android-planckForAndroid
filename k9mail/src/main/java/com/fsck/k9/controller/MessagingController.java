@@ -3868,7 +3868,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         context.startActivity(Intent.createChooser(msg, context.getString(R.string.send_alternate_chooser_title)));
     }
 
-    public void shareEmailFile(Context context, LocalMessage message) {
+    private void shareEmailFile(Context context, LocalMessage message) {
         String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), 20)) + ".eml";
         File file = new File(context.getExternalCacheDir(), fileName);
         try {
