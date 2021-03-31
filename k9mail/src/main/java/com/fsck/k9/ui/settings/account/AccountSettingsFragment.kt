@@ -19,6 +19,7 @@ import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -212,7 +213,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun showMDMDialog(title: CharSequence): Boolean {
         if (mdmDialog == null) {
-            mdmDialog = AlertDialog.Builder(view?.context, R.style.SyncDisableDialog)
+            mdmDialog = AlertDialog.Builder(view?.context,
+                    ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
                     .setTitle(title)
                     .setMessage(R.string.mdm_controlled_dialog_explanation)
                     .setCancelable(true)
