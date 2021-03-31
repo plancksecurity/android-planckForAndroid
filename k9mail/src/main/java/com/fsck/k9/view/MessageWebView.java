@@ -74,7 +74,7 @@ public class MessageWebView extends RigidWebView {
         final WebSettings webSettings = this.getSettings();
 
         webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-
+        clearCache(true);
         /* TODO this might improve rendering smoothness when webview is animated into view
         if (VERSION.SDK_INT >= VERSION_CODES.M) {
             webSettings.setOffscreenPreRaster(true);
