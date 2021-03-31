@@ -99,6 +99,9 @@ public class MessagingControllerTest {
     private LocalMessage localMessageToSend1;
     @Mock
     private PEpProvider pEpProvider;
+    @Mock
+    private Preferences preferences;
+
     private volatile boolean hasFetchedMessage = false;
     private static MockedStatic<PEpProviderFactory> mockProviderFactory;
 
@@ -107,12 +110,18 @@ public class MessagingControllerTest {
         ShadowLog.stream = System.out;
         MockitoAnnotations.openMocks(this);
         appContext = ApplicationProvider.getApplicationContext();
+        stubPreferences();
 
-        stubPEpProviderCreation();
-        controller = new MessagingController(appContext, notificationController, contacts, transportProvider);
+        //stubPEpProviderCreation();
+        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
 
         configureAccount();
         configureLocalStore();
+    }
+
+    private void stubPreferences() {
+        doReturn(account).when(preferences).getAccount(anyString());
+        doReturn(Collections.singletonList(account)).when(preferences).getAccounts();
     }
 
     private void stubPEpProviderCreation() {
