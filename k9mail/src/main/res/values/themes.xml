@@ -313,7 +313,7 @@
 
         <item name="toolbarDefaultColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarColor">@color/dark_theme_overlay_1</item>
-        <item name="messageViewStatusBarColor">@color/nav_contact_background</item>
+        <item name="messageViewStatusBarColor">@color/dark_theme_overlay_1</item>
         <item name="messageViewToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="messageListToolbarIconsColor">@color/toolbar_content_default_dark_theme</item>
         <item name="screenDefaultBackgroundColor">@color/dark_theme_default_background</item>
