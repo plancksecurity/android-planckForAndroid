@@ -33,11 +33,6 @@ import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID
 import com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS
 import com.fsck.k9.pEp.importAccount.PEpImporterActivity
 import com.fsck.k9.pEp.importAccount.showPasswordDialog
-import com.fsck.k9.pEp.importAccount.PasswordPromptDialog
-import com.fsck.k9.pEp.importAccount.PASSWORD.ACCOUNTS_ID
-import com.fsck.k9.pEp.importAccount.PASSWORD.ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS
-import com.fsck.k9.pEp.importAccount.PEpImporterActivity
-import com.fsck.k9.pEp.importAccount.showPasswordDialog
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools

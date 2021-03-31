@@ -5,7 +5,7 @@
         <item name="android:textColor">?attr/grayScaleColorOnBackground1</item>
     </style>
 
-    <style name="LightBlackText.Bold">
+    <style name="GrayScaleColorText1.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -17,7 +17,7 @@
         <item name="android:textColor">?attr/grayScaleColorOnBackground2</item>
     </style>
 
-    <style name="DarkGreyText.Bold">
+    <style name="GrayScaleColorText2.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
