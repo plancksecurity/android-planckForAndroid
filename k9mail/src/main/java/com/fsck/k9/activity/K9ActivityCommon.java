@@ -108,7 +108,7 @@ public class K9ActivityCommon {
     }
 
     public static void configureNavigationBar(Activity activity) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ThemeManager.isDarkTheme()) {
             View decorView = activity.getWindow().getDecorView();
             int vis = decorView.getSystemUiVisibility();
             vis &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
