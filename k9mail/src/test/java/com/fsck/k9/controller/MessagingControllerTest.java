@@ -13,7 +13,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import com.fsck.k9.search.LocalSearch;
 import org.junit.After;
@@ -103,7 +102,6 @@ public class MessagingControllerTest {
     private Preferences preferences;
 
     private volatile boolean hasFetchedMessage = false;
-    private static MockedStatic<PEpProviderFactory> mockProviderFactory;
 
     @Before
     public void setUp() throws MessagingException {
@@ -112,7 +110,6 @@ public class MessagingControllerTest {
         appContext = ApplicationProvider.getApplicationContext();
         stubPreferences();
 
-        //stubPEpProviderCreation();
         controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
 
         configureAccount();
@@ -122,11 +119,6 @@ public class MessagingControllerTest {
     private void stubPreferences() {
         doReturn(account).when(preferences).getAccount(anyString());
         doReturn(Collections.singletonList(account)).when(preferences).getAccounts();
-    }
-
-    private void stubPEpProviderCreation() {
-        mockProviderFactory.when(() -> PEpProviderFactory.createAndSetupProvider(any()))
-                .thenReturn(pEpProvider);
     }
 
     @After
@@ -929,7 +921,6 @@ public class MessagingControllerTest {
     @BeforeClass
     public static void beforeClass() {
         FakeAndroidKeyStore.setup();
-        mockProviderFactory = Mockito.mockStatic(PEpProviderFactory.class);
     }
 
 }
