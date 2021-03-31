@@ -9,16 +9,16 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
+import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.common.GetNavigationAccountEmailAction
 import com.fsck.k9.common.GetNavigationFolderTextAction
+import com.fsck.k9.common.GetTextViewTextAction
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not
 import org.junit.Assert.assertTrue
@@ -35,9 +35,6 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
 
     @get:Rule
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
-
-    private lateinit var testUtils: TestUtils
-    private lateinit var uiDevice: UiDevice
 
     @Before
     fun before() {
