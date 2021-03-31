@@ -140,7 +140,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openGlobalAdvancedSettings() {
         clickSetting(R.string.advanced)
         getScreenShotCurrentActivity("global advanced setting")
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
         }
         clickSettingDialog(R.string.background_ops_label, "global background sync setting")
