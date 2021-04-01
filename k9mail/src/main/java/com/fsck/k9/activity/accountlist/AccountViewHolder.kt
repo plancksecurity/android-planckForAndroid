@@ -25,7 +25,6 @@ class AccountViewHolder(
     private var email: TextView = view.findViewById(R.id.email)
     private var newMessageCount: TextView = view.findViewById(R.id.new_message_count)
     private var flaggedMessageCount: TextView = view.findViewById(R.id.flagged_message_count)
-    private var newMessageCountIcon: View = view.findViewById(R.id.new_message_count_icon)
     private var flaggedMessageCountIcon: View = view.findViewById(R.id.flagged_message_count_icon)
     private var newMessageCountWrapper: View = view.findViewById(R.id.new_message_count_wrapper)
     private var flaggedMessageCountWrapper: View =
@@ -33,7 +32,6 @@ class AccountViewHolder(
     private var activeIcons: RelativeLayout = view.findViewById(R.id.active_icons)
     private var folders: ImageButton = view.findViewById(R.id.folders)
     private var settings: ImageButton = view.findViewById(R.id.account_settings)
-    private var accountsItemLayout: LinearLayout = view.findViewById(R.id.accounts_item_layout)
     private var descriptionUnreadMessages: TextView =
         view.findViewById(R.id.description_unread_messages)
     private var accountsDescriptionLayout =
