@@ -440,6 +440,13 @@ public class UtilsPackage {
         return isDisplayed[0];
     }
 
+    public static boolean viewIsDisplayed(ViewInteraction viewInteraction)
+    {
+        final boolean[] isDisplayed = {true};
+        viewInteraction.withFailureHandler((error, viewMatcher) -> isDisplayed[0] = false).check(matches(isCompletelyDisplayed()));
+        return isDisplayed[0];
+    }
+
     static boolean viewWithTextIsDisplayed(String viewText)
     {
         final boolean[] isDisplayed = {true};

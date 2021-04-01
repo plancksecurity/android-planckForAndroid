@@ -28,6 +28,7 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.Root;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -151,6 +152,7 @@ public class TestUtils {
     public static JSONArray jsonArray;
     public static String rating;
     public String trustWords = "nothing";
+    private String emailForDevice;
 
 
 
@@ -363,6 +365,39 @@ public class TestUtils {
         if (test_number().equals("0")) {
             getMessageListSize();
         }
+    }
+
+    public String getAccountEmailForDevice() {
+        if(emailForDevice != null) return emailForDevice;
+        String out = "error: email for device not initialized";
+        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
+        File configFile = new File(directory, "test_config.txt");
+        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+
+        FileInputStream fin;
+        if(configFile.canRead()) {
+            try {
+                fin = new FileInputStream(configFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fin);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                while ((receiveString = bufferedReader.readLine()) != null && !receiveString.contains("mail")) {
+                    Timber.v("Searching for test email address for device...");
+                }
+                fin.close();
+                bufferedReader.close();
+                if(receiveString != null && !receiveString.isEmpty()) {
+                    String[] line = receiveString.split(" = ");
+                    out = emailForDevice = line[1];
+                }
+            }
+            catch (Exception e) {
+                Timber.e(e, "could not read from file %s", configFile);
+                out = e.getMessage();
+            }
+        }
+        return out;
     }
 
     public void readConfigFile() {
@@ -2575,6 +2610,22 @@ public class TestUtils {
             }
     }
 
+    public void waitUntilViewDisplayed(int viewId) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewId);
+            device.waitForIdle();
+        }
+    }
+
+    public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewInteraction);
+            device.waitForIdle();
+        }
+    }
+
     private void doWaitForIdlingListViewResource(int resource){
         IdlingResource idlingResourceListView;
         waitForIdle();
@@ -2599,11 +2650,13 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
-        onView(withId(getCurrentActivity().getResources()
-                .getIdentifier("alertTitle", "id", "android")))
-                .inRoot(isDialog())
-                .check(matches(withText(displayText)))
-                .check(matches(isDisplayed()));
+        waitForIdle();
+        int id = context.getResources().getIdentifier("alertTitle", "id", "android");
+        ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
+        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+
+        onView(withText(displayText)).check(matches(isDisplayed()));
+        waitForIdle();
     }
 
     String getResourceString(int id, int position) {
