@@ -137,14 +137,7 @@ public class UtilsPackage {
         return new TypeSafeMatcher<View>() {
             @Override
             public boolean matchesSafely(final View view) {
-                if(view instanceof ListView) {
-                    return ((ListView) view).getCount() == size;
-                }
-                else if(view instanceof RecyclerView) {
-                    return ((RecyclerView) view).getAdapter().getItemCount() == size;
-                }
-                throw new ClassCastException("Wrong view class: expected Listview or RecyclerView but got "
-                        + view.getClass().getSimpleName());
+                return ((ListView) view).getCount() == size;
             }
 
             @Override
