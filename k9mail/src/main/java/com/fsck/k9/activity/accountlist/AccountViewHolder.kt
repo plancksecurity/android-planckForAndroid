@@ -2,7 +2,6 @@ package com.fsck.k9.activity.accountlist
 
 import android.view.View
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -57,7 +56,7 @@ class AccountViewHolder(
 
     private fun bindUnreadCount(stats: AccountStats?, account: BaseAccount) {
         if (stats != null) {
-            val unreadMessageCount: Int? = stats.unreadMessageCount
+            val unreadMessageCount: Int = stats.unreadMessageCount
             descriptionUnreadMessages.text = String.format("%d", unreadMessageCount)
             newMessageCount.text = String.format("%d", unreadMessageCount)
 
