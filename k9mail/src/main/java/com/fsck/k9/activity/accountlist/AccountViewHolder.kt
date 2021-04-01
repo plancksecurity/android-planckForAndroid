@@ -38,6 +38,7 @@ class AccountViewHolder(
 
     fun bind(account: BaseAccount, stats: AccountStats?) {
         accountsDescriptionLayout.setOnClickListener { onFolderClickListener.onClick(position) }
+        accountsDescriptionLayout.setOnLongClickListener { true }
 
         bindEmail(stats, account)
 
@@ -98,6 +99,7 @@ class AccountViewHolder(
             folders.visibility = View.VISIBLE
             folders.drawable.alpha = 255
             folders.setOnClickListener { listener.foldersClicked(account) }
+            folders.setOnLongClickListener { true }
         }
     }
 
