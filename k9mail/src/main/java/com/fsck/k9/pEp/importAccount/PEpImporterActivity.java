@@ -107,9 +107,11 @@ public abstract class PEpImporterActivity extends PepActivity {
     }
 
     private void promptServerPasswords(ArrayList<String> ids) {
-        disabledAccounts = ids;
-        Intent intent = PasswordPromptKt.showPasswordDialog(this, new ArrayList<>(ids));
-        startActivityForResult(intent, ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS);
+        if (ids.size() > 0) {
+            disabledAccounts = ids;
+            Intent intent = PasswordPromptKt.showPasswordDialog(this, new ArrayList<>(ids));
+            startActivityForResult(intent, ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS);
+        }
     }
 
     @Override
