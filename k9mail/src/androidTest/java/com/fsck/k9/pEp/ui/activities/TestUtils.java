@@ -1569,13 +1569,14 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        doWait(5000);
+        waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if(!withSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
+            waitForIdle();
         }
         onView(withId(R.id.done)).perform(click());
-        doWait(5000);
+        waitForIdle();
     }
 
     private void setupEmailAndPassword() {
@@ -1584,7 +1585,7 @@ public class TestUtils {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String email = getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
