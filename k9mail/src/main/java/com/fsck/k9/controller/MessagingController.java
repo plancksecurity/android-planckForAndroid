@@ -165,11 +165,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @VisibleForTesting
     MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider) {
+                        Contacts contacts, TransportProvider transportProvider, PEpProvider pEpProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
+        this.pEpProvider = pEpProvider;
         controllerThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -187,7 +188,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             NotificationController notificationController = NotificationController.newInstance(appContext);
             Contacts contacts = Contacts.getInstance(context);
             TransportProvider transportProvider = TransportProvider.getInstance();
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider);
+            PEpProvider pEpProvider = PEpProviderFactory.createProvider(appContext);
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, pEpProvider);
         }
         return inst;
     }
@@ -242,7 +244,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         Timber.d("createIfNeeded messaging controller");
-        pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+        pEpProvider.setup();
         while (!stopped) {
             String commandDescription = null;
             try {
