@@ -81,14 +81,14 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/securityStatusText"
+            app:layout_constraintEnd_toStartOf="@+id/privacyStatusText"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/pep_status_red" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/securityStatusText"
+            android:id="@+id/privacyStatusText"
             style="@style/PEpPrivacyStatusTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

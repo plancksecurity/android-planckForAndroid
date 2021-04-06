@@ -1857,7 +1857,7 @@ public class TestUtils {
             if (R.id.securityStatusIcon != statusColor) {
                 assertFailWithMessage("Wrong Status color");
             }
-            onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+            onView(withId(R.id.privacyStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
         }
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -1873,7 +1873,7 @@ public class TestUtils {
 
         waitForToolbar();
         if(!enabledForThisMessage) {
-            onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+            onView(withId(R.id.privacyStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
         }
 
         statusColor = getSecurityStatusDrawableColor(status);
@@ -1890,11 +1890,11 @@ public class TestUtils {
             }
             waitUntilViewDisplayed(R.id.securityStatusText);
             if(!enabledForThisMessage) {
-                onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
-                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
+                onView(withId(R.id.privacyStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
+                onView(withId(R.id.privacyStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
             }
             else {
-                onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+                onView(withId(R.id.privacyStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
             }
         }
 
@@ -1965,10 +1965,10 @@ public class TestUtils {
     public void clickStatus() {
         waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        if (viewIsDisplayed(R.id.securityStatusText)) {
+        if (viewIsDisplayed(R.id.privacyStatusText)) {
             waitForIdle();
-            onView(withId(R.id.securityStatusText)).check(matches(isDisplayed()));
-            onView(withId(R.id.securityStatusText)).perform(click());
+            onView(withId(R.id.privacyStatusText)).check(matches(isDisplayed()));
+            onView(withId(R.id.privacyStatusText)).perform(click());
         }
         waitForIdle();
     }
@@ -2071,7 +2071,7 @@ public class TestUtils {
             waitForIdle();
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
-                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
+                onView(withId(R.id.privacyStatusText)).check(matches(withTextColor(color)));
                 //checkUpperToolbar(color);
                 return;
             }
@@ -2679,7 +2679,7 @@ public class TestUtils {
     }
 
     public void clickMessageStatus() {
-        clickView(R.id.securityStatusText);
+        clickView(R.id.privacyStatusText);
     }
 
     public void goBackToMessageList(){

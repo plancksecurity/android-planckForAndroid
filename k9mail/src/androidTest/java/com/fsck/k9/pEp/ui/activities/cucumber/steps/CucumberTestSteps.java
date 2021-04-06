@@ -2133,7 +2133,7 @@ public class CucumberTestSteps {
     public void I_save_trustwords(){
         timeRequiredForThisMethod(10);
         testUtils.waitForIdle();
-        onView(withId(R.id.securityStatusText)).perform(click());
+        onView(withId(R.id.privacyStatusText)).perform(click());
         testUtils.waitForIdle();
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         testUtils.pressBack();

@@ -16,13 +16,13 @@ import security.pEp.ui.PEpUIUtils.getToolbarRatingVisibility
 class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
 
     private var securityStatusIcon: AppCompatImageView? = null
-    private var securityStatusText: AppCompatTextView? = null
+    private var privacyStatusText: AppCompatTextView? = null
     var encrypt = true
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
         securityStatusIcon = findViewById(R.id.securityStatusIcon)
-        securityStatusText = findViewById(R.id.securityStatusText)
+        privacyStatusText = findViewById(R.id.privacyStatusText)
     }
 
     fun setRating(rating: Rating?) {
@@ -35,8 +35,8 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : Constrai
         else
             securityStatusIcon?.clearColorFilter()
 
-        securityStatusText?.setText(getRatingTextRes(rating, encrypt))
-        securityStatusText?.setTextColor(ContextCompat.getColor(context, getRatingColorRes(rating, encrypt)))
+        privacyStatusText?.setText(getRatingTextRes(rating, encrypt))
+        privacyStatusText?.setTextColor(ContextCompat.getColor(context, getRatingColorRes(rating, encrypt)))
 
     }
 }
