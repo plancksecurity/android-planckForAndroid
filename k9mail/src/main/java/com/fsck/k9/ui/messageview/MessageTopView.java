@@ -134,57 +134,6 @@ public class MessageTopView extends RelativeLayout {
         }
     }
 
-    public void showMessageEncryptedButIncomplete(MessageViewInfo messageViewInfo, Drawable providerIcon) {
-        resetAndPrepareMessageView(messageViewInfo);
-        View view = mInflater.inflate(R.layout.message_content_crypto_incomplete, containerView, false);
-        setCryptoProviderIcon(providerIcon, view);
-
-        containerView.addView(view);
-        displayViewOnLoadFinished(false);
-    }
-
-    public void showMessageCryptoErrorView(MessageViewInfo messageViewInfo, Drawable providerIcon) {
-        resetAndPrepareMessageView(messageViewInfo);
-        View view = mInflater.inflate(R.layout.message_content_crypto_error, containerView, false);
-        setCryptoProviderIcon(providerIcon, view);
-
-        TextView cryptoErrorText = (TextView) view.findViewById(R.id.crypto_error_text);
-        OpenPgpError openPgpError = messageViewInfo.cryptoResultAnnotation.getOpenPgpError();
-        if (openPgpError != null) {
-            String errorText = openPgpError.getMessage();
-            cryptoErrorText.setText(errorText);
-        }
-
-        containerView.addView(view);
-        displayViewOnLoadFinished(false);
-    }
-
-    public void showMessageCryptoCancelledView(MessageViewInfo messageViewInfo, Drawable providerIcon) {
-        resetAndPrepareMessageView(messageViewInfo);
-        View view = mInflater.inflate(R.layout.message_content_crypto_cancelled, containerView, false);
-        setCryptoProviderIcon(providerIcon, view);
-
-        view.findViewById(R.id.crypto_cancelled_retry).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                messageCryptoPresenter.onClickRetryCryptoOperation();
-            }
-        });
-
-        containerView.addView(view);
-        displayViewOnLoadFinished(false);
-    }
-
-    private void setCryptoProviderIcon(Drawable openPgpApiProviderIcon, View view) {
-        ImageView cryptoProviderIcon = (ImageView) view.findViewById(R.id.crypto_error_icon);
-        if (openPgpApiProviderIcon != null) {
-            cryptoProviderIcon.setImageDrawable(openPgpApiProviderIcon);
-        } else {
-            cryptoProviderIcon.setImageResource(R.drawable.status_lock_error);
-            cryptoProviderIcon.setColorFilter(ThemeUtils.getStyledColor(getContext(), R.attr.openpgp_red));
-        }
-    }
-
     /**
      * Fetch the message header view.  This is not the same as the message headers; this is the View shown at the top
      * of messages.
