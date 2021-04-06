@@ -147,7 +147,7 @@ public class MessageTopView extends RelativeLayout {
                     shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
 
             boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-            containerView.displayMessageViewContainer(
+        containerView.displayMessageViewContainer(
                     messageViewInfo,
                     () -> {
                         if (shouldStopProgressDialog) {
