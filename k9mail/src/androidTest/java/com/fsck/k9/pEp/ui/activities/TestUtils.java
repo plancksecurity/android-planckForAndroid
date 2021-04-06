@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
@@ -1848,13 +1847,13 @@ public class TestUtils {
             waitForIdle();
         }*/
         waitForToolbar();
-        statusColor = getSecurityStatusDrawableColor(status);
+        statusColor = getPrivacyStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
             }
         } else {
-            if (R.id.securityStatusIcon != statusColor) {
+            if (R.id.privacyStatusIcon != statusColor) {
                 assertFailWithMessage("Wrong Status color");
             }
             onView(withId(R.id.privacyStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
@@ -1876,7 +1875,7 @@ public class TestUtils {
             onView(withId(R.id.privacyStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
         }
 
-        statusColor = getSecurityStatusDrawableColor(status);
+        statusColor = getPrivacyStatusDrawableColor(status);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
@@ -1908,7 +1907,7 @@ public class TestUtils {
         }
     }
 
-    private int getSecurityStatusDrawableColor(Rating rating){
+    private int getPrivacyStatusDrawableColor(Rating rating){
         int color;
         if (rating == null) {
             color = -10;
@@ -1944,7 +1943,7 @@ public class TestUtils {
         return color;
     }
 
-    private int getSecurityStatusIconColor (Rating rating){
+    private int getPrivacyStatusIconColor(Rating rating){
         int color;
         if (rating == null) {
             color = -10;
@@ -2128,7 +2127,7 @@ public class TestUtils {
         int currentMessage = 1;
         waitForIdle();
         getStatusRating(statusRating, status);
-        int statusColor = getSecurityStatusIconColor(statusRating[0]);
+        int statusColor = getPrivacyStatusIconColor(statusRating[0]);
         boolean assertedBadgeColor = false;
         BySelector selector = By.clazz("android.widget.ImageView");
         while (!assertedBadgeColor) {
