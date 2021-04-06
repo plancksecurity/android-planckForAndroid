@@ -5,14 +5,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,9 +23,7 @@ import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.view.MessageHeader;
-import com.fsck.k9.view.ThemeUtils;
 import com.fsck.k9.view.ToolableViewAnimator;
-import org.openintents.openpgp.OpenPgpError;
 
 import java.util.Map;
 public class MessageTopView extends RelativeLayout {
@@ -47,8 +41,7 @@ public class MessageTopView extends RelativeLayout {
     private TextView errorText;
 
     private MessageHeader mHeaderContainer;
-    private LayoutInflater mInflater;
-    private ViewGroup containerView;
+    private MessageContainerView containerView;
     private Button mDownloadRemainder;
     private AttachmentViewCallback attachmentCallback;
     private View showPicturesButton;
@@ -71,7 +64,6 @@ public class MessageTopView extends RelativeLayout {
 
         mHeaderContainer = (MessageHeader) findViewById(R.id.header_container);
         // mHeaderContainer.setOnLayoutChangedListener(this);
-        mInflater = LayoutInflater.from(getContext());
 
         viewAnimator = (ToolableViewAnimator) findViewById(R.id.message_layout_animator);
         progressBar = (ProgressBar) findViewById(R.id.message_progress);
@@ -86,7 +78,7 @@ public class MessageTopView extends RelativeLayout {
         showPicturesButton = (View) findViewById(R.id.show_pictures);
         setShowPicturesButtonListener();
 
-        containerView = (ViewGroup) findViewById(R.id.message_container);
+        containerView = findViewById(R.id.message_container);
 
         hideHeaderView();
     }
@@ -96,16 +88,12 @@ public class MessageTopView extends RelativeLayout {
     }
 
     private void showPicturesInAllContainerViews() {
-        View messageContainerViewCandidate = containerView.getChildAt(0);
-        if (messageContainerViewCandidate instanceof MessageContainerView) {
-            ((MessageContainerView) messageContainerViewCandidate).showPictures();
-        }
+        containerView.showPictures();
         hideShowPicturesButton();
     }
 
     private void resetAndPrepareMessageView(MessageViewInfo messageViewInfo) {
         mDownloadRemainder.setVisibility(View.GONE);
-        containerView.removeAllViews();
         setShowDownloadButton(messageViewInfo);
     }
 
@@ -116,12 +104,8 @@ public class MessageTopView extends RelativeLayout {
         boolean automaticallyLoadPictures =
                 shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
 
-        MessageContainerView view = (MessageContainerView) mInflater.inflate(R.layout.message_container,
-                containerView, false);
-        containerView.addView(view);
-
         boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-        view.displayMessageViewContainer(
+        containerView.displayMessageViewContainer(
                 messageViewInfo,
                 () -> {
                     if (shouldStopProgressDialog)
@@ -129,7 +113,7 @@ public class MessageTopView extends RelativeLayout {
                 },
                 automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
-        if (view.hasHiddenExternalImages()) {
+        if (containerView.hasHiddenExternalImages()) {
             showShowPicturesButton();
         }
     }
