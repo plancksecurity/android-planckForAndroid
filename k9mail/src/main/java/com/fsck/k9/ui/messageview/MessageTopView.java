@@ -46,6 +46,7 @@ public class MessageTopView extends RelativeLayout {
     private AttachmentViewCallback attachmentCallback;
     private View showPicturesButton;
     private boolean isShowingProgress;
+    private boolean messageLoaded = false;
 
     private MessageCryptoPresenter messageCryptoPresenter;
 
@@ -98,23 +99,26 @@ public class MessageTopView extends RelativeLayout {
     }
 
     public void showMessage(Account account, MessageViewInfo messageViewInfo, boolean shouldStopProgressDialog) {
-        resetAndPrepareMessageView(messageViewInfo);
+        if (!messageLoaded) {
+            messageLoaded = true;
+            resetAndPrepareMessageView(messageViewInfo);
 
-        ShowPictures showPicturesSetting = account.getShowPictures();
-        boolean automaticallyLoadPictures =
-                shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
+            ShowPictures showPicturesSetting = account.getShowPictures();
+            boolean automaticallyLoadPictures =
+                    shouldAutomaticallyLoadPictures(showPicturesSetting, messageViewInfo.message);
 
-        boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
-        containerView.displayMessageViewContainer(
-                messageViewInfo,
-                () -> {
-                    if (shouldStopProgressDialog)
-                        displayViewOnLoadFinished(true);
-                },
-                automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
+            boolean hideUnsignedTextDivider = account.getOpenPgpHideSignOnly();
+            containerView.displayMessageViewContainer(
+                    messageViewInfo,
+                    () -> {
+                        if (shouldStopProgressDialog)
+                            displayViewOnLoadFinished(true);
+                    },
+                    automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
-        if (containerView.hasHiddenExternalImages()) {
-            showShowPicturesButton();
+            if (containerView.hasHiddenExternalImages()) {
+                showShowPicturesButton();
+            }
         }
     }
 
