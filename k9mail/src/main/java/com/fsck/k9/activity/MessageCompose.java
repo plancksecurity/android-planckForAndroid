@@ -119,7 +119,7 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.PEpPrivacyStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
@@ -271,7 +271,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @ComposeView
     DisplayHtml displayHtml;
 
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PEpPrivacyStatusLayout pEpPrivacyStatusLayout;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -550,9 +550,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbar(true);
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
-            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
-            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
-            pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+            pEpPrivacyStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            pEpPrivacyStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+            pEpPrivacyStatusLayout.setOnLongClickListener(view -> {
                 PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                         view, recipientPresenter);
                 statusMenu.show();
@@ -2022,8 +2022,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void setToolbarRating(Rating rating) {
         boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setEncrypt(encrypt);
-        pEpSecurityStatusLayout.setRating(rating);
+        pEpPrivacyStatusLayout.setEncrypt(encrypt);
+        pEpPrivacyStatusLayout.setRating(rating);
     }
 
     private Handler internalMessageHandler = new Handler() {

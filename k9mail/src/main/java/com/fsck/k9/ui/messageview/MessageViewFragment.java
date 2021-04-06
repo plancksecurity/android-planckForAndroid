@@ -77,7 +77,7 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.print.Print;
 import security.pEp.print.PrintMessage;
 import security.pEp.ui.message_compose.PEpFabMenu;
-import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.PEpPrivacyStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -100,7 +100,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PEpPrivacyStatusLayout pEpPrivacyStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -212,7 +212,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         Toolbar toolbar = ((MessageList) getActivity()).getToolbar();
         if (toolbar != null) {
-            pEpSecurityStatusLayout = toolbar.findViewById(R.id.actionbar_message_view);
+            pEpPrivacyStatusLayout = toolbar.findViewById(R.id.actionbar_message_view);
         }
 
         mMessageView = view.findViewById(R.id.message_view);
@@ -245,7 +245,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                 displayHtml);
         displayMessage();
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+        pEpPrivacyStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
     }
 
     @Override
@@ -259,7 +259,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onDestroy() {
         super.onDestroy();
         Activity activity = getActivity();
-        pEpSecurityStatusLayout.setOnClickListener(null);
+        pEpPrivacyStatusLayout.setOnClickListener(null);
 
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
@@ -322,7 +322,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void onStop() {
-        pEpSecurityStatusLayout.setVisibility(View.GONE);
+        pEpPrivacyStatusLayout.setVisibility(View.GONE);
         super.onStop();
     }
 
@@ -363,8 +363,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void setToolbar() {
         if (isAdded()) {
-            pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
-            pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+            pEpPrivacyStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            pEpPrivacyStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setToolbarColor(
                     ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
             toolBarCustomizer.setStatusBarPepColor(
