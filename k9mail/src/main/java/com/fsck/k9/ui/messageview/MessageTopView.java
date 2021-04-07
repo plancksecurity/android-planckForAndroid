@@ -149,8 +149,13 @@ public class MessageTopView extends RelativeLayout {
             containerView.displayMessageViewContainer(
                     messageViewInfo,
                     () -> {
-                        if (shouldStopProgressDialog)
+                        if (shouldStopProgressDialog) {
                             displayViewOnLoadFinished(true);
+                        }
+                        if (savedState != null) {
+                            scrollView.post(() ->
+                                    scrollView.scrollTo(0, getScrollFromPercentage(savedState.scrollY)));
+                        }
                     },
                     automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
 
