@@ -14,10 +14,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
+import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -30,6 +35,7 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -40,11 +46,6 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.TextView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
@@ -73,6 +74,7 @@ import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
+
 import static android.content.ContentValues.TAG;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -98,8 +100,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import androidx.test.platform.app.InstrumentationRegistry ;
-
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
