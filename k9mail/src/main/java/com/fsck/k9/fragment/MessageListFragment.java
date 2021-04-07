@@ -19,6 +19,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.AttrRes;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.CursorLoader;
@@ -801,7 +802,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
         try {
             MlfUtils.getOpenFolderWithCallback(folderName, account, localFolder -> {
-                if(isResumed()) {
+                if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
                     onFolderRetrievedGetFolderInfoHolder(localFolder);
                 }
                 return null;
@@ -814,12 +815,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private void onFolderRetrievedGetFolderInfoHolder(LocalFolder localFolder) {
         currentFolder = new FolderInfoHolder(context, localFolder, account);
         initializeLoadersIfNeeded();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
     }
 
     /**
@@ -3096,7 +3091,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             try {
                 MlfUtils.getOpenFolderWithCallback(folderName, account,
                     localFolder -> {
-                        if(isResumed()) {
+                        if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
                             onLocalFolderRetrievedUpdateMessagesOfFolder(localFolder);
                         }
                         return null;
