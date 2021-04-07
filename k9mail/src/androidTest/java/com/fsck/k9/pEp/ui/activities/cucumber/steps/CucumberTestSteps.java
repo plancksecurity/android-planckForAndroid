@@ -1240,13 +1240,13 @@ public class CucumberTestSteps {
             case "passphrase":
                 switch (testUtils.test_number()) {
                     case "4":
-                        raw = R.raw.passphrase_test003;
+                        raw = R.raw.passphrase1;
                         break;
                     case "5":
-                        raw = R.raw.passphrase_test004;
+                        raw = R.raw.passphrase2;
                         break;
                     case "6":
-                        raw = R.raw.passphrase_test005;
+                        raw = R.raw.passphrase3;
                         break;
                 }
                 testUtils.waitForIdle();
@@ -1386,6 +1386,7 @@ public class CucumberTestSteps {
 
     @When("^I import key with passphrase for account (\\d+)$")
     public void I_import_passphrase (int account) {
+        testUtils.readConfigFile();
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
             testUtils.selectFromMenu(R.string.action_settings);
         }
@@ -1403,9 +1404,9 @@ public class CucumberTestSteps {
             testUtils.waitForIdle();
         }
         testUtils.waitForIdle();
-        while (!getTextFromView(onView(withId(R.id.passphrase))).contains("leakydente2020")){
+        while (!getTextFromView(onView(withId(R.id.passphrase))).contains(testUtils.getPassphrasePassword())){
             testUtils.waitForIdle();
-            onView(withId(R.id.passphrase)).perform(typeText("leakydente2020"));
+            onView(withId(R.id.passphrase)).perform(typeText(testUtils.getPassphrasePassword()));
         }
         testUtils.waitForIdle();
         testUtils.clickView(R.id.afirmativeActionButton);
