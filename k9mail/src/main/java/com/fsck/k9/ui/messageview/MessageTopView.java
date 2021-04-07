@@ -5,6 +5,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.view.MessageHeader;
+import com.fsck.k9.view.NonLockingScrollView;
 import com.fsck.k9.view.ToolableViewAnimator;
 
 import java.util.Map;
@@ -47,9 +50,10 @@ public class MessageTopView extends RelativeLayout {
     private View showPicturesButton;
     private boolean isShowingProgress;
     private boolean messageLoaded = false;
+    private NonLockingScrollView scrollView;
 
     private MessageCryptoPresenter messageCryptoPresenter;
-
+    private SavedState savedState;
 
     public MessageTopView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -57,6 +61,40 @@ public class MessageTopView extends RelativeLayout {
 
     public MessageHeader getMessageHeader() {
         return mHeaderContainer;
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState savedState = new SavedState(superState);
+
+        savedState.scrollY = getScrollViewPercentage();
+        return savedState;
+    }
+
+    private double getScrollViewPercentage() {
+        double scrollViewHeight = scrollView.getChildAt(0).getBottom() - scrollView.getHeight();
+        double getScrollY = scrollView.getScrollY();
+        return (getScrollY / scrollViewHeight) * 100d;
+    }
+
+    private int getScrollFromPercentage(double percentage){
+        double scrollViewHeight = scrollView.getChildAt(0).getBottom() - scrollView.getHeight();
+        return (int) (scrollViewHeight * percentage / 100d);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        if(!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        SavedState savedState = (SavedState)state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+
+        this.savedState = savedState;
     }
 
     @Override
@@ -80,7 +118,7 @@ public class MessageTopView extends RelativeLayout {
         setShowPicturesButtonListener();
 
         containerView = findViewById(R.id.message_container);
-
+        scrollView = findViewById(R.id.scrollview);
         hideHeaderView();
     }
 
@@ -262,6 +300,38 @@ public class MessageTopView extends RelativeLayout {
 
     public void setPrivacyProtected(boolean ispEpEnabled) {
         mHeaderContainer.setPrivacyProtected(ispEpEnabled);
+    }
+
+    static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    @Override
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    @Override
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
+        double scrollY;
+
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            this.scrollY = in.readDouble();
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeDouble(this.scrollY);
+        }
     }
 
     public String toHtml() {
