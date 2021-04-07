@@ -860,6 +860,7 @@ public class TestUtils {
     }
 
     public void clickHandShakeButton () {
+        waitForIdle();
         if (exists(onView(withId(R.id.buttonHandshake)))) {
             onView(withId(R.id.buttonHandshake)).perform(click());
             waitForIdle();
@@ -867,6 +868,7 @@ public class TestUtils {
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
+        waitForIdle();
     }
 
     public void goToHandshakeDialog (){
@@ -2386,6 +2388,7 @@ public class TestUtils {
     }
 
     public void selectFromScreen(int resource) {
+        waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
@@ -2412,7 +2415,6 @@ public class TestUtils {
                             return;
                         } catch (Exception ex1) {
                             waitForIdle();
-                            Espresso.onIdle();
                             return;
                         }
                     }
@@ -3310,6 +3312,7 @@ public class TestUtils {
     }
 
     public void scrollToView (String text){
+        waitForIdle();
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
             waitForIdle();
             Espresso.onIdle();
@@ -3318,6 +3321,7 @@ public class TestUtils {
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
+        waitForIdle();
     }
 
     private void setCheckBox(String resourceText, boolean checked) {
@@ -3390,6 +3394,7 @@ public class TestUtils {
     public String getEmailAccount (int account) { return testConfig.getMail(account);}
 
     public static void getJSONObject(String object) {
+        waitForIdle();
         switch (object) {
             case "keys":
                 String keys = null;
@@ -3436,6 +3441,7 @@ public class TestUtils {
                     Timber.i("Cannot find json object");
                 }
         }
+        waitForIdle();
     }
 
     private static String readJsonFile(String fileName) {
