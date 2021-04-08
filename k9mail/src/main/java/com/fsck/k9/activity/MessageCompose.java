@@ -472,7 +472,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             if (action == Action.REPLY || action == Action.REPLY_ALL ||
                     action == Action.FORWARD || action == Action.EDIT_DRAFT) {
                 messageLoaderHelper = new MessageLoaderHelper(this, getSupportLoaderManager(),
-                        getSupportFragmentManager(), messageLoaderCallbacks);
+                        getSupportFragmentManager(), messageLoaderCallbacks, displayHtml);
                 internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_ON);
 
                 Parcelable cachedDecryptionResult = intent.getParcelableExtra(EXTRA_MESSAGE_DECRYPTION_RESULT);

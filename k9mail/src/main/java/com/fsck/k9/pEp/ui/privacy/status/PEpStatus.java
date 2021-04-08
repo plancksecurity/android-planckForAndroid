@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.message.html.DisplayHtml;
+import com.fsck.k9.pEp.infrastructure.MessageView;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 
@@ -53,6 +55,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Inject PEpStatusPresenter presenter;
 
     @Inject PEpStatusRendererBuilder rendererBuilder;
+
+    @Inject
+    @MessageView
+    DisplayHtml displayHtml;
 
     @Bind(R.id.my_recycler_view)
     RecyclerView recipientsView;
@@ -120,7 +126,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initialize(this, getUiCache(), getpEp(), isMessageIncoming, new Address(sender), forceUnencrypted, alwaysSecure);
+            presenter.initialize(this, getUiCache(), getpEp(),displayHtml, isMessageIncoming,
+                    new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
 

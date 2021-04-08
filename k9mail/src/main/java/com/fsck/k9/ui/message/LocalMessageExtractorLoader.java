@@ -15,19 +15,24 @@ import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 
 
 public class LocalMessageExtractorLoader extends AsyncTaskLoader<MessageViewInfo> {
-    private static final MessageViewInfoExtractor messageViewInfoExtractor = MessageViewInfoExtractor.getInstance();
 
 
     private final LocalMessage message;
     private MessageViewInfo messageViewInfo;
     @Nullable
     private MessageCryptoAnnotations annotations;
+    private MessageViewInfoExtractor messageViewInfoExtractor;
 
     public LocalMessageExtractorLoader(
-            Context context, LocalMessage message, @Nullable MessageCryptoAnnotations annotations) {
+            Context context,
+            LocalMessage message,
+            @Nullable MessageCryptoAnnotations annotations,
+            MessageViewInfoExtractor messageViewInfoExtractor
+            ) {
         super(context);
         this.message = message;
         this.annotations = annotations;
+        this.messageViewInfoExtractor = messageViewInfoExtractor;
     }
 
     @Override

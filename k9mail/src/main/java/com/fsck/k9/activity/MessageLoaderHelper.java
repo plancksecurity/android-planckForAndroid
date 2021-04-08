@@ -30,7 +30,10 @@ import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.mailstore.MessageViewInfoExtractor;
+import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
@@ -103,22 +106,29 @@ public class MessageLoaderHelper {
     private OpenPgpDecryptionResult cachedDecryptionResult;
 
     private MessageCryptoHelper messageCryptoHelper;
+    private final MessageViewInfoExtractor messageViewInfoExtractor;
     private Handler handler = new Handler(Looper.getMainLooper());
 
 
-    public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
-                               @NonNull MessageLoaderCallbacks callback) {
+    public MessageLoaderHelper(Context context,
+                               LoaderManager loaderManager,
+                               FragmentManager fragmentManager,
+                               @NonNull MessageLoaderCallbacks callback,
+                               DisplayHtml displayHtml) {
         this.context = context;
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
         this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+        this.messageViewInfoExtractor = new MessageViewInfoExtractor(context,
+                AttachmentInfoExtractor.getInstance(), displayHtml);
     }
 
     public MessageLoaderHelper(Context context, LoaderManager loaderManager, FragmentManager fragmentManager,
                                @NonNull MessageLoaderCallbacks callback,
-                               @NonNull MessageLoaderDecryptCallbacks decryptCallback) {
-        this(context, loaderManager, fragmentManager, callback);
+                               @NonNull MessageLoaderDecryptCallbacks decryptCallback,
+                               DisplayHtml displayHtml) {
+        this(context, loaderManager, fragmentManager, callback, displayHtml);
         this.decryptCallback = decryptCallback;
     }
 
@@ -418,7 +428,7 @@ public class MessageLoaderHelper {
             if (id != DECODE_MESSAGE_LOADER_ID) {
                 throw new IllegalStateException("loader id must be message decoder id");
             }
-            return new LocalMessageExtractorLoader(context, localMessage, messageCryptoAnnotations);
+            return new LocalMessageExtractorLoader(context, localMessage, messageCryptoAnnotations, messageViewInfoExtractor);
         }
 
         @Override
