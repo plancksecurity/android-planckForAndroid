@@ -3,6 +3,7 @@ package com.fsck.k9.pEp.ui.privacy.status;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
@@ -35,7 +36,8 @@ public class PEpStatusPresenterTest {
     @Mock PePUIArtefactCache uiCache;
     @Mock PEpProvider provider;
     @Mock Address senderAddress;
-
+    @Mock
+    DisplayHtml displayHtml;
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -49,12 +51,13 @@ public class PEpStatusPresenterTest {
     public void shouldStartMessageLoaderWhenLoadMessage() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false, senderAddress, forceUnencrypted, alwaysSecure);
 
-        presenter.loadMessage(new MessageReference("","","", null));
+        presenter.loadMessage(new MessageReference("", "", "", null));
 
         verify(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
-                any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class)
+                any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class),
+                displayHtml
         );
     }
 
@@ -63,7 +66,7 @@ public class PEpStatusPresenterTest {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
         when(uiCache.getRecipients()).thenReturn(emptyRecipients());
-        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRecipients();
         verify(pEpStatusView, never()).setupRecipients(anyList());
@@ -75,7 +78,7 @@ public class PEpStatusPresenterTest {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
         when(uiCache.getRecipients()).thenReturn(recipients());
-        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         presenter.loadRecipients();
         verify(pEpStatusView).setupRecipients(anyList());
@@ -107,18 +110,18 @@ public class PEpStatusPresenterTest {
     public void shouldExtractRatingWhenOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(pEpStatusView, uiCache, provider, true, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true, senderAddress, forceUnencrypted, alwaysSecure);
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);
         PEpProvider.SimpleResultCallback<Rating> callback = mock(PEpProvider.SimpleResultCallback.class);
-        verify(provider).incomingMessageRating(any(),callback);
+        verify(provider).incomingMessageRating(any(), callback);
     }
 
     @Test
     public void shouldGetRecipientsWhenOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false, senderAddress, forceUnencrypted, alwaysSecure);
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);
 
@@ -129,7 +132,7 @@ public class PEpStatusPresenterTest {
     public void shouldUpdateViewOnHandshakeResult() throws Exception {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(pEpStatusView, uiCache, provider, false, senderAddress, forceUnencrypted, alwaysSecure);
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false, senderAddress, forceUnencrypted, alwaysSecure);
 
         Identity identity = new Identity();
         presenter.onHandshakeResult(identity, false);
