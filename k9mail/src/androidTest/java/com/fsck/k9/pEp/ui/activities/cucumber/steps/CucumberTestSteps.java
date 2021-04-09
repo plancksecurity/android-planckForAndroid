@@ -2025,6 +2025,36 @@ public class CucumberTestSteps {
         testUtils.emptyFolder("Download");
     }
 
+    @And("^I check (\\S+) is attached in draft$")
+    public void I_check_attached_in_draft(String attachment) {
+        testUtils.waitForIdle();
+        String attachmentText = "wrong attachment";
+        switch (attachment) {
+            case "settings":
+                attachmentText = "settings.k9s";
+                break;
+            case "settingsthemedark":
+                attachmentText = "settingsthemedark.k9s";
+                break;
+            case "MSoffice":
+                attachmentText = "testmsoffice.docx";
+                break;
+            case "PDF":
+                attachmentText = "testpdf.pdf";
+                break;
+            case "masterKey":
+                attachmentText = "masterkey.asc";
+                break;
+            case "picture":
+                attachmentText = "testpicture.png";
+                break;
+            default:
+                fileName = "passphrase.asc";
+                break;
+        }
+        testUtils.assertsTextExistsOnScreen(attachmentText);
+    }
+
     @And("^I open attached Master Key$")
     public void I_open_attached_Master_Key() {
         testUtils.emptyFolder("Download");
