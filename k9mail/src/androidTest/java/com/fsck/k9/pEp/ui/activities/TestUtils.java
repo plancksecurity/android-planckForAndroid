@@ -3133,7 +3133,7 @@ public class TestUtils {
 
     public void compareMessageBody(String cucumberBody) {
         String [] body;
-        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
+        while (!viewIsDisplayed(R.id.to)) {
             waitForIdle();
         }
         swipeUpScreen();
