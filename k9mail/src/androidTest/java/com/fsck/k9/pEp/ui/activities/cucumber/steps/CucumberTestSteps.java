@@ -1237,6 +1237,7 @@ public class CucumberTestSteps {
                 raw = R.raw.testpicture;
                 testUtils.waitForIdle();
                 fileName = "testpicture.png";
+                break;
             case "passphrase":
                 switch (testUtils.test_number()) {
                     case "4":
@@ -1251,6 +1252,7 @@ public class CucumberTestSteps {
                 }
                 testUtils.waitForIdle();
                 fileName = "passphrase.asc";
+                break;
         }
         while (true) {
             try {
