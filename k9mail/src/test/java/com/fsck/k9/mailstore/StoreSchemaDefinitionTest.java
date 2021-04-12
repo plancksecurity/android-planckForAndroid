@@ -200,8 +200,7 @@ public class StoreSchemaDefinitionTest {
                 "answered INTEGER default 0, " +
                 "forwarded INTEGER default 0, " +
                 "message_part_id INTEGER, " +
-                "pep_rating TEXT," +
-                "auto_consume INTEGER default 0" +
+                "pep_rating TEXT" +
                 ")");
 
         db.execSQL("CREATE TABLE message_parts (" +
