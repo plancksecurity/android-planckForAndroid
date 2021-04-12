@@ -153,7 +153,6 @@ public class StoreSchemaDefinitionTest {
     private void initV55Database(SQLiteDatabase db) {
         db.beginTransaction();
 
-        db.execSQL("DROP TABLE IF EXISTS folders");
         db.execSQL("CREATE TABLE folders (" +
                 "id INTEGER PRIMARY KEY," +
                 "name TEXT, " +
@@ -174,7 +173,7 @@ public class StoreSchemaDefinitionTest {
                 ")");
 
         db.execSQL("CREATE INDEX IF NOT EXISTS folder_name ON folders (name)");
-        db.execSQL("DROP TABLE IF EXISTS messages");
+
         db.execSQL("CREATE TABLE messages (" +
                 "id INTEGER PRIMARY KEY, " +
                 "deleted INTEGER default 0, " +
@@ -205,7 +204,6 @@ public class StoreSchemaDefinitionTest {
                 "auto_consume INTEGER default 0" +
                 ")");
 
-        db.execSQL("DROP TABLE IF EXISTS message_parts");
         db.execSQL("CREATE TABLE message_parts (" +
                 "id INTEGER PRIMARY KEY, " +
                 "type INTEGER NOT NULL, " +
@@ -233,25 +231,17 @@ public class StoreSchemaDefinitionTest {
                 "UPDATE message_parts SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
                 "END");
 
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_uid ON messages (uid, folder_id)");
-        db.execSQL("DROP INDEX IF EXISTS msg_folder_id");
-        db.execSQL("DROP INDEX IF EXISTS msg_folder_id_date");
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_folder_id_deleted_date ON messages (folder_id,deleted,internal_date)");
+        db.execSQL("CREATE INDEX msg_uid ON messages (uid, folder_id)");
+        db.execSQL("CREATE INDEX msg_folder_id_deleted_date ON messages (folder_id,deleted,internal_date)");
 
-        db.execSQL("DROP INDEX IF EXISTS msg_empty");
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_empty ON messages (empty)");
+        db.execSQL("CREATE INDEX msg_empty ON messages (empty)");
 
-        db.execSQL("DROP INDEX IF EXISTS msg_read");
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_read ON messages (read)");
+        db.execSQL("CREATE INDEX msg_read ON messages (read)");
 
-        db.execSQL("DROP INDEX IF EXISTS msg_flagged");
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_flagged ON messages (flagged)");
+        db.execSQL("CREATE INDEX msg_flagged ON messages (flagged)");
 
-        db.execSQL("DROP INDEX IF EXISTS msg_composite");
-        db.execSQL("CREATE INDEX IF NOT EXISTS msg_composite ON messages (deleted, empty,folder_id,flagged,read)");
+        db.execSQL("CREATE INDEX msg_composite ON messages (deleted, empty,folder_id,flagged,read)");
 
-
-        db.execSQL("DROP TABLE IF EXISTS threads");
         db.execSQL("CREATE TABLE threads (" +
                 "id INTEGER PRIMARY KEY, " +
                 "message_id INTEGER, " +
@@ -259,30 +249,23 @@ public class StoreSchemaDefinitionTest {
                 "parent INTEGER" +
                 ")");
 
-        db.execSQL("DROP INDEX IF EXISTS threads_message_id");
-        db.execSQL("CREATE INDEX IF NOT EXISTS threads_message_id ON threads (message_id)");
+        db.execSQL("CREATE INDEX threads_message_id ON threads (message_id)");
 
-        db.execSQL("DROP INDEX IF EXISTS threads_root");
-        db.execSQL("CREATE INDEX IF NOT EXISTS threads_root ON threads (root)");
+        db.execSQL("CREATE INDEX threads_root ON threads (root)");
 
-        db.execSQL("DROP INDEX IF EXISTS threads_parent");
-        db.execSQL("CREATE INDEX IF NOT EXISTS threads_parent ON threads (parent)");
+        db.execSQL("CREATE INDEX threads_parent ON threads (parent)");
 
-        db.execSQL("DROP TRIGGER IF EXISTS set_thread_root");
         db.execSQL("CREATE TRIGGER set_thread_root " +
                 "AFTER INSERT ON threads " +
                 "BEGIN " +
                 "UPDATE threads SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
                 "END");
 
-        db.execSQL("DROP TABLE IF EXISTS pending_commands");
         db.execSQL("CREATE TABLE pending_commands " +
                 "(id INTEGER PRIMARY KEY, command TEXT, data TEXT)");
 
-        db.execSQL("DROP TRIGGER IF EXISTS delete_folder");
         db.execSQL("CREATE TRIGGER delete_folder BEFORE DELETE ON folders BEGIN DELETE FROM messages WHERE old.id = folder_id; END;");
 
-        db.execSQL("DROP TRIGGER IF EXISTS delete_message");
         db.execSQL("CREATE TRIGGER delete_message " +
                 "BEFORE DELETE ON messages " +
                 "BEGIN " +
@@ -290,7 +273,6 @@ public class StoreSchemaDefinitionTest {
                 "DELETE FROM messages_fulltext WHERE docid = OLD.id; " +
                 "END");
 
-        db.execSQL("DROP TABLE IF EXISTS messages_fulltext");
         db.execSQL("CREATE VIRTUAL TABLE messages_fulltext USING fts4 (fulltext)");
 
         db.setVersion(55);
