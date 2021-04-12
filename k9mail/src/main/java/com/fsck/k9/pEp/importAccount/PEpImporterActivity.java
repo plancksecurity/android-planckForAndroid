@@ -119,12 +119,23 @@ public abstract class PEpImporterActivity extends PepActivity {
         Timber.i("onActivityResult requestCode = %d, resultCode = %s, data = %s", requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                ArrayList<String> returnValue = data.getStringArrayListExtra(ACCOUNTS_ID);
-                if (returnValue != null && !returnValue.isEmpty()) {
-                    promptServerPasswords(returnValue);
-                } else {
-                    onImportFinished();
+            if (data != null) {
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        ArrayList<String> returnValue = data.getStringArrayListExtra(ACCOUNTS_ID);
+                        if (returnValue != null && !returnValue.isEmpty()) {
+                            promptServerPasswords(returnValue);
+                        } else {
+                            onImportFinished();
+                        }
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        returnValue = data.getStringArrayListExtra(ACCOUNTS_ID);
+                        if (returnValue != null && !returnValue.isEmpty()) {
+                            promptServerPasswords(returnValue);
+                        }
+                        break;
+
                 }
             } else {
                 promptServerPasswords(disabledAccounts);

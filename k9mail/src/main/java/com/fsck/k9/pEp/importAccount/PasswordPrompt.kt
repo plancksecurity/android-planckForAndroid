@@ -146,13 +146,20 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
             showProgressDialog()
             setAccountPassword(incomingPassword, outgoingPassword)
         }
-        cancelButton.setOnClickListener { finish() }
+        cancelButton.setOnClickListener { cancelPrompt() }
     }
 
     private fun sendDataBack() {
         val resultIntent = Intent()
         resultIntent.putStringArrayListExtra(ACCOUNTS_ID, remainingAccounts)
         setResult(Activity.RESULT_OK, resultIntent)
+        finish()
+    }
+
+    private fun cancelPrompt() {
+        val resultIntent = Intent()
+        resultIntent.putStringArrayListExtra(ACCOUNTS_ID, remainingAccounts)
+        setResult(Activity.RESULT_CANCELED, resultIntent)
         finish()
     }
 

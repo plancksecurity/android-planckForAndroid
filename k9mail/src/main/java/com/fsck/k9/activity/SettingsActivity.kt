@@ -516,7 +516,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun onImportFinished() {
-        onOpenAccount(Preferences.getPreferences(this).defaultAccount)
     }
 
     private fun onDeleteAccount(account: Account) {
@@ -539,7 +538,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 } else ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description),
+                                selectedContextAccount!!.description),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
@@ -795,14 +794,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 if (resultCode == Activity.RESULT_OK && data != null)
                     onExport(data)
             ACTIVITY_REQUEST_PROMPT_SERVER_PASSWORDS -> {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    val returnValue = data.getStringArrayListExtra(ACCOUNTS_ID)
-                    if (returnValue!!.isNotEmpty()) {
-                        promptServerPasswords(returnValue)
-                    } else
-                        onImportFinished()
-                }else{
-                    onOpenAccount(Preferences.getPreferences(this).defaultAccount)
+                when {
+                    resultCode == Activity.RESULT_OK && data != null -> {
+                        val returnValue = data.getStringArrayListExtra(ACCOUNTS_ID)
+                        if (returnValue?.isNotEmpty() == true) {
+                            promptServerPasswords(returnValue)
+                        }
+                    }
+                    resultCode == Activity.RESULT_CANCELED -> {
+                    }
+                    else ->
+                        onOpenAccount(Preferences.getPreferences(this).defaultAccount)
                 }
             }
         }
