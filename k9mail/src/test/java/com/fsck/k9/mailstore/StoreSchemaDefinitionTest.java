@@ -230,17 +230,6 @@ public class StoreSchemaDefinitionTest {
                 "UPDATE message_parts SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
                 "END");
 
-        db.execSQL("CREATE INDEX msg_uid ON messages (uid, folder_id)");
-        db.execSQL("CREATE INDEX msg_folder_id_deleted_date ON messages (folder_id,deleted,internal_date)");
-
-        db.execSQL("CREATE INDEX msg_empty ON messages (empty)");
-
-        db.execSQL("CREATE INDEX msg_read ON messages (read)");
-
-        db.execSQL("CREATE INDEX msg_flagged ON messages (flagged)");
-
-        db.execSQL("CREATE INDEX msg_composite ON messages (deleted, empty,folder_id,flagged,read)");
-
         db.execSQL("CREATE TABLE threads (" +
                 "id INTEGER PRIMARY KEY, " +
                 "message_id INTEGER, " +
