@@ -77,7 +77,7 @@ public class StoreSchemaDefinitionTest {
     public void doDbUpgrade_withBadDatabase_shouldThrowInDebugBuild() {
         if (BuildConfig.DEBUG) {
             SQLiteDatabase database = SQLiteDatabase.create(null);
-            database.setVersion(29);
+            database.setVersion(55);
 
             try {
                 storeSchemaDefinition.doDbUpgrade(database);
@@ -90,7 +90,7 @@ public class StoreSchemaDefinitionTest {
 
     @Test
     public void doDbUpgrade_withV29_shouldUpgradeDatabaseToLatestVersion() {
-        SQLiteDatabase database = createV29Database();
+        SQLiteDatabase database = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(database);
 
@@ -99,7 +99,7 @@ public class StoreSchemaDefinitionTest {
 
     @Test
     public void doDbUpgrade_withV29() {
-        SQLiteDatabase database = createV29Database();
+        SQLiteDatabase database = createV55Database();
         insertMessageWithSubject(database, "Test Email");
 
         storeSchemaDefinition.doDbUpgrade(database);
@@ -110,7 +110,7 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTables() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
@@ -120,7 +120,7 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTriggers() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
@@ -130,18 +130,20 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameIndexes() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
         assertDatabaseIndexesEquals(newDatabase, upgradedDatabase);
     }
 
+    @Test
+    public void justCreateDatabase() {
+        SQLiteDatabase database = createV55Database();
 
-    private SQLiteDatabase createV29Database() {
-        SQLiteDatabase database = SQLiteDatabase.create(null);
-        initV29Database(database);
-        return database;
+        storeSchemaDefinition.doDbUpgrade(database);
+
+        assertEquals(LocalStore.DB_VERSION, database.getVersion());
     }
 
     private SQLiteDatabase createV55Database() {
@@ -260,108 +262,6 @@ public class StoreSchemaDefinitionTest {
         db.execSQL("CREATE VIRTUAL TABLE messages_fulltext USING fts4 (fulltext)");
 
         db.setVersion(55);
-
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    private void initV29Database(SQLiteDatabase db) {
-        /*
-         * There is no precise definition of a v29 database. This function approximates it by creating a database
-         * that could be upgraded to the latest database as of v58
-         */
-
-        db.beginTransaction();
-
-        db.execSQL("CREATE TABLE folders (" +
-                "id INTEGER PRIMARY KEY," +
-                "name TEXT, " +
-                "last_updated INTEGER, " +
-                "unread_count INTEGER, " +
-                "visible_limit INTEGER, " +
-                "status TEXT, " +
-                "push_state TEXT, " +
-                "last_pushed INTEGER " +
-                ")");
-
-        db.execSQL("CREATE TABLE messages (" +
-                "id INTEGER PRIMARY KEY, " +
-                "folder_id INTEGER, " +
-                "uid TEXT, " +
-                "subject TEXT, " +
-                "date INTEGER, " +
-                "flags TEXT, " +
-                "sender_list TEXT, " +
-                "to_list TEXT, " +
-                "cc_list TEXT, " +
-                "bcc_list TEXT, " +
-                "reply_to_list TEXT, " +
-                "attachment_count INTEGER, " +
-                "internal_date INTEGER, " +
-                "message_id TEXT, " +
-                "html_content TEXT, " +
-                "text_content TEXT, " +
-                "preview_type TEXT default \"none\", " +
-                "message_part_id INTEGER, " +
-                "pep_color TEXT" +
-                ")");
-
-        db.execSQL("CREATE TABLE attachments (" +
-                "id INTEGER PRIMARY KEY, " +
-                "size INTEGER, " +
-                "name TEXT, " +
-                "mime_type TEXT, " +
-                "store_data TEXT, " +
-                "content_uri TEXT, " +
-                "message_id INTEGER" +
-                ")");
-
-        db.execSQL("CREATE TABLE headers (" +
-                "id INTEGER PRIMARY KEY, " +
-                "name TEXT, " +
-                "value TEXT, " +
-                "message_id INTEGER" +
-                ")");
-
-        db.execSQL("CREATE TABLE threads (" +
-                "id INTEGER PRIMARY KEY, " +
-                "message_id INTEGER, " +
-                "root INTEGER, " +
-                "parent INTEGER" +
-                ")");
-
-        db.execSQL("CREATE TABLE pending_commands (" +
-                "id INTEGER PRIMARY KEY, " +
-                "command TEXT, " +
-                "arguments TEXT" +
-                ")");
-
-        db.execSQL("CREATE INDEX msg_uid ON messages (uid, folder_id)");
-        db.execSQL("CREATE INDEX folder_name ON folders (name)");
-        db.execSQL("CREATE INDEX threads_message_id ON threads (message_id)");
-        db.execSQL("CREATE INDEX threads_root ON threads (root)");
-        db.execSQL("CREATE INDEX threads_parent ON threads (parent)");
-
-        db.execSQL("CREATE TRIGGER set_thread_root " +
-                "AFTER INSERT ON threads " +
-                "BEGIN " +
-                "UPDATE threads SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
-                "END");
-
-        db.execSQL("CREATE TRIGGER delete_folder " +
-                "BEFORE DELETE ON folders " +
-                "BEGIN " +
-                "DELETE FROM messages WHERE old.id = folder_id; " +
-                "END;");
-
-        db.execSQL("CREATE TRIGGER delete_message " +
-                "BEFORE DELETE ON messages " +
-                "BEGIN " +
-                "DELETE FROM message_parts WHERE root = OLD.message_part_id; " +
-                "DELETE FROM messages_fulltext WHERE docid = OLD.id; " +
-                "END");
-
-        db.setVersion(29);
 
         db.setTransactionSuccessful();
         db.endTransaction();
