@@ -260,8 +260,11 @@ public class StoreSchemaDefinitionTest {
                 "UPDATE threads SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
                 "END");
 
-        db.execSQL("CREATE TABLE pending_commands " +
-                "(id INTEGER PRIMARY KEY, command TEXT, data TEXT)");
+        db.execSQL("CREATE TABLE pending_commands (" +
+                "id INTEGER PRIMARY KEY, " +
+                "command TEXT, " +
+                "arguments TEXT" +
+                ")");
 
         db.execSQL("CREATE TRIGGER delete_folder BEFORE DELETE ON folders BEGIN DELETE FROM messages WHERE old.id = folder_id; END;");
 
