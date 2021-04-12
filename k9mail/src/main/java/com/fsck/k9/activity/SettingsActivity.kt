@@ -241,9 +241,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             return
         }
 
-        if (checkDisabledAccounts(accounts)) {
-            return
-        }
+        checkDisabledAccounts(accounts)
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
         if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
             onOpenAccount(unifiedInboxAccount)
@@ -283,15 +281,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         setupAddAccountButton()
     }
 
-    private fun checkDisabledAccounts(accounts: List<Account>): Boolean {
+    private fun checkDisabledAccounts(accounts: List<Account>) {
         accounts.filter { account -> !account.isEnabled }
                 .map { account -> account.uuid }
                 .whenNotNullNorEmpty { list ->
                     selectedContextAccount = null
                     promptServerPasswords(ArrayList(list))
-                    return true
                 }
-        return false
     }
 
     override fun search(query: String) {
