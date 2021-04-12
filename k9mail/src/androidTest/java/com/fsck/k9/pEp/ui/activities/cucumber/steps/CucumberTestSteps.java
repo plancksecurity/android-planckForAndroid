@@ -983,8 +983,32 @@ public class CucumberTestSteps {
     }
 
     @And("^I test widgets$")
-    public void I_test_widgets(){
-        waitForIdle();
+    public void I_test_widget() {
+        device.pressHome();
+        device.pressMenu();
+        testUtils.selectFromScreen("Widgets");
+        boolean findView = false;
+        BySelector selector = By.clazz("android.widget.TextView");
+        //device.click(device.getDisplayWidth() - 5, device.getDisplayHeight()-5);
+        device.click(5, device.getDisplayHeight()-5);
+        while (!findView) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                if (textView.getText().equals("p≡p")) {
+                    //findView = true;
+                }
+            }
+            waitForIdle();
+            device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight()-5,
+                    device.getDisplayWidth() - 5, 50, 150);
+            waitForIdle();
+        }
+        //device.pressDPadCenter();
+        try {
+            device.pressRecentApps();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        device.pressEnter();
     }
 
     @And("^I select from message menu (\\S+)$")
