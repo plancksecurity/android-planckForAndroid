@@ -6,5 +6,5 @@
     <path
         android:pathData="M14.4,6L14,4H5v17h2v-7h5.6l0.4,2h7V6z"
         android:strokeWidth="1"
-        android:strokeColor="@color/white" />
+        android:strokeColor="@color/toolbar_content_default_dark_theme" />
 </vector>
