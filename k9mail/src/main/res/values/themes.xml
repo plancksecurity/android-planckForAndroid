@@ -337,7 +337,7 @@
         <item name="messageListSeparatorColor">?android:attr/colorBackground</item>
         <item name="rejectButtonDefaultColor">@color/pep_red</item>
         <item name="defaultButtonTextColor">@color/white_transparent_90</item>
-        <item name="searchBarHintColor">@color/light_primary_color</item>
+        <item name="searchBarHintColor">@color/toolbar_content_default_dark_theme</item>
         <item name="fab_menu_background_tint">@color/fab_menu_background_tint_dark_theme</item>
         <item name="unifiedInboxIcon">@drawable/ic_unified_inbox_24dp</item>
         <item name="allMessagesIcon">@drawable/ic_all_messages_24dp</item>
