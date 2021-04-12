@@ -47,6 +47,7 @@ public class ImportSettingsDarkThemeTest {
 
     @Test
     public void importSettingDarkTheme() {
+        // FIXME: 12/04/2021 This test is fixed by P4A-1331. Please remove this fixme after P4A-1331 is merged.
         testUtils.selectFromMenu(R.string.settings_import);
         testUtils.doWaitForAlertDialog(R.string.settings_import_selection);
         testUtils.clickAcceptButton();
