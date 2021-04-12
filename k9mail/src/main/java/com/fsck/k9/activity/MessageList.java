@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -1738,11 +1737,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void checkFlagMenuItemChecked(boolean check) {
         if(check) {
-            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueCheckedIcon));
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagCheckedIcon));
             flaggedCheckbox.setTitle(R.string.unflag_action);
         }
         else {
-            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueUncheckedIcon));
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagUncheckedIcon));
             flaggedCheckbox.setTitle(R.string.flag_action);
         }
     }
@@ -1797,6 +1796,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.flag).setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
+            checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
@@ -1817,8 +1817,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
-
-            checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {

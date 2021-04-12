@@ -159,8 +159,8 @@
 
         <item name="iconFlagButton">@drawable/ic_flag_button_light</item>
         <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
-        <item name="flagOpaqueCheckedIcon">@drawable/ic_flag_opaque_light</item>
-        <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_opaque_light</item>
+        <item name="flagCheckedIcon">@drawable/ic_flag_light</item>
+        <item name="flagUncheckedIcon">@drawable/ic_flag_border_light</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_light</item>
 
         <item name="toolbarDefaultColor">@color/pep_green</item>
@@ -307,8 +307,8 @@
         <item name="iconAdavancedSettings">@drawable/ic_advanced_dark</item>
         <item name="iconFlagButton">@drawable/ic_flag_button_dark</item>
         <item name="iconFlagButtonGreen">@drawable/ic_flag_button_green</item>
-        <item name="flagOpaqueCheckedIcon">@drawable/ic_flag_dark</item>
-        <item name="flagOpaqueUncheckedIcon">@drawable/ic_flag_border_dark</item>
+        <item name="flagCheckedIcon">@drawable/ic_flag_dark</item>
+        <item name="flagUncheckedIcon">@drawable/ic_flag_border_dark</item>
         <item name="iconPepLogo">@drawable/ic_pep_logo_dark</item>
 
         <item name="toolbarDefaultColor">@color/dark_theme_overlay_1</item>

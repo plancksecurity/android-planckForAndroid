@@ -14,7 +14,7 @@
     <!-- MessageView -->
     <item
         android:id="@+id/flag"
-        android:icon="?attr/flagOpaqueUncheckedIcon"
+        android:icon="?attr/flagUncheckedIcon"
         android:title="@string/flag_action"
         android:checkable="true"
         app:showAsAction="always" />
