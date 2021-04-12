@@ -98,7 +98,7 @@
         <item name="iconActionSort">@drawable/ic_sort_light</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_light</item>
         <item name="iconActionFlag">@drawable/ic_flag_light</item>
-        <item name="iconActionUnflag">@drawable/ic_flag_border_light</item>
+        <item name="iconActionUnflag">@drawable/ic_flag_border_action_mode</item>
         <item name="iconActionMarkAsRead">@drawable/ic_opened_envelope_light</item>
         <item name="iconActionMarkAsUnread">@drawable/ic_envelope_light</item>
         <item name="iconActionRemoteSearch">@drawable/ic_magnify_cloud_light</item>
@@ -245,7 +245,7 @@
         <item name="iconActionSort">@drawable/ic_sort_dark</item>
         <item name="iconActionSpam">@drawable/ic_alert_octagon_dark</item>
         <item name="iconActionFlag">@drawable/ic_flag_dark</item>
-        <item name="iconActionUnflag">@drawable/ic_flag_border_dark</item>
+        <item name="iconActionUnflag">@drawable/ic_flag_border_action_mode</item>
         <item name="iconActionMarkAsRead">@drawable/ic_opened_envelope_dark</item>
         <item name="iconActionMarkAsUnread">@drawable/ic_envelope_dark</item>
         <item name="iconActionRemoteSearch">@drawable/ic_magnify_cloud_dark</item>
