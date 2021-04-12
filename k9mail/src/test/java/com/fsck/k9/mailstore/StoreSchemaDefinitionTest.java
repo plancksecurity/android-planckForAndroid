@@ -257,13 +257,6 @@ public class StoreSchemaDefinitionTest {
 
         db.execSQL("CREATE TRIGGER delete_folder BEFORE DELETE ON folders BEGIN DELETE FROM messages WHERE old.id = folder_id; END;");
 
-        db.execSQL("CREATE TRIGGER delete_message " +
-                "BEFORE DELETE ON messages " +
-                "BEGIN " +
-                "DELETE FROM message_parts WHERE root = OLD.message_part_id; " +
-                "DELETE FROM messages_fulltext WHERE docid = OLD.id; " +
-                "END");
-
         db.execSQL("CREATE VIRTUAL TABLE messages_fulltext USING fts4 (fulltext)");
 
         db.setVersion(55);
