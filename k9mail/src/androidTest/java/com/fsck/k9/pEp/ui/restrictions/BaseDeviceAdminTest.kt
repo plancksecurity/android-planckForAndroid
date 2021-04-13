@@ -1,9 +1,7 @@
 package com.fsck.k9.pEp.ui.restrictions
 
-import android.content.Intent
 import androidx.test.uiautomator.By
 import com.fsck.k9.common.BaseTest
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Test
 
