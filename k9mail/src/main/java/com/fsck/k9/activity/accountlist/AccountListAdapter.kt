@@ -17,7 +17,6 @@ import security.pEp.ui.resources.ResourcesProvider
 import java.util.concurrent.ConcurrentHashMap
 
 class AccountListAdapter(
-    private val context: Context,
         private val accounts: List<BaseAccount>,
         private val indexedFolderClickListener: IndexedFolderClickListener,
         private val resourcesProvider: ResourcesProvider,
@@ -25,10 +24,12 @@ class AccountListAdapter(
         private val accountStats: ConcurrentHashMap<String, AccountStats>) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
         , AccountClickListener {
 
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.accounts_item, parent, false)
+        this.context = parent.context
         return AccountViewHolder(
             view,
             indexedFolderClickListener,
