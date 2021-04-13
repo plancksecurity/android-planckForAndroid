@@ -153,8 +153,12 @@ public class MessageTopView extends RelativeLayout {
                             displayViewOnLoadFinished(true);
                         }
                         if (savedState != null) {
-                            scrollView.post(() ->
-                                    scrollView.scrollTo(0, getScrollFromPercentage(savedState.scrollY)));
+                            scrollView.postDelayed(() ->
+                                            scrollView.scrollTo(
+                                                    0,
+                                                    getScrollFromPercentage(savedState.scrollY)
+                                            ),
+                                    300);
                         }
                     },
                     automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
