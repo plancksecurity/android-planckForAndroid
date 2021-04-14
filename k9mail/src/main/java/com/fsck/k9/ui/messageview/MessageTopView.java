@@ -309,6 +309,10 @@ public class MessageTopView extends RelativeLayout {
         mHeaderContainer.setPrivacyProtected(ispEpEnabled);
     }
 
+    public boolean canScroll() {
+        return containerView.canScroll();
+    }
+
     static class SavedState extends BaseSavedState {
         public static final Parcelable.Creator<SavedState> CREATOR =
                 new Parcelable.Creator<SavedState>() {

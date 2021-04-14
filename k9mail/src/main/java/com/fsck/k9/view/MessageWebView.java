@@ -185,6 +185,16 @@ public class MessageWebView extends RigidWebView {
         }
     }
 
+    public boolean canScroll() {
+        float realWidth = computeHorizontalScrollRange() - getWidth();
+        float percentage = getScrollX() / realWidth;
+        if (scrolled) {
+            scrolled = false;
+            return false;
+        } else if (realWidth == 0.0f) return true;
+        else return percentage == 0.0f || percentage == 1.0f;
+    }
+
     public interface OnPageFinishedListener {
         void onPageFinished(WebView webView);
     }

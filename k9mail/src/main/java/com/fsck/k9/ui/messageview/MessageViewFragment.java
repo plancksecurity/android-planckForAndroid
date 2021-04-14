@@ -34,7 +34,7 @@ import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -86,7 +86,7 @@ import static android.app.Activity.RESULT_OK;
 import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
 
 public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener {
 
     private static final String ARG_REFERENCE = "reference";
 
@@ -275,19 +275,22 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setupSwipeDetector() {
-        ((MessageList) getActivity()).setupGestureDetector(this);
-    }
+        ((MessageList) getContext()).setupGestureDetector(
+                new SwipeGestureDetector.OnSwipeGestureListener() {
+                    @Override
+                    public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
+                        if (mMessageView.canScroll())
+                            ((MessageList) getContext()).showNextMessage();
+                    }
 
-    @Override
-    public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
-        ((MessageList) getActivity()).showNextMessage();
+                    @Override
+                    public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
+                        if (mMessageView.canScroll())
+                            ((MessageList) getContext()).showPreviousMessage();
+                    }
+                }
+        );
     }
-
-    @Override
-    public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
-        ((MessageList) getActivity()).showPreviousMessage();
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         messageCryptoPresenter.onSaveInstanceState(outState);

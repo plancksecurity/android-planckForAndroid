@@ -42,10 +42,8 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
-
-public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener, OnCreateContextMenuListener {
+import javax.inject.Inject;public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener,
+        OnCreateContextMenuListener {
     private static final int MENU_ITEM_LINK_VIEW = Menu.FIRST;
     private static final int MENU_ITEM_LINK_SHARE = Menu.FIRST + 1;
     private static final int MENU_ITEM_LINK_COPY = Menu.FIRST + 2;
@@ -572,6 +570,10 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
 
     public Map<Uri, AttachmentViewInfo> getCurrentAttachments() {
         return attachments;
+    }
+
+    public boolean canScroll() {
+        return mMessageContentView.canScroll();
     }
 
     static class SavedState extends BaseSavedState {
