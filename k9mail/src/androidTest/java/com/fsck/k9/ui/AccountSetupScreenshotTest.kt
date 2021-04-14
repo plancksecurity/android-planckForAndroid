@@ -54,7 +54,8 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import account menu")
         sleep(500)
 
-        startFileManagerStub("stubAccount", ".k9s")
+        testUtils.externalAppRespondWithFile(R.raw.stubaccount)
+
         click(getString(R.string.settings_import))
         sleep(500)
 
