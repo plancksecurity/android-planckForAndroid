@@ -259,7 +259,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     }
 
     private fun importKey() {
-        startFileManagerStub("test_key", ".asc")
+        testUtils.externalAppRespondWithFile(R.raw.test_key)
 
         clickSetting(R.string.pgp_key_import_title)
         runBlocking { waitForIdle() }

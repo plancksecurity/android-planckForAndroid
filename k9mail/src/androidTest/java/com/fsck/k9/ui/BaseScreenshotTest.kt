@@ -164,19 +164,6 @@ open class BaseScreenshotTest : BaseTest() {
         count = 0
     }
 
-    fun startFileManagerStub(filename: String, extension: String) {
-        val result: Instrumentation.ActivityResult = fileManagerResultStub(filename, extension)
-        intending(not(isInternal())).respondWith(result)
-        runBlocking { waitForIdle() }
-    }
-
-    private fun fileManagerResultStub(fileName: String, extension: String): Instrumentation.ActivityResult {
-        val resultData = Intent()
-        val fileLocation = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName + extension)
-        resultData.data = Uri.parse("file://$fileLocation")
-        return Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
-    }
-
     companion object {
         private const val IMAGE_DIR = "/sdcard/Screenshots/"
         const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"

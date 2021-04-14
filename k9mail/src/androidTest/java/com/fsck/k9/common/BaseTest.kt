@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.UiAutomation
 import android.content.Context
 import android.content.res.Resources
-import android.os.Build
 import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -24,8 +23,6 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import com.fsck.k9.BuildConfig
-import com.fsck.k9.K9
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.TestUtils
@@ -47,6 +44,7 @@ open class BaseTest {
     lateinit var context: Context
     lateinit var resources: Resources
     private lateinit var uiAutomation: UiAutomation
+    lateinit var testUtils: TestUtils
 
     private val messageListSize = IntArray(2)
 
@@ -65,6 +63,7 @@ open class BaseTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
         resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
         uiAutomation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        testUtils = TestUtils(device, InstrumentationRegistry.getInstrumentation())
         ViewMatchers.assertThat(context, CoreMatchers.notNullValue())
         ViewMatchers.assertThat(device, CoreMatchers.notNullValue())
         ViewMatchers.assertThat(resources, CoreMatchers.notNullValue())
