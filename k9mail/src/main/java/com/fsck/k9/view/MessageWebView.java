@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
-
+import android.os.Build;
 import android.util.AttributeSet;
 import timber.log.Timber;
 import android.view.KeyEvent;
@@ -26,7 +26,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 public class MessageWebView extends RigidWebView {
 
     private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
-
+    private boolean scrolled = false;
     public MessageWebView(Context context) {
         super(context);
     }
@@ -72,7 +72,7 @@ public class MessageWebView extends RigidWebView {
         this.setVerticalScrollbarOverlay(true);
         this.setScrollBarStyle(SCROLLBARS_INSIDE_OVERLAY);
         this.setLongClickable(true);
-
+        setScrollListener();
         if (ThemeManager.getMessageViewTheme() == Theme.DARK) {
             // Black theme should get a black webview background
             // we'll set the background of the messages on load
@@ -114,6 +114,14 @@ public class MessageWebView extends RigidWebView {
 
         // Disable network images by default.  This is overridden by preferences.
         blockNetworkData(true);
+    }
+
+    private void setScrollListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            this.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                scrolled = true;
+            });
+        }
     }
 
     /**
