@@ -46,8 +46,10 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         openFirstScreen()
         click(R.id.skip)
         sleep(500)
+        runBlocking { waitForIdle() }
         permissions()
 
+        runBlocking { waitForIdle() }
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("import account menu")
         sleep(500)

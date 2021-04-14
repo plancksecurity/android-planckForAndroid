@@ -100,25 +100,6 @@ open class BaseTest {
         device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT)
     }
 
-    fun grantPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            uiAutomation.executeShellCommand("pm grant " + context.packageName
-                    + " android.permission.WRITE_EXTERNAL_STORAGE")
-            uiAutomation.executeShellCommand("pm grant " + context.packageName
-                    + " android.permission.READ_CONTACTS")
-            uiAutomation.executeShellCommand("pm grant " + context.packageName
-                    + " android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
-            K9.setShallRequestPermissions(false)
-
-            Thread {
-                val prefs = Preferences.getPreferences(context)
-                val editor = prefs.storage.edit()
-                K9.save(editor)
-                editor.commit()
-            }.start()
-        }
-    }
-
     fun sleep(time: Int) {
         try {
             Thread.sleep(time.toLong())
@@ -129,6 +110,7 @@ open class BaseTest {
 
     suspend fun waitForIdle() = withContext(Dispatchers.IO) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        device.waitForIdle()
     }
 
     fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
@@ -308,14 +290,14 @@ open class BaseTest {
     private fun allowPermissions(index: Int) {
         while (true) {
             try {
-                device.waitForIdle()
+                runBlocking { waitForIdle() }
                 val allowPermissions = device.findObject(UiSelector()
                         .clickable(true)
                         .checkable(false)
                         .index(index))
                 if (allowPermissions.exists()) {
                     allowPermissions.click()
-                    device.waitForIdle()
+                    runBlocking { waitForIdle() }
                 } else {
                     Timber.e("There is no permissions dialog to interact with ")
                     return
