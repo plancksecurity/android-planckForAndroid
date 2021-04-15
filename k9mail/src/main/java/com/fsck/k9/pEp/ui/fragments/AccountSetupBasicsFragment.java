@@ -485,7 +485,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void checkSettings(AccountSetupCheckSettings.CheckDirection direction) {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, direction, false, AccountSetupCheckSettingsFragment.LOGIN,
+        pEpSettingsChecker.checkSettings(mAccount, direction, AccountSetupCheckSettingsFragment.LOGIN,
                 false, basicsSettingsCheckCallback);
     }
 
@@ -657,7 +657,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     //We've successfully checked incoming.  Now check outgoing.
                     mCheckedIncoming = true;
                     saveCredentialsInPreferences();
-                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
+                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, AccountSetupCheckSettingsFragment.LOGIN,
                             false,
                             new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                                 @Override
@@ -685,7 +685,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void goForward() {
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         } catch (URISyntaxException e) {
             Timber.e(e);
         }

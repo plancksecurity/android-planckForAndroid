@@ -607,7 +607,7 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
     }
 
     private void checkSettings() {
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, AccountSetupCheckSettingsFragment.INCOMING,
                 false,
                 new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
                     @Override
@@ -626,7 +626,7 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
         if (editSettings) {
             getActivity().finish();
         } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         }
     }
 

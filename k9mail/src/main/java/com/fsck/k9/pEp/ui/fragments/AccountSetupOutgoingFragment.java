@@ -69,7 +69,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
 
     private static final String EXTRA_ACCOUNT = "account";
 
-    private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
@@ -96,7 +95,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private AuthTypeAdapter mAuthTypeAdapter;
     private Button mNextButton;
     private Account mAccount;
-    private boolean mMakeDefault;
 
     private View rootView;
     private boolean mEdit;
@@ -113,11 +111,10 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private boolean errorDialogWasShowing;
     private boolean wasLoading;
 
-    public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
+    public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
-        bundle.putBoolean(EXTRA_MAKE_DEFAULT, makeDefault);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -206,7 +203,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         //FIXME: get Account object again?
         accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mAccount = getAccountFromPreferences(accountUuid);
-        mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
          * If we're being reloaded we override the original account with the one
@@ -315,7 +311,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
 
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, mMakeDefault, AccountSetupCheckSettingsFragment.OUTGOING,
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, AccountSetupCheckSettingsFragment.OUTGOING,
                 false, basicsSettingsCheckCallback);
     }
 
@@ -620,7 +616,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
                 mAccount.save(preferences);
                 goForward();
             } else {
-                AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
+                AccountSetupOptions.actionOptions(getActivity(), mAccount, false);
                 goForward();
             }
         }
@@ -635,7 +631,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
                 getActivity().finish();
             }
         } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         }
     }
 

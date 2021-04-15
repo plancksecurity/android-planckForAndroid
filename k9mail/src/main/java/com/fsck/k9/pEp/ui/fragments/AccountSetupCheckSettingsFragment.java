@@ -61,7 +61,6 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
 
     private static final String EXTRA_CHECK_DIRECTION ="checkDirection";
     private static final String EXTRA_ACTIVITY_REQUEST_CODE = "EXTRA_ACTIVITY_REQUEST_CODE";
-    private static final String EXTRA_DEFAULT = "default";
     private static final String EXTRA_PROCEDENCE = "procedence";
     public static final String INCOMING = "INCOMING";
     public static final String OUTGOING = "OUTGOING";
@@ -81,18 +80,16 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     private boolean mCanceled;
 
     private boolean mDestroyed;
-    private boolean mMakeDefault;
     private String mProcedence;
 
 
     public static AccountSetupCheckSettingsFragment actionCheckSettings(Account account,
-                                                                        AccountSetupCheckSettings.CheckDirection direction, Boolean makeDefault, String procedence) {
+                                                                        AccountSetupCheckSettings.CheckDirection direction, String procedence) {
         AccountSetupCheckSettingsFragment fragment = new AccountSetupCheckSettingsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
         bundle.putSerializable(EXTRA_CHECK_DIRECTION, direction);
         bundle.putSerializable(EXTRA_ACTIVITY_REQUEST_CODE, ACTIVITY_REQUEST_CODE);
-        bundle.putBoolean(EXTRA_DEFAULT, makeDefault);
         bundle.putString(EXTRA_PROCEDENCE, procedence);
         fragment.setArguments(bundle);
         return fragment;
@@ -120,7 +117,6 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
         mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
         mDirection = (AccountSetupCheckSettings.CheckDirection) getArguments().getSerializable(EXTRA_CHECK_DIRECTION);
 
-        mMakeDefault = getArguments().getBoolean(EXTRA_DEFAULT);
         mProcedence = getArguments().getString(EXTRA_PROCEDENCE);
 
         new CheckAccountTask(mAccount).execute(mDirection);
@@ -330,7 +326,7 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
                     e.getMessage() == null ? "" : e.getMessage());
         }
         AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount,
-                mDirection, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING);
+                mDirection, AccountSetupCheckSettingsFragment.INCOMING);
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -416,7 +412,7 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
                             .replace(R.id.account_setup_container, accountSetupBasicsFragment, "accountSetupBasicsFragment")
                             .commit();
                 } else {
-                    AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, false);
+                    AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
                     getFragmentManager()
                             .beginTransaction()
                             .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -573,7 +569,7 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     }
 
     private void goToOutgoingSettings() {
-        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount, mMakeDefault);
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)

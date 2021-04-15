@@ -42,7 +42,6 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
 
     private Account account;
     private AccountSetupCheckSettings.CheckDirection direction;
-    private Boolean makeDefault;
     private String procedence;
     private PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection> callback;
     private Boolean isEditing;
@@ -56,11 +55,11 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     @Override
     public void checkSettings(Account account,
                               AccountSetupCheckSettings.CheckDirection checkDirection,
-                              Boolean makeDefault, String procedence, Boolean isEditing,
+                              String procedence,
+                              Boolean isEditing,
                               ResultCallback<Redirection> callback) {
         this.account = account;
         this.direction = checkDirection;
-        this.makeDefault = makeDefault;
         this.procedence = procedence;
         this.isEditing = isEditing;
         this.callback = callback;

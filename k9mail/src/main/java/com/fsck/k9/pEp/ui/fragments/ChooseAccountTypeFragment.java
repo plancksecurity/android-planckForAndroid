@@ -90,7 +90,7 @@ public class ChooseAccountTypeFragment extends PEpFragment {
     }
 
     private void goForward() {
-        accountSetupNavigator.goForward(getFragmentManager(), mAccount, mMakeDefault);
+        accountSetupNavigator.goForward(getFragmentManager(), mAccount);
     }
 
     private void onIMAPClicked() {

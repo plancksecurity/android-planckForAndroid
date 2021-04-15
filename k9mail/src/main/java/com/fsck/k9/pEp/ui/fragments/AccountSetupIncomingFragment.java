@@ -78,7 +78,6 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
-    private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
@@ -111,7 +110,6 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private EditText mWebdavMailboxPathView;
     private Button mNextButton;
     private Account mAccount;
-    private boolean mMakeDefault;
     private CheckBox mCompressionMobile;
     private CheckBox mCompressionWifi;
     private CheckBox mCompressionOther;
@@ -131,11 +129,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
 
     private final K9JobManager jobManager = K9.jobManager;
 
-    public static AccountSetupIncomingFragment actionIncomingSettings(Account account, boolean makeDefault) {
+    public static AccountSetupIncomingFragment actionIncomingSettings(Account account) {
         AccountSetupIncomingFragment fragment = new AccountSetupIncomingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
-        bundle.putBoolean(EXTRA_MAKE_DEFAULT, makeDefault);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -219,7 +216,6 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mAccount = getAccountFromPreferences(accountUuid);
-        mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
          * If we're being reloaded we override the original account with the one
@@ -670,7 +666,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private void checkSettings() {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
+        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, AccountSetupCheckSettingsFragment.INCOMING,
                 false, basicsSettingsCheckCallback);
     }
 
@@ -683,7 +679,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
                 getActivity().finish();
             }
         } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         }
     }
 
