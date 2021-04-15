@@ -241,7 +241,11 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             if(manualSetup) {
                 account.setOptionsOnInstall();
             }
-            account.save(Preferences.getPreferences(mActivity));
+            Preferences preferences = Preferences.getPreferences(mActivity);
+            account.save(preferences);
+            if(preferences.getDefaultAccount() == null) {
+                preferences.setDefaultAccount(account);
+            }
             MessagingController.getInstance(mActivity).refreshRemoteSynchronous(account);
             accountKeysGenerator.generateAccountKeys();
             return null;
