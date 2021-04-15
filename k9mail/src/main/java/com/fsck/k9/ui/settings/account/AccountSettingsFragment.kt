@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.SwitchPreferenceCompat
@@ -80,6 +81,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpSync(account)
         initializePgpImportKey()
         initializeNotifications()
+        initializeDefaultAccountPreference()
         initializePepPrivacyProtection()
     }
 
@@ -269,6 +271,20 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeDefaultAccountPreference() {
+        findPreference<CheckBoxPreference>(PREFERENCE_DEFAULT_ACCOUNT)?.let { preference ->
+            preference.setOnPreferenceChangeListener { _, _ ->
+                if(preference.isChecked) {
+                    FeedbackTools.showLongFeedback(
+                        requireView(),
+                        getString(R.string.default_account_cannot_be_unset_msg)
+                    )
+                    false
+                } else true
+            }
+        }
+    }
+
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
         loading?.visibility = View.VISIBLE
@@ -411,6 +427,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ACCOUNT_KEY_RESET = "pep_key_reset_account"
         private const val PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT = "pep_enable_sync_account"
         private const val DELETE_POLICY_MARK_AS_READ = "MARK_AS_READ"
+        private const val PREFERENCE_DEFAULT_ACCOUNT = "account_default"
 
         private val FOLDER_LIST_PREFERENCES = listOf(
                 PREFERENCE_AUTO_EXPAND_FOLDER,
