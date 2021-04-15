@@ -985,55 +985,78 @@ public class CucumberTestSteps {
     @And("^I test widgets$")
     public void I_test_widget() {
         device.pressHome();
-        device.swipe(device.getDisplayWidth()/2, device.getDisplayHeight()/2,
-                device.getDisplayWidth()/2, device.getDisplayHeight()/2,450);
-        testUtils.selectFromScreen("Widgets");
-        boolean findView = false;
-        BySelector selector = By.clazz("android.widget.TextView");
-        //device.click(device.getDisplayWidth() - 5, device.getDisplayHeight()-5);
-        device.click(5, device.getDisplayHeight()-5);
-        while (!findView) {
-            for (int scroll = 95; scroll > 0; scroll --) {
+        for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
+            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2,
+                    device.getDisplayWidth() / 2, device.getDisplayHeight() / 2, 450);
+            testUtils.selectFromScreen("Widgets");
+            boolean findView = false;
+            BySelector selector = By.clazz("android.widget.TextView");
+            //device.click(device.getDisplayWidth() - 5, device.getDisplayHeight()-5);
+            device.click(5, device.getDisplayHeight() - 5);
+            for (int scroll = 95; scroll > 0; scroll--) {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getText().equals("p≡p")) {
                         findView = true;
                     }
                 }
                 waitForIdle();
-                device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll/100,
-                        device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1)/100, 15);
+                device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
+                        device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
                 waitForIdle();
             }
 
-            for (int scroll = 0; scroll < 10; scroll ++) {
+            for (int scroll = 0; scroll < 10; scroll++) {
                 waitForIdle();
-                device.drag(10, device.getDisplayHeight()/2,
-                        device.getDisplayWidth() - 10, device.getDisplayHeight()/2, 10);
+                device.drag(10, device.getDisplayHeight() / 2,
+                        device.getDisplayWidth() - 10, device.getDisplayHeight() / 2, 10);
                 waitForIdle();
             }
-            for (int scroll = 0; scroll < 10; scroll ++) {
+            for (int scroll = 0; scroll < 10; scroll++) {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getText().equals("p≡p")) {
                         textView.click();
+                        int widgetPreview = 0;
                         BySelector subSelector = By.clazz("android.view.View");
                         for (UiObject2 subTextView : device.findObjects(subSelector)) {
                             if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
-                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                        device.getDisplayWidth()/2, device.getDisplayHeight()/3, 30);
+                                widgetPreview++;
+                                if (widgetPreview == widgetToDrag) {
+                                    scroll = 10;
+                                    switch (widgetToDrag) {
+                                        case 1:
+                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                    device.getDisplayWidth() / 5, device.getDisplayHeight() / 4, 30);
+                                            break;
+                                        case 2:
+                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                    device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                                            break;
+                                        case 3:
+                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                    device.getDisplayWidth() / 5, device.getDisplayHeight() / 3, 30);
+                                            break;
+                                    }
+                                }
+                            }
+                            if (scroll == 10) {
+                                break;
                             }
                         }
                         findView = true;
-
+                    }
+                    if (scroll == 10) {
+                        break;
                     }
                 }
+                if (scroll == 10) {
+                    break;
+                }
                 waitForIdle();
-                device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight()/2,
-                        10, device.getDisplayHeight()/2, 15);
+                device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
+                        10, device.getDisplayHeight() / 2, 15);
                 waitForIdle();
             }
         }
-
-
     }
 
     @And("^I select from message menu (\\S+)$")
