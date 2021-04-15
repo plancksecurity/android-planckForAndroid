@@ -1106,8 +1106,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if(redirection.equals(PEpSettingsChecker.Redirection.OUTGOING)) {
             checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
         } else {
+            restoreViewsEnabledState();
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
-            requireActivity().finish();
         }
     }
 
