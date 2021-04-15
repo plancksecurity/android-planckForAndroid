@@ -908,7 +908,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
                 view.tag = holder
 
-                holder.accountsItemLayout!!.setOnClickListener { indexedFolderClickListener.onClick(position) }
+                holder.accountsItemLayout!!.setOnClickListener {
+                    if(account is Account && !account.isEnabled) {
+                        onActivateAccount(account)
+                    } else {
+                        indexedFolderClickListener.onClick(position)
+                    }
+                }
             }
             val stats = accountStats[account!!.uuid]
 
@@ -966,7 +972,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.folders?.let {
                     it.visibility = View.VISIBLE
                     it.drawable.alpha = 255
-                    it.setOnClickListener { FolderList.actionHandleAccount(this@SettingsActivity, account as Account) }
+                    it.setOnClickListener {
+                        if(account is Account && !account.isEnabled) {
+                            onActivateAccount(account)
+                        } else {
+                            FolderList.actionHandleAccount(this@SettingsActivity, account as Account)
+                        }
+                    }
                 }
 
                 holder.settings?.let {
