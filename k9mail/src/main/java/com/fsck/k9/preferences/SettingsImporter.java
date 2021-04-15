@@ -250,16 +250,6 @@ public class SettingsImporter {
                         }
                     }
 
-                    StorageEditor editor = storage.edit();
-
-                    String defaultAccountUuid = storage.getString("defaultAccountUuid", null);
-                    if (defaultAccountUuid == null) {
-                        putString(editor, "defaultAccountUuid", accountUuids.get(0));
-                    }
-
-                    if (!editor.commit()) {
-                        throw new SettingsImportExportException("Failed to set default account");
-                    }
                     for (Account account : Preferences.getPreferences(context).getAccounts()) {
                         PEpUtils.pEpGenerateAccountKeys(context, account);
                     }
