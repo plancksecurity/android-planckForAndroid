@@ -792,9 +792,13 @@ public abstract class PEpImporterActivity extends PepActivity {
 
                 // Mark account as enabled
                 mAccount.setEnabled(true);
+                Preferences preferences = Preferences.getPreferences(mContext);
+                if(preferences.getDefaultAccount() == null) {
+                    preferences.setDefaultAccount(mAccount);
+                }
 
                 // Save the account settings
-                mAccount.save(Preferences.getPreferences(mContext));
+                mAccount.save(preferences);
 
                 // Get list of folders from remote server
                 MessagingController.getInstance(mApplication).refreshRemoteSynchronous(mAccount);
