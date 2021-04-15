@@ -1,16 +1,13 @@
 package security.pEp.ui.feedback
 
-import android.os.Parcelable
 import com.fsck.k9.mail.Message
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
 data class FeedbackMessageInfo(
     val subject: String,
     val from: String,
     val recipients: FeedbackMessageRecipients,
     val date: String,
-) : Parcelable {
+) {
     companion object {
         @JvmStatic
         fun fromMessage(message: Message): FeedbackMessageInfo {
@@ -34,7 +31,5 @@ data class FeedbackMessageInfo(
 
     }
 
-    @Parcelize
-    data class FeedbackMessageRecipients(val to: String, val cc: String, val bcc: String) :
-        Parcelable
+    data class FeedbackMessageRecipients(val to: String, val cc: String, val bcc: String)
 }

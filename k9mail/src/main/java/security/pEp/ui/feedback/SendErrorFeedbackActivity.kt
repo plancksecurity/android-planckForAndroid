@@ -3,7 +3,6 @@ package security.pEp.ui.feedback
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.View
 import com.fsck.k9.Account
 import com.fsck.k9.R
@@ -13,7 +12,6 @@ import com.fsck.k9.databinding.ActivityFeedbackBinding
 import com.fsck.k9.mail.Message
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import kotlinx.android.parcel.Parcelize
 import javax.inject.Inject
 
 class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
@@ -104,13 +102,12 @@ class SendErrorFeedbackActivity : WizardActivity(), SendErrorFeedbackView {
     }
 }
 
-@Parcelize
 data class SendErrorFeedbackActivityData(
     val accountUuid: String,
     val title: String,
     val text: String,
     val messageInfo: FeedbackMessageInfo
-) : Parcelable {
+) {
     companion object {
         @JvmStatic
         fun create(
