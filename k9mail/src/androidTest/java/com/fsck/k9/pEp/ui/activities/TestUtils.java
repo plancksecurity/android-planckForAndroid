@@ -1885,7 +1885,7 @@ public class TestUtils {
             ) {
                 assertFailWithMessage("Wrong Status color");
             }
-
+            waitUntilViewDisplayed(R.id.securityStatusText);
             if(!enabledForThisMessage) {
                 onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
@@ -2297,8 +2297,11 @@ public class TestUtils {
     }
 
     public void selectFromStatusPopupMenu(int itemId) {
+        waitForIdle();
         onView(withId(R.id.actionbar_message_view)).perform(ViewActions.longClick());
+        waitForIdle();
         selectFromPopupMenu(itemId);
+        waitForIdle();
     }
 
     public void selectFromPopupMenu(int itemId) {
