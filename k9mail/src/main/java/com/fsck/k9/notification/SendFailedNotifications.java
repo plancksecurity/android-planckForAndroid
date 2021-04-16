@@ -107,7 +107,7 @@ class SendFailedNotifications {
     }
 
     private int getSendPendingMessagesActionIcon() {
-        return R.drawable.ic_send_dark;
+        return R.drawable.notification_action_send_pending;
     }
 
     private NotificationManagerCompat getNotificationManager() {
