@@ -1986,11 +1986,9 @@ public class TestUtils {
         while (currentActivity == getCurrentActivity()) {
             try {
                 waitForIdle();
-                if (saveAsDraft) {
-                    while (!viewIsDisplayed(R.id.message_content)) {
-                        onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                        waitForIdle();
-                    }
+                while (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                    waitForIdle();
                 }
                 waitForIdle();
                 pressBack();
