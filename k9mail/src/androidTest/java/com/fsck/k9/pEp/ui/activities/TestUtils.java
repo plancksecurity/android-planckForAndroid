@@ -2664,6 +2664,16 @@ public class TestUtils {
         waitForIdle();
     }
 
+    public void doWaitForNextAlertDialog(boolean isOwnPackage) {
+        String packageName = isOwnPackage
+            ? context.getPackageName()
+            : "android";
+        waitForIdle();
+        int id = context.getResources().getIdentifier("alertTitle", "id", packageName);
+        waitUntilViewDisplayed(onView(withId(id)).inRoot(isDialog()));
+        waitForIdle();
+    }
+
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
