@@ -34,6 +34,7 @@ import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.NestedListView
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.preferences.SettingsExporter
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
@@ -887,6 +888,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 layoutInflater.inflate(R.layout.accounts_item, parent, false)
             }
             view.isLongClickable = true
+            view.setBackgroundColor(ThemeManager.getColorFromAttributeResource(this@SettingsActivity,
+                if(account is Account && !account.isEnabled) R.attr.disabledAccountBackground
+                else R.attr.screenDefaultBackgroundColor
+            ))
+
             var holder: AccountViewHolder? = view.tag as AccountViewHolder?
             if (holder == null) {
                 holder = AccountViewHolder()
