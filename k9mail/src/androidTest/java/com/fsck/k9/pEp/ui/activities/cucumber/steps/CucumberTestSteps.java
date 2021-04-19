@@ -1029,7 +1029,9 @@ public class CucumberTestSteps {
                                     switch (widgetToDrag) {
                                         case 1:
                                             device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                    device.getDisplayWidth() / 5, device.getDisplayHeight() / 4, 30);
+                                                    device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                                            waitForIdle();
+                                            testUtils.clickTextOnScreen("Unified Inbox");
                                             break;
                                         case 2:
                                             device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
@@ -1037,7 +1039,9 @@ public class CucumberTestSteps {
                                             break;
                                         case 3:
                                             device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                    device.getDisplayWidth() / 5, device.getDisplayHeight() / 3, 30);
+                                                    device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                                            waitForIdle();
+                                            testUtils.clickTextOnScreen("Unified Inbox");
                                             break;
                                     }
                                 }
