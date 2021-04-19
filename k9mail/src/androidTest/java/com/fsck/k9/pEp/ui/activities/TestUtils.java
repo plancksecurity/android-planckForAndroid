@@ -2292,16 +2292,12 @@ public class TestUtils {
     }
 
     public boolean textExistsOnScreen (String text) {
-        boolean viewExists = false;
         waitForIdle();
-        BySelector selector = By.clazz("android.view.View");
-        while (!viewExists) {
-            for (UiObject2 view : device.findObjects(selector)) {
-                if (view.getText() != null) {
-                    viewExists = true;
-                    if (view.getText().contains(text)) {
-                        return true;
-                    }
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 view : device.findObjects(selector)) {
+            if (view.getText() != null) {
+                if (view.getText().contains(text)) {
+                    return true;
                 }
             }
         }
