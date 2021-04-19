@@ -986,14 +986,18 @@ public class CucumberTestSteps {
     public void I_test_widget() {
         device.pressHome();
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
-            device.swipe(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2,
-                    device.getDisplayWidth() / 2, device.getDisplayHeight() / 2, 450);
+            while (!testUtils.textExistsOnScreen("Widgets")) {
+                waitForIdle();
+                device.drag(device.getDisplayWidth() / 2, device.getDisplayHeight() * 13 / 20,
+                        device.getDisplayWidth() / 2, device.getDisplayHeight() * 13 / 20, 450);
+                waitForIdle();
+            }
             testUtils.selectFromScreen("Widgets");
+            waitForIdle();
             boolean findView = false;
             BySelector selector = By.clazz("android.widget.TextView");
-            //device.click(device.getDisplayWidth() - 5, device.getDisplayHeight()-5);
             device.click(5, device.getDisplayHeight() - 5);
-            for (int scroll = 95; scroll > 0; scroll--) {
+            /*for (int scroll = 95; scroll > 0; scroll--) {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getText().equals("p≡p")) {
                         findView = true;
@@ -1003,7 +1007,7 @@ public class CucumberTestSteps {
                 device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
                         device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
                 waitForIdle();
-            }
+            }*/
 
             for (int scroll = 0; scroll < 10; scroll++) {
                 waitForIdle();
