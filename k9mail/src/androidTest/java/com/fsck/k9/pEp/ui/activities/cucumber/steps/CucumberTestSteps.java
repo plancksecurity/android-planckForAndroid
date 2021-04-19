@@ -1000,7 +1000,6 @@ public class CucumberTestSteps {
             /*for (int scroll = 95; scroll > 0; scroll--) {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getText().equals("p≡p")) {
-                        findView = true;
                     }
                 }
                 waitForIdle();
@@ -1073,6 +1072,9 @@ public class CucumberTestSteps {
         }
         if (widgets != 3) {
             TestUtils.assertFailWithMessage("Missing a Widget");
+        }
+        if (!testUtils.textExistsOnScreen("WidTest")) {
+            TestUtils.assertFailWithMessage("Widget error: wrong message subject");
         }
     }
 
