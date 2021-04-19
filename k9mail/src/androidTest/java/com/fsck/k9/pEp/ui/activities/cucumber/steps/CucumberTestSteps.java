@@ -985,6 +985,8 @@ public class CucumberTestSteps {
     @And("^I test widgets$")
     public void I_test_widget() {
         device.pressHome();
+        BySelector selector = By.clazz("android.widget.TextView");
+        BySelector subSelector = By.clazz("android.view.View");
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
@@ -994,8 +996,6 @@ public class CucumberTestSteps {
             }
             testUtils.selectFromScreen("Widgets");
             waitForIdle();
-            boolean findView = false;
-            BySelector selector = By.clazz("android.widget.TextView");
             device.click(5, device.getDisplayHeight() - 5);
             /*for (int scroll = 95; scroll > 0; scroll--) {
                 for (UiObject2 textView : device.findObjects(selector)) {
@@ -1020,7 +1020,6 @@ public class CucumberTestSteps {
                     if (textView.getText().equals("p≡p")) {
                         textView.click();
                         int widgetPreview = 0;
-                        BySelector subSelector = By.clazz("android.view.View");
                         for (UiObject2 subTextView : device.findObjects(subSelector)) {
                             if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
                                 widgetPreview++;
@@ -1050,7 +1049,6 @@ public class CucumberTestSteps {
                                 break;
                             }
                         }
-                        findView = true;
                     }
                     if (scroll == 10) {
                         break;
@@ -1064,6 +1062,17 @@ public class CucumberTestSteps {
                         10, device.getDisplayHeight() / 2, 15);
                 waitForIdle();
             }
+        }
+        int widgets = 0;
+        for (UiObject2 view : device.findObjects(selector)) {
+            if (view.getText() != null) {
+                if (view.getText().contains("Unified Inbox")) {
+                    widgets++;
+                }
+            }
+        }
+        if (widgets != 3) {
+            TestUtils.assertFailWithMessage("Missing a Widget");
         }
     }
 
