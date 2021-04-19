@@ -1076,6 +1076,9 @@ public class CucumberTestSteps {
         if (!testUtils.textExistsOnScreen("WidTest")) {
             TestUtils.assertFailWithMessage("Widget error: wrong message subject");
         }
+        waitForIdle();
+        device.click(device.getDisplayWidth()/2, device.getDisplayHeight()/3);
+        waitForIdle();
     }
 
     @And("^I select from message menu (\\S+)$")
