@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.UiAutomation
 import android.content.Context
 import android.content.res.Resources
+import android.os.Build
+import android.view.ViewGroup
 import android.widget.ScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
@@ -81,7 +83,25 @@ open class BaseTest {
         Intents.init()
         waitLauncher()
         waitAppLaunch()
+        runBlocking {
+            resetFocus()
+        }
         Timber.e("Test Launch successful ================>")
+    }
+
+    private fun resetFocus() = runBlocking(Dispatchers.Main) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+            Iterables.getOnlyElement(activities)?.let { activity ->
+                val content = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
+                val oldDefaultFocusHighlightEnabled = content.defaultFocusHighlightEnabled
+                content.isFocusable = true
+                content.defaultFocusHighlightEnabled = false
+                content.requestFocus()
+                content.clearFocus()
+                content.defaultFocusHighlightEnabled = oldDefaultFocusHighlightEnabled
+            }
+        }
     }
 
     @After
