@@ -2438,6 +2438,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void markAllMessagesRead(final Account account, final String folder) {
+        threadPool.execute(() -> {
+            markAllMessagesReadSynchronous(account, folder);
+        });
+    }
+
+    private void markAllMessagesReadSynchronous(final Account account, final String folder) {
         Timber.i("Marking all messages in %s:%s as read", account.getDescription(), folder);
 
         PendingCommand command = PendingMarkAllAsRead.create(folder);
