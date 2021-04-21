@@ -41,29 +41,8 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.menu_account_settings, menu)
-        menu.findItem(R.id.delete_account).setOnMenuItemClickListener { showDeleteConfirmationDialog() }
         return true
     }
-
-    private fun showDeleteConfirmationDialog():Boolean{
-        val description = viewModel.getAccount(accountUuid).value?.description ?: ""
-
-        val fragment: DialogFragment =
-                ConfirmationDialogFragment.newInstance(
-                        DIALOG_REMOVE_ACCOUNT,
-                        getString(R.string.account_delete_dlg_title),
-                        getString(R.string.account_delete_dlg_instructions_fmt, description),
-                        getString(R.string.okay_action),
-                        getString(R.string.cancel_action)
-                )
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(fragment, DIALOG_REMOVE_TAG)
-        fragmentTransaction.commitAllowingStateLoss()
-
-        return false
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,9 +94,15 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            R.id.delete_account -> {
+                showDeleteConfirmationDialog()
+                return true
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -155,7 +140,8 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
                 }
 
                 MessagingController.getInstance(application).deleteAccount(realAccount)
-                Preferences.getPreferences(this@AccountSettingsActivity).deleteAccount(realAccount)
+                Preferences.getPreferences(this@AccountSettingsActivity)
+                    .deleteAccount(realAccount)
                 K9.setServicesEnabled(this@AccountSettingsActivity)
 
                 accountDeleted();
@@ -168,6 +154,23 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
         intent.putExtra(EXTRA_ACCOUNT_DELETED, true)
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    private fun showDeleteConfirmationDialog() {
+        val description = viewModel.getAccount(accountUuid).value?.description ?: ""
+
+        val fragment: DialogFragment =
+                ConfirmationDialogFragment.newInstance(
+                        DIALOG_REMOVE_ACCOUNT,
+                        getString(R.string.account_delete_dlg_title),
+                        getString(R.string.account_delete_dlg_instructions_fmt, description),
+                        getString(R.string.okay_action),
+                        getString(R.string.cancel_action)
+                )
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(fragment, DIALOG_REMOVE_TAG)
+        fragmentTransaction.commitAllowingStateLoss()
     }
 
     companion object {
