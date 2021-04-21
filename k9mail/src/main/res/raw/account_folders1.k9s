@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<k9settings version="52" format="1">
+  <global>
+    <value key="animations">true</value>
+    <value key="attachmentdefaultpath">/storage/emulated/0/Download</value>
+    <value key="backgroundOperations">WHEN_CHECKED_AUTO_SYNC</value>
+    <value key="changeRegisteredNameColor">false</value>
+    <value key="confirmDelete">false</value>
+    <value key="confirmDeleteStarred">false</value>
+    <value key="confirmSpam">false</value>
+    <value key="confirmMarkAllRead">true</value>
+    <value key="countSearchMessages">true</value>
+    <value key="enableDebugLogging">true</value>
+    <value key="enableSensitiveLogging">false</value>
+    <value key="fontSizeMessageComposeInput">medium</value>
+    <value key="fontSizeMessageViewTime" />
+    <value key="gesturesEnabled">false</value>
+    <value key="hideSpecialAccounts">false</value>
+    <value key="language">default</value>
+    <value key="measureAccounts">true</value>
+    <value key="messageListCheckboxes">false</value>
+    <value key="messageListPreviewLines">2</value>
+    <value key="messageListStars">true</value>
+    <value key="messageViewFixedWidthFont">false</value>
+    <value key="messageViewReturnToList">false</value>
+    <value key="messageViewShowNext">true</value>
+    <value key="quietTimeEnabled">false</value>
+    <value key="quietTimeEnds">7:00</value>
+    <value key="quietTimeStarts">21:00</value>
+    <value key="registeredNameColor">#00008f</value>
+    <value key="showContactName">false</value>
+    <value key="showCorrespondentNames">true</value>
+    <value key="sortTypeEnum">SORT_DATE</value>
+    <value key="sortAscending">false</value>
+    <value key="startIntegratedInbox">false</value>
+    <value key="theme">follow_system</value>
+    <value key="messageViewTheme">use_global</value>
+    <value key="useVolumeKeysForListNavigation">false</value>
+    <value key="useVolumeKeysForNavigation">false</value>
+    <value key="wrapFolderNames">false</value>
+    <value key="notificationHideSubject">NEVER</value>
+    <value key="useBackgroundAsUnreadIndicator">false</value>
+    <value key="threadedView">true</value>
+    <value key="splitViewMode">NEVER</value>
+    <value key="messageComposeTheme">use_global</value>
+    <value key="fixedMessageViewTheme">true</value>
+    <value key="showContactPicture">true</value>
+    <value key="autofitWidth">true</value>
+    <value key="colorizeMissingContactPictures">false</value>
+    <value key="messageViewDeleteActionVisible">true</value>
+    <value key="messageViewArchiveActionVisible">false</value>
+    <value key="messageViewMoveActionVisible">false</value>
+    <value key="messageViewCopyActionVisible">false</value>
+    <value key="messageViewSpamActionVisible">false</value>
+    <value key="fontSizeMessageViewContentPercent">100</value>
+    <value key="hideUserAgent">true</value>
+    <value key="hideTimeZone">false</value>
+    <value key="lockScreenNotificationVisibility">MESSAGE_COUNT</value>
+    <value key="confirmDeleteFromNotification">true</value>
+    <value key="messageListSenderAboveSubject">false</value>
+    <value key="notificationQuickDelete">NEVER</value>
+    <value key="notificationDuringQuietTimeEnabled">true</value>
+    <value key="confirmDiscardMessage">true</value>
+    <value key="pEpExtraAccounts"></value>
+    <value key="pEpUseKeyserver">true</value>
+    <value key="pEpPassiveMode">false</value>
+    <value key="pEpForwardWarningEnabled">false</value>
+    <value key="pEpEnableSync">true</value>
+    <value key="pEpSubjectProtection">true</value>
+    <value key="pEpSyncFolder">true</value>
+  </global>
+  <accounts>
+    <account uuid="eb175c94-0474-4725-ab71-0f9962097d42">
+      <name>android08@peptest.ch</name>
+      <incoming-server type="IMAP">
+        <host>peptest.ch</host>
+        <port>993</port>
+        <connection-security>SSL_TLS_REQUIRED</connection-security>
+        <authentication-type>PLAIN</authentication-type>
+        <username>android08@peptest.ch</username>
+        <extra>
+          <value key="autoDetectNamespace">true</value>
+        </extra>
+      </incoming-server>
+      <outgoing-server type="SMTP">
+        <host>peptest.ch</host>
+        <port>587</port>
+        <connection-security>STARTTLS_REQUIRED</connection-security>
+        <authentication-type>PLAIN</authentication-type>
+        <username>android08@peptest.ch</username>
+      </outgoing-server>
+      <settings>
+        <value key="allowRemoteSearch">true</value>
+        <value key="alwaysShowCcBcc">false</value>
+        <value key="archiveFolderName">Archive</value>
+        <value key="autoExpandFolderName">INBOX</value>
+        <value key="automaticCheckIntervalMinutes">-1</value>
+        <value key="chipColor">#0099cc</value>
+        <value key="cryptoApp"></value>
+        <value key="defaultQuotedTextShown">true</value>
+        <value key="deletePolicy">DELETE</value>
+        <value key="displayCount">100</value>
+        <value key="draftsFolderName">Drafts</value>
+        <value key="expungePolicy">EXPUNGE_IMMEDIATELY</value>
+        <value key="folderDisplayMode">NOT_SECOND_CLASS</value>
+        <value key="folderNotifyNewMailMode">ALL</value>
+        <value key="folderPushMode">FIRST_CLASS</value>
+        <value key="folderSyncMode">FIRST_CLASS</value>
+        <value key="folderTargetMode">NOT_SECOND_CLASS</value>
+        <value key="goToUnreadMessageSearch">false</value>
+        <value key="idleRefreshMinutes">24</value>
+        <value key="inboxFolderName">INBOX</value>
+        <value key="led">false</value>
+        <value key="ledColor">#0099cc</value>
+        <value key="localStorageProvider">InternalStorage</value>
+        <value key="markMessageAsReadOnView">true</value>
+        <value key="maxPushFolders">10</value>
+        <value key="maximumAutoDownloadMessageSize">0</value>
+        <value key="maximumPolledMessageAge">-1</value>
+        <value key="messageFormat">HTML</value>
+        <value key="messageFormatAuto">false</value>
+        <value key="notifyContactsMailOnly">false</value>
+        <value key="notifyMailCheck">true</value>
+        <value key="notifyNewMail">true</value>
+        <value key="notifySelfNewMail">true</value>
+        <value key="pEpPrivacyProtected">true</value>
+        <value key="pushPollOnConnect">true</value>
+        <value key="quotePrefix">&gt;</value>
+        <value key="quoteStyle">PREFIX</value>
+        <value key="remoteSearchFullText">false</value>
+        <value key="remoteSearchNumResults">25</value>
+        <value key="replyAfterQuote">false</value>
+        <value key="ring">true</value>
+        <value key="ringtone">content://settings/system/notification_sound</value>
+        <value key="searchableFolders">ALL</value>
+        <value key="sentFolderName">Sent</value>
+        <value key="showPicturesEnum">NEVER</value>
+        <value key="signatureBeforeQuotedText">false</value>
+        <value key="sortAscending">false</value>
+        <value key="sortTypeEnum">SORT_DATE</value>
+        <value key="spamFolderName">Spam</value>
+        <value key="stripSignature">true</value>
+        <value key="subscribedFoldersOnly">false</value>
+        <value key="syncRemoteDeletions">true</value>
+        <value key="trashFolderName">Trash</value>
+        <value key="useCompression.MOBILE">true</value>
+        <value key="useCompression.OTHER">true</value>
+        <value key="useCompression.WIFI">true</value>
+        <value key="vibrate">false</value>
+        <value key="vibratePattern">0</value>
+        <value key="vibrateTimes">5</value>
+      </settings>
+      <identities>
+        <identity>
+          <name>Djdjdud</name>
+          <email>android08@peptest.ch</email>
+          <description>Initial identity</description>
+          <settings>
+            <value key="signature">--  Sent from my p≡p for Android. </value>
+            <value key="signatureUse">true</value>
+          </settings>
+        </identity>
+      </identities>
+    </account>
+  </accounts>
+</k9settings>
