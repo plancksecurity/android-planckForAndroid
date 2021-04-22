@@ -986,7 +986,10 @@ public class CucumberTestSteps {
     public void I_test_widget() {
         device.pressHome();
         BySelector selector = By.clazz("android.widget.TextView");
+        BySelector horizontalScroll = By.clazz("android.widget.LinearLayout");
         BySelector subSelector = By.clazz("android.view.View");
+        int horizontalWidgetScroll = 0;
+        int scroll = 0;
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
@@ -996,76 +999,94 @@ public class CucumberTestSteps {
             }
             testUtils.selectFromScreen("Widgets");
             waitForIdle();
-            device.click(5, device.getDisplayHeight() - 5);
-            /*for (int scroll = 95; scroll > 0; scroll--) {
-                for (UiObject2 textView : device.findObjects(selector)) {
-                    if (textView.getText().equals("p≡p")) {
-                    }
-                }
-                waitForIdle();
-                device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
-                        device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
-                waitForIdle();
-            }*/
-
-            for (int scroll = 0; scroll < 10; scroll++) {
-                waitForIdle();
-                device.drag(10, device.getDisplayHeight() / 2,
-                        device.getDisplayWidth() - 10, device.getDisplayHeight() / 2, 10);
-                waitForIdle();
-            }
-            for (int scroll = 0; scroll < 10; scroll++) {
-                for (UiObject2 textView : device.findObjects(selector)) {
-                    if (textView.getText().equals("p≡p")) {
-                        textView.click();
-                        int widgetPreview = 0;
-                        for (UiObject2 subTextView : device.findObjects(subSelector)) {
-                            if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
-                                widgetPreview++;
-                                if (widgetPreview == widgetToDrag) {
-                                    scroll = 10;
-                                    switch (widgetToDrag) {
-                                        case 1:
-                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                    device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
-                                            waitForIdle();
-                                            testUtils.clickTextOnScreen("Unified Inbox");
-                                            break;
-                                        case 2:
-                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                    device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
-                                            break;
-                                        case 3:
-                                            device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                    device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
-                                            waitForIdle();
-                                            testUtils.clickTextOnScreen("Unified Inbox");
-                                            break;
-                                    }
-                                }
-                            }
-                            if (scroll == 10) {
-                                break;
-                            }
+            if (horizontalWidgetScroll == 0) {
+                horizontalWidgetScroll = -1;
+                for (UiObject2 linearLayout : device.findObjects(horizontalScroll)) {
+                    if (linearLayout.getResourceName() != null) {
+                        if (linearLayout.getResourceName().equals("com.sec.android.app.launcher:id/widget_page_indicator")) {
+                            horizontalWidgetScroll = linearLayout.getChildCount();
                         }
                     }
-                    if (scroll == 10) {
+                }
+            }
+            if (horizontalWidgetScroll == -1) {
+                device.click(5, device.getDisplayHeight() - 5);
+                for (scroll = 95; scroll > 0; scroll--) {
+                    for (UiObject2 textView : device.findObjects(selector)) {
+                        if (textView.getText().equals("p≡p")) {
+                        }
+                    }
+                    waitForIdle();
+                    device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
+                            device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
+                    waitForIdle();
+                }
+            } else {
+                if (scroll == 0) {
+                    for (; scroll < horizontalWidgetScroll - 1; scroll++) {
+                        waitForIdle();
+                        device.drag(10, device.getDisplayHeight() / 2,
+                                device.getDisplayWidth() - 10, device.getDisplayHeight() / 2, 10);
+                        waitForIdle();
+                    }
+                    scroll = 0;
+                }
+                for (; scroll < horizontalWidgetScroll - 1; scroll++) {
+                    for (UiObject2 textView : device.findObjects(selector)) {
+                        if (textView.getText().equals("p≡p")) {
+                            textView.click();
+                            int widgetPreview = 0;
+                            for (UiObject2 subTextView : device.findObjects(subSelector)) {
+                                if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
+                                    widgetPreview++;
+                                    if (widgetPreview == widgetToDrag) {
+                                        scroll = horizontalWidgetScroll - 1;
+                                        switch (widgetToDrag) {
+                                            case 1:
+                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                        device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                                                waitForIdle();
+                                                testUtils.clickTextOnScreen("Unified Inbox");
+                                                break;
+                                            case 2:
+                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                        device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                                                break;
+                                            case 3:
+                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                        device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                                                waitForIdle();
+                                                testUtils.clickTextOnScreen("Unified Inbox");
+                                                break;
+                                        }
+                                    }
+                                }
+                                if (scroll == horizontalWidgetScroll - 1) {
+                                    break;
+                                }
+                            }
+                        }
+                        if (scroll == horizontalWidgetScroll - 1) {
+                            break;
+                        }
+                    }
+                    if (scroll == horizontalWidgetScroll - 1) {
+                        scroll = horizontalWidgetScroll - 2;
                         break;
                     }
+                    waitForIdle();
+                    device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
+                            10, device.getDisplayHeight() / 2, 15);
+                    waitForIdle();
                 }
-                if (scroll == 10) {
-                    break;
-                }
-                waitForIdle();
-                device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
-                        10, device.getDisplayHeight() / 2, 15);
-                waitForIdle();
             }
         }
         int widgets = 0;
+        UiObject2 messagesListWidget = null;
         for (UiObject2 view : device.findObjects(selector)) {
             if (view.getText() != null) {
                 if (view.getText().contains("Unified Inbox")) {
+                    messagesListWidget = view;
                     widgets++;
                 }
             }
@@ -1077,7 +1098,7 @@ public class CucumberTestSteps {
             TestUtils.assertFailWithMessage("Widget error: wrong message subject");
         }
         waitForIdle();
-        device.click(device.getDisplayWidth()/2, device.getDisplayHeight()/3);
+        messagesListWidget.click();
         waitForIdle();
     }
 
