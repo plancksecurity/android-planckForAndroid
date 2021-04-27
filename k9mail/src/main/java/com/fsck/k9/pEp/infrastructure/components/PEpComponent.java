@@ -29,6 +29,7 @@ import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
+import com.fsck.k9.ui.settings.account.removeaccount.RemoveAccountActivity;
 
 import dagger.Component;
 import security.pEp.ui.intro.IntroFirstFragment;
@@ -104,4 +105,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(PassphraseActivity activity);
 
     void inject(ExportpEpSupportDataActivity activity);
+
+    void inject(RemoveAccountActivity activity);
 }

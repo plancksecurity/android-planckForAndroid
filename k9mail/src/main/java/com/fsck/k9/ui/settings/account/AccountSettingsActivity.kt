@@ -20,6 +20,7 @@ import com.fsck.k9.fragment.ConfirmationDialogFragment
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
+import com.fsck.k9.ui.settings.account.removeaccount.RemoveAccountActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -100,7 +101,9 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
                 return true
             }
             R.id.delete_account -> {
-                showDeleteConfirmationDialog()
+                viewModel.getAccount(accountUuid).value?.let { account ->
+                    RemoveAccountActivity.start(this, account)
+                }
                 return true
             }
         }
@@ -143,17 +146,8 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
                 Preferences.getPreferences(this@AccountSettingsActivity)
                     .deleteAccount(realAccount)
                 K9.setServicesEnabled(this@AccountSettingsActivity)
-
-                accountDeleted();
             }
         }
-    }
-
-    private fun accountDeleted() {
-        val intent = Intent()
-        intent.putExtra(EXTRA_ACCOUNT_DELETED, true)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
     }
 
     private fun showDeleteConfirmationDialog() {
@@ -176,7 +170,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
     companion object {
         private const val ARG_ACCOUNT_UUID = "accountUuid"
         private const val ARG_START_SCREEN_KEY = "startScreen"
-        const val EXTRA_ACCOUNT_DELETED = "extra_account_deleted"
         const val ACTIVITY_REQUEST_ACCOUNT_SETTINGS = 10012
 
         @JvmStatic
@@ -211,6 +204,16 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
 
     override fun doNegativeClick(dialogId: Int) {
         // NOOP
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == Activity.RESULT_OK && data != null) {
+            if(requestCode == RemoveAccountActivity.ACTIVITY_REQUEST_REMOVE_ACCOUNT) {
+                setResult(Activity.RESULT_OK, data)
+                finish()
+            }
+        }
     }
 
 }

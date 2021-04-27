@@ -42,7 +42,7 @@ import com.fsck.k9.search.SearchSpecification.SearchField
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity
 import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.ACTIVITY_REQUEST_ACCOUNT_SETTINGS
-import com.fsck.k9.ui.settings.account.AccountSettingsActivity.Companion.EXTRA_ACCOUNT_DELETED
+import com.fsck.k9.ui.settings.account.removeaccount.RemoveAccountActivity.Companion.EXTRA_ACCOUNT_DELETED
 import com.fsck.k9.ui.settings.general.GeneralSettingsActivity
 import com.fsck.k9.ui.settings.general.GeneralSettingsFragment
 import com.karumi.dexter.PermissionToken

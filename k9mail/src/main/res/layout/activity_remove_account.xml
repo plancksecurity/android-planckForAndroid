@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout"
+    android:layout_width="@dimen/floating_width"
+    android:minWidth="@dimen/floating_width"
+    android:maxWidth="@dimen/floating_width"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:paddingTop="17dp"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="7dp"
+    android:background="?attr/defaultDialogBackground"
+    tools:context=".ui.settings.account.removeaccount.RemoveAccountActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@android:style/TextAppearance.Material.DialogWindowTitle"
+        android:textColor="?attr/defaultColorOnBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Title"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/confirmationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/dialogMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@android:style/TextAppearance.Material.Subhead"
+            android:textColor="?attr/defaultColorOnBackground"
+            app:layout_constraintBottom_toTopOf="@+id/cancelButton"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris" />
+
+        <Button
+            android:id="@+id/cancelButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/cancel_action"
+            android:textAllCaps="true"
+            android:textColor="?attr/negativeButtonColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/acceptButton" />
+
+        <Button
+            android:id="@+id/acceptButton"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/okay_action"
+            android:textColor="@color/pep_red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/progress_dialog_layout"
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/confirmationLayout"
+        app:layout_constraintTop_toTopOf="@+id/confirmationLayout"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
