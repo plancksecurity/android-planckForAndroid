@@ -2,11 +2,13 @@ package com.fsck.k9.ui.settings.account.removeaccount
 
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
+import com.fsck.k9.controller.MessagingController
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class RemoveAccountPresenter @Inject constructor(
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val controller: MessagingController
 ) {
     private lateinit var view: RemoveAccountView
     lateinit var account: Account
@@ -65,6 +67,6 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
-        true
+        controller.hasMessagesPendingToSend(account)
     }
 }

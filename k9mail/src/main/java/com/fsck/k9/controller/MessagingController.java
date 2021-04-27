@@ -2891,6 +2891,11 @@ public class MessagingController implements Sync.MessageToSendCallback {
         }
     }
 
+    @WorkerThread
+    public boolean hasMessagesPendingToSend(final Account account) {
+        return messagesPendingSend(account);
+    }
+
     private boolean messagesPendingSend(final Account account) {
         Folder localFolder = null;
         try {
