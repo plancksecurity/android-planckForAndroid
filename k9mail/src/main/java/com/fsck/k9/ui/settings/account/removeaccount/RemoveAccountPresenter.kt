@@ -59,12 +59,51 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     fun onAcceptButtonClicked() {
-
+        onRemoveAccountConfirmedByUser()
     }
 
     fun onCancelButtonClicked() {
         view.finish()
     }
+
+    private fun onRemoveAccountConfirmedByUser() {
+        when(step) {
+            RemoveAccountStep.SEND_FAILED -> removeAccountDefault()
+            RemoveAccountStep.NORMAL,
+            RemoveAccountStep.MESSAGES_IN_OUTBOX -> removeAccountSendingPendingMessagesIfNeeded()
+            else -> {}
+        }
+    }
+
+    private fun removeAccountDefault() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            deleteAccountWork()
+        }
+    }
+
+    private fun removeAccountSendingPendingMessagesIfNeeded() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            if (checkMessagesLeftInOutboxFolder()) {
+                setStep(RemoveAccountStep.LOADING)
+
+                sendPendindMessages()
+
+                if(checkMessagesLeftInOutboxFolder()) {
+                    setStep(RemoveAccountStep.SEND_FAILED)
+                } else {
+                    deleteAccountWork()
+                }
+            } else {
+                deleteAccountWork()
+            }
+        }
+    }
+
+    private suspend fun deleteAccountWork() {}
+
+    private suspend fun sendPendindMessages() {}
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
         controller.hasMessagesPendingToSend(account)
