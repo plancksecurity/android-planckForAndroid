@@ -13,6 +13,7 @@ import com.fsck.k9.helper.MessageHelper
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.AttachmentResolver
 import com.fsck.k9.mailstore.LocalMessage
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.view.K9WebViewClient
 import com.fsck.k9.view.MessageWebView
 import security.pEp.permissions.PermissionChecker
@@ -52,7 +53,9 @@ class PrintMessage(private val context: Context,
 
     override fun print() {
         val htmlWithHeader = html.replaceFirst("</head><body>", buildHeader(message))
-        val htmlWithHeaderAndCss = htmlWithHeader.replaceFirst("<style type=\"text/css\">", buildCss())
+        var htmlWithHeaderAndCss = htmlWithHeader.replaceFirst("<style type=\"text/css\">", buildCss())
+        if (ThemeManager.isDarkTheme())
+            htmlWithHeaderAndCss = htmlWithHeaderAndCss.replaceFirst("* {", "")
         webView.loadDataWithBaseURL("about:blank", htmlWithHeaderAndCss, "text/html", "utf-8", null)
     }
 
