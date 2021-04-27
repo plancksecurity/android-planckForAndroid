@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
@@ -16,7 +15,6 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.fragment.ConfirmationDialogFragment
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
@@ -29,11 +27,7 @@ import org.koin.android.architecture.ext.viewModel
 import security.pEp.mdm.RestrictionsListener
 import timber.log.Timber
 
-private const val DIALOG_REMOVE_ACCOUNT = 1
-private const val DIALOG_REMOVE_TAG = "removeDialog"
-
-class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, RestrictionsListener,
-    ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
+class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, RestrictionsListener {
     private val viewModel: AccountSettingsViewModel by viewModel()
     private lateinit var accountUuid: String
     private var startScreenKey: String? = null
@@ -150,23 +144,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
         }
     }
 
-    private fun showDeleteConfirmationDialog() {
-        val description = viewModel.getAccount(accountUuid).value?.description ?: ""
-
-        val fragment: DialogFragment =
-                ConfirmationDialogFragment.newInstance(
-                        DIALOG_REMOVE_ACCOUNT,
-                        getString(R.string.account_delete_dlg_title),
-                        getString(R.string.account_delete_dlg_instructions_fmt, description),
-                        getString(R.string.okay_action),
-                        getString(R.string.cancel_action)
-                )
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(fragment, DIALOG_REMOVE_TAG)
-        fragmentTransaction.commitAllowingStateLoss()
-    }
-
     companion object {
         private const val ARG_ACCOUNT_UUID = "accountUuid"
         private const val ARG_START_SCREEN_KEY = "startScreen"
@@ -190,20 +167,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
 
     override fun search(query: String?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun dialogCancelled(dialogId: Int) {
-        // NOOP
-    }
-
-    override fun doPositiveClick(dialogId: Int) {
-        when(dialogId){
-            DIALOG_REMOVE_ACCOUNT -> deleteAccountWork()
-        }
-    }
-
-    override fun doNegativeClick(dialogId: Int) {
-        // NOOP
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
