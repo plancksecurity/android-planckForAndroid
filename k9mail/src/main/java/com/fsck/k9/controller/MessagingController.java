@@ -2867,16 +2867,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 }
                 if (messagesPendingSend(account)) {
 
-                    showSendingNotificationIfNecessary(account);
-
-                    try {
-                        sendPendingMessagesSynchronous(account);
-                    } finally {
-                        clearSendingNotificationIfNecessary(account);
-                    }
+                    sendPendingMessagesAndHandleSendingNotificationSynchronous(account);
                 }
             }
         });
+    }
+
+    @WorkerThread
+    public void sendPendingMessagesAndHandleSendingNotificationSynchronous(Account account) {
+        showSendingNotificationIfNecessary(account);
+
+        try {
+            sendPendingMessagesSynchronous(account);
+        } finally {
+            clearSendingNotificationIfNecessary(account);
+        }
     }
 
     private void showSendingNotificationIfNecessary(Account account) {

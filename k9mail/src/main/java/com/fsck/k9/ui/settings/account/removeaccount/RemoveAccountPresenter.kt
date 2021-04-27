@@ -86,7 +86,7 @@ class RemoveAccountPresenter @Inject constructor(
             if (checkMessagesLeftInOutboxFolder()) {
                 setStep(RemoveAccountStep.LOADING)
 
-                sendPendindMessages()
+                sendPendingMessages()
 
                 if(checkMessagesLeftInOutboxFolder()) {
                     setStep(RemoveAccountStep.SEND_FAILED)
@@ -113,7 +113,10 @@ class RemoveAccountPresenter @Inject constructor(
         setStep(RemoveAccountStep.FINISHED)
     }
 
-    private suspend fun sendPendindMessages() {}
+    private suspend fun sendPendingMessages() = withContext(Dispatchers.IO) {
+        controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(account)
+        launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
+    }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
         controller.hasMessagesPendingToSend(account)
@@ -122,5 +125,9 @@ class RemoveAccountPresenter @Inject constructor(
     private fun launchInUIScope(block: suspend CoroutineScope.() -> Unit) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch { block() }
+    }
+
+    companion object {
+        private const val PROGRESS_DIALOG_MIN_DELAY = 600L
     }
 }
