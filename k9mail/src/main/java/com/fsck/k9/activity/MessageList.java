@@ -2115,7 +2115,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         ft.replace(R.id.message_list_container, fragment);
 
         if(popPrevious) {
-            fm.popBackStack();
+            fm.popBackStackImmediate();
         }
 
         if (addToBackStack)
