@@ -9,20 +9,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
-import com.fsck.k9.Account
-import com.fsck.k9.K9
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.account.removeaccount.RemoveAccountActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.koin.android.architecture.ext.viewModel
 import security.pEp.mdm.RestrictionsListener
 import timber.log.Timber
@@ -119,29 +111,6 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
         }
 
         return true
-    }
-
-    private fun deleteAccountWork() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
-
-            val account = viewModel.getAccount(accountUuid).value
-
-            if (account is Account) {
-                val realAccount = account as Account?
-                try {
-                    realAccount?.localStore?.delete()
-                } catch (e: Exception) {
-                    // Ignore, this may lead to localStores on sd-cards that
-                    // are currently not inserted to be left
-                }
-
-                MessagingController.getInstance(application).deleteAccount(realAccount)
-                Preferences.getPreferences(this@AccountSettingsActivity)
-                    .deleteAccount(realAccount)
-                K9.setServicesEnabled(this@AccountSettingsActivity)
-            }
-        }
     }
 
     companion object {

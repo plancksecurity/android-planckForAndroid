@@ -1,12 +1,16 @@
 package com.fsck.k9.ui.settings.account.removeaccount
 
+import android.content.Context
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 class RemoveAccountPresenter @Inject constructor(
+    @Named("AppContext") private val application: Context,
     private val preferences: Preferences,
     private val controller: MessagingController
 ) {
@@ -101,7 +105,19 @@ class RemoveAccountPresenter @Inject constructor(
         }
     }
 
-    private suspend fun deleteAccountWork() {}
+    private suspend fun deleteAccountWork() = withContext(Dispatchers.IO) {
+        try {
+            account.localStore?.delete()
+        } catch (e: Exception) {
+            // Ignore, this may lead to localStores on sd-cards that
+            // are currently not inserted to be left
+        }
+
+        controller.deleteAccount(account)
+        preferences.deleteAccount(account)
+        K9.setServicesEnabled(application)
+        setStep(RemoveAccountStep.FINISHED)
+    }
 
     private suspend fun sendPendindMessages() {}
 
