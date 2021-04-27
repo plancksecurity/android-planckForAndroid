@@ -31,8 +31,7 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun showInitialScreen() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        launchInUIScope {
             setStep(
                 if(checkMessagesLeftInOutboxFolder()) RemoveAccountStep.MESSAGES_IN_OUTBOX
                 else RemoveAccountStep.NORMAL
@@ -77,15 +76,13 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun removeAccountDefault() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        launchInUIScope {
             deleteAccountWork()
         }
     }
 
     private fun removeAccountSendingPendingMessagesIfNeeded() {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        launchInUIScope {
             if (checkMessagesLeftInOutboxFolder()) {
                 setStep(RemoveAccountStep.LOADING)
 
@@ -120,5 +117,10 @@ class RemoveAccountPresenter @Inject constructor(
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
         controller.hasMessagesPendingToSend(account)
+    }
+
+    private fun launchInUIScope(block: suspend CoroutineScope.() -> Unit) {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch { block() }
     }
 }
