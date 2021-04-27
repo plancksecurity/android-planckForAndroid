@@ -39,6 +39,7 @@ public class QuotedMessageMvpView {
         mQuotedText.getInputExtras(true).putBoolean("allowEmoji", true);
 
         mQuotedHTML = (MessageWebView) messageCompose.findViewById(R.id.quoted_html);
+        mQuotedHTML.setTheme();
         mQuotedHTML.configure();
         // Disable the ability to click links in the quoted HTML page. I think this is a nice feature, but if someone
         // feels this should be a preference (or should go away all together), I'm ok with that too. -achen 20101130
