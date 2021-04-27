@@ -1,6 +1,7 @@
 package security.pEp.print
 
 import android.content.Context
+import android.net.Uri
 import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintManager
@@ -10,8 +11,10 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.helper.MessageHelper
+import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.AttachmentResolver
+import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.view.K9WebViewClient
@@ -21,6 +24,7 @@ import security.pEp.permissions.PermissionChecker
 class PrintMessage(private val context: Context,
                    permissionChecker: PermissionChecker,
                    private val attachmentResolver: AttachmentResolver,
+                   private val attachments: MutableMap<Uri, AttachmentViewInfo>?,
                    private val message: LocalMessage,
                    private val html: String) : Print {
     private var webView: MessageWebView = MessageWebView(context)
@@ -56,7 +60,8 @@ class PrintMessage(private val context: Context,
         var htmlWithHeaderAndCss = htmlWithHeader.replaceFirst("<style type=\"text/css\">", buildCss())
         if (ThemeManager.isDarkTheme())
             htmlWithHeaderAndCss = htmlWithHeaderAndCss.replaceFirst("* {", "")
-        webView.loadDataWithBaseURL("about:blank", htmlWithHeaderAndCss, "text/html", "utf-8", null)
+        val htmlWithHeaderCssAndAttachments = htmlWithHeaderAndCss.replaceFirst("</body>", buildAttachments())
+        webView.loadDataWithBaseURL("about:blank", htmlWithHeaderCssAndAttachments, "text/html", "utf-8", null)
     }
 
     private fun buildHeader(message: Message): String {
@@ -126,7 +131,86 @@ class PrintMessage(private val context: Context,
                 "   border-width:0;\n" +
                 "   color:gray;\n" +
                 "   background-color:silver\n" +
+                "}\n" +
+                ".lineBreakSmall{\n" +
+                "   height:2px;\n" +
+                "   border-width:0;\n" +
+                "   color:gray;\n" +
+                "   background-color:silver;\n" +
+                "   max-width: 400px;\n" +
+                "   margin-left:0;\n" +
+                "}\n" +
+                ".attachments{\n" +
+                "   margin-left:20;\n" +
+                "}\n" +
+                ".attachment {\n" +
+                "   float: left;\n" +
+                "   clear: none; \n" +
+                "}\n" +
+                ".noPadding{\n" +
+                "   margin: 0;\n" +
+                "   padding: 0; \n" +
+                "}\n" +
+                ".noPaddingBold{\n" +
+                "   font-weight: bold;\n" +
+                "   margin: 0;\n" +
+                "   padding: 0; \n" +
+                "}\n" +
+                "ul.no_bullet {\n" +
+                "   list-style-type: none;\n" +
+                "   padding: 0;\n" +
+                "   margin: 0;\n" +
+                "}\n" +
+                "li.icon {\n" +
+                "   background: url('https://aux.iconspalace.com/uploads/document-icon-256-545819468.png') no-repeat left;\n" +
+                "   background-size: 15px;\n" +
+                "   padding-left: 20px;\n" +
+                "   padding-top: 7px;\n" +
                 "}"
+    }
+
+    private fun buildAttachments(): String {
+        val attachmentsList = notInlineNorpEpAttachments()
+        return if (attachmentsList?.isNotEmpty() == true) {
+            "<div class=\"attachments\">\n" +
+                    "<hr class=\"lineBreakSmall\">\n" +
+                    attachmentsTitle(attachmentsList.size) +
+                    "<ul class=\"no_bullet\">\n" +
+                    buildAttachmentsList(attachmentsList) +
+                    "</ul>\n" +
+                    "</div>\n" +
+                    "</body>"
+        } else "</body>"
+    }
+
+    private fun buildAttachmentsList(attachmentsList: List<AttachmentViewInfo>): String {
+        return attachmentsList.joinToString("") { entry -> buildAttachment(entry) }
+    }
+
+    private fun notInlineNorpEpAttachments() = attachments
+            ?.map { entry -> entry.value }
+            ?.filter { entry -> !entry.inlineAttachment && !entry.ispEpAttachment()}
+
+
+    private fun buildAttachment(attachmentInfo: AttachmentViewInfo): String =
+            "   <li class=\"icon\">\n" +
+                    "   <div>\n" +
+                    "       <p class=\"noPaddingBold\">${attachmentInfo.displayName}</p>\n" +
+                    "       <p class=\"noPadding\">${setAttachmentSize(attachmentInfo.size)}</p>\n" +
+                    "   </div>\n" +
+                    "</li>\n"
+
+    private fun attachmentsTitle(attachmentsCount: Int): String =
+            "<span class=\"bold\">" +
+                    if (attachmentsCount > 1) {
+                        context.getString(R.string.attachment_plural, attachmentsCount)
+                    } else {
+                        context.getString(R.string.attachment_singular, attachmentsCount)
+                    } +
+                    "</span>\n"
+
+    private fun setAttachmentSize(size: Long): String {
+        return if (size == AttachmentViewInfo.UNKNOWN_SIZE) "" else SizeFormatter.formatSize(context, size)
     }
 }
 
