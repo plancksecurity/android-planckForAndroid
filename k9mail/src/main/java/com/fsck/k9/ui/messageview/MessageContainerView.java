@@ -563,6 +563,10 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         return currentAttachmentResolver;
     }
 
+    public Map<Uri, AttachmentViewInfo> getCurrentAttachments() {
+        return attachments;
+    }
+
     static class SavedState extends BaseSavedState {
         boolean attachmentViewVisible;
         boolean showingPictures;

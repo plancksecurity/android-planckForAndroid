@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +24,14 @@ import com.fsck.k9.helper.Contacts;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.AttachmentResolver;
+import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.ThemeUtils;
 import com.fsck.k9.view.ToolableViewAnimator;
 import org.openintents.openpgp.OpenPgpError;
 
-
+import java.util.Map;
 public class MessageTopView extends RelativeLayout {
 
     public static final int PROGRESS_MAX = 1000;
@@ -342,4 +344,11 @@ public class MessageTopView extends RelativeLayout {
     }
 
 
+    public Map<Uri, AttachmentViewInfo> getCurrentAttachments() {
+        View messageContainerViewCandidate = containerView.getChildAt(0);
+        if (messageContainerViewCandidate instanceof MessageContainerView) {
+            return ((MessageContainerView) messageContainerViewCandidate).getCurrentAttachments();
+        }
+        return null;
+    }
 }
