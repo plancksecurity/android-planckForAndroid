@@ -297,6 +297,8 @@ public class CucumberTestSteps {
 
     private void textViewEditor (String text, String viewName) {
         int viewId = testUtils.intToID(viewName);
+        String messageText = "";
+        int endOfLongMessage = 0;
         while (!exists(onView(withId(viewId)))) {
             waitForIdle();
             TestUtils.swipeDownScreen();
@@ -307,7 +309,14 @@ public class CucumberTestSteps {
                 timeRequiredForThisMethod(30);
                 testUtils.removeTextFromTextView(viewName);
                 break;
+            case "longWord":
+                messageText = testUtils.longWord();
+                endOfLongMessage = 2;
             case "longText":
+                if (messageText.equals("")) {
+                    messageText = testUtils.longText();
+                    endOfLongMessage = 80;
+                }
                 timeRequiredForThisMethod(3000);
                 waitForIdle();
                 BySelector selector = By.clazz("android.widget.EditText");
@@ -315,18 +324,19 @@ public class CucumberTestSteps {
                 UiObject2 scroll;
                 for (UiObject2 object : device.findObjects(selector)) {
                     if (object.getResourceName().equals(uiObject.getResourceName())) {
-                        while (!object.getText().contains(testUtils.longText())) {
+                        while (!object.getText().contains(messageText)) {
                             try {
                                 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                                 waitForIdle();
                                 object.click();
+                                String finalMessageText = messageText;
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        testUtils.setClipboard(testUtils.longText());
+                                        testUtils.setClipboard(finalMessageText);
                                     }
                                 });
-                                for (int i = 0; i < 80; i++) {
+                                for (int i = 0; i < endOfLongMessage; i++) {
                                     waitForIdle();
                                     scroll.swipe(Direction.UP, 1.0f);
                                     testUtils.pasteClipboard();
@@ -341,7 +351,7 @@ public class CucumberTestSteps {
                 }
                 Espresso.onIdle();
                 testUtils.scrollUpToSubject();
-                return;
+                break;
             default:
                 timeRequiredForThisMethod(10);
                 testUtils.scrollUpToSubject();
