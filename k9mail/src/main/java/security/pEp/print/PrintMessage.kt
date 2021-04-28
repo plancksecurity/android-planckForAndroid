@@ -189,7 +189,7 @@ class PrintMessage(private val context: Context,
 
     private fun notInlineNorpEpAttachments() = attachments
             ?.map { entry -> entry.value }
-            ?.filter { entry -> !entry.inlineAttachment && !entry.ispEpAttachment()}
+            ?.filter { entry -> !entry.inlineAttachment && !entry.ispEpAttachment() }
 
 
     private fun buildAttachment(attachmentInfo: AttachmentViewInfo): String =
@@ -201,13 +201,7 @@ class PrintMessage(private val context: Context,
                     "</li>\n"
 
     private fun attachmentsTitle(attachmentsCount: Int): String =
-            "<span class=\"bold\">" +
-                    if (attachmentsCount > 1) {
-                        context.getString(R.string.attachment_plural, attachmentsCount)
-                    } else {
-                        context.getString(R.string.attachment_singular, attachmentsCount)
-                    } +
-                    "</span>\n"
+            "<span class=\"bold\">${context.resources.getQuantityString(R.plurals.attachment_count, attachmentsCount, attachmentsCount)}</span>\n"
 
     private fun setAttachmentSize(size: Long): String {
         return if (size == AttachmentViewInfo.UNKNOWN_SIZE) "" else SizeFormatter.formatSize(context, size)
