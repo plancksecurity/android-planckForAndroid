@@ -887,6 +887,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         void messageHeaderViewAvailable(MessageHeader messageHeaderView);
 
         void updateMenu();
+
+        void refreshMessageViewFragment();
     }
 
     public boolean isInitialized() {
@@ -1015,12 +1017,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void refreshMessage() {
         //If get support manager is null, it means that you don't have a fragment to refresh
-        if (getFragmentManager() != null) {
-            MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageReference);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.message_view_container, fragment);
-            ft.commit();
-        }
+        mFragmentListener.refreshMessageViewFragment();
     }
 
     @Override
