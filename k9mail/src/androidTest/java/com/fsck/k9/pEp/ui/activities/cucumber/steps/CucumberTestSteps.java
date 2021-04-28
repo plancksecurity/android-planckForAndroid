@@ -2290,7 +2290,7 @@ public class CucumberTestSteps {
     @Then("^I go back and save as draft$")
     public void I_go_back_and_save_as_draft(){
         timeRequiredForThisMethod(10);
-        testUtils.goBackAndSaveAsDraft(activityTestRule);
+        testUtils.goBackAndSaveAsDraft();
     }
 
     @Then("^I save as draft$")
