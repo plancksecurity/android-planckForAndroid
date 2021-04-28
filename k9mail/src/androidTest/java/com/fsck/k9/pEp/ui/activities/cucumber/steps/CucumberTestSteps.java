@@ -1442,7 +1442,7 @@ public class CucumberTestSteps {
 
     @When("^I test Unified Inbox (\\d+) times")
     public void I_test_unified_inbox(int times) {
-        //I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
+        I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
         for (int i = 0; i < times; i++) {
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
@@ -1452,11 +1452,11 @@ public class CucumberTestSteps {
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.special_mailbox_name_inbox);
             testUtils.composeMessageButton();
-            testUtils.pressBack();
+            testUtils.goBackAndSaveAsDraft();
             testUtils.openHamburgerMenu();
             testUtils.selectFromScreen(R.string.integrated_inbox_title);
             testUtils.composeMessageButton();
-            testUtils.pressBack();
+            testUtils.goBackAndSaveAsDraft();
             testUtils.clickMessageAtPosition(2);
             waitForIdle();
             testUtils.goBackToMessageList();
