@@ -2689,6 +2689,14 @@ public class TestUtils {
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
+    public String longWord() {
+        String word = "ji";
+        for (int i = 0; i < 15; i++) {
+            word += word;
+        }
+        return word + "\n";
+    }
+
     public boolean clickLastMessage() {
         boolean messageClicked = false;
         boolean encrypted = false;
