@@ -597,7 +597,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 mMessageView.getCurrentAttachmentResolver(),
                 mMessageView.getCurrentAttachments(),
                 mMessage,
-                mMessageView.getCurrentHtml());
+                mMessageView.toHtml());
         printMessage.print();
     }
 

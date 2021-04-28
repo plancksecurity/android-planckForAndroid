@@ -327,10 +327,10 @@ public class MessageTopView extends RelativeLayout {
         mHeaderContainer.setPrivacyProtected(ispEpEnabled);
     }
 
-    public String getCurrentHtml() {
+    public String toHtml() {
         View messageContainerViewCandidate = containerView.getChildAt(0);
         if (messageContainerViewCandidate instanceof MessageContainerView) {
-            return ((MessageContainerView) messageContainerViewCandidate).getCurrentHtml();
+            return ((MessageContainerView) messageContainerViewCandidate).toHtml();
         }
         return null;
     }

@@ -555,7 +555,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         return attachmentViewMap.get(attachment);
     }
 
-    public String getCurrentHtml() {
+    public String toHtml() {
         return currentHtmlText;
     }
 
