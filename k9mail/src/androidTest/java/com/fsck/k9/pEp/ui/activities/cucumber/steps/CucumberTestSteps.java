@@ -993,8 +993,8 @@ public class CucumberTestSteps {
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
-                device.drag(device.getDisplayWidth() / 2, device.getDisplayHeight() * 13 / 20,
-                        device.getDisplayWidth() / 2, device.getDisplayHeight() * 13 / 20, 450);
+                device.drag(device.getDisplayWidth() / 2, device.getDisplayHeight() * 15 / 20,
+                        device.getDisplayWidth() / 2, device.getDisplayHeight() * 15 / 20, 450);
                 waitForIdle();
             }
             testUtils.selectFromScreen("Widgets");
@@ -1011,15 +1011,46 @@ public class CucumberTestSteps {
             }
             if (horizontalWidgetScroll == -1) {
                 device.click(5, device.getDisplayHeight() - 5);
+                int widgetPreview = 0;
                 for (scroll = 95; scroll > 0; scroll--) {
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText().equals("p≡p")) {
+                        if (textView.getText().contains("p≡p")) {
+                            if (widgetPreview == widgetToDrag) {
+                                            switch (widgetToDrag) {
+                                                case 1:
+                                                    device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                                                            device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                                                    waitForIdle();
+                                                    testUtils.clickTextOnScreen("Unified Inbox");
+                                                    break;
+                                                case 2:
+                                                    device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                                                            device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                                                    break;
+                                                case 3:
+                                                    device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                                                            device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                                                    waitForIdle();
+                                                    testUtils.clickTextOnScreen("Unified Inbox");
+                                                    break;
+                                            }
+                                    if (scroll == horizontalWidgetScroll - 1) {
+                                        break;
+                                    }
+                                }
+                            widgetPreview++;
+                            }
+                        if (widgetPreview > widgetToDrag) {
+                            break;
                         }
-                    }
+                        }
                     waitForIdle();
                     device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
                             device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
                     waitForIdle();
+                    if (widgetPreview > widgetToDrag) {
+                        break;
+                    }
                 }
             } else {
                 if (scroll == 0) {
