@@ -1936,7 +1936,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    public void goBackAndSaveAsDraft (IntentsTestRule activity){
+    public void goBackAndSaveAsDraft (){
         goBack(true);
     }
 
