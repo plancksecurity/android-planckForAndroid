@@ -1,7 +1,7 @@
 package com.fsck.k9.message.extractors;
 
 
-import androidx.annotation.NonNull;
+/*import androidx.annotation.NonNull;
 
 import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.mail.Part;
@@ -66,4 +66,4 @@ class PreviewTextExtractor {
 
         return (text.length() > MAX_PREVIEW_LENGTH) ? text.substring(0, MAX_PREVIEW_LENGTH - 1) + "…" : text;
     }
-}
+}*/
