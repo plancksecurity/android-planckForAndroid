@@ -746,6 +746,11 @@ public class TestUtils {
                 cucumberBody = longText();
                 compareMessageBodyLongText(cucumberBody);
                 break;
+            case "longWord":
+                waitForIdle();
+                cucumberBody = longWord();
+                compareMessageBodyLongText(cucumberBody);
+                break;
             default:
                 compareMessageBody(cucumberBody);
                 break;
