@@ -2696,7 +2696,7 @@ public class TestUtils {
 
     public String longWord() {
         String word = "ji";
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 10; i++) {
             word += word;
         }
         return word + "\n";
