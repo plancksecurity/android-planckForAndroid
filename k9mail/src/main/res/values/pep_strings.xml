@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
@@ -326,4 +326,7 @@
     <string name="export_pep_support_data_dialog_image_failure_content_desc">Failure</string>
 
     <string name="sending_messages_in_progress">Sending and removing…</string>
+    <string name="account_delete_dlg_messages_in_outbox_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p. There are messages pending to be sent in Outbox folder. p≡p will try to send all of them before removing account.</string>
+    <string name="send_all_messages_and_remove_account_action">Send all &amp; remove</string>
+    <string name="account_delete_dlg_after_send_failed_instructions_fmt">Could not send some messages in outbox, removing account will delete them, are you sure?</string>
 </resources>

@@ -65,6 +65,26 @@ class RemoveAccountActivity : WizardActivity(), RemoveAccountView {
         binding.progressLayout.root.visibility = View.GONE
     }
 
+    private fun chooseAccountDeleteDialogMsg(step: RemoveAccountStep, accountDescription: String): String {
+        return when(step) {
+            RemoveAccountStep.MESSAGES_IN_OUTBOX -> getString(R.string.account_delete_dlg_messages_in_outbox_instructions_fmt, accountDescription)
+            RemoveAccountStep.SEND_FAILED -> getString(R.string.account_delete_dlg_after_send_failed_instructions_fmt)
+            else -> getString(R.string.account_delete_dlg_instructions_fmt, accountDescription)
+        }
+    }
+
+    private fun chooseAccountDeleteButtonText(step: RemoveAccountStep): String {
+        return when(step) {
+            RemoveAccountStep.MESSAGES_IN_OUTBOX -> getString(R.string.send_all_messages_and_remove_account_action)
+            else -> getString(R.string.okay_action)
+        }
+    }
+
+    override fun showDialogAtStep(step: RemoveAccountStep, accountDescription: String) {
+        binding.dialogMessage.text = chooseAccountDeleteDialogMsg(step, accountDescription)
+        binding.acceptButton.text = chooseAccountDeleteButtonText(step)
+    }
+
     companion object {
         const val EXTRA_ACCOUNT_DELETED = "extra_account_deleted"
         const val ACTIVITY_REQUEST_REMOVE_ACCOUNT = 10013
