@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityRemoveAccountBinding
@@ -22,10 +23,14 @@ class RemoveAccountActivity : WizardActivity(), RemoveAccountView {
         setupViews()
 
         intent.extras?.let {
+            val model = getViewModel()
             val accountUuid = it.getString(EXTRA_ACCOUNT_UUID, "")
-            presenter.initialize(this, accountUuid)
+            presenter.initialize(this, model, accountUuid)
         } ?: finish()
     }
+
+    private fun getViewModel() =
+        ViewModelProvider(this).get(RemoveAccountViewModel::class.java)
 
     override fun inject() {
         getpEpComponent().inject(this)

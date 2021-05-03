@@ -13,13 +13,15 @@ class RemoveAccountPresenter @Inject constructor(
 ) {
     private lateinit var view: RemoveAccountView
     lateinit var account: Account
-    private var step: RemoveAccountStep = RemoveAccountStep.INITIAL
+    private lateinit var model: RemoveAccountModel
 
     fun initialize(
         view: RemoveAccountView,
+        model: RemoveAccountModel,
         accountUuid: String
     ) {
         this.view = view
+        this.model = model
         val argAccount = preferences.getAccount(accountUuid)
         if (argAccount != null) {
             this.account = argAccount
@@ -40,7 +42,7 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun setStep(step: RemoveAccountStep) {
-        this.step = step
+        model.step = step
         renderStep(step)
     }
 
@@ -67,7 +69,7 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun onRemoveAccountConfirmedByUser() {
-        when(step) {
+        when(model.step) {
             RemoveAccountStep.SEND_FAILED -> removeAccountDefault()
             RemoveAccountStep.NORMAL,
             RemoveAccountStep.MESSAGES_IN_OUTBOX -> removeAccountSendingPendingMessagesIfNeeded()

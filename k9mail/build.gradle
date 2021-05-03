@@ -92,6 +92,7 @@ dependencies {
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycleViewModel}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
     implementation "com.xwray:groupie:${versions.groupie}"
