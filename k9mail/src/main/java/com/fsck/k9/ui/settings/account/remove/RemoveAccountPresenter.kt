@@ -124,9 +124,7 @@ class RemoveAccountPresenter @Inject constructor(
     private fun removeAccountSendingPendingMessagesIfNeeded() {
         launchInUIScope {
             if (checkMessagesInOutboxAndInformUser()) {
-                setStep(RemoveAccountStep.SENDING_MESSAGES)
-
-                sendPendingMessages()
+                sendPendingMessagesAndInformUser()
 
                 if(checkMessagesInOutboxAndInformUser()) {
                     setStep(RemoveAccountStep.SEND_FAILED)
@@ -160,6 +158,11 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun getAccount(): Account = model.account
+
+    private suspend fun sendPendingMessagesAndInformUser() {
+        setStep(RemoveAccountStep.SENDING_MESSAGES)
+        sendPendingMessages()
+    }
 
     private suspend fun sendPendingMessages() = withContext(Dispatchers.IO) {
         controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
