@@ -12,12 +12,17 @@ import javax.inject.Inject
 class RemoveAccountPresenter @Inject constructor(
     private val k9Wrapper: K9Wrapper,
     private val preferences: Preferences,
-    private val controller: MessagingController
+    private val controller: MessagingController,
+    private val lifecycle: Lifecycle
 ): LifecycleObserver {
     private lateinit var view: RemoveAccountView
     private lateinit var model: RemoveAccountModel
     private lateinit var scopeProvider: CoroutineScopeProvider
     private lateinit var viewDelegate: RemoveAccountViewDelegate
+
+    init {
+        lifecycle.addObserver(this)
+    }
 
     fun initialize(
         view: RemoveAccountView,

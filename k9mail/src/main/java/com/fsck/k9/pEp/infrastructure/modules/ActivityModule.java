@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.fsck.k9.message.html.DisplayHtml;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
+
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.ComposeView;
 import com.fsck.k9.pEp.infrastructure.MessageView;
@@ -66,5 +69,10 @@ public class ActivityModule {
     @MessageView
     public DisplayHtml provideDisplayHtmlForMessageView(DisplayHtmlUiFactory factory) {
         return factory.createForMessageView();
+    }
+
+    @Provides
+    public Lifecycle provideLifecycle() {
+        return ((AppCompatActivity) activity).getLifecycle();
     }
 }
