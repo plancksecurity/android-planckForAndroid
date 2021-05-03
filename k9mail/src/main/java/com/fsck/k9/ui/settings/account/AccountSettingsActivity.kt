@@ -14,7 +14,7 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
 import com.fsck.k9.ui.observe
-import com.fsck.k9.ui.settings.account.removeaccount.RemoveAccountActivity
+import com.fsck.k9.ui.settings.account.remove.RemoveAccountActivity
 import org.koin.android.architecture.ext.viewModel
 import security.pEp.mdm.RestrictionsListener
 import timber.log.Timber

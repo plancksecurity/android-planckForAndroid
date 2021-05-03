@@ -13,7 +13,7 @@
     android:paddingEnd="24dp"
     android:paddingBottom="7dp"
     android:background="?attr/defaultDialogBackground"
-    tools:context=".ui.settings.account.removeaccount.RemoveAccountActivity">
+    tools:context=".ui.settings.account.remove.RemoveAccountActivity">
 
     <TextView
         android:id="@+id/title"

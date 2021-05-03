@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.settings.account.removeaccount
+package com.fsck.k9.ui.settings.account.remove
 
 interface RemoveAccountView {
     fun finish()

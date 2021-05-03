@@ -565,7 +565,7 @@
             android:theme="@style/OverlayTheme" />
 
         <activity
-            android:name=".ui.settings.account.removeaccount.RemoveAccountActivity"
+            android:name=".ui.settings.account.remove.RemoveAccountActivity"
             android:theme="@style/OverlayTheme" />
     </application>
 
