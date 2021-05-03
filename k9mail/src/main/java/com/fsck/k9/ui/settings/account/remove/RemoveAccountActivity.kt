@@ -5,9 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.databinding.ActivityRemoveAccountBinding
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 class RemoveAccountActivity : WizardActivity() {
@@ -30,10 +32,14 @@ class RemoveAccountActivity : WizardActivity() {
         intent.extras?.let {
             val model = getViewModel()
             val accountUuid = it.getString(EXTRA_ACCOUNT_UUID, "")
+            val scopeProvider = object: CoroutineScopeProvider {
+                override fun getScope(): CoroutineScope = model.viewModelScope
+
+            }
             presenter.initialize(
                 view,
                 model,
-                model,
+                scopeProvider,
                 accountRemoveViewDelegate,
                 accountUuid,
                 savedInstanceState == null
