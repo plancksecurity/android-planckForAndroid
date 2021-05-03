@@ -100,6 +100,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
@@ -128,7 +129,6 @@ dependencies {
     testImplementation "androidx.test:runner:${versions.runner_rules}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
     testImplementation "org.jdom:jdom2:2.0.6"
@@ -287,12 +287,6 @@ android {
             if (baseAbiVersionCode != null) {
                 output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
             }
-        }
-    }
-
-    testOptions{
-        unitTests{
-            includeAndroidResources = true
         }
     }
 

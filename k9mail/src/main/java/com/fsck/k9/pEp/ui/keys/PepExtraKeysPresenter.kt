@@ -1,12 +1,18 @@
 package com.fsck.k9.pEp.ui.keys
 
+import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
-class PepExtraKeysPresenter @Inject constructor() {
+class PepExtraKeysPresenter @Inject constructor(
+        private val dispatcherProvider: DispatcherProvider
+) {
 
     private lateinit var view: PepExtraKeysView
     private lateinit var pEp: PEpProvider
@@ -18,7 +24,7 @@ class PepExtraKeysPresenter @Inject constructor() {
     }
 
     private fun setupMasterKeys(keys: Set<String>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        val uiScope = CoroutineScope(dispatcherProvider.main() + SupervisorJob())
         uiScope.launch {
             val availableKeys = getMasterKeyInfo()
             val masterKeys: MutableList<KeyListItem> = ArrayList(availableKeys?.size ?: 0)
@@ -31,7 +37,7 @@ class PepExtraKeysPresenter @Inject constructor() {
         }
     }
 
-    private suspend fun getMasterKeyInfo(): List<KeyListItem>? = withContext(Dispatchers.IO) {
+    private suspend fun getMasterKeyInfo(): List<KeyListItem>? = withContext(dispatcherProvider.io()) {
         pEp.masterKeysInfo
     }
 }

@@ -106,14 +106,15 @@ public class RecipientPresenter {
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
-           OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account, ComposePgpInlineDecider composePgpInlineDecider,
-
+            OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account,
+            ComposePgpInlineDecider composePgpInlineDecider,
+            PEpProvider pEpProvider,
             ReplyToParser replyToParser, RecipientsChangedListener recipientsChangedListener) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
+        this.pEp = pEpProvider;
         this.listener = recipientsChangedListener;
         this.openPgpApiManager = openPgpApiManager;
 

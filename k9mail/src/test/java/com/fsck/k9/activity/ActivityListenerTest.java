@@ -8,14 +8,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.R;
 import com.fsck.k9.mail.Message;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +31,7 @@ public class ActivityListenerTest {
 
 
     private Context context;
+    private Context contextSpy;
     private Account account;
     private Message message;
     private ActivityListener activityListener;
@@ -37,29 +40,39 @@ public class ActivityListenerTest {
     @Before
     public void before() {
         context = ApplicationProvider.getApplicationContext();
+        stubContextSpy();
+
         account = createAccount();
         message = mock(Message.class);
 
         activityListener = new ActivityListener();
     }
 
+    private void stubContextSpy() {
+        contextSpy = Mockito.spy(context);
+
+        Mockito.doReturn("Syncing messages").when(contextSpy).getString(R.string.status_syncing);
+        Mockito.doReturn("1/2").when(contextSpy).getString(R.string.folder_progress, 1, 2);
+        Mockito.doReturn("Syncing disabled").when(contextSpy).getString(R.string.status_syncing_off);
+        Mockito.doReturn("2/3").when(contextSpy).getString(R.string.folder_progress, 2, 3);
+    }
+
     @Test
     public void getOperation__whenFolderStatusChanged() {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
         activityListener.folderStatusChanged(account, FOLDER, COUNT);
+        String operation = activityListener.getOperation(contextSpy);
 
-        String operation = activityListener.getOperation(context);
-
-        assertEquals("Poll account:folder", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     @Test
     public void getOperation__whenSynchronizeMailboxStarted() {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
-        assertEquals("Poll account:folder", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     @Test
@@ -67,9 +80,9 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
         activityListener.synchronizeMailboxProgress(account, FOLDER, 1, 2);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
-        assertEquals("Poll account:folder 1/2", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     @Test
@@ -77,7 +90,7 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
         activityListener.synchronizeMailboxFailed(account, FOLDER, ERROR_MESSAGE);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
         if (K9.isDebug()) {
             assertEquals("Polling and pushing disabled", operation);
@@ -92,7 +105,7 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxHeadersStarted(account, FOLDER);
         activityListener.synchronizeMailboxFailed(account, FOLDER, ERROR_MESSAGE);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
         if (K9.isDebug()) {
             assertEquals("Polling and pushing disabled", operation);
@@ -106,7 +119,7 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
         activityListener.synchronizeMailboxFinished(account, FOLDER, COUNT, COUNT);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
         if (K9.isDebug()) {
             assertEquals("Polling and pushing disabled", operation);
@@ -119,9 +132,9 @@ public class ActivityListenerTest {
     public void getOperation__whenSynchronizeMailboxHeadersStarted_shouldResultInValidStatus() {
         activityListener.synchronizeMailboxHeadersStarted(account, FOLDER);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
-        assertEquals("Fetching headers account:folder", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     @Test
@@ -129,9 +142,9 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxHeadersStarted(account, FOLDER);
         activityListener.synchronizeMailboxHeadersProgress(account, FOLDER, 2, 3);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
-        assertEquals("Fetching headers account:folder 2/3", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     @Test
@@ -139,7 +152,7 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxHeadersStarted(account, FOLDER);
         activityListener.synchronizeMailboxHeadersFinished(account, FOLDER, COUNT, COUNT);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
         assertEquals("", operation);
     }
@@ -149,9 +162,9 @@ public class ActivityListenerTest {
         activityListener.synchronizeMailboxStarted(account, FOLDER);
         activityListener.synchronizeMailboxNewMessage(account, FOLDER, message);
 
-        String operation = activityListener.getOperation(context);
+        String operation = activityListener.getOperation(contextSpy);
 
-        assertEquals("Poll account:folder", operation);
+        assertEquals("Syncing messages", operation);
     }
 
     private Account createAccount() {
