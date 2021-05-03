@@ -17,17 +17,20 @@ class RemoveAccountPresenter @Inject constructor(
     private lateinit var view: RemoveAccountView
     private lateinit var model: RemoveAccountModel
     private lateinit var scopeProvider: CoroutineScopeProvider
+    private lateinit var viewDelegate: RemoveAccountViewDelegate
 
     fun initialize(
         view: RemoveAccountView,
         model: RemoveAccountModel,
         scopeProvider: CoroutineScopeProvider,
+        viewDelegate: RemoveAccountViewDelegate,
         accountUuid: String,
         initializeModel: Boolean
     ) {
         this.view = view
         this.model = model
         this.scopeProvider = scopeProvider
+        this.viewDelegate = viewDelegate
 
         initializeModelIfNeeded(accountUuid, initializeModel)
     }
@@ -41,7 +44,7 @@ class RemoveAccountPresenter @Inject constructor(
             if (argAccount != null) {
                 model.initialize(argAccount)
             } else {
-                view.finish()
+                viewDelegate.finish()
             }
         }
     }
@@ -76,7 +79,7 @@ class RemoveAccountPresenter @Inject constructor(
             RemoveAccountStep.LOADING -> view.showLoading()
             RemoveAccountStep.FINISHED -> {
                 view.hideLoading()
-                view.accountDeleted()
+                viewDelegate.accountRemoved()
             }
             else -> {
                 view.showDialogAtStep(step, getAccount().description.orEmpty())
@@ -90,7 +93,7 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     fun onCancelButtonClicked() {
-        view.finish()
+        viewDelegate.finish()
     }
 
     private fun onRemoveAccountConfirmedByUser() {

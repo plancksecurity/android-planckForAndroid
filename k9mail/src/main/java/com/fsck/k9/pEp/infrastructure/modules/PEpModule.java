@@ -12,6 +12,8 @@ import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
+import com.fsck.k9.ui.settings.account.remove.RemoveAccountView;
+import com.fsck.k9.ui.settings.account.remove.RemoveAccountViewImpl;
 
 import javax.inject.Named;
 
@@ -70,4 +72,8 @@ public class PEpModule {
         return Preferences.getPreferences(context);
     }
 
+    @Provides
+    public RemoveAccountView provideRemoveAccountView() {
+        return new RemoveAccountViewImpl();
+    }
 }

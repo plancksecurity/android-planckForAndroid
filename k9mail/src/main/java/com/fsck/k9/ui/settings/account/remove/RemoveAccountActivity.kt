@@ -3,29 +3,41 @@ package com.fsck.k9.ui.settings.account.remove
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import com.fsck.k9.Account
-import com.fsck.k9.R
 import com.fsck.k9.databinding.ActivityRemoveAccountBinding
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import javax.inject.Inject
 
-class RemoveAccountActivity : WizardActivity(), RemoveAccountView {
-    private lateinit var binding: ActivityRemoveAccountBinding
-
+class RemoveAccountActivity : WizardActivity() {
     @Inject
     lateinit var presenter: RemoveAccountPresenter
+    @Inject
+    lateinit var view: RemoveAccountView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupViews()
+
+        val binding = ActivityRemoveAccountBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        view.initialize(
+            binding,
+            onAcceptButtonClicked = { presenter.onAcceptButtonClicked() },
+            onCancelButtonClicked = { presenter.onCancelButtonClicked() }
+        )
 
         intent.extras?.let {
             val model = getViewModel()
             val accountUuid = it.getString(EXTRA_ACCOUNT_UUID, "")
-            presenter.initialize(this, model, model, accountUuid, savedInstanceState == null)
+            presenter.initialize(
+                view,
+                model,
+                model,
+                accountRemoveViewDelegate,
+                accountUuid,
+                savedInstanceState == null
+            )
         } ?: finish()
     }
 
@@ -36,58 +48,17 @@ class RemoveAccountActivity : WizardActivity(), RemoveAccountView {
         getpEpComponent().inject(this)
     }
 
-    private fun setupViews() {
-        binding = ActivityRemoveAccountBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        binding.title.text = getString(R.string.account_delete_dlg_title)
-        binding.acceptButton.setOnClickListener {
-            presenter.onAcceptButtonClicked()
+    private val accountRemoveViewDelegate = object: RemoveAccountViewDelegate {
+        override fun accountRemoved() {
+            val intent = Intent()
+            intent.putExtra(EXTRA_ACCOUNT_DELETED, true)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
-        binding.cancelButton.setOnClickListener {
-            presenter.onCancelButtonClicked()
+
+        override fun finish() {
+            this@RemoveAccountActivity.finish()
         }
-    }
-
-    override fun accountDeleted() {
-        val intent = Intent()
-        intent.putExtra(EXTRA_ACCOUNT_DELETED, true)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-    }
-
-    override fun showLoading() {
-        binding.acceptButton.visibility = View.INVISIBLE
-        binding.cancelButton.visibility = View.INVISIBLE
-        binding.dialogMessage.visibility = View.INVISIBLE
-        binding.progressLayout.root.visibility = View.VISIBLE
-        binding.progressLayout.progressText.text = getString(R.string.sending_messages_in_progress)
-    }
-
-    override fun hideLoading() {
-        binding.acceptButton.visibility = View.VISIBLE
-        binding.cancelButton.visibility = View.VISIBLE
-        binding.dialogMessage.visibility = View.VISIBLE
-        binding.progressLayout.root.visibility = View.GONE
-    }
-
-    private fun chooseAccountDeleteDialogMsg(step: RemoveAccountStep, accountDescription: String): String {
-        return when(step) {
-            RemoveAccountStep.MESSAGES_IN_OUTBOX -> getString(R.string.account_delete_dlg_messages_in_outbox_instructions_fmt, accountDescription)
-            RemoveAccountStep.SEND_FAILED -> getString(R.string.account_delete_dlg_after_send_failed_instructions_fmt)
-            else -> getString(R.string.account_delete_dlg_instructions_fmt, accountDescription)
-        }
-    }
-
-    private fun chooseAccountDeleteButtonText(step: RemoveAccountStep): String {
-        return when(step) {
-            RemoveAccountStep.MESSAGES_IN_OUTBOX -> getString(R.string.send_all_messages_and_remove_account_action)
-            else -> getString(R.string.okay_action)
-        }
-    }
-
-    override fun showDialogAtStep(step: RemoveAccountStep, accountDescription: String) {
-        binding.dialogMessage.text = chooseAccountDeleteDialogMsg(step, accountDescription)
-        binding.acceptButton.text = chooseAccountDeleteButtonText(step)
     }
 
     companion object {

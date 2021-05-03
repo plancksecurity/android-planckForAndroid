@@ -1,10 +1,8 @@
 package com.fsck.k9.ui.settings.account.remove
 
+import com.fsck.k9.databinding.ActivityRemoveAccountBinding
+
 interface RemoveAccountView {
-    fun finish()
-
-    fun accountDeleted()
-
     fun showLoading()
 
     fun hideLoading()
@@ -12,6 +10,12 @@ interface RemoveAccountView {
     fun showDialogAtStep(
         step: RemoveAccountStep,
         accountDescription: String
+    )
+
+    fun initialize(
+        binding: ActivityRemoveAccountBinding,
+        onAcceptButtonClicked: () -> Unit,
+        onCancelButtonClicked: () -> Unit
     )
 }
 
