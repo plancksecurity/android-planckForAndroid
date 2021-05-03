@@ -80,17 +80,19 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun renderStep(step: RemoveAccountStep) {
-        when(step) {
-            RemoveAccountStep.SENDING_MESSAGES,
-            RemoveAccountStep.INITIAL,
-            RemoveAccountStep.CHECKING_FOR_MESSAGES -> view.showLoading(step)
-            RemoveAccountStep.FINISHED -> {
-                view.hideLoading()
-                viewDelegate.accountRemoved()
-            }
-            else -> {
-                view.showDialogAtStep(step, getAccount().description.orEmpty())
-                view.hideLoading()
+        runWithLifecycleSafety {
+            when(step) {
+                RemoveAccountStep.SENDING_MESSAGES,
+                RemoveAccountStep.INITIAL,
+                RemoveAccountStep.CHECKING_FOR_MESSAGES -> view.showLoading(step)
+                RemoveAccountStep.FINISHED -> {
+                    view.hideLoading()
+                    viewDelegate.accountRemoved()
+                }
+                else -> {
+                    view.showDialogAtStep(step, getAccount().description.orEmpty())
+                    view.hideLoading()
+                }
             }
         }
     }
@@ -168,6 +170,12 @@ class RemoveAccountPresenter @Inject constructor(
 
     private fun launchInUIScope(block: suspend CoroutineScope.() -> Unit) {
         scopeProvider.getScope().launch { block() }
+    }
+
+    private fun runWithLifecycleSafety(block: () -> Unit) {
+        if(lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            block()
+        }
     }
 
     companion object {
