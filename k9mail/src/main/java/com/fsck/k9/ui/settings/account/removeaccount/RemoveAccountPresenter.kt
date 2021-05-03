@@ -16,15 +16,18 @@ class RemoveAccountPresenter @Inject constructor(
 ): LifecycleObserver {
     private lateinit var view: RemoveAccountView
     private lateinit var model: RemoveAccountModel
+    private lateinit var scopeProvider: CoroutineScopeProvider
 
     fun initialize(
         view: RemoveAccountView,
         model: RemoveAccountModel,
+        scopeProvider: CoroutineScopeProvider,
         accountUuid: String,
         initializeModel: Boolean
     ) {
         this.view = view
         this.model = model
+        this.scopeProvider = scopeProvider
 
         initializeModelIfNeeded(accountUuid, initializeModel)
     }
@@ -149,8 +152,7 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private fun launchInUIScope(block: suspend CoroutineScope.() -> Unit) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch { block() }
+        scopeProvider.getScope().launch { block() }
     }
 
     companion object {

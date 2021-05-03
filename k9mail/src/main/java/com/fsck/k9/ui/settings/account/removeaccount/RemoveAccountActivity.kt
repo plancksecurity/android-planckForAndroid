@@ -25,7 +25,7 @@ class RemoveAccountActivity : WizardActivity(), RemoveAccountView {
         intent.extras?.let {
             val model = getViewModel()
             val accountUuid = it.getString(EXTRA_ACCOUNT_UUID, "")
-            presenter.initialize(this, model, accountUuid, savedInstanceState == null)
+            presenter.initialize(this, model, model, accountUuid, savedInstanceState == null)
         } ?: finish()
     }
 
