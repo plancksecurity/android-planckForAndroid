@@ -12,7 +12,6 @@ class RemoveAccountPresenter @Inject constructor(
     private val controller: MessagingController
 ) {
     private lateinit var view: RemoveAccountView
-    lateinit var account: Account
     private lateinit var model: RemoveAccountModel
 
     fun initialize(
@@ -24,7 +23,7 @@ class RemoveAccountPresenter @Inject constructor(
         this.model = model
         val argAccount = preferences.getAccount(accountUuid)
         if (argAccount != null) {
-            this.account = argAccount
+            model.account = argAccount
             showInitialScreen()
         } else {
             view.finish()
@@ -54,7 +53,7 @@ class RemoveAccountPresenter @Inject constructor(
                 view.accountDeleted()
             }
             else -> {
-                view.showDialogAtStep(step, account.description.orEmpty())
+                view.showDialogAtStep(step, getAccount().description.orEmpty())
                 view.hideLoading()
             }
         }
@@ -103,25 +102,27 @@ class RemoveAccountPresenter @Inject constructor(
 
     private suspend fun deleteAccountWork() = withContext(Dispatchers.IO) {
         try {
-            account.localStore?.delete()
+            getAccount().localStore?.delete()
         } catch (e: Exception) {
             // Ignore, this may lead to localStores on sd-cards that
             // are currently not inserted to be left
         }
 
-        controller.deleteAccount(account)
-        preferences.deleteAccount(account)
+        controller.deleteAccount(getAccount())
+        preferences.deleteAccount(getAccount())
         k9Wrapper.setServicesEnabled()
         setStep(RemoveAccountStep.FINISHED)
     }
 
+    private fun getAccount(): Account = model.account
+
     private suspend fun sendPendingMessages() = withContext(Dispatchers.IO) {
-        controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(account)
+        controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
     }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
-        controller.hasMessagesPendingToSend(account)
+        controller.hasMessagesPendingToSend(getAccount())
     }
 
     private fun launchInUIScope(block: suspend CoroutineScope.() -> Unit) {
