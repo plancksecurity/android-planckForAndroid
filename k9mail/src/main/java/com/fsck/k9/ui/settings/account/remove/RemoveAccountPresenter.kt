@@ -115,23 +115,28 @@ class RemoveAccountPresenter @Inject constructor(
     private fun removeAccountDefault() {
         launchInUIScope {
             deleteAccountWork()
+            setStep(RemoveAccountStep.FINISHED)
         }
     }
 
     private fun removeAccountSendingPendingMessagesIfNeeded() {
         launchInUIScope {
+            setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
             if (checkMessagesLeftInOutboxFolder()) {
                 setStep(RemoveAccountStep.SENDING_MESSAGES)
 
                 sendPendingMessages()
 
+                setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
                 if(checkMessagesLeftInOutboxFolder()) {
                     setStep(RemoveAccountStep.SEND_FAILED)
                 } else {
                     deleteAccountWork()
+                    setStep(RemoveAccountStep.FINISHED)
                 }
             } else {
                 deleteAccountWork()
+                setStep(RemoveAccountStep.FINISHED)
             }
         }
     }
@@ -147,7 +152,6 @@ class RemoveAccountPresenter @Inject constructor(
         controller.deleteAccount(getAccount())
         preferences.deleteAccount(getAccount())
         k9Wrapper.setServicesEnabled()
-        setStep(RemoveAccountStep.FINISHED)
     }
 
     private fun getAccount(): Account = model.account
@@ -158,7 +162,6 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
-        setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
         controller.hasMessagesPendingToSend(getAccount())
     }
