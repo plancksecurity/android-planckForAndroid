@@ -4,5 +4,7 @@ import com.fsck.k9.Account
 
 interface RemoveAccountModel {
     var step: RemoveAccountStep
-    var account: Account
+    val account: Account
+    fun isStarted(): Boolean
+    fun initialize(account: Account)
 }

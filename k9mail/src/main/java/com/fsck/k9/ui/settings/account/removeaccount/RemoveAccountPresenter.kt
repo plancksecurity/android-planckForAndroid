@@ -1,5 +1,8 @@
 package com.fsck.k9.ui.settings.account.removeaccount
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
@@ -10,24 +13,44 @@ class RemoveAccountPresenter @Inject constructor(
     private val k9Wrapper: K9Wrapper,
     private val preferences: Preferences,
     private val controller: MessagingController
-) {
+): LifecycleObserver {
     private lateinit var view: RemoveAccountView
     private lateinit var model: RemoveAccountModel
 
     fun initialize(
         view: RemoveAccountView,
         model: RemoveAccountModel,
-        accountUuid: String
+        accountUuid: String,
+        initializeModel: Boolean
     ) {
         this.view = view
         this.model = model
-        val argAccount = preferences.getAccount(accountUuid)
-        if (argAccount != null) {
-            model.account = argAccount
-            showInitialScreen()
-        } else {
-            view.finish()
-            return
+
+        initializeModelIfNeeded(accountUuid, initializeModel)
+    }
+
+    private fun initializeModelIfNeeded(
+        accountUuid: String,
+        initialize: Boolean
+    ) {
+        if (initialize) {
+            val argAccount = preferences.getAccount(accountUuid)
+            if (argAccount != null) {
+                model.initialize(argAccount)
+            } else {
+                view.finish()
+            }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    @Suppress("unused")
+    private fun showCurrentScreen() {
+        launchInUIScope {
+            renderStep(model.step)
+            if(!model.isStarted()) {
+                showInitialScreen()
+            }
         }
     }
 
