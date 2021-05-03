@@ -166,8 +166,8 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private suspend fun sendPendingMessages() = withContext(dispatcherProvider.io()) {
-        controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
+        controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
     }
 
     private suspend fun checkMessagesInOutboxAndInformUser(): Boolean {
