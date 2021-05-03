@@ -1,5 +1,6 @@
 package com.fsck.k9.ui.settings.account.remove
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -81,7 +82,8 @@ class RemoveAccountPresenter @Inject constructor(
         renderStep(step)
     }
 
-    private fun renderStep(step: RemoveAccountStep) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun renderStep(step: RemoveAccountStep) {
         runWithLifecycleSafety {
             when(step) {
                 RemoveAccountStep.SENDING_MESSAGES,
