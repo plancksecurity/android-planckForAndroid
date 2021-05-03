@@ -6,6 +6,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.pEp.DispatcherProvider
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
@@ -13,7 +14,8 @@ class RemoveAccountPresenter @Inject constructor(
     private val k9Wrapper: K9Wrapper,
     private val preferences: Preferences,
     private val controller: MessagingController,
-    private val lifecycle: Lifecycle
+    private val lifecycle: Lifecycle,
+    private val dispatcherProvider: DispatcherProvider
 ): LifecycleObserver {
     private lateinit var view: RemoveAccountView
     private lateinit var model: RemoveAccountModel
@@ -140,7 +142,7 @@ class RemoveAccountPresenter @Inject constructor(
         setStep(RemoveAccountStep.FINISHED)
     }
 
-    private suspend fun deleteAccountWork() = withContext(Dispatchers.IO) {
+    private suspend fun deleteAccountWork() = withContext(dispatcherProvider.io()) {
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
         try {
             getAccount().localStore?.delete()
@@ -161,7 +163,7 @@ class RemoveAccountPresenter @Inject constructor(
         sendPendingMessages()
     }
 
-    private suspend fun sendPendingMessages() = withContext(Dispatchers.IO) {
+    private suspend fun sendPendingMessages() = withContext(dispatcherProvider.io()) {
         controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
     }
@@ -171,7 +173,7 @@ class RemoveAccountPresenter @Inject constructor(
         return checkMessagesLeftInOutboxFolder()
     }
 
-    private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
+    private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(dispatcherProvider.io()) {
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
         controller.hasMessagesPendingToSend(getAccount())
     }
