@@ -68,7 +68,7 @@ class RemoveAccountPresenter @Inject constructor(
     private fun showInitialScreen() {
         launchInUIScope {
             setStep(
-                if(checkMessagesLeftInOutboxFolder()) RemoveAccountStep.MESSAGES_IN_OUTBOX
+                if(checkMessagesInOutboxAndInformUser()) RemoveAccountStep.MESSAGES_IN_OUTBOX
                 else RemoveAccountStep.NORMAL
             )
         }
@@ -123,14 +123,12 @@ class RemoveAccountPresenter @Inject constructor(
 
     private fun removeAccountSendingPendingMessagesIfNeeded() {
         launchInUIScope {
-            setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
-            if (checkMessagesLeftInOutboxFolder()) {
+            if (checkMessagesInOutboxAndInformUser()) {
                 setStep(RemoveAccountStep.SENDING_MESSAGES)
 
                 sendPendingMessages()
 
-                setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
-                if(checkMessagesLeftInOutboxFolder()) {
+                if(checkMessagesInOutboxAndInformUser()) {
                     setStep(RemoveAccountStep.SEND_FAILED)
                 } else {
                     removeAccount()
@@ -166,6 +164,11 @@ class RemoveAccountPresenter @Inject constructor(
     private suspend fun sendPendingMessages() = withContext(Dispatchers.IO) {
         controller.sendPendingMessagesAndHandleSendingNotificationSynchronous(getAccount())
         launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
+    }
+
+    private suspend fun checkMessagesInOutboxAndInformUser(): Boolean {
+        setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
+        return checkMessagesLeftInOutboxFolder()
     }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
