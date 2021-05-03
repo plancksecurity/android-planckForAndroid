@@ -86,9 +86,7 @@ class RemoveAccountPresenter @Inject constructor(
                 RemoveAccountStep.INITIAL,
                 RemoveAccountStep.CHECKING_FOR_MESSAGES,
                 RemoveAccountStep.REMOVING_ACCOUNT -> view.showLoading(step)
-                RemoveAccountStep.FINISHED -> {
-                    viewDelegate.accountRemoved()
-                }
+                RemoveAccountStep.FINISHED -> viewDelegate.accountRemoved()
                 else -> {
                     view.showDialogAtStep(step, getAccount().description.orEmpty())
                     view.hideLoading()
