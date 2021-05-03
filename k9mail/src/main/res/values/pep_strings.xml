@@ -329,4 +329,6 @@
     <string name="account_delete_dlg_messages_in_outbox_instructions_fmt">The account \"<xliff:g id="account">%s</xliff:g>\" will be removed from p≡p. There are messages pending to be sent in Outbox folder. p≡p will try to send all of them before removing account.</string>
     <string name="send_all_messages_and_remove_account_action">Send all &amp; remove</string>
     <string name="account_delete_dlg_after_send_failed_instructions_fmt">Could not send some messages in outbox, removing account will delete them, are you sure?</string>
+    <string name="account_delete_dlg_retrieving_data">Retrieving data…</string>
+    <string name="account_delete_dlg_checking_pending_messages">Checking for pending messages…</string>
 </resources>

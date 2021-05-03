@@ -76,7 +76,9 @@ class RemoveAccountPresenter @Inject constructor(
 
     private fun renderStep(step: RemoveAccountStep) {
         when(step) {
-            RemoveAccountStep.LOADING -> view.showLoading()
+            RemoveAccountStep.SENDING_MESSAGES,
+            RemoveAccountStep.INITIAL,
+            RemoveAccountStep.CHECKING_FOR_MESSAGES -> view.showLoading(step)
             RemoveAccountStep.FINISHED -> {
                 view.hideLoading()
                 viewDelegate.accountRemoved()
@@ -114,7 +116,7 @@ class RemoveAccountPresenter @Inject constructor(
     private fun removeAccountSendingPendingMessagesIfNeeded() {
         launchInUIScope {
             if (checkMessagesLeftInOutboxFolder()) {
-                setStep(RemoveAccountStep.LOADING)
+                setStep(RemoveAccountStep.SENDING_MESSAGES)
 
                 sendPendingMessages()
 
@@ -151,6 +153,8 @@ class RemoveAccountPresenter @Inject constructor(
     }
 
     private suspend fun checkMessagesLeftInOutboxFolder(): Boolean = withContext(Dispatchers.IO) {
+        setStep(RemoveAccountStep.CHECKING_FOR_MESSAGES)
+        launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
         controller.hasMessagesPendingToSend(getAccount())
     }
 

@@ -46,12 +46,12 @@ class RemoveAccountViewImpl @Inject constructor(): RemoveAccountView {
         title = binding.title
     }
 
-    override fun showLoading() {
+    override fun showLoading(step: RemoveAccountStep) {
         acceptButton.visibility = View.INVISIBLE
         cancelButton.visibility = View.INVISIBLE
         dialogMessage.visibility = View.INVISIBLE
         progressLayout.visibility = View.VISIBLE
-        progressText.text = context.getString(R.string.sending_messages_in_progress)
+        progressText.text = chooseLoadingText(step)
     }
 
     override fun hideLoading() {
@@ -73,6 +73,15 @@ class RemoveAccountViewImpl @Inject constructor(): RemoveAccountView {
         return when(step) {
             RemoveAccountStep.MESSAGES_IN_OUTBOX -> context.getString(R.string.send_all_messages_and_remove_account_action)
             else -> context.getString(R.string.okay_action)
+        }
+    }
+
+    private fun chooseLoadingText(step: RemoveAccountStep): String {
+        return when(step) {
+            RemoveAccountStep.INITIAL -> context.getString(R.string.account_delete_dlg_retrieving_data)
+            RemoveAccountStep.CHECKING_FOR_MESSAGES -> context.getString(R.string.account_delete_dlg_checking_pending_messages)
+            RemoveAccountStep.SENDING_MESSAGES -> context.getString(R.string.sending_messages_in_progress)
+            else -> ""
         }
     }
 
