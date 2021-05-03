@@ -1,16 +1,13 @@
 package com.fsck.k9.ui.settings.account.removeaccount
 
-import android.content.Context
 import com.fsck.k9.Account
-import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import javax.inject.Named
 
 class RemoveAccountPresenter @Inject constructor(
-    @Named("AppContext") private val application: Context,
+    private val k9Wrapper: K9Wrapper,
     private val preferences: Preferences,
     private val controller: MessagingController
 ) {
@@ -115,7 +112,7 @@ class RemoveAccountPresenter @Inject constructor(
 
         controller.deleteAccount(account)
         preferences.deleteAccount(account)
-        K9.setServicesEnabled(application)
+        k9Wrapper.setServicesEnabled()
         setStep(RemoveAccountStep.FINISHED)
     }
 
