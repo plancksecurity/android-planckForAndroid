@@ -81,6 +81,7 @@ class RemoveAccountViewImpl @Inject constructor(): RemoveAccountView {
             RemoveAccountStep.INITIAL -> context.getString(R.string.account_delete_dlg_retrieving_data)
             RemoveAccountStep.CHECKING_FOR_MESSAGES -> context.getString(R.string.account_delete_dlg_checking_pending_messages)
             RemoveAccountStep.SENDING_MESSAGES -> context.getString(R.string.sending_messages_in_progress)
+            RemoveAccountStep.REMOVING_ACCOUNT -> context.getString(R.string.account_delete_dlg_removing_account)
             else -> ""
         }
     }

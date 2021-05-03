@@ -331,4 +331,5 @@
     <string name="account_delete_dlg_after_send_failed_instructions_fmt">Could not send some messages in outbox, removing account will delete them, are you sure?</string>
     <string name="account_delete_dlg_retrieving_data">Retrieving data…</string>
     <string name="account_delete_dlg_checking_pending_messages">Checking for pending messages…</string>
+    <string name="account_delete_dlg_removing_account">Removing account…</string>
 </resources>

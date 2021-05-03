@@ -26,5 +26,6 @@ enum class RemoveAccountStep {
     MESSAGES_IN_OUTBOX,
     SENDING_MESSAGES,
     SEND_FAILED,
+    REMOVING_ACCOUNT,
     FINISHED
 }

@@ -84,7 +84,8 @@ class RemoveAccountPresenter @Inject constructor(
             when(step) {
                 RemoveAccountStep.SENDING_MESSAGES,
                 RemoveAccountStep.INITIAL,
-                RemoveAccountStep.CHECKING_FOR_MESSAGES -> view.showLoading(step)
+                RemoveAccountStep.CHECKING_FOR_MESSAGES,
+                RemoveAccountStep.REMOVING_ACCOUNT -> view.showLoading(step)
                 RemoveAccountStep.FINISHED -> {
                     view.hideLoading()
                     viewDelegate.accountRemoved()
@@ -116,8 +117,7 @@ class RemoveAccountPresenter @Inject constructor(
 
     private fun removeAccountDefault() {
         launchInUIScope {
-            deleteAccountWork()
-            setStep(RemoveAccountStep.FINISHED)
+            removeAccount()
         }
     }
 
@@ -133,17 +133,22 @@ class RemoveAccountPresenter @Inject constructor(
                 if(checkMessagesLeftInOutboxFolder()) {
                     setStep(RemoveAccountStep.SEND_FAILED)
                 } else {
-                    deleteAccountWork()
-                    setStep(RemoveAccountStep.FINISHED)
+                    removeAccount()
                 }
             } else {
-                deleteAccountWork()
-                setStep(RemoveAccountStep.FINISHED)
+                removeAccount()
             }
         }
     }
 
+    private suspend fun removeAccount() {
+        setStep(RemoveAccountStep.REMOVING_ACCOUNT)
+        deleteAccountWork()
+        setStep(RemoveAccountStep.FINISHED)
+    }
+
     private suspend fun deleteAccountWork() = withContext(Dispatchers.IO) {
+        launch { delay(PROGRESS_DIALOG_MIN_DELAY) }
         try {
             getAccount().localStore?.delete()
         } catch (e: Exception) {
