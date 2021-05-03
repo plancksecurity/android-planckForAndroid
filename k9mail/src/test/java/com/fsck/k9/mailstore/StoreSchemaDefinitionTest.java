@@ -19,7 +19,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.mail.MessagingException;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -88,8 +87,6 @@ public class StoreSchemaDefinitionTest {
         }
     }
 
-    // FIXME: 30/03/2021 FIX THIS TEST
-    @Ignore
     @Test
     public void doDbUpgrade_withV29_shouldUpgradeDatabaseToLatestVersion() {
         SQLiteDatabase database = createV29Database();
@@ -99,8 +96,6 @@ public class StoreSchemaDefinitionTest {
         assertEquals(LocalStore.DB_VERSION, database.getVersion());
     }
 
-    // FIXME: 30/03/2021 FIX THIS TEST
-    @Ignore
     @Test
     public void doDbUpgrade_withV29() {
         SQLiteDatabase database = createV29Database();
@@ -111,8 +106,6 @@ public class StoreSchemaDefinitionTest {
         assertMessageWithSubjectExists(database, "Test Email");
     }
 
-    // FIXME: 30/03/2021 FIX THIS TEST
-    @Ignore
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTables() {
         SQLiteDatabase newDatabase = createNewDatabase();
@@ -123,8 +116,6 @@ public class StoreSchemaDefinitionTest {
         assertDatabaseTablesEquals(newDatabase, upgradedDatabase);
     }
 
-    // FIXME: 30/03/2021 FIX THIS TEST
-    @Ignore
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTriggers() {
         SQLiteDatabase newDatabase = createNewDatabase();
@@ -135,8 +126,6 @@ public class StoreSchemaDefinitionTest {
         assertDatabaseTriggersEquals(newDatabase, upgradedDatabase);
     }
 
-    // FIXME: 30/03/2021 FIX THIS TEST
-    @Ignore
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameIndexes() {
         SQLiteDatabase newDatabase = createNewDatabase();

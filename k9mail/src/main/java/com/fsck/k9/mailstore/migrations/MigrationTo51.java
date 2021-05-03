@@ -220,7 +220,8 @@ class MigrationTo51 {
                 "flagged INTEGER default 0, " +
                 "answered INTEGER default 0, " +
                 "forwarded INTEGER default 0, " +
-                "message_part_id INTEGER" +
+                "message_part_id INTEGER, " +
+                "pep_color TEXT" +
                 ")");
 
         db.execSQL("CREATE TABLE message_parts (" +
