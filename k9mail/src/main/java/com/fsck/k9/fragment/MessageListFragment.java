@@ -607,7 +607,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        messageHelper = MessageHelper.getInstance(getActivity());
+        messageHelper = MessageHelper.getInstance(getContext().getApplicationContext());
 
         initializeMessageList();
 

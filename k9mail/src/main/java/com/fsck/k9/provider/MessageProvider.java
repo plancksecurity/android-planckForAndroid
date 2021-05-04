@@ -94,7 +94,7 @@ public class MessageProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        messageHelper = MessageHelper.getInstance(getContext());
+        messageHelper = MessageHelper.getInstance(getContext().getApplicationContext());
 
         registerQueryHandler(new ThrottlingQueryHandler(new AccountsQueryHandler()));
         registerQueryHandler(new ThrottlingQueryHandler(new MessagesQueryHandler()));
