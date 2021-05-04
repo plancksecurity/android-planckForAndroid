@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -3126,7 +3127,8 @@ public class TestUtils {
 
     public void setClipboard(String textToCopy) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(null, textToCopy);
+        clipboard.clearPrimaryClip();
+        ClipData clip = ClipData.newPlainText("", textToCopy);
         while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
             device.waitForIdle();
             clipboard.setPrimaryClip(clip);
