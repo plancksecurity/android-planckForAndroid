@@ -330,12 +330,14 @@ public class CucumberTestSteps {
                                 waitForIdle();
                                 object.click();
                                 String finalMessageText = messageText;
+                                waitForIdle();
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
                                         testUtils.setClipboard(finalMessageText);
                                     }
                                 });
+                                waitForIdle();
                                 for (int i = 0; i < endOfLongMessage; i++) {
                                     waitForIdle();
                                     scroll.swipe(Direction.UP, 1.0f);
