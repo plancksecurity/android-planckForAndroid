@@ -13,13 +13,11 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import com.fsck.k9.search.LocalSearch;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -100,25 +98,27 @@ public class MessagingControllerTest {
     private LocalMessage localMessageToSend1;
     @Mock
     private PEpProvider pEpProvider;
+    @Mock
+    private Preferences preferences;
+
     private volatile boolean hasFetchedMessage = false;
-    private static MockedStatic<PEpProviderFactory> mockProviderFactory;
 
     @Before
     public void setUp() throws MessagingException {
         ShadowLog.stream = System.out;
         MockitoAnnotations.openMocks(this);
         appContext = ApplicationProvider.getApplicationContext();
+        stubPreferences();
 
-        stubPEpProviderCreation();
-        controller = new MessagingController(appContext, notificationController, contacts, transportProvider);
+        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
 
         configureAccount();
         configureLocalStore();
     }
 
-    private void stubPEpProviderCreation() {
-        mockProviderFactory.when(() -> PEpProviderFactory.createAndSetupProvider(any()))
-                .thenReturn(pEpProvider);
+    private void stubPreferences() {
+        doReturn(account).when(preferences).getAccount(anyString());
+        doReturn(Collections.singletonList(account)).when(preferences).getAccounts();
     }
 
     @After
@@ -317,8 +317,6 @@ public class MessagingControllerTest {
         verify(listener, never()).listFoldersFinished(account);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchLocalMessagesSynchronous_shouldCallSearchForMessagesOnLocalStore()
             throws Exception {
@@ -330,8 +328,6 @@ public class MessagingControllerTest {
         verify(localStore).searchForMessages(any(MessageRetrievalListener.class), eq(search));
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchLocalMessagesSynchronous_shouldNotifyWhenStoreFinishesRetrievingAMessage()
             throws Exception {
@@ -389,8 +385,6 @@ public class MessagingControllerTest {
         when(account.getRemoteSearchNumResults()).thenReturn(50);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldNotifyStartedListingRemoteMessages() throws Exception {
         setupRemoteSearch();
@@ -400,8 +394,6 @@ public class MessagingControllerTest {
         verify(listener).remoteSearchStarted(FOLDER_NAME);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldQueryRemoteFolder() throws Exception {
         setupRemoteSearch();
@@ -411,8 +403,6 @@ public class MessagingControllerTest {
         verify(remoteFolder).search("query", reqFlags, forbiddenFlags);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldAskLocalFolderToDetermineNewMessages() throws Exception {
         setupRemoteSearch();
@@ -422,8 +412,6 @@ public class MessagingControllerTest {
         verify(localFolder).extractNewMessages(remoteMessages);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldTryAndGetNewMessages() throws Exception {
         setupRemoteSearch();
@@ -433,8 +421,6 @@ public class MessagingControllerTest {
         verify(localFolder).getMessage("newMessageUid1");
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldNotTryAndGetOldMessages() throws Exception {
         setupRemoteSearch();
@@ -444,8 +430,6 @@ public class MessagingControllerTest {
         verify(localFolder, never()).getMessage("oldMessageUid");
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldFetchNewMessages() throws Exception {
         setupRemoteSearch();
@@ -456,8 +440,6 @@ public class MessagingControllerTest {
                 fetchProfileCaptor.capture(), eq(null));
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldNotFetchExistingMessages() throws Exception {
         setupRemoteSearch();
@@ -468,8 +450,6 @@ public class MessagingControllerTest {
                 fetchProfileCaptor.capture(), eq(null));
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldNotifyOnFailure() throws Exception {
         setupRemoteSearch();
@@ -480,8 +460,6 @@ public class MessagingControllerTest {
         verify(listener).remoteSearchFailed(null, "Test");
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void searchRemoteMessagesSynchronous_shouldNotifyOnFinish() throws Exception {
         setupRemoteSearch();
@@ -521,8 +499,6 @@ public class MessagingControllerTest {
         verify(listener).synchronizeMailboxProgress(account, "Sent", 0, 1);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_shouldSendMessageUsingTransport() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -532,8 +508,6 @@ public class MessagingControllerTest {
         verify(transport).sendMessage(localMessageToSend1);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_shouldSetAndRemoveSendInProgressFlag() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -546,8 +520,6 @@ public class MessagingControllerTest {
         ordering.verify(localMessageToSend1).setFlag(Flag.X_SEND_IN_PROGRESS, false);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_shouldMarkSentMessageAsSeen() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -557,8 +529,6 @@ public class MessagingControllerTest {
         verify(localMessageToSend1).setFlag(Flag.SEEN, true);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_whenMessageSentSuccesfully_shouldUpdateProgress() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -568,8 +538,6 @@ public class MessagingControllerTest {
         verify(listener).synchronizeMailboxProgress(account, "Sent", 1, 1);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_shouldUpdateProgress() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -579,8 +547,6 @@ public class MessagingControllerTest {
         verify(listener).synchronizeMailboxProgress(account, "Sent", 1, 1);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_withAuthenticationFailure_shouldNotify() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -591,8 +557,6 @@ public class MessagingControllerTest {
         verify(notificationController).showAuthenticationErrorNotification(account, false);
     }
 
-    // FIXME: 30/03/2021 Mock PEpProvider dependency in MessagingController for these tests to work.
-    @Ignore
     @Test
     public void sendPendingMessagesSynchronous_withCertificateFailure_shouldNotify() throws MessagingException {
         setupAccountWithMessageToSend();
@@ -957,7 +921,6 @@ public class MessagingControllerTest {
     @BeforeClass
     public static void beforeClass() {
         FakeAndroidKeyStore.setup();
-        mockProviderFactory = Mockito.mockStatic(PEpProviderFactory.class);
     }
 
 }
