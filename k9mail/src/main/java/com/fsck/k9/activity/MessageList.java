@@ -13,9 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.*;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,8 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
@@ -35,32 +31,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
-import com.fsck.k9.AccountStats;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.activity.setup.DrawerFolderPopulator;
-import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.controller.SimpleMessagingListener;
+import com.fsck.k9.activity.drawer.DrawerLayoutView;
+import com.fsck.k9.activity.drawer.MessageListView;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
-import com.fsck.k9.pEp.AccountUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.models.FolderModel;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
-import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener;
-import com.fsck.k9.pEp.ui.renderers.AccountRenderer;
-import com.fsck.k9.pEp.ui.renderers.FolderRenderer;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -77,14 +64,11 @@ import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.view.MessageTitleView;
 import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
-import com.google.android.material.navigation.NavigationView;
-import com.pedrogomez.renderers.ListAdapteeCollection;
-import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -93,9 +77,7 @@ import foundation.pEp.jniadapter.Rating;
 import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
-import security.pEp.ui.nav_view.NavFolderAccountButton;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -107,10 +89,8 @@ import timber.log.Timber;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends PepActivity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener,
-        NavigationView.OnNavigationItemSelectedListener, DrawerLocker {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker {
 
-    @Inject AccountUtils accountUtils;
     @Inject
     NotificationChannelManager channelUtils;
     @Inject
@@ -122,7 +102,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Inject
     ResourcesProvider resourcesProvider;
     @Inject
-    DrawerFolderPopulator drawerFolderPopulator;
+    DrawerLayoutView drawerLayoutView;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -144,42 +124,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
     private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
+    private static final String STATE_ACCOUNT_UUID = "accountUuid";
 
     // Used for navigating to next/previous message
     private static final int PREVIOUS = 1;
     private static final int NEXT = 2;
-    private TextView mActionBarPepStatus;
 
     public static final int REQUEST_MASK_PENDING_INTENT = 1 << 16;
-    private View customView;
-    private DrawerLayout drawerLayout;
-    private List<LocalFolder> menuFolders;
-    private TextView firstAccountText;
-    private TextView secondAccountText;
-    private View firstAccountLayout;
-    private View secondAccountLayout;
-    private View mainAccountLayout;
-    private TextView mainAccountText;
-    private NavFolderAccountButton navFoldersAccountsButton;
-    private NavigationView navigationView;
-    private TextView mainAccountName;
-    private TextView mainAccountEmail;
-    private boolean showingAccountsMenu;
-    private RecyclerView navigationFolders;
-    private RecyclerView navigationAccounts;
-    private View foldersDrawerLayout;
-    private View accountsDrawerLayout;
-    private View addAccountContainer;
-    private View configureAccountContainer;
-    private ActionBarDrawerToggle toggle;
-    private DrawerLayout.DrawerListener drawerCloseListener;
     private boolean messageViewVisible;
     private boolean isThreadDisplayed;
     private MessageSwipeDirection direction;
-    private Account lastUsedAccount;
-    private SearchAccount unifiedInboxAccount;
-    private SearchAccount allMessagesAccount;
     private String specialAccountUuid;
+    private String accountUuid;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
             boolean noThreading, boolean newTask, boolean isFolder) {
@@ -225,12 +181,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         intent.putExtra(EXTRA_SPECIAL_FOLDER, specialFolder);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         return intent;
     }
 
-    public static Intent actionDisplayMessageIntent(Context context,
-            MessageReference messageReference) {
+    public static Intent actionDisplayMessageIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageList.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra(EXTRA_MESSAGE_REFERENCE, messageReference.toIdentityString());
@@ -238,51 +192,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.integrated_inbox) {
-            SearchAccount unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
-            updateMessagesForSpecificInbox(unifiedInboxAccount);
-            return true;
-        } else if (id == R.id.all_messages) {
-            SearchAccount allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
-            updateMessagesForSpecificInbox(allMessagesAccount);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
+    public void updateMessagesForSpecificInbox(SearchAccount searchAccount) {
         LocalSearch search = searchAccount.getRelatedSearch();
-        MessageListFragment fragment = MessageListFragment.newInstance(search, false,
-                !mNoThreading);
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false, !mNoThreading);
         addMessageListFragment(fragment, !isHomeScreen(search));
-        drawerLayout.closeDrawers();
-    }
-
-    @Override
-    public void setDrawerEnabled(boolean enabled) {
-        if (drawerLayout != null) {
-            int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
-                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
-            drawerLayout.setDrawerLockMode(lockMode);
-            toggle.setDrawerIndicatorEnabled(enabled);
-            if (!enabled) {
-                toggle.setToolbarNavigationClickListener(v -> onBackPressed());
-                if(messageViewVisible) {
-                    setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
-                }
-            }
-        }
-    }
-
-    private void handleDrawerState() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START))
-            drawerLayout.closeDrawer(GravityCompat.END);
-        else
-            drawerLayout.openDrawer(GravityCompat.START);
     }
 
     public void setMessageViewVisible(Boolean visible) {
@@ -301,12 +214,55 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         return isThreadDisplayed;
     }
 
+    @Override
+    public void showLoadingMessages() {
+        mMessageListFragment.showLoadingMessages();
+    }
+
+    @Override
+    public void setUpToolbarHomeIcon() {
+        if (messageViewVisible) {
+            setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
+        }
+    }
+
+    @Override
+    public void editAccount() {
+        onEditSettings();
+    }
+
+    @Override
+    public void onDrawerClosed(@NotNull LocalFolder folder) {
+        LocalSearch search = getLocalSearch(mAccount, folder);
+        MessageListFragment fragment = MessageListFragment.newInstance(search, false, !mNoThreading);
+        addMessageListFragment(fragment, !isHomeScreen(search));
+    }
+
+    @Override
+    public void updateAccount(@NotNull Account account) {
+        this.mAccount = account;
+    }
+
+    @Override
+    public void updateFolderName(@NotNull String folderName) {
+        this.mFolderName = folderName;
+    }
+
+    @Override
+    public void updateLastUsedAccount() {
+        PePUIArtefactCache.getInstance(this).setLastUsedAccount(mAccount);
+    }
+
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        drawerLayoutView.setDrawerEnabled(enabled);
+    }
+
     private enum DisplayMode {
         MESSAGE_LIST,
         MESSAGE_VIEW,
         SPLIT_VIEW
     }
-
 
     private StorageManager.StorageListener mStorageListener = new StorageListenerImplementation();
 
@@ -355,11 +311,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private boolean mMessageListWasDisplayed = false;
     private ViewSwitcher mViewSwitcher;
 
-    private RendererBuilder<FolderModel> rendererFolderBuilder;
-    private RVRendererAdapter<FolderModel> folderAdapter;
-    private RendererBuilder<Account> rendererAccountBuilder;
-    private RVRendererAdapter<Account> accountAdapter;
-
     @Inject
     PermissionChecker permissionChecker;
 
@@ -382,7 +333,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             bindViews(R.layout.split_message_list);
         } else {
             bindViews(R.layout.message_list);
-            mViewSwitcher = (ViewSwitcher) findViewById(R.id.container);
+            mViewSwitcher = findViewById(R.id.container);
             mViewSwitcher.setFirstInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_left));
             mViewSwitcher.setFirstOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_right));
             mViewSwitcher.setSecondInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_right));
@@ -390,6 +341,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mViewSwitcher.setOnSwitchCompleteListener(this);
         }
         initializeActionBar();
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayoutView.initDrawerView(drawerLayout, this);
+        restoreAccountUuid(savedInstanceState);
 
         if (!decodeExtras(getIntent())) {
             return;
@@ -404,11 +358,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
         channelUtils.updateChannels();
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        initializeDrawerToggle();
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayoutView.initializeDrawerToggle(toggle);
+    }
 
-        foldersDrawerLayout = findViewById(R.id.navigation_bar_folders_layout);
-        accountsDrawerLayout = findViewById(R.id.navigation_bar_accounts_layout);
+    private void restoreAccountUuid(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            accountUuid = savedInstanceState.getString(STATE_ACCOUNT_UUID);
+        }
     }
 
     @Override
@@ -439,12 +397,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         else {
             specialAccountUuid = null;
-        }
-        if (specialAccountUuid != null) {
-            appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
-        } else {
-            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
-            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+        }    if(specialAccountUuid != null) {
+                appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+            } else {
+                appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+                appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+
         }
         return appData;
     }
@@ -454,231 +412,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         getpEpComponent().inject(this);
     }
 
-    private void loadNavigationView() {
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        mainAccountName = (TextView)findViewById(R.id.nav_header_name);
-        mainAccountEmail = (TextView)findViewById(R.id.nav_header_email);
-
-        mainAccountText = (TextView)findViewById(R.id.nav_header_contact_text);
-        mainAccountLayout = findViewById(R.id.nav_header_image_container);
-        firstAccountText = (TextView)findViewById(R.id.first_account);
-        firstAccountLayout = findViewById(R.id.first_account_container);
-        secondAccountText = (TextView)findViewById(R.id.second_account);
-        secondAccountLayout = findViewById(R.id.second_account_container);
-
-        navigationFolders = (RecyclerView) findViewById(R.id.navigation_folders);
-        navFoldersAccountsButton = findViewById(R.id.navFoldersAccountsButton);
-
-        navigationAccounts = (RecyclerView) findViewById(R.id.navigation_accounts);
-        setupNavigationHeader();
-
-        setupNavigationFoldersList();
-
-        createFoldersMenu();
-
-        setNavigationViewInsets();
-    }
-
-    private void setNavigationViewInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(
-                navigationView,
-                (v, insets) -> {
-                    View view = navigationView.findViewById(R.id.menu_header);
-                    view.setPadding(
-                            view.getPaddingLeft(),
-                            insets.getSystemWindowInsetTop(),
-                            view.getPaddingRight(),
-                            view.getPaddingBottom()
-                    );
-                    return insets.consumeSystemWindowInsets();
-                });
-    }
-
-    private void setupNavigationFoldersList() {
-        if (navigationFolders != null) {
-            navigationFolders.setLayoutManager(getDrawerLayoutManager());
-        }
-        FolderRenderer folderRenderer = new FolderRenderer();
-        rendererFolderBuilder = new RendererBuilder<>(folderRenderer);
-
-        folderRenderer.setFolderClickListener(new OnFolderClickListener() {
-            @Override
-            public void onClick(LocalFolder folder) {
-                changeFolder(folder);
-            }
-
-            @Override
-            public void onClick(Integer position) {
-
-            }
-        });
-        ListAdapteeCollection<FolderModel> adapteeCollection = new ListAdapteeCollection<>(Collections.emptyList());
-
-        folderAdapter = new RVRendererAdapter<>(rendererFolderBuilder, adapteeCollection);
-        if (navigationFolders != null) {
-            navigationFolders.setAdapter(folderAdapter);
-        }
-    }
-
-    private void setupNavigationHeader() {
-        mainAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-        mainAccountName.setText(mAccount.getName());
-        mainAccountEmail.setText(mAccount.getEmail());
-        setupNavigationHeaderListeners();
-        setupAccountsListeners();
-    }
-
-    private void setupNavigationHeaderListeners() {
-        findViewById(R.id.menu_header).setOnClickListener(v -> {
-                    if (!showingAccountsMenu) {
-                        navFoldersAccountsButton.showFolders();
-                        createAccountsMenu();
-                    } else {
-                        navFoldersAccountsButton.showAccounts();
-                        createFoldersMenu();
-                    }
-                }
-        );
-    }
-
-    private void setupAccountsListeners() {
-        List<Account> accounts = new ArrayList<>(preferences.getAccounts());
-        accounts.remove(mAccount);
-        if (accounts.size() > 1) {
-            setupThreeAcountsListeners(accounts);
-        } else if (accounts.size() > 0) {
-            setupTwoAcountsListeners(accounts);
-        } else {
-            firstAccountLayout.setVisibility(View.GONE);
-            secondAccountLayout.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupTwoAcountsListeners(List<Account> accounts) {
-        final Account firstAccount = accounts.get(accounts.size() - 1);
-        firstAccountLayout.setVisibility(View.VISIBLE);
-        secondAccountLayout.setVisibility(View.GONE);
-        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-        firstAccountLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-                firstAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                mainAccountEmail.setText(firstAccount.getEmail());
-                mainAccountName.setText(firstAccount.getName());
-                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
-            }
-        });
-    }
-
-    private void setupThreeAcountsListeners(List<Account> accounts) {
-        final Account firstAccount = accounts.get(accounts.size() - 1);
-        final Account lastAccount = accounts.get(accounts.size() - 2);
-        firstAccountLayout.setVisibility(View.VISIBLE);
-        secondAccountLayout.setVisibility(View.VISIBLE);
-        firstAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-        secondAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
-        firstAccountLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(firstAccount.getName()));
-                mainAccountEmail.setText(firstAccount.getEmail());
-                mainAccountName.setText(firstAccount.getName());
-                firstAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
-                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount);
-            }
-        });
-        secondAccountLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMessageListFragment.showLoadingMessages();
-                mainAccountText.setText(PEpUIUtils.accountNameSummary(lastAccount.getName()));
-                mainAccountEmail.setText(lastAccount.getEmail());
-                mainAccountName.setText(lastAccount.getName());
-                secondAccountText.setText(PEpUIUtils.accountNameSummary(mAccount.getName()));
-                changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount);
-            }
-        });
-    }
-
-    private void changeAccountAnimation(final View goToView, final View fromView, final Account accountClicked) {
-        final int firstAccountLayoutPosition[] = new int[2];
-        fromView.getLocationOnScreen( firstAccountLayoutPosition );
-        final int mainAccountLayoutPosition[] = new int[2];
-        goToView.getLocationOnScreen(mainAccountLayoutPosition);
-
-        TranslateAnimation anim = new TranslateAnimation(0, goToView.getX() + goToView.getWidth()/2 - firstAccountLayoutPosition[0] , 0, goToView.getY() + goToView.getHeight()/2 - firstAccountLayoutPosition[1]);
-        anim.setDuration(500);
-        fromView.startAnimation(anim);
-        initializeDrawerListener(fromView, accountClicked);
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                Animation dissapearAnimation = AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_down);
-                dissapearAnimation.setDuration(500);
-                goToView.startAnimation(dissapearAnimation);
-
-                drawerLayout.addDrawerListener(drawerCloseListener);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-                drawerLayout.closeDrawers();
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-    }
-
-    private void initializeDrawerListener(final View fromView, final Account accountClicked) {
-        drawerCloseListener = new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                changeAccount(fromView, accountClicked);
-                drawerLayout.removeDrawerListener(drawerCloseListener);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        };
-    }
-
-    private void changeAccount(View fromView, Account accountClicked) {
-        fromView.startAnimation(AnimationUtils.loadAnimation(getBaseContext(), R.anim.scale_up));
-        drawerLayout.closeDrawers();
-        mAccount = accountClicked;
-        setupNavigationHeader();
-        String folder = accountClicked.getAutoExpandFolderName();
-        LocalSearch search = new LocalSearch(folder);
-        search.addAccountUuid(accountClicked.getUuid());
-        search.addAllowedFolder(folder);
-        refreshMessages(search);
-        changeAccountsOrder();
-    }
-
-    private void changeAccountsOrder() {
+    @Override
+    public void changeAccountsOrder() {
         List<Account> accounts = preferences.getAccounts();
         List<Account> clonedAccounts = new ArrayList<>(accounts.size());
         clonedAccounts.addAll(accounts);
@@ -689,142 +424,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         preferences.setAccounts(reorderedAccounts);
     }
 
-    private void createFoldersMenu() {
-        showingAccountsMenu = false;
-        foldersDrawerLayout.setVisibility(View.VISIBLE);
-        accountsDrawerLayout.setVisibility(View.GONE);
-        setupMainFolders();
-        populateDrawerGroup();
-    }
-
-    private void setupMainFolders() {
-        setupMainFoldersUnreadMessages();
-
-        setupMainFoldersListeners(unifiedInboxAccount, allMessagesAccount);
-    }
-
-    private void setNewInboxMessages(AccountStats stats, TextView unreadMessagesView) {
-        if (stats.unreadMessageCount > 0) {
-            unreadMessagesView.setVisibility(View.VISIBLE);
-            unreadMessagesView.setText(String.valueOf(stats.unreadMessageCount));
-        } else {
-            unreadMessagesView.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupMainFoldersListeners(final SearchAccount unifiedInboxAccount, final SearchAccount allMessagesAccount) {
-        View unifiedInbox = findViewById(R.id.unified_inbox);
-        View allMessagesContainer = findViewById(R.id.all_messages_container);
-        unifiedInbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateMessagesForSpecificInbox(unifiedInboxAccount);
-            }
-        });
-        allMessagesContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateMessagesForSpecificInbox(allMessagesAccount);
-            }
-        });
-    }
-
-    private void createAccountsMenu() {
-        if (navigationAccounts != null) {
-            navigationAccounts.setLayoutManager(getDrawerLayoutManager());
-        }
-
-        showingAccountsMenu = true;
-        foldersDrawerLayout.setVisibility(View.GONE);
-        accountsDrawerLayout.setVisibility(View.VISIBLE);
-
-        List<Account> accounts = new ArrayList<>(preferences.getAccounts());
-        accounts.remove(mAccount);
-        AccountRenderer accountRenderer = new AccountRenderer();
-        rendererAccountBuilder = new RendererBuilder<>(accountRenderer);
-
-        accountRenderer.setOnAccountClickListenerListener(new OnAccountClickListener() {
-            @Override
-            public void onClick(final Account account) {
-                mMessageListFragment.showLoadingMessages();
-                mAccount = account;
-                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                drawerCloseListener = new DrawerLayout.DrawerListener() {
-                    @Override
-                    public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                    }
-
-                    @Override
-                    public void onDrawerOpened(View drawerView) {
-
-                    }
-
-                    @Override
-                    public void onDrawerClosed(View drawerView) {
-                        String folder = account.getAutoExpandFolderName();
-                        LocalSearch search = new LocalSearch(folder);
-                        search.addAccountUuid(mAccount.getUuid());
-                        search.addAllowedFolder(folder);
-                        refreshMessages(search);
-                        setupNavigationHeader();
-                        createFoldersMenu();
-                        navFoldersAccountsButton.showAccounts();
-                        drawerLayout.removeDrawerListener(drawerCloseListener);
-                        changeAccountsOrder();
-                    }
-
-                    @Override
-                    public void onDrawerStateChanged(int newState) {
-
-                    }
-                };
-                drawerLayout.addDrawerListener(drawerCloseListener);
-                drawerLayout.closeDrawers();
-//                onOpenFolder(account.getAutoExpandFolderName());
-            }
-        });
-        ListAdapteeCollection<Account> adapteeCollection = new ListAdapteeCollection<>(accounts);
-
-        accountAdapter = new RVRendererAdapter<>(rendererAccountBuilder, adapteeCollection);
-        if (navigationAccounts != null) {
-            navigationAccounts.setAdapter(accountAdapter);
-        }
-
-        setupCreateAccountListener();
-        configureAccountContainer = findViewById(R.id.configure_account_container);
-        configureAccountContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
-                onEditSettings();
-            }
-        });
-    }
-
-    @NonNull
-    private LinearLayoutManager getDrawerLayoutManager() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this) {
-            @Override
-            public boolean canScrollVertically() {
-                return false;
-            }
-        };
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        return linearLayoutManager;
-    }
-
-    private void setupCreateAccountListener() {
-        addAccountContainer = findViewById(R.id.add_account_container);
-        addAccountContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
-                AccountSetupBasics.actionNewAccount(MessageList.this);
-            }
-        });
-    }
-
     private void onOpenFolder(String folder) {
         LocalSearch search = new LocalSearch(folder);
         search.addAccountUuid(mAccount.getUuid());
@@ -832,48 +431,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         MessageList.actionDisplaySearch(this, search, false, false);
     }
 
-    private void populateDrawerGroup() {
-        if (menuFolders != null && menuFolders.size() > 0 && mAccount != null
-                && menuFolders.get(0).getAccountUuid().equals(mAccount.getUuid())) {
-            populateFolders(menuFolders, true);
-        } else if (mAccount != null) {
-            MessagingController instance = MessagingController.getInstance(this);
-            instance.listFolders(mAccount, false, new SimpleMessagingListener() {
-                    @Override
-                    public void listFolders(Account account, List<LocalFolder> folders) {
-                        menuFolders = folders;
-                        populateFolders(menuFolders, false);
-                    }
-                });
-        }
-    }
-
-    private void populateFolders(List<LocalFolder> folders, boolean force) {
-        List<LocalFolder> foldersFiltered = filterLocalFolders(folders);
-        if(getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, mAccount, force);
-        }
-        runOnUiThread(this::setupMainFolders);
-    }
-
-    @NonNull
-    private List<LocalFolder> filterLocalFolders(List<LocalFolder> folders) {
-        String allMessagesFolderName = getString(R.string.search_all_messages_title);
-        String unifiedFolderName = getString(R.string.integrated_inbox_title);
-        List<LocalFolder> foldersFiltered = new ArrayList<>();
-        for (LocalFolder folder : folders) {
-            if (!folder.getName().equals(allMessagesFolderName) &&
-                    !folder.getName().equals(unifiedFolderName)) {
-                foldersFiltered.add(folder);
-            }
-        }
-        return foldersFiltered;
-    }
-
-    private  boolean isInboxFolder(LocalSearch search) {
-        String inbox = mAccount.getIdentity(0).getEmail() +":"+ mAccount.getInboxFolderName();
-        return search.getName().equals(inbox)
-                || search.getName().equals(inbox + " - Starred");
+    private boolean isInboxFolder(LocalSearch search) {
+        String inbox = mAccount.getIdentity(0).getEmail() + ":" + mAccount.getInboxFolderName();
+        return search.getName().equals(inbox) || search.getName().equals(inbox + " - Starred");
     }
 
     private boolean isUnifiedInbox(LocalSearch search) {
@@ -884,43 +444,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         return (K9.startIntegratedInbox() && isUnifiedInbox(search)) || (!K9.startIntegratedInbox() && isInboxFolder(search));
     }
 
-    private void changeFolder(final LocalFolder folder) {
-        mFolderName = folder.getName();
-        mMessageListFragment.showLoadingMessages();
-        drawerCloseListener = new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                LocalSearch search = getLocalSearch(mAccount, folder);
-                MessageListFragment fragment = MessageListFragment.newInstance(search, false,
-                        !mNoThreading);
-                addMessageListFragment(fragment, !isHomeScreen(search));
-                drawerLayout.removeDrawerListener(drawerCloseListener);
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
-        };
-        drawerLayout.addDrawerListener(drawerCloseListener);
-        drawerLayout.closeDrawers();
-    }
-
     @NonNull
+    @SuppressLint("StringFormatInvalid")
     private LocalSearch getLocalSearch(Account account, LocalFolder folder) {
-        String searchTitle = getString(R.string.search_title,
-                getString(R.string.message_list_title, account.getDescription(),
-                        folder.getName()),
+         String searchTitle = getString(R.string.search_title,
+                getString(R.string.message_list_title, account.getDescription(), folder.getName()),
                 getString(R.string.flagged_modifier));
 
         LocalSearch search = new LocalSearch(searchTitle);
@@ -961,16 +489,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
 
         channelUtils.updateChannels();
-        initializeDrawerToggle();
 
-    }
-
-    private void initializeDrawerToggle() {
-        toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, getToolbar(), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.removeDrawerListener(toggle);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayoutView.initializeDrawerToggle(toggle);
     }
 
     /**
@@ -1004,8 +527,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 specialAccountUuid = null;
             }
             else {
-                mMessageListFragment = MessageListFragment.newInstance(mSearch, false,
-                         !mNoThreading);
+                mMessageListFragment = MessageListFragment.newInstance(mSearch, false, !mNoThreading);
             }
             ft.add(R.id.message_list_container, mMessageListFragment);
             ft.commit();
@@ -1019,9 +541,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    private void refreshMessages(LocalSearch search) {
-        mMessageListFragment.deselectAll();
-
+    @Override
+    public void refreshMessages(LocalSearch search) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStackImmediate();
         boolean hasMessageListFragment = (mMessageListFragment != null);
@@ -1200,18 +721,19 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mSearch.searchAllAccounts()) {
             List<Account> accounts = preferences.getAccounts();
             mSingleAccountMode = (accounts.size() == 1);
-            if (mSingleAccountMode) {
-                mAccount = accounts.get(0);
-            }
-            else {
-                mAccount = preferences.getDefaultAccount();
-            }
+            mAccount = accounts.get(0);
         } else {
-            mSingleAccountMode = (accountUuids.length == 1);
-            if (mSingleAccountMode) {
-                mAccount = preferences.getAccount(accountUuids[0]);
+            if (accountUuid != null) {
+                mAccount = preferences.getAccount(accountUuid);
+                mSingleAccountMode = true;
+            } else {
+                mSingleAccountMode = (accountUuids.length == 1);
+                if (mSingleAccountMode) {
+                    mAccount = preferences.getAccount(accountUuids[0]);
+                }
             }
         }
+        drawerLayoutView.updateAccount(mAccount);
         mSingleFolderMode = mSingleAccountMode && (mSearch.getFolderNames().size() == 1);
 
         if (mSingleAccountMode && (mAccount == null || !mAccount.isAvailable(this))) {
@@ -1263,7 +785,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
         }
 
-        if (mAccount != null && !mAccount.isAvailable(this)) {
+        if (mSingleAccountMode && (mAccount == null || !mAccount.isAvailable(this))) {
             onAccountUnavailable();
             return;
         }
@@ -1273,29 +795,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             updateToolbarColorToOriginal();
         }
 
-        if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-            setDrawerEnabled(false);
-        } else {
-            setDrawerEnabled(true);
-        }
-
-        if (mAccount != null) {
-            loadNavigationView();
-        }
-    }
-
-    private void setupMainFoldersUnreadMessages() {
-        unifiedInboxAccount = SearchAccount.createUnifiedInboxAccount(this);
-        allMessagesAccount = SearchAccount.createAllMessagesAccount(this);
-        accountUtils.loadSearchAccountStats(this, unifiedInboxAccount,
-                (account, stats) -> {
-                    TextView unifiedInboxMessages = (TextView) findViewById(R.id.unified_inbox_new_messages);
-                    setNewInboxMessages(stats, unifiedInboxMessages);
-                });
-        accountUtils.loadSearchAccountStats(this, allMessagesAccount,
-                (account, stats) -> {
-                    TextView allMessages = (TextView) findViewById(R.id.all_messages_new_messages);
-                    setNewInboxMessages(stats, allMessages);});
+        drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
+        drawerLayoutView.loadNavigationView();
     }
 
     @Override
@@ -1305,6 +806,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         outState.putSerializable(STATE_DISPLAY_MODE, mDisplayMode);
         outState.putBoolean(STATE_MESSAGE_LIST_WAS_DISPLAYED, mMessageListWasDisplayed);
         outState.putInt(STATE_FIRST_BACK_STACK_ID, mFirstBackStackId);
+        if (mAccount != null && !mSearch.isManualSearch()) {
+            outState.putString(STATE_ACCOUNT_UUID, mAccount.getUuid());
+        }
     }
 
     @Override
@@ -1314,15 +818,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        setUpToolbar(true, v -> setDrawerEnabled(true));
-        customView = getToolbar().findViewById(R.id.actionbar_custom);
+        setUpToolbar(true, v -> drawerLayoutView.setDrawerEnabled(true));
+        View customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
-        mActionBarSubject = (MessageTitleView) customView.findViewById(R.id.message_title_view);
-        mActionBarTitle = (TextView) customView.findViewById(R.id.actionbar_title_first);
-        mActionBarSubTitle = (TextView) customView.findViewById(R.id.actionbar_title_sub);
-        mActionBarUnread = (TextView) customView.findViewById(R.id.actionbar_unread_count);
-        mActionBarProgress = (ProgressBar) customView.findViewById(R.id.actionbar_progress);
+        mActionBarSubject = customView.findViewById(R.id.message_title_view);
+        mActionBarTitle = customView.findViewById(R.id.actionbar_title_first);
+        mActionBarSubTitle = customView.findViewById(R.id.actionbar_title_sub);
+        mActionBarUnread = customView.findViewById(R.id.actionbar_unread_count);
+        mActionBarProgress = customView.findViewById(R.id.actionbar_progress);
         mActionButtonIndeterminateProgress = getActionButtonIndeterminateProgress();
     }
 
@@ -1346,8 +850,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
+        if (drawerLayoutView.drawerWasClosed()) {
             return;
         }
         if (isMessageViewVisible()) {
@@ -1619,7 +1122,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                setDrawerEnabled(isAndroidLollipop());
+                drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
                 showSearchView();
                 return true;
             }
@@ -1889,7 +1392,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
             menu.findItem(R.id.privacyStatus).setVisible(true);
-            setDrawerEnabled(false);
+            drawerLayoutView.setDrawerEnabled(false);
         } else {
             menu.findItem(R.id.privacyStatus).setVisible(false);
             menu.findItem(R.id.set_sort).setVisible(true);
@@ -1901,16 +1404,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
             menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
             menu.findItem(R.id.show_folder_list).setVisible(true);
-            setDrawerEnabled(true);
 
-            if(isThreadDisplayed) {
-                setDrawerEnabled(false);
-            }
+            drawerLayoutView.setDrawerEnabled(!isThreadDisplayed);
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
             // configure action bar in search screen
             if(mMessageListFragment.isManualSearch()) {
-                setDrawerEnabled(false);
+                drawerLayoutView.setDrawerEnabled(false);
                 menu.findItem(R.id.check_mail).setVisible(false);
                 menu.findItem(R.id.compose).setVisible(false);
                 menu.findItem(R.id.show_folder_list).setVisible(false);
@@ -1968,8 +1468,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void setUnreadCount(int unread) {
         setActionBarUnread(unread);
-        populateDrawerGroup();
-        setupMainFoldersUnreadMessages();
+        drawerLayoutView.populateDrawerGroup();
     }
 
     @Override
@@ -2087,12 +1586,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         @Override
         public void onUnmount(String providerId) {
             if (mAccount != null && providerId.equals(mAccount.getLocalStorageProviderId())) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onAccountUnavailable();
-                    }
-                });
+                runOnUiThread(MessageList.this::onAccountUnavailable);
             }
         }
 
@@ -2102,13 +1596,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack) {
+    private void addMessageListFragment(@NotNull MessageListFragment fragment, boolean addToBackStack) {
         addMessageListFragment(fragment, addToBackStack, true);
     }
 
     private void addMessageListFragment(MessageListFragment fragment, boolean addToBackStack, boolean popPrevious) {
-        mMessageListFragment.deselectAll();
-
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 

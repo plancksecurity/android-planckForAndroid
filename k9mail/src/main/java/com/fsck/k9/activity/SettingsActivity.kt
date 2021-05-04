@@ -30,8 +30,8 @@ import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
-import com.fsck.k9.pEp.ui.listeners.OnBaseAccountClickListener
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
+import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
+import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.NestedListView
 import com.fsck.k9.preferences.SettingsExporter
@@ -394,16 +394,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         newAccounts.addAll(accounts)
 
-        adapter = AccountListAdapter(accounts, object : OnFolderClickListener {
-            override fun onClick(folder: LocalFolder) {
-
-            }
-
-            override fun onClick(position: Int?) {
-                val account = accountsList!!.getItemAtPosition(position!!) as BaseAccount
-                onEditAccount(account as Account)
-            }
-        }, OnBaseAccountClickListener { baseAccount -> AccountSettingsActivity.start(this@SettingsActivity, baseAccount.uuid) })
+        adapter = AccountListAdapter(accounts,
+                indexedFolderClickListener { position ->
+                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    onEditAccount(account as Account)
+                }
+        )
         accountsList!!.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
@@ -880,9 +876,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     internal inner class AccountListAdapter(
             accounts: List<BaseAccount>,
-            private val onFolderClickListener: OnFolderClickListener,
-            private val onBaseAccountClickListener: OnBaseAccountClickListener
-    ) : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
+            private val indexedFolderClickListener: IndexedFolderClickListener)
+        : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val account = getItem(position)
@@ -913,7 +908,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
                 view.tag = holder
 
-                holder.accountsItemLayout!!.setOnClickListener { onFolderClickListener.onClick(position) }
+                holder.accountsItemLayout!!.setOnClickListener { indexedFolderClickListener.onClick(position) }
             }
             val stats = accountStats[account!!.uuid]
 
