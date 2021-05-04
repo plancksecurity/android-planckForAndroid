@@ -2617,13 +2617,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void clearAllPending(final Account account) {
-        try {
-            Timber.w("Clearing pending commands!");
-            LocalStore localStore = account.getLocalStore();
-            localStore.removePendingCommands();
-        } catch (MessagingException me) {
-            Timber.e(me, "Unable to clear pending command");
-        }
+        threadPool.execute(() -> {
+            try {
+                Timber.w("Clearing pending commands!");
+                LocalStore localStore = account.getLocalStore();
+                localStore.removePendingCommands();
+            } catch (MessagingException me) {
+                Timber.e(me, "Unable to clear pending command");
+            }
+        });
     }
 
     public void loadMessageRemotePartial(final Account account, final String folder,
