@@ -2716,7 +2716,6 @@ public class TestUtils {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         messageClicked = true;
                         waitForIdle();
-                        waitUntilIdle();
                     }
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
                         try {
@@ -2746,7 +2745,6 @@ public class TestUtils {
             Timber.i("There are no JSON files attached");
         }
         waitForIdle();
-        Espresso.onIdle();
         return encrypted;
     }
 
