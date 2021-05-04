@@ -62,6 +62,11 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         dataStore.activity = activity
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        dataStore.activity = null
+    }
+
     private fun initializeTheme() {
         (findPreference(PREFERENCE_THEME) as? ListPreference)?.apply {
             if (Build.VERSION.SDK_INT < 28) {
