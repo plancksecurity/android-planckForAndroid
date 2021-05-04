@@ -124,6 +124,7 @@
     <string name="clear_pending_action">Clear pending actions (danger!)</string>
     <string name="mark_as_read_action">Mark as read</string>
     <string name="send_alternate_action">Share</string>
+    <string name="print_action">Print</string>
     <string name="send_alternate_chooser_title">Choose sender</string>
     <string name="flag_action">Add star</string>
     <string name="unflag_action">Remove star</string>

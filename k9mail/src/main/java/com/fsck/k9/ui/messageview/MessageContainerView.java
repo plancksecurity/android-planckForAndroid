@@ -408,12 +408,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
             textToDisplay = HtmlConverter.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
         }
 
-        OnPageFinishedListener onPageFinishedListener = new OnPageFinishedListener() {
-            @Override
-            public void onPageFinished() {
-                onRenderingFinishedListener.onLoadFinished();
-            }
-        };
+        OnPageFinishedListener onPageFinishedListener = view -> onRenderingFinishedListener.onLoadFinished();
 
         displayHtmlContentWithInlineAttachments(
                 textToDisplay, messageViewInfo.attachmentResolver, onPageFinishedListener);
@@ -558,6 +553,18 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
 
     private AttachmentView getAttachmentView(AttachmentViewInfo attachment) {
         return attachmentViewMap.get(attachment);
+    }
+
+    public String toHtml() {
+        return currentHtmlText;
+    }
+
+    public AttachmentResolver getCurrentAttachmentResolver() {
+        return currentAttachmentResolver;
+    }
+
+    public Map<Uri, AttachmentViewInfo> getCurrentAttachments() {
+        return attachments;
     }
 
     static class SavedState extends BaseSavedState {

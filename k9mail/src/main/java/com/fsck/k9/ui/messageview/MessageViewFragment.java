@@ -44,21 +44,14 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -80,6 +73,8 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.print.Print;
+import security.pEp.print.PrintMessage;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -146,15 +141,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private AttachmentViewInfo currentAttachmentViewInfo;
 
-    private OnMessageOptionsListener messageOptionsListener = action -> {
-        if (action.equals(MessageAction.REPLY)) {
-            onReply();
-        } else if (action.equals(MessageAction.REPLY_ALL)) {
-            onReplyAll();
-        } else if (action.equals(MessageAction.FORWARD)) {
-            onForward();
-        } else if (action.equals(MessageAction.SHARE)) {
-            onSendAlternate();
+    private final OnMessageOptionsListener messageOptionsListener = action -> {
+        switch (action) {
+            case REPLY:
+                onReply();
+                break;
+            case REPLY_ALL:
+                onReplyAll();
+                break;
+            case FORWARD:
+                onForward();
+                break;
+            case SHARE:
+                onSendAlternate();
+                break;
+            case PRINT:
+                onPrintMessage();
+                break;
         }
     };
 
@@ -584,6 +587,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         if (mMessage != null) {
             mController.sendAlternate(getActivity(), mAccount, mMessage);
         }
+    }
+
+
+    public void onPrintMessage() {
+        Print printMessage = new PrintMessage(
+                requireContext(),
+                permissionChecker,
+                mMessageView.getCurrentAttachmentResolver(),
+                mMessageView.getCurrentAttachments(),
+                mMessage,
+                mMessageView.toHtml());
+        printMessage.print();
     }
 
     public void onToggleRead() {

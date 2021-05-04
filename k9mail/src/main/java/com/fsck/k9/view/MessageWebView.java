@@ -169,6 +169,6 @@ public class MessageWebView extends RigidWebView {
     }
 
     public interface OnPageFinishedListener {
-        void onPageFinished();
+        void onPageFinished(WebView webView);
     }
 }
