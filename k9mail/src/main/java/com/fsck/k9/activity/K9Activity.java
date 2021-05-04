@@ -83,6 +83,11 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     @Override
+    public void removeGestureDetector() {
+        mBase.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         mBase = null;
         PePUIArtefactCache pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
