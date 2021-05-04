@@ -32,7 +32,7 @@ buildscript {
                 'commonsIo'          : '2.4',
 
                 'apacheCommons'      : '2.4',
-                'jsoup'              : '1.11.2',
+                'jsoup'              : '1.13.1',
                 'glide'              : '3.7.0',
                 'tokenAutoComplete'  : '2.0.7',
                 'safeContentResolver': '0.9.0',
@@ -66,7 +66,7 @@ buildscript {
                 'runner_rules'       : '1.1.0',
                 'mockito'            : '3.5.0',
                 'mockitoKotlin'      : '1.5.0',
-                'truth'              : '0.35',
+                'truth'              : '1.1',
                 'espresso'           : '3.1.1',
                 'uiAutomator'        : '2.2.0',
                 'cucumber'           : '4.4.0'

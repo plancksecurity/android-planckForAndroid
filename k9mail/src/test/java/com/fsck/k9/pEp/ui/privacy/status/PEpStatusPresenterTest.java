@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
@@ -41,6 +42,8 @@ public class PEpStatusPresenterTest {
     @Mock PePUIArtefactCache uiCache;
     @Mock PEpProvider provider;
     @Mock Address senderAddress;
+    @Mock
+    DisplayHtml displayHtml;
     @Mock PEpIdentityMapper identityMapper;
 
     @Before
@@ -54,13 +57,14 @@ public class PEpStatusPresenterTest {
     public void shouldStartMessageLoaderWhenLoadMessage() {
         boolean forceUnencrypted = false;
         boolean alwaysSecure = false;
-        presenter.initialize(pEpStatusView, uiCache, provider, false,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false,
                 senderAddress, forceUnencrypted, alwaysSecure);
 
-        presenter.loadMessage(new MessageReference("","","", null));
+        presenter.loadMessage(new MessageReference("", "", "", null));
 
         verify(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
-                any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class)
+                any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class),
+                displayHtml
         );
     }
 
@@ -87,13 +91,13 @@ public class PEpStatusPresenterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldExtractRatingWhenOnHandshakeResult() {
-        presenter.initialize(pEpStatusView, uiCache, provider, true,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true,
                 senderAddress, false, false);
         Identity identity = new Identity();
 
         presenter.onHandshakeResult(identity, false);
 
-        verify(provider).incomingMessageRating(any(),any(PEpProvider.SimpleResultCallback.class));
+        verify(provider).incomingMessageRating(any(), any(PEpProvider.SimpleResultCallback.class));
     }
 
     @Test
@@ -175,7 +179,7 @@ public class PEpStatusPresenterTest {
         when(uiCache.getRecipients()).thenReturn(recipients());
         when(identityMapper.mapRecipients(anyList())).thenReturn(mappedRecipients());
 
-        presenter.initialize(pEpStatusView, uiCache, provider, isMessageIncoming,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, isMessageIncoming,
                 senderAddress, false, false);
 
         prepareAndRunOnHandshakeResult(trust);
@@ -204,14 +208,14 @@ public class PEpStatusPresenterTest {
     }
 
     private void runLoadRecipients() throws Exception {
-        presenter.initialize(pEpStatusView, uiCache, provider, false,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml,false,
                 senderAddress, false, false);
         prepareAndCallLoadRecipients();
     }
 
     @Test
     public void setForceUnencryptedCallsViewMethods() {
-        presenter.initialize(pEpStatusView, uiCache, provider, true,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true,
                 senderAddress, false, false);
 
         presenter.setForceUnencrypted(true);
@@ -222,7 +226,7 @@ public class PEpStatusPresenterTest {
 
     @Test
     public void setAlwaysSecureCallsSetupBackIntent() {
-        presenter.initialize(pEpStatusView, uiCache, provider, true,
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true,
                 senderAddress, false, false);
 
         presenter.setAlwaysSecure(true);

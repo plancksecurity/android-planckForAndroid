@@ -27,12 +27,13 @@ import android.widget.TextView;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.ClipboardManager;
 import com.fsck.k9.helper.Contacts;
-import com.fsck.k9.message.html.HtmlConverter;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.html.DisplayHtml;
+import com.fsck.k9.pEp.infrastructure.MessageView;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
@@ -40,6 +41,8 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 
 public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener, OnCreateContextMenuListener {
@@ -78,6 +81,9 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     private String currentHtmlText;
     private AttachmentResolver currentAttachmentResolver;
 
+    @Inject
+    @MessageView
+    DisplayHtml displayHtml;
 
     @Override
     public void onFinishInflate() {
@@ -405,7 +411,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         }
 
         if (textToDisplay == null) {
-            textToDisplay = HtmlConverter.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
+            textToDisplay = displayHtml.wrapStatusMessage(getContext().getString(R.string.webview_empty_message));
         }
 
         OnPageFinishedListener onPageFinishedListener = view -> onRenderingFinishedListener.onLoadFinished();

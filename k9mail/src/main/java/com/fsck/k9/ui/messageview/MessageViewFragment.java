@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -47,9 +46,11 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.infrastructure.MessageView;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
@@ -167,6 +168,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     PermissionChecker permissionChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    @MessageView
+    DisplayHtml displayHtml;
 
     @Override
     protected void inject() {
@@ -238,7 +242,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks);
+                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                displayHtml);
 
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);

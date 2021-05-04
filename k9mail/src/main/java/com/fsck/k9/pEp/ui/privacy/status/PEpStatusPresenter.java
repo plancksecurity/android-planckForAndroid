@@ -13,6 +13,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
@@ -46,6 +47,7 @@ public class PEpStatusPresenter {
     private Identity latestHandshakeId;
     private boolean forceUnencrypted = false;
     private boolean isAlwaysSecure = false;
+    private DisplayHtml displayHtml;
 
     private Handler mainThreadHandler = new Handler() {
         @Override
@@ -72,10 +74,13 @@ public class PEpStatusPresenter {
         this.pEpIdentityMapper = pEpIdentityMapper;
     }
 
-    void initialize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider, boolean isMessageIncoming, Address senderAddress, boolean forceUnencrypted, boolean alwaysSecure) {
+    void initialize(PEpStatusView pEpStatusView, PePUIArtefactCache uiCache, PEpProvider pEpProvider,
+                    DisplayHtml displayHtml, boolean isMessageIncoming, Address senderAddress,
+                    boolean forceUnencrypted, boolean alwaysSecure) {
         this.view = pEpStatusView;
         this.cache = uiCache;
         this.pEpProvider = pEpProvider;
+        this.displayHtml = displayHtml;
         this.isMessageIncoming = isMessageIncoming;
         this.senderAddress = senderAddress;
         this.forceUnencrypted = forceUnencrypted;
@@ -84,7 +89,7 @@ public class PEpStatusPresenter {
 
     void loadMessage(MessageReference messageReference) {
         if (messageReference != null) {
-            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback());
+            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback(), displayHtml);
         }
     }
 
