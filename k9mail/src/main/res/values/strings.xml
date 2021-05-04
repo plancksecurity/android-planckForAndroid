@@ -1071,9 +1071,4 @@ You can keep this message and use it as a backup for your secret key. If you wan
     <string name="switch_off">Off</string>
     <string name="port_is_empty">Port can\'t be empty</string>
     <string name="port_is_out_of_range">The port is out of range</string>
-
-    <plurals name="attachment_count">
-        <item quantity="one">%1$d attachment</item>
-        <item quantity="other">%1$d attachments</item>
-    </plurals>
 </resources>
