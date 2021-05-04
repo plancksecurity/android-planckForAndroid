@@ -13,7 +13,7 @@ import security.pEp.ui.PEpUIUtils.getRatingColorRes
 import security.pEp.ui.PEpUIUtils.getRatingTextRes
 import security.pEp.ui.PEpUIUtils.getToolbarRatingVisibility
 
-class PEpSecurityStatusLayout(context: Context?, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
+class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
 
     private var securityStatusIcon: AppCompatImageView? = null
     private var securityStatusText: AppCompatTextView? = null
