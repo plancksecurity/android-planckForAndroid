@@ -59,11 +59,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
+    }
+
+    override fun onResume() {
+        super.onResume()
         dataStore.activity = activity
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         dataStore.activity = null
     }
 
