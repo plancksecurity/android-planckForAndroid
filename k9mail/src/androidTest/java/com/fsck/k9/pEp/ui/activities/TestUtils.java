@@ -21,6 +21,7 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
@@ -1440,7 +1441,7 @@ public class TestUtils {
 
     private void convertResourceToBitmapFile(int resourceId, String fileName) {
         Bitmap bm = BitmapFactory.decodeResource(resources, resourceId);
-        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        File extStorageDirectory = context.getExternalFilesDir(null);
         File fileImage = new File(extStorageDirectory, fileName);
         try {
             FileOutputStream outStream;
@@ -1530,9 +1531,11 @@ public class TestUtils {
 
     private static Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
-        File fileLocation = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath(), fileName);
-        resultData.setData(Uri.parse("file://" + fileLocation));
+        File fileLocation = new File(context.getExternalFilesDir(null), fileName);
+        Uri uri = FileProvider.getUriForFile(context, APP_ID+".provider", fileLocation);
+        resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        resultData.setType("*/*");
+        resultData.setData(uri);
         return resultData;
     }
 
