@@ -17,16 +17,16 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 object DI {
-    private val mainModule = applicationContext {
-        bean { Preferences.getPreferences(get()) }
-        bean { MessagingController.getInstance(get()) }
-        bean { TransportProvider() }
-        bean { get<Context>().resources }
-        bean { StorageManager.getInstance(get()) }
-        bean { FolderNameFormatter(get()) }
+    private val mainModule = module {
+        single { Preferences.getPreferences(get()) }
+        single { MessagingController.getInstance(get()) }
+        single { TransportProvider() }
+        single { get<Context>().resources }
+        single { StorageManager.getInstance(get()) }
+        single { FolderNameFormatter(get()) }
     }
 
-    val appModules = listOf(
+    private val appModules = listOf(
             mainModule,
             settingsUiModule,
             //unreadWidgetModule,
@@ -38,26 +38,15 @@ object DI {
 
     @JvmStatic fun start(application: Application) {
         @Suppress("ConstantConditionIf")
-        Koin.logger = if (BuildConfig.DEBUG) AndroidLogger() else EmptyLogger()
+        (startKoin {
+            if (BuildConfig.DEBUG) {
+                androidLogger()
+            }
 
-        StandAloneContext.startKoin(appModules) with application
+            androidContext(application)
+            modules(appModules)
+        })
+
     }
 
-    @JvmOverloads
-    @JvmStatic
-    fun <T : Any> get(clazz: Class<T>, name: String = "", parameters: Parameters = { emptyMap() }): T {
-        val koinContext = StandAloneContext.koinContext as KoinContext
-        val kClass = clazz.kotlin
-
-        return if (name.isEmpty()) {
-            koinContext.resolveInstance(kClass, parameters) { koinContext.beanRegistry.searchAll(kClass) }
-        } else {
-            koinContext.resolveInstance(kClass, parameters) { koinContext.beanRegistry.searchByName(name) }
-        }
-    }
-
-    inline fun <reified T : Any> get(name: String = "", noinline parameters: Parameters = { emptyMap() }): T {
-        val koinContext = StandAloneContext.koinContext as KoinContext
-        return koinContext.get(name, parameters)
-    }
 }
