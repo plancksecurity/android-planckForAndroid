@@ -46,6 +46,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -824,7 +825,7 @@ public class ImapFolderTest {
         ImapFolder folder = createFolder("Folder");
         prepareImapFolderForOpen(OPEN_MODE_RO);
         folder.open(OPEN_MODE_RO);
-        when(imapConnection.readResponse(any(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
+        when(imapConnection.readResponse(nullable(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
         List<ImapMessage> messages = createImapMessages("1");
         FetchProfile fetchProfile = createFetchProfile(Item.FLAGS);
 
@@ -838,7 +839,7 @@ public class ImapFolderTest {
         ImapFolder folder = createFolder("Folder");
         prepareImapFolderForOpen(OPEN_MODE_RO);
         folder.open(OPEN_MODE_RO);
-        when(imapConnection.readResponse(any(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
+        when(imapConnection.readResponse(nullable(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
         List<ImapMessage> messages = createImapMessages("1");
         FetchProfile fetchProfile = createFetchProfile(Item.ENVELOPE);
 
@@ -854,7 +855,7 @@ public class ImapFolderTest {
         ImapFolder folder = createFolder("Folder");
         prepareImapFolderForOpen(OPEN_MODE_RO);
         folder.open(OPEN_MODE_RO);
-        when(imapConnection.readResponse(any(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
+        when(imapConnection.readResponse(nullable(ImapResponseCallback.class))).thenReturn(createImapResponse("x OK"));
         List<ImapMessage> messages = createImapMessages("1");
         FetchProfile fetchProfile = createFetchProfile(Item.STRUCTURE);
 
@@ -914,7 +915,7 @@ public class ImapFolderTest {
         folder.open(OPEN_MODE_RO);
         List<ImapMessage> messages = createImapMessages("1");
         FetchProfile fetchProfile = createFetchProfile(Item.FLAGS);
-        when(imapConnection.readResponse(any(ImapResponseCallback.class)))
+        when(imapConnection.readResponse(nullable(ImapResponseCallback.class)))
                 .thenReturn(createImapResponse("* 1 FETCH (FLAGS (\\Seen) UID 1)"))
                 .thenReturn(createImapResponse("x OK"));
 

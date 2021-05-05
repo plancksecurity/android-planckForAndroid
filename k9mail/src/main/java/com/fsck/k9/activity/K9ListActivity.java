@@ -59,6 +59,11 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     }
 
     @Override
+    public void removeGestureDetector() {
+        mBase.onPause();
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Shortcuts that work no matter what is selected
         if (K9.useVolumeKeysForListNavigationEnabled() &&

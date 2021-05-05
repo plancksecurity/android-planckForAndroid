@@ -305,4 +305,8 @@
     <string name="pgp_key_import_confirmation_dialog_question">Are you sure you want to import and use this key?</string>
     <string name="pgp_key_import_confirmation_confirm">Yes</string>
     <string name="pgp_key_import_confirmation_reject">No</string>
+    <plurals name="attachment_count">
+        <item quantity="one">%1$d attachment</item>
+        <item quantity="other">%1$d attachments</item>
+    </plurals>
 </resources>

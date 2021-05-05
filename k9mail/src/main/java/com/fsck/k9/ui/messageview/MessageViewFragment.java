@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -43,21 +43,16 @@ import com.fsck.k9.helper.FileBrowserHelper;
 import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.MessagingException;
-import com.fsck.k9.mail.internet.MessageExtractor;
-import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
-import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.message.extractors.EncryptionVerifier;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.infrastructure.MessageView;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction;
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
@@ -79,6 +74,8 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.print.Print;
+import security.pEp.print.PrintMessage;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -145,15 +142,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private AttachmentViewInfo currentAttachmentViewInfo;
 
-    private OnMessageOptionsListener messageOptionsListener = action -> {
-        if (action.equals(MessageAction.REPLY)) {
-            onReply();
-        } else if (action.equals(MessageAction.REPLY_ALL)) {
-            onReplyAll();
-        } else if (action.equals(MessageAction.FORWARD)) {
-            onForward();
-        } else if (action.equals(MessageAction.SHARE)) {
-            onSendAlternate();
+    private final OnMessageOptionsListener messageOptionsListener = action -> {
+        switch (action) {
+            case REPLY:
+                onReply();
+                break;
+            case REPLY_ALL:
+                onReplyAll();
+                break;
+            case FORWARD:
+                onForward();
+                break;
+            case SHARE:
+                onSendAlternate();
+                break;
+            case PRINT:
+                onPrintMessage();
+                break;
         }
     };
 
@@ -163,6 +168,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     PermissionChecker permissionChecker;
     @Inject
     ToolBarCustomizer toolBarCustomizer;
+    @Inject
+    @MessageView
+    DisplayHtml displayHtml;
 
     @Override
     protected void inject() {
@@ -234,7 +242,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         ((DrawerLocker) getActivity()).setDrawerEnabled(false);
         Context context = getActivity().getApplicationContext();
         messageLoaderHelper = new MessageLoaderHelper(context, LoaderManager.getInstance(this),
-                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks);
+                getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
+                displayHtml);
 
         Bundle arguments = getArguments();
         String messageReferenceString = arguments.getString(ARG_REFERENCE);
@@ -309,6 +318,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onPause() {
         super.onPause();
+        ((MessageList) getContext()).removeGestureDetector();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 
@@ -583,6 +593,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         if (mMessage != null) {
             mController.sendAlternate(getActivity(), mAccount, mMessage);
         }
+    }
+
+
+    public void onPrintMessage() {
+        Print printMessage = new PrintMessage(
+                requireContext(),
+                permissionChecker,
+                mMessageView.getCurrentAttachmentResolver(),
+                mMessageView.getCurrentAttachments(),
+                mMessage,
+                mMessageView.toHtml());
+        printMessage.print();
     }
 
     public void onToggleRead() {
@@ -1013,20 +1035,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-
         currentAttachmentViewInfo = attachment;
-        FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
-                ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
-                    @Override
-                    public void onPathEntered(String path) {
-                        getAttachmentController(attachment).saveAttachmentTo(path);
-                    }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getAttachmentController(attachment).saveAttachment();
+        } else {
+            FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
+                    ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
+                        @Override
+                        public void onPathEntered(String path) {
+                            getAttachmentController(attachment).saveAttachmentTo(path);
+                        }
 
-                    @Override
-                    public void onCancel() {
-                        // Do nothing
-                    }
-                });
+                        @Override
+                        public void onCancel() {
+                            // Do nothing
+                        }
+                    });
+        }
     }
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {

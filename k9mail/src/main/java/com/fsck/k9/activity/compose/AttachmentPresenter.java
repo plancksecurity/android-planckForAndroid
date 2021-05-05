@@ -166,7 +166,9 @@ public class AttachmentPresenter {
                 allPartsAvailable = false;
                 continue;
             }
-            addAttachment(attachmentViewInfo);
+            if (!attachmentViewInfo.ispEpAttachment()) {
+                addAttachment(attachmentViewInfo);
+            }
         }
 
         return allPartsAvailable;

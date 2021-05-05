@@ -161,15 +161,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private PEpProvider pEpProvider;
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
+    private final Preferences preferences;
 
 
     @VisibleForTesting
     MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider) {
+                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PEpProvider pEpProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
+        this.pEpProvider = pEpProvider;
+        this.preferences = preferences;
         controllerThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -187,7 +190,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             NotificationController notificationController = NotificationController.newInstance(appContext);
             Contacts contacts = Contacts.getInstance(context);
             TransportProvider transportProvider = TransportProvider.getInstance();
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider);
+            Preferences preferences = Preferences.getPreferences(appContext);
+            PEpProvider pEpProvider = PEpProviderFactory.createProvider(appContext);
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
         }
         return inst;
     }
@@ -242,7 +247,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         Timber.d("createIfNeeded messaging controller");
-        pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+        pEpProvider.setup();
         while (!stopped) {
             String commandDescription = null;
             try {
@@ -559,7 +564,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     void searchLocalMessagesSynchronous(final LocalSearch search, final MessagingListener listener) {
         final AccountStats stats = new AccountStats();
         final Set<String> uuidSet = new HashSet<>(Arrays.asList(search.getAccountUuids()));
-        List<Account> accounts = Preferences.getPreferences(context).getAccounts();
+        List<Account> accounts = preferences.getAccounts();
         boolean allAccounts = uuidSet.contains(SearchSpecification.ALL_ACCOUNTS);
 
         // for every account we want to search do the query in the localstore
@@ -624,7 +629,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     @VisibleForTesting
     void searchRemoteMessagesSynchronous(final String acctUuid, final String folderName, final String query,
                                          final Set<Flag> requiredFlags, final Set<Flag> forbiddenFlags, final MessagingListener listener) {
-        final Account acct = Preferences.getPreferences(context).getAccount(acctUuid);
+        final Account acct = preferences.getAccount(acctUuid);
 
         if (listener != null) {
             listener.remoteSearchStarted(folderName);
@@ -1450,7 +1455,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (oldestExtantMessage.before(downloadStarted) &&
                     oldestExtantMessage.after(new Date(account.getLatestOldMessageSeenTime()))) {
                 account.setLatestOldMessageSeenTime(oldestExtantMessage.getTime());
-                account.save(Preferences.getPreferences(context));
+                account.save(preferences);
             }
 
         }
@@ -2848,8 +2853,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void sendPendingMessages(MessagingListener listener) {
-        final Preferences prefs = Preferences.getPreferences(context);
-        for (Account account : prefs.getAvailableAccounts()) {
+        for (Account account : preferences.getAvailableAccounts()) {
             sendPendingMessages(account, listener);
         }
     }
@@ -3141,7 +3145,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException, AppDidntEncryptMessageException  {
-        Preferences preferences = Preferences.getPreferences(context);
         //TODO: Move to pEp provider
         String[] keys = K9.getMasterKeys().toArray(new String[0]);
         List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
@@ -3220,7 +3223,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public AccountStats getSearchAccountStatsSynchronous(final SearchAccount searchAccount,
                                                          final MessagingListener listener) {
 
-        Preferences preferences = Preferences.getPreferences(context);
         LocalSearch search = searchAccount.getRelatedSearch();
 
         // Collect accounts that belong to the search
@@ -3888,14 +3890,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                 try {
                     Timber.i("Starting mail check");
 
-                    Preferences prefs = Preferences.getPreferences(context);
-
                     Collection<Account> accounts;
                     if (account != null) {
                         accounts = new ArrayList<>(1);
                         accounts.add(account);
                     } else {
-                        accounts = prefs.getAvailableAccounts();
+                        accounts = preferences.getAvailableAccounts();
                     }
 
                     for (final Account account : accounts) {
@@ -3946,9 +3946,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             public void run() {
                 try {
                     Timber.i("pEp Starting mail check");
-                    Preferences prefs = Preferences.getPreferences(context);
 
-                    Collection<Account> accounts = prefs.getAvailableAccounts();
+                    Collection<Account> accounts = preferences.getAvailableAccounts();
 
                     for (final Account account : accounts) {
                         checkpEpSyncMailForAccount(account);
@@ -4606,7 +4605,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         for (Map.Entry<String, Map<String, List<MessageReference>>> entry : accountMap.entrySet()) {
             String accountUuid = entry.getKey();
-            Account account = Preferences.getPreferences(context).getAccount(accountUuid);
+            Account account = preferences.getAccount(accountUuid);
 
             Map<String, List<MessageReference>> folderMap = entry.getValue();
             for (Map.Entry<String, List<MessageReference>> folderEntry : folderMap.entrySet()) {
@@ -4766,7 +4765,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private Account loadAddressAccount(String address) {
-        List<Account> accounts = Preferences.getPreferences(context).getAccounts();
+        List<Account> accounts = preferences.getAccounts();
         Account currentAccount = null;
         for (Account account : accounts) {
             currentAccount = checkAccount(address, account);
@@ -4833,7 +4832,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public void consumeMessages(final Context context) throws MessagingException {
         Timber.e("Delete pEp-auto-consume messages older than %d min for All accounts",
                 PEpProvider.TIMEOUT / (60 * 1000));
-        List<Account> accounts = Preferences.getPreferences(context).getAccounts();
+        List<Account> accounts = preferences.getAccounts();
         for (Account account : accounts) {
             consumeMessages(account);
         }

@@ -42,7 +42,7 @@ class PEpProviderImplKotlin @Inject constructor(
     private val sendMessageSet = false
     private val showHandshakeSet = false
 
-    init {
+    override fun setup() {
         createEngineInstanceIfNeeded()
     }
 

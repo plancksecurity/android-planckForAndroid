@@ -38,7 +38,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -90,10 +89,12 @@ import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageBuilder;
 import com.fsck.k9.message.SimpleMessageFormat;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.infrastructure.ComposeView;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -265,6 +266,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     ResourcesProvider resourcesProvider;
 
+    @Inject
+    @ComposeView
+    DisplayHtml displayHtml;
+
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
@@ -355,7 +360,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         ComposePgpInlineDecider composePgpInlineDecider = new ComposePgpInlineDecider();
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
-                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider, new ReplyToParser(), this
+                openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
+                pEp,
+                new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();
 
@@ -368,7 +375,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
         Timber.e("P4A-941 subject-view init %d ", System.currentTimeMillis()-time);
 
-        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this);
+        QuotedMessageMvpView quotedMessageMvpView = new QuotedMessageMvpView(this, displayHtml);
         quotedMessagePresenter = new QuotedMessagePresenter(this, quotedMessageMvpView, account);
         attachmentPresenter = new AttachmentPresenter(getApplicationContext(), attachmentMvpView,
                 getSupportLoaderManager(), this);
@@ -467,7 +474,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             if (action == Action.REPLY || action == Action.REPLY_ALL ||
                     action == Action.FORWARD || action == Action.EDIT_DRAFT) {
                 messageLoaderHelper = new MessageLoaderHelper(this, getSupportLoaderManager(),
-                        getSupportFragmentManager(), messageLoaderCallbacks);
+                        getSupportFragmentManager(), messageLoaderCallbacks, displayHtml);
                 internalMessageHandler.sendEmptyMessage(MSG_PROGRESS_ON);
 
                 Parcelable cachedDecryptionResult = intent.getParcelableExtra(EXTRA_MESSAGE_DECRYPTION_RESULT);

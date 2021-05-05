@@ -17,7 +17,7 @@ class GetNavigationFolderTextAction : ViewAction {
     }
 
     override fun getDescription(): String {
-        return "get navigation folder text"
+        return "get text"
     }
 
     override fun perform(uiController: UiController, view: View) {

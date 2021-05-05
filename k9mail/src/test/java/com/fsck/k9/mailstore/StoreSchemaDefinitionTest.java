@@ -16,6 +16,7 @@ import com.fsck.k9.GlobalsHelper;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.R;
+import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.MessagingException;
 
 import org.junit.Before;
@@ -37,7 +38,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 @RunWith(K9RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -77,7 +77,7 @@ public class StoreSchemaDefinitionTest {
     public void doDbUpgrade_withBadDatabase_shouldThrowInDebugBuild() {
         if (BuildConfig.DEBUG) {
             SQLiteDatabase database = SQLiteDatabase.create(null);
-            database.setVersion(29);
+            database.setVersion(55);
 
             try {
                 storeSchemaDefinition.doDbUpgrade(database);
@@ -90,7 +90,7 @@ public class StoreSchemaDefinitionTest {
 
     @Test
     public void doDbUpgrade_withV29_shouldUpgradeDatabaseToLatestVersion() {
-        SQLiteDatabase database = createV29Database();
+        SQLiteDatabase database = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(database);
 
@@ -99,7 +99,7 @@ public class StoreSchemaDefinitionTest {
 
     @Test
     public void doDbUpgrade_withV29() {
-        SQLiteDatabase database = createV29Database();
+        SQLiteDatabase database = createV55Database();
         insertMessageWithSubject(database, "Test Email");
 
         storeSchemaDefinition.doDbUpgrade(database);
@@ -110,7 +110,7 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTables() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
@@ -120,7 +120,7 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameTriggers() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
@@ -130,26 +130,29 @@ public class StoreSchemaDefinitionTest {
     @Test
     public void doDbUpgrade_fromV29_shouldResultInSameIndexes() {
         SQLiteDatabase newDatabase = createNewDatabase();
-        SQLiteDatabase upgradedDatabase = createV29Database();
+        SQLiteDatabase upgradedDatabase = createV55Database();
 
         storeSchemaDefinition.doDbUpgrade(upgradedDatabase);
 
         assertDatabaseIndexesEquals(newDatabase, upgradedDatabase);
     }
 
+    @Test
+    public void justCreateDatabase() {
+        SQLiteDatabase database = createV55Database();
 
-    private SQLiteDatabase createV29Database() {
+        storeSchemaDefinition.doDbUpgrade(database);
+
+        assertEquals(LocalStore.DB_VERSION, database.getVersion());
+    }
+
+    private SQLiteDatabase createV55Database() {
         SQLiteDatabase database = SQLiteDatabase.create(null);
-        initV29Database(database);
+        initV55Database(database);
         return database;
     }
 
-    private void initV29Database(SQLiteDatabase db) {
-        /*
-         * There is no precise definition of a v29 database. This function approximates it by creating a database
-         * that could be upgraded to the latest database as of v58
-         */
-
+    private void initV55Database(SQLiteDatabase db) {
         db.beginTransaction();
 
         db.execSQL("CREATE TABLE folders (" +
@@ -160,11 +163,22 @@ public class StoreSchemaDefinitionTest {
                 "visible_limit INTEGER, " +
                 "status TEXT, " +
                 "push_state TEXT, " +
-                "last_pushed INTEGER " +
+                "last_pushed INTEGER, " +
+                "flagged_count INTEGER default 0, " +
+                "integrate INTEGER, " +
+                "top_group INTEGER, " +
+                "poll_class TEXT, " +
+                "push_class TEXT, " +
+                "display_class TEXT, " +
+                "notify_class TEXT default '"+ Folder.FolderClass.INHERITED.name() + "', " +
+                "more_messages TEXT default \"unknown\"" +
                 ")");
+
+        db.execSQL("CREATE INDEX IF NOT EXISTS folder_name ON folders (name)");
 
         db.execSQL("CREATE TABLE messages (" +
                 "id INTEGER PRIMARY KEY, " +
+                "deleted INTEGER default 0, " +
                 "folder_id INTEGER, " +
                 "uid TEXT, " +
                 "subject TEXT, " +
@@ -178,28 +192,45 @@ public class StoreSchemaDefinitionTest {
                 "attachment_count INTEGER, " +
                 "internal_date INTEGER, " +
                 "message_id TEXT, " +
-                "html_content TEXT, " +
-                "text_content TEXT, " +
                 "preview_type TEXT default \"none\", " +
-                "message_part_id INTEGER" +
+                "preview TEXT, " +
+                "mime_type TEXT, "+
+                "normalized_subject_hash INTEGER, " +
+                "empty INTEGER default 0, " +
+                "read INTEGER default 0, " +
+                "flagged INTEGER default 0, " +
+                "answered INTEGER default 0, " +
+                "forwarded INTEGER default 0, " +
+                "message_part_id INTEGER, " +
+                "pep_color TEXT" +
                 ")");
 
-        db.execSQL("CREATE TABLE attachments (" +
+        db.execSQL("CREATE TABLE message_parts (" +
                 "id INTEGER PRIMARY KEY, " +
-                "size INTEGER, " +
-                "name TEXT, " +
+                "type INTEGER NOT NULL, " +
+                "root INTEGER, " +
+                "parent INTEGER NOT NULL, " +
+                "seq INTEGER NOT NULL, " +
                 "mime_type TEXT, " +
-                "store_data TEXT, " +
-                "content_uri TEXT, " +
-                "message_id INTEGER" +
+                "decoded_body_size INTEGER, " +
+                "display_name TEXT, " +
+                "header TEXT, " +
+                "encoding TEXT, " +
+                "charset TEXT, " +
+                "data_location INTEGER NOT NULL, " +
+                "data BLOB, " +
+                "preamble TEXT, " +
+                "epilogue TEXT, " +
+                "boundary TEXT, " +
+                "content_id TEXT, " +
+                "server_extra TEXT" +
                 ")");
 
-        db.execSQL("CREATE TABLE headers (" +
-                "id INTEGER PRIMARY KEY, " +
-                "name TEXT, " +
-                "value TEXT, " +
-                "message_id INTEGER" +
-                ")");
+        db.execSQL("CREATE TRIGGER set_message_part_root " +
+                "AFTER INSERT ON message_parts " +
+                "BEGIN " +
+                "UPDATE message_parts SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
+                "END");
 
         db.execSQL("CREATE TABLE threads (" +
                 "id INTEGER PRIMARY KEY, " +
@@ -208,16 +239,10 @@ public class StoreSchemaDefinitionTest {
                 "parent INTEGER" +
                 ")");
 
-        db.execSQL("CREATE TABLE pending_commands (" +
-                "id INTEGER PRIMARY KEY, " +
-                "command TEXT, " +
-                "arguments TEXT" +
-                ")");
-
-        db.execSQL("CREATE INDEX msg_uid ON messages (uid, folder_id)");
-        db.execSQL("CREATE INDEX folder_name ON folders (name)");
         db.execSQL("CREATE INDEX threads_message_id ON threads (message_id)");
+
         db.execSQL("CREATE INDEX threads_root ON threads (root)");
+
         db.execSQL("CREATE INDEX threads_parent ON threads (parent)");
 
         db.execSQL("CREATE TRIGGER set_thread_root " +
@@ -226,20 +251,17 @@ public class StoreSchemaDefinitionTest {
                 "UPDATE threads SET root=id WHERE root IS NULL AND ROWID = NEW.ROWID; " +
                 "END");
 
-        db.execSQL("CREATE TRIGGER delete_folder " +
-                "BEFORE DELETE ON folders " +
-                "BEGIN " +
-                "DELETE FROM messages WHERE old.id = folder_id; " +
-                "END;");
+        db.execSQL("CREATE TABLE pending_commands (" +
+                "id INTEGER PRIMARY KEY, " +
+                "command TEXT, " +
+                "arguments TEXT" +
+                ")");
 
-        db.execSQL("CREATE TRIGGER delete_message " +
-                "BEFORE DELETE ON messages " +
-                "BEGIN " +
-                "DELETE FROM message_parts WHERE root = OLD.message_part_id; " +
-                "DELETE FROM messages_fulltext WHERE docid = OLD.id; " +
-                "END");
+        db.execSQL("CREATE TRIGGER delete_folder BEFORE DELETE ON folders BEGIN DELETE FROM messages WHERE old.id = folder_id; END;");
 
-        db.setVersion(29);
+        db.execSQL("CREATE VIRTUAL TABLE messages_fulltext USING fts4 (fulltext)");
+
+        db.setVersion(55);
 
         db.setTransactionSuccessful();
         db.endTransaction();

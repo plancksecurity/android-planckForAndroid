@@ -4,5 +4,6 @@ public enum MessageAction {
     REPLY,
     REPLY_ALL,
     FORWARD,
-    SHARE
+    SHARE,
+    PRINT
 }

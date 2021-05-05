@@ -3,7 +3,11 @@ package com.fsck.k9.pEp.infrastructure.modules;
 import android.app.Activity;
 import android.content.Context;
 
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
+import com.fsck.k9.pEp.infrastructure.ComposeView;
+import com.fsck.k9.pEp.infrastructure.MessageView;
+import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
 
 import javax.inject.Named;
 
@@ -50,5 +54,17 @@ public class ActivityModule {
     @Provides
     public ResourcesProvider providepEpResourcesProvider() {
         return new PEpResourcesProvider(activity);
+    }
+
+    @Provides
+    @ComposeView
+    public DisplayHtml provideDisplayHtmlForCompose(DisplayHtmlUiFactory factory) {
+        return factory.createForMessageCompose();
+    }
+
+    @Provides
+    @MessageView
+    public DisplayHtml provideDisplayHtmlForMessageView(DisplayHtmlUiFactory factory) {
+        return factory.createForMessageView();
     }
 }

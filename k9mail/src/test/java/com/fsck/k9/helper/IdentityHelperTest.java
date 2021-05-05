@@ -10,18 +10,25 @@ import com.fsck.k9.Identity;
 import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.internet.MimeMessage;
 
+import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(K9RobolectricTestRunner.class)
 public class IdentityHelperTest {
@@ -33,7 +40,15 @@ public class IdentityHelperTest {
     @Before
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
-        createDummyAccount(context);
+        Context contextSpy = Mockito.spy(context);
+        Mockito.doReturn(contextSpy).when(contextSpy).getApplicationContext();
+        Mockito.doReturn("text").when(contextSpy).getString(anyInt());
+
+
+        createDummyAccount(contextSpy);
+
+
+        BinaryTempFileBody.setTempDirectory(new File("."));
         msg = parseWithoutRecurse(toStream(
                 "From: <adam@example.org>\r\n" +
                         "To: <eva@example.org>\r\n" +
@@ -51,7 +66,7 @@ public class IdentityHelperTest {
     }
 
     private static ByteArrayInputStream toStream(String rawMailData) throws Exception {
-        return new ByteArrayInputStream(rawMailData.getBytes("ISO-8859-1"));
+        return new ByteArrayInputStream(rawMailData.getBytes(StandardCharsets.ISO_8859_1));
     }
 
     private void createDummyAccount(Context context) {
@@ -78,7 +93,7 @@ public class IdentityHelperTest {
     }
 
     @Test
-    public void testXOriginalTo() throws Exception {
+    public void testXOriginalTo() {
         Address[] addresses = {new Address("test2@mail.com")};
         msg.setRecipients(Message.RecipientType.X_ORIGINAL_TO, addresses);
 
@@ -87,13 +102,13 @@ public class IdentityHelperTest {
     }
 
     @Test
-    public void testTo_withoutXOriginalTo() throws Exception {
+    public void testTo_withoutXOriginalTo() {
         Identity eva = IdentityHelper.getRecipientIdentityFromMessage(account, msg);
         assertTrue(eva.getEmail().equalsIgnoreCase("eva@example.org"));
     }
 
     @Test
-    public void testDeliveredTo() throws Exception {
+    public void testDeliveredTo() {
         Address[] addresses = {new Address("test2@mail.com")};
         msg.setRecipients(Message.RecipientType.DELIVERED_TO, addresses);
         msg.removeHeader("X-Original-To");
@@ -104,7 +119,7 @@ public class IdentityHelperTest {
     }
 
     @Test
-    public void testXEnvelopeTo() throws Exception {
+    public void testXEnvelopeTo() {
         Address[] addresses = {new Address("test@mail.com")};
         msg.setRecipients(Message.RecipientType.X_ENVELOPE_TO, addresses);
         msg.removeHeader("X-Original-To");
@@ -115,7 +130,7 @@ public class IdentityHelperTest {
     }
 
     @Test
-    public void testXEnvelopeTo_withXOriginalTo() throws Exception {
+    public void testXEnvelopeTo_withXOriginalTo() {
         Address[] addresses = {new Address("test@mail.com")};
         Address[] xoriginaltoaddresses = {new Address("test2@mail.com")};
         msg.setRecipients(Message.RecipientType.X_ENVELOPE_TO, addresses);
@@ -131,5 +146,10 @@ public class IdentityHelperTest {
         protected DummyAccount(Context context) {
             super(context);
         }
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        FakeAndroidKeyStore.setup();
     }
 }
