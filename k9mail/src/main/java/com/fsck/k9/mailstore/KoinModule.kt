@@ -1,7 +1,7 @@
 package com.fsck.k9.mailstore
 
-import org.koin.dsl.module.applicationContext
+import org.koin.dsl.module
 
-val mailStoreModule = applicationContext {
-    bean { FolderRepositoryManager() }
+val mailStoreModule = module {
+    single { FolderRepositoryManager() }
 }

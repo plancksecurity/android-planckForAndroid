@@ -6,27 +6,30 @@ import com.fsck.k9.ui.account.AccountsLiveData
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory
 import com.fsck.k9.ui.settings.account.AccountSettingsViewModel
 import com.fsck.k9.ui.settings.general.GeneralSettingsDataStore
-import org.koin.android.architecture.ext.viewModel
-import org.koin.dsl.module.applicationContext
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
+import org.koin.dsl.module
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.permissions.PEpPermissionChecker
 import security.pEp.ui.permissions.PepPermissionRequester
 import java.util.concurrent.Executors
 
-val settingsUiModule = applicationContext {
-    bean { AccountsLiveData(get()) }
-    viewModel { SettingsViewModel(get()) }
+val settingsUiModule = module {
+    single { AccountsLiveData(preferences = get()) }
+    viewModel { SettingsViewModel(accounts = get()) }
 
-    bean { FileBrowserHelper.getInstance() }
-    bean { GeneralSettingsDataStore(get(), get(), get("SaveSettingsExecutorService")) }
-    bean("SaveSettingsExecutorService") {
-        Executors.newSingleThreadExecutor(NamedThreadFactory("SaveSettings"))
+    single { FileBrowserHelper.getInstance() }
+    factory { GeneralSettingsDataStore(context = get(), preferences = get(),
+            executorService = get(named("SaveSettingsExecutorService"))) }
+    single(named("SaveSettingsExecutorService")) {
+        Executors.newSingleThreadExecutor(NamedThreadFactory(threadNamePrefix = "SaveSettings"))
     }
 
-    bean<PermissionChecker> { PEpPermissionChecker(get()) }
-    factory<PermissionRequester> { params -> PepPermissionRequester(params["activity"]) }
+    single<PermissionChecker> { PEpPermissionChecker(get()) }
+    factory<PermissionRequester> {PepPermissionRequester(get()) }
 
-    viewModel { AccountSettingsViewModel(get(), get()) }
-    bean { AccountSettingsDataStoreFactory(get(), get(), get("SaveSettingsExecutorService")) }
+    viewModel { AccountSettingsViewModel(preferences = get(), folderRepositoryManager = get()) }
+    single { AccountSettingsDataStoreFactory(context = get(), preferences = get(),
+            executorService = get(named("SaveSettingsExecutorService"))) }
 }

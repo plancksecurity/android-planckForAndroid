@@ -1,7 +1,7 @@
 package com.fsck.k9.autocrypt
 
-import org.koin.dsl.module.applicationContext
+import org.koin.dsl.module
 
-val autocryptModule = applicationContext {
-    bean { AutocryptTransferMessageCreator(get()) }
+val autocryptModule = module {
+    single { AutocryptTransferMessageCreator(resources = get()) }
 }

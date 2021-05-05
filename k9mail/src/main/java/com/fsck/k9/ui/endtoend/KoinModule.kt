@@ -1,20 +1,23 @@
 package com.fsck.k9.ui.endtoend
 
-import org.koin.android.architecture.ext.viewModel
-import org.koin.dsl.module.applicationContext
+import androidx.lifecycle.LifecycleOwner
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
 
-val endToEndUiModule = applicationContext {
-    factory { AutocryptSetupMessageLiveEvent(get()) }
+val endToEndUiModule = module {
+    factory { AutocryptSetupMessageLiveEvent(messageCreator = get()) }
     factory { AutocryptSetupTransferLiveEvent() }
-    factory { params ->
+    factory { (lifecycleOwner: LifecycleOwner, autocryptTransferView: AutocryptKeyTransferActivity) ->
         AutocryptKeyTransferPresenter(
-                params["lifecycleOwner"],
-                get(),
-                get(parameters = { params.values }),
-                get(),
-                get(),
-                get(),
-                params["autocryptTransferView"])
+                lifecycleOwner = lifecycleOwner,
+                context = get(),
+                openPgpApiManager = get { parametersOf(lifecycleOwner) },
+                transportProvider = get(),
+                preferences = get(),
+                viewModel = get(),
+                view = autocryptTransferView)
     }
-    viewModel { AutocryptKeyTransferViewModel(get(), get()) }
+    viewModel { AutocryptKeyTransferViewModel(autocryptSetupMessageLiveEvent = get(),
+            autocryptSetupTransferLiveEvent = get()) }
 }
