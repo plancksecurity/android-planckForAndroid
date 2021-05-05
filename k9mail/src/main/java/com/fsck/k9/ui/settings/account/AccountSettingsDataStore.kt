@@ -7,7 +7,6 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.service.MailServiceLegacy
-import org.koin.dsl.module.applicationContext
 import java.util.concurrent.ExecutorService
 
 class AccountSettingsDataStore(

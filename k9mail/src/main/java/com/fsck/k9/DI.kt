@@ -11,14 +11,10 @@ import com.fsck.k9.mailstore.mailStoreModule
 import com.fsck.k9.ui.endtoend.endToEndUiModule
 import com.fsck.k9.ui.folders.FolderNameFormatter
 import com.fsck.k9.ui.settings.settingsUiModule
-import org.koin.Koin
-import org.koin.KoinContext
-import org.koin.android.ext.koin.with
-import org.koin.android.logger.AndroidLogger
-import org.koin.core.parameter.Parameters
-import org.koin.dsl.module.applicationContext
-import org.koin.log.EmptyLogger
-import org.koin.standalone.StandAloneContext
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.dsl.module
 
 object DI {
     private val mainModule = applicationContext {

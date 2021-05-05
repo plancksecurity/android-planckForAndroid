@@ -15,6 +15,7 @@ import com.fsck.k9.ui.observe
 import org.koin.android.architecture.ext.viewModel
 import security.pEp.mdm.RestrictionsListener
 import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, RestrictionsListener {

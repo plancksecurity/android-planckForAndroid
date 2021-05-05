@@ -8,8 +8,8 @@ import android.util.AttributeSet
 import com.fsck.k9.K9
 import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.ui.folders.FolderNameFormatter
-import org.koin.standalone.KoinComponent
-import org.koin.standalone.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * A [ListPreference] that allows selecting one of an account's folders.

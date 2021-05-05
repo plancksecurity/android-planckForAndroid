@@ -29,8 +29,9 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
-import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.core.parameter.parametersOf
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
