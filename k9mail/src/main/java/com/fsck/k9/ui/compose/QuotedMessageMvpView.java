@@ -3,7 +3,6 @@ package com.fsck.k9.ui.compose;
 
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -12,7 +11,7 @@ import android.widget.ImageButton;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
-import com.fsck.k9.message.html.HtmlConverter;
+import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.message.QuotedTextMode;
 import com.fsck.k9.message.SimpleMessageFormat;
@@ -29,9 +28,9 @@ public class QuotedMessageMvpView {
     private final MessageWebView mQuotedHTML;
     private final ImageRefusingEditText mMessageContentView;
     private final ImageButton mQuotedTextDelete;
+    private final DisplayHtml displayHtml;
 
-
-    public QuotedMessageMvpView(MessageCompose messageCompose) {
+    public QuotedMessageMvpView(MessageCompose messageCompose, DisplayHtml displayHtml) {
         mQuotedTextShow = (Button) messageCompose.findViewById(R.id.quoted_text_show);
         mQuotedTextBar = messageCompose.findViewById(R.id.quoted_text_bar);
         mQuotedTextEdit = (ImageButton) messageCompose.findViewById(R.id.quoted_text_edit);
@@ -51,6 +50,7 @@ public class QuotedMessageMvpView {
         });
 
         mMessageContentView = messageCompose.findViewById(R.id.message_content);
+        this.displayHtml = displayHtml;
     }
 
     public void setOnClickPresenter(final QuotedMessagePresenter presenter) {
@@ -109,7 +109,7 @@ public class QuotedMessageMvpView {
 
     public void setQuotedHtml(String quotedContent, AttachmentResolver attachmentResolver) {
         mQuotedHTML.displayHtmlContentWithInlineAttachments(
-                HtmlConverter.wrapMessageContent(quotedContent),
+                displayHtml.wrapMessageContent(quotedContent),
                 attachmentResolver, null);
     }
 

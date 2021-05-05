@@ -1,14 +1,19 @@
 package com.fsck.k9.view;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.MimeMessage;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(AndroidJUnit4.class)
+@Config(manifest = Config.NONE)
 public class MessageHeaderTest {
 
     private static final Address FROM_ADDRESS = Address.parse("from@example1.com")[0];

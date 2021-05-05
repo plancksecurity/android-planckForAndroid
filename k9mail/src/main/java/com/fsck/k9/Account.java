@@ -151,13 +151,15 @@ public class Account implements BaseAccount, StoreConfig {
      * http://developer.android.com/design/style/color.html
      * Note: Order does matter, it's the order in which they will be picked.
      */
-    private static final Integer[] PREDEFINED_COLORS = new Integer[] {
-            Color.parseColor("#0099CC"),    // blue
-            Color.parseColor("#669900"),    // green
-            Color.parseColor("#FF8800"),    // orange
-            Color.parseColor("#CC0000"),    // red
-            Color.parseColor("#9933CC")     // purple
-    };
+    private static final Integer[] getPredeFinedColors() {
+        return new Integer[] {
+                Color.parseColor("#0099CC"),    // blue
+                Color.parseColor("#669900"),    // green
+                Color.parseColor("#FF8800"),    // orange
+                Color.parseColor("#CC0000"),    // red
+                Color.parseColor("#9933CC")     // purple
+        };
+    }
 
     public enum SortType {
         SORT_DATE(R.string.sort_earliest_first, R.string.sort_latest_first, false),
@@ -384,8 +386,9 @@ public class Account implements BaseAccount, StoreConfig {
     private int pickColor(Context context) {
         List<Account> accounts = Preferences.getPreferences(context).getAccounts();
 
-        List<Integer> availableColors = new ArrayList<>(PREDEFINED_COLORS.length);
-        Collections.addAll(availableColors, PREDEFINED_COLORS);
+        Integer[] predefinedColors = getPredeFinedColors();
+        List<Integer> availableColors = new ArrayList<>(predefinedColors.length);
+        Collections.addAll(availableColors, predefinedColors);
 
         for (Account account : accounts) {
             Integer color = account.getChipColor();

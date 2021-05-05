@@ -155,26 +155,21 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     public void showLoadingMessages() {
         listView.setVisibility(GONE);
-//        fab.setVisibility(GONE);
         fab.hide();
         loadingView.setVisibility(View.VISIBLE);
     }
 
     public void hideLoadingMessages(int messageCount) {
-
-        if(isManualSearch()) {
-            if(messageCount == 0) {
+        if (isManualSearch()) {
+            if (messageCount == 0) {
                 noResultsFound.setVisibility(View.VISIBLE);
                 // show empty search
-            }
-            else {
+            } else {
                 listView.setVisibility(View.VISIBLE);
                 noResultsFound.setVisibility(View.GONE);
             }
-        }
-        else {
+        } else {
             listView.setVisibility(View.VISIBLE);
-//        fab.setVisibility(View.VISIBLE);
             fab.show();
         }
         loadingView.setVisibility(View.GONE);
@@ -607,7 +602,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        messageHelper = MessageHelper.getInstance(getActivity());
+        messageHelper = MessageHelper.getInstance(getContext().getApplicationContext());
 
         initializeMessageList();
 
@@ -2576,6 +2571,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      */
     @Override
     public void onStop() {
+        deselectAll();
         // If we represent a remote search, then kill that before going back.
         if (isRemoteSearch() && remoteSearchFuture != null) {
             try {
@@ -2604,7 +2600,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setSelectionState(true);
     }
 
-    public void deselectAll() {
+    private void deselectAll() {
         setSelectionState(false);
     }
 

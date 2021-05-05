@@ -173,8 +173,16 @@ public class AddressTest {
     }
 
     @Test
+    public void parse_withShortText_ReturnsEmptyArray() throws Exception {
+        Address[] addresses = Address.parse("Alice");
+
+        assertEquals(0, addresses.length);
+    }
+
+    @Test
     public void getHostname_withoutAddress_isNull() throws Exception {
-        Address address = Address.parse("Alice")[0];
+        Address[] addresses = Address.parse("Alice1");
+        Address address = addresses[0];
 
         String result = address.getHostname();
 

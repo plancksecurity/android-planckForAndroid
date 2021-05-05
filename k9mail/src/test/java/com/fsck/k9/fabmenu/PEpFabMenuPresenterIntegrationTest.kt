@@ -23,13 +23,14 @@ class PEpFabMenuPresenterIntegrationTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        MockitoAnnotations.openMocks(this)
         presenter = PEpFabMenuPresenter(view)
         presenter.listener = listener
     }
 
     @Test
     fun presenterStartShouldShowInitialState() {
+        presenter.init()
         verify(view).showInitialState()
         verify(view, never()).closeMenu()
         verify(view, never()).openMenu()

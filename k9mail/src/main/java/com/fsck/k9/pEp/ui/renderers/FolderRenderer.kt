@@ -6,19 +6,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
-import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
+import com.fsck.k9.pEp.ui.listeners.FolderClickListener
 import com.pedrogomez.renderers.Renderer
 import kotlinx.android.synthetic.main.folder_navigation_list_item.view.*
 import kotlinx.coroutines.*
-import timber.log.Timber
 
 class FolderRenderer : Renderer<FolderModel>() {
 
     lateinit var folderName: TextView
     lateinit var folderNewMessages: TextView
-    private lateinit var onFolderClickListener: OnFolderClickListener
+    private lateinit var onFolderClickListener: FolderClickListener
 
 
     override fun setUpView(rootView: View) {
@@ -57,7 +55,7 @@ class FolderRenderer : Renderer<FolderModel>() {
         }
     }
 
-    fun setFolderClickListener(onFolderClickListener: OnFolderClickListener) {
+    fun setFolderClickListener(onFolderClickListener: FolderClickListener) {
         this.onFolderClickListener = onFolderClickListener
     }
 

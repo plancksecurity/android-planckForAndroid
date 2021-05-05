@@ -15,10 +15,12 @@ public class PEpProviderFactory {
     // (I cache the context, but am not complely sure, wether it becomes invalid once...)
 
     static public PEpProvider createAndSetupProvider(Context ctx) {
+        PEpProvider pEpProvider = createProvider(ctx);
+        pEpProvider.setup();
         return createProvider(ctx);
     }
 
-    static private PEpProvider createProvider(Context context) {
+    static public PEpProvider createProvider(Context context) {
         ThreadExecutor threadExecutor = new JobExecutor();
         PostExecutionThread postExecutionThread = new UIThread();
         return new PEpProviderImplKotlin(threadExecutor, postExecutionThread, context);

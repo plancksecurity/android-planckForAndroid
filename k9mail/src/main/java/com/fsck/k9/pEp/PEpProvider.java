@@ -42,6 +42,8 @@ public interface PEpProvider extends AutoCloseable {
     String PEP_KEY_LIST_SEPARATOR = ",";
     String KEY_MIOSSING_ERORR_MESSAGE = "Key missing";
 
+    void setup();
+
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and
      * calls the jni adapter to obtain the info. According to fdik, this check returns fast (all

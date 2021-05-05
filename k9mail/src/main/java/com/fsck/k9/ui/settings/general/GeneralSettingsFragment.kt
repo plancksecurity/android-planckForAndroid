@@ -80,12 +80,15 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
-        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
-            attachmentDefaultPathPreference = this
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.remove()
+        } else {
+            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
+                attachmentDefaultPathPreference = this
 
-            summary = attachmentDefaultPath()
-            onClick {
-                fileBrowserHelper.showFileBrowserActivity(this@GeneralSettingsFragment,
+                summary = attachmentDefaultPath()
+                onClick {
+                    fileBrowserHelper.showFileBrowserActivity(this@GeneralSettingsFragment,
                         File(attachmentDefaultPath()), REQUEST_PICK_DIRECTORY,
                         object : FileBrowserHelper.FileBrowserFailOverCallback {
                             override fun onPathEntered(path: String) {
@@ -94,7 +97,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
                             override fun onCancel() = Unit
                         }
-                )
+                    )
+                }
             }
         }
     }

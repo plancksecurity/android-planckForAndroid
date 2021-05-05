@@ -27,15 +27,14 @@ class HeadCleaner {
 
     private void copySafeNodes(Element source, Element destination) {
         CleaningVisitor cleaningVisitor = new CleaningVisitor(source, destination);
-        NodeTraversor traversor = new NodeTraversor(cleaningVisitor);
-        traversor.traverse(source);
+        NodeTraversor.traverse(cleaningVisitor, source);
     }
 
 
     static class CleaningVisitor implements NodeVisitor {
         private final Element root;
         private Element destination;
-        private boolean skipChildren = false;
+        private Element elementToSkip;
 
 
         CleaningVisitor(Element root, Element destination) {
@@ -44,7 +43,7 @@ class HeadCleaner {
         }
 
         public void head(Node source, int depth) {
-            if (skipChildren) {
+            if (elementToSkip != null) {
                 return;
             }
 
@@ -59,23 +58,24 @@ class HeadCleaner {
                     destination.appendChild(destinationChild);
                     destination = destinationChild;
                 } else if (source != root) {
-                    skipChildren = true;
+                    elementToSkip = sourceElement;
                 }
             } else if (source instanceof TextNode) {
                 TextNode sourceText = (TextNode) source;
-                TextNode destinationText = new TextNode(sourceText.getWholeText(), source.baseUri());
+                TextNode destinationText = new TextNode(sourceText.getWholeText());
                 destination.appendChild(destinationText);
             } else if (source instanceof DataNode && isSafeTag(source.parent())) {
                 DataNode sourceData = (DataNode) source;
-                DataNode destinationData = new DataNode(sourceData.getWholeData(), source.baseUri());
+                DataNode destinationData = new DataNode(sourceData.getWholeData());
                 destination.appendChild(destinationData);
             }
         }
 
         public void tail(Node source, int depth) {
-            if (source == destination) {
+            if (source == elementToSkip) {
+                elementToSkip = null;
+            } else if (source instanceof Element && isSafeTag(source)) {
                 destination = destination.parent();
-                skipChildren = false;
             }
         }
 

@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import timber.log.Timber;
 
+import com.fsck.k9.Globals;
 import com.fsck.k9.mail.Body;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Multipart;

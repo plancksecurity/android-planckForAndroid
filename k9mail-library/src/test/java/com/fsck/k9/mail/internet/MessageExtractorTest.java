@@ -61,7 +61,7 @@ public class MessageExtractorTest {
     @Test
     public void getTextFromPart_withExceptionThrownGettingInputStream_shouldReturnNull() throws Exception {
         part.setHeader(MimeHeader.HEADER_CONTENT_TYPE, "text/html");
-        Body body = mock(Body.class);
+        Body body = mock(RawDataBody.class);
         when(body.getInputStream()).thenThrow(new MessagingException("Test"));
         part.setBody(body);
 

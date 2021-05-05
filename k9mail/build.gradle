@@ -51,13 +51,12 @@ dependencies {
 
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
-    implementation "androidx.legacy:legacy-support-v4:${versions.androidXLegacy}"
-    implementation "androidx.appcompat:appcompat:${versions.androidXAppCompat}"
-    implementation "androidx.cardview:cardview:${versions.androidXCardView}"
-    implementation "com.google.android.material:material:${versions.androidX}"
-    implementation "androidx.appcompat:appcompat:${versions.androidX}"
-    implementation "androidx.recyclerview:recyclerview:${versions.androidX}"
-    implementation "androidx.vectordrawable:vectordrawable:${versions.androidX}"
+    implementation "androidx.legacy:legacy-support-v4:${versions.legacySupport}"
+    implementation "androidx.appcompat:appcompat:${versions.appCompat}"
+    implementation "androidx.cardview:cardview:${versions.cardView}"
+    implementation "com.google.android.material:material:${versions.material}"
+    implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
+    implementation "androidx.vectordrawable:vectordrawable:${versions.vectordrawable}"
     implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
 
     implementation "com.squareup.moshi:moshi:${versions.moshi}"
@@ -74,7 +73,7 @@ dependencies {
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}"
-    implementation "androidx.preference:preference:${versions.androidX}"
+    implementation "androidx.preference:preference:${versions.preference}"
     implementation "com.takisoft.preferencex:preferencex:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-ringtone:${versions.preferencesFix}"
     implementation "com.takisoft.preferencex:preferencex-datetimepicker:${versions.preferencesFix}"
@@ -100,12 +99,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.3.0'
     // androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
@@ -119,14 +121,13 @@ dependencies {
 
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
-    testImplementation "androidx.test:core:${versions.androidX}"
-    testImplementation "androidx.test.ext:junit:${versions.androidX}"
-    androidTestImplementation "androidx.test.ext:junit:${versions.androidX}"
+    testImplementation "androidx.test:core:${versions.androidXcoreTest}"
+    testImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
     testImplementation "androidx.test:rules:${versions.runner_rules}"
     testImplementation "androidx.test:runner:${versions.runner_rules}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
-    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
     testImplementation "org.jdom:jdom2:2.0.6"
@@ -285,12 +286,6 @@ android {
             if (baseAbiVersionCode != null) {
                 output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
             }
-        }
-    }
-
-    testOptions{
-        unitTests{
-            includeAndroidResources = true
         }
     }
 

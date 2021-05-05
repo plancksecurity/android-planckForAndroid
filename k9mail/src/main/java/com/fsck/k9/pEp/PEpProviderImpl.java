@@ -74,6 +74,9 @@ public class PEpProviderImpl implements PEpProvider {
     }
 
     @Override
+    public void setup() {}
+
+    @Override
     public synchronized Rating getRating(com.fsck.k9.mail.Message message) {
         Address from = message.getFrom()[0];                            // FIXME: From is an array?!
         List<Address> to = Arrays.asList(message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO));

@@ -315,7 +315,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mStartIntegratedInbox = false;
     private static boolean mMeasureAccounts = true;
     private static boolean mCountSearchMessages = true;
-    private static boolean mAutofitWidth = true;
+    private static boolean mAutofitWidth = false;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
     private static String mQuietTimeStarts = null;
@@ -918,7 +918,7 @@ public class K9 extends MultiDexApplication {
         mMessageListStars = storage.getBoolean("messageListStars", true);
         mMessageListPreviewLines = storage.getInt("messageListPreviewLines", 2);
 
-        mAutofitWidth = storage.getBoolean("autofitWidth", true);
+        mAutofitWidth = storage.getBoolean("autofitWidth", false);
 
         mQuietTimeEnabled = storage.getBoolean("quietTimeEnabled", false);
         mNotificationDuringQuietTimeEnabled = storage.getBoolean("notificationDuringQuietTimeEnabled", true);
@@ -1450,7 +1450,9 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getAttachmentDefaultPath() {
-        return mAttachmentDefaultPath;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
+                : mAttachmentDefaultPath;
     }
 
     public static void setAttachmentDefaultPath(String attachmentDefaultPath) {
