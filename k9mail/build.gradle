@@ -97,7 +97,8 @@ dependencies {
     implementation "com.xwray:groupie:${versions.groupie}"
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
-    implementation "org.koin:koin-android-architecture:${versions.koin}"
+    implementation "io.insert-koin:koin-core:${versions.koin}"
+    implementation "io.insert-koin:koin-android:${versions.koin}"
     implementation "androidx.core:core-ktx:${versions.androidXcore}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
@@ -137,7 +138,7 @@ dependencies {
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
-    testImplementation "org.koin:koin-test:${versions.koin}"
+    testImplementation "io.insert-koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 
     androidTestImplementation "org.mockito:mockito-android:${versions.mockito}"
