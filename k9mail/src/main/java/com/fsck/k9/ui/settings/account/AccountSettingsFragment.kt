@@ -41,7 +41,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
     private val dataStoreFactory: AccountSettingsDataStoreFactory by inject()
     private val storageManager: StorageManager by inject()
-    private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
+    private val openPgpApiManager: OpenPgpApiManager by inject { parametersOf(this) }
 
     private var rootkey:String? = null
     private var mdmDialog: AlertDialog? = null

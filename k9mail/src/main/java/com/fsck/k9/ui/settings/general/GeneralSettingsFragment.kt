@@ -27,6 +27,7 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.passphrase.PassphraseActivity
@@ -39,7 +40,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val fileBrowserHelper: FileBrowserHelper by inject()
     private val permissionChecker: PermissionChecker by inject()
     private val permissionRequester: PermissionRequester by inject {
-        mapOf("activity" to requireActivity())
+        parametersOf(requireActivity())
     }
 
     private lateinit var attachmentDefaultPathPreference: Preference

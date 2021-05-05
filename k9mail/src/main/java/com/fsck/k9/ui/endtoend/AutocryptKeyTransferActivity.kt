@@ -25,9 +25,7 @@ import timber.log.Timber
 class AutocryptKeyTransferActivity : K9Activity() {
     override fun search(query: String?) {
     }
-    private val presenter: AutocryptKeyTransferPresenter by inject {
-        mapOf("lifecycleOwner" to this, "autocryptTransferView" to this)
-    }
+    private val presenter: AutocryptKeyTransferPresenter by inject { parametersOf(this, this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
