@@ -748,7 +748,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                     accountUuids[0].equals(SearchSpecification.ALL_ACCOUNTS)) {
                 allAccounts = true;
 
-                List<Account> accounts = preferences.getAccounts();
+                List<Account> accounts = new ArrayList<>(preferences.getAvailableAccounts());
 
                 this.accountUuids = new String[accounts.size()];
                 for (int i = 0, len = accounts.size(); i < len; i++) {
@@ -794,7 +794,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void getFolderInfoHolder(String folderName, Account account) {
-        if(!preferences.getAccounts().contains(account)) {
+        if(!preferences.getAvailableAccounts().contains(account)) {
             Timber.e("Account is null in Preferences because we just deleted it, " +
                     "this should only happen coming from FragmentManager.popBackStack from MessageList.onNewIntent");
             return;
@@ -860,7 +860,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         if (account != null) {
             accountsWithNotification = Collections.singletonList(account);
         } else {
-            accountsWithNotification = preferences.getAccounts();
+            accountsWithNotification = new ArrayList<>(preferences.getAvailableAccounts());
         }
 
         for (Account accountWithNotification : accountsWithNotification) {
