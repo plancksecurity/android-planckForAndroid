@@ -39,7 +39,7 @@ public class MessageWebView extends RigidWebView {
         super(context, attrs, defStyle);
     }
 
-    public void setTheme() {
+    public void refreshTheme() {
         if(ThemeManager.isDarkTheme() && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             WebSettingsCompat.setForceDark(getSettings(), WebSettingsCompat.FORCE_DARK_ON);
         }

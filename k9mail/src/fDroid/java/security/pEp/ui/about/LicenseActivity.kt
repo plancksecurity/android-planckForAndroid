@@ -28,7 +28,7 @@ class LicenseActivity : PepActivity() {
 
         val webView = findViewById<MessageWebView>(R.id.license_webview)
         webView.blockNetworkData(false)
-        webView.setTheme()
+        webView.refreshTheme()
 
         webView.loadUrl(GPL_LICENSE)
     }
