@@ -318,6 +318,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onPause() {
         super.onPause();
+        ((MessageList) getContext()).removeGestureDetector();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 

@@ -185,7 +185,7 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
         mToView.setOnLongClickListener(this);
         mCcView.setOnLongClickListener(this);
 
-        mMessageHelper = MessageHelper.getInstance(mContext);
+        mMessageHelper = MessageHelper.getInstance(mContext.getApplicationContext());
 
         mSubjectView.setVisibility(VISIBLE);
 

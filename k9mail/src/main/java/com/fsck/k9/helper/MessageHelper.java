@@ -41,9 +41,6 @@ public class MessageHelper {
         if (sInstance == null) {
             sInstance = new MessageHelper(context);
         }
-        else {
-            sInstance.mContext = context; // done to take the context with new locale.
-        }
         return sInstance;
     }
 

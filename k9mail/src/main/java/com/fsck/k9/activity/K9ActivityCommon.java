@@ -90,6 +90,8 @@ public class K9ActivityCommon {
      */
     public interface K9ActivityMagic {
         void setupGestureDetector(OnSwipeGestureListener listener);
+
+        void removeGestureDetector();
     }
 
 
