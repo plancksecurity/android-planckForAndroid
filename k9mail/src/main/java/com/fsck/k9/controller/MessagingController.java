@@ -3874,14 +3874,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
         File file = new File(context.getExternalCacheDir(), fileName);
         try {
             message.writeTo(new FileOutputStream(file));
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.setType("*/*");
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
         } catch (IOException | MessagingException e) {
             Timber.e(e);
         }
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        intent.setType("*/*");
-        context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
+
     }
 
     /**
