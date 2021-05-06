@@ -33,6 +33,7 @@ import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
 import org.json.JSONArray;
@@ -118,7 +119,7 @@ public class CucumberTestSteps {
     private final Timer timer = new Timer();
     private final int[] time = {0};
     @Rule
-    public IntentsTestRule<MessageList> activityTestRule = new IntentsTestRule<>(MessageList.class, true, false);
+    public IntentsTestRule<SplashActivity> activityTestRule = new IntentsTestRule<>(SplashActivity.class, true, false);
 
     @Before
     public void setup() {
