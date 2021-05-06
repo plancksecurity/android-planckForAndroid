@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.webkit.WebSettingsCompat;
+import androidx.webkit.WebViewFeature;
+
 import android.util.AttributeSet;
 import timber.log.Timber;
 import android.view.KeyEvent;
@@ -34,6 +37,12 @@ public class MessageWebView extends RigidWebView {
 
     public MessageWebView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    public void refreshTheme() {
+        if(ThemeManager.isDarkTheme() && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+            WebSettingsCompat.setForceDark(getSettings(), WebSettingsCompat.FORCE_DARK_ON);
+        }
     }
 
     /**
