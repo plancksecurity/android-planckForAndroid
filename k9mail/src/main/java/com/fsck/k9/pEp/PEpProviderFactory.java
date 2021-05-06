@@ -17,7 +17,7 @@ public class PEpProviderFactory {
     static public PEpProvider createAndSetupProvider(Context ctx) {
         PEpProvider pEpProvider = createProvider(ctx);
         pEpProvider.setup();
-        return createProvider(ctx);
+        return pEpProvider;
     }
 
     static public PEpProvider createProvider(Context context) {
