@@ -275,18 +275,18 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setupSwipeDetector() {
-        ((MessageList) getContext()).setupGestureDetector(
+        ((MessageList) getActivity()).setupGestureDetector(
                 new SwipeGestureDetector.OnSwipeGestureListener() {
                     @Override
                     public void onSwipeRightToLeft(MotionEvent e1, MotionEvent e2) {
                         if (mMessageView.canScroll())
-                            ((MessageList) getContext()).showNextMessage();
+                            ((MessageList) getActivity()).showNextMessage();
                     }
 
                     @Override
                     public void onSwipeLeftToRight(MotionEvent e1, MotionEvent e2) {
                         if (mMessageView.canScroll())
-                            ((MessageList) getContext()).showPreviousMessage();
+                            ((MessageList) getActivity()).showPreviousMessage();
                     }
                 }
         );
@@ -319,7 +319,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onPause() {
         super.onPause();
-        ((MessageList) getContext()).removeGestureDetector();
+        ((MessageList) getActivity()).removeGestureDetector();
         messageLoaderHelper.cancelAndClearLocalMessageLoader();
     }
 
