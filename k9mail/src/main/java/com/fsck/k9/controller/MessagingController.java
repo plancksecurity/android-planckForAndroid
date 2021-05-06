@@ -143,6 +143,7 @@ import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
     public static final long SHARE_SIZE_THRESHOLD = 64000;
+    public static final int SHARE_MAX_FILENAME_SIZE = 20;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -3869,7 +3870,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void shareEmailFile(Context context, LocalMessage message) {
-        String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), 20)) + ".eml";
+        String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), SHARE_MAX_FILENAME_SIZE)) + ".eml";
         File file = new File(context.getExternalCacheDir(), fileName);
         try {
             message.writeTo(new FileOutputStream(file));
