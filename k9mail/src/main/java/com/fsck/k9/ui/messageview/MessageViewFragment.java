@@ -8,7 +8,6 @@ import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
 import android.os.Build;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
