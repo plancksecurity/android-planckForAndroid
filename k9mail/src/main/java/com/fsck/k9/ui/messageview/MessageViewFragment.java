@@ -193,7 +193,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        decodeArguments();
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
 
@@ -203,6 +203,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         messageCryptoPresenter = new MessageCryptoPresenter(savedInstanceState, messageCryptoMvpView);
         ((MessageList) getActivity()).hideSearchView();
+    }
+
+    private void decodeArguments() {
+        Bundle arguments = getArguments();
+        String messageReferenceString = arguments.getString(ARG_REFERENCE);
+        mMessageReference = MessageReference.parse(messageReferenceString);
     }
 
     @Override
@@ -300,10 +306,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pEpFabMenu.setClickListeners(messageOptionsListener);
     }
 
-    public void displayMessage() {
-        Bundle arguments = getArguments();
-        String messageReferenceString = arguments.getString(ARG_REFERENCE);
-        mMessageReference = MessageReference.parse(messageReferenceString);
+    private void displayMessage() {
         Timber.d("MessageView displaying message %s", mMessageReference);
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
