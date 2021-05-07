@@ -90,6 +90,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         super.onFinishInflate();
 
         mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
+        mMessageContentView.refreshTheme();
         if (!isInEditMode()) {
             mMessageContentView.configure();
         }

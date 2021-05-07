@@ -5,11 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.view.MessageWebView
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
@@ -31,9 +28,7 @@ class LicenseActivity : PepActivity() {
 
         val webView = findViewById<MessageWebView>(R.id.license_webview)
         webView.blockNetworkData(false)
-        if(ThemeManager.isDarkTheme() && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-            WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
-        }
+        webView.refreshTheme()
 
         webView.loadUrl(GPL_LICENSE)
     }
