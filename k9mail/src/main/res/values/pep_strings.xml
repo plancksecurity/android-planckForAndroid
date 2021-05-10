@@ -327,6 +327,7 @@
 
     <string name="dialog_confirm_duplicate_attachment_title">Duplicate Attachment</string>
     <string name="dialog_confirm_duplicate_attachment_rename_message">File already exists in downloads folder. Please choose a name for new file:</string>
+    <string name="dialog_confirm_duplicate_attachment_rename_hint">Write a new name for the file (do not forget to use same file extension)</string>
     <string name="dialog_confirm_duplicate_attachment_message">File already exists in downloads folder. Would you like to overwrite or rename it?</string>
     <string name="dialog_confirm_duplicate_attachment_overwrite_button">Overwrite</string>
     <string name="dialog_confirm_duplicate_attachment_rename_button">Rename</string>
