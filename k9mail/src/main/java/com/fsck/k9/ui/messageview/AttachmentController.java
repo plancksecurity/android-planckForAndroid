@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import androidx.annotation.WorkerThread;
 
-import security.pEp.ui.dialog.DuplicateAttachmentConfirmationDialog;
 import timber.log.Timber;
 import android.view.View;
 
