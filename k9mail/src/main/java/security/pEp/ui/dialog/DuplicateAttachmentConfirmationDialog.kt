@@ -78,18 +78,17 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
         }
 
         @JvmStatic
-        fun show(
-            fragment: Fragment,
+        fun Fragment.showDuplicateAttachmentConfirmationDialog(
             message: String,
             defaultFileName: String
         ) {
-            if(fragment !is DuplicationAttachmentConfirmationListener) {
+            if(this !is DuplicationAttachmentConfirmationListener) {
                 throw IllegalStateException("Fragment must implement DuplicationAttachmentConfirmationListener!")
             }
             val dialogFragment = newInstance(message, defaultFileName)
 
-            dialogFragment.setTargetFragment(fragment, ID)
-            dialogFragment.show(fragment.parentFragmentManager, DIALOG_TAG)
+            dialogFragment.setTargetFragment(this, ID)
+            dialogFragment.show(parentFragmentManager, DIALOG_TAG)
         }
     }
 }
