@@ -16,9 +16,11 @@ private const val ID = 1
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_OVERWRITE_OR_RENAME = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
+private const val STATE_OVERWRITE_SCREEN = "overwriteScreen"
 
 class DuplicateAttachmentConfirmationDialog : DialogFragment() {
     private var overwriteOrRename: Boolean = false
+    private var isOverwriteScreen: Boolean = false
     private var defaultFileName: String = ""
     private lateinit var messageText: TextView
     private lateinit var newNameInput: EditText
@@ -44,7 +46,9 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
             false
         )
         locateViews(rootView)
-        displayScreen(overwriteOrRename)
+        val showOverwriteScreen =
+            savedInstanceState?.getBoolean(STATE_OVERWRITE_SCREEN, false) ?: overwriteOrRename
+        displayScreen(showOverwriteScreen)
        
         return rootView
     }
@@ -57,8 +61,9 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
         negativelButton = rootView.findViewById(R.id.cancelButton)
     }
 
-    private fun displayScreen(isOverwriteScreen: Boolean) {
-        if(isOverwriteScreen) {
+    private fun displayScreen(showOverwriteScreen: Boolean) {
+        this.isOverwriteScreen = showOverwriteScreen
+        if(showOverwriteScreen) {
             messageText.setText(
                 R.string.dialog_confirm_duplicate_attachment_message
             )
@@ -87,11 +92,16 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
                 getListener().attachmentNameConfirmed(newNameInput.text.toString())
             }
             negativelButton.setOnClickListener {
-                if(this.overwriteOrRename) displayScreen(true)
+                if(overwriteOrRename) displayScreen(true)
                 else dismissAllowingStateLoss()
             }
             renameButton.visibility = View.GONE
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_OVERWRITE_SCREEN, isOverwriteScreen)
     }
 
     interface DuplicationAttachmentConfirmationListener {
