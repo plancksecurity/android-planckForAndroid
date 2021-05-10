@@ -14,17 +14,22 @@ import java.lang.IllegalStateException
 
 private const val ID = 1
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
-private const val ARG_MESSAGE = "message"
+private const val ARG_OVERWRITE_OR_RENAME = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
 
 class DuplicateAttachmentConfirmationDialog : DialogFragment() {
-    private var message: String = ""
+    private var overwriteOrRename: Boolean = false
     private var defaultFileName: String = ""
+    private lateinit var messageText: TextView
+    private lateinit var newNameInput: EditText
+    private lateinit var positiveButton: Button
+    private lateinit var renameButton: Button
+    private lateinit var negativelButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            message = it.getString(ARG_MESSAGE, "")
+            overwriteOrRename = it.getBoolean(ARG_OVERWRITE_OR_RENAME, false)
             defaultFileName = it.getString(ARG_DEFAULT_FILE_NAME, "")
         }
     }
@@ -38,21 +43,60 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
             container,
             false
         )
-        rootView.findViewById<TextView>(R.id.messageText).text = message
-        val nameInput = rootView.findViewById<EditText>(R.id.newNameInput)
-        nameInput.setText(defaultFileName)
-        rootView.findViewById<Button>(R.id.acceptButton).setOnClickListener {
-            dismissAllowingStateLoss()
-            getListener().attachmentNameConfirmed(nameInput.text.toString())
-        }
-        rootView.findViewById<Button>(R.id.cancelButton).setOnClickListener {
-            dismissAllowingStateLoss()
-        }
+        locateViews(rootView)
+        displayScreen(overwriteOrRename)
+       
         return rootView
+    }
+    
+    private fun locateViews(rootView: View) {
+        messageText = rootView.findViewById(R.id.messageText)
+        newNameInput = rootView.findViewById(R.id.newNameInput)
+        positiveButton = rootView.findViewById(R.id.acceptButton)
+        renameButton = rootView.findViewById(R.id.renameButton)
+        negativelButton = rootView.findViewById(R.id.cancelButton)
+    }
+
+    private fun displayScreen(isOverwriteScreen: Boolean) {
+        if(isOverwriteScreen) {
+            messageText.setText(
+                R.string.dialog_confirm_duplicate_attachment_message
+            )
+            newNameInput.visibility = View.GONE
+            positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_overwrite_button)
+            positiveButton.setOnClickListener {
+                dismissAllowingStateLoss()
+                getListener().overwriteAttachmentName()
+            }
+            negativelButton.setOnClickListener {
+                dismissAllowingStateLoss()
+            }
+            renameButton.visibility = View.VISIBLE
+            renameButton.setOnClickListener {
+                displayScreen(false)
+            }
+        } else {
+            messageText.setText(
+                R.string.dialog_confirm_duplicate_attachment_rename_message
+            )
+            newNameInput.setText(defaultFileName)
+            newNameInput.visibility = View.VISIBLE
+            positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_save_button)
+            positiveButton.setOnClickListener {
+                dismissAllowingStateLoss()
+                getListener().attachmentNameConfirmed(newNameInput.text.toString())
+            }
+            negativelButton.setOnClickListener {
+                if(this.overwriteOrRename) displayScreen(true)
+                else dismissAllowingStateLoss()
+            }
+            renameButton.visibility = View.GONE
+        }
     }
 
     interface DuplicationAttachmentConfirmationListener {
         fun attachmentNameConfirmed(newName: String)
+        fun overwriteAttachmentName()
     }
 
     private fun getListener(): DuplicationAttachmentConfirmationListener {
@@ -68,24 +112,24 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
 
     companion object {
         private fun newInstance(
-            message: String,
+            overwrite: Boolean,
             defaultFileName: String
         ) = DuplicateAttachmentConfirmationDialog().apply {
             arguments = Bundle().apply {
-                putString(ARG_MESSAGE, message)
                 putString(ARG_DEFAULT_FILE_NAME, defaultFileName)
+                putBoolean(ARG_OVERWRITE_OR_RENAME, overwrite)
             }
         }
 
         @JvmStatic
         fun Fragment.showDuplicateAttachmentConfirmationDialog(
-            message: String,
+            overwrite: Boolean,
             defaultFileName: String
         ) {
             if(this !is DuplicationAttachmentConfirmationListener) {
                 throw IllegalStateException("Fragment must implement DuplicationAttachmentConfirmationListener!")
             }
-            val dialogFragment = newInstance(message, defaultFileName)
+            val dialogFragment = newInstance(overwrite, defaultFileName)
 
             dialogFragment.setTargetFragment(this, ID)
             dialogFragment.show(parentFragmentManager, DIALOG_TAG)
