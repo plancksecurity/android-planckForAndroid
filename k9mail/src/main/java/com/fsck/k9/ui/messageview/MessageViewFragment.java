@@ -921,7 +921,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void attachmentNameConfirmed(@NotNull String newName) {
-        currentAttachmentViewInfo = new AttachmentViewInfo(
+        AttachmentViewInfo attachmentViewInfo = new AttachmentViewInfo(
             currentAttachmentViewInfo.mimeType,
                 newName,
                 currentAttachmentViewInfo.size,
@@ -930,6 +930,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 currentAttachmentViewInfo.part,
                 currentAttachmentViewInfo.isContentAvailable
         );
+        setCurrentAttachmentViewInfo(attachmentViewInfo);
         getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(customAttachmentSavePath);
     }
 
