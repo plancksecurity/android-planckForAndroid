@@ -63,6 +63,7 @@ import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1069,7 +1070,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         setCurrentAttachmentViewInfo(attachment);
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
-            getAttachmentController(attachment).saveAttachment();
+            saveAttachmentPreventingDuplicates();
+        }
+    }
+
+    private void saveAttachmentPreventingDuplicates() {
+        // if current attachment already exists
+        File attachmentFile = new File(K9.getAttachmentDefaultPath(), currentAttachmentViewInfo.displayName);
+        if(attachmentFile.exists()) {
+            // show dialog for renaming, confirmation, etc.
+        } else {
+            getAttachmentController(currentAttachmentViewInfo).saveAttachment();
         }
     }
 
