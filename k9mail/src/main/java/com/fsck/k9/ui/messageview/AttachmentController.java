@@ -60,13 +60,24 @@ public class AttachmentController {
         this.attachment = attachment;
     }
 
-    public void saveAttachmentPreventingDuplicates(String savePath) {
+    public void saveAttachmentPreventingDuplicates(String savePath, boolean overwrite) {
         File attachmentFile = new File(savePath, attachment.displayName);
         if(attachmentFile.exists()) {
             String newDisplayName = findNewNameForDuplicateAttachment(savePath);
-            messageViewFragment.showDuplicateAttachmentConfirmationDialog(newDisplayName);
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog(overwrite, newDisplayName);
         } else {
             saveAttachmentTo(savePath);
+        }
+    }
+
+    public void overwriteAttachment(String savePath) {
+        File attachmentFile = new File(savePath, attachment.displayName);
+        boolean couldDelete = attachmentFile.delete();
+        if(couldDelete) {
+            saveAttachmentTo(savePath);
+        } else {
+            String newDisplayName = findNewNameForDuplicateAttachment(savePath);
+            messageViewFragment.overWriteAttachmentFailed(newDisplayName);
         }
     }
 
