@@ -325,4 +325,6 @@
     <string name="export_pep_support_data_dialog_image_success_content_desc">Success</string>
     <string name="export_pep_support_data_dialog_image_failure_content_desc">Failure</string>
 
+    <string name="dialog_confirm_duplicate_attachment_title">Duplicate Attachment</string>
+    <string name="dialog_confirm_duplicate_attachment_message">File already exists in %s. Please choose a name for new file:</string>
 </resources>
