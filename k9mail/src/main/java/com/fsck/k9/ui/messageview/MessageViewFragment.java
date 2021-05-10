@@ -63,6 +63,8 @@ import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +79,7 @@ import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.print.Print;
 import security.pEp.print.PrintMessage;
+import security.pEp.ui.dialog.DuplicateAttachmentConfirmationDialog;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -87,9 +90,11 @@ import static android.app.Activity.RESULT_OK;
 import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
 
 public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
-        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
+        AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener,
+        DuplicateAttachmentConfirmationDialog.DuplicationAttachmentConfirmationListener {
 
     private static final String ARG_REFERENCE = "reference";
+    private static final String STATE_ATTACHMENT_SAVE_PATH = "attachmentSavePath";
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;
     private static final int ACTIVITY_CHOOSE_FOLDER_COPY = 2;
@@ -102,6 +107,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private String customAttachmentSavePath;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -238,8 +244,15 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         setMessageOptionsListener();
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
-        restoreAttachmentViewInfo();
+        restoreState(savedInstanceState);
         return view;
+    }
+
+    private void restoreState(Bundle savedInstanceState) {
+        if(savedInstanceState != null) {
+            restoreAttachmentViewInfo();
+            customAttachmentSavePath = savedInstanceState.getString(STATE_ATTACHMENT_SAVE_PATH);
+        }
     }
 
     private void restoreAttachmentViewInfo() {
@@ -328,6 +341,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onSaveInstanceState(Bundle outState) {
         messageCryptoPresenter.onSaveInstanceState(outState);
+        outState.putString(STATE_ATTACHMENT_SAVE_PATH, customAttachmentSavePath);
 
         super.onSaveInstanceState(outState);
     }
@@ -589,7 +603,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                     if (fileUri != null) {
                         String filePath = fileUri.getPath();
                         if (filePath != null) {
-                            getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(filePath);
+                            saveAttachmentPreventingDuplicates(filePath);
                         }
                     }
                 }
@@ -900,6 +914,20 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
     }
 
+    @Override
+    public void attachmentNameConfirmed(@NotNull String newName) {
+        currentAttachmentViewInfo = new AttachmentViewInfo(
+            currentAttachmentViewInfo.mimeType,
+                newName,
+                currentAttachmentViewInfo.size,
+                currentAttachmentViewInfo.internalUri,
+                currentAttachmentViewInfo.inlineAttachment,
+                currentAttachmentViewInfo.part,
+                currentAttachmentViewInfo.isContentAvailable
+        );
+        getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(customAttachmentSavePath);
+    }
+
     public interface MessageViewFragmentListener {
         void onForward(MessageReference messageReference, Parcelable decryptionResultForReply,
                        Rating pEpRating);
@@ -1070,17 +1098,19 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         setCurrentAttachmentViewInfo(attachment);
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
-            saveAttachmentPreventingDuplicates();
+            saveAttachmentPreventingDuplicates(K9.getAttachmentDefaultPath());
         }
     }
 
-    private void saveAttachmentPreventingDuplicates() {
-        // if current attachment already exists
-        File attachmentFile = new File(K9.getAttachmentDefaultPath(), currentAttachmentViewInfo.displayName);
+    private void saveAttachmentPreventingDuplicates(String savePath) {
+        customAttachmentSavePath = savePath;
+        File attachmentFile = new File(savePath, currentAttachmentViewInfo.displayName);
         if(attachmentFile.exists()) {
-            // show dialog for renaming, confirmation, etc.
+            String message = getString(R.string.dialog_confirm_duplicate_attachment_message, savePath);
+            String defaultFileName = currentAttachmentViewInfo.displayName;
+            DuplicateAttachmentConfirmationDialog.show(this, message, defaultFileName);
         } else {
-            getAttachmentController(currentAttachmentViewInfo).saveAttachment();
+            getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(savePath);
         }
     }
 
