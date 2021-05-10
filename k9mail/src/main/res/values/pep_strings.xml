@@ -326,5 +326,9 @@
     <string name="export_pep_support_data_dialog_image_failure_content_desc">Failure</string>
 
     <string name="dialog_confirm_duplicate_attachment_title">Duplicate Attachment</string>
-    <string name="dialog_confirm_duplicate_attachment_message">File already exists in %s. Please choose a name for new file:</string>
+    <string name="dialog_confirm_duplicate_attachment_rename_message">File already exists in %s. Please choose a name for new file:</string>
+    <string name="dialog_confirm_duplicate_attachment_message">File already exists in %s. Would you like to overwrite or rename it?</string>
+    <string name="dialog_confirm_duplicate_attachment_overwrite_button">Overwrite</string>
+    <string name="dialog_confirm_duplicate_attachment_rename_button">Rename</string>
+    <string name="dialog_confirm_duplicate_attachment_save_button">Save</string>
 </resources>

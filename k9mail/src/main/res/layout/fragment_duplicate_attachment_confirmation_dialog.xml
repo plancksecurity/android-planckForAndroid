@@ -29,14 +29,16 @@
         android:ems="10"
         tools:text="filename.extension"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messageText" />
+        app:layout_constraintTop_toBottomOf="@+id/messageText"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/messageText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/dialog_confirm_duplicate_attachment_message"
+        tools:text="@string/dialog_confirm_duplicate_attachment_message"
         android:textColor="?attr/defaultColorOnBackground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
@@ -57,8 +59,17 @@
         style="?attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/okay_action"
+        android:text="@string/dialog_confirm_duplicate_attachment_overwrite_button"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cancelButton" />
+
+    <Button
+        android:id="@+id/renameButton"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_confirm_duplicate_attachment_rename_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/cancelButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
