@@ -1,6 +1,7 @@
 package com.fsck.k9.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.Context;
@@ -38,8 +39,10 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
 import com.fsck.k9.activity.drawer.DrawerLayoutView;
 import com.fsck.k9.activity.drawer.MessageListView;
+import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.fragment.MessageListFragment;
 import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
+import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
@@ -137,6 +140,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private MessageSwipeDirection direction;
     private String specialAccountUuid;
     private String accountUuid;
+    private NonConfigurationInstance nonConfigurationInstance;
+    private MessageListNonConfigurationInstance messageListNonConfigurationInstance;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
                                            boolean noThreading, boolean newTask, boolean isFolder) {
@@ -355,6 +360,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayoutView.initDrawerView(MessageList.this, getToolbar(), drawerLayout, this);
         restoreAccountUuid(savedInstanceState);
+        restoreNonConfigurationInstance();
 
         if (!decodeExtras(getIntent())) {
             return;
@@ -370,6 +376,57 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         channelUtils.updateChannels();
 
 
+    }
+
+    private void restoreNonConfigurationInstance() {
+        nonConfigurationInstance = (NonConfigurationInstance) getLastCustomNonConfigurationInstance();
+        if (nonConfigurationInstance != null) {
+            nonConfigurationInstance.restore(this);
+            if(nonConfigurationInstance instanceof MessageListNonConfigurationInstance) {
+                messageListNonConfigurationInstance = (MessageListNonConfigurationInstance) nonConfigurationInstance;
+            }
+        }
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Object retain = null;
+        if (nonConfigurationInstance != null && nonConfigurationInstance.retain()) {
+            retain = nonConfigurationInstance;
+        }
+        return retain;
+    }
+
+    private static class MessageListNonConfigurationInstance implements NonConfigurationInstance {
+        private final AttachmentViewInfo attachmentViewInfo;
+
+        MessageListNonConfigurationInstance(AttachmentViewInfo attachmentViewInfo) {
+            this.attachmentViewInfo = attachmentViewInfo;
+        }
+
+        public AttachmentViewInfo getAttachmentViewInfo() {
+            return attachmentViewInfo;
+        }
+
+        @Override
+        public boolean retain() {
+            return true;
+        }
+
+        @Override
+        public void restore(Activity activity) {
+
+        }
+    }
+
+    public AttachmentViewInfo getNonConfigAttachmentViewInfo() {
+        return messageListNonConfigurationInstance == null
+        ? null
+        : messageListNonConfigurationInstance.getAttachmentViewInfo();
+    }
+
+    public void retainAttachmentViewInfo(AttachmentViewInfo attachmentViewInfo) {
+        this.nonConfigurationInstance = new MessageListNonConfigurationInstance(attachmentViewInfo);
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {

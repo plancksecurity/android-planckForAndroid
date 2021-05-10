@@ -237,7 +237,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         setMessageOptionsListener();
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
+        restoreAttachmentViewInfo();
         return view;
+    }
+
+    private void restoreAttachmentViewInfo() {
+        currentAttachmentViewInfo = ((MessageList)requireActivity()).getNonConfigAttachmentViewInfo();
+    }
+
+    private void setCurrentAttachmentViewInfo(AttachmentViewInfo attachmentViewInfo) {
+        currentAttachmentViewInfo = attachmentViewInfo;
+        ((MessageList)requireActivity()).retainAttachmentViewInfo(attachmentViewInfo);
     }
 
     @Override
@@ -1029,14 +1039,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onViewAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-        currentAttachmentViewInfo = attachment;
+        setCurrentAttachmentViewInfo(attachment);
         getAttachmentController(attachment).viewAttachment();
     }
 
     @Override
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-        currentAttachmentViewInfo = attachment;
+        setCurrentAttachmentViewInfo(attachment);
         createPermissionListeners();
         if (permissionChecker.hasWriteExternalPermission()) {
             getAttachmentController(attachment).saveAttachment();
@@ -1046,7 +1056,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     @Override
     public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
-        currentAttachmentViewInfo = attachment;
+        setCurrentAttachmentViewInfo(attachment);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getAttachmentController(attachment).saveAttachment();
         } else {
