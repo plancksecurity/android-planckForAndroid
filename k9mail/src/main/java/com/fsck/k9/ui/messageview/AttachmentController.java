@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import androidx.annotation.WorkerThread;
 
+import kotlin.text.StringsKt;
 import timber.log.Timber;
 import android.view.View;
 
@@ -62,11 +63,26 @@ public class AttachmentController {
     public void saveAttachmentPreventingDuplicates(String savePath) {
         File attachmentFile = new File(savePath, attachment.displayName);
         if(attachmentFile.exists()) {
-            // show duplicate attachment dialog
-            messageViewFragment.showDuplicateAttachmentConfirmationDialog();
+            String newDisplayName = findNewNameForDuplicateAttachment(savePath);
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog(newDisplayName);
         } else {
             saveAttachmentTo(savePath);
         }
+    }
+
+    public String findNewNameForDuplicateAttachment(String savePath) {
+        File attachmentFile;
+        int oldNameCount = 1;
+        String displayName;
+        do {
+            displayName =
+                    StringsKt.substringBeforeLast(attachment.displayName, '.', attachment.displayName) +
+                            "(" + oldNameCount + ")." +
+                            StringsKt.substringAfterLast(attachment.displayName, '.', attachment.displayName);
+            attachmentFile = new File(savePath, displayName);
+            oldNameCount ++;
+        } while(attachmentFile.exists());
+        return displayName;
     }
 
     public void viewAttachment() {

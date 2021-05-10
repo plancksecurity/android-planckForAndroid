@@ -848,10 +848,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         showDialog(R.id.dialog_attachment_progress);
     }
 
-    public void showDuplicateAttachmentConfirmationDialog() {
+    public void showDuplicateAttachmentConfirmationDialog(String newAttachmentDefaultName) {
         String message = getString(R.string.dialog_confirm_duplicate_attachment_message, customAttachmentSavePath);
-        String defaultFileName = currentAttachmentViewInfo.displayName;
-        DuplicateAttachmentConfirmationDialog.showDuplicateAttachmentConfirmationDialog(this, message, defaultFileName);
+        DuplicateAttachmentConfirmationDialog.showDuplicateAttachmentConfirmationDialog(
+                this, message, newAttachmentDefaultName);
     }
 
     public void hideAttachmentLoadingDialogOnMainThread() {
