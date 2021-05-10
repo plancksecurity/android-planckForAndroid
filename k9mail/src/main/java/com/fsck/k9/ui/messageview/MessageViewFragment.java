@@ -65,7 +65,6 @@ import com.fsck.k9.view.MessageHeader;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -849,6 +848,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         showDialog(R.id.dialog_attachment_progress);
     }
 
+    public void showDuplicateAttachmentConfirmationDialog() {
+        String message = getString(R.string.dialog_confirm_duplicate_attachment_message, customAttachmentSavePath);
+        String defaultFileName = currentAttachmentViewInfo.displayName;
+        DuplicateAttachmentConfirmationDialog.show(this, message, defaultFileName);
+    }
+
     public void hideAttachmentLoadingDialogOnMainThread() {
         handler.post(() -> {
             removeDialog(R.id.dialog_attachment_progress);
@@ -1104,14 +1109,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void saveAttachmentPreventingDuplicates(String savePath) {
         customAttachmentSavePath = savePath;
-        File attachmentFile = new File(savePath, currentAttachmentViewInfo.displayName);
-        if(attachmentFile.exists()) {
-            String message = getString(R.string.dialog_confirm_duplicate_attachment_message, savePath);
-            String defaultFileName = currentAttachmentViewInfo.displayName;
-            DuplicateAttachmentConfirmationDialog.show(this, message, defaultFileName);
-        } else {
-            getAttachmentController(currentAttachmentViewInfo).saveAttachmentTo(savePath);
-        }
+        getAttachmentController(currentAttachmentViewInfo).saveAttachmentPreventingDuplicates(savePath);
     }
 
     @Override
@@ -1125,7 +1123,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                     ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
                         @Override
                         public void onPathEntered(String path) {
-                            getAttachmentController(attachment).saveAttachmentTo(path);
+                            saveAttachmentPreventingDuplicates(path);
                         }
 
                         @Override

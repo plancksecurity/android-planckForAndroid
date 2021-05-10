@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import androidx.annotation.WorkerThread;
+
+import security.pEp.ui.dialog.DuplicateAttachmentConfirmationDialog;
 import timber.log.Timber;
 import android.view.View;
 
@@ -56,6 +58,16 @@ public class AttachmentController {
         this.downloadManager = downloadManager;
         this.messageViewFragment = messageViewFragment;
         this.attachment = attachment;
+    }
+
+    public void saveAttachmentPreventingDuplicates(String savePath) {
+        File attachmentFile = new File(savePath, attachment.displayName);
+        if(attachmentFile.exists()) {
+            // show duplicate attachment dialog
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog();
+        } else {
+            saveAttachmentTo(savePath);
+        }
     }
 
     public void viewAttachment() {
