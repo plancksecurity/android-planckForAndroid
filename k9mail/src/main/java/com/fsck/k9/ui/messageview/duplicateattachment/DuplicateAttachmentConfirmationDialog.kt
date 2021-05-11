@@ -39,6 +39,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         arguments?.let {
             presenter.initialize(
                 view = this,
+                listener = getListener(),
                 initialScreenMode = ScreenMode.valueOf(
                     it.getString(
                         ARG_INITIAL_SCREEN_MODE,

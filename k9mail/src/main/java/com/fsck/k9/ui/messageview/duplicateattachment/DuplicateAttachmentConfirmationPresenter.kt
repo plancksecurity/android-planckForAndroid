@@ -7,16 +7,19 @@ private const val STATE_CURRENT_SCREEN_MODE = "currentScreenMode"
 
 class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     private lateinit var view: DuplicateAttachmentConfirmationView
+    private lateinit var listener: DuplicationAttachmentConfirmationListener
     lateinit var initialScreenMode: ScreenMode
     lateinit var currentScreenMode: ScreenMode
     lateinit var defaultName: String
 
     fun initialize(
         view: DuplicateAttachmentConfirmationView,
+        listener: DuplicationAttachmentConfirmationListener,
         initialScreenMode: ScreenMode,
         defaultName: String
     ) {
         this.view = view
+        this.listener = listener
         this.initialScreenMode = initialScreenMode
         this.defaultName = defaultName
     }
