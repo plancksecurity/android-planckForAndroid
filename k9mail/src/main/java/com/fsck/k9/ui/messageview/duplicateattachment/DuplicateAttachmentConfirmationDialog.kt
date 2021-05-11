@@ -138,11 +138,6 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         renameButton.visibility = View.GONE
     }
 
-    interface DuplicationAttachmentConfirmationListener {
-        fun attachmentNameConfirmed(newName: String)
-        fun overwriteAttachmentName()
-    }
-
     private fun getListener(): DuplicationAttachmentConfirmationListener {
         try {
             return targetFragment as DuplicationAttachmentConfirmationListener
@@ -183,4 +178,9 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
 
 enum class ScreenMode {
     OVERWRITE, RENAME
+}
+
+interface DuplicationAttachmentConfirmationListener {
+    fun attachmentNameConfirmed(newName: String)
+    fun overwriteAttachmentName()
 }
