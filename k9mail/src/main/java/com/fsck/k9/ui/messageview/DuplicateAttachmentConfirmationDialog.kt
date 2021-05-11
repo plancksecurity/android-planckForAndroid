@@ -9,31 +9,62 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.loader.app.LoaderManager
+import com.fsck.k9.K9
 import com.fsck.k9.R
-import java.lang.IllegalStateException
+import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule
+import javax.inject.Inject
 
 private const val ID = 1
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_INITIAL_SCREEN_MODE = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
-private const val STATE_CURRENT_SCREEN_MODE = "overwriteScreen"
 
-class DuplicateAttachmentConfirmationDialog : DialogFragment() {
-    private lateinit var initialScreenMode: ScreenMode
-    private lateinit var currentScreenMode: ScreenMode
-    private var defaultFileName: String = ""
+class DuplicateAttachmentConfirmationDialog : DialogFragment(), DuplicateAttachmentConfirmationView {
     private lateinit var messageText: TextView
     private lateinit var newNameInput: EditText
     private lateinit var positiveButton: Button
     private lateinit var renameButton: Button
     private lateinit var negativelButton: Button
 
+    @Inject
+    lateinit var presenter: DuplicateAttachmentConfirmationPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         arguments?.let {
-            initialScreenMode = ScreenMode.valueOf(it.getString(ARG_INITIAL_SCREEN_MODE, ScreenMode.RENAME.name))
-            defaultFileName = it.getString(ARG_DEFAULT_FILE_NAME, "")
+            presenter.initialize(
+                view = this,
+                initialScreenMode = ScreenMode.valueOf(
+                    it.getString(
+                        ARG_INITIAL_SCREEN_MODE,
+                        ScreenMode.RENAME.name
+                    )
+                ),
+                defaultName = it.getString(
+                    ARG_DEFAULT_FILE_NAME,
+                    ""
+                )
+            )
         }
+    }
+
+    private fun initializeInjector() {
+        val pEpComponent = DaggerPEpComponent.builder()
+            .applicationComponent((requireContext().applicationContext as K9).component)
+            .pEpModule(
+                PEpModule(
+                    requireActivity(),
+                    LoaderManager.getInstance(this),
+                    parentFragmentManager
+                )
+            )
+            .activityModule(ActivityModule(activity))
+            .build()
+        pEpComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -46,11 +77,13 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
             false
         )
         locateViews(rootView)
-        displayScreen(
-            ScreenMode.valueOf(savedInstanceState?.getString(STATE_CURRENT_SCREEN_MODE) ?: initialScreenMode.name)
-        )
-       
+        setupClickListeners()
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter.displayInitialScreen(savedInstanceState)
     }
     
     private fun locateViews(rootView: View) {
@@ -61,55 +94,43 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
         negativelButton = rootView.findViewById(R.id.cancelButton)
     }
 
-    private fun displayScreen(screenMode: ScreenMode) {
-        currentScreenMode = screenMode
-        when(screenMode) {
-            ScreenMode.OVERWRITE -> {
-                messageText.setText(
-                    R.string.dialog_confirm_duplicate_attachment_message
-                )
-                newNameInput.visibility = View.GONE
-                positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_overwrite_button)
-                positiveButton.setOnClickListener {
-                    dismissAllowingStateLoss()
-                    getListener().overwriteAttachmentName()
-                }
-                negativelButton.setText(R.string.cancel_action)
-                negativelButton.setOnClickListener {
-                    dismissAllowingStateLoss()
-                }
-                renameButton.visibility = View.VISIBLE
-                renameButton.setOnClickListener {
-                    displayScreen(ScreenMode.RENAME)
-                }
-            }
-            ScreenMode.RENAME -> {
-                messageText.setText(
-                    R.string.dialog_confirm_duplicate_attachment_rename_message
-                )
-                newNameInput.setText(defaultFileName)
-                newNameInput.visibility = View.VISIBLE
-                positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_save_button)
-                positiveButton.setOnClickListener {
-                    dismissAllowingStateLoss()
-                    getListener().attachmentNameConfirmed(newNameInput.text.toString())
-                }
-                negativelButton.setText(
-                    if(initialScreenMode == ScreenMode.OVERWRITE) R.string.dialog_confirm_duplicate_attachment_back_button
-                    else R.string.cancel_action
-                )
-                negativelButton.setOnClickListener {
-                    if(initialScreenMode == ScreenMode.OVERWRITE) displayScreen(ScreenMode.OVERWRITE)
-                    else dismissAllowingStateLoss()
-                }
-                renameButton.visibility = View.GONE
-            }
+    private fun setupClickListeners() {
+        positiveButton.setOnClickListener {
+            presenter.positiveButtonClicked()
+        }
+        negativelButton.setOnClickListener {
+            presenter.negativeButtonClicked()
+        }
+        renameButton.setOnClickListener {
+            presenter.renameButtonClicked()
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(STATE_CURRENT_SCREEN_MODE, currentScreenMode.name)
+    override fun finish() {
+        dismissAllowingStateLoss()
+    }
+
+    override fun displayOverwriteScreen() {
+        messageText.setText(R.string.dialog_confirm_duplicate_attachment_message)
+        newNameInput.visibility = View.GONE
+        positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_overwrite_button)
+        negativelButton.setText(R.string.cancel_action)
+        renameButton.visibility = View.VISIBLE
+    }
+
+    override fun displayRenameScreen(
+        backOrCancel: Boolean,
+        defaultFileName: String
+    ) {
+        messageText.setText(R.string.dialog_confirm_duplicate_attachment_rename_message)
+        newNameInput.setText(defaultFileName)
+        newNameInput.visibility = View.VISIBLE
+        positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_save_button)
+        negativelButton.setText(
+            if(backOrCancel) R.string.dialog_confirm_duplicate_attachment_back_button
+            else R.string.cancel_action
+        )
+        renameButton.visibility = View.GONE
     }
 
     interface DuplicationAttachmentConfirmationListener {
