@@ -88,10 +88,6 @@ public class AttachmentController {
         }
     }
 
-    public void saveAttachment() {
-        saveAttachmentTo(K9.getAttachmentDefaultPath());
-    }
-
     public void saveAttachmentTo(String directory) {
         saveAttachmentTo(new File(directory));
     }
