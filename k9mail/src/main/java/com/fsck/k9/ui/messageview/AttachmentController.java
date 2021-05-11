@@ -13,7 +13,6 @@ import android.os.Environment;
 import androidx.annotation.WorkerThread;
 
 import kotlin.text.StringsKt;
-import security.pEp.ui.dialog.ScreenMode;
 import timber.log.Timber;
 import android.view.View;
 

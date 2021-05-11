@@ -78,8 +78,6 @@ import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.print.Print;
 import security.pEp.print.PrintMessage;
-import security.pEp.ui.dialog.DuplicateAttachmentConfirmationDialog;
-import security.pEp.ui.dialog.ScreenMode;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
