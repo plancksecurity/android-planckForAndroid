@@ -98,7 +98,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
 
     private fun setupClickListeners() {
         positiveButton.setOnClickListener {
-            presenter.positiveButtonClicked()
+            presenter.positiveButtonClicked(newNameInput.text.toString())
         }
         negativelButton.setOnClickListener {
             presenter.negativeButtonClicked()

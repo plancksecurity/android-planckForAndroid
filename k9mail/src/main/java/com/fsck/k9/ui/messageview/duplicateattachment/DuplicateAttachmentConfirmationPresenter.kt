@@ -52,23 +52,17 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     }
 
     fun renameButtonClicked() {
-        when(currentScreenMode) {
-            ScreenMode.OVERWRITE -> {
-
-            }
-            ScreenMode.RENAME -> {
-
-            }
-        }
+        displayScreen(ScreenMode.RENAME)
     }
 
-    fun positiveButtonClicked() {
+    fun positiveButtonClicked(newName: String) {
+        view.finish()
         when(currentScreenMode) {
             ScreenMode.OVERWRITE -> {
-
+                listener.overwriteAttachmentName()
             }
             ScreenMode.RENAME -> {
-
+                listener.attachmentNameConfirmed(newName)
             }
         }
     }
@@ -76,10 +70,11 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     fun negativeButtonClicked() {
         when(currentScreenMode) {
             ScreenMode.OVERWRITE -> {
-
+                view.finish()
             }
             ScreenMode.RENAME -> {
-
+                if(initialScreenMode == ScreenMode.OVERWRITE) displayScreen(ScreenMode.OVERWRITE)
+                else view.finish()
             }
         }
     }
