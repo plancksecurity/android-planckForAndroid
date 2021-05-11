@@ -110,6 +110,11 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         dismissAllowingStateLoss()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenter.saveInstanceState(outState)
+    }
+
     override fun displayOverwriteScreen() {
         messageText.setText(R.string.dialog_confirm_duplicate_attachment_message)
         newNameInput.visibility = View.GONE
