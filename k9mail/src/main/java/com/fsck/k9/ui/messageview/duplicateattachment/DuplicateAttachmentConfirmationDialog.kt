@@ -21,6 +21,7 @@ private const val ID = 1
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_INITIAL_SCREEN_MODE = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
+private const val ARG_SAVE_PATH = "save_path"
 
 class DuplicateAttachmentConfirmationDialog : DialogFragment(),
     DuplicateAttachmentConfirmationView {
@@ -48,6 +49,10 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
                 ),
                 defaultName = it.getString(
                     ARG_DEFAULT_FILE_NAME,
+                    ""
+                ),
+                savePath = it.getString(
+                    ARG_SAVE_PATH,
                     ""
                 )
             )
@@ -154,10 +159,12 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
     companion object {
         private fun newInstance(
             initialScreenMode: ScreenMode,
-            defaultFileName: String
+            defaultFileName: String,
+            savePath: String
         ) = DuplicateAttachmentConfirmationDialog().apply {
             arguments = Bundle().apply {
                 putString(ARG_DEFAULT_FILE_NAME, defaultFileName)
+                putSerializable(ARG_SAVE_PATH, savePath)
                 putString(ARG_INITIAL_SCREEN_MODE, initialScreenMode.name)
             }
         }
@@ -165,12 +172,13 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         @JvmStatic
         fun Fragment.showDuplicateAttachmentConfirmationDialog(
             initialScreenMode: ScreenMode,
-            defaultFileName: String
+            defaultFileName: String,
+            savePath: String
         ) {
             if(this !is DuplicationAttachmentConfirmationListener) {
                 throw IllegalStateException("Fragment must implement DuplicationAttachmentConfirmationListener!")
             }
-            val dialogFragment = newInstance(initialScreenMode, defaultFileName)
+            val dialogFragment = newInstance(initialScreenMode, defaultFileName, savePath)
 
             dialogFragment.setTargetFragment(this, ID)
             dialogFragment.show(parentFragmentManager, DIALOG_TAG)

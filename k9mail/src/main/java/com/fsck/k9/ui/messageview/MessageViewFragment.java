@@ -850,9 +850,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         showDialog(R.id.dialog_attachment_progress);
     }
 
-    public void showDuplicateAttachmentConfirmationDialog(ScreenMode mode, String newAttachmentDefaultName) {
+    public void showDuplicateAttachmentConfirmationDialog(ScreenMode mode) {
         DuplicateAttachmentConfirmationDialog.showDuplicateAttachmentConfirmationDialog(
-                this, mode, newAttachmentDefaultName);
+                this,
+                mode, currentAttachmentViewInfo.displayName,
+                customAttachmentSavePath
+        );
     }
 
     public void hideAttachmentLoadingDialogOnMainThread() {
@@ -940,12 +943,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         getAttachmentController(currentAttachmentViewInfo).overwriteAttachment(customAttachmentSavePath);
     }
 
-    public void overWriteAttachmentFailed(String newDisplayName) {
+    public void overWriteAttachmentFailed() {
         FeedbackTools.showLongFeedback(
                 requireView(),
                 getString(R.string.snackbar_duplicate_attachment_overwrite_failed_rename_action),
                 getString(R.string.dialog_confirm_duplicate_attachment_rename_button),
-                v -> showDuplicateAttachmentConfirmationDialog(ScreenMode.RENAME, newDisplayName)
+                v -> showDuplicateAttachmentConfirmationDialog(ScreenMode.RENAME)
         );
     }
 

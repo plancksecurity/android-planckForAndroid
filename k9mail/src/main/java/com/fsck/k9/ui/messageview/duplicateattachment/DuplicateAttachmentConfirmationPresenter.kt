@@ -1,6 +1,8 @@
 package com.fsck.k9.ui.messageview.duplicateattachment
 
 import android.os.Bundle
+import kotlinx.coroutines.*
+import java.io.File
 import javax.inject.Inject
 
 private const val STATE_CURRENT_SCREEN_MODE = "currentScreenMode"
@@ -11,17 +13,20 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     lateinit var initialScreenMode: ScreenMode
     lateinit var currentScreenMode: ScreenMode
     lateinit var defaultName: String
+    lateinit var savePath: String
 
     fun initialize(
         view: DuplicateAttachmentConfirmationView,
         listener: DuplicationAttachmentConfirmationListener,
         initialScreenMode: ScreenMode,
-        defaultName: String
+        defaultName: String,
+        savePath: String
     ) {
         this.view = view
         this.listener = listener
         this.initialScreenMode = initialScreenMode
         this.defaultName = defaultName
+        this.savePath = savePath
     }
 
     fun displayInitialScreen(savedInstanceState: Bundle?) {
@@ -39,15 +44,18 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     fun displayScreen(screenMode: ScreenMode) {
         currentScreenMode = screenMode
         when(screenMode) {
-            ScreenMode.OVERWRITE -> {
-                view.displayOverwriteScreen()
-            }
-            ScreenMode.RENAME -> {
-                view.displayRenameScreen(
-                    initialScreenMode == ScreenMode.OVERWRITE,
-                    defaultName
-                )
-            }
+            ScreenMode.OVERWRITE -> view.displayOverwriteScreen()
+            ScreenMode.RENAME -> displayRenameScreenWithSuggestedFileName()
+        }
+    }
+
+    private fun displayRenameScreenWithSuggestedFileName() {
+        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        uiScope.launch {
+            view.displayRenameScreen(
+                initialScreenMode == ScreenMode.OVERWRITE,
+                findNewNameForDuplicateAttachment()
+            )
         }
     }
 
@@ -77,5 +85,19 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
                 else view.finish()
             }
         }
+    }
+
+    private suspend fun findNewNameForDuplicateAttachment(): String = withContext(Dispatchers.IO) {
+        var attachmentFile: File
+        var oldNameCount = 1
+        var displayName: String
+        do {
+            displayName = defaultName.substringBeforeLast('.') +
+                    "(" + oldNameCount + ")." +
+                    defaultName.substringAfterLast('.')
+            attachmentFile = File(savePath, displayName)
+            oldNameCount++
+        } while (attachmentFile.exists())
+        return@withContext displayName
     }
 }

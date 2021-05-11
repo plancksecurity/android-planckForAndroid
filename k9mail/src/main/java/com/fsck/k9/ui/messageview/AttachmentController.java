@@ -64,8 +64,7 @@ public class AttachmentController {
     public void saveAttachmentPreventingDuplicates(String savePath) {
         File attachmentFile = new File(savePath, attachment.displayName);
         if(attachmentFile.exists()) {
-            String newDisplayName = findNewNameForDuplicateAttachment(savePath);
-            messageViewFragment.showDuplicateAttachmentConfirmationDialog(ScreenMode.OVERWRITE, newDisplayName);
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog(ScreenMode.OVERWRITE);
         } else {
             saveAttachmentTo(savePath);
         }
@@ -77,24 +76,8 @@ public class AttachmentController {
         if(couldDelete) {
             saveAttachmentTo(savePath);
         } else {
-            String newDisplayName = findNewNameForDuplicateAttachment(savePath);
-            messageViewFragment.overWriteAttachmentFailed(newDisplayName);
+            messageViewFragment.overWriteAttachmentFailed();
         }
-    }
-
-    public String findNewNameForDuplicateAttachment(String savePath) {
-        File attachmentFile;
-        int oldNameCount = 1;
-        String displayName;
-        do {
-            displayName =
-                    StringsKt.substringBeforeLast(attachment.displayName, '.', attachment.displayName) +
-                            "(" + oldNameCount + ")." +
-                            StringsKt.substringAfterLast(attachment.displayName, '.', attachment.displayName);
-            attachmentFile = new File(savePath, displayName);
-            oldNameCount ++;
-        } while(attachmentFile.exists());
-        return displayName;
     }
 
     public void viewAttachment() {
