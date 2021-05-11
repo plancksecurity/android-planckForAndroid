@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@android:style/TextAppearance.Material.DialogWindowTitle"
-        android:textColor="?attr/defaultColorOnBackground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="@string/dialog_confirm_duplicate_attachment_title"/>
@@ -28,7 +27,6 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         tools:text="filename.extension"
-        android:hint=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/messageText"
         android:visibility="gone"
@@ -44,7 +42,6 @@
         tools:text="@string/dialog_confirm_duplicate_attachment_message"
         android:textAppearance="@android:style/TextAppearance.Material.Subhead"
         android:labelFor="@id/newNameInput"
-        android:textColor="?attr/defaultColorOnBackground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title" />
 
