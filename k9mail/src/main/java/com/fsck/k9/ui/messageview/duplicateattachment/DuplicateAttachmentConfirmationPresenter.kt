@@ -1,10 +1,11 @@
 package com.fsck.k9.ui.messageview.duplicateattachment
 
 import android.os.Bundle
+import javax.inject.Inject
 
 private const val STATE_CURRENT_SCREEN_MODE = "currentScreenMode"
 
-class DuplicateAttachmentConfirmationPresenter {
+class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
     private lateinit var view: DuplicateAttachmentConfirmationView
     lateinit var initialScreenMode: ScreenMode
     lateinit var currentScreenMode: ScreenMode
