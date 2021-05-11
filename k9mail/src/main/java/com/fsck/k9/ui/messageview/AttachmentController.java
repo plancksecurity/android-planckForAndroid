@@ -32,6 +32,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
+import com.fsck.k9.ui.messageview.duplicateattachment.ScreenMode;
 
 import org.apache.commons.io.IOUtils;
 

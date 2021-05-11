@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.messageview
+package com.fsck.k9.ui.messageview.duplicateattachment
 
 import android.os.Bundle
 

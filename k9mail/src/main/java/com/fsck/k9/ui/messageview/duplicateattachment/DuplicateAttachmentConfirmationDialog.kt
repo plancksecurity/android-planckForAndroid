@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.messageview
+package com.fsck.k9.ui.messageview.duplicateattachment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.loader.app.LoaderManager
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule
 import javax.inject.Inject
@@ -22,7 +21,8 @@ private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_INITIAL_SCREEN_MODE = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
 
-class DuplicateAttachmentConfirmationDialog : DialogFragment(), DuplicateAttachmentConfirmationView {
+class DuplicateAttachmentConfirmationDialog : DialogFragment(),
+    DuplicateAttachmentConfirmationView {
     private lateinit var messageText: TextView
     private lateinit var newNameInput: EditText
     private lateinit var positiveButton: Button
