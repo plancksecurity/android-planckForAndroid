@@ -61,11 +61,11 @@ public class AttachmentController {
         this.attachment = attachment;
     }
 
-    public void saveAttachmentPreventingDuplicates(String savePath, ScreenMode mode) {
+    public void saveAttachmentPreventingDuplicates(String savePath) {
         File attachmentFile = new File(savePath, attachment.displayName);
         if(attachmentFile.exists()) {
             String newDisplayName = findNewNameForDuplicateAttachment(savePath);
-            messageViewFragment.showDuplicateAttachmentConfirmationDialog(mode, newDisplayName);
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog(ScreenMode.OVERWRITE, newDisplayName);
         } else {
             saveAttachmentTo(savePath);
         }

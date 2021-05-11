@@ -1124,7 +1124,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void saveAttachmentPreventingDuplicates(String savePath) {
         customAttachmentSavePath = savePath;
-        getAttachmentController(currentAttachmentViewInfo).saveAttachmentPreventingDuplicates(savePath, ScreenMode.OVERWRITE);
+        getAttachmentController(currentAttachmentViewInfo).saveAttachmentPreventingDuplicates(savePath);
     }
 
     @Override
