@@ -13,6 +13,7 @@ import android.os.Environment;
 import androidx.annotation.WorkerThread;
 
 import kotlin.text.StringsKt;
+import security.pEp.ui.dialog.ScreenMode;
 import timber.log.Timber;
 import android.view.View;
 
@@ -60,11 +61,11 @@ public class AttachmentController {
         this.attachment = attachment;
     }
 
-    public void saveAttachmentPreventingDuplicates(String savePath, boolean overwrite) {
+    public void saveAttachmentPreventingDuplicates(String savePath, ScreenMode mode) {
         File attachmentFile = new File(savePath, attachment.displayName);
         if(attachmentFile.exists()) {
             String newDisplayName = findNewNameForDuplicateAttachment(savePath);
-            messageViewFragment.showDuplicateAttachmentConfirmationDialog(overwrite, newDisplayName);
+            messageViewFragment.showDuplicateAttachmentConfirmationDialog(mode, newDisplayName);
         } else {
             saveAttachmentTo(savePath);
         }

@@ -79,6 +79,7 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.print.Print;
 import security.pEp.print.PrintMessage;
 import security.pEp.ui.dialog.DuplicateAttachmentConfirmationDialog;
+import security.pEp.ui.dialog.ScreenMode;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -848,9 +849,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         showDialog(R.id.dialog_attachment_progress);
     }
 
-    public void showDuplicateAttachmentConfirmationDialog(boolean overwrite, String newAttachmentDefaultName) {
+    public void showDuplicateAttachmentConfirmationDialog(ScreenMode mode, String newAttachmentDefaultName) {
         DuplicateAttachmentConfirmationDialog.showDuplicateAttachmentConfirmationDialog(
-                this, overwrite, newAttachmentDefaultName);
+                this, mode, newAttachmentDefaultName);
     }
 
     public void hideAttachmentLoadingDialogOnMainThread() {
@@ -943,7 +944,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 requireView(),
                 getString(R.string.snackbar_duplicate_attachment_overwrite_failed_rename_action),
                 getString(R.string.dialog_confirm_duplicate_attachment_rename_button),
-                v -> showDuplicateAttachmentConfirmationDialog(false, newDisplayName)
+                v -> showDuplicateAttachmentConfirmationDialog(ScreenMode.RENAME, newDisplayName)
         );
     }
 
@@ -1123,7 +1124,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void saveAttachmentPreventingDuplicates(String savePath) {
         customAttachmentSavePath = savePath;
-        getAttachmentController(currentAttachmentViewInfo).saveAttachmentPreventingDuplicates(savePath, true);
+        getAttachmentController(currentAttachmentViewInfo).saveAttachmentPreventingDuplicates(savePath, ScreenMode.OVERWRITE);
     }
 
     @Override
