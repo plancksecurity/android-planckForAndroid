@@ -333,4 +333,5 @@
     <string name="dialog_confirm_duplicate_attachment_overwrite_button">Overwrite</string>
     <string name="dialog_confirm_duplicate_attachment_rename_button">Rename</string>
     <string name="dialog_confirm_duplicate_attachment_save_button">Save</string>
+    <string name="dialog_confirm_duplicate_attachment_back_button">Back</string>
 </resources>

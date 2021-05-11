@@ -73,6 +73,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
                 dismissAllowingStateLoss()
                 getListener().overwriteAttachmentName()
             }
+            negativelButton.setText(R.string.cancel_action)
             negativelButton.setOnClickListener {
                 dismissAllowingStateLoss()
             }
@@ -91,6 +92,10 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment() {
                 dismissAllowingStateLoss()
                 getListener().attachmentNameConfirmed(newNameInput.text.toString())
             }
+            negativelButton.setText(
+                if(overwriteOrRename) R.string.dialog_confirm_duplicate_attachment_back_button
+                else R.string.cancel_action
+            )
             negativelButton.setOnClickListener {
                 if(overwriteOrRename) displayScreen(true)
                 else dismissAllowingStateLoss()
