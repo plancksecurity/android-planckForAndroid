@@ -1619,7 +1619,12 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 public void run() {
                     Activity activity = getActivity();
                     if (activity != null) {
-                        FeedbackTools.showLongFeedback(getView(), getString(R.string.remote_search_error));
+                        FeedbackTools.showLongFeedback(
+                                getView(),
+                                getString(R.string.remote_search_error),
+                                getString(R.string.messageview_decrypt_retry),
+                                v -> onRemoteSearch()
+                        );
                     }
                 }
             });
