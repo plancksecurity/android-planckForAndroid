@@ -1421,7 +1421,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             // If this is an explicit local search, show the option to search on the server
             if (!mMessageListFragment.isRemoteSearch() &&
                     mMessageListFragment.isRemoteSearchAllowed()) {
-                menu.findItem(R.id.search_remote).setVisible(true);
+
             } else if (!mMessageListFragment.isManualSearch() && !isThreadDisplayed) {
                 menu.findItem(R.id.search).setVisible(true);
             }

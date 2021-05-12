@@ -2874,7 +2874,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     public boolean isRemoteSearchAllowed() {
         if (!search.isManualSearch() || remoteSearchPerformed || !singleFolderMode
-                || isOutbox()) {
+                || currentFolder == null || isOutbox()) {
             return false;
         }
 
@@ -3051,6 +3051,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             }
 
             fragmentListener.updateMenu();
+            if (!remoteSearchPerformed && isRemoteSearchAllowed()) {
+                onRemoteSearch();
+            }
         }
         hideLoadingMessages(cursor.getCount());
     }
