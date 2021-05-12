@@ -1113,6 +1113,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      */
     private void onRemoteSearchRequested() {
         hideLoadingMessages(1);
+        fragmentListener.showRemoteSearchIcon(false);
         String searchAccount;
         String searchFolder;
 
