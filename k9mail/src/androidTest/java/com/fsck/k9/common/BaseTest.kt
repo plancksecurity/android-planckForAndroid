@@ -269,20 +269,10 @@ open class BaseTest {
         click(R.id.fab_button_compose_message)
         waitMessageCompose()
         val message = TestUtils.BasicMessage(email, "reset", "", email)
-        fillMessage(message)
-        sleep(2000)
+        testUtils.fillMessage(message, false)
+        TestUtils.waitForIdle()
         click(R.id.send)
-        sleep(3000)
-    }
-
-    private fun fillMessage(message: TestUtils.BasicMessage) {
-        Espresso.closeSoftKeyboard()
-        sleep(500)
-        addTextTo(R.id.to, message.to)
-        sleep(500)
-        addTextTo(R.id.subject, message.subject)
-        sleep(500)
-        addTextTo(R.id.message_content, message.message)
+        TestUtils.waitForIdle()
     }
 
     fun allowPermissions() {
