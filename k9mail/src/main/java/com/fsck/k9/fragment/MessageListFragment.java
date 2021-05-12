@@ -1625,6 +1625,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                                 getString(R.string.messageview_decrypt_retry),
                                 v -> onRemoteSearch()
                         );
+                        fragmentListener.showRemoteSearchIcon(true);
                     }
                 }
             });
@@ -2728,6 +2729,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         void goBack();
         void updateMenu();
         void setDirection(MessageSwipeDirection direction);
+        void showRemoteSearchIcon(boolean show);
     }
 
     public void onReverseSort() {

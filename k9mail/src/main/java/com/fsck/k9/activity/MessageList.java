@@ -126,6 +126,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
     private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
     private static final String STATE_ACCOUNT_UUID = "accountUuid";
+    private static final String STATE_SHOWING_REMOTE_SEARCH_ITEM = "showingRemoteSearchItem";
 
     // Used for navigating to next/previous message
     private static final int PREVIOUS = 1;
@@ -137,6 +138,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private MessageSwipeDirection direction;
     private String specialAccountUuid;
     private String accountUuid;
+    private boolean showingRemoteSearchItem;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
                                            boolean noThreading, boolean newTask, boolean isFolder) {
@@ -818,12 +820,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mAccount != null && !mSearch.isManualSearch()) {
             outState.putString(STATE_ACCOUNT_UUID, mAccount.getUuid());
         }
+        outState.putBoolean(STATE_SHOWING_REMOTE_SEARCH_ITEM, showingRemoteSearchItem);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         mMessageListWasDisplayed = savedInstanceState.getBoolean(STATE_MESSAGE_LIST_WAS_DISPLAYED);
         mFirstBackStackId = savedInstanceState.getInt(STATE_FIRST_BACK_STACK_ID);
+        showingRemoteSearchItem = savedInstanceState.getBoolean(STATE_SHOWING_REMOTE_SEARCH_ITEM);
     }
 
     private void initializeActionBar() {
@@ -1418,11 +1422,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 menu.findItem(R.id.show_folder_list).setVisible(false);
                 menu.findItem(R.id.settings).setVisible(false);
             }
-            // If this is an explicit local search, show the option to search on the server
-            if (!mMessageListFragment.isRemoteSearch() &&
-                    mMessageListFragment.isRemoteSearchAllowed()) {
-
-            } else if (!mMessageListFragment.isManualSearch() && !isThreadDisplayed) {
+            // Show the option to search on the server if it was set to be displayed
+            menu.findItem(R.id.search_remote).setVisible(showingRemoteSearchItem);
+            if (!mMessageListFragment.isManualSearch() && !isThreadDisplayed) {
                 menu.findItem(R.id.search).setVisible(true);
             }
         }
@@ -1857,6 +1859,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void setDirection(MessageSwipeDirection direction) {
         this.direction = direction;
+    }
+
+    @Override
+    public void showRemoteSearchIcon(boolean show) {
+        showingRemoteSearchItem = show;
+        updateMenu();
     }
 
 
