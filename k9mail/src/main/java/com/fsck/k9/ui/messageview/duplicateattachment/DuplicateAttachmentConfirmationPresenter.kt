@@ -1,13 +1,16 @@
 package com.fsck.k9.ui.messageview.duplicateattachment
 
 import android.os.Bundle
+import com.fsck.k9.pEp.DispatcherProvider
 import kotlinx.coroutines.*
 import java.io.File
 import javax.inject.Inject
 
 private const val STATE_CURRENT_SCREEN_MODE = "currentScreenMode"
 
-class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
+class DuplicateAttachmentConfirmationPresenter @Inject constructor(
+    private val dispatcherProvider: DispatcherProvider
+) {
     private lateinit var view: DuplicateAttachmentConfirmationView
     private lateinit var listener: DuplicationAttachmentConfirmationListener
     lateinit var initialScreenMode: ScreenMode
@@ -87,7 +90,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor() {
         }
     }
 
-    private suspend fun findNewNameForDuplicateAttachment(): String = withContext(Dispatchers.IO) {
+    private suspend fun findNewNameForDuplicateAttachment(): String = withContext(dispatcherProvider.io()) {
         var attachmentFile: File
         var oldNameCount = 1
         var displayName: String
