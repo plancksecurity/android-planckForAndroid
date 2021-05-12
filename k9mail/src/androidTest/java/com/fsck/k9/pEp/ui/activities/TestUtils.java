@@ -2953,7 +2953,7 @@ public class TestUtils {
     public void waitForNewMessage() {
         boolean newEmail = false;
         waitForIdle();
-        while (!exists(onView(withId(R.id.message_list)))){
+        while (!exists(onView(withId(R.id.message_list)))) {
             waitForIdle();
         }
         doWaitForResource(R.id.message_list);
@@ -2965,24 +2965,18 @@ public class TestUtils {
                 waitForIdle();
                 swipeDownMessageList();
                 waitForIdle();
-                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
-                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
-                if (messageListSize[1] > messageListSize[0]){
-                    newEmail = true;
+                if (viewIsDisplayed(R.id.message_list)) {
+                    onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+                    if (messageListSize[1] > messageListSize[0]) {
+                        newEmail = true;
+                        waitForIdle();
+                    }
                 }
             } catch (Exception ex) {
                 Timber.i("Waiting for new message : " + ex);
             }
         }
-        if (viewIsDisplayed(R.id.delete)) {
-            pressBack();
-            waitForIdle();
-        }
         getMessageListSize();
-        if (viewIsDisplayed(R.id.delete)) {
-            pressBack();
-            waitForIdle();
-        }
     }
 
     public void assertThereAreXMessages(int numberOfMessages) {
@@ -3007,13 +3001,13 @@ public class TestUtils {
         while (exists(onView(withId(R.id.message_list)))) {
             try {
                 waitForIdle();
-                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
                 onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
                 return;
             } catch (Exception ex) {
                 Timber.i("Cannot find view message_list: " + ex.getMessage());
             }
         }
+        waitForIdle();
     }
 
     public int getListSize() {
@@ -3025,10 +3019,12 @@ public class TestUtils {
             try {
                 Thread.sleep(2000);
                 waitForIdle();
-                onView(withId(R.id.message_list)).perform(swipeDown());
-                waitForIdle();
-                Thread.sleep(2000);
-                return;
+                if (viewIsDisplayed(R.id.message_list)) {
+                    onView(withId(R.id.message_list)).perform(swipeDown());
+                    waitForIdle();
+                    Thread.sleep(2000);
+                    return;
+                }
             } catch (Exception e) {
                 Timber.i("Cannot swipe down");
             }
