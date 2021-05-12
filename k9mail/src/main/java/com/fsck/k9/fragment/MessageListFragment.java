@@ -1112,6 +1112,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
      * User has requested a remote search.  Setup the bundle and start the intent.
      */
     private void onRemoteSearchRequested() {
+        hideLoadingMessages(1);
         String searchAccount;
         String searchFolder;
 
@@ -1644,6 +1645,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 handler.updateFooter(String.format(context.getString(R.string.load_more_messages_fmt), maxResults));
             } else {
                 handler.updateFooter(null);
+                if(isAdded() && adapter.isEmpty()) {
+                    noResultsFound.setVisibility(View.VISIBLE);
+                }
             }
             fragmentListener.setMessageListProgress(Window.PROGRESS_END);
 
