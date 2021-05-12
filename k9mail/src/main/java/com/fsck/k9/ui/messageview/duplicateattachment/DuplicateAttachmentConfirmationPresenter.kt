@@ -9,7 +9,8 @@ import javax.inject.Inject
 private const val STATE_CURRENT_SCREEN_MODE = "currentScreenMode"
 
 class DuplicateAttachmentConfirmationPresenter @Inject constructor(
-    private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider,
+    private val fileWrapper: FileWrapper
 ) {
     private lateinit var view: DuplicateAttachmentConfirmationView
     private lateinit var listener: DuplicationAttachmentConfirmationListener
@@ -98,9 +99,14 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
             displayName = defaultName.substringBeforeLast('.') +
                     "(" + oldNameCount + ")." +
                     defaultName.substringAfterLast('.')
-            attachmentFile = File(savePath, displayName)
+            attachmentFile = fileWrapper.createFile(savePath, displayName)
             oldNameCount++
-        } while (attachmentFile.exists())
+        } while (fileWrapper.fileExists(attachmentFile))
         return@withContext displayName
     }
+}
+
+class FileWrapper @Inject constructor() {
+    fun createFile(parent: String, name: String ) = File(parent, name)
+    fun fileExists(file: File) = file.exists()
 }
