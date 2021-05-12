@@ -2876,6 +2876,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             onRemoteSearchRequested();
         } else {
             FeedbackTools.showShortFeedback(getView(), getString(R.string.remote_search_unavailable_no_network));
+            fragmentListener.showRemoteSearchIcon(true);
         }
     }
 
