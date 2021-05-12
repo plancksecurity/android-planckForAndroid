@@ -254,7 +254,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private int selectedCount = 0;
     Set<Long> selected = new HashSet<>();
     private ActionMode actionMode;
-    private Boolean hasConnectivity;
     /**
      * Relevant messages for the current context when we have to remember the chosen messages
      * between user interactions (e.g. selecting a folder for move operation).
@@ -834,11 +833,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
         else {
             getFolderInfoHolder(folderName, account);
-        }
-
-        // Check if we have connectivity.  Cache the value.
-        if (hasConnectivity == null) {
-            hasConnectivity = Utility.hasConnectivity(getActivity().getApplication());
         }
 
         localBroadcastManager.registerReceiver(cacheBroadcastReceiver, cacheIntentFilter);
@@ -2873,7 +2867,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     public void onRemoteSearch() {
         // Remote search is useless without the network.
-        if (hasConnectivity) {
+        if (Utility.hasConnectivity(requireContext().getApplicationContext())) {
             onRemoteSearchRequested();
         } else {
             FeedbackTools.showShortFeedback(getView(), getString(R.string.remote_search_unavailable_no_network));
