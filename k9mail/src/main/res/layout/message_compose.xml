@@ -32,7 +32,7 @@
                 android:layout_marginRight="@dimen/outer_margin"
                 android:background="@android:color/transparent"
                 android:hint="@string/message_compose_subject_hint"
-                android:imeOptions="actionNext"
+                android:imeOptions="actionNext|flagNoExtractUi"
                 android:inputType="textEmailSubject|textAutoCorrect|textCapSentences"
                 android:privateImeOptions="disableSticker=true;disableGifKeyboard=true"
                 android:singleLine="true"
@@ -61,7 +61,7 @@
                 android:layout_weight="1"
                 android:gravity="top"
                 android:hint="@string/message_compose_content_hint"
-                android:imeOptions="actionDone|flagNoEnterAction"
+                android:imeOptions="actionDone|flagNoEnterAction|flagNoExtractUi"
                 android:minLines="3"
                 android:paddingTop="8dp"
                 android:privateImeOptions="disableSticker=true;disableGifKeyboard=true" />
