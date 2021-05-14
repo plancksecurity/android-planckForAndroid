@@ -3319,14 +3319,29 @@ public class TestUtils {
     public void scrollToView (String text){
         waitForIdle();
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
-            waitForIdle();
-            Espresso.onIdle();
+        waitForIdle();
+        Espresso.onIdle();
         try {
             textView.dragTo(500,500,30);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
         waitForIdle();
+    }
+
+    public void scrollUpToView (int view){
+        UiObject2 scroll;
+        do {
+            try {
+                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                waitForIdle();
+                scroll.swipe(Direction.DOWN, 1.0f);
+                waitForIdle();
+            } catch (Exception e) {
+                pressBack();
+            }
+        } while (!viewIsDisplayed(view));
+        onView(withId(view)).check(matches(isCompletelyDisplayed()));
     }
 
     private void setCheckBox(String resourceText, boolean checked) {
