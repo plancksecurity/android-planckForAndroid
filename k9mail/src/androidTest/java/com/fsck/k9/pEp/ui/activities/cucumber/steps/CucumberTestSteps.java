@@ -183,6 +183,27 @@ public class CucumberTestSteps {
     @When(value = "^I created an account$")
     public void I_create_account() {
         waitForIdle();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (exists(onView(withId(R.id.passphrase)))) {
+            testUtils.readConfigFile();
+            while (getTextFromView(onView(withId(R.id.passphrase))).equals("")) {
+                try {
+                    waitForIdle();
+                    onView(withId(R.id.passphrase)).perform(click());
+                    waitForIdle();
+                    onView(withId(R.id.passphrase)).perform(typeText(testUtils.getPassphrasePassword()), closeSoftKeyboard());
+                } catch (Exception ex) {
+                    Timber.i("Cannot fill account email: " + ex.getMessage());
+                }
+            }
+            waitForIdle();
+            onView(withId(R.id.afirmativeActionButton)).perform(click());
+        }
+        waitForIdle();
         if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))){
