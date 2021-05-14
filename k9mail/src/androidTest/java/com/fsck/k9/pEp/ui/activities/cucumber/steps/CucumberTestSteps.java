@@ -176,7 +176,7 @@ public class CucumberTestSteps {
             }
         }
         waitForIdle();
-        activityTestRule.finishActivity();
+         activityTestRule.finishActivity();
         waitForIdle();
     }
 
@@ -1583,6 +1583,7 @@ public class CucumberTestSteps {
     public void I_compare_fingerprint () {
         testUtils.openOptionsMenu();
         testUtils.selectFromMenu(R.string.show_headers_action);
+        testUtils.scrollUpToView(R.id.from);
         testUtils.assertsTextExistsOnScreen(fingerprint);
 
     }
