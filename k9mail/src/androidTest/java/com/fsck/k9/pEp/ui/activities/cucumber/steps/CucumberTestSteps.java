@@ -1326,9 +1326,9 @@ public class CucumberTestSteps {
 
     private void walkThroughAdvanced() {
         testUtils.selectFromScreen(testUtils.stringToID("account_settings_push_advanced_title"));
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("settings_attachment_default_path"));
-        testUtils.pressBack();
-        testUtils.scrollToViewAndClickIt(testUtils.stringToID("background_ops_label"));
+        //testUtils.scrollToViewAndClickIt(testUtils.stringToID("settings_attachment_default_path"));
+        //testUtils.pressBack();
+        //testUtils.scrollToViewAndClickIt(testUtils.stringToID("background_ops_label"));
         testUtils.pressBack();
     }
 
