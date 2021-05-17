@@ -17,7 +17,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.R
+import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.folderClickListener
@@ -38,6 +41,7 @@ class DrawerLayoutView @Inject constructor(
     @Named("ActivityContext") private val context: Context,
     private var drawerFolderPopulator: DrawerFolderPopulator,
     private var drawerLayoutPresenter: DrawerLayoutPresenter,
+        private var messagingController: MessagingController
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -75,6 +79,43 @@ class DrawerLayoutView @Inject constructor(
 
     private lateinit var messageListView: MessageListView
 
+    private val activityListener = object : ActivityListener() {
+
+        override fun remoteSearchFailed(folder: String, err: String) {
+
+        }
+
+        override fun remoteSearchStarted(folder: String) {
+        }
+
+        override fun enableProgressIndicator(enable: Boolean) {
+        }
+
+        override fun remoteSearchFinished(folder: String, numResults: Int, maxResults: Int, extraResults: List<Message>) {
+
+        }
+
+        override fun remoteSearchServerQueryComplete(folderName: String, numResults: Int, maxResults: Int) {
+        }
+
+        override fun informUserOfStatus() {
+            populateDrawerGroup()
+        }
+
+        override fun synchronizeMailboxStarted(account: Account, folder: String) {
+        }
+
+        override fun synchronizeMailboxFinished(account: Account, folder: String,
+                                                totalMessagesInMailbox: Int, numNewMessages: Int) {
+        }
+
+        override fun synchronizeMailboxFailed(account: Account, folder: String, message: String) {
+        }
+
+        override fun folderStatusChanged(account: Account, folder: String, unreadMessageCount: Int) {
+        }
+    }
+
     fun initDrawerView(
         activity: Activity?,
         toolbar: Toolbar?,
@@ -101,6 +142,7 @@ class DrawerLayoutView @Inject constructor(
             activity, drawerLayout, toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+        toggle.setDrawerLayoutPresenter(this)
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -415,11 +457,19 @@ class DrawerLayoutView @Inject constructor(
         drawerLayoutPresenter.loadNavigationView()
     }
 
-    fun populateDrawerGroup() {
+    override fun populateDrawerGroup() {
         drawerLayoutPresenter.populateDrawerGroup()
     }
 
     override fun refreshMessages(search: LocalSearch) {
         messageListView.refreshMessages(search)
+    }
+
+    override fun addActivityListener() {
+        messagingController.addListener(activityListener)
+    }
+
+    override fun removeActivityListener() {
+        messagingController.removeListener(activityListener)
     }
 }
