@@ -3015,12 +3015,34 @@ public class TestUtils {
     }
 
     public void swipeDownMessageList() {
+        BySelector selector = By.clazz("android.widget.ImageView");
+        int totalAnimations = 0;
+        int animationsDisplayed;
         while (true) {
             try {
                 Thread.sleep(2000);
                 waitForIdle();
                 if (viewIsDisplayed(R.id.message_list)) {
+                    for (UiObject2 imageView : device.findObjects(selector)) {
+                        if (imageView.getResourceName() == null) {
+                            if (imageView.getVisibleCenter().y > 25) {
+                                totalAnimations++;
+                            }
+                        }
+                    }
                     onView(withId(R.id.message_list)).perform(swipeDown());
+                    do {
+                        animationsDisplayed = 0;
+                        waitForIdle();
+                        for (UiObject2 imageView : device.findObjects(selector)) {
+                            if (imageView.getResourceName() == null) {
+                                if (imageView.getVisibleCenter().y > 25) {
+                                    animationsDisplayed++;
+                                }
+                            }
+                        }
+                        waitForIdle();
+                    } while (animationsDisplayed > totalAnimations);
                     waitForIdle();
                     Thread.sleep(2000);
                     return;
