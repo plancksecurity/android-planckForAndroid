@@ -1606,7 +1606,8 @@ public class CucumberTestSteps {
         testUtils.selectFromMenu(R.string.show_headers_action);
         testUtils.scrollUpToView(R.id.from);
         testUtils.assertsTextExistsOnScreen(fingerprint);
-
+        testUtils.goBackToMessageList();
+        testUtils.disableKeySync();
     }
 
     @When("^I remove account (\\S+)$")
