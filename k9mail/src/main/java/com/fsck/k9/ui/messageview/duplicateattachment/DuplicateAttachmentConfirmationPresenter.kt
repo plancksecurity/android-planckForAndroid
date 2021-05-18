@@ -48,7 +48,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
     fun displayStage(screenMode: ScreenMode) {
         currentScreenMode = screenMode
         when(screenMode) {
-            ScreenMode.OVERWRITE -> view.displayOverwriteScreen()
+            ScreenMode.OVERWRITE -> view.displayOverwriteStage()
             ScreenMode.RENAME -> displayRenameScreenWithSuggestedFileName()
         }
     }
@@ -56,7 +56,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
     private fun displayRenameScreenWithSuggestedFileName() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-            view.displayRenameScreen(
+            view.displayRenameStage(
                 initialScreenMode == ScreenMode.OVERWRITE,
                 findNewNameForDuplicateAttachment()
             )

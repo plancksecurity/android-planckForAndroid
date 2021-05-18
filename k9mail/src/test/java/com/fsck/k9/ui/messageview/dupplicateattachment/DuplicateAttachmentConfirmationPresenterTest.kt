@@ -46,7 +46,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
         presenter.displayStage(ScreenMode.OVERWRITE)
 
-        verify(view).displayOverwriteScreen()
+        verify(view).displayOverwriteStage()
     }
 
     @Test
@@ -62,7 +62,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.displayStage(ScreenMode.RENAME)
 
-            verify(view).displayRenameScreen(anyBoolean(), anyString())
+            verify(view).displayRenameStage(anyBoolean(), anyString())
         }
 
     @Test
@@ -77,7 +77,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
         presenter.displayInitialStage(null)
 
-        verify(view).displayOverwriteScreen()
+        verify(view).displayOverwriteStage()
     }
 
     @Test
@@ -94,7 +94,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
         presenter.displayInitialStage(savedInstanceState)
 
-        verify(view).displayOverwriteScreen()
+        verify(view).displayOverwriteStage()
     }
 
     @Test
@@ -110,7 +110,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.renameActionClicked()
 
-            verify(view).displayRenameScreen(eq(false), anyString())
+            verify(view).displayRenameStage(eq(false), anyString())
         }
 
     @Test
@@ -158,7 +158,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
         presenter.negativeActionClicked()
 
-        verify(view).displayOverwriteScreen()
+        verify(view).displayOverwriteStage()
     }
 
     @Test
@@ -222,7 +222,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.displayStage(ScreenMode.RENAME)
 
-            verify(view).displayRenameScreen(false, MODIFIED_NAME_1)
+            verify(view).displayRenameStage(false, MODIFIED_NAME_1)
         }
 
     @Test
@@ -240,7 +240,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.displayStage(ScreenMode.RENAME)
 
-            verify(view).displayRenameScreen(false, MODIFIED_NAME_4)
+            verify(view).displayRenameStage(false, MODIFIED_NAME_4)
         }
 
     private fun stubFileWrapper() {

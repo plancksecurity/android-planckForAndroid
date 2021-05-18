@@ -3,9 +3,9 @@ package com.fsck.k9.ui.messageview.duplicateattachment
 interface DuplicateAttachmentConfirmationView {
     fun finish()
 
-    fun displayOverwriteScreen()
+    fun displayOverwriteStage()
 
-    fun displayRenameScreen(
+    fun displayRenameStage(
         canGoBack: Boolean,
         defaultFileName: String
     )

@@ -122,7 +122,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         presenter.saveInstanceState(outState)
     }
 
-    override fun displayOverwriteScreen() {
+    override fun displayOverwriteStage() {
         messageText.setText(R.string.dialog_confirm_duplicate_attachment_message)
         newNameInput.visibility = View.GONE
         positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_overwrite_button)
@@ -130,7 +130,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         renameButton.visibility = View.VISIBLE
     }
 
-    override fun displayRenameScreen(
+    override fun displayRenameStage(
         canGoBack: Boolean,
         defaultFileName: String
     ) {
