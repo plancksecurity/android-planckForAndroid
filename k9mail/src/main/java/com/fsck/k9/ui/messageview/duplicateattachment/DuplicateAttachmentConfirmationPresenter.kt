@@ -33,8 +33,8 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
         this.savePath = savePath
     }
 
-    fun displayInitialScreen(savedInstanceState: Bundle?) {
-        displayScreen(
+    fun displayInitialStage(savedInstanceState: Bundle?) {
+        displayStage(
             ScreenMode.valueOf(
                 savedInstanceState?.getString(STATE_CURRENT_SCREEN_MODE) ?: initialScreenMode.name
             )
@@ -45,7 +45,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
         outState.putString(STATE_CURRENT_SCREEN_MODE, currentScreenMode.name)
     }
 
-    fun displayScreen(screenMode: ScreenMode) {
+    fun displayStage(screenMode: ScreenMode) {
         currentScreenMode = screenMode
         when(screenMode) {
             ScreenMode.OVERWRITE -> view.displayOverwriteScreen()
@@ -64,7 +64,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
     }
 
     fun renameButtonClicked() {
-        displayScreen(ScreenMode.RENAME)
+        displayStage(ScreenMode.RENAME)
     }
 
     fun positiveButtonClicked(newName: String) {
@@ -85,7 +85,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
                 view.finish()
             }
             ScreenMode.RENAME -> {
-                if(initialScreenMode == ScreenMode.OVERWRITE) displayScreen(ScreenMode.OVERWRITE)
+                if(initialScreenMode == ScreenMode.OVERWRITE) displayStage(ScreenMode.OVERWRITE)
                 else view.finish()
             }
         }

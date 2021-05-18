@@ -90,7 +90,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        presenter.displayInitialScreen(savedInstanceState)
+        presenter.displayInitialStage(savedInstanceState)
     }
     
     private fun locateViews(rootView: View) {
