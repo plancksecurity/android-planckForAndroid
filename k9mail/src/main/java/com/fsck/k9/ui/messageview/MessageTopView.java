@@ -34,6 +34,7 @@ public class MessageTopView extends RelativeLayout {
     public static final int PROGRESS_MAX = 1000;
     public static final int PROGRESS_MAX_WITH_MARGIN = 950;
     public static final int PROGRESS_STEP_DURATION = 180;
+    public static final int SAVED_STATE_SCROLL_DELAY_DURATION = 300;
 
 
     private ToolableViewAnimator viewAnimator;
@@ -155,7 +156,7 @@ public class MessageTopView extends RelativeLayout {
                         if (savedState != null) {
                             scrollView.postDelayed(() ->
                                             scrollView.scrollTo(0, getScrollFromPercentage(savedState.scrollY)),
-                                    300);
+                                    SAVED_STATE_SCROLL_DELAY_DURATION);
                         }
                     },
                     automaticallyLoadPictures, hideUnsignedTextDivider, attachmentCallback);
