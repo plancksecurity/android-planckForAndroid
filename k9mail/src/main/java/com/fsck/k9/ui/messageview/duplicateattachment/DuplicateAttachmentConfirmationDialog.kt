@@ -103,13 +103,13 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
 
     private fun setupClickListeners() {
         positiveButton.setOnClickListener {
-            presenter.positiveButtonClicked(newNameInput.text.toString())
+            presenter.positiveActionClicked(newNameInput.text.toString())
         }
         negativelButton.setOnClickListener {
-            presenter.negativeButtonClicked()
+            presenter.negativeActionClicked()
         }
         renameButton.setOnClickListener {
-            presenter.renameButtonClicked()
+            presenter.renameActionClicked()
         }
     }
 

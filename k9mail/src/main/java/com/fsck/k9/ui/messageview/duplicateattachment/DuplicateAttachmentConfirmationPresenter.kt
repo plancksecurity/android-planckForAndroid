@@ -63,11 +63,11 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
         }
     }
 
-    fun renameButtonClicked() {
+    fun renameActionClicked() {
         displayStage(ScreenMode.RENAME)
     }
 
-    fun positiveButtonClicked(newName: String) {
+    fun positiveActionClicked(newName: String) {
         view.finish()
         when(currentScreenMode) {
             ScreenMode.OVERWRITE -> {
@@ -79,7 +79,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
         }
     }
 
-    fun negativeButtonClicked() {
+    fun negativeActionClicked() {
         when(currentScreenMode) {
             ScreenMode.OVERWRITE -> {
                 view.finish()

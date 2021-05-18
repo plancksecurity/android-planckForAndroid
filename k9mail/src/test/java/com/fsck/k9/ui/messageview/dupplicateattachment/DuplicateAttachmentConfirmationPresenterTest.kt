@@ -108,7 +108,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
                 SAVE_PATH
             )
 
-            presenter.renameButtonClicked()
+            presenter.renameActionClicked()
 
             verify(view).displayRenameScreen(eq(false), anyString())
         }
@@ -124,7 +124,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.OVERWRITE)
 
-        presenter.negativeButtonClicked()
+        presenter.negativeActionClicked()
 
         verify(view).finish()
     }
@@ -140,7 +140,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.RENAME)
 
-        presenter.negativeButtonClicked()
+        presenter.negativeActionClicked()
 
         verify(view).finish()
     }
@@ -156,7 +156,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.RENAME)
 
-        presenter.negativeButtonClicked()
+        presenter.negativeActionClicked()
 
         verify(view).displayOverwriteScreen()
     }
@@ -172,7 +172,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.OVERWRITE)
 
-        presenter.positiveButtonClicked(DEFAULT_NAME)
+        presenter.positiveActionClicked(DEFAULT_NAME)
 
         verify(view).finish()
     }
@@ -188,7 +188,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.OVERWRITE)
 
-        presenter.positiveButtonClicked(DEFAULT_NAME)
+        presenter.positiveActionClicked(DEFAULT_NAME)
 
         verify(listener).overwriteAttachmentName()
     }
@@ -204,7 +204,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
         )
         presenter.displayStage(ScreenMode.RENAME)
 
-        presenter.positiveButtonClicked(DEFAULT_NAME)
+        presenter.positiveActionClicked(DEFAULT_NAME)
 
         verify(listener).attachmentNameConfirmed(anyString())
     }
