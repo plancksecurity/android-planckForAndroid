@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.messageview.duplicateattachment
+package security.pEp.ui.duplicateattachment
 
 interface DuplicateAttachmentConfirmationView {
     fun finish()

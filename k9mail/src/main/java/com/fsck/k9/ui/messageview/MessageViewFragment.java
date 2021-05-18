@@ -60,9 +60,9 @@ import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.messageview.CryptoInfoDialog.OnClickShowCryptoKeyListener;
 import com.fsck.k9.ui.messageview.MessageCryptoPresenter.MessageCryptoMvpView;
-import com.fsck.k9.ui.messageview.duplicateattachment.DuplicateAttachmentConfirmationDialog;
-import com.fsck.k9.ui.messageview.duplicateattachment.DuplicationAttachmentConfirmationListener;
-import com.fsck.k9.ui.messageview.duplicateattachment.ScreenMode;
+import security.pEp.ui.duplicateattachment.DuplicateAttachmentConfirmationDialog;
+import security.pEp.ui.duplicateattachment.DuplicationAttachmentConfirmationListener;
+import security.pEp.ui.duplicateattachment.ScreenMode;
 import com.fsck.k9.view.MessageCryptoDisplayStatus;
 import com.fsck.k9.view.MessageHeader;
 

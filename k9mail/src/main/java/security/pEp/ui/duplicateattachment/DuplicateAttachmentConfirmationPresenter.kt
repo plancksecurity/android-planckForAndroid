@@ -1,4 +1,4 @@
-package com.fsck.k9.ui.messageview.duplicateattachment
+package security.pEp.ui.duplicateattachment
 
 import android.os.Bundle
 import com.fsck.k9.pEp.DispatcherProvider

@@ -9,7 +9,7 @@
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
     android:paddingBottom="7dp"
-    tools:context=".ui.messageview.duplicateattachment.DuplicateAttachmentConfirmationDialog">
+    tools:context="security.pEp.ui.duplicateattachment.DuplicateAttachmentConfirmationDialog">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"

@@ -1,16 +1,14 @@
-package com.fsck.k9.ui.messageview.dupplicateattachment
+package security.pEp.ui.duplicateattachment
 
 import android.os.Bundle
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.fsck.k9.ui.messageview.duplicateattachment.*
 import com.nhaarman.mockito_kotlin.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyString
+import org.mockito.ArgumentMatchers
 import java.io.File
 
 @ExperimentalCoroutinesApi
@@ -27,7 +25,10 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
     @Before
     fun setUp() {
-        doReturn(File("hi there")).`when`(fileWrapper).createFile(anyString(), anyString())
+        doReturn(File("hi there")).`when`(fileWrapper).createFile(
+            ArgumentMatchers.anyString(),
+            ArgumentMatchers.anyString()
+        )
         presenter = DuplicateAttachmentConfirmationPresenter(
             coroutinesTestRule.testDispatcherProvider,
             fileWrapper
@@ -62,7 +63,10 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.displayStage(ScreenMode.RENAME)
 
-            verify(view).displayRenameStage(anyBoolean(), anyString())
+            verify(view).displayRenameStage(
+                ArgumentMatchers.anyBoolean(),
+                ArgumentMatchers.anyString()
+            )
         }
 
     @Test
@@ -110,7 +114,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
             presenter.renameActionClicked()
 
-            verify(view).displayRenameStage(eq(false), anyString())
+            verify(view).displayRenameStage(eq(false), ArgumentMatchers.anyString())
         }
 
     @Test
@@ -206,7 +210,7 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
         presenter.positiveActionClicked(DEFAULT_NAME)
 
-        verify(listener).attachmentNameConfirmed(anyString())
+        verify(listener).attachmentNameConfirmed(ArgumentMatchers.anyString())
     }
 
     @Test
