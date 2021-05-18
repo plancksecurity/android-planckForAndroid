@@ -70,12 +70,8 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
     fun positiveActionClicked(newName: String) {
         view.finish()
         when(currentScreenMode) {
-            ScreenMode.OVERWRITE -> {
-                listener.overwriteAttachmentName()
-            }
-            ScreenMode.RENAME -> {
-                listener.attachmentNameConfirmed(newName)
-            }
+            ScreenMode.OVERWRITE -> listener.overwriteAttachmentName()
+            ScreenMode.RENAME -> listener.attachmentNameConfirmed(newName)
         }
     }
 
