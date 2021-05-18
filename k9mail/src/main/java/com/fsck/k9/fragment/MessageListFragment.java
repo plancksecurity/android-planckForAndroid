@@ -1729,6 +1729,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             FooterViewHolder holder = new FooterViewHolder();
             holder.main = (TextView) footerView.findViewById(R.id.main_text);
             footerView.setTag(holder);
+            footerView.setOnClickListener(v -> onMessageClick((AdapterView<?>) v.getParent(), v, -1));
         }
 
         return footerView;
