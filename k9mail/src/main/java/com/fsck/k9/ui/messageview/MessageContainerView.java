@@ -42,7 +42,9 @@ import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener,
+import javax.inject.Inject;
+
+public class MessageContainerView extends LinearLayout implements OnLayoutChangedListener,
         OnCreateContextMenuListener {
     private static final int MENU_ITEM_LINK_VIEW = Menu.FIRST;
     private static final int MENU_ITEM_LINK_SHARE = Menu.FIRST + 1;
