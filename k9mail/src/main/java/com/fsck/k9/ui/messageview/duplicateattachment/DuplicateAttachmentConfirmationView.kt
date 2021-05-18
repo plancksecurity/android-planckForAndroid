@@ -6,7 +6,7 @@ interface DuplicateAttachmentConfirmationView {
     fun displayOverwriteScreen()
 
     fun displayRenameScreen(
-        backOrCancel: Boolean,
+        canGoBack: Boolean,
         defaultFileName: String
     )
 }

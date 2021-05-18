@@ -131,7 +131,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
     }
 
     override fun displayRenameScreen(
-        backOrCancel: Boolean,
+        canGoBack: Boolean,
         defaultFileName: String
     ) {
         messageText.setText(R.string.dialog_confirm_duplicate_attachment_rename_message)
@@ -139,7 +139,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         newNameInput.visibility = View.VISIBLE
         positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_save_button)
         negativelButton.setText(
-            if(backOrCancel) R.string.dialog_confirm_duplicate_attachment_back_button
+            if(canGoBack) R.string.dialog_confirm_duplicate_attachment_back_button
             else R.string.cancel_action
         )
         renameButton.visibility = View.GONE
