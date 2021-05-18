@@ -17,7 +17,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule
 import javax.inject.Inject
 
-private const val ID = 1
+private const val TARGET_FRAGMENT_REQUEST_CODE = 2001
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_INITIAL_SCREEN_MODE = "overwriteOrRename"
 private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
@@ -180,7 +180,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
             }
             val dialogFragment = newInstance(initialScreenMode, defaultFileName, savePath)
 
-            dialogFragment.setTargetFragment(this, ID)
+            dialogFragment.setTargetFragment(this, TARGET_FRAGMENT_REQUEST_CODE)
             dialogFragment.show(parentFragmentManager, DIALOG_TAG)
         }
     }
