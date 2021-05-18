@@ -20,8 +20,8 @@ import javax.inject.Inject
 private const val TARGET_FRAGMENT_REQUEST_CODE = 2001
 private const val DIALOG_TAG = "duplicateAttachmentConfirmationDialog"
 private const val ARG_INITIAL_SCREEN_MODE = "overwriteOrRename"
-private const val ARG_DEFAULT_FILE_NAME = "default_file_name"
-private const val ARG_SAVE_PATH = "save_path"
+private const val ARG_DEFAULT_FILE_NAME = "defaultFileName"
+private const val ARG_SAVE_PATH = "savePath"
 
 class DuplicateAttachmentConfirmationDialog : DialogFragment(),
     DuplicateAttachmentConfirmationView {
