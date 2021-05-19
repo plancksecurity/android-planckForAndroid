@@ -47,7 +47,7 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
 
     fun displayStage(screenMode: ScreenMode) {
         currentScreenMode = screenMode
-        when(screenMode) {
+        when (screenMode) {
             ScreenMode.OVERWRITE -> view.displayOverwriteStage()
             ScreenMode.RENAME -> displayRenameScreenWithSuggestedFileName()
         }
@@ -69,40 +69,41 @@ class DuplicateAttachmentConfirmationPresenter @Inject constructor(
 
     fun positiveActionClicked(newName: String) {
         view.finish()
-        when(currentScreenMode) {
+        when (currentScreenMode) {
             ScreenMode.OVERWRITE -> listener.overwriteAttachmentName()
             ScreenMode.RENAME -> listener.attachmentNameConfirmed(newName)
         }
     }
 
     fun negativeActionClicked() {
-        when(currentScreenMode) {
+        when (currentScreenMode) {
             ScreenMode.OVERWRITE -> {
                 view.finish()
             }
             ScreenMode.RENAME -> {
-                if(initialScreenMode == ScreenMode.OVERWRITE) displayStage(ScreenMode.OVERWRITE)
+                if (initialScreenMode == ScreenMode.OVERWRITE) displayStage(ScreenMode.OVERWRITE)
                 else view.finish()
             }
         }
     }
 
-    private suspend fun findNewNameForDuplicateAttachment(): String = withContext(dispatcherProvider.io()) {
-        var attachmentFile: File
-        var oldNameCount = 1
-        var displayName: String
-        do {
-            displayName = defaultName.substringBeforeLast('.') +
-                    "(" + oldNameCount + ")." +
-                    defaultName.substringAfterLast('.')
-            attachmentFile = fileWrapper.createFile(savePath, displayName)
-            oldNameCount++
-        } while (fileWrapper.fileExists(attachmentFile))
-        return@withContext displayName
-    }
+    private suspend fun findNewNameForDuplicateAttachment(): String =
+        withContext(dispatcherProvider.io()) {
+            var attachmentFile: File
+            var oldNameCount = 1
+            var displayName: String
+            do {
+                displayName = defaultName.substringBeforeLast('.') +
+                        "(" + oldNameCount + ")." +
+                        defaultName.substringAfterLast('.')
+                attachmentFile = fileWrapper.createFile(savePath, displayName)
+                oldNameCount++
+            } while (fileWrapper.fileExists(attachmentFile))
+            return@withContext displayName
+        }
 }
 
 class FileWrapper @Inject constructor() {
-    fun createFile(parent: String, name: String ) = File(parent, name)
+    fun createFile(parent: String, name: String) = File(parent, name)
     fun fileExists(file: File) = file.exists()
 }

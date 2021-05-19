@@ -92,7 +92,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         super.onViewCreated(view, savedInstanceState)
         presenter.displayInitialStage(savedInstanceState)
     }
-    
+
     private fun locateViews(rootView: View) {
         messageText = rootView.findViewById(R.id.messageText)
         newNameInput = rootView.findViewById(R.id.newNameInput)
@@ -139,7 +139,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         newNameInput.visibility = View.VISIBLE
         positiveButton.setText(R.string.dialog_confirm_duplicate_attachment_save_button)
         negativelButton.setText(
-            if(canGoBack) R.string.dialog_confirm_duplicate_attachment_back_button
+            if (canGoBack) R.string.dialog_confirm_duplicate_attachment_back_button
             else R.string.cancel_action
         )
         renameButton.visibility = View.GONE
@@ -175,7 +175,7 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
             defaultFileName: String,
             savePath: String
         ) {
-            if(this !is DuplicationAttachmentConfirmationListener) {
+            if (this !is DuplicationAttachmentConfirmationListener) {
                 throw IllegalStateException("Fragment must implement DuplicationAttachmentConfirmationListener!")
             }
             val dialogFragment = newInstance(initialScreenMode, defaultFileName, savePath)

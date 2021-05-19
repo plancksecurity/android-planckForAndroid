@@ -86,7 +86,8 @@ class DuplicateAttachmentConfirmationPresenterTest {
 
     @Test
     fun `when presenter has saved state, view displays screen in mode saved in the state`() {
-        doReturn(ScreenMode.OVERWRITE.name).`when`(savedInstanceState).getString(STATE_CURRENT_SCREEN_MODE)
+        doReturn(ScreenMode.OVERWRITE.name).`when`(savedInstanceState)
+            .getString(STATE_CURRENT_SCREEN_MODE)
 
         presenter.initialize(
             view,
