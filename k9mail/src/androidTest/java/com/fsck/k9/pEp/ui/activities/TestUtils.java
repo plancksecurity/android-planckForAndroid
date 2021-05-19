@@ -3181,6 +3181,7 @@ public class TestUtils {
                 waitForIdle();
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 waitForIdle();
+                object.getText().replaceAll("\n", "");
                 if (!object.getText().contains(cucumberBody)) {
                     assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
