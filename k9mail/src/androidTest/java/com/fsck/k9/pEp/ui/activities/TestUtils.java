@@ -2705,6 +2705,10 @@ public class TestUtils {
         return word + "\n";
     }
 
+    public String specialCharacters() {
+        return "¡¢£¤¥§¨©ª«¬®¯°±´µ¶·¸º»¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÕØßàáâãäåæçñõ÷øÿ₫¦²³¼½¾ÐðÞþ×αΓβΛγΣπΠσΩς<>≠′≤″≥∂≡∫≈∑∞∏√•€™†‡◊‰←↑→↓♠♣♥♦‹›☺☻♀♂♪♫►ΦΘε~бвгґѓдђєжийлљњћќўфцчџшщъыьэюя";
+    }
+
     public void insertTextNTimes (String messageText, int repetitionsOfTheText) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.EditText");
