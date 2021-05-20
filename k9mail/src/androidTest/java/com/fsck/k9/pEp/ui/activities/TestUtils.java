@@ -740,19 +740,21 @@ public class TestUtils {
     }
 
     public void compareMessageBodyWithText (String cucumberBody) {
+        waitForIdle();
         switch (cucumberBody) {
             case "empty":
                 compareMessageBody("");
                 break;
             case "longText":
-                waitForIdle();
                 cucumberBody = longText();
                 compareMessageBodyLongText(cucumberBody);
                 break;
             case "longWord":
-                waitForIdle();
                 cucumberBody = longWord();
                 compareMessageBodyLongText(cucumberBody);
+                break;
+            case "specialCharacters":
+                compareMessageBody(specialCharacters());
                 break;
             default:
                 compareMessageBody(cucumberBody);
