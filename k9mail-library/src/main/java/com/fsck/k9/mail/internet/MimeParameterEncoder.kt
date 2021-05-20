@@ -13,7 +13,6 @@ object MimeParameterEncoder {
 
     private const val ENCODED_VALUE_PREFIX = "UTF-8''"
 
-
     /**
      * Create header field value with parameters encoded if necessary.
      */
@@ -43,7 +42,8 @@ object MimeParameterEncoder {
         if (unencodedValueFitsOnSingleLine && value.isToken()) {
             appendParameter(name, value)
         } else if (quotedValueMightFitOnSingleLine && value.isQuotable() &&
-                fixedCostLength + value.quotedLength() <= MAX_LINE_LENGTH) {
+            fixedCostLength + value.quotedLength() <= MAX_LINE_LENGTH
+        ) {
             appendParameter(name, value.quoted())
         } else {
             rfc2231EncodeAndAppendParameter(name, value)
@@ -57,7 +57,7 @@ object MimeParameterEncoder {
 
     private fun StringBuilder.rfc2231EncodeAndAppendParameter(name: String, value: String) {
         val encodedValueLength = 1 /* folding space */ + name.length + 1 /* asterisk */ + 1 /* equal sign */ +
-                ENCODED_VALUE_PREFIX.length + value.rfc2231EncodedLength() + 1 /* semicolon */
+            ENCODED_VALUE_PREFIX.length + value.rfc2231EncodedLength() + 1 /* semicolon */
 
         if (encodedValueLength <= MAX_LINE_LENGTH) {
             appendRfc2231SingleLineParameter(name, value.rfc2231Encoded())
