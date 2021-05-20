@@ -339,42 +339,10 @@ public class CucumberTestSteps {
                     messageText = testUtils.longText();
                     endOfLongMessage = 80;
                 }
-                timeRequiredForThisMethod(3000);
-                waitForIdle();
-                BySelector selector = By.clazz("android.widget.EditText");
-                UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
-                UiObject2 scroll;
-                for (UiObject2 object : device.findObjects(selector)) {
-                    if (object.getResourceName().equals(uiObject.getResourceName())) {
-                        while (!object.getText().contains(messageText)) {
-                            try {
-                                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
-                                waitForIdle();
-                                object.click();
-                                String finalMessageText = messageText;
-                                waitForIdle();
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        testUtils.setClipboard(finalMessageText);
-                                    }
-                                });
-                                waitForIdle();
-                                for (int i = 0; i < endOfLongMessage; i++) {
-                                    waitForIdle();
-                                    scroll.swipe(Direction.UP, 1.0f);
-                                    testUtils.pasteClipboard();
-                                    waitForIdle();
-                                }
-                                object.click();
-                            } catch (Exception ex) {
-                                Timber.i("Cannot fill long text: " + ex.getMessage());
-                            }
-                        }
-                    }
-                }
-                Espresso.onIdle();
-                testUtils.scrollUpToSubject();
+                testUtils.insertTextNTimes(messageText, endOfLongMessage);
+                break;
+            case "specialCharacters":
+                testUtils.insertTextNTimes(testUtils.specialCharacters(), 1);
                 break;
             default:
                 timeRequiredForThisMethod(10);
@@ -1195,6 +1163,68 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(15);
         waitForIdle();
         testUtils.selectFromScreen(testUtils.stringToID(textToSelect));
+        waitForIdle();
+    }
+
+    @Then("^I export settings$")
+    public void I_export_settings() {
+        waitForIdle();
+        testUtils.openOptionsMenu();
+        testUtils.selectFromScreen(testUtils.stringToID("import_export_action"));
+        testUtils.selectFromScreen(testUtils.stringToID("settings_export_all"));
+        //waitForIdle();
+        //onView(withId(android.R.id.title)).perform(typeText("RRR"));
+        BySelector selector;
+        selector = By.clazz("android.widget.EditText");
+        boolean endOfLoop = false;
+        waitForIdle();
+        while (!endOfLoop) {
+            for (UiObject2 editText : device.findObjects(selector)) {
+                if (editText.getResourceName().equals("android:id/title")) {
+                    while (!editText.getText().equals("testingsettings.k9s")) {
+                        editText.setText("testingsettings.k9s");
+                    }
+                    endOfLoop = true;
+                }
+            }
+        }
+        waitForIdle();
+        selector = By.clazz("android.widget.Button");
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    endOfLoop = true;
+                }
+            }
+        }
+        waitForIdle();
+        selector = By.clazz("android.widget.TextView");
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_export_success_header")))) {
+                    endOfLoop = true;
+                }
+                waitForIdle();
+            }
+        }
+
+        waitForIdle();
+        selector = By.clazz("android.widget.Button");
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    endOfLoop = true;
+                }
+            }
+        }
+        waitForIdle();
+
+        I_wait_seconds(2000);
         waitForIdle();
     }
 
@@ -2152,8 +2182,9 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
-        waitForIdle();
-        waitUntilIdle();
+        for (int i = 0; i < 100; i++) {
+            waitUntilIdle();
+        }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
         checkPrivacyStatus(color);
