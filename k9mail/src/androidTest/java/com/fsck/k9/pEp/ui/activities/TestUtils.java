@@ -16,7 +16,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -2701,6 +2703,44 @@ public class TestUtils {
             word += word;
         }
         return word + "\n";
+    }
+
+    public void insertTextNTimes (String messageText, int repetitionsOfTheText) {
+        waitForIdle();
+        BySelector selector = By.clazz("android.widget.EditText");
+        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 scroll;
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getResourceName().equals(uiObject.getResourceName())) {
+                while (!object.getText().contains(messageText)) {
+                    try {
+                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                        waitForIdle();
+                        object.click();
+                        String finalMessageText = messageText;
+                        waitForIdle();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setClipboard(finalMessageText);
+                            }
+                        });
+                        waitForIdle();
+                        for (int i = 0; i < repetitionsOfTheText; i++) {
+                            waitForIdle();
+                            scroll.swipe(Direction.UP, 1.0f);
+                            pasteClipboard();
+                            waitForIdle();
+                        }
+                        object.click();
+                    } catch (Exception ex) {
+                        Timber.i("Cannot fill long text: " + ex.getMessage());
+                    }
+                }
+            }
+        }
+        Espresso.onIdle();
+        scrollUpToSubject();
     }
 
     public boolean clickLastMessage() {
