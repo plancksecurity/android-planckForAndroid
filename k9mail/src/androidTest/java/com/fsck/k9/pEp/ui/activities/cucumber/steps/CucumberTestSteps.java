@@ -334,11 +334,10 @@ public class CucumberTestSteps {
             case "longWord":
                 messageText = testUtils.longWord();
                 endOfLongMessage = 2;
+                testUtils.insertTextNTimes(messageText, endOfLongMessage);
+                break;
             case "longText":
-                if (messageText.equals("")) {
-                    messageText = testUtils.longText();
-                    endOfLongMessage = 80;
-                }
+                messageText = testUtils.longText();
                 testUtils.insertTextNTimes(messageText, endOfLongMessage);
                 break;
             case "specialCharacters":
