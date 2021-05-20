@@ -743,23 +743,22 @@ public class TestUtils {
         waitForIdle();
         switch (cucumberBody) {
             case "empty":
-                compareMessageBody("");
+                cucumberBody = "";
                 break;
             case "longText":
                 cucumberBody = longText();
-                compareMessageBodyLongText(cucumberBody);
                 break;
             case "longWord":
                 cucumberBody = longWord();
-                compareMessageBodyLongText(cucumberBody);
                 break;
             case "specialCharacters":
-                compareMessageBody(specialCharacters());
+                cucumberBody = specialCharacters();
                 break;
             default:
                 compareMessageBody(cucumberBody);
                 break;
         }
+        compareMessageBodyLongText(cucumberBody);
     }
 
     public static void assertFailWithMessage(String message) {
