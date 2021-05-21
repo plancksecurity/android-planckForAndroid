@@ -3041,18 +3041,20 @@ public class TestUtils {
 
     public void getMessageListSize() {
         waitForIdle();
-        swipeDownMessageList();
-        waitForIdle();
-        while (exists(onView(withId(R.id.message_list)))) {
-            try {
-                waitForIdle();
-                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
-                return;
-            } catch (Exception ex) {
-                Timber.i("Cannot find view message_list: " + ex.getMessage());
+        if (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox))) {
+            swipeDownMessageList();
+            waitForIdle();
+            while (exists(onView(withId(R.id.message_list)))) {
+                try {
+                    waitForIdle();
+                    onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+                    return;
+                } catch (Exception ex) {
+                    Timber.i("Cannot find view message_list: " + ex.getMessage());
+                }
             }
+            waitForIdle();
         }
-        waitForIdle();
     }
 
     public int getListSize() {
