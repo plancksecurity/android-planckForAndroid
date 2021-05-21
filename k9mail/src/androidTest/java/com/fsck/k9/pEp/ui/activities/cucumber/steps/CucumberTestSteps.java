@@ -1450,6 +1450,11 @@ public class CucumberTestSteps {
                 waitForIdle();
                 fileName = "testpicture.png";
                 break;
+            case "specialCharacters":
+                raw = R.raw.testmsoffice;
+                waitForIdle();
+                fileName = "aµØßàåæçñяΣオ可.pdf";
+                break;
             case "passphrase":
                 switch (testUtils.test_number()) {
                     case "4":
