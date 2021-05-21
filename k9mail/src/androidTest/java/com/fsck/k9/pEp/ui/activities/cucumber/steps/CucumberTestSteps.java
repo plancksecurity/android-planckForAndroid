@@ -338,6 +338,7 @@ public class CucumberTestSteps {
                 break;
             case "longText":
                 messageText = testUtils.longText();
+                endOfLongMessage = 80;
                 testUtils.insertTextNTimes(messageText, endOfLongMessage);
                 break;
             case "specialCharacters":
