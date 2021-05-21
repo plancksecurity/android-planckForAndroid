@@ -60,7 +60,6 @@ import security.pEp.ui.intro.startWelcomeMessage
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import security.pEp.ui.resources.ResourcesProvider
-import security.pEp.utils.whenNotNullNorEmpty
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
