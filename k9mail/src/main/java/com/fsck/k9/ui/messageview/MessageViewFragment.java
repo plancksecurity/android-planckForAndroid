@@ -242,12 +242,32 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void restoreAttachmentViewInfo() {
-        currentAttachmentViewInfo = ((MessageList)requireActivity()).getNonConfigAttachmentViewInfo();
+        currentAttachmentViewInfo = getNonConfigAttachmentViewInfo();
     }
 
     private void setCurrentAttachmentViewInfo(AttachmentViewInfo attachmentViewInfo) {
         currentAttachmentViewInfo = attachmentViewInfo;
-        ((MessageList)requireActivity()).retainAttachmentViewInfo(attachmentViewInfo);
+        retainAttachmentViewInfo(attachmentViewInfo);
+    }
+
+    public AttachmentViewInfo getNonConfigAttachmentViewInfo() {
+        MessageList.MessageListNonConfigurationInstance messageListNonConfigurationInstance =
+                ((MessageList) requireActivity()).getMessageListNonConfigurationInstance();
+        return messageListNonConfigurationInstance == null
+                ? null
+                : messageListNonConfigurationInstance.attachmentViewInfo;
+    }
+
+    public void retainAttachmentViewInfo(AttachmentViewInfo attachmentViewInfo) {
+        MessageList.MessageListNonConfigurationInstance messageListNonConfigurationInstance =
+                ((MessageList) requireActivity()).getMessageListNonConfigurationInstance();
+        if(messageListNonConfigurationInstance == null) {
+            messageListNonConfigurationInstance = new MessageList.MessageListNonConfigurationInstance();
+            ((MessageList) requireActivity()).setMessageListNonConfigurationInstance(
+                    messageListNonConfigurationInstance
+            );
+        }
+        messageListNonConfigurationInstance.attachmentViewInfo = attachmentViewInfo;
     }
 
     @Override

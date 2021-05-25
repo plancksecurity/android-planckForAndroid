@@ -389,8 +389,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         return messageListNonConfigurationInstance;
     }
 
-    private static class MessageListNonConfigurationInstance implements NonConfigurationInstance {
-        private AttachmentViewInfo attachmentViewInfo;
+    public static class MessageListNonConfigurationInstance implements NonConfigurationInstance {
+        public AttachmentViewInfo attachmentViewInfo;
 
         @Override
         public boolean retain() {
@@ -403,17 +403,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
-    public AttachmentViewInfo getNonConfigAttachmentViewInfo() {
-        return messageListNonConfigurationInstance == null
-        ? null
-        : messageListNonConfigurationInstance.attachmentViewInfo;
+    public MessageListNonConfigurationInstance getMessageListNonConfigurationInstance() {
+        return messageListNonConfigurationInstance;
     }
 
-    public void retainAttachmentViewInfo(AttachmentViewInfo attachmentViewInfo) {
-        if(messageListNonConfigurationInstance == null) {
-            messageListNonConfigurationInstance = new MessageListNonConfigurationInstance();
-        }
-        messageListNonConfigurationInstance.attachmentViewInfo = attachmentViewInfo;
+    public void setMessageListNonConfigurationInstance(
+            MessageListNonConfigurationInstance messageListNonConfigurationInstance) {
+        this.messageListNonConfigurationInstance = messageListNonConfigurationInstance;
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
