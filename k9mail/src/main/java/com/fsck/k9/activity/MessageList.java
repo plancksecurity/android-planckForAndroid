@@ -1422,7 +1422,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 menu.findItem(R.id.show_folder_list).setVisible(false);
                 menu.findItem(R.id.settings).setVisible(false);
             }
-            // Show the option to search on the server if it was set to be displayed
             menu.findItem(R.id.search_remote).setVisible(showingRemoteSearchItem);
             if (!mMessageListFragment.isManualSearch() && !isThreadDisplayed) {
                 menu.findItem(R.id.search).setVisible(true);
