@@ -1194,7 +1194,15 @@ public class CucumberTestSteps {
         while (!endOfLoop) {
             for (UiObject2 button : device.findObjects(selector)) {
                 if (button.getResourceName().equals("android:id/button1")) {
+                    UiObject2 buttonParent = button.getParent();
                     button.click();
+                    try {
+                        while (buttonParent.getChildCount() > 0) {
+                            waitForIdle();
+                        }
+                    } catch (Exception settingsSaved) {
+                        Timber.i("Saving settings");
+                    }
                     endOfLoop = true;
                 }
             }
@@ -1222,9 +1230,6 @@ public class CucumberTestSteps {
                 }
             }
         }
-        waitForIdle();
-
-        I_wait_seconds(2000);
         waitForIdle();
     }
 
