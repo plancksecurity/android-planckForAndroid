@@ -16,27 +16,42 @@ class DrawerFolderPopulator @Inject constructor() {
     private var lastUnreadCounts: IntArray = intArrayOf()
     private lateinit var lastFolders: List<LocalFolder>
 
-    fun populateFoldersIfNeeded(folderAdapter: RVRendererAdapter<FolderModel>, newFolders: List<LocalFolder>, account: Account, force: Boolean) {
+    fun populateFoldersIfNeeded(
+        folderAdapter: RVRendererAdapter<FolderModel>,
+        newFolders: List<LocalFolder>,
+        account: Account,
+        force: Boolean
+    ) {
         val newFoldersAreDifferent = areFolderListDifferent(newFolders)
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
             val newUnreadCounts = calculateNewUnread(newFolders)
             val unreadCountIsDifferent = !newUnreadCounts.contentEquals(lastUnreadCounts)
-            if(force || newFoldersAreDifferent || unreadCountIsDifferent) {
+            if (force || newFoldersAreDifferent || unreadCountIsDifferent) {
                 lastFolders = newFolders
                 lastUnreadCounts = newUnreadCounts
-                populateFolders(folderAdapter, account)
+                populateFolders(
+                    folderAdapter,
+                    account,
+                    ArrayList(newFolders),
+                    newUnreadCounts.copyOf()
+                )
             }
         }
     }
 
-    private suspend fun populateFolders(folderAdapter: RVRendererAdapter<FolderModel>, account: Account) {
+    private suspend fun populateFolders(
+        folderAdapter: RVRendererAdapter<FolderModel>,
+        account: Account,
+        lastFolders: List<LocalFolder>,
+        lastUnreadCounts: IntArray
+    ) {
         var folderModels: MutableList<FolderModel> = ArrayList(lastFolders.size)
         withContext(Dispatchers.Default) {
             lastFolders.forEachIndexed { index, localFolder ->
                 val folderModel = FolderModel()
                 folderModel.account = account
-                folderModel.localFolder = lastFolders[index]
+                folderModel.localFolder = localFolder
                 folderModel.unreadCount = lastUnreadCounts[index]
                 folderModels.add(folderModel)
             }
