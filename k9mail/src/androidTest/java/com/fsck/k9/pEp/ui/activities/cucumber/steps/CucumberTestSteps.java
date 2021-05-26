@@ -1701,17 +1701,19 @@ public class CucumberTestSteps {
     @When("^I remove account (\\S+)$")
     public void I_remove_account (String account) {
         int accountToRemove = Integer.parseInt(account);
-        while (true) {
-            try {
-                waitForIdle();
-                openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
-                waitForIdle();
-            } catch (Exception ex) {
-                Timber.i("Cannot open menu");
-                break;
+        if (!exists(onView(withId(R.id.accounts_list)))) {
+            while (true) {
+                try {
+                    waitForIdle();
+                    openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().getTargetContext());
+                    waitForIdle();
+                } catch (Exception ex) {
+                    Timber.i("Cannot open menu");
+                    break;
+                }
             }
+            testUtils.selectFromMenu(R.string.action_settings);
         }
-        testUtils.selectFromMenu(R.string.action_settings);
         waitForIdle();
         while (true) {
             try {
