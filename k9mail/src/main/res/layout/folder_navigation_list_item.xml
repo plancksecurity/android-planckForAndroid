@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:background="?attr/grayScaleColorOnBackground3"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
     android:paddingStart="16dp"
     tools:ignore="RtlSymmetry">
 
@@ -14,7 +14,7 @@
         android:id="@+id/folder_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/showchildrenbutton"
         android:background="@drawable/ic_label_black_24dp"
         android:visibility="gone"
         tools:ignore="ContentDescription" />
@@ -24,7 +24,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_chevron_right_drawer_24dp"
-        android:layout_toEndOf="@id/folder_icon"
         tools:ignore="ContentDescription" />
 
     <View
