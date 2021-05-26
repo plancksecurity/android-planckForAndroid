@@ -10,7 +10,6 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.FolderClickListener
 import com.pedrogomez.renderers.Renderer
 import kotlinx.android.synthetic.main.folder_navigation_list_item.view.*
-import kotlinx.coroutines.*
 
 class FolderRenderer : Renderer<FolderModel>() {
 
@@ -39,10 +38,6 @@ class FolderRenderer : Renderer<FolderModel>() {
         folderName.text =
                 FolderInfoHolder.getDisplayName(context, content.account, content.localFolder.name)
         renderUnreadMessages(content.unreadCount)
-    }
-
-    private suspend fun getUnreadMessageCount(): Int = withContext(Dispatchers.IO) {
-        content.localFolder.unreadMessageCount
     }
 
     private fun renderUnreadMessages(unreadMessageCount: Int) {
