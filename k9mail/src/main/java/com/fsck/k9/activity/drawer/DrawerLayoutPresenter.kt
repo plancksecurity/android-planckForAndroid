@@ -12,6 +12,8 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
+import security.pEp.animatedlevellist.model.LevelListItem
+import security.pEp.animatedlevellist.util.LevelListBuilderImpl
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -95,8 +97,13 @@ class DrawerLayoutPresenter @Inject constructor(
     }
 
     private fun setFoldersAdapter() {
-        val collection = ListAdapteeCollection<FolderModel>(emptyList())
-        drawerView.setFolderAdapter(collection)
+       val separator = account?.remoteStore?.pathDelimiter ?: return
+        val levelListBuilder = LevelListBuilderImpl<FolderModel>(separator, 4)
+        val criteria: (LevelListItem<FolderModel>) -> Boolean = { levelItem -> account?.isSpecialFolder(levelItem.item.itemName) == true }
+        levelListBuilder.visibleItemCriteria = criteria
+        levelListBuilder.showOnTopCriteria = criteria
+
+        drawerView.setFolderAdapter(levelListBuilder)
     }
 
     private fun setupNavigationHeader() {
