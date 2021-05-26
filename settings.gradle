@@ -4,3 +4,5 @@ include ':plugins:HoloColorPicker'
 include ':plugins:openpgp-api-lib:openpgp-api'
 include ':pEpJNIAdapter'
 project(':pEpJNIAdapter').projectDir = file("../pEpJNIAdapter/android")
+include ':animatedlevellist'
+project(':animatedlevellist').projectDir = file("../experiments/animatedlevellist")
