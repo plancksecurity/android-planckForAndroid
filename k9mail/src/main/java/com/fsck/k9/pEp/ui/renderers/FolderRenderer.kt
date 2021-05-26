@@ -20,6 +20,7 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
     private lateinit var folderNewMessages: TextView
     private lateinit var showChildrenButton: ImageView
     private lateinit var showChildrenClicker: View
+    private lateinit var folderIcon: View
 
     override fun inflate(inflater: LayoutInflater, parent: ViewGroup): View {
         val inflatedView = inflater.inflate(R.layout.folder_navigation_list_item, parent, false)
@@ -27,6 +28,7 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
         folderNewMessages = inflatedView.findViewById(R.id.folder_new_messages)
         showChildrenButton = inflatedView.findViewById(R.id.showchildrenbutton)
         showChildrenClicker = inflatedView.findViewById(R.id.showchildrenclicker)
+        folderIcon = inflatedView.findViewById(R.id.folder_icon)
         return inflatedView
     }
 
@@ -41,14 +43,19 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
 
     override fun indentByDepth(view: View, item: LevelListItem<FolderModel>) {
         val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indent, view.context.resources.displayMetrics)
-            .toInt()
-        val params : RelativeLayout.LayoutParams = showChildrenButton.layoutParams as RelativeLayout.LayoutParams
+                .toInt()
+        val indentView: View = if(content.children.isEmpty()) folderIcon else showChildrenButton
+        val params : RelativeLayout.LayoutParams = indentView.layoutParams as RelativeLayout.LayoutParams
         params.leftMargin = item.depth * px
-        showChildrenButton.layoutParams = params
+        indentView.layoutParams = params
     }
 
     override fun differenciateParentOrChildDisplay() {
-        showChildrenButton.visibility = if(content.children.isEmpty()) View.INVISIBLE else View.VISIBLE
+        showChildrenButton.visibility =
+        if(content.children.isEmpty()) {
+            if(this.isFlatList && content.depth == 0) View.GONE
+            else View.INVISIBLE
+        } else View.VISIBLE
         showChildrenClicker.visibility = if(content.children.isEmpty()) View.INVISIBLE else View.VISIBLE
     }
 
@@ -64,7 +71,10 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
                 folderNewMessages.visibility = View.VISIBLE
                 folderNewMessages.text = unreadMessageCount.toString()
             }
-            else -> folderNewMessages.visibility = View.GONE
+            else -> {
+                folderNewMessages.text = ""
+                folderNewMessages.visibility = View.INVISIBLE
+            }
         }
     }
 }

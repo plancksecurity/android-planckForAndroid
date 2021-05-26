@@ -16,13 +16,13 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/showchildrenbutton"
         android:background="@drawable/ic_label_black_24dp"
-        android:visibility="gone"
         tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/showchildrenbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:src="@drawable/ic_chevron_right_drawer_24dp"
         tools:ignore="ContentDescription" />
 
@@ -39,15 +39,15 @@
         android:id="@+id/folder_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_toEndOf="@+id/showchildrenbutton"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_toEndOf="@+id/folder_icon"
         android:layout_toStartOf="@+id/folder_new_messages"
         android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
         android:textColor="?android:attr/textColorPrimary"
         tools:text="Folder name"
-        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
         android:ellipsize="middle"
         android:singleLine="true"/>
 
@@ -57,10 +57,11 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:visibility="gone"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|end"
         tools:text="77"
         tools:visibility="visible"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginEnd="16dp"
+        android:minEms="1"/>
 </RelativeLayout>
