@@ -40,13 +40,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_toEndOf="@+id/showchildrenbutton"
+        android:layout_toStartOf="@+id/folder_new_messages"
         android:fontFamily="sans-serif-medium"
         android:layout_centerVertical="true"
         android:textColor="?android:attr/textColorPrimary"
         tools:text="Folder name"
         android:layout_alignParentTop="true"
-        android:maxLines="1" />
+        android:ellipsize="middle"
+        android:singleLine="true"/>
 
     <TextView
         android:id="@+id/folder_new_messages"
