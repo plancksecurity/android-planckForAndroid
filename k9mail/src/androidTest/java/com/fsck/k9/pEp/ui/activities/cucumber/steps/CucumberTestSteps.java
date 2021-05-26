@@ -1241,18 +1241,21 @@ public class CucumberTestSteps {
     public void I_import_settings() {
         waitForIdle();
         testUtils.openOptionsMenu();
-        //testUtils.selectFromScreen(testUtils.stringToID("import_export_action"));
         testUtils.selectFromScreen(testUtils.stringToID("settings_import"));
         BySelector selector = By.clazz("android.widget.TextView");
         boolean endOfLoop = false;
         waitForIdle();
         while (!endOfLoop) {
             for (UiObject2 textView : device.findObjects(selector)) {
-                if (textView.getText().contains("testingsettings")) {
-                    textView.click();
-                    waitForIdle();
-                    endOfLoop = true;
-                    break;
+                try {
+                    if (textView != null && textView.getText().contains("testingsettings")) {
+                        textView.click();
+                        waitForIdle();
+                        endOfLoop = true;
+                        break;
+                    }
+                } catch (Exception nullView) {
+                    Timber.i("TextView is null");
                 }
             }
         }
@@ -1266,6 +1269,52 @@ public class CucumberTestSteps {
                 waitForIdle();
             }
         }
+        waitForIdle();
+        selector = By.clazz("android.widget.Button");
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    endOfLoop = true;
+                }
+            }
+        }
+        waitForIdle();
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_import_success_header")))) {
+                    endOfLoop = true;
+                    break;
+                }
+                waitForIdle();
+            }
+        }
+        waitForIdle();
+        selector = By.clazz("android.widget.Button");
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    endOfLoop = true;
+                }
+            }
+        }
+        waitForIdle();
+        endOfLoop = false;
+        while (!endOfLoop) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_import_activate_account_header")))) {
+                    endOfLoop = true;
+                    break;
+                }
+                waitForIdle();
+            }
+        }
+
+
         waitForIdle();
         selector = By.clazz("android.widget.Button");
         endOfLoop = false;
