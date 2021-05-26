@@ -1185,6 +1185,7 @@ public class CucumberTestSteps {
                         editText.setText("testingsettings.k9s");
                     }
                     endOfLoop = true;
+                    break;
                 }
             }
         }
@@ -1204,6 +1205,7 @@ public class CucumberTestSteps {
                         Timber.i("Saving settings");
                     }
                     endOfLoop = true;
+                    break;
                 }
             }
         }
@@ -1214,6 +1216,7 @@ public class CucumberTestSteps {
             for (UiObject2 textView : device.findObjects(selector)) {
                 if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_export_success_header")))) {
                     endOfLoop = true;
+                    break;
                 }
                 waitForIdle();
             }
@@ -1227,6 +1230,7 @@ public class CucumberTestSteps {
                 if (button.getResourceName().equals("android:id/button1")) {
                     button.click();
                     endOfLoop = true;
+                    break;
                 }
             }
         }
