@@ -145,16 +145,8 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
         renameButton.visibility = View.GONE
     }
 
-    private fun getListener(): DuplicationAttachmentConfirmationListener {
-        try {
-            return targetFragment as DuplicationAttachmentConfirmationListener
-        } catch (e: ClassCastException) {
-            throw ClassCastException(
-                targetFragment!!.javaClass.toString() +
-                        " must implement DuplicationAttachmentConfirmationListener"
-            )
-        }
-    }
+    private fun getListener(): DuplicationAttachmentConfirmationListener  =
+        targetFragment as DuplicationAttachmentConfirmationListener
 
     companion object {
         private fun newInstance(
