@@ -1259,75 +1259,29 @@ public class CucumberTestSteps {
                 }
             }
         }
+        testUtils.waitForUiObject2(resources.getString(testUtils.stringToID("settings_import_selection")), "android:id/alertTitle", selector);
+        testUtils.pressOKButtonInDialog();
+        testUtils.waitForUiObject2(resources.getString(testUtils.stringToID("settings_import_success_header")), "android:id/alertTitle", By.clazz("android.widget.TextView"));
+        testUtils.pressOKButtonInDialog();
+        testUtils.waitForUiObject2(resources.getString(testUtils.stringToID("settings_import_activate_account_header")), "android:id/alertTitle", By.clazz("android.widget.TextView"));
+        selector = By.clazz("android.widget.EditText");
         endOfLoop = false;
         while (!endOfLoop) {
-            for (UiObject2 textView : device.findObjects(selector)) {
-                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_import_selection")))) {
-                    endOfLoop = true;
-                    break;
-                }
-                waitForIdle();
-            }
-        }
-        waitForIdle();
-        selector = By.clazz("android.widget.Button");
-        endOfLoop = false;
-        while (!endOfLoop) {
-            for (UiObject2 button : device.findObjects(selector)) {
-                if (button.getResourceName().equals("android:id/button1")) {
-                    button.click();
-                    endOfLoop = true;
-                }
-            }
-        }
-        waitForIdle();
-        endOfLoop = false;
-        while (!endOfLoop) {
-            for (UiObject2 textView : device.findObjects(selector)) {
-                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_import_success_header")))) {
-                    endOfLoop = true;
-                    break;
-                }
-                waitForIdle();
-            }
-        }
-        waitForIdle();
-        selector = By.clazz("android.widget.Button");
-        endOfLoop = false;
-        while (!endOfLoop) {
-            for (UiObject2 button : device.findObjects(selector)) {
-                if (button.getResourceName().equals("android:id/button1")) {
-                    button.click();
-                    endOfLoop = true;
+            for (UiObject2 editText : device.findObjects(selector)) {
+                try {
+                    if (editText.getResourceName().equals("security.pEp.debug:id/incoming_server_password")) {
+                        editText.setText(testUtils.getAccountPassword());
+                        endOfLoop = true;
+                        break;
+                    }
+                } catch (Exception noPassword) {
+                    Timber.i("No account password");
                 }
             }
         }
         waitForIdle();
-        endOfLoop = false;
-        while (!endOfLoop) {
-            for (UiObject2 textView : device.findObjects(selector)) {
-                if (textView.getResourceName().equals("android:id/alertTitle") && textView.getText().equals(resources.getString(testUtils.stringToID("settings_import_activate_account_header")))) {
-                    endOfLoop = true;
-                    break;
-                }
-                waitForIdle();
-            }
-        }
-
-
+        testUtils.pressOKButtonInDialog();
         waitForIdle();
-        selector = By.clazz("android.widget.Button");
-        endOfLoop = false;
-        while (!endOfLoop) {
-            for (UiObject2 button : device.findObjects(selector)) {
-                if (button.getResourceName().equals("android:id/button1")) {
-                    button.click();
-                    endOfLoop = true;
-                }
-            }
-        }
-        waitForIdle();
-
     }
 
     @Then("^I walk through app$")
