@@ -2631,6 +2631,18 @@ public class TestUtils {
         }
     }
 
+    public void pressOKButtonInDialog () {
+        BySelector selector = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    waitForIdle();
+                    return;
+                }
+            }
+        }
+    }
 
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
