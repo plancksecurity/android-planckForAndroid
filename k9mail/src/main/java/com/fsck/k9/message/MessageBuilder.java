@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 
 import com.fsck.k9.mail.internet.Headers;
+
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import com.fsck.k9.Account.QuoteStyle;
@@ -95,6 +97,7 @@ public abstract class MessageBuilder {
     private Vector<Blob> blobAttachments;
     private Message.EncFormat encondingFormat;
     private boolean isAlwaysSecure;
+    private Rating pEpRating;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -158,6 +161,10 @@ public abstract class MessageBuilder {
         if (isAlwaysSecure) {
             message.setFlag(Flag.X_PEP_NEVER_UNSECURE, true);
             message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
+        }
+
+        if (pEpRating != null) {
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpRating));
         }
     }
 
@@ -650,6 +657,10 @@ public abstract class MessageBuilder {
         this.blobAttachments = attachments;
         this.encondingFormat = encFormat;
         return this;
+    }
+
+    public void setpEpRating(Rating pEpRating) {
+        this.pEpRating = pEpRating;
     }
 
     private void addBlobAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {
