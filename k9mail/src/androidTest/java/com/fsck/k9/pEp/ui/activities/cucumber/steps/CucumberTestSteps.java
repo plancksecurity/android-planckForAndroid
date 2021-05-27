@@ -1280,6 +1280,11 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
+    @Then("^I check Global settings$")
+    public void I_check_global_settings(){
+        testUtils.goToDisplayAndCheckSettings();
+    }
+
     @Then("^I change Global settings$")
     public void I_change_global_settings(){
 
