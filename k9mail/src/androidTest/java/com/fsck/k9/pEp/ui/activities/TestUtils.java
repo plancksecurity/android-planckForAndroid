@@ -3464,17 +3464,18 @@ public class TestUtils {
 
     }
 
-    public boolean checkItemFromDialogListViewIsSelected (int item) {
+    public void checkItemFromDialogListViewIsSelected (int item) {
         BySelector selector = By.clazz("android.widget.ListView");
-        boolean isChecked = false;
         waitForIdle();
         while (true) {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")) {
-                        isChecked = listView.getChildren().get(item).isChecked();
+                        if (!listView.getChildren().get(item).isChecked()) {
+                            assertFailWithMessage("Item is not selected");
+                        }
                         pressBack();
-                        return isChecked;
+                        return;
                     }
                 } catch (Exception ex){
                     Timber.i("Cannot find text on screen: " + ex);
