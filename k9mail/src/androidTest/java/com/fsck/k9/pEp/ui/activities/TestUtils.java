@@ -2216,7 +2216,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    public void typeTextToForceRatingCaltulation (int view) {
+    public void typeTextToForceRatingCalculation(int view) {
         waitForIdle();
         onView(withId(view)).perform(click(), closeSoftKeyboard());
         onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());

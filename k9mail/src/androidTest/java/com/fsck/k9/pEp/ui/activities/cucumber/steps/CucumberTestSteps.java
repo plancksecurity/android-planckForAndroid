@@ -9,9 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -29,7 +26,6 @@ import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -297,7 +293,7 @@ public class CucumberTestSteps {
             }
         }
         try {
-            testUtils.typeTextToForceRatingCaltulation(R.id.subject);
+            testUtils.typeTextToForceRatingCalculation(R.id.subject);
             onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
             onView(withId(R.id.to)).check(matches(isDisplayed()));
         } catch (Exception ex) {
@@ -956,7 +952,7 @@ public class CucumberTestSteps {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
             try {
-                testUtils.typeTextToForceRatingCaltulation(R.id.subject);
+                testUtils.typeTextToForceRatingCalculation(R.id.subject);
             } catch (Exception ex) {
                 for (UiObject2 object : device.findObjects(selector)) {
                     boolean actionPerformed = false;
@@ -970,7 +966,7 @@ public class CucumberTestSteps {
                     }
                 }
                 try {
-                    testUtils.typeTextToForceRatingCaltulation(R.id.subject);
+                    testUtils.typeTextToForceRatingCalculation(R.id.subject);
                 } catch (Exception e) {
                     Timber.i("Cannot find subject");
                 }
@@ -2015,7 +2011,7 @@ public class CucumberTestSteps {
         while (!viewIsDisplayed(R.id.message_content)) {
             waitForIdle();
         }
-        testUtils.typeTextToForceRatingCaltulation(R.id.message_content);
+        testUtils.typeTextToForceRatingCalculation(R.id.message_content);
     }
 
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
@@ -2246,7 +2242,7 @@ public class CucumberTestSteps {
             TestUtils.swipeUpScreen();
             TestUtils.swipeDownScreen();
             TestUtils.swipeDownScreen();
-            testUtils.typeTextToForceRatingCaltulation(R.id.subject);
+            testUtils.typeTextToForceRatingCalculation(R.id.subject);
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
