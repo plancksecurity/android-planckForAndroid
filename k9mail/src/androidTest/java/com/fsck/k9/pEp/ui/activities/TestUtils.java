@@ -3421,7 +3421,7 @@ public class TestUtils {
         onView(withId(view)).check(matches(isCompletelyDisplayed()));
     }
 
-    private void setCheckBox(String resourceText, boolean checked) {
+    public void setCheckBox(String resourceText, boolean checked) {
         BySelector selector = By.clazz("android.widget.CheckBox");
         while (true) {
             for (UiObject2 checkbox : device.findObjects(selector)) {
