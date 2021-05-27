@@ -3518,6 +3518,44 @@ public class TestUtils {
         selectFromScreen(stringToID("font_size_account_list"));
         selectFromScreen(stringToID("font_size_account_name"));
         checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_account_description"));
+        checkItemFromDialogListViewIsSelected(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_folder_list"));
+        selectFromScreen(stringToID("font_size_folder_name"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_folder_status"));
+        checkItemFromDialogListViewIsSelected(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_list"));
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_list_date"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_list_preview"));
+        checkItemFromDialogListViewIsSelected(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_view"));
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_view_to"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_view_cc"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_view_date"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("font_size_message_view_additional_headers"));
+        checkItemFromDialogListViewIsSelected(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_compose"));
+        selectFromScreen(stringToID("font_size_message_compose_input"));
+        selectItemFromDialogListView(2);
+        pressBack();
+        pressBack();
 
     }
 
