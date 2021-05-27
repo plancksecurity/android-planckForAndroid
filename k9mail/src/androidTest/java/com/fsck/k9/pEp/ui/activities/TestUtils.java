@@ -3484,6 +3484,15 @@ public class TestUtils {
 
     }
 
+    public void goToDisplayAndCheckSettings () {
+        selectFromScreen(stringToID("display_preferences"));
+        selectFromScreen(stringToID("font_size_settings_title"));
+        selectFromScreen(stringToID("font_size_account_list"));
+        selectFromScreen(stringToID("font_size_account_name"));
+        checkItemFromDialogListViewIsSelected(2);
+
+    }
+
         public void goToDisplayAndChangeSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
