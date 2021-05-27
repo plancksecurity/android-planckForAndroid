@@ -3567,7 +3567,8 @@ public class TestUtils {
         selectItemFromDialogListView(2);
         pressBack();
         pressBack();
-        /*scrollToCheckBoxAndCheckIt(true, stringToID("animations_title"));
+
+        scrollToCheckBoxAndCheckIt(true, stringToID("animations_title"));
         scrollToView(resources.getString(R.string.accountlist_preferences));
         scrollToCheckBoxAndCheckIt(true, stringToID("measure_accounts_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("count_search_title"));
@@ -3579,11 +3580,11 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_flag_label"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_checkbox_label"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_correspondent_names_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_sender_above_subject_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_show_contact_name_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_sender_above_subject_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_contact_name_label"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_contact_picture_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_colorize_missing_contact_pictures_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_threaded_view_label"));
         scrollToView(resources.getString(stringToID("messageview_preferences")));
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
@@ -3591,7 +3592,7 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
-        pressBack();*/
+        pressBack();
     }
 
     public void setTrustWords(String text) {
