@@ -1284,8 +1284,13 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @Then("^I walk through app$")
-    public void I_walk_through_app(){
+    @Then("^I change Global settings$")
+    public void I_change_global_settings(){
+
+    }
+
+        @Then("^I walk through app$")
+        public void I_walk_through_app(){
         timeRequiredForThisMethod(15);
         waitForIdle();
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
