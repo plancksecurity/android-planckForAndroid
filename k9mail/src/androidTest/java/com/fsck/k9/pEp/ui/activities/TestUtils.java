@@ -3410,6 +3410,11 @@ public class TestUtils {
         }
     }
 
+    public void scrollToCheckBoxAndAssertIt(boolean isChecked, int view) {
+        scrollToView(resources.getString(view));
+        assertCheckBox(view, isChecked);
+    }
+
     public void scrollToViewAndClickIt(int view) {
         scrollToView(resources.getString(view));
         selectFromScreen(view);
