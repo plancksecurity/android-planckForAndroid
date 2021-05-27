@@ -3445,6 +3445,25 @@ public class TestUtils {
         }
     }
 
+    public void selectItemFromDialogListView (int item) {
+        BySelector selector = By.clazz("android.widget.ListView");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 listView : device.findObjects(selector)) {
+                try {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")) {
+                        listView.getChildren().get(item).click();
+                        waitForIdle();
+                        return;
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+
+    }
+
     public void setTrustWords(String text) {
         trustWords = text;
     }
