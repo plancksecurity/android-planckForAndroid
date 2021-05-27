@@ -3352,6 +3352,28 @@ public class TestUtils {
         }
     }
 
+    public void assertCheckBox(int resource, boolean check) {
+        boolean textViewFound = false;
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (!textViewFound) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().contains(resources.getString(resource))) {
+                        waitForIdle();
+                        UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
+                        if (checkbox.isChecked() == check) {
+                            return;
+                        } else {
+                            assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
+                        }
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find CheckBox on screen: " + ex);
+                }
+            }
+        }
+    }
+
     public void getScreenShot() {
         waitForIdle();
         File imageDir = new File(Environment.getExternalStorageDirectory().toString());
