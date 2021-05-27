@@ -3464,6 +3464,26 @@ public class TestUtils {
 
     }
 
+    public boolean checkItemFromDialogListViewIsSelected (int item) {
+        BySelector selector = By.clazz("android.widget.ListView");
+        boolean isChecked = false;
+        waitForIdle();
+        while (true) {
+            for (UiObject2 listView : device.findObjects(selector)) {
+                try {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")) {
+                        isChecked = listView.getChildren().get(item).isChecked();
+                        pressBack();
+                        return isChecked;
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find text on screen: " + ex);
+                }
+            }
+        }
+
+    }
+
     public void setTrustWords(String text) {
         trustWords = text;
     }
