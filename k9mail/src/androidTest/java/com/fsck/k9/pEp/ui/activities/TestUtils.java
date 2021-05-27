@@ -3484,6 +3484,79 @@ public class TestUtils {
 
     }
 
+        public void goToDisplayAndChangeSettings () {
+        selectFromScreen(stringToID("display_preferences"));
+        selectFromScreen(stringToID("font_size_settings_title"));
+        selectFromScreen(stringToID("font_size_account_list"));
+        selectFromScreen(stringToID("font_size_account_name"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_account_description"));
+        selectItemFromDialogListView(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_folder_list"));
+        selectFromScreen(stringToID("font_size_folder_name"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_folder_status"));
+        selectItemFromDialogListView(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_list"));
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_list_date"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_list_preview"));
+        selectItemFromDialogListView(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_view"));
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_view_to"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_view_cc"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_view_date"));
+        selectItemFromDialogListView(2);
+        selectFromScreen(stringToID("font_size_message_view_additional_headers"));
+        selectItemFromDialogListView(2);
+        //selectFromScreen(stringToID("font_size_message_view_content"));
+        //selectItemFromDialogListView(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_compose"));
+        selectFromScreen(stringToID("font_size_message_compose_input"));
+        selectItemFromDialogListView(2);
+        pressBack();
+        pressBack();
+        /*scrollToCheckBoxAndCheckIt(true, stringToID("animations_title"));
+        scrollToView(resources.getString(R.string.accountlist_preferences));
+        scrollToCheckBoxAndCheckIt(true, stringToID("measure_accounts_title"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("count_search_title"));
+        scrollToView(resources.getString(stringToID("folderlist_preferences")));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        scrollToView(resources.getString(stringToID("messagelist_preferences")));
+        scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
+        pressBack();
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_flag_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_checkbox_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_correspondent_names_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_sender_above_subject_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_show_contact_name_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_contact_picture_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_threaded_view_label"));
+        scrollToView(resources.getString(stringToID("messageview_preferences")));
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        pressBack();
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_autofit_width_label"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        pressBack();*/
+    }
+
     public void setTrustWords(String text) {
         trustWords = text;
     }
