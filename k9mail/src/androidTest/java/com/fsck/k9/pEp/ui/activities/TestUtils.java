@@ -2613,6 +2613,25 @@ public class TestUtils {
                 .check(matches(isDisplayed()));
     }
 
+    public void waitForUiObject2 (String textInTheObject, String resourceName, BySelector selector) {
+        waitForIdle();
+        while (true) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                try {
+                    if (textView.getResourceName().equals(resourceName) && textView.getText().equals(textInTheObject)) {
+                        waitForIdle();
+                        return;
+                    }
+                } catch (Exception nullView) {
+                    waitForIdle();
+                    Timber.i(textInTheObject + " is not ready yet: " + nullView.getMessage());
+                }
+            }
+            waitForIdle();
+        }
+    }
+
+
     String getResourceString(int id, int position) {
         return resources.getStringArray(id)[position];
     }
@@ -3557,6 +3576,13 @@ public class TestUtils {
         } catch (Exception ex) {
             Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
         }
+    }
+
+    public String getAccountPassword () {
+        while (testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getPassword(Integer.parseInt(testConfig.test_number));
     }
 
     public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
