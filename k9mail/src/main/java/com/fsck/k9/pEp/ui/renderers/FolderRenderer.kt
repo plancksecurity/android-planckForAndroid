@@ -4,7 +4,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.fsck.k9.R
@@ -16,10 +15,7 @@ import security.pEp.animatedlevellist.util.Constants
 
 class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
 
-    private lateinit var folderName: TextView
     private lateinit var folderNewMessages: TextView
-    private lateinit var showChildrenButton: ImageView
-    private lateinit var showChildrenClicker: View
     private lateinit var folderIcon: View
 
     override fun inflate(inflater: LayoutInflater, parent: ViewGroup): View {
@@ -33,8 +29,8 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
     }
 
     override fun bind() {
-        differenciateParentOrChildDisplay()
-        differenciateUnfoldedCondition()
+        differentiateParentOrChildDisplay()
+        differentiateUnfoldedCondition()
         val folderModel = content.item
         folderName.text =
             FolderInfoHolder.getDisplayName(context, folderModel.account, content.levelListItemName)
@@ -50,7 +46,7 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
         indentView.layoutParams = params
     }
 
-    override fun differenciateParentOrChildDisplay() {
+    override fun differentiateParentOrChildDisplay() {
         showChildrenButton.visibility =
         if(content.children.isEmpty()) {
             if(this.isFlatList && content.depth == 0) View.GONE
@@ -59,7 +55,7 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
         showChildrenClicker.visibility = if(content.children.isEmpty()) View.INVISIBLE else View.VISIBLE
     }
 
-    private fun differenciateUnfoldedCondition() {
+    override fun differentiateUnfoldedCondition() {
         showChildrenButton.rotation =
             if(!content.areChildrenUnfolded) Constants.ARROW_ORIGINAL_ROTATION
             else Constants.ARROW_FINAL_ROTATION

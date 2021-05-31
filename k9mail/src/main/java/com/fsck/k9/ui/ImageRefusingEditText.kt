@@ -16,7 +16,7 @@ class ImageRefusingEditText(context: Context, attrs: AttributeSet) : EolConverti
     private val inputConnectionProvider: InputConnectionProvider = InputConnectionProviderImpl(context)
 
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
-        var ic = super.onCreateInputConnection(editorInfo)
+        val ic = super.onCreateInputConnection(editorInfo)!!
         return inputConnectionProvider.provideInputConnection(ic, editorInfo)
     }
 

@@ -315,10 +315,10 @@ class DrawerLayoutView @Inject constructor(
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
 
         navigationFolders.layoutManager = getDrawerLayoutManager()
-        folderAdapter = object: BaseLevelListRVRendererAdapter<FolderModel>(
-            rendererFolderBuilder, levelItemActionListener, levelListBuilder, CHILD_FOLDER_INDENT
-        ) {}
-        navigationFolders.adapter = folderAdapter
+        folderAdapter = BaseLevelListRVRendererAdapter(
+            levelItemActionListener, levelListBuilder, CHILD_FOLDER_INDENT, rendererFolderBuilder
+        )
+        navigationFolders.adapter = folderAdapter.adapter
     }
 
     private val levelItemActionListener = object: LevelItemActionListener<FolderModel> {

@@ -43,7 +43,6 @@ class DrawerFolderPopulator @Inject constructor() {
             folderModels = orderFolderLists(account, folderModels)
         }
         folderAdapter.changePlainList(folderModels)
-        folderAdapter.notifyDataSetChanged()
     }
 
     private fun areFolderListDifferent(newFolders: List<LocalFolder>): Boolean {
