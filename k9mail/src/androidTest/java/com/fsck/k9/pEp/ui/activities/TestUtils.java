@@ -3478,7 +3478,8 @@ public class TestUtils {
         while (true) {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
-                    if (listView.getResourceName().equals("android:id/select_dialog_listview")) {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")
+                    || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
                         listView.getChildren().get(item).click();
                         waitForIdle();
                         return;
@@ -3497,7 +3498,8 @@ public class TestUtils {
         while (true) {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
-                    if (listView.getResourceName().equals("android:id/select_dialog_listview")) {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")
+                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
                         if (!listView.getChildren().get(item).isChecked()) {
                             assertFailWithMessage("Item is not selected");
                         }
