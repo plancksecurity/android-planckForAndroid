@@ -3635,6 +3635,16 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToNotificationsAndAssertSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time"));
+        scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
+        pressBack();
+        pressBack();
+    }
+
         public void goToDisplayAndChangeSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
@@ -3733,6 +3743,16 @@ public class TestUtils {
         pressOKButtonInDialog();
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("start_integrated_inbox_title"));
+        pressBack();
+    }
+
+    public void goToNotificationsAndChangeSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("quiet_time"));
+        scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
+        pressBack();
         pressBack();
     }
 
