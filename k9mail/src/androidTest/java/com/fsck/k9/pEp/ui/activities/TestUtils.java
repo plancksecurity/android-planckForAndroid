@@ -3555,10 +3555,42 @@ public class TestUtils {
         pressBack();
         selectFromScreen(stringToID("font_size_message_compose"));
         selectFromScreen(stringToID("font_size_message_compose_input"));
-        selectItemFromDialogListView(2);
+        checkItemFromDialogListViewIsSelected(2);
         pressBack();
         pressBack();
 
+        scrollToCheckBoxAndAssertIt(false, stringToID("animations_title"));
+        scrollToView(resources.getString(R.string.accountlist_preferences));
+        scrollToCheckBoxAndAssertIt(false, stringToID("measure_accounts_title"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("count_search_title"));
+        scrollToView(resources.getString(stringToID("folderlist_preferences")));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        scrollToView(resources.getString(stringToID("messagelist_preferences")));
+        scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
+        checkItemFromDialogListViewIsSelected(3);
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_flag_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_checkbox_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_correspondent_names_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_sender_above_subject_label"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_show_contact_name_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_contact_picture_label"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_threaded_view_label"));
+        scrollToView(resources.getString(stringToID("messageview_preferences")));
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        checkItemFromDialogListViewIsSelected(1);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        checkItemFromDialogListViewIsSelected(2);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        checkItemFromDialogListViewIsSelected(3);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        checkItemFromDialogListViewIsSelected(4);
+        //pressOKButtonInDialog();
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_autofit_width_label"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        pressBack();
     }
 
         public void goToDisplayAndChangeSettings () {
