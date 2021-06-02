@@ -3606,6 +3606,28 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToInteractionAndCheckSettings () {
+        selectFromScreen(stringToID("interaction_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("gestures_title"));
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        checkItemFromDialogListViewIsSelected(0);
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        checkItemFromDialogListViewIsSelected(1);
+        scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_return_to_list_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_messageview_show_next_label"));
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(0);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(1);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(3);
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("start_integrated_inbox_title"));
+        pressBack();
+
+    }
+
         public void goToDisplayAndChangeSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
@@ -3682,6 +3704,29 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        pressBack();
+    }
+
+    public void goToInteractionAndChangeSettings () {
+        selectFromScreen(stringToID("interaction_preferences"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("gestures_title"));
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        selectItemFromDialogListView(0);
+        selectItemFromDialogListView(1);
+        pressOKButtonInDialog();
+        scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_return_to_list_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_messageview_show_next_label"));
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        selectItemFromDialogListView(0);
+        selectItemFromDialogListView(1);
+        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(3);
+        selectItemFromDialogListView(4);
+        selectItemFromDialogListView(5);
+        pressOKButtonInDialog();
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("start_integrated_inbox_title"));
         pressBack();
     }
 
