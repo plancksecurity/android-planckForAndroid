@@ -3485,7 +3485,7 @@ public class TestUtils {
         }
     }
 
-    public void selectItemFromDialogListView (int item) {
+    public void selectItemFromDialogListView (int item, boolean boxChecked) {
         BySelector selector = By.clazz("android.widget.ListView");
         waitForIdle();
         while (true) {
@@ -3493,7 +3493,9 @@ public class TestUtils {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
                     || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
-                        listView.getChildren().get(item).click();
+                        if (listView.getChildren().get(item).isChecked() != boxChecked) {
+                            listView.getChildren().get(item).click();
+                        }
                         waitForIdle();
                         return;
                     }
@@ -3505,7 +3507,7 @@ public class TestUtils {
 
     }
 
-    public void checkItemFromDialogListViewIsSelected (int item) {
+    public void checkItemFromDialogListViewIsSelected (int item, boolean isSelected) {
         BySelector selector = By.clazz("android.widget.ListView");
         waitForIdle();
         while (true) {
@@ -3513,18 +3515,17 @@ public class TestUtils {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
                             || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
-                        if (!listView.getChildren().get(item).isChecked()) {
-                            assertFailWithMessage("Item is not selected");
+                        if (listView.getChildren().get(item).isChecked() != isSelected) {
+                            assertFailWithMessage("Item " + item + " of the list must be " + isSelected + " and is " + listView.getChildren().get(item).isChecked());
                         }
                         pressBack();
                         return;
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
                 }
             }
         }
-
     }
 
     public void goToDisplayAndCheckSettings () {
@@ -3532,46 +3533,45 @@ public class TestUtils {
         selectFromScreen(stringToID("font_size_settings_title"));
         selectFromScreen(stringToID("font_size_account_list"));
         selectFromScreen(stringToID("font_size_account_name"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_account_description"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_folder_list"));
         selectFromScreen(stringToID("font_size_folder_name"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_folder_status"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_list"));
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_date"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_preview"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_view"));
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_to"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_cc"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_date"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_additional_headers"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_compose"));
         selectFromScreen(stringToID("font_size_message_compose_input"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(2, true);
         pressBack();
         pressBack();
-
         scrollToCheckBoxAndAssertIt(false, stringToID("animations_title"));
         scrollToView(resources.getString(R.string.accountlist_preferences));
         scrollToCheckBoxAndAssertIt(false, stringToID("measure_accounts_title"));
@@ -3580,7 +3580,7 @@ public class TestUtils {
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
         scrollToView(resources.getString(stringToID("messagelist_preferences")));
         scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
-        checkItemFromDialogListViewIsSelected(3);
+        checkItemFromDialogListViewIsSelected(3, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_flag_label"));
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_checkbox_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_correspondent_names_label"));
@@ -3592,13 +3592,15 @@ public class TestUtils {
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_threaded_view_label"));
         scrollToView(resources.getString(stringToID("messageview_preferences")));
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(1);
+        checkItemFromDialogListViewIsSelected(0, false);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(2);
+        checkItemFromDialogListViewIsSelected(1, true);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(3);
+        checkItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(4);
+        checkItemFromDialogListViewIsSelected(3, true);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        checkItemFromDialogListViewIsSelected(4, true);
         //pressOKButtonInDialog();
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
@@ -3610,22 +3612,27 @@ public class TestUtils {
         selectFromScreen(stringToID("interaction_preferences"));
         scrollToCheckBoxAndAssertIt(true, stringToID("gestures_title"));
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
-        checkItemFromDialogListViewIsSelected(0);
+        checkItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
-        checkItemFromDialogListViewIsSelected(1);
+        checkItemFromDialogListViewIsSelected(1, true);
         scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_return_to_list_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_messageview_show_next_label"));
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(0);
+        checkItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(1);
+        checkItemFromDialogListViewIsSelected(1, true);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(3);
+        checkItemFromDialogListViewIsSelected(2, false);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(3, true);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(4, false);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        checkItemFromDialogListViewIsSelected(5, false);
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndAssertIt(true, stringToID("start_integrated_inbox_title"));
         pressBack();
-
     }
 
         public void goToDisplayAndChangeSettings () {
@@ -3633,48 +3640,47 @@ public class TestUtils {
         selectFromScreen(stringToID("font_size_settings_title"));
         selectFromScreen(stringToID("font_size_account_list"));
         selectFromScreen(stringToID("font_size_account_name"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_account_description"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_folder_list"));
         selectFromScreen(stringToID("font_size_folder_name"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_folder_status"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_list"));
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_list_date"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_list_preview"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_view"));
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_view_to"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_view_cc"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_view_date"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         selectFromScreen(stringToID("font_size_message_view_additional_headers"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         //selectFromScreen(stringToID("font_size_message_view_content"));
         //selectItemFromDialogListView(2);
         pressBack();
         selectFromScreen(stringToID("font_size_message_compose"));
         selectFromScreen(stringToID("font_size_message_compose_input"));
-        selectItemFromDialogListView(2);
+        selectItemFromDialogListView(2, true);
         pressBack();
         pressBack();
-
         scrollToCheckBoxAndCheckIt(false, stringToID("animations_title"));
         scrollToView(resources.getString(R.string.accountlist_preferences));
         scrollToCheckBoxAndCheckIt(false, stringToID("measure_accounts_title"));
@@ -3683,7 +3689,7 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
         scrollToView(resources.getString(stringToID("messagelist_preferences")));
         scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
-        selectItemFromDialogListView(3);
+        selectItemFromDialogListView(3, true);
         scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_flag_label"));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_checkbox_label"));
         scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_show_correspondent_names_label"));
@@ -3695,11 +3701,11 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_threaded_view_label"));
         scrollToView(resources.getString(stringToID("messageview_preferences")));
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        selectItemFromDialogListView(0);
-        selectItemFromDialogListView(1);
-        selectItemFromDialogListView(2);
-        selectItemFromDialogListView(3);
-        selectItemFromDialogListView(4);
+        selectItemFromDialogListView(0, false);
+        selectItemFromDialogListView(1, true);
+        selectItemFromDialogListView(2, true);
+        selectItemFromDialogListView(3, true);
+        selectItemFromDialogListView(4, true);
         pressOKButtonInDialog();
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
@@ -3711,19 +3717,19 @@ public class TestUtils {
         selectFromScreen(stringToID("interaction_preferences"));
         scrollToCheckBoxAndCheckIt(true, stringToID("gestures_title"));
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
-        selectItemFromDialogListView(0);
-        selectItemFromDialogListView(1);
+        selectItemFromDialogListView(0, true);
+        selectItemFromDialogListView(1, true);
         pressOKButtonInDialog();
         scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_return_to_list_label"));
         scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_messageview_show_next_label"));
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        selectItemFromDialogListView(0);
-        selectItemFromDialogListView(1);
-        selectItemFromDialogListView(2);
-        selectItemFromDialogListView(3);
-        selectItemFromDialogListView(4);
-        selectItemFromDialogListView(5);
+        selectItemFromDialogListView(0, true);
+        selectItemFromDialogListView(1, true);
+        selectItemFromDialogListView(2, false);
+        selectItemFromDialogListView(3, true);
+        selectItemFromDialogListView(4, false);
+        selectItemFromDialogListView(5, false);
         pressOKButtonInDialog();
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("start_integrated_inbox_title"));
