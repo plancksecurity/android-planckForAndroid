@@ -2567,6 +2567,19 @@ public class TestUtils {
         assertThat(waitForView, notNullValue());
     }
 
+    public void waitForView (int view) {
+        while (true) {
+            try {
+                while (!exists(onView(withId(view)))) {
+                    waitForIdle();
+                }
+                return;
+            } catch (Exception viewIsNotDisplayed) {
+                Timber.i("View is not displayed, waiting for view...");
+            }
+        }
+    }
+
     public void doWaitForResource(int resource) {
         waitForIdle();
         IdlingResource idlingResourceVisibility = null;
