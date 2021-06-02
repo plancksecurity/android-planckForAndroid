@@ -643,6 +643,7 @@ public class CucumberTestSteps {
     public void I_click_stop_trusting_words() {
         timeRequiredForThisMethod(10);
         testUtils.goToHandshakeDialog();
+        testUtils.waitForView(R.id.rejectHandshake);
         onView(withId(R.id.rejectHandshake)).perform(click());
         waitForIdle();
         testUtils.pressBack();
@@ -945,12 +946,13 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
-            waitUntilIdle();
         }
         waitForIdle();
         onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        waitForIdle();
+        for (int i = 0; i < 100; i++) {
+            waitUntilIdle();
+        }
             try {
                 testUtils.typeTextToForceRatingCalculation(R.id.subject);
             } catch (Exception ex) {
@@ -1287,7 +1289,10 @@ public class CucumberTestSteps {
 
     @Then("^I change Global settings$")
     public void I_change_global_settings(){
-
+        testUtils.goToDisplayAndChangeSettings();
+        //testUtils.scrollToCheckBoxAndCheckIt();
+        //testUtils.setCheckBox();
+        //testUtils.checkBoxOnScreenChecked();
     }
 
         @Then("^I walk through app$")
