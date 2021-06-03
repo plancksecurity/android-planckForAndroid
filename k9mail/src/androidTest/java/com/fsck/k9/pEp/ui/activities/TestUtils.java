@@ -3528,6 +3528,63 @@ public class TestUtils {
         }
     }
 
+    public void setTimeInRadialPicker (int hour) {
+        BySelector selector = By.clazz("android.view.View");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 clock : device.findObjects(selector)) {
+                try {
+                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                        clock.getChildren().get(hour).click();
+                        pressBack();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void checkTimeInRadialPickerIsSelected (int hour) {
+        BySelector selector = By.clazz("android.widget.RelativeLayout");
+        boolean timeAssertDone = false;
+        waitForIdle();
+        while (!timeAssertDone) {
+            for (UiObject2 time : device.findObjects(selector)) {
+                try {
+                    if (time.getResourceName().equals("security.pEp.debug:id/time_header")) {
+                        if (!time.getText().contains((String.valueOf(hour)))){
+                            assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
+                        }
+                        pressBack();
+                        timeAssertDone = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+        selector = By.clazz("android.view.View");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 clock : device.findObjects(selector)) {
+                try {
+                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                        if (!clock.getChildren().get(hour).isChecked()) {
+                            assertFailWithMessage("Wrong time selected");
+                        }
+                        pressBack();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+    }
+
     public void goToDisplayAndCheckSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
