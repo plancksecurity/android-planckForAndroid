@@ -3536,7 +3536,6 @@ public class TestUtils {
                 try {
                     if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
                         clock.getChildren().get(hour).click();
-                        pressBack();
                         return;
                     }
                 } catch (Exception ex) {
@@ -3554,10 +3553,9 @@ public class TestUtils {
             for (UiObject2 time : device.findObjects(selector)) {
                 try {
                     if (time.getResourceName().equals("security.pEp.debug:id/time_header")) {
-                        if (!time.getText().contains((String.valueOf(hour)))){
+                        if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
                             assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
                         }
-                        pressBack();
                         timeAssertDone = true;
                         break;
                     }
@@ -3572,10 +3570,9 @@ public class TestUtils {
             for (UiObject2 clock : device.findObjects(selector)) {
                 try {
                     if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
-                        if (!clock.getChildren().get(hour).isChecked()) {
+                        if (!clock.getChildren().get(hour).isSelected()) {
                             assertFailWithMessage("Wrong time selected");
                         }
-                        pressBack();
                         return;
                     }
                 } catch (Exception ex) {
