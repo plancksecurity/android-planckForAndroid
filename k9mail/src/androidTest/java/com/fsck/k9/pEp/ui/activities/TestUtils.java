@@ -3479,7 +3479,7 @@ public class TestUtils {
                         }
                     }
                 } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
+                    Timber.i("Cannot find checkbox in screen: " + ex);
                 }
             }
         }
@@ -3511,7 +3511,7 @@ public class TestUtils {
                         return;
                     }
                 } catch (Exception ex) {
-                    Timber.i("Cannot find text on screen: " + ex);
+                    Timber.i("Cannot find item in the dialog list: " + ex);
                 }
             }
         }
@@ -3532,7 +3532,7 @@ public class TestUtils {
                         return;
                     }
                 } catch (Exception ex) {
-                    Timber.i("Cannot find text on screen: " + ex);
+                    Timber.i("Cannot find dialog list or item in the list: " + ex);
                 }
             }
         }
