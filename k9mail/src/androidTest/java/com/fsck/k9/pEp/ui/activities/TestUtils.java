@@ -3637,11 +3637,18 @@ public class TestUtils {
 
     public void goToNotificationsAndAssertSettings () {
         selectFromScreen(stringToID("notifications_title"));
-        scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("quiet_time"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time_notification"));
+        scrollToViewAndClickIt(stringToID("quiet_time_starts"));
+        checkTimeInRadialPickerIsSelected(1);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("quiet_time_ends"));
+        checkTimeInRadialPickerIsSelected(4);
+        pressOKButtonInDialog();
         scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
-        pressBack();
+        checkItemFromDialogListViewIsSelected(2, true);
         scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
-        pressBack();
+        checkItemFromDialogListViewIsSelected(3, true);
         pressBack();
     }
 
@@ -3748,11 +3755,18 @@ public class TestUtils {
 
     public void goToNotificationsAndChangeSettings () {
         selectFromScreen(stringToID("notifications_title"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("quiet_time"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("quiet_time"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("quiet_time_notification"));
+        scrollToViewAndClickIt(stringToID("quiet_time_starts"));
+        setTimeInRadialPicker(1);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("quiet_time_ends"));
+        setTimeInRadialPicker(4);
+        pressOKButtonInDialog();
         scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
-        pressBack();
+        selectItemFromDialogListView(2, true);
         scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
-        pressBack();
+        selectItemFromDialogListView(3, true);
         pressBack();
     }
 
