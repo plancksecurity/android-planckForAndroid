@@ -3492,19 +3492,29 @@ public class TestUtils {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
-                    || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != boxChecked) {
                             listView.getChildren().get(item).click();
+                        } else {
+                            boolean existsOKButton = false;
+                            selector = By.clazz("android.widget.Button");
+                            for (UiObject2 button : device.findObjects(selector)) {
+                                if (button.getResourceName().equals("android:id/button1")) {
+                                    existsOKButton = true;
+                                }
+                            }
+                            if (!existsOKButton) {
+                                pressBack();
+                            }
                         }
                         waitForIdle();
                         return;
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     Timber.i("Cannot find text on screen: " + ex);
                 }
             }
         }
-
     }
 
     public void checkItemFromDialogListViewIsSelected (int item, boolean isSelected) {
