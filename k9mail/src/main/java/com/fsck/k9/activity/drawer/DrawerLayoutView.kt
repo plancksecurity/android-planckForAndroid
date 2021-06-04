@@ -20,7 +20,6 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.mail.Message
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.folderClickListener
@@ -41,7 +40,7 @@ class DrawerLayoutView @Inject constructor(
     @Named("ActivityContext") private val context: Context,
     private var drawerFolderPopulator: DrawerFolderPopulator,
     private var drawerLayoutPresenter: DrawerLayoutPresenter,
-        private var messagingController: MessagingController
+    private var messagingController: MessagingController
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -100,7 +99,7 @@ class DrawerLayoutView @Inject constructor(
         })
         findViewsById()
         setupCreateConfigAccountListeners()
-        initializeDrawerToggle(activity,toolbar)
+        initializeDrawerToggle(activity, toolbar)
     }
 
     fun updateAccount(account: Account) {
@@ -108,11 +107,12 @@ class DrawerLayoutView @Inject constructor(
     }
 
     private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
-        toggle = ActionBarDrawerToggle(
+        toggle = DrawerLayoutToogle(
             activity, drawerLayout, toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
-        toggle.setDrawerLayoutView(this)
+
+        (toggle as DrawerLayoutToogle).setDrawerLayoutView(this)
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()

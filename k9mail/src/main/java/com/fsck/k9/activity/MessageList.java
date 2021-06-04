@@ -31,7 +31,6 @@ import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.MessageActions;
-import com.fsck.k9.activity.drawer.DrawerLayoutToogle;
 import com.fsck.k9.activity.drawer.DrawerLayoutView;
 import com.fsck.k9.activity.drawer.MessageListView;
 import com.fsck.k9.fragment.MessageListFragment;
