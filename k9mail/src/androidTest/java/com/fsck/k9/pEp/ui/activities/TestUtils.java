@@ -3592,7 +3592,7 @@ public class TestUtils {
         }
     }
 
-    public void goToDisplayAndCheckSettings () {
+    public void goToDisplayAndAssertSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
         selectFromScreen(stringToID("font_size_account_list"));
@@ -3672,7 +3672,7 @@ public class TestUtils {
         pressBack();
     }
 
-    public void goToInteractionAndCheckSettings () {
+    public void goToInteractionAndAssertSettings () {
         selectFromScreen(stringToID("interaction_preferences"));
         scrollToCheckBoxAndAssertIt(true, stringToID("gestures_title"));
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
