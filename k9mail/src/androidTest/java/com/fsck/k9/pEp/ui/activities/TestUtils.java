@@ -3731,6 +3731,16 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAdvancedAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToViewAndClickIt(stringToID("background_ops_label"));
+        checkItemFromDialogListViewIsSelected(1, true);
+        selectItemFromDialogListView(1, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("debug_enable_sensitive_logging_title"));
+        pressBack();
+    }
+
         public void goToDisplayAndChangeSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
@@ -3861,6 +3871,15 @@ public class TestUtils {
         scrollToCheckBoxAndCheckIt(false, stringToID("pep_subject_protection"));
         scrollToView(resources.getString(stringToID("blacklist_title")));
         scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_privacy_hide_timezone"));
+        pressBack();
+    }
+
+    public void goToAdvancedAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToViewAndClickIt(stringToID("background_ops_label"));
+        selectItemFromDialogListView(1, true);
+        scrollToCheckBoxAndCheckIt(false, stringToID("debug_enable_debug_logging_title"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("debug_enable_sensitive_logging_title"));
         pressBack();
     }
 
