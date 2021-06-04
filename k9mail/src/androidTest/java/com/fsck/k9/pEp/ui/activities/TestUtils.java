@@ -3883,6 +3883,22 @@ public class TestUtils {
         pressBack();
     }
 
+    public void changeGlobalSettings () {
+        goToDisplayAndChangeSettings();
+        goToInteractionAndChangeSettings();
+        goToNotificationsAndChangeSettings();
+        goToPrivacyAndChangeSettings();
+        goToAdvancedAndChangeSettings();
+    }
+
+    public void assertGloblaSettings () {
+        goToDisplayAndAssertSettings();
+        goToInteractionAndAssertSettings();
+        goToNotificationsAndAssertSettings();
+        goToPrivacyAndAssertSettings();
+        goToAdvancedAndAssertSettings();
+    }
+
     public void setTrustWords(String text) {
         trustWords = text;
     }
