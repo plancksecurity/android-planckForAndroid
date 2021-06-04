@@ -8,6 +8,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -34,9 +35,9 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class DrawerLayoutView @Inject constructor(
-        @Named("ActivityContext") private val context: Context,
-        private var drawerFolderPopulator: DrawerFolderPopulator,
-        private var drawerLayoutPresenter: DrawerLayoutPresenter,
+    @Named("ActivityContext") private val context: Context,
+    private var drawerFolderPopulator: DrawerFolderPopulator,
+    private var drawerLayoutPresenter: DrawerLayoutPresenter,
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -68,7 +69,8 @@ class DrawerLayoutView @Inject constructor(
 
     private lateinit var drawerCloseListener: DrawerLayout.DrawerListener
 
-    private val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down).apply { duration = 500 }
+    private val disappearAnimation =
+        AnimationUtils.loadAnimation(context, R.anim.scale_down).apply { duration = 500 }
     private val scaleUpAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_up)
 
     private lateinit var messageListView: MessageListView
@@ -119,10 +121,10 @@ class DrawerLayoutView @Inject constructor(
         ViewCompat.setOnApplyWindowInsetsListener(navigationView) { _, insets ->
             val view: View = navigationView.findViewById(R.id.menu_header)
             view.setPadding(
-                    view.paddingLeft,
-                    insets.systemWindowInsetTop,
-                    view.paddingRight,
-                    view.paddingBottom
+                view.paddingLeft,
+                insets.systemWindowInsetTop,
+                view.paddingRight,
+                view.paddingBottom
             )
             insets.consumeSystemWindowInsets()
         }
@@ -249,19 +251,28 @@ class DrawerLayoutView @Inject constructor(
         val mainAccountLayoutPosition = IntArray(2)
         goToView.getLocationOnScreen(mainAccountLayoutPosition)
         return TranslateAnimation(
-                0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
-                0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
-                .apply { duration = 500 }
+            0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
+            0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1]
+        )
+            .apply { duration = 500 }
     }
 
     override fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean) {
         (context as Activity).runOnUiThread {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, account, force)
+            drawerFolderPopulator.populateFoldersIfNeeded(
+                folderAdapter,
+                foldersFiltered,
+                account,
+                force
+            )
         }
     }
 
-    override fun setupMainFolders(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount) {
+    override fun setupMainFolders(
+        unifiedInboxAccount: SearchAccount,
+        allMessagesAccount: SearchAccount
+    ) {
         (context as Activity).runOnUiThread {
             val unifiedInbox = drawerLayout.findViewById<View>(R.id.unified_inbox)
             val allMessagesContainer = drawerLayout.findViewById<View>(R.id.all_messages_container)
@@ -281,7 +292,8 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun setupUnifiedInboxUnreadMessages(stats: AccountStats) {
-        val unifiedInboxMessages = drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
+        val unifiedInboxMessages =
+            drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
         setNewInboxMessages(stats, unifiedInboxMessages)
     }
 
@@ -361,7 +373,8 @@ class DrawerLayoutView @Inject constructor(
     }
 
     fun setDrawerEnabled(enabled: Boolean) {
-        val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        val lockMode =
+            if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         drawerLayout.setDrawerLockMode(lockMode)
         toggle.isDrawerIndicatorEnabled = enabled
         if (!enabled) {
