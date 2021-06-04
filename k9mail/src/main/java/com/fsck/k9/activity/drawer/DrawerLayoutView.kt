@@ -75,7 +75,12 @@ class DrawerLayoutView @Inject constructor(
 
     private lateinit var messageListView: MessageListView
 
-    fun initDrawerView(drawerLayout: DrawerLayout, messageListView: MessageListView) {
+    fun initDrawerView(
+        activity: Activity?,
+        toolbar: Toolbar?,
+        drawerLayout: DrawerLayout,
+        messageListView: MessageListView
+    ) {
         this.drawerLayout = drawerLayout
         this.messageListView = messageListView
         drawerLayoutPresenter.init(this)
@@ -84,14 +89,18 @@ class DrawerLayoutView @Inject constructor(
         })
         findViewsById()
         setupCreateConfigAccountListeners()
+        initializeDrawerToggle(activity,toolbar)
     }
 
     fun updateAccount(account: Account) {
         drawerLayoutPresenter.account = account
     }
 
-    fun initializeDrawerToggle(toggle: ActionBarDrawerToggle) {
-        this.toggle = toggle
+    private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
+        toggle = ActionBarDrawerToggle(
+            activity, drawerLayout, toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
