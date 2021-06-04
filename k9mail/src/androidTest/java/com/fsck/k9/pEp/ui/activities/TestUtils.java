@@ -3899,6 +3899,75 @@ public class TestUtils {
         goToAdvancedAndAssertSettings();
     }
 
+    public void goToGeneralAccountAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_general_title"));
+        scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        BySelector selector = By.clazz("android.widget.EditText");
+        boolean accountNameChanged = false;
+        waitForIdle();
+        while (!accountNameChanged) {
+            for (UiObject2 editText : device.findObjects(selector)) {
+                try {
+                    if (editText.getResourceName().equals("android:id/edit")) {
+                        editText.setText("newname");
+                        accountNameChanged = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find account name: " + ex);
+                }
+            }
+        }
+        pressOKButtonInDialog();
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void changeAccountSettings () {
+        selectAccountSettingsFromList(account);
+        goToGeneralAccountAndChangeSettings();
+    }
+
+    public void goToGeneralAccountAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_general_title"));
+        scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        BySelector selector = By.clazz("android.widget.EditText");
+        boolean accountNameHasBeenChecked = false;
+        waitForIdle();
+        while (!accountNameHasBeenChecked) {
+            for (UiObject2 editText : device.findObjects(selector)) {
+                try {
+                    if (editText.getResourceName().equals("android:id/edit")) {
+                        if (!editText.getText().equals("newname")) {
+                            assertFailWithMessage("Account name has not been modified");
+                        }
+                        accountNameHasBeenChecked = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find account name: " + ex);
+                }
+            }
+        }
+        pressOKButtonInDialog();
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        checkItemFromDialogListViewIsSelected(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void assertAccountSettings () {
+        selectAccountSettingsFromList(account);
+        goToGeneralAccountAndAssertSettings();
+
+    }
+
     public void setTrustWords(String text) {
         trustWords = text;
     }
