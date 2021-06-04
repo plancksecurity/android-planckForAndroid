@@ -3716,6 +3716,21 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToPrivacyAndAssertSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("pep_passive_mode"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("pep_forward_warning"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        //scrollToViewAndClickIt(stringToID("master_key_management"));
+        //pressBack();
+        scrollToView(resources.getString(stringToID("pep_sync")));
+        scrollToView(resources.getString(stringToID("pep_sync_folder")));
+        scrollToCheckBoxAndAssertIt(false, stringToID("pep_subject_protection"));
+        scrollToView(resources.getString(stringToID("blacklist_title")));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_privacy_hide_timezone"));
+        pressBack();
+    }
+
         public void goToDisplayAndChangeSettings () {
         selectFromScreen(stringToID("display_preferences"));
         selectFromScreen(stringToID("font_size_settings_title"));
@@ -3831,6 +3846,21 @@ public class TestUtils {
         selectItemFromDialogListView(2, true);
         scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
         selectItemFromDialogListView(3, true);
+        pressBack();
+    }
+
+    public void goToPrivacyAndChangeSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("pep_passive_mode"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("pep_forward_warning"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        //scrollToViewAndClickIt(stringToID("master_key_management"));
+        //pressBack();
+        scrollToView(resources.getString(stringToID("pep_sync")));
+        scrollToView(resources.getString(stringToID("pep_sync_folder")));
+        scrollToCheckBoxAndCheckIt(false, stringToID("pep_subject_protection"));
+        scrollToView(resources.getString(stringToID("blacklist_title")));
+        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_privacy_hide_timezone"));
         pressBack();
     }
 
