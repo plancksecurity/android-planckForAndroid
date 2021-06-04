@@ -342,7 +342,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayoutView.initDrawerView(this, getToolbar(), drawerLayout, this);
+        drawerLayoutView.initDrawerView(MessageList.this, getToolbar(), drawerLayout, this);
         restoreAccountUuid(savedInstanceState);
 
         if (!decodeExtras(getIntent())) {
