@@ -17,7 +17,7 @@ class DrawerLayoutToogle : ActionBarDrawerToggle {
                 openDrawerContentDescRes: Int, closeDrawerContentDescRes: Int) : super(activity,
             drawerLayout, toolbar, openDrawerContentDescRes, closeDrawerContentDescRes)
 
-    fun setDrawerLayoutPresenter(drawerLayoutView: DrawerLayoutView) {
+    fun setDrawerLayoutView(drawerLayoutView: DrawerLayoutView) {
         this.drawerLayoutView = drawerLayoutView
     }
 

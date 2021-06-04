@@ -142,7 +142,7 @@ class DrawerLayoutView @Inject constructor(
             activity, drawerLayout, toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
-        toggle.setDrawerLayoutPresenter(this)
+        toggle.setDrawerLayoutView(this)
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
