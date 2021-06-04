@@ -81,38 +81,8 @@ class DrawerLayoutView @Inject constructor(
 
     private val activityListener = object : ActivityListener() {
 
-        override fun remoteSearchFailed(folder: String, err: String) {
-
-        }
-
-        override fun remoteSearchStarted(folder: String) {
-        }
-
-        override fun enableProgressIndicator(enable: Boolean) {
-        }
-
-        override fun remoteSearchFinished(folder: String, numResults: Int, maxResults: Int, extraResults: List<Message>) {
-
-        }
-
-        override fun remoteSearchServerQueryComplete(folderName: String, numResults: Int, maxResults: Int) {
-        }
-
         override fun informUserOfStatus() {
             populateDrawerGroup()
-        }
-
-        override fun synchronizeMailboxStarted(account: Account, folder: String) {
-        }
-
-        override fun synchronizeMailboxFinished(account: Account, folder: String,
-                                                totalMessagesInMailbox: Int, numNewMessages: Int) {
-        }
-
-        override fun synchronizeMailboxFailed(account: Account, folder: String, message: String) {
-        }
-
-        override fun folderStatusChanged(account: Account, folder: String, unreadMessageCount: Int) {
         }
     }
 
