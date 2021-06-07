@@ -3736,7 +3736,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("background_ops_label"));
         checkItemFromDialogListViewIsSelected(1, true);
         selectItemFromDialogListView(1, true);
-        scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
         scrollToCheckBoxAndAssertIt(true, stringToID("debug_enable_sensitive_logging_title"));
         pressBack();
     }
@@ -3927,9 +3927,42 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToFetchingAccountAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_sync"));
+        scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
+        selectItemFromDialogListView(14, true);
+        scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToCheckBoxAndCheckIt(false, stringToID("push_poll_on_connect_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
+        selectItemFromDialogListView(6, true);
+        scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
+        selectItemFromDialogListView(3, true);
+        pressBack();
+    }
+
+
     public void changeAccountSettings () {
         selectAccountSettingsFromList(account);
         goToGeneralAccountAndChangeSettings();
+        goToFetchingAccountAndChangeSettings();
+        pressBack();
     }
 
     public void goToGeneralAccountAndAssertSettings () {
@@ -3962,10 +3995,41 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToFetchingAccountAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_sync"));
+        scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
+        checkItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
+        checkItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
+        checkItemFromDialogListViewIsSelected(14, true);
+        scrollToViewAndClickIt(stringToID("account_setup_options_mail_check_frequency_label"));
+        checkItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
+        checkItemFromDialogListViewIsSelected(2, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("push_poll_on_connect_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
+        checkItemFromDialogListViewIsSelected(6, true);
+        scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
+        checkItemFromDialogListViewIsSelected(3, true);
+        pressBack();
+    }
+
     public void assertAccountSettings () {
         selectAccountSettingsFromList(account);
         goToGeneralAccountAndAssertSettings();
-
+        goToFetchingAccountAndAssertSettings();
+        pressBack();
     }
 
     public void setTrustWords(String text) {
