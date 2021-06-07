@@ -3878,7 +3878,7 @@ public class TestUtils {
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToViewAndClickIt(stringToID("background_ops_label"));
         selectItemFromDialogListView(1, true);
-        scrollToCheckBoxAndCheckIt(false, stringToID("debug_enable_debug_logging_title"));
+        //scrollToCheckBoxAndCheckIt(false, stringToID("debug_enable_debug_logging_title"));
         scrollToCheckBoxAndCheckIt(true, stringToID("debug_enable_sensitive_logging_title"));
         pressBack();
     }
