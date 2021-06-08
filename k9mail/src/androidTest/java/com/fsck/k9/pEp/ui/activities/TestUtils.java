@@ -4063,7 +4063,7 @@ public class TestUtils {
         selectFromScreen(stringToID("account_settings_composition"));
         scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
         checkItemFromDialogListViewIsSelected(2, true);
-        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
