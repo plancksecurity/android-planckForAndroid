@@ -1191,20 +1191,24 @@ public class CucumberTestSteps {
         selector = By.clazz("android.widget.Button");
         endOfLoop = false;
         while (!endOfLoop) {
-            for (UiObject2 button : device.findObjects(selector)) {
-                if (button.getResourceName().equals("android:id/button1")) {
-                    UiObject2 buttonParent = button.getParent();
-                    button.click();
-                    try {
-                        while (buttonParent.getChildCount() > 0) {
-                            waitForIdle();
+            try {
+                for (UiObject2 button : device.findObjects(selector)) {
+                    if (button.getResourceName().equals("android:id/button1")) {
+                        UiObject2 buttonParent = button.getParent();
+                        button.click();
+                        try {
+                            while (buttonParent.getChildCount() > 0) {
+                                waitForIdle();
+                            }
+                        } catch (Exception settingsSaved) {
+                            Timber.i("Saving settings");
                         }
-                    } catch (Exception settingsSaved) {
-                        Timber.i("Saving settings");
+                        endOfLoop = true;
+                        break;
                     }
-                    endOfLoop = true;
-                    break;
                 }
+            } catch (Exception noButton) {
+                Timber.i("Cannot find SAVE button");
             }
         }
         waitForIdle();
