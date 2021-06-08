@@ -1288,15 +1288,22 @@ public class CucumberTestSteps {
 
     @Then("^I check Global settings$")
     public void I_check_global_settings(){
-        testUtils.goToDisplayAndCheckSettings();
+        testUtils.assertGloblaSettings();
     }
 
     @Then("^I change Global settings$")
     public void I_change_global_settings(){
-        testUtils.goToDisplayAndChangeSettings();
-        //testUtils.scrollToCheckBoxAndCheckIt();
-        //testUtils.setCheckBox();
-        //testUtils.checkBoxOnScreenChecked();
+        testUtils.changeGlobalSettings();
+    }
+
+    @Then("^I check Account settings$")
+    public void I_check_account_settings(){
+        testUtils.assertAccountSettings();
+    }
+
+    @Then("^I change Account settings$")
+    public void I_change_account_settings() {
+        testUtils.changeAccountSettings();
     }
 
         @Then("^I walk through app$")
