@@ -19,7 +19,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.MediaStore;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -3377,7 +3376,7 @@ public class TestUtils {
                         if (checkbox.isChecked() == check) {
                             return;
                         } else {
-                            assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
+                            textViewFound = true;
                         }
                     }
                 } catch (Exception ex){
@@ -3385,6 +3384,7 @@ public class TestUtils {
                 }
             }
         }
+        assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
     }
 
     public void getScreenShot() {
@@ -3519,23 +3519,26 @@ public class TestUtils {
 
     public void checkItemFromDialogListViewIsSelected (int item, boolean isSelected) {
         BySelector selector = By.clazz("android.widget.ListView");
+        boolean itemSelected = true;
         waitForIdle();
-        while (true) {
+        while (itemSelected) {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
                             || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != isSelected) {
-                            assertFailWithMessage("Item " + item + " of the list must be " + isSelected + " and is " + listView.getChildren().get(item).isChecked());
+                            itemSelected = false;
+                        } else {
+                            pressBack();
+                            return;
                         }
-                        pressBack();
-                        return;
                     }
                 } catch (Exception ex) {
                     Timber.i("Cannot find dialog list or item in the list: " + ex);
                 }
             }
         }
+        assertFailWithMessage("Item " + item + " of the list is not " + isSelected);
     }
 
     public void setTimeInRadialPicker (int hour) {
@@ -3734,8 +3737,8 @@ public class TestUtils {
     public void goToAdvancedAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToViewAndClickIt(stringToID("background_ops_label"));
-        checkItemFromDialogListViewIsSelected(1, true);
-        selectItemFromDialogListView(1, true);
+        //checkItemFromDialogListViewIsSelected(1, true);
+        //selectItemFromDialogListView(1, true);
         //scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
         scrollToCheckBoxAndAssertIt(true, stringToID("debug_enable_sensitive_logging_title"));
         pressBack();
@@ -3902,6 +3905,16 @@ public class TestUtils {
     public void goToGeneralAccountAndChangeSettings () {
         selectFromScreen(stringToID("account_settings_general_title"));
         scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        introduceTextInDialogWindow("newname");
+        //scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void introduceTextInDialogWindow (String text) {
         BySelector selector = By.clazz("android.widget.EditText");
         boolean accountNameChanged = false;
         waitForIdle();
@@ -3909,7 +3922,7 @@ public class TestUtils {
             for (UiObject2 editText : device.findObjects(selector)) {
                 try {
                     if (editText.getResourceName().equals("android:id/edit")) {
-                        editText.setText("newname");
+                        editText.setText(text);
                         accountNameChanged = true;
                         break;
                     }
@@ -3919,12 +3932,6 @@ public class TestUtils {
             }
         }
         pressOKButtonInDialog();
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_label"));
-        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
-        selectItemFromDialogListView(2, true);
-        scrollToViewAndClickIt(stringToID("advanced"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
-        pressBack();
     }
 
     public void goToFetchingAccountAndChangeSettings () {
@@ -3957,17 +3964,50 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsSendingEmailAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_composition"));
+        scrollToViewAndClickIt(stringToID("account_settings_composition_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("account_settings_identities_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_outgoing_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_reply_after_quote_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_strip_signature_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_prefix_label"));
+        introduceTextInDialogWindow("prefixtext");
+        pressBack();
+    }
+
 
     public void changeAccountSettings () {
-        selectAccountSettingsFromList(account);
+        selectAccountSettingsFromList(0);
         goToGeneralAccountAndChangeSettings();
         goToFetchingAccountAndChangeSettings();
+        goToAccountSettingsSendingEmailAndChangeSettings();
         pressBack();
     }
 
     public void goToGeneralAccountAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_general_title"));
         scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        assertTextInDialogWindow("newname");
+        //scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        checkItemFromDialogListViewIsSelected(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void assertTextInDialogWindow(String text) {
         BySelector selector = By.clazz("android.widget.EditText");
         boolean accountNameHasBeenChecked = false;
         waitForIdle();
@@ -3975,7 +4015,7 @@ public class TestUtils {
             for (UiObject2 editText : device.findObjects(selector)) {
                 try {
                     if (editText.getResourceName().equals("android:id/edit")) {
-                        if (!editText.getText().equals("newname")) {
+                        if (!editText.getText().equals(text)) {
                             assertFailWithMessage("Account name has not been modified");
                         }
                         accountNameHasBeenChecked = true;
@@ -3987,12 +4027,6 @@ public class TestUtils {
             }
         }
         pressOKButtonInDialog();
-        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_label"));
-        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
-        checkItemFromDialogListViewIsSelected(2, true);
-        scrollToViewAndClickIt(stringToID("advanced"));
-        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
-        pressBack();
     }
 
     public void goToFetchingAccountAndAssertSettings () {
@@ -4006,7 +4040,7 @@ public class TestUtils {
         checkItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
         checkItemFromDialogListViewIsSelected(14, true);
-        scrollToViewAndClickIt(stringToID("account_setup_options_mail_check_frequency_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
         checkItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
         checkItemFromDialogListViewIsSelected(0, true);
@@ -4025,10 +4059,27 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsSendingEmailAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_composition"));
+        scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
+        checkItemFromDialogListViewIsSelected(2, true);
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_reply_after_quote_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_strip_signature_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_prefix_label"));
+        assertTextInDialogWindow("prefixtext");
+        pressBack();
+    }
+
     public void assertAccountSettings () {
-        selectAccountSettingsFromList(account);
-        goToGeneralAccountAndAssertSettings();
+        selectAccountSettingsFromList(0);
+         goToGeneralAccountAndAssertSettings();
         goToFetchingAccountAndAssertSettings();
+        goToAccountSettingsSendingEmailAndAssertSettings();
         pressBack();
     }
 
