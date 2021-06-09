@@ -1170,17 +1170,17 @@ public class CucumberTestSteps {
         testUtils.openOptionsMenu();
         testUtils.selectFromScreen(testUtils.stringToID("import_export_action"));
         testUtils.selectFromScreen(testUtils.stringToID("settings_export_all"));
-        //waitForIdle();
-        //onView(withId(android.R.id.title)).perform(typeText("RRR"));
         BySelector selector;
         selector = By.clazz("android.widget.EditText");
         boolean endOfLoop = false;
+        UiObject2 fileNameInTextBox = null;
         waitForIdle();
         while (!endOfLoop) {
             for (UiObject2 editText : device.findObjects(selector)) {
                 if (editText.getResourceName().equals("android:id/title")) {
                     while (!editText.getText().equals("testingsettings.k9s")) {
                         editText.setText("testingsettings.k9s");
+                        fileNameInTextBox = editText;
                     }
                     endOfLoop = true;
                     break;
@@ -1194,16 +1194,19 @@ public class CucumberTestSteps {
             try {
                 for (UiObject2 button : device.findObjects(selector)) {
                     if (button.getResourceName().equals("android:id/button1")) {
-                        UiObject2 buttonParent = button.getParent();
-                        button.click();
                         try {
-                            while (buttonParent.getChildCount() > 0) {
+                            while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
+                                waitForIdle();
+                                button.click(3000);
                                 waitForIdle();
                             }
                         } catch (Exception settingsSaved) {
                             Timber.i("Saving settings");
                         }
                         endOfLoop = true;
+                        while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
+                            waitForIdle();
+                        }
                         break;
                     }
                 }
