@@ -4008,6 +4008,21 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsNotificationsAndChangeSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_notify_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_notify_contacts_mail_only_label"));
+        //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
+        selectItemFromDialogListView(4, true);
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_notify_self_label"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_notify_sync_label"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        pressBack();
+    }
+
+
     public void changeAccountSettings () {
         selectAccountSettingsFromList(0);
         goToGeneralAccountAndChangeSettings();
@@ -4120,6 +4135,21 @@ public class TestUtils {
         checkItemFromDialogListViewIsSelected(0, true);
         pressBack();
     }
+
+    public void goToAccountSettingsNotificationsAndAssertSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notify_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_notify_contacts_mail_only_label"));
+        //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
+        checkItemFromDialogListViewIsSelected(4, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_self_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_sync_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        pressBack();
+    }
+
     public void assertAccountSettings () {
         selectAccountSettingsFromList(0);
          goToGeneralAccountAndAssertSettings();
