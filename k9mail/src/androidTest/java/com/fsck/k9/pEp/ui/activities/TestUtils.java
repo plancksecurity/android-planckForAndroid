@@ -4024,11 +4024,15 @@ public class TestUtils {
 
 
     public void changeAccountSettings () {
-        selectAccountSettingsFromList(0);
-        goToGeneralAccountAndChangeSettings();
-        goToFetchingAccountAndChangeSettings();
-        goToAccountSettingsSendingEmailAndChangeSettings();
-        pressBack();
+        for (int account = 0; account < 3; account++) {
+            selectAccountSettingsFromList(account);
+            goToGeneralAccountAndChangeSettings();
+            goToFetchingAccountAndChangeSettings();
+            goToAccountSettingsSendingEmailAndChangeSettings();
+            goToAccountSettingsDefaultFoldersAndChangeSettings();
+            goToAccountSettingsNotificationsAndChangeSettings();
+            pressBack();
+        }
     }
 
     public void goToGeneralAccountAndAssertSettings () {
@@ -4151,11 +4155,15 @@ public class TestUtils {
     }
 
     public void assertAccountSettings () {
-        selectAccountSettingsFromList(0);
-         goToGeneralAccountAndAssertSettings();
-        goToFetchingAccountAndAssertSettings();
-        goToAccountSettingsSendingEmailAndAssertSettings();
-        pressBack();
+        for (int account = 0; account < 3; account++) {
+            selectAccountSettingsFromList(account);
+            goToGeneralAccountAndAssertSettings();
+            goToFetchingAccountAndAssertSettings();
+            goToAccountSettingsSendingEmailAndAssertSettings();
+            goToAccountSettingsDefaultFoldersAndAssertSettings();
+            goToAccountSettingsNotificationsAndAssertSettings();
+            pressBack();
+        }
     }
 
     public void setTrustWords(String text) {
