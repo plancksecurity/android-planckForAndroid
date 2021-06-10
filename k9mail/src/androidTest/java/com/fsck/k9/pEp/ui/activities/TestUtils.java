@@ -4022,6 +4022,14 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsSearchAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_search"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_remote_search_enabled"));
+        scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
+        selectItemFromDialogListView(7, true);
+        pressBack();
+    }
+
 
     public void changeAccountSettings () {
         for (int account = 0; account < 3; account++) {
@@ -4151,6 +4159,14 @@ public class TestUtils {
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_self_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_sync_label"));
         scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        pressBack();
+    }
+
+    public void goToAccountSettingsSearchAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_search"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_remote_search_enabled"));
+        scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
+        checkItemFromDialogListViewIsSelected(7, true);
         pressBack();
     }
 
