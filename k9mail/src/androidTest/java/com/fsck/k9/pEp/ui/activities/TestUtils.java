@@ -3986,7 +3986,6 @@ public class TestUtils {
         pressBack();
     }
 
-
     public void changeAccountSettings () {
         selectAccountSettingsFromList(0);
         goToGeneralAccountAndChangeSettings();
@@ -4010,13 +4009,14 @@ public class TestUtils {
     public void assertTextInDialogWindow(String text) {
         BySelector selector = By.clazz("android.widget.EditText");
         boolean accountNameHasBeenChecked = false;
+        boolean fail = false;
         waitForIdle();
         while (!accountNameHasBeenChecked) {
             for (UiObject2 editText : device.findObjects(selector)) {
                 try {
                     if (editText.getResourceName().equals("android:id/edit")) {
-                        if (!editText.getText().equals(text)) {
-                            assertFailWithMessage("Account name has not been modified");
+                        if (!editText.getText().contains(text)) {
+                            fail = true;
                         }
                         accountNameHasBeenChecked = true;
                         break;
@@ -4025,6 +4025,9 @@ public class TestUtils {
                     Timber.i("Cannot find account name: " + ex);
                 }
             }
+        }
+        if (fail) {
+            assertFailWithMessage("Account name has not been modified");
         }
         pressOKButtonInDialog();
     }
