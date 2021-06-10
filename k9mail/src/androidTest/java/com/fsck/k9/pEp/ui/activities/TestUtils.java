@@ -4024,9 +4024,18 @@ public class TestUtils {
 
     public void goToAccountSettingsSearchAndChangeSettings () {
         selectFromScreen(stringToID("account_settings_search"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_remote_search_enabled"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_remote_search_enabled"));
         scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
         selectItemFromDialogListView(7, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsPrivacyAndChangeSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndCheckIt(true, stringToID("pep_enable_privacy_protection"));
+        scrollToCheckBoxAndCheckIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        //scrollToCheckBoxAndCheckIt(false, stringToID("pep_sync_enable_account"));
         pressBack();
     }
 
@@ -4039,6 +4048,8 @@ public class TestUtils {
             goToAccountSettingsSendingEmailAndChangeSettings();
             goToAccountSettingsDefaultFoldersAndChangeSettings();
             goToAccountSettingsNotificationsAndChangeSettings();
+            goToAccountSettingsSearchAndChangeSettings();
+            goToAccountSettingsPrivacyAndChangeSettings();
             pressBack();
         }
     }
@@ -4164,9 +4175,18 @@ public class TestUtils {
 
     public void goToAccountSettingsSearchAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_search"));
-        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_remote_search_enabled"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_remote_search_enabled"));
         scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
         checkItemFromDialogListViewIsSelected(7, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsPrivacyAndAssertSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("pep_enable_privacy_protection"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("pep_sync_enable_account"));
         pressBack();
     }
 
@@ -4178,6 +4198,8 @@ public class TestUtils {
             goToAccountSettingsSendingEmailAndAssertSettings();
             goToAccountSettingsDefaultFoldersAndAssertSettings();
             goToAccountSettingsNotificationsAndAssertSettings();
+            goToAccountSettingsSearchAndAssertSettings();
+            goToAccountSettingsPrivacyAndAssertSettings();
             pressBack();
         }
     }
