@@ -3737,6 +3737,7 @@ public class TestUtils {
     public void goToAdvancedAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToViewAndClickIt(stringToID("background_ops_label"));
+        checkItemFromDialogListViewIsSelected(1, true);
         //checkItemFromDialogListViewIsSelected(1, true);
         //selectItemFromDialogListView(1, true);
         //scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
