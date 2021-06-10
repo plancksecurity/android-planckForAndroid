@@ -3987,6 +3987,27 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsDefaultFoldersAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_folders"));
+        scrollToViewAndClickIt(stringToID("account_setup_auto_expand_folder"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_display_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_target_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("archive_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("drafts_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("sent_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("spam_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("trash_folder_label"));
+        selectItemFromDialogListView(0, true);
+        pressBack();
+    }
+
     public void changeAccountSettings () {
         selectAccountSettingsFromList(0);
         goToGeneralAccountAndChangeSettings();
@@ -4079,6 +4100,26 @@ public class TestUtils {
         pressBack();
     }
 
+    public void goToAccountSettingsDefaultFoldersAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_folders"));
+        scrollToViewAndClickIt(stringToID("account_setup_auto_expand_folder"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_display_mode_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_target_mode_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("archive_folder_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("drafts_folder_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("sent_folder_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("spam_folder_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("trash_folder_label"));
+        checkItemFromDialogListViewIsSelected(0, true);
+        pressBack();
+    }
     public void assertAccountSettings () {
         selectAccountSettingsFromList(0);
          goToGeneralAccountAndAssertSettings();
