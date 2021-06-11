@@ -3412,7 +3412,7 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToCheckBoxAndCheckIt(boolean isChecked, int view) {
+    public void scrollToCheckBoxAndSetIt(boolean isChecked, int view) {
         scrollToView(resources.getString(view));
         if (isChecked) {
             checkBoxOnScreenChecked(view, false);
@@ -3517,7 +3517,7 @@ public class TestUtils {
         }
     }
 
-    public void checkItemFromDialogListViewIsSelected (int item, boolean isSelected) {
+    public void assertItemFromDialogListViewIsSelected(int item, boolean isSelected) {
         BySelector selector = By.clazz("android.widget.ListView");
         boolean itemSelected = true;
         waitForIdle();
@@ -3600,43 +3600,43 @@ public class TestUtils {
         selectFromScreen(stringToID("font_size_settings_title"));
         selectFromScreen(stringToID("font_size_account_list"));
         selectFromScreen(stringToID("font_size_account_name"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_account_description"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_folder_list"));
         selectFromScreen(stringToID("font_size_folder_name"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_folder_status"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_list"));
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_date"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_preview"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_view"));
         selectFromScreen(stringToID("font_size_message_list_sender"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_to"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_cc"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_list_subject"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_date"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("font_size_message_view_additional_headers"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         pressBack();
         selectFromScreen(stringToID("font_size_message_compose"));
         selectFromScreen(stringToID("font_size_message_compose_input"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         pressBack();
         pressBack();
         scrollToCheckBoxAndAssertIt(false, stringToID("animations_title"));
@@ -3647,7 +3647,7 @@ public class TestUtils {
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
         scrollToView(resources.getString(stringToID("messagelist_preferences")));
         scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
-        checkItemFromDialogListViewIsSelected(3, true);
+        assertItemFromDialogListViewIsSelected(3, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_flag_label"));
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_checkbox_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_correspondent_names_label"));
@@ -3659,15 +3659,15 @@ public class TestUtils {
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_threaded_view_label"));
         scrollToView(resources.getString(stringToID("messageview_preferences")));
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(0, false);
+        assertItemFromDialogListViewIsSelected(0, false);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(1, true);
+        assertItemFromDialogListViewIsSelected(1, true);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(3, true);
+        assertItemFromDialogListViewIsSelected(3, true);
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
-        checkItemFromDialogListViewIsSelected(4, true);
+        assertItemFromDialogListViewIsSelected(4, true);
         //pressOKButtonInDialog();
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
@@ -3679,24 +3679,24 @@ public class TestUtils {
         selectFromScreen(stringToID("interaction_preferences"));
         scrollToCheckBoxAndAssertIt(true, stringToID("gestures_title"));
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
-        checkItemFromDialogListViewIsSelected(1, true);
+        assertItemFromDialogListViewIsSelected(1, true);
         scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
         scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_return_to_list_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_messageview_show_next_label"));
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(1, true);
+        assertItemFromDialogListViewIsSelected(1, true);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(2, false);
+        assertItemFromDialogListViewIsSelected(2, false);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(3, true);
+        assertItemFromDialogListViewIsSelected(3, true);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(4, false);
+        assertItemFromDialogListViewIsSelected(4, false);
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
-        checkItemFromDialogListViewIsSelected(5, false);
+        assertItemFromDialogListViewIsSelected(5, false);
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToCheckBoxAndAssertIt(true, stringToID("start_integrated_inbox_title"));
         pressBack();
@@ -3713,9 +3713,9 @@ public class TestUtils {
         checkTimeInRadialPickerIsSelected(4);
         pressOKButtonInDialog();
         scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
-        checkItemFromDialogListViewIsSelected(3, true);
+        assertItemFromDialogListViewIsSelected(3, true);
         pressBack();
     }
 
@@ -3737,7 +3737,7 @@ public class TestUtils {
     public void goToAdvancedAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         scrollToViewAndClickIt(stringToID("background_ops_label"));
-        checkItemFromDialogListViewIsSelected(1, true);
+        assertItemFromDialogListViewIsSelected(1, true);
         //checkItemFromDialogListViewIsSelected(1, true);
         //selectItemFromDialogListView(1, true);
         //scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
@@ -3791,24 +3791,24 @@ public class TestUtils {
         selectItemFromDialogListView(2, true);
         pressBack();
         pressBack();
-        scrollToCheckBoxAndCheckIt(false, stringToID("animations_title"));
+        scrollToCheckBoxAndSetIt(false, stringToID("animations_title"));
         scrollToView(resources.getString(R.string.accountlist_preferences));
-        scrollToCheckBoxAndCheckIt(false, stringToID("measure_accounts_title"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("count_search_title"));
+        scrollToCheckBoxAndSetIt(false, stringToID("measure_accounts_title"));
+        scrollToCheckBoxAndSetIt(false, stringToID("count_search_title"));
         scrollToView(resources.getString(stringToID("folderlist_preferences")));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
         scrollToView(resources.getString(stringToID("messagelist_preferences")));
         scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
         selectItemFromDialogListView(3, true);
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_flag_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_checkbox_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_show_correspondent_names_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_sender_above_subject_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_flag_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_checkbox_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_show_correspondent_names_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_sender_above_subject_label"));
         //scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_contact_name_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_show_contact_picture_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_show_contact_picture_label"));
         //scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_colorize_missing_contact_pictures_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_threaded_view_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_threaded_view_label"));
         scrollToView(resources.getString(stringToID("messageview_preferences")));
         selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
         selectItemFromDialogListView(0, false);
@@ -3817,22 +3817,22 @@ public class TestUtils {
         selectItemFromDialogListView(3, true);
         selectItemFromDialogListView(4, true);
         pressOKButtonInDialog();
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_autofit_width_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_autofit_width_label"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
         pressBack();
     }
 
     public void goToInteractionAndChangeSettings () {
         selectFromScreen(stringToID("interaction_preferences"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("gestures_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("gestures_title"));
         scrollToViewAndClickIt(stringToID("volume_navigation_title"));
         selectItemFromDialogListView(0, true);
         selectItemFromDialogListView(1, true);
         pressOKButtonInDialog();
         scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_messageview_return_to_list_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("global_settings_messageview_show_next_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_return_to_list_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_messageview_show_next_label"));
         scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
         selectItemFromDialogListView(0, true);
         selectItemFromDialogListView(1, true);
@@ -3842,14 +3842,14 @@ public class TestUtils {
         selectItemFromDialogListView(5, false);
         pressOKButtonInDialog();
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("start_integrated_inbox_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("start_integrated_inbox_title"));
         pressBack();
     }
 
     public void goToNotificationsAndChangeSettings () {
         selectFromScreen(stringToID("notifications_title"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("quiet_time"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("quiet_time_notification"));
+        scrollToCheckBoxAndSetIt(true, stringToID("quiet_time"));
+        scrollToCheckBoxAndSetIt(false, stringToID("quiet_time_notification"));
         scrollToViewAndClickIt(stringToID("quiet_time_starts"));
         setTimeInRadialPicker(1);
         pressOKButtonInDialog();
@@ -3865,16 +3865,16 @@ public class TestUtils {
 
     public void goToPrivacyAndChangeSettings () {
         selectFromScreen(stringToID("privacy_preferences"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("pep_passive_mode"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("pep_forward_warning"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_passive_mode"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_forward_warning"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         //scrollToViewAndClickIt(stringToID("master_key_management"));
         //pressBack();
         scrollToView(resources.getString(stringToID("pep_sync")));
         scrollToView(resources.getString(stringToID("pep_sync_folder")));
-        scrollToCheckBoxAndCheckIt(false, stringToID("pep_subject_protection"));
+        scrollToCheckBoxAndSetIt(false, stringToID("pep_subject_protection"));
         scrollToView(resources.getString(stringToID("blacklist_title")));
-        scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_privacy_hide_timezone"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_privacy_hide_timezone"));
         pressBack();
     }
 
@@ -3883,7 +3883,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("background_ops_label"));
         selectItemFromDialogListView(1, true);
         //scrollToCheckBoxAndCheckIt(false, stringToID("debug_enable_debug_logging_title"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("debug_enable_sensitive_logging_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("debug_enable_sensitive_logging_title"));
         pressBack();
     }
 
@@ -3903,7 +3903,7 @@ public class TestUtils {
         goToAdvancedAndAssertSettings();
     }
 
-    public void goToGeneralAccountAndChangeSettings () {
+    public void goToAccountSettingsGeneralAccountAndChangeSettings() {
         selectFromScreen(stringToID("account_settings_general_title"));
         scrollToViewAndClickIt(stringToID("account_settings_description_label"));
         introduceTextInDialogWindow("newname");
@@ -3911,7 +3911,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
         selectItemFromDialogListView(2, true);
         scrollToViewAndClickIt(stringToID("advanced"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
         pressBack();
     }
 
@@ -3935,7 +3935,7 @@ public class TestUtils {
         pressOKButtonInDialog();
     }
 
-    public void goToFetchingAccountAndChangeSettings () {
+    public void goToAccountSettingsFetchingAccountAndChangeSettings () {
         selectFromScreen(stringToID("account_settings_sync"));
         scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
         pressBack();
@@ -3952,12 +3952,12 @@ public class TestUtils {
         selectItemFromDialogListView(0, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
         selectItemFromDialogListView(0, true);
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
         scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
         selectItemFromDialogListView(0, true);
         scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
         selectItemFromDialogListView(2, true);
-        scrollToCheckBoxAndCheckIt(false, stringToID("push_poll_on_connect_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("push_poll_on_connect_label"));
         scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
         selectItemFromDialogListView(6, true);
         scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
@@ -3973,15 +3973,15 @@ public class TestUtils {
         pressBack();
         scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
         selectItemFromDialogListView(2, true);
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
         scrollToViewAndClickIt(stringToID("account_settings_outgoing_label"));
         pressBack();
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
         selectItemFromDialogListView(0, true);
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_reply_after_quote_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_strip_signature_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_reply_after_quote_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_strip_signature_label"));
         scrollToViewAndClickIt(stringToID("account_settings_quote_prefix_label"));
         introduceTextInDialogWindow("prefixtext");
         pressBack();
@@ -4010,21 +4010,21 @@ public class TestUtils {
 
     public void goToAccountSettingsNotificationsAndChangeSettings () {
         selectFromScreen(stringToID("notifications_title"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_notify_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_notify_contacts_mail_only_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_notify_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_notify_contacts_mail_only_label"));
         //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
         selectItemFromDialogListView(4, true);
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_notify_self_label"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_notify_sync_label"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_notify_self_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_notify_sync_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_notification_opens_unread_label"));
         pressBack();
     }
 
     public void goToAccountSettingsSearchAndChangeSettings () {
         selectFromScreen(stringToID("account_settings_search"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("account_settings_remote_search_enabled"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_remote_search_enabled"));
         scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
         selectItemFromDialogListView(7, true);
         pressBack();
@@ -4032,8 +4032,8 @@ public class TestUtils {
 
     public void goToAccountSettingsPrivacyAndChangeSettings () {
         selectFromScreen(stringToID("privacy_preferences"));
-        scrollToCheckBoxAndCheckIt(true, stringToID("pep_enable_privacy_protection"));
-        scrollToCheckBoxAndCheckIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_enable_privacy_protection"));
+        scrollToCheckBoxAndSetIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
         scrollToViewAndClickIt(stringToID("advanced"));
         //scrollToCheckBoxAndCheckIt(false, stringToID("pep_sync_enable_account"));
         pressBack();
@@ -4043,8 +4043,8 @@ public class TestUtils {
     public void changeAccountSettings () {
         for (int account = 0; account < 3; account++) {
             selectAccountSettingsFromList(account);
-            goToGeneralAccountAndChangeSettings();
-            goToFetchingAccountAndChangeSettings();
+            goToAccountSettingsGeneralAccountAndChangeSettings();
+            goToAccountSettingsFetchingAccountAndChangeSettings();
             goToAccountSettingsSendingEmailAndChangeSettings();
             goToAccountSettingsDefaultFoldersAndChangeSettings();
             goToAccountSettingsNotificationsAndChangeSettings();
@@ -4054,13 +4054,13 @@ public class TestUtils {
         }
     }
 
-    public void goToGeneralAccountAndAssertSettings () {
+    public void goToAccountSettingsGeneralAccountAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_general_title"));
         scrollToViewAndClickIt(stringToID("account_settings_description_label"));
         assertTextInDialogWindow("newname");
         //scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_label"));
         scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
         pressBack();
@@ -4092,40 +4092,40 @@ public class TestUtils {
         pressOKButtonInDialog();
     }
 
-    public void goToFetchingAccountAndAssertSettings () {
+    public void goToAccountSettingsFetchingAccountAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_sync"));
         scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
         pressBack();
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
-        checkItemFromDialogListViewIsSelected(5, true);
+        assertItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
-        checkItemFromDialogListViewIsSelected(5, true);
+        assertItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
-        checkItemFromDialogListViewIsSelected(14, true);
+        assertItemFromDialogListViewIsSelected(14, true);
         scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
-        checkItemFromDialogListViewIsSelected(5, true);
+        assertItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
         scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("push_poll_on_connect_label"));
         scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
-        checkItemFromDialogListViewIsSelected(6, true);
+        assertItemFromDialogListViewIsSelected(6, true);
         scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
-        checkItemFromDialogListViewIsSelected(3, true);
+        assertItemFromDialogListViewIsSelected(3, true);
         pressBack();
     }
 
     public void goToAccountSettingsSendingEmailAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_composition"));
         scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
-        checkItemFromDialogListViewIsSelected(2, true);
+        assertItemFromDialogListViewIsSelected(2, true);
         //scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
         scrollToViewAndClickIt(stringToID("advanced"));
@@ -4141,21 +4141,21 @@ public class TestUtils {
     public void goToAccountSettingsDefaultFoldersAndAssertSettings () {
         selectFromScreen(stringToID("account_settings_folders"));
         scrollToViewAndClickIt(stringToID("account_setup_auto_expand_folder"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_display_mode_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_target_mode_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("archive_folder_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("drafts_folder_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("sent_folder_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("spam_folder_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         scrollToViewAndClickIt(stringToID("trash_folder_label"));
-        checkItemFromDialogListViewIsSelected(0, true);
+        assertItemFromDialogListViewIsSelected(0, true);
         pressBack();
     }
 
@@ -4166,7 +4166,7 @@ public class TestUtils {
         //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
         scrollToViewAndClickIt(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
-        checkItemFromDialogListViewIsSelected(4, true);
+        assertItemFromDialogListViewIsSelected(4, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_self_label"));
         scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_sync_label"));
         scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notification_opens_unread_label"));
@@ -4177,7 +4177,7 @@ public class TestUtils {
         selectFromScreen(stringToID("account_settings_search"));
         scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_remote_search_enabled"));
         scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
-        checkItemFromDialogListViewIsSelected(7, true);
+        assertItemFromDialogListViewIsSelected(7, true);
         pressBack();
     }
 
@@ -4193,8 +4193,8 @@ public class TestUtils {
     public void assertAccountSettings () {
         for (int account = 0; account < 3; account++) {
             selectAccountSettingsFromList(account);
-            goToGeneralAccountAndAssertSettings();
-            goToFetchingAccountAndAssertSettings();
+            goToAccountSettingsGeneralAccountAndAssertSettings();
+            goToAccountSettingsFetchingAccountAndAssertSettings();
             goToAccountSettingsSendingEmailAndAssertSettings();
             goToAccountSettingsDefaultFoldersAndAssertSettings();
             goToAccountSettingsNotificationsAndAssertSettings();
