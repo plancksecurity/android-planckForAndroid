@@ -3722,7 +3722,7 @@ public class TestUtils {
     public void goToPrivacyAndAssertSettings () {
         selectFromScreen(stringToID("privacy_preferences"));
         scrollToCheckBoxAndAssertIt(true, stringToID("pep_passive_mode"));
-        scrollToCheckBoxAndAssertIt(true, stringToID("pep_forward_warning"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("pep_forward_warning"));
         selectFromScreen(stringToID("account_settings_push_advanced_title"));
         //scrollToViewAndClickIt(stringToID("master_key_management"));
         //pressBack();
