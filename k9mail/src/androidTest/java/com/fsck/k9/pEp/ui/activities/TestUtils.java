@@ -3705,7 +3705,7 @@ public class TestUtils {
     public void goToNotificationsAndAssertSettings () {
         selectFromScreen(stringToID("notifications_title"));
         scrollToCheckBoxAndAssertIt(true, stringToID("quiet_time"));
-        scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time_notification"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time_notification"));
         scrollToViewAndClickIt(stringToID("quiet_time_starts"));
         checkTimeInRadialPickerIsSelected(1);
         pressOKButtonInDialog();
