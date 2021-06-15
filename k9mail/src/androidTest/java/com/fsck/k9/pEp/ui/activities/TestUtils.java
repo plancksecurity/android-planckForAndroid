@@ -3986,6 +3986,7 @@ public class TestUtils {
     public void goToAccountSettingsSendingEmailAndChangeSettings () {
         selectFromScreen(stringToID("account_settings_composition"));
         scrollToViewAndClickIt(stringToID("account_settings_composition_label"));
+        onView(withId(R.id.account_name)).perform(closeSoftKeyboard());
         pressBack();
         scrollToViewAndClickIt(stringToID("account_settings_identities_label"));
         pressBack();
