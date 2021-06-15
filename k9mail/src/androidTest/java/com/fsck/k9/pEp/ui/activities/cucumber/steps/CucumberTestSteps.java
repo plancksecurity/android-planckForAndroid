@@ -1188,31 +1188,27 @@ public class CucumberTestSteps {
             }
         }
         waitForIdle();
-        selector = By.clazz("android.widget.Button");
         endOfLoop = false;
+        UiObject2 container = fileNameInTextBox.getParent();
         while (!endOfLoop) {
             try {
-                for (UiObject2 button : device.findObjects(selector)) {
-                    if (button.getResourceName().equals("android:id/button1")) {
-                        try {
-                            while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
-                                waitForIdle();
-                                button.click(3000);
-                                waitForIdle();
-                            }
-                        } catch (Exception settingsSaved) {
-                            Timber.i("Saving settings");
-                        }
-                        endOfLoop = true;
-                        while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
-                            waitForIdle();
-                        }
-                        break;
-                    }
+                while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
+                    waitForIdle();
+                    container.getChildren().get(2).getChildren().get(0).click(3000);
+                    waitForIdle();
+                    endOfLoop = true;
                 }
-            } catch (Exception noButton) {
-                Timber.i("Cannot find SAVE button");
+            } catch (Exception settingsSaved) {
+                Timber.i("Saving settings");
             }
+            break;
+        }
+        try {
+            while (fileNameInTextBox.getText().equals("testingsettings.k9s")) {
+                waitForIdle();
+            }
+        } catch (Exception ex) {
+            Timber.i("Settings are exported");
         }
         waitForIdle();
         selector = By.clazz("android.widget.TextView");
@@ -1966,7 +1962,7 @@ public class CucumberTestSteps {
             I_test_unified_inbox(1);
             I_wait_seconds(5);
             I_go_back_to_accounts_list();
-            I_walk_through_app();
+            //I_walk_through_app();
             I_wait_seconds(5);
             testUtils.pressBack();
         }
