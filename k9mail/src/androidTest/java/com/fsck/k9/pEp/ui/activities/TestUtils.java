@@ -2821,11 +2821,8 @@ public class TestUtils {
                 messageClicked = true;
             }
         }
-        try {
-            onView(withText(R.string.cancel_action)).perform(click());
+        if (exists(onView(withId(R.id.error_message)))) {
             encrypted = true;
-        } catch (NoMatchingViewException ignoredException) {
-            Timber.i("Ignored exception. Email is not encrypted");
         }
         try {
             readAttachedJSONFile();
