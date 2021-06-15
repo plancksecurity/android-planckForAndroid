@@ -4133,8 +4133,8 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
         assertItemFromDialogListViewIsSelected(2, true);
         scrollToCheckBoxAndAssertIt(false, stringToID("push_poll_on_connect_label"));
-        scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
-        assertItemFromDialogListViewIsSelected(6, true);
+        //scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
+        //assertItemFromDialogListViewIsSelected(6, true);
         scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
         assertItemFromDialogListViewIsSelected(3, true);
         pressBack();
