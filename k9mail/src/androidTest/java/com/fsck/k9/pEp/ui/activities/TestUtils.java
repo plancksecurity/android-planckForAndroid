@@ -4202,7 +4202,7 @@ public class TestUtils {
     public void goToAccountSettingsPrivacyAndAssertSettings () {
         selectFromScreen(stringToID("privacy_preferences"));
         scrollToCheckBoxAndAssertIt(true, stringToID("pep_enable_privacy_protection"));
-        scrollToCheckBoxAndAssertIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
         scrollToViewAndClickIt(stringToID("advanced"));
         //scrollToCheckBoxAndAssertIt(false, stringToID("pep_sync_enable_account"));
         pressBack();
