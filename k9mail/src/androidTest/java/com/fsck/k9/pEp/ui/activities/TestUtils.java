@@ -3963,7 +3963,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
         selectItemFromDialogListView(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
-        selectItemFromDialogListView(14, true);
+        selectItemFromDialogListView(10, true);
         scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
         selectItemFromDialogListView(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
@@ -4120,7 +4120,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
         assertItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
-        assertItemFromDialogListViewIsSelected(14, true);
+        assertItemFromDialogListViewIsSelected(10, true);
         scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
         assertItemFromDialogListViewIsSelected(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
