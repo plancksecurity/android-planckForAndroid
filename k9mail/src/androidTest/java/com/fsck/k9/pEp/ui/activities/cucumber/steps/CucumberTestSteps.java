@@ -1633,6 +1633,30 @@ public class CucumberTestSteps {
         testUtils.selectAccount(folder, accountToStart);
     }
 
+    @And("^I click to load more messages$")
+    public void I_click_load_messages(){
+        timeRequiredForThisMethod(10);
+        waitForIdle();
+        while (testUtils.getListSize() < 101) {
+            testUtils.swipeDownMessageList();
+            waitForIdle();
+        }
+        testUtils.scrollDownToView(R.id.main_text);
+        testUtils.clickView(R.id.main_text);
+        waitForIdle();
+    }
+
+    @And("^I assert there are more messages$")
+    public void I_assert_more_messages(){
+        waitForIdle();
+        waitForIdle();
+        testUtils.getMessageListSize();
+        if (testUtils.getListSize() <= 101) {
+            testUtils.assertFailWithMessage("Is not loading more messages");
+        }
+        waitForIdle();
+    }
+
     @And("^I click view (\\S+)$")
     public void I_click_view(String viewClicked){
         timeRequiredForThisMethod(10);
