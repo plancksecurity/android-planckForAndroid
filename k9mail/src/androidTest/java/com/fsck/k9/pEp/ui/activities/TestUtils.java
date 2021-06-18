@@ -86,6 +86,7 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Checks.checkNotNull;
@@ -370,6 +371,8 @@ public class TestUtils {
     public void readConfigFile() {
         File newFile = null;
          do {
+             //File directory = new File(context.getExternalFilesDir(null).toString());
+             //newFile = new File(directory, "/test_config.txt");
             File directory = new File(Environment.getExternalStorageDirectory().toString());
             newFile = new File(directory, "test/test_config.txt");
         } while (!newFile.exists());
@@ -767,7 +770,7 @@ public class TestUtils {
     public void readBotList(){
         File directory = new File(Environment.getExternalStorageDirectory().toString());
 
-        File newFile = new File(directory, "test/botlist.txt");
+        File newFile = new File(directory, "Download/test/botlist.txt");
         testConfig = new TestConfig();
         try  {
             FileInputStream fin = new FileInputStream(newFile);
@@ -3407,6 +3410,18 @@ public class TestUtils {
         } while (!viewIsDisplayed(R.id.subject));
         onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
         onView(withId(R.id.subject)).perform(click());
+    }
+
+    public void scrollDownToView (int view) {
+        while (!viewIsDisplayed(view)) {
+            try {
+                waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeUp());
+                waitForIdle();
+            } catch (Exception e) {
+                Timber.i("Cannot swipe down");
+            }
+        }
     }
 
     public void scrollToCheckBoxAndSetIt(boolean isChecked, int view) {
