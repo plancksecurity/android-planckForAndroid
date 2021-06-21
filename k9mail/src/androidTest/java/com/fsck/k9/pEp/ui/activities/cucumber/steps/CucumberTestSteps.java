@@ -217,6 +217,44 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I enter (\\S+) in the CC field")
+    public void I_fill_CC_field(String cucumberCCField) {
+        waitForIdle();
+        while (!exists(onView(withId(R.id.to)))) {
+            TestUtils.swipeUpScreen();
+        }
+        cucumberCCField = returnTextToPutInFieldTo(cucumberCCField);
+        onView(withId(R.id.recipient_expander)).perform(click());
+        if (!(getTextFromView(onView(withId(R.id.cc))).equals("") || getTextFromView(onView(withId(R.id.cc))).equals(" "))) {
+            try {
+                testUtils.typeTextInField(cucumberCCField, R.id.cc, "cc");
+            } catch (Exception ex) {
+                Timber.i("Couldn't fill CC: " + ex.getMessage());
+            }
+        } else {
+            boolean filled = false;
+            while (!filled) {
+                try {
+                    waitForIdle();
+                    onView(withId(R.id.cc)).check(matches(isDisplayed()));
+                    onView(withId(R.id.cc)).perform(closeSoftKeyboard());
+                    waitForIdle();
+                    testUtils.typeTextInField(cucumberCCField, R.id.cc, "cc");
+                    onView(withId(R.id.cc)).perform(closeSoftKeyboard());
+                    filled = true;
+                } catch (Exception ex) {
+                    Timber.i("Couldn't find view: " + ex.getMessage());
+                }
+            }
+        }
+        try {
+            testUtils.typeTextToForceRatingCalculation(R.id.subject);
+            onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
+            onView(withId(R.id.cc)).check(matches(isDisplayed()));
+        } catch (Exception ex) {
+            Timber.i("Couldn't find view: " + ex.getMessage());
+        }
+    }
 
     @When("^I enter (\\S+) in the messageTo field")
     public void I_fill_messageTo_field(String cucumberMessageTo) {
