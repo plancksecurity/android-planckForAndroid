@@ -217,30 +217,50 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I enter (\\S+) in the CC field")
-    public void I_fill_CC_field(String cucumberCCField) {
+    @When("^I enter (\\S+) in the (\\S+) field")
+    public void I_enter_text_in_field(String textToField, String field) {
         waitForIdle();
         while (!exists(onView(withId(R.id.to)))) {
             TestUtils.swipeUpScreen();
         }
-        cucumberCCField = returnTextToPutInFieldTo(cucumberCCField);
-        onView(withId(R.id.recipient_expander)).perform(click());
-        if (!(getTextFromView(onView(withId(R.id.cc))).equals("") || getTextFromView(onView(withId(R.id.cc))).equals(" "))) {
+        int viewID = 0;
+        String resourceID = "";
+        switch (field) {
+            case "CC":
+                viewID = R.id.cc;
+                resourceID = "cc";
+                break;
+            case "BCC":
+                viewID = R.id.bcc;
+                resourceID = "bcc";
+                break;
+            case "to":
+                viewID = R.id.to;
+                resourceID = "to";
+                break;
+            default:
+                break;
+        }
+        textToField = returnTextToPutInFieldTo(textToField);
+        if (exists(onView(withId(R.id.recipient_expander)))) {
+            onView(withId(R.id.recipient_expander)).perform(click());
+        }
+        if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
             try {
-                testUtils.typeTextInField(cucumberCCField, R.id.cc, "cc");
+                testUtils.typeTextInField(textToField, viewID, resourceID);
             } catch (Exception ex) {
-                Timber.i("Couldn't fill CC: " + ex.getMessage());
+                Timber.i("Couldn't fill " + resourceID + ": " + ex.getMessage());
             }
         } else {
             boolean filled = false;
             while (!filled) {
                 try {
                     waitForIdle();
-                    onView(withId(R.id.cc)).check(matches(isDisplayed()));
-                    onView(withId(R.id.cc)).perform(closeSoftKeyboard());
+                    onView(withId(viewID)).check(matches(isDisplayed()));
+                    onView(withId(viewID)).perform(closeSoftKeyboard());
                     waitForIdle();
-                    testUtils.typeTextInField(cucumberCCField, R.id.cc, "cc");
-                    onView(withId(R.id.cc)).perform(closeSoftKeyboard());
+                    testUtils.typeTextInField(textToField, viewID, resourceID);
+                    onView(withId(viewID)).perform(closeSoftKeyboard());
                     filled = true;
                 } catch (Exception ex) {
                     Timber.i("Couldn't find view: " + ex.getMessage());
@@ -250,46 +270,7 @@ public class CucumberTestSteps {
         try {
             testUtils.typeTextToForceRatingCalculation(R.id.subject);
             onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
-            onView(withId(R.id.cc)).check(matches(isDisplayed()));
-        } catch (Exception ex) {
-            Timber.i("Couldn't find view: " + ex.getMessage());
-        }
-    }
-
-    @When("^I enter (\\S+) in the messageTo field")
-    public void I_fill_messageTo_field(String cucumberMessageTo) {
-        timeRequiredForThisMethod(15);
-        waitForIdle();
-        while (!exists(onView(withId(R.id.to)))) {
-            TestUtils.swipeUpScreen();
-        }
-        cucumberMessageTo = returnTextToPutInFieldTo(cucumberMessageTo);
-        if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
-            try {
-                fillMessage(cucumberMessageTo);
-            } catch (Exception ex) {
-                Timber.i("Couldn't fill message: " + ex.getMessage());
-            }
-        } else {
-            boolean filled = false;
-            while (!filled) {
-                try {
-                    waitForIdle();
-                    onView(withId(R.id.to)).check(matches(isDisplayed()));
-                    onView(withId(R.id.to)).perform(closeSoftKeyboard());
-                    waitForIdle();
-                    fillMessage(cucumberMessageTo);
-                    onView(withId(R.id.to)).perform(closeSoftKeyboard());
-                    filled = true;
-                } catch (Exception ex) {
-                    Timber.i("Couldn't find view: " + ex.getMessage());
-                }
-            }
-        }
-        try {
-            testUtils.typeTextToForceRatingCalculation(R.id.subject);
-            onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
-            onView(withId(R.id.to)).check(matches(isDisplayed()));
+            onView(withId(viewID)).check(matches(isDisplayed()));
         } catch (Exception ex) {
             Timber.i("Couldn't find view: " + ex.getMessage());
         }
@@ -1679,7 +1660,7 @@ public class CucumberTestSteps {
         }
         testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
-        I_fill_messageTo_field("myself");
+        I_enter_text_in_field("myself", "TO");
         //I_fill_subject_field("New");
         I_click_the_send_message_button();
         testUtils.goBackToMessageList();
@@ -2069,9 +2050,9 @@ public class CucumberTestSteps {
     public void I_summon_threads(int total, String address) {
         try {
             for (int i = 0; i < total; i++) {
-                I_fill_messageTo_field(address);
+                I_enter_text_in_field(address, "TO");
                 testUtils.summonThreads();
-                I_fill_messageTo_field("empty");
+                I_enter_text_in_field("empty", "TO");
                 testUtils.summonThreads();
             }
         } catch (Exception ex) {
