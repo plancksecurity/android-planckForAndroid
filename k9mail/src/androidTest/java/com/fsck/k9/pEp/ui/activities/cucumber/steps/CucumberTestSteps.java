@@ -225,51 +225,7 @@ public class CucumberTestSteps {
         while (!exists(onView(withId(R.id.to)))) {
             TestUtils.swipeUpScreen();
         }
-        switch (cucumberMessageTo) {
-            case "empty":
-                cucumberMessageTo = "";
-                testUtils.removeTextFromTextView("to");
-                break;
-            case "myself":
-                cucumberMessageTo = getTextFromView(onView(withId(R.id.accountName)));
-                break;
-            case "bot1":
-                Timber.i("Filling message to bot1");
-                cucumberMessageTo = bot[0] + "acc" + accountSelected + HOST;
-                break;
-            case "bot2":
-                Timber.i("Filling message to bot2");
-                cucumberMessageTo = bot[1] + "acc" + accountSelected + HOST;
-                break;
-            case "bot3":
-                Timber.i("Filling message to bot3");
-                cucumberMessageTo = bot[2] + "acc" + accountSelected + HOST;
-                break;
-            case "bot4":
-                Timber.i("Filling message to bot4");
-                cucumberMessageTo = bot[3] + "acc" + accountSelected + HOST;
-                break;
-            case "bot5":
-                Timber.i("Filling message to bot5");
-                cucumberMessageTo = bot[4] + "acc" + accountSelected + HOST;
-                break;
-            case "bot6":
-                Timber.i("Filling message to bot6");
-                cucumberMessageTo = bot[5] + "acc" + accountSelected + HOST;
-                break;
-            case "bot7":
-                Timber.i("Filling message to bot7");
-                cucumberMessageTo = bot[6] + "acc" + accountSelected + HOST;
-                break;
-            case "bot8":
-                Timber.i("Filling message to bot8");
-                cucumberMessageTo = bot[7] + "acc" + accountSelected + HOST;
-                break;
-            case "bot9":
-                Timber.i("Filling message to bot4");
-                cucumberMessageTo = bot[8] + "acc" + accountSelected + HOST;
-                break;
-        }
+        cucumberMessageTo = returnTextToPutInFieldTo(cucumberMessageTo);
         if (!(getTextFromView(onView(withId(R.id.to))).equals("") || getTextFromView(onView(withId(R.id.to))).equals(" "))) {
             try {
                 fillMessage(cucumberMessageTo);
@@ -2370,6 +2326,55 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.e("Error moving cucumber reports1: " + ex.getMessage());
         }
+    }
+
+    public String returnTextToPutInFieldTo (String cucumberMessageTo) {
+        switch (cucumberMessageTo) {
+            case "empty":
+                cucumberMessageTo = "";
+                testUtils.removeTextFromTextView("to");
+                break;
+            case "myself":
+                cucumberMessageTo = getTextFromView(onView(withId(R.id.accountName)));
+                break;
+            case "bot1":
+                Timber.i("Filling message to bot1");
+                cucumberMessageTo = bot[0] + "acc" + accountSelected + HOST;
+                break;
+            case "bot2":
+                Timber.i("Filling message to bot2");
+                cucumberMessageTo = bot[1] + "acc" + accountSelected + HOST;
+                break;
+            case "bot3":
+                Timber.i("Filling message to bot3");
+                cucumberMessageTo = bot[2] + "acc" + accountSelected + HOST;
+                break;
+            case "bot4":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[3] + "acc" + accountSelected + HOST;
+                break;
+            case "bot5":
+                Timber.i("Filling message to bot5");
+                cucumberMessageTo = bot[4] + "acc" + accountSelected + HOST;
+                break;
+            case "bot6":
+                Timber.i("Filling message to bot6");
+                cucumberMessageTo = bot[5] + "acc" + accountSelected + HOST;
+                break;
+            case "bot7":
+                Timber.i("Filling message to bot7");
+                cucumberMessageTo = bot[6] + "acc" + accountSelected + HOST;
+                break;
+            case "bot8":
+                Timber.i("Filling message to bot8");
+                cucumberMessageTo = bot[7] + "acc" + accountSelected + HOST;
+                break;
+            case "bot9":
+                Timber.i("Filling message to bot4");
+                cucumberMessageTo = bot[8] + "acc" + accountSelected + HOST;
+                break;
+        }
+        return cucumberMessageTo;
     }
 
     private void SetDirectory() {
