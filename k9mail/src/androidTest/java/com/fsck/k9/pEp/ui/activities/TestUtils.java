@@ -1336,25 +1336,8 @@ public class TestUtils {
         while (!viewIsDisplayed(R.id.to)) {
             waitForIdle();
         }
-        UiObject2 list = null;
-        Rect bounds = null;
-        while (list == null || bounds == null) {
-            try {
-                waitForIdle();
-                list = device.findObject(By.res(APP_ID, "to"));
-                bounds = list.getVisibleBounds();
-            } catch (Exception ex) {
-                Timber.i("Cannot find view TO");
-            }
-        }
         if (!inputMessage.getTo().equals("")) {
-            onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
-            device.click(bounds.left - 1, bounds.centerY());
-            waitForIdle();
-            device.click(bounds.left - 1, bounds.centerY());
-            waitForIdle();
-            onView(withId(R.id.to)).perform(appendTextInTextView(inputMessage.getTo()), closeSoftKeyboard());
-
+            typeTextInField(inputMessage.getTo(), R.id.to, "to");
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
                 || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())) {
@@ -1379,6 +1362,26 @@ public class TestUtils {
             String extension = ".png";
             attachFiles(fileName, extension, 3);
         }
+    }
+
+    public void typeTextInField(String text, int field, String resourceID) {
+        UiObject2 list = null;
+        Rect bounds = null;
+        while (list == null || bounds == null) {
+            try {
+                waitForIdle();
+                list = device.findObject(By.res(APP_ID, resourceID));
+                bounds = list.getVisibleBounds();
+            } catch (Exception ex) {
+                Timber.i("Cannot find view TO");
+            }
+        }
+        onView(withId(field)).perform(click(), closeSoftKeyboard());
+        device.click(bounds.left - 1, bounds.centerY());
+        waitForIdle();
+        device.click(bounds.left - 1, bounds.centerY());
+        waitForIdle();
+        onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
     }
 
     private void attachFiles(String fileName, String extension, int total) {
