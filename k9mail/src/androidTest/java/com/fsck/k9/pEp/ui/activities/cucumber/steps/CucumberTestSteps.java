@@ -1638,7 +1638,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         waitForIdle();
         while (testUtils.getListSize() < 101) {
-            testUtils.swipeDownMessageList();
+            testUtils.getMessageListSize();
             waitForIdle();
         }
         testUtils.scrollDownToView(R.id.main_text);
