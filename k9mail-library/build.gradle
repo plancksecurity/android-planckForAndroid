@@ -37,6 +37,8 @@ dependencies {
     // The Android Gradle plugin doesn't seem to put the Apache HTTP Client on the runtime classpath anymore when
     // running JVM tests.
     testImplementation "org.apache.httpcomponents:httpclient:4.5.5"
+
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidX}"
 }
 
 android {
