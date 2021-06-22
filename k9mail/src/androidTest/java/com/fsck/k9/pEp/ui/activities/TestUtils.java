@@ -21,6 +21,7 @@ import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
@@ -28,6 +29,7 @@ import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.Root;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -151,6 +153,7 @@ public class TestUtils {
     public static JSONArray jsonArray;
     public static String rating;
     public String trustWords = "nothing";
+    private String emailForDevice;
 
 
 
@@ -363,6 +366,39 @@ public class TestUtils {
         if (test_number().equals("0")) {
             getMessageListSize();
         }
+    }
+
+    public String getAccountEmailForDevice() {
+        if(emailForDevice != null) return emailForDevice;
+        String out = "error: email for device not initialized";
+        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
+        File configFile = new File(directory, "test_config.txt");
+        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+
+        FileInputStream fin;
+        if(configFile.canRead()) {
+            try {
+                fin = new FileInputStream(configFile);
+                InputStreamReader inputStreamReader = new InputStreamReader(fin);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString;
+                while ((receiveString = bufferedReader.readLine()) != null && !receiveString.contains("mail")) {
+                    Timber.v("Searching for test email address for device...");
+                }
+                fin.close();
+                bufferedReader.close();
+                if(receiveString != null && !receiveString.isEmpty()) {
+                    String[] line = receiveString.split(" = ");
+                    out = emailForDevice = line[1];
+                }
+            }
+            catch (Exception e) {
+                Timber.e(e, "could not read from file %s", configFile);
+                out = e.getMessage();
+            }
+        }
+        return out;
     }
 
     public void readConfigFile() {
@@ -1405,7 +1441,7 @@ public class TestUtils {
 
     private void convertResourceToBitmapFile(int resourceId, String fileName) {
         Bitmap bm = BitmapFactory.decodeResource(resources, resourceId);
-        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+        File extStorageDirectory = context.getExternalFilesDir(null);
         File fileImage = new File(extStorageDirectory, fileName);
         try {
             FileOutputStream outStream;
@@ -1495,9 +1531,11 @@ public class TestUtils {
 
     private static Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
-        File fileLocation = new File(Environment.getExternalStorageDirectory()
-                .getAbsolutePath(), fileName);
-        resultData.setData(Uri.parse("file://" + fileLocation));
+        File fileLocation = new File(context.getExternalFilesDir(null), fileName);
+        Uri uri = FileProvider.getUriForFile(context, APP_ID+".provider", fileLocation);
+        resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        resultData.setType("*/*");
+        resultData.setData(uri);
         return resultData;
     }
 
@@ -1534,13 +1572,14 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        doWait(5000);
+        waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if(!withSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
+            waitForIdle();
         }
         onView(withId(R.id.done)).perform(click());
-        doWait(5000);
+        waitForIdle();
     }
 
     private void setupEmailAndPassword() {
@@ -1549,7 +1588,7 @@ public class TestUtils {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String email = getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
@@ -1849,7 +1888,7 @@ public class TestUtils {
             ) {
                 assertFailWithMessage("Wrong Status color");
             }
-
+            waitUntilViewDisplayed(R.id.securityStatusText);
             if(!enabledForThisMessage) {
                 onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
@@ -1947,11 +1986,9 @@ public class TestUtils {
         while (currentActivity == getCurrentActivity()) {
             try {
                 waitForIdle();
-                if (saveAsDraft) {
-                    while (!viewIsDisplayed(R.id.message_content)) {
-                        onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
-                        waitForIdle();
-                    }
+                while (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                    waitForIdle();
                 }
                 waitForIdle();
                 pressBack();
@@ -2261,8 +2298,11 @@ public class TestUtils {
     }
 
     public void selectFromStatusPopupMenu(int itemId) {
+        waitForIdle();
         onView(withId(R.id.actionbar_message_view)).perform(ViewActions.longClick());
+        waitForIdle();
         selectFromPopupMenu(itemId);
+        waitForIdle();
     }
 
     public void selectFromPopupMenu(int itemId) {
@@ -2575,6 +2615,22 @@ public class TestUtils {
             }
     }
 
+    public void waitUntilViewDisplayed(int viewId) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewId);
+            device.waitForIdle();
+        }
+    }
+
+    public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        boolean displayed = false;
+        while(!displayed) {
+            displayed = viewIsDisplayed(viewInteraction);
+            device.waitForIdle();
+        }
+    }
+
     private void doWaitForIdlingListViewResource(int resource){
         IdlingResource idlingResourceListView;
         waitForIdle();
@@ -2599,11 +2655,23 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
-        onView(withId(getCurrentActivity().getResources()
-                .getIdentifier("alertTitle", "id", "android")))
-                .inRoot(isDialog())
-                .check(matches(withText(displayText)))
-                .check(matches(isDisplayed()));
+        waitForIdle();
+        int id = context.getResources().getIdentifier("alertTitle", "id", "android");
+        ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
+        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+
+        onView(withText(displayText)).check(matches(isDisplayed()));
+        waitForIdle();
+    }
+
+    public void doWaitForNextAlertDialog(boolean isOwnPackage) {
+        String packageName = isOwnPackage
+            ? context.getPackageName()
+            : "android";
+        waitForIdle();
+        int id = context.getResources().getIdentifier("alertTitle", "id", packageName);
+        waitUntilViewDisplayed(onView(withId(id)).inRoot(isDialog()));
+        waitForIdle();
     }
 
     String getResourceString(int id, int position) {

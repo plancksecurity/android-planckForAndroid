@@ -1,121 +1,144 @@
 package com.fsck.k9.activity.setup;
 
-import android.content.Intent;
-import androidx.test.espresso.ViewAssertion;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
-import androidx.appcompat.widget.Toolbar;
-import androidx.test.runner.AndroidJUnit4;
-
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.TextView;
 
-import com.fsck.k9.BuildConfig;
-import com.fsck.k9.R;
+import androidx.appcompat.widget.Toolbar;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
+import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
+import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
+import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.pEp.ui.activities.TestUtils;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.InstrumentationRegistry.getInstrumentation;
+import java.util.List;
+
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static java.lang.Thread.sleep;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class AccountSetupBasicsTest {
 
+    private TestUtils testUtils;
+    private UiDevice device;
+    private Preferences preferences;
+    private List<Account> previousAccounts;
+
     @Rule
-    public ActivityTestRule<AccountSetupBasics> mActivityRule =
-            new ActivityTestRule<>(AccountSetupBasics.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void setUp() throws Exception {
+        preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
+        new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
+        testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
+    }
 
+    @After
+    public void tearDown() {
+        splashActivityTestRule.finishActivity();
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test
     public void testManualSetup() {
-        startActivity();
+        previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
         onView(withId(R.id.manual_setup)).perform(click());
-        doWait();
         setupIncomingSettings();
-        doWait();
         setupOutgoingSettings();
-        doWait();
         accountSetupPEpOptions();
-        doWait();
-        accountSetupName();
+        accountSetupName(false);
+        checkLastAccountInSettings();
     }
 
     @Test
     public void testAutomaticSetup() {
-        startActivity();
+        previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        doWait();
-        accountSetupName();
+        accountSetupName(false);
+        checkLastAccountInSettings();
     }
 
     @Test
     public void testImportAccount() {
-        startActivity();
-        //openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-        //onView(withId(R.id.import_settings)).perform(click());
-        //onView(withText(R.string.action_settings)).perform(click());
-        //sonView(allOf(withId(R.id.import_settings), withParent(withId(R.id.toolbar)))).perform(click());
-        //openActionBarOverflowOrOptionsMenu(getInstrumentation().getContext());
-        //onView(withText(R.string.action_settings)).perform(click());
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+        testUtils.externalAppRespondWithFile(R.raw.test);
+        previousAccounts = preferences.getAccounts();
 
-        ViewInteraction appCompatTextView = onView(
-                allOf(withId(R.id.title), withText("Import settings"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.support.v7.view.menu.ListMenuItemView")),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatTextView.perform(click());
+        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.doWaitForAlertDialog(R.string.settings_import_selection);
+        testUtils.clickAcceptButton();
+        testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
+        testUtils.clickAcceptButton();
+        testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
+        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
+        testUtils.clickAcceptButton();
+        device.waitForIdle();
+        checkLastAccountInSettings();
     }
 
-    private void doWait() {
-        try {
-            sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    private void checkLastAccountInSettings() {
+        testUtils.selectFromMenu(R.string.action_settings);
+
+        List<Account> newAccounts = preferences.getAccounts();
+        assertEquals(previousAccounts.size() + 1, newAccounts.size());
+
+        testUtils.doWaitForResource(R.id.accounts_list);
+
+        onView(withId(R.id.accounts_list)).check(matches(withListSize(newAccounts.size())));
+
+        int lastIndex = newAccounts.size() - 1;
+
+        onView(withRecyclerView(R.id.accounts_list).atPositionOnView(lastIndex, R.id.description))
+                .check(matches(withText(newAccounts.get(lastIndex).getEmail())));
     }
 
-    private void accountSetupName() {
+    private void accountSetupName(boolean withSync) {
+        testUtils.waitUntilViewDisplayed(R.id.account_name);
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_names_title)));
 
         onView(withId(R.id.account_name)).perform(replaceText("test"));
+        if (!withSync) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        }
+        onView(withId(R.id.done)).perform(click());
     }
 
     private void accountSetupPEpOptions() {
+        testUtils.waitUntilViewDisplayed(R.id.next);
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_settings_title_fmt)));
@@ -124,22 +147,22 @@ public class AccountSetupBasicsTest {
     }
 
     private void setupOutgoingSettings() {
-        setupSettings(matches(withText(R.string.account_setup_outgoing_title)));
+        setupSettings(R.string.account_setup_outgoing_title);
     }
 
-    private void setupSettings(ViewAssertion matches) {
-        onView(allOf(isAssignableFrom(TextView.class),
-                withParent(isAssignableFrom(Toolbar.class))))
-                .check(matches);
+    private void setupSettings(int stringResource) {
+        testUtils.waitUntilViewDisplayed(onView(allOf(isAssignableFrom(TextView.class),
+                withParent(isAssignableFrom(Toolbar.class)), withText(stringResource))));
 
         String server = BuildConfig.PEP_TEST_EMAIL_SERVER;
 
         onView(withId(R.id.account_server)).perform(replaceText(server));
+        device.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
     private void setupIncomingSettings() {
-        setupSettings(matches(withText(R.string.account_setup_incoming_title)));
+        setupSettings(R.string.account_setup_incoming_title);
     }
 
     private void setupEmailAndPassword() {
@@ -148,33 +171,9 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String email = testUtils.getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
-    }
-
-    private void startActivity() {
-        Intent intent = new Intent();
-        mActivityRule.launchActivity(intent);
-    }
-
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
     }
 }
