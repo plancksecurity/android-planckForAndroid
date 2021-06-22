@@ -5,7 +5,7 @@ import com.fsck.k9.mailstore.LocalFolder;
 
 import org.jetbrains.annotations.NotNull;
 
-import security.pEp.animatedlevellist.model.PlainItem;
+import security.pEp.foldable.folders.model.PlainItem;
 
 public class FolderModel extends PlainItem {
     private LocalFolder localFolder;

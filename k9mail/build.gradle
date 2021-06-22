@@ -48,7 +48,7 @@ dependencies {
     implementation project(':k9mail-library')
     implementation project(':plugins:HoloColorPicker')
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
-    implementation project(':animatedlevellist')
+    implementation project(':foldableFolders')
 
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"

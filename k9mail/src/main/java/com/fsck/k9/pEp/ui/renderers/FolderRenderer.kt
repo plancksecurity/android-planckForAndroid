@@ -9,9 +9,9 @@ import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.models.FolderModel
-import security.pEp.animatedlevellist.defaultimplementations.renderer.DefaultLevelItemRenderer
-import security.pEp.animatedlevellist.model.LevelListItem
-import security.pEp.animatedlevellist.util.Constants
+import security.pEp.foldable.folders.defaults.renderer.DefaultLevelItemRenderer
+import security.pEp.foldable.folders.model.LevelListItem
+import security.pEp.foldable.folders.util.Constants
 
 class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
 

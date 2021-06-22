@@ -7,7 +7,7 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import security.pEp.animatedlevellist.util.LevelListBuilder
+import security.pEp.foldable.folders.util.LevelListBuilder
 
 interface DrawerView {
     fun refreshMessages(search: LocalSearch)
