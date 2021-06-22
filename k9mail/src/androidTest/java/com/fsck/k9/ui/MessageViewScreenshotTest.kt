@@ -7,11 +7,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
 import org.junit.Test
 import org.junit.runner.RunWith
-/*
- *   For this test we need to:
- *   1 - create one thread conversation
- *   2 - send 1 message to 3 different bots
- */
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)

@@ -1,54 +1,61 @@
 package com.fsck.k9.ui
 
+import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- *  This 2 test need to be run in an clean app, before run it clean the app data
- */
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
+    @get:Rule
+    var permissionRule: GrantPermissionRule =
+            GrantPermissionRule.grant(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_CONTACTS, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
 
-    /**
-     * NEEDS PEP_TEST_EMAIL_ADDRESS and PEP_TEST_EMAIL_PASSWORD system variables
-     */
+
+    companion object {
+        const val BOT_1_NAME = "bot1"
+        const val BOT_2_NAME = "bot2"
+        const val BOT_3_NAME = "bot3"
+    }
 
     @Test
     fun automaticAccountSetup() {
         setTestSet("A")
-        grantPermissions()
         accountSetup(true)
     }
 
     @Test
     fun manualAccountSetup() {
         setTestSet("B")
-        grantPermissions()
         accountSetup(false)
     }
 
     @Test
     fun importAccountSetup() {
         setTestSet("L")
-        grantPermissions()
         openFirstScreen()
         click(R.id.skip)
         sleep(500)
+        runBlocking { waitForIdle() }
+        permissions()
 
+        runBlocking { waitForIdle() }
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
         getScreenShotCurrentActivity("import account menu")
         sleep(500)
 
-        startFileManagerStub("android07", "k9s")
+        testUtils.externalAppRespondWithFile(R.raw.stubaccount)
+
         click(getString(R.string.settings_import))
         sleep(500)
 
@@ -65,9 +72,42 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import account step 3 filled")
     }
 
+    @Test
+    fun addMessagesToAccount() {
+        openFirstScreen()
+        waitListView()
+        getMessageListSize()
+
+        sendNewMessageToSelf()
+        waitNewMessage()
+        getMessageListSize()
+
+        replyToSelfMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_1_NAME)
+        waitNewMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_2_NAME)
+        waitNewMessage()
+        getMessageListSize()
+
+        sendMessageToBot(BOT_3_NAME)
+        waitNewMessage()
+    }
+
+    private fun permissions() {
+        getScreenShotCurrentActivity("permissions")
+        sleep(1000)
+        click(R.id.action_continue)
+        allowPermissions()
+    }
+
     private fun accountSetup(automaticLogin: Boolean) {
         openFirstScreen()
         passWelcomeScreen()
+        permissions()
         if (automaticLogin) addFirstAccountAutomatic()
         else addFirstAccountManual()
     }
@@ -140,8 +180,5 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
         click(R.id.done)
     }
 
-    private fun closeKeyboardWithDelay() {
-        Espresso.closeSoftKeyboard()
-        sleep(1000)
-    }
+
 }
