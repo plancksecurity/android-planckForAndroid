@@ -342,7 +342,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayoutView.initDrawerView(drawerLayout, this);
+        drawerLayoutView.initDrawerView(MessageList.this, getToolbar(), drawerLayout, this);
         restoreAccountUuid(savedInstanceState);
 
         if (!decodeExtras(getIntent())) {
@@ -358,9 +358,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
         channelUtils.updateChannels();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutView.initializeDrawerToggle(toggle);
+
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
@@ -491,9 +489,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         channelUtils.updateChannels();
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutView.initializeDrawerToggle(toggle);
+        drawerLayoutView.initDrawerView(this, getToolbar(), drawerLayout, this);
     }
 
     /**
