@@ -38,7 +38,7 @@ dependencies {
     // running JVM tests.
     testImplementation "org.apache.httpcomponents:httpclient:4.5.5"
 
-    androidTestImplementation "androidx.test.ext:junit:${versions.androidX}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
 }
 
 android {
