@@ -97,7 +97,7 @@ import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpProviderImpl;
+import com.fsck.k9.pEp.PEpProviderImplKotlin;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
@@ -113,12 +113,10 @@ import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import foundation.pEp.jniadapter.exceptions.pEpException;
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -4690,7 +4688,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     return;
                 }
 
-                Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
+                Message message = PEpProviderImplKotlin.getMimeMessage(pEpMessage);
 
                 if (message == null) {
                     Timber.e("pEpEngine  messageToSend: Cannot convert pEpMessage into K9Message");

@@ -258,6 +258,8 @@ public interface PEpProvider extends AutoCloseable {
 
     void setSyncHandshakeCallback(Sync.NotifyHandshakeCallback callback);
 
+    void disableSyncForAllIdentites();
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
