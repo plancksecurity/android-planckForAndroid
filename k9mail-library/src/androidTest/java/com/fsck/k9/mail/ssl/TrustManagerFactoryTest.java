@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import javax.net.ssl.X509TrustManager;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -298,6 +299,7 @@ public class TrustManagerFactoryTest {
     }
 
     @Test
+    @Ignore("Whole AndroidTest package was removed from K9 upstream, commit #357e1972")
     public void testGloballyTrustedCertificateChain() throws Exception {
         X509TrustManager trustManager = TrustManagerFactory.get("www.linux.com", PORT1);
         X509Certificate[] certificates = new X509Certificate[] { mLinuxComCert, mLinuxComFirstParentCert};
