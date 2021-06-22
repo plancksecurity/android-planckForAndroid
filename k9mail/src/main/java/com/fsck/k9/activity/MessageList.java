@@ -796,7 +796,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
 
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
+        setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
+    }
+
+    private void setDefaultFolderNameIfNeeded() {
+        if(mAccount != null && mFolderName == null) {
+            mFolderName = mAccount.getAutoExpandFolderName();
+        }
     }
 
     @Override
