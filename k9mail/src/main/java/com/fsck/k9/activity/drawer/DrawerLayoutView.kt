@@ -17,7 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.R
+import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.pEp.ui.listeners.folderClickListener
@@ -38,6 +40,7 @@ class DrawerLayoutView @Inject constructor(
     @Named("ActivityContext") private val context: Context,
     private var drawerFolderPopulator: DrawerFolderPopulator,
     private var drawerLayoutPresenter: DrawerLayoutPresenter,
+    private var messagingController: MessagingController
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -75,6 +78,13 @@ class DrawerLayoutView @Inject constructor(
 
     private lateinit var messageListView: MessageListView
 
+    private val activityListener = object : ActivityListener() {
+
+        override fun informUserOfStatus() {
+            populateDrawerGroup()
+        }
+    }
+
     fun initDrawerView(
         activity: Activity?,
         toolbar: Toolbar?,
@@ -89,7 +99,7 @@ class DrawerLayoutView @Inject constructor(
         })
         findViewsById()
         setupCreateConfigAccountListeners()
-        initializeDrawerToggle(activity,toolbar)
+        initializeDrawerToggle(activity, toolbar)
     }
 
     fun updateAccount(account: Account) {
@@ -97,10 +107,12 @@ class DrawerLayoutView @Inject constructor(
     }
 
     private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
-        toggle = ActionBarDrawerToggle(
+        toggle = DrawerLayoutToogle(
             activity, drawerLayout, toolbar,
             R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+
+        (toggle as DrawerLayoutToogle).setDrawerLayoutView(this)
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -415,11 +427,19 @@ class DrawerLayoutView @Inject constructor(
         drawerLayoutPresenter.loadNavigationView()
     }
 
-    fun populateDrawerGroup() {
+    override fun populateDrawerGroup() {
         drawerLayoutPresenter.populateDrawerGroup()
     }
 
     override fun refreshMessages(search: LocalSearch) {
         messageListView.refreshMessages(search)
+    }
+
+    override fun addActivityListener() {
+        messagingController.addListener(activityListener)
+    }
+
+    override fun removeActivityListener() {
+        messagingController.removeListener(activityListener)
     }
 }
