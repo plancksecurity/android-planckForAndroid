@@ -6,7 +6,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import javax.net.ssl.X509TrustManager;
@@ -210,7 +210,7 @@ public class TrustManagerFactoryTest {
     @Before
     public void setUp() throws Exception {
         mKeyStoreFile = File.createTempFile("localKeyStore", null,
-                InstrumentationRegistry.getTargetContext().getCacheDir());
+                ApplicationProvider.getApplicationContext().getCacheDir());
         mKeyStore = LocalKeyStore.getInstance();
         mKeyStore.setKeyStoreFile(mKeyStoreFile);
     }
