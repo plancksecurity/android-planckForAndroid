@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
@@ -88,8 +89,12 @@ public class PEpStatusPresenter {
     }
 
     void loadMessage(MessageReference messageReference) {
+        simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback(), displayHtml);
+    }
+
+    private void forceLoadMessage(MessageReference messageReference, MessageLoaderHelper.MessageLoaderCallbacks callback) {
         if (messageReference != null) {
-            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback(), displayHtml);
+            simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, callback, displayHtml, true);
         }
     }
 
@@ -181,30 +186,121 @@ public class PEpStatusPresenter {
 
     void onHandshakeResult(Identity id, boolean trust) {
         latestHandshakeId = id;
-        refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+
+        forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
-            public void onLoaded(Rating rating) {
-                onRatingChanged(rating);
-                if (trust) {
-                    showUndoAction(PEpProvider.TrustAction.TRUST);
-                } else {
-                    view.showMistrustFeedback(latestHandshakeId.username);
+            public void onMessageDataLoadFinished(LocalMessage message) {
+                if(message.isSet(Flag.DELETED)) {
+                    view.finish();
+                    return;
                 }
-                updateIdentities();
+                refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+                    @Override
+                    public void onLoaded(Rating rating) {
+                        onRatingChanged(rating);
+                        if (trust) {
+                            showUndoAction(PEpProvider.TrustAction.TRUST);
+                        } else {
+                            view.showMistrustFeedback(latestHandshakeId.username);
+                        }
+                        updateIdentities();
+                    }
+                });
+            }
+
+            @Override
+            public void onMessageDataLoadFailed() {
+
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
+
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
+
+            }
+
+            @Override
+            public void setLoadingProgress(int current, int max) {
+
+            }
+
+            @Override
+            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
+
+            }
+
+            @Override
+            public void onDownloadErrorMessageNotFound() {
+
+            }
+
+            @Override
+            public void onDownloadErrorNetworkError() {
+
             }
         });
     }
 
     public void resetpEpData(Identity id) {
-        pEpProvider.keyResetIdentity(id, null);
-        refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+        forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
-            public void onLoaded(Rating rating) {
-                onRatingChanged(rating);
-                onTrustReset(currentRating, id);
-                view.showResetpEpDataFeedback();
+            public void onMessageDataLoadFinished(LocalMessage message) {
+                if(message.isSet(Flag.DELETED)) {
+                    view.finish();
+                    return;
+                }
+                pEpProvider.keyResetIdentity(id, null);
+                refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+                    @Override
+                    public void onLoaded(Rating rating) {
+                        onRatingChanged(rating);
+                        onTrustReset(currentRating, id);
+                        view.showResetpEpDataFeedback();
+                    }
+                });
+            }
+
+            @Override
+            public void onMessageDataLoadFailed() {
+
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
+
+            }
+
+            @Override
+            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
+
+            }
+
+            @Override
+            public void setLoadingProgress(int current, int max) {
+
+            }
+
+            @Override
+            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
+
+            }
+
+            @Override
+            public void onDownloadErrorMessageNotFound() {
+
+            }
+
+            @Override
+            public void onDownloadErrorNetworkError() {
+
             }
         });
+
+
     }
 
     private void refreshRating(PEpProvider.ResultCallback<Rating> callback) {
@@ -242,6 +338,10 @@ public class PEpStatusPresenter {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
                 localMessage = message;
+                if(message.isSet(Flag.DELETED)) {
+                    view.finish();
+                    return;
+                }
                 currentRating = localMessage.getpEpRating();
             }
 
@@ -279,7 +379,51 @@ public class PEpStatusPresenter {
 
     public void undoTrust() {
         if (latestHandshakeId != null) {
-            resetTrust(latestHandshakeId);
+            forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
+                @Override
+                public void onMessageDataLoadFinished(LocalMessage message) {
+                    if(message.isSet(Flag.DELETED)) {
+                        view.finish();
+                        return;
+                    }
+                    resetTrust(latestHandshakeId);
+                }
+
+                @Override
+                public void onMessageDataLoadFailed() {
+
+                }
+
+                @Override
+                public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
+
+                }
+
+                @Override
+                public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
+
+                }
+
+                @Override
+                public void setLoadingProgress(int current, int max) {
+
+                }
+
+                @Override
+                public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
+
+                }
+
+                @Override
+                public void onDownloadErrorMessageNotFound() {
+
+                }
+
+                @Override
+                public void onDownloadErrorNetworkError() {
+
+                }
+            });
         }
     }
 
