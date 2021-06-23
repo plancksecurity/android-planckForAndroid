@@ -2747,6 +2747,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         FetchProfile fp = new FetchProfile();
         fp.add(FetchProfile.Item.BODY);
+        fp.add(FetchProfile.Item.FLAGS);
         localFolder.fetch(Collections.singletonList(message), fp, null);
         localFolder.close();
 
