@@ -137,8 +137,14 @@ public class MessageLoaderHelper {
 
     // public interface
 
+
     @UiThread
     public void asyncStartOrResumeLoadingMessage(MessageReference messageReference, Parcelable cachedDecryptionResult) {
+        asyncStartOrResumeLoadingMessage(messageReference, cachedDecryptionResult, false);
+    }
+
+    @UiThread
+    public void asyncStartOrResumeLoadingMessage(MessageReference messageReference, Parcelable cachedDecryptionResult, boolean forceLoad) {
         this.messageReference = messageReference;
         this.account = Preferences.getPreferences(context).getAccount(messageReference.getAccountUuid());
 
@@ -149,7 +155,7 @@ public class MessageLoaderHelper {
                 Timber.e("Got decryption result of unknown type - ignoring");
             }
         }
-        startOrResumeLocalMessageLoader();
+        startOrResumeLocalMessageLoader(forceLoad);
     }
 
     @UiThread
@@ -211,13 +217,16 @@ public class MessageLoaderHelper {
 
 
     // load from database
-
     private void startOrResumeLocalMessageLoader() {
+        startOrResumeLocalMessageLoader(false);
+    }
+
+    private void startOrResumeLocalMessageLoader(boolean forceLoad) {
         LocalMessageLoader loader =
                 (LocalMessageLoader) loaderManager.<LocalMessage>getLoader(LOCAL_MESSAGE_LOADER_ID);
         boolean isLoaderStale = (loader == null) || !loader.isCreatedFor(messageReference);
 
-        if (isLoaderStale) {
+        if (isLoaderStale || forceLoad) {
             Timber.d("Creating new local message loader");
             cancelAndClearCryptoOperation();
             cancelAndClearDecodeLoader();
