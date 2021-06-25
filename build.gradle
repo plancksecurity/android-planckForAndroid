@@ -8,7 +8,8 @@ buildscript {
                 'pEpEngineRevision'    : 'Release_2.1.33',
                 'pEpJNIAdapterRevision': 'Release_2.1.26',
                 'versionName'          : '1.1.264',
-                'libpEpAdapterRevision': 'Release_2.1.21'
+                'libpEpAdapterRevision': 'Release_2.1.21',
+                'foldersRevision'      : 'v0.2'
         ]
 
         versions = [
