@@ -38,12 +38,19 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
     }
 
     override fun indentByDepth(view: View, item: LevelListItem<FolderModel>) {
-        val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indent, view.context.resources.displayMetrics)
-                .toInt()
+        setIndentForView(folderIcon, 0)
+        setIndentForView(showChildrenButton, 0)
+
         val indentView: View = if(content.children.isEmpty()) folderIcon else showChildrenButton
-        val params : RelativeLayout.LayoutParams = indentView.layoutParams as RelativeLayout.LayoutParams
-        params.leftMargin = item.depth * px
-        indentView.layoutParams = params
+        val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indent, view.context.resources.displayMetrics)
+            .toInt()
+        setIndentForView(indentView, item.depth * px)
+    }
+
+    private fun setIndentForView(view: View, indent: Int) {
+        val params : RelativeLayout.LayoutParams = view.layoutParams as RelativeLayout.LayoutParams
+        params.leftMargin = indent
+        view.layoutParams = params
     }
 
     override fun differentiateParentOrChildDisplay() {
