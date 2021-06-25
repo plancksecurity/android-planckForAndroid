@@ -2373,7 +2373,7 @@ public class CucumberTestSteps {
                 testUtils.removeTextFromTextView("to");
                 break;
             case "myself":
-                cucumberMessageTo = getTextFromView(onView(withId(R.id.accountName)));
+                cucumberMessageTo = testUtils.getAccountAddress(accountSelected);
                 break;
             case "bot1":
                 Timber.i("Filling message to bot1");
