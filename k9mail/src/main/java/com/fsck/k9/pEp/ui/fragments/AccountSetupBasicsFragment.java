@@ -1070,11 +1070,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
                                 })
                         .setNegativeButton(
                                 getString(R.string.account_setup_failed_dlg_invalid_certificate_reject),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        getFragmentManager().popBackStack();
-                                    }
-                                })
+                                null
+                        )
                         .show();
             }
         });
