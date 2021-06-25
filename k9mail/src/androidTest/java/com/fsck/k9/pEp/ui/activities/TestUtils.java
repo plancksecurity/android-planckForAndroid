@@ -1150,6 +1150,18 @@ public class TestUtils {
         }
     }
 
+    public void assertTextInView(String text, int view) {
+        waitForIdle();
+        try {
+            waitForIdle();
+            if (!getTextFromView(onView(withId(view))).contains(text)) {
+                assertFailWithMessage("View doesn't contain text: " + text);
+            }
+        } catch (Exception ex) {
+            Timber.i("Cannot find view: " + ex.getMessage());
+        }
+    }
+
     private void manualAccount() {
         while (!viewIsDisplayed(R.id.manual_setup)) {
             waitForIdle();
