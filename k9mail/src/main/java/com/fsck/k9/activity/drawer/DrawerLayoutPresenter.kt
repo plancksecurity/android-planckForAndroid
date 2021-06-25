@@ -12,7 +12,7 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import security.pEp.foldable.folders.model.LevelListItem
+import security.pEp.foldable.folders.util.Constants
 import security.pEp.foldable.folders.util.LevelListBuilderImpl
 import javax.inject.Inject
 import javax.inject.Named
@@ -97,12 +97,20 @@ class DrawerLayoutPresenter @Inject constructor(
     }
 
     private fun setFoldersAdapter() {
-       val separator = account?.remoteStore?.pathDelimiter ?: return
-        val levelListBuilder = LevelListBuilderImpl<FolderModel>(separator, 4)
-        val criteria: (LevelListItem<FolderModel>) -> Boolean = { levelItem -> account?.isSpecialFolder(levelItem.item.itemName) == true }
-        levelListBuilder.visibleItemCriteria = criteria
-        levelListBuilder.showOnTopCriteria = criteria
-
+        val account = account?: return
+        val separator = account.remoteStore?.pathDelimiter ?: return
+        val levelListBuilder = LevelListBuilderImpl<FolderModel>(
+            separator = separator,
+            depthLimit = 4,
+            showOnTopFilter = { levelItem ->
+                when {
+                    account.isSpecialFolder(levelItem.item.itemName) -> 900
+                    levelItem.item.itemName == account.inboxFolderName -> 0
+                    else -> Constants.DEFAULT_SHOW_ON_TOP_PRIO
+                }
+            },
+            unfoldedPathFilter = { it.item.itemName == account.inboxFolderName }
+        )
         drawerView.setFolderAdapter(levelListBuilder)
     }
 
