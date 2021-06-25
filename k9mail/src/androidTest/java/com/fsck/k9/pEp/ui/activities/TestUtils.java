@@ -770,7 +770,7 @@ public class TestUtils {
     public void readBotList(){
         File directory = new File(Environment.getExternalStorageDirectory().toString());
 
-        File newFile = new File(directory, "Download/test/botlist.txt");
+        File newFile = new File(directory, "test/botlist.txt");
         testConfig = new TestConfig();
         try  {
             FileInputStream fin = new FileInputStream(newFile);
