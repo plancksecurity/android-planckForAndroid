@@ -185,8 +185,6 @@ public class PEpStatusPresenter {
     }
 
     void onHandshakeResult(Identity id, boolean trust) {
-        latestHandshakeId = id;
-
         forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
@@ -194,6 +192,7 @@ public class PEpStatusPresenter {
                     view.finish();
                     return;
                 }
+                latestHandshakeId = id;
                 refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
                     @Override
                     public void onLoaded(Rating rating) {
