@@ -117,7 +117,7 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
         mProgressBar.setIndeterminate(true);
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccount(accountUuid);
+        mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
         mDirection = (AccountSetupCheckSettings.CheckDirection) getArguments().getSerializable(EXTRA_CHECK_DIRECTION);
 
         mMakeDefault = getArguments().getBoolean(EXTRA_DEFAULT);
