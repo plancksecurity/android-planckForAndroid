@@ -40,7 +40,6 @@ class DrawerFolderPopulator @Inject constructor() {
                 folderModel.unreadCount = lastUnreadCounts[index]
                 folderModels.add(folderModel)
             }
-            folderModels = orderFolderLists(account, folderModels)
         }
         folderAdapter.changePlainList(folderModels)
     }
