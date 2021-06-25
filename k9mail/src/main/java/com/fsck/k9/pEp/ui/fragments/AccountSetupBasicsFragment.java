@@ -421,17 +421,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
             incomingUsername = incomingUsername.replaceAll("\\$domain", domain);
 
             URI incomingUriTemplate = mProvider.incomingUriTemplate;
+            int port = RemoteStore.decodeStoreUri(incomingUriTemplate.toString()).port;
             String incomingUserInfo = incomingUsername + ":" + passwordEnc;
             if (usingXOAuth2)
                 incomingUserInfo = AuthType.XOAUTH2 + ":" + incomingUserInfo;
             URI incomingUri = new URI(incomingUriTemplate.getScheme(), incomingUserInfo,
-                    incomingUriTemplate.getHost(), incomingUriTemplate.getPort(),
+                    incomingUriTemplate.getHost(), port,
                     null, null, null);
 
             String outgoingUsername = mProvider.outgoingUsernameTemplate;
 
             URI outgoingUriTemplate = mProvider.outgoingUriTemplate;
-
+            port = Transport.decodeTransportUri(outgoingUriTemplate.toString()).port;
 
             URI outgoingUri;
             if (outgoingUsername != null) {
@@ -444,12 +445,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     outgoingUserInfo = outgoingUserInfo + ":" + AuthType.XOAUTH2;
                 }
                 outgoingUri = new URI(outgoingUriTemplate.getScheme(), outgoingUserInfo,
-                        outgoingUriTemplate.getHost(), outgoingUriTemplate.getPort(), null,
+                        outgoingUriTemplate.getHost(), port, null,
                         null, null);
 
             } else {
                 outgoingUri = new URI(outgoingUriTemplate.getScheme(),
-                        null, outgoingUriTemplate.getHost(), outgoingUriTemplate.getPort(), null,
+                        null, outgoingUriTemplate.getHost(), port, null,
                         null, null);
 
 
@@ -478,9 +479,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void checkSettings() {
+        checkSettings(AccountSetupCheckSettings.CheckDirection.INCOMING);
+    }
+
+    private void checkSettings(AccountSetupCheckSettings.CheckDirection direction) {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.LOGIN,
+        pEpSettingsChecker.checkSettings(mAccount, direction, false, AccountSetupCheckSettingsFragment.LOGIN,
                 false, basicsSettingsCheckCallback);
     }
 
@@ -902,7 +907,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (certificateException.hasCertChain()) {
             acceptKeyDialog(
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
-                    certificateException.getOriginalException());
+                    certificateException.getOriginalException(),
+                    cve.direction);
         } else {
             showErrorDialog(
                     R.string.account_setup_failed_dlg_server_message_fmt,
@@ -926,7 +932,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
-    private void acceptKeyDialog(final int msgResId, final CertificateValidationException ex) {
+    private void acceptKeyDialog(
+            final int msgResId,
+            final CertificateValidationException ex,
+            AccountSetupCheckSettings.CheckDirection direction
+    ) {
         Handler handler = new Handler();
         handler.post(new Runnable() {
             public void run() {
@@ -1055,7 +1065,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                                 getString(R.string.account_setup_failed_dlg_invalid_certificate_accept),
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        acceptCertificate(chain[0]);
+                                        acceptCertificate(chain[0], direction);
                                     }
                                 })
                         .setNegativeButton(
@@ -1070,21 +1080,23 @@ public class AccountSetupBasicsFragment extends PEpFragment
         });
     }
 
-    private void acceptCertificate(X509Certificate certificate) {
+    private void acceptCertificate(X509Certificate certificate,
+                                   AccountSetupCheckSettings.CheckDirection direction) {
         try {
-            mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.INCOMING, certificate);
+            if(direction.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
+                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.INCOMING,
+                        certificate);
+                checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+            } else {
+                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.OUTGOING,
+                        certificate);
+                onSettingsChecked(PEpSettingsChecker.Redirection.TO_APP);
+            }
         } catch (CertificateException e) {
             showErrorDialog(
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
                     e.getMessage() == null ? "" : e.getMessage());
         }
-        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount,
-                AccountSetupCheckSettings.CheckDirection.INCOMING, false, AccountSetupCheckSettingsFragment.INCOMING);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                .commit();
     }
 
     @Override
@@ -1094,8 +1106,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     @Override
     public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
-        AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
-        requireActivity().finish();
+        if(redirection.equals(PEpSettingsChecker.Redirection.OUTGOING)) {
+            checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+        } else {
+            AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
+            requireActivity().finish();
+        }
     }
 
     @Override
