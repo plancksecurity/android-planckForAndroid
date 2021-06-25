@@ -185,13 +185,9 @@ public class PEpStatusPresenter {
     }
 
     void onHandshakeResult(Identity id, boolean trust) {
-        forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
-            @Override
-            public void onMessageDataLoadFinished(LocalMessage message) {
-                if(message.isSet(Flag.DELETED)) {
-                    view.finish();
-                    return;
-                }
+        forceLoadMessage(
+            localMessage.makeMessageReference(),
+            callback(() -> {
                 latestHandshakeId = id;
                 refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
                     @Override
@@ -205,53 +201,14 @@ public class PEpStatusPresenter {
                         updateIdentities();
                     }
                 });
-            }
-
-            @Override
-            public void onMessageDataLoadFailed() {
-
-            }
-
-            @Override
-            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-
-            }
-
-            @Override
-            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-
-            }
-
-            @Override
-            public void setLoadingProgress(int current, int max) {
-
-            }
-
-            @Override
-            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
-
-            }
-
-            @Override
-            public void onDownloadErrorMessageNotFound() {
-
-            }
-
-            @Override
-            public void onDownloadErrorNetworkError() {
-
-            }
-        });
+            })
+        );
     }
 
     public void resetpEpData(Identity id) {
-        forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
-            @Override
-            public void onMessageDataLoadFinished(LocalMessage message) {
-                if(message.isSet(Flag.DELETED)) {
-                    view.finish();
-                    return;
-                }
+        forceLoadMessage(
+            localMessage.makeMessageReference(),
+            callback(() -> {
                 pEpProvider.keyResetIdentity(id, null);
                 refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
                     @Override
@@ -261,45 +218,8 @@ public class PEpStatusPresenter {
                         view.showResetpEpDataFeedback();
                     }
                 });
-            }
-
-            @Override
-            public void onMessageDataLoadFailed() {
-
-            }
-
-            @Override
-            public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-
-            }
-
-            @Override
-            public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-
-            }
-
-            @Override
-            public void setLoadingProgress(int current, int max) {
-
-            }
-
-            @Override
-            public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
-
-            }
-
-            @Override
-            public void onDownloadErrorMessageNotFound() {
-
-            }
-
-            @Override
-            public void onDownloadErrorNetworkError() {
-
-            }
-        });
-
-
+            })
+        );
     }
 
     private void refreshRating(PEpProvider.ResultCallback<Rating> callback) {
@@ -333,15 +253,23 @@ public class PEpStatusPresenter {
     }
 
     public MessageLoaderHelper.MessageLoaderCallbacks callback() {
+        return callback(() -> currentRating = localMessage.getpEpRating());
+    }
+
+    private interface OnMessageCorrectlyLoaderListener {
+        void onMessageCorrectlyLoaded();
+    }
+
+    public MessageLoaderHelper.MessageLoaderCallbacks callback(OnMessageCorrectlyLoaderListener listener) {
         return new MessageLoaderHelper.MessageLoaderCallbacks() {
             @Override
             public void onMessageDataLoadFinished(LocalMessage message) {
-                localMessage = message;
                 if(message.isSet(Flag.DELETED)) {
                     view.finish();
                     return;
                 }
-                currentRating = localMessage.getpEpRating();
+                localMessage = message;
+                listener.onMessageCorrectlyLoaded();
             }
 
             @Override
@@ -355,6 +283,7 @@ public class PEpStatusPresenter {
 
             @Override
             public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
+                view.showDataLoadError();
             }
 
             @Override
@@ -378,51 +307,10 @@ public class PEpStatusPresenter {
 
     public void undoTrust() {
         if (latestHandshakeId != null) {
-            forceLoadMessage(localMessage.makeMessageReference(), new MessageLoaderHelper.MessageLoaderCallbacks() {
-                @Override
-                public void onMessageDataLoadFinished(LocalMessage message) {
-                    if(message.isSet(Flag.DELETED)) {
-                        view.finish();
-                        return;
-                    }
-                    resetTrust(latestHandshakeId);
-                }
-
-                @Override
-                public void onMessageDataLoadFailed() {
-
-                }
-
-                @Override
-                public void onMessageViewInfoLoadFinished(MessageViewInfo messageViewInfo) {
-
-                }
-
-                @Override
-                public void onMessageViewInfoLoadFailed(MessageViewInfo messageViewInfo) {
-
-                }
-
-                @Override
-                public void setLoadingProgress(int current, int max) {
-
-                }
-
-                @Override
-                public void startIntentSenderForMessageLoaderHelper(IntentSender si, int requestCode, Intent fillIntent, int flagsMask, int flagValues, int extraFlags) {
-
-                }
-
-                @Override
-                public void onDownloadErrorMessageNotFound() {
-
-                }
-
-                @Override
-                public void onDownloadErrorNetworkError() {
-
-                }
-            });
+            forceLoadMessage(
+                localMessage.makeMessageReference(),
+                callback(() -> resetTrust(latestHandshakeId))
+            );
         }
     }
 
