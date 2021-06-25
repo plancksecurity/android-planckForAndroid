@@ -2827,7 +2827,7 @@ public class TestUtils {
                 messageClicked = true;
             }
         }
-        if (exists(onView(withId(R.id.error_message)))) {
+        if (viewIsDisplayed(R.id.error_message)) {
             encrypted = true;
         }
         try {
@@ -4388,6 +4388,13 @@ public class TestUtils {
             readConfigFile();
         }
         return testConfig.getPassword(Integer.parseInt(testConfig.test_number));
+    }
+
+    public String getAccountAddress (int account) {
+        while (testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getMail(account);
     }
 
     public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
