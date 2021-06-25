@@ -217,12 +217,30 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I enter (\\S+) in the (\\S+) field")
-    public void I_enter_text_in_field(String textToField, String field) {
+    @When("^I assert account (\\S+) is in the (\\S+) field")
+    public void I_assert_account_in_field(String text, String field) {
         waitForIdle();
-        while (!exists(onView(withId(R.id.to)))) {
-            TestUtils.swipeUpScreen();
+        int viewID = 0;
+        switch (field) {
+            case "CC":
+                viewID = R.id.cc;
+                break;
+            case "BCC":
+                viewID = R.id.bcc;
+                break;
+            case "to":
+                viewID = R.id.to;
+                break;
+            default:
+                break;
         }
+        text = accountAddress(text);
+        testUtils.assertTextInView(text,viewID);
+    }
+
+        @When("^I enter (\\S+) in the (\\S+) field")
+        public void I_enter_text_in_field(String account, String field) {
+        waitForIdle();
         int viewID = 0;
         String resourceID = "";
         switch (field) {
@@ -234,20 +252,20 @@ public class CucumberTestSteps {
                 viewID = R.id.bcc;
                 resourceID = "bcc";
                 break;
-            case "to":
+            case "TO":
                 viewID = R.id.to;
                 resourceID = "to";
                 break;
             default:
                 break;
         }
-        textToField = returnTextToPutInFieldTo(textToField);
+        account = accountAddress(account);
         if (exists(onView(withId(R.id.recipient_expander)))) {
             onView(withId(R.id.recipient_expander)).perform(click());
         }
         if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
             try {
-                testUtils.typeTextInField(textToField, viewID, resourceID);
+                testUtils.typeTextInField(account, viewID, resourceID);
             } catch (Exception ex) {
                 Timber.i("Couldn't fill " + resourceID + ": " + ex.getMessage());
             }
@@ -259,8 +277,9 @@ public class CucumberTestSteps {
                     onView(withId(viewID)).check(matches(isDisplayed()));
                     onView(withId(viewID)).perform(closeSoftKeyboard());
                     waitForIdle();
-                    testUtils.typeTextInField(textToField, viewID, resourceID);
-                    onView(withId(viewID)).perform(closeSoftKeyboard());
+                    testUtils.typeTextInField(account, viewID, resourceID);
+                    testUtils.typeTextInField(",", viewID, resourceID);
+                    //onView(withId(viewID)).perform(closeSoftKeyboard());
                     filled = true;
                 } catch (Exception ex) {
                     Timber.i("Couldn't find view: " + ex.getMessage());
@@ -276,13 +295,13 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I enter (\\S+) in the messageSubject field")
+    @When("^I enter (\\S+) in the message Subject field")
     public void I_fill_subject_field(String cucumberSubject) {
         timeRequiredForThisMethod(15);
         textViewEditor(cucumberSubject, "subject");
     }
 
-    @When("^I enter (\\S+) in the messageBody field")
+    @When("^I enter (\\S+) in the message Body field")
     public void I_fill_body_field(String cucumberBody) {
         timeRequiredForThisMethod(1);
         textViewEditor(cucumberBody, "message_content");
@@ -2347,7 +2366,7 @@ public class CucumberTestSteps {
         }
     }
 
-    public String returnTextToPutInFieldTo (String cucumberMessageTo) {
+    public String accountAddress(String cucumberMessageTo) {
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
