@@ -12,10 +12,13 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
+import security.pEp.foldable.folders.model.LevelListItem
 import security.pEp.foldable.folders.util.Constants
 import security.pEp.foldable.folders.util.LevelListBuilderImpl
 import javax.inject.Inject
 import javax.inject.Named
+
+const val DEFAULT_PATH_DEPTH = 4
 
 class DrawerLayoutPresenter @Inject constructor(
         @Named("ActivityContext") private val context: Context,
@@ -99,17 +102,23 @@ class DrawerLayoutPresenter @Inject constructor(
     private fun setFoldersAdapter() {
         val account = account?: return
         val separator = account.remoteStore?.pathDelimiter ?: return
+        val filter: (LevelListItem<FolderModel>) -> Int = { levelItem ->
+            when {
+                levelItem.item.itemName == account.inboxFolderName -> 0
+                levelItem.item.itemName == account.draftsFolderName -> 1
+                levelItem.item.itemName == account.sentFolderName -> 2
+                levelItem.item.itemName == account.outboxFolderName -> 3
+                levelItem.item.itemName == account.spamFolderName -> 4
+                levelItem.item.itemName == account.trashFolderName -> 5
+                account.isSpecialFolder(levelItem.item.itemName) -> 900
+                else -> Constants.DEFAULT_SHOW_ON_TOP_PRIO
+            }
+        }
         val levelListBuilder = LevelListBuilderImpl<FolderModel>(
             separator = separator,
-            depthLimit = 4,
-            showOnTopFilter = { levelItem ->
-                when {
-                    account.isSpecialFolder(levelItem.item.itemName) -> 900
-                    levelItem.item.itemName == account.inboxFolderName -> 0
-                    else -> Constants.DEFAULT_SHOW_ON_TOP_PRIO
-                }
-            },
-            unfoldedPathFilter = { it.item.itemName == account.inboxFolderName }
+            depthLimit = DEFAULT_PATH_DEPTH,
+            showOnTopFilter = filter,
+            unfoldedPathFilter = { account.isSpecialFolder(it.item.itemName) }
         )
         drawerView.setFolderAdapter(levelListBuilder)
     }
