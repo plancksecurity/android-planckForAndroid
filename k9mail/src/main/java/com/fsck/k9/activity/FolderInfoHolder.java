@@ -103,26 +103,30 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
      *         folder name if it's a non-special folder.
      */
     public static String getDisplayName(Context context, Account account, String name) {
+        return getDisplayName(context, account, name, name);
+    }
+
+    public static String getDisplayName(Context context, Account account, String name, String fqn) {
         final String displayName;
-        if (name.equals(account.getSpamFolderName())) {
+        if (fqn.equals(account.getSpamFolderName())) {
             displayName = String.format(
                     context.getString(R.string.special_mailbox_name_spam_fmt), name);
-        } else if (name.equals(account.getArchiveFolderName())) {
+        } else if (fqn.equals(account.getArchiveFolderName())) {
             displayName = String.format(
                     context.getString(R.string.special_mailbox_name_archive_fmt), name);
-        } else if (name.equals(account.getSentFolderName())) {
+        } else if (fqn.equals(account.getSentFolderName())) {
             displayName = String.format(
                     context.getString(R.string.special_mailbox_name_sent_fmt), name);
-        } else if (name.equals(account.getTrashFolderName())) {
+        } else if (fqn.equals(account.getTrashFolderName())) {
             displayName = String.format(
                     context.getString(R.string.special_mailbox_name_trash_fmt), name);
-        } else if (name.equals(account.getDraftsFolderName())) {
+        } else if (fqn.equals(account.getDraftsFolderName())) {
             displayName = String.format(
                     context.getString(R.string.special_mailbox_name_drafts_fmt), name);
-        } else if (name.equals(account.getOutboxFolderName())) {
+        } else if (fqn.equals(account.getOutboxFolderName())) {
             displayName = context.getString(R.string.special_mailbox_name_outbox);
         // FIXME: We really shouldn't do a case-insensitive comparison here
-        } else if (name.equalsIgnoreCase(account.getInboxFolderName())) {
+        } else if (fqn.equalsIgnoreCase(account.getInboxFolderName())) {
             displayName = context.getString(R.string.special_mailbox_name_inbox);
         } else {
             displayName = name;

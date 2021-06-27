@@ -33,8 +33,11 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
         differentiateUnfoldedCondition()
         val folderModel = content.item
         folderName.text =
-            FolderInfoHolder.getDisplayName(context, folderModel.account, content.fullName)
-                .replace(content.fullName, content.levelListItemName)
+            FolderInfoHolder.getDisplayName(context,
+                folderModel.account,
+                content.levelListItemName,
+                content.fullName)
+
         renderUnreadMessages(folderModel.unreadCount)
     }
 
