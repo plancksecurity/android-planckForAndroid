@@ -49,7 +49,7 @@ import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
-import security.pEp.shortcuts.ShortcutManager
+import security.pEp.shortcuts.ShortcutHelper
 import security.pEp.ui.about.AboutActivity
 import security.pEp.ui.intro.startWelcomeMessage
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
@@ -108,7 +108,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     @Inject
     lateinit var preferences: Preferences
     @Inject
-    lateinit var shortcutManager: ShortcutManager
+    lateinit var shortcutHelper: ShortcutHelper
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -210,7 +210,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = preferences.accounts
-        shortcutManager.createComposeDynamicShortcut()
+        shortcutHelper.createComposeDynamicShortcut()
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -607,7 +607,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 val realAccount = selectedContextAccount as Account?
                 val deletingDefaultAccount = realAccount!!.uuid == preferences.defaultAccount?.uuid
                 if(deletingDefaultAccount) {
-                    shortcutManager.removeComposeDynamicShortcut()
+                    shortcutHelper.removeComposeDynamicShortcut()
                 }
                 try {
                     realAccount.localStore.delete()
@@ -620,7 +620,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     .deleteAccount(realAccount)
                 preferences.deleteAccount(realAccount)
                 if(deletingDefaultAccount) {
-                    shortcutManager.createComposeDynamicShortcut()
+                    shortcutHelper.createComposeDynamicShortcut()
                 }
                 K9.setServicesEnabled(this@SettingsActivity)
 

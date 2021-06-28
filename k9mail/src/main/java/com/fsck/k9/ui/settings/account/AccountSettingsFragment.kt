@@ -38,7 +38,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
-import security.pEp.shortcuts.ShortcutManager
+import security.pEp.shortcuts.ShortcutHelper
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 import javax.inject.Inject
@@ -58,7 +58,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private var title: CharSequence? = null
 
     @Inject
-    lateinit var shortcutManager: ShortcutManager
+    lateinit var shortcutHelper: ShortcutHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +81,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
             account,
             object : AccountSettingsDataStore.DefaultAccountChangedListener {
                 override fun onDefaultAccountChanged() {
-                    shortcutManager.createComposeDynamicShortcut()
+                    shortcutHelper.createComposeDynamicShortcut()
                 }
             })
 

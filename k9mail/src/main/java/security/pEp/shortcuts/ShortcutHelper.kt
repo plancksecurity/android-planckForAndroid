@@ -12,7 +12,7 @@ import com.fsck.k9.activity.compose.MessageActions
 import javax.inject.Inject
 import javax.inject.Named
 
-class ShortcutManager @Inject constructor(
+class ShortcutHelper @Inject constructor(
     @Named("ActivityContext") private val context: Context,
     private val preferences: Preferences
 ) {
