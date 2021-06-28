@@ -208,9 +208,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = preferences.accounts
-        if(accounts.size > 0) {
-            ShortcutManager.createComposeDynamicShortcut(this)
-        }
+        ShortcutManager.createComposeDynamicShortcut(this)
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())

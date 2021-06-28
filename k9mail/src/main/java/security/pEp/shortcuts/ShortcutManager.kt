@@ -5,13 +5,15 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageCompose
 import com.fsck.k9.activity.compose.MessageActions
 
 object ShortcutManager {
     fun createComposeDynamicShortcut(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 &&
+            Preferences.getPreferences(context).availableAccounts.isNotEmpty()) {
             val composeIntent = MessageActions.getDefaultComposeShortcutIntent(context)
             val composeShortcut = ShortcutInfo.Builder(context, MessageCompose.SHORTCUT_COMPOSE)
                 .setShortLabel(context.getString(R.string.compose_action))
