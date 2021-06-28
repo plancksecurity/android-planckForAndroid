@@ -119,6 +119,22 @@ class NewMailNotifications {
         cancelNotification(notificationId);
     }
 
+    public void clearNewMailNotifications(Account account, String folderName) {
+        synchronized (lock) {
+            NotificationData notificationData = getNotificationData(account);
+            if (notificationData == null) {
+                return;
+            }
+
+            List<MessageReference> allReferences = notificationData.getAllMessageReferences();
+            for(MessageReference reference : allReferences) {
+                if(reference.getFolderName().equals(folderName)) {
+                    removeNewMailNotification(account, reference);
+                }
+            }
+        }
+    }
+
     private NotificationData getOrCreateNotificationData(Account account, int unreadMessageCount) {
         NotificationData notificationData = getNotificationData(account);
         if (notificationData != null) {

@@ -117,6 +117,10 @@ public class NotificationController {
         newMailNotifications.clearNewMailNotifications(account);
     }
 
+    public void clearNewMailNotifications(Account account, String folderName) {
+        newMailNotifications.clearNewMailNotifications(account, folderName);
+    }
+
     void configureNotification(NotificationCompat.Builder builder, String ringtone, long[] vibrationPattern,
             Integer ledColor, int ledSpeed, boolean ringAndVibrate) {
 
