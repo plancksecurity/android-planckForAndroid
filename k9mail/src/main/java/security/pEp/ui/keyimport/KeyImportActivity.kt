@@ -93,18 +93,18 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         hideLoading()
         fingerprintTextView.visibility = View.GONE
         addressText.visibility = View.GONE
-        actionDescriptionToConfirm.visibility = View.GONE
+        textView.visibility = View.GONE
 
         if (success) {
             findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_success_header)
-            textView.text = getString(R.string.key_import_success)
+            actionDescriptionToConfirm.text = getString(R.string.key_import_success)
             cancelButton.visibility = View.INVISIBLE
             acceptButton.text = getString(R.string.okay_action)
             acceptButton.setOnClickListener { finish() }
         } else {
             acceptButton.visibility = View.GONE
             findViewById<TextView>(R.id.title).text = getString(R.string.settings_import_failed_header)
-            textView.text = getString(R.string.key_import_failure, filename)
+            actionDescriptionToConfirm.text = getString(R.string.key_import_failure, filename)
             cancelButton.text = getString(R.string.okay_action)
             cancelButton.setOnClickListener { finish() }
         }
