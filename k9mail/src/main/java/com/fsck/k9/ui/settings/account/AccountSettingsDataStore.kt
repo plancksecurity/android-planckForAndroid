@@ -14,7 +14,8 @@ class AccountSettingsDataStore(
         private val context: Context,
         private val preferences: Preferences,
         private val executorService: ExecutorService,
-        private val account: Account
+        private val account: Account,
+        private val defaultAccountChangedListener: DefaultAccountChangedListener
 ) : PreferenceDataStore() {
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
@@ -47,7 +48,10 @@ class AccountSettingsDataStore(
         when (key) {
             "account_default" -> {
                 executorService.execute {
-                    preferences.defaultAccount = account
+                    if(preferences.defaultAccount.uuid != account.uuid) {
+                        preferences.defaultAccount = account
+                        defaultAccountChangedListener.onDefaultAccountChanged()
+                    }
                 }
                 return
             }
@@ -229,5 +233,9 @@ class AccountSettingsDataStore(
         account.setPEpSyncAccount(value)
         PEpUtils.updateSyncFlag(context, account,
                 (context.applicationContext as K9).pEpSyncProvider)
+    }
+
+    interface DefaultAccountChangedListener {
+        fun onDefaultAccountChanged()
     }
 }

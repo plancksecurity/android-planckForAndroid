@@ -8,9 +8,12 @@ import java.util.concurrent.ExecutorService
 class AccountSettingsDataStoreFactory(
         private val context: Context,
         private val preferences: Preferences,
-        private val executorService: ExecutorService
+        private val executorService: ExecutorService,
 ) {
-    fun create(account: Account): AccountSettingsDataStore {
-        return AccountSettingsDataStore(context, preferences, executorService, account)
+    fun create(
+        account: Account,
+        defaultAccountChangedListener: AccountSettingsDataStore.DefaultAccountChangedListener
+    ): AccountSettingsDataStore {
+        return AccountSettingsDataStore(context, preferences, executorService, account, defaultAccountChangedListener)
     }
 }

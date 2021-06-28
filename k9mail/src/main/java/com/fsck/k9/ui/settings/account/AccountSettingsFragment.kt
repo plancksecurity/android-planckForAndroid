@@ -34,6 +34,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
+import security.pEp.shortcuts.ShortcutManager
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 
@@ -54,7 +55,13 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         account = getAccount()
-        val dataStore = dataStoreFactory.create(account)
+        val dataStore = dataStoreFactory.create(
+            account,
+            object: AccountSettingsDataStore.DefaultAccountChangedListener {
+                override fun onDefaultAccountChanged() {
+                    ShortcutManager.createComposeDynamicShortcut(requireContext())
+                }
+            })
 
         preferenceManager.preferenceDataStore = dataStore
         this.rootkey = rootKey
