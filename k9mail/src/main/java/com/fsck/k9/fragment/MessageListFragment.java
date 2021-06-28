@@ -1613,6 +1613,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         return AdapterView.INVALID_POSITION;
     }
 
+    public void refreshAccount() {
+        decodeArguments();
+        adapter.notifyDataSetChanged();
+    }
+
     class MessageListActivityListener extends ActivityListener {
         @Override
         public void remoteSearchFailed(String folder, final String err) {

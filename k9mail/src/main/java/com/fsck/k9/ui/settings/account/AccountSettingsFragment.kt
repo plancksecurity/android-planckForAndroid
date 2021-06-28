@@ -3,13 +3,13 @@ package com.fsck.k9.ui.settings.account
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.preference.ListPreference
 import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.*
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -19,6 +19,7 @@ import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -41,6 +42,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val storageManager: StorageManager by inject()
     private val openPgpApiManager: OpenPgpApiManager by inject(parameters = { mapOf("lifecycleOwner" to this) })
 
+    private var rootkey:String? = null
+    private var mdmDialog: AlertDialog? = null
+    private lateinit var account:Account
     private val accountUuid: String by lazy {
         checkNotNull(arguments?.getString(ARG_ACCOUNT_UUID)) { "$ARG_ACCOUNT_UUID == null" }
     }
@@ -48,13 +52,18 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
-        val account = getAccount()
+        account = getAccount()
         val dataStore = dataStoreFactory.create(account)
 
         preferenceManager.preferenceDataStore = dataStore
+        this.rootkey = rootKey
         setPreferencesFromResource(R.xml.account_settings, rootKey)
         title = preferenceScreen.title
 
+        initializePreferences()
+    }
+
+    private fun initializePreferences(){
         initializeIncomingServer()
         initializeComposition()
         initializeManageIdentities()
@@ -71,6 +80,12 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         initializeAccountpEpSync(account)
         initializePgpImportKey()
         initializeNotifications()
+        initializePepPrivacyProtection()
+    }
+
+    fun refreshPreferences() {
+        setPreferencesFromResource(R.xml.account_settings, rootkey)
+        initializePreferences()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -184,6 +199,30 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 onClick(::onKeyImportClicked)
             }
         }
+    }
+
+    private fun initializePepPrivacyProtection() {
+        if (account.getpEpPrivacyProtected().locked) {
+                (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+                    showMDMDialog(this.title)
+                }
+            }
+        }
+    }
+
+    private fun showMDMDialog(title: CharSequence): Boolean {
+        if (mdmDialog == null) {
+            mdmDialog = AlertDialog.Builder(view?.context,
+                    ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
+                    .setTitle(title)
+                    .setMessage(R.string.mdm_controlled_dialog_explanation)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.ok) { _, _ -> }
+                    .create()
+        }
+        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+        return false
     }
 
     private fun onKeyImportClicked() {
@@ -360,6 +399,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_LOCAL_STORAGE_PROVIDER = "local_storage_provider"
         private const val PREFERENCE_FOLDERS = "folders"
         private const val PREFERENCE_AUTO_EXPAND_FOLDER = "account_setup_auto_expand_folder"
+        private const val PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
         private const val PREFERENCE_ARCHIVE_FOLDER = "archive_folder"
         private const val PREFERENCE_DRAFTS_FOLDER = "drafts_folder"
         private const val PREFERENCE_SENT_FOLDER = "sent_folder"

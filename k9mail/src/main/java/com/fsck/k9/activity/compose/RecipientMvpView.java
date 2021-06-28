@@ -500,6 +500,8 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             boolean reallyWithToast = true;
             if (withToast.length > 0) reallyWithToast = withToast[0];
             activity.setToolbarRating(pEpRating);
+        } else {
+            activity.setToolbarRating(Rating.pEpRatingUnencrypted);
         }
     }
 
@@ -534,35 +536,26 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.messageRatingLoaded();
     }
 
-    public void notifyAddressesChanged(List<Address> toAdresses, List<Address> ccAdresses, List<Address> bccAdresses) {
-        ccView.notifyDatasetChanged();
-        bccView.notifyDatasetChanged();
+    public void notifyAddressesChanged(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bbcAddresses) {
 
-        for (Address toAdress : toAdresses) {
-            toView.removeObject(new Recipient(toAdress));
+        for (Address toAddress : toAddresses) {
+            Recipient recipient = new Recipient(toAddress);
+            toView.removeObject(recipient);
+            toView.addRecipients(recipient);
         }
 
-        for (Address ccAdress : ccAdresses) {
-            ccView.removeObject(new Recipient(ccAdress));
+        for (Address ccAddress : ccAddresses) {
+            Recipient recipient = new Recipient(ccAddress);
+            ccView.removeObject(recipient);
+            ccView.addRecipients(recipient);
         }
 
-        for (Address bccAdress : bccAdresses) {
-            bccView.removeObject(new Recipient(bccAdress));
-        }
-        toView.notifyDatasetChanged();
-
-        for (Address toAdress : toAdresses) {
-            addRecipients(RecipientType.TO, new Recipient(toAdress));
-        }
-        toView.notifyDatasetChanged();
-
-        for (Address ccAdress : ccAdresses) {
-            addRecipients(RecipientType.CC, new Recipient(ccAdress));
+        for (Address bccAddress : bbcAddresses) {
+            Recipient recipient = new Recipient(bccAddress);
+            bccView.removeObject(recipient);
+            bccView.addRecipients(recipient);
         }
 
-        for (Address bccAdress : bccAdresses) {
-            addRecipients(RecipientType.BCC, new Recipient(bccAdress));
-        }
     }
 
     public enum CryptoStatusDisplayType {

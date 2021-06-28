@@ -3,6 +3,7 @@ package com.fsck.k9.preferences;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,9 @@ import com.fsck.k9.preferences.Settings.SettingsDescription;
 import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
+
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -225,14 +229,44 @@ public class AccountSettings {
                 new V(42, new BooleanSetting(false))
             ));
         s.put("pEpPrivacyProtected", Settings.versions(
-                new V(45, new BooleanSetting(true))
-            ));
+                new V(45, new BooleanSetting(true)),
+                new V(52, new StringSetting(
+                        ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(true, false)))
+                )
+        ));
 
         SETTINGS = Collections.unmodifiableMap(s);
 
         // noinspection MismatchedQueryAndUpdateOfCollection, this map intentionally left blank
         Map<Integer, SettingsUpgrader> u = new HashMap<>();
+        u.put(52, new SettingsUpgraderV52());
+
         UPGRADERS = Collections.unmodifiableMap(u);
+    }
+
+
+    /**
+     * Upgrades the settings from version 51 to 52.
+     *
+     * <p>
+     * Convert boolean from <em>pEpPrivacyProtected</em> to
+     * String
+     * </p>
+     */
+    public static class SettingsUpgraderV52 implements SettingsUpgrader {
+
+        @Override
+        public Set<String> upgrade(Map<String, Object> settings) {
+            String settingId = "pEpPrivacyProtected";
+            Boolean oldValue = (Boolean) settings.get(settingId);
+
+            if (oldValue != null) {
+                String newValue = ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(oldValue, false));
+                settings.put(settingId, newValue);
+            }
+            return null;
+        }
+
     }
 
     static Map<String, Object> validate(int version, Map<String, String> importedSettings, boolean useDefaultValues) {
