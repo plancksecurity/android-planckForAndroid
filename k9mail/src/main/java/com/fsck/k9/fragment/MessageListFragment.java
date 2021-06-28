@@ -2875,7 +2875,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     public boolean isRemoteSearchAllowed() {
-        if (!search.isManualSearch() || remoteSearchPerformed || !singleFolderMode) {
+        if (!search.isManualSearch() || remoteSearchPerformed || !singleFolderMode
+                || isOutbox()) {
             return false;
         }
 
