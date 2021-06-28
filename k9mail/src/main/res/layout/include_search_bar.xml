@@ -17,7 +17,7 @@
         android:paddingEnd="8dp"
         android:background="@android:color/transparent"
         android:hint="@string/search_action"
-        android:imeOptions="actionSearch"
+        android:imeOptions="actionSearch|flagNoExtractUi"
         android:inputType="textCapSentences|textNoSuggestions"
         android:lines="1"
         android:layout_toStartOf="@id/search_clear"

@@ -279,7 +279,7 @@
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/to_wrapper"
             android:dropDownWidth="wrap_content"
-            android:imeOptions="actionNext"
+            android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="textEmailAddress|textMultiLine"
             android:paddingStart="0dp"
             android:paddingEnd="4dp"
@@ -346,7 +346,7 @@
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/cc_wrapper"
             android:dropDownWidth="wrap_content"
-            android:imeOptions="actionNext"
+            android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="textEmailAddress|textMultiLine"
             android:completionThreshold="1"/>
 
@@ -391,7 +391,7 @@
             android:background="@android:color/transparent"
             android:dropDownAnchor="@id/bcc_wrapper"
             android:dropDownWidth="wrap_content"
-            android:imeOptions="actionNext"
+            android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="textEmailAddress|textMultiLine"
             android:completionThreshold="1"/>
 
