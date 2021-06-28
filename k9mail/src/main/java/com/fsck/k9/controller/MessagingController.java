@@ -41,6 +41,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.core.content.FileProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -3873,13 +3874,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
         try {
             message.writeTo(new FileOutputStream(file));
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", file);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
             intent.setType("*/*");
             context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
         } catch (IOException | MessagingException e) {
             Timber.e(e);
         }
-
 
     }
 
