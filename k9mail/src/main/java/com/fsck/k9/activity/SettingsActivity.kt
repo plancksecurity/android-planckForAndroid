@@ -371,7 +371,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         accounts.addAll(preferences.accounts)
 
         if (accounts.size < 1) {
-            ShortcutManager.removeComposeDynamicShortcut(this)
             AccountSetupBasics.actionNewAccount(this)
             finishAffinity()
             return
@@ -604,16 +603,23 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             if (selectedContextAccount is Account) {
                 val realAccount = selectedContextAccount as Account?
+                val deletingDefaultAccount = realAccount!!.uuid == preferences.defaultAccount?.uuid
+                if(deletingDefaultAccount) {
+                    ShortcutManager.removeComposeDynamicShortcut(this@SettingsActivity)
+                }
                 try {
-                    realAccount!!.localStore.delete()
+                    realAccount.localStore.delete()
                 } catch (e: Exception) {
                     // Ignore, this may lead to localStores on sd-cards that
                     // are currently not inserted to be left
                 }
 
                 MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
+                    .deleteAccount(realAccount)
                 preferences.deleteAccount(realAccount)
+                if(deletingDefaultAccount) {
+                    ShortcutManager.createComposeDynamicShortcut(this@SettingsActivity)
+                }
                 K9.setServicesEnabled(this@SettingsActivity)
 
                 anyAccountWasDeleted = true
