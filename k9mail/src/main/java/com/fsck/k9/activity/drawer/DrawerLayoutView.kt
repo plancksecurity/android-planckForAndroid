@@ -22,7 +22,6 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.listeners.folderClickListener
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
@@ -31,6 +30,10 @@ import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
+import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
+import security.pEp.foldable.folders.displayers.LevelItemActionListener
+import security.pEp.foldable.folders.model.LevelListItem
+import security.pEp.foldable.folders.util.LevelListBuilder
 import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
@@ -64,8 +67,7 @@ class DrawerLayoutView @Inject constructor(
     private lateinit var navFoldersAccountsButton: NavFolderAccountButton
     private lateinit var navigationView: NavigationView
     private lateinit var menuHeader: View
-
-    private lateinit var folderAdapter: RVRendererAdapter<FolderModel>
+    private lateinit var folderAdapter: BaseLevelListRVRendererAdapter<FolderModel>
     private lateinit var accountAdapter: RVRendererAdapter<Account>
 
     private lateinit var toggle: ActionBarDrawerToggle
@@ -341,14 +343,21 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    override fun setFolderAdapter(collection: ListAdapteeCollection<FolderModel>) {
+    override fun setFolderAdapter(levelListBuilder: LevelListBuilder<FolderModel>) {
         val folderRenderer = FolderRenderer()
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
-        folderRenderer.setFolderClickListener(folderClickListener(this::folderClicked))
 
         navigationFolders.layoutManager = getDrawerLayoutManager()
-        folderAdapter = RVRendererAdapter(rendererFolderBuilder, collection)
-        navigationFolders.adapter = folderAdapter
+        folderAdapter = BaseLevelListRVRendererAdapter(
+            levelItemActionListener, levelListBuilder, CHILD_FOLDER_INDENT, rendererFolderBuilder
+        )
+        navigationFolders.adapter = folderAdapter.adapter
+    }
+
+    private val levelItemActionListener = object: LevelItemActionListener<FolderModel> {
+        override fun onItemClicked(item: LevelListItem<FolderModel>) {
+            folderClicked(item.item.localFolder)
+        }
     }
 
     private fun folderClicked(folder: LocalFolder) {
@@ -441,5 +450,9 @@ class DrawerLayoutView @Inject constructor(
 
     override fun removeActivityListener() {
         messagingController.removeListener(activityListener)
+    }
+
+    companion object {
+        private const val CHILD_FOLDER_INDENT = 16F
     }
 }
