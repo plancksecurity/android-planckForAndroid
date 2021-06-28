@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.loader.app.LoaderManager
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -19,6 +20,9 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
+import com.fsck.k9.pEp.infrastructure.components.DaggerPEpComponent
+import com.fsck.k9.pEp.infrastructure.modules.ActivityModule
+import com.fsck.k9.pEp.infrastructure.modules.PEpModule
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
@@ -37,6 +41,7 @@ import org.openintents.openpgp.util.OpenPgpProviderUtil
 import security.pEp.shortcuts.ShortcutManager
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
+import javax.inject.Inject
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
     private val viewModel: AccountSettingsViewModel by sharedViewModel()
@@ -52,14 +57,31 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
     private var title: CharSequence? = null
 
+    @Inject
+    lateinit var shortcutManager: ShortcutManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initializeInjector()
+    }
+
+    private fun initializeInjector() {
+        val pEpComponent = DaggerPEpComponent.builder()
+            .applicationComponent((requireContext().applicationContext as K9).component)
+            .pEpModule(PEpModule(activity, LoaderManager.getInstance(this), fragmentManager))
+            .activityModule(ActivityModule(activity))
+            .build()
+        pEpComponent.inject(this)
+    }
+
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         account = getAccount()
         val dataStore = dataStoreFactory.create(
             account,
-            object: AccountSettingsDataStore.DefaultAccountChangedListener {
+            object : AccountSettingsDataStore.DefaultAccountChangedListener {
                 override fun onDefaultAccountChanged() {
-                    ShortcutManager.createComposeDynamicShortcut(requireContext())
+                    shortcutManager.createComposeDynamicShortcut()
                 }
             })
 

@@ -107,6 +107,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     lateinit var resourcesProvider: ResourcesProvider
     @Inject
     lateinit var preferences: Preferences
+    @Inject
+    lateinit var shortcutManager: ShortcutManager
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -208,7 +210,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         val accounts = preferences.accounts
-        ShortcutManager.createComposeDynamicShortcut(this)
+        shortcutManager.createComposeDynamicShortcut()
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
         val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -605,7 +607,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 val realAccount = selectedContextAccount as Account?
                 val deletingDefaultAccount = realAccount!!.uuid == preferences.defaultAccount?.uuid
                 if(deletingDefaultAccount) {
-                    ShortcutManager.removeComposeDynamicShortcut(this@SettingsActivity)
+                    shortcutManager.removeComposeDynamicShortcut()
                 }
                 try {
                     realAccount.localStore.delete()
@@ -618,7 +620,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     .deleteAccount(realAccount)
                 preferences.deleteAccount(realAccount)
                 if(deletingDefaultAccount) {
-                    ShortcutManager.createComposeDynamicShortcut(this@SettingsActivity)
+                    shortcutManager.createComposeDynamicShortcut()
                 }
                 K9.setServicesEnabled(this@SettingsActivity)
 
