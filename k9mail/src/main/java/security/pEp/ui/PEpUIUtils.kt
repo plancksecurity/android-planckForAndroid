@@ -1,6 +1,8 @@
 package security.pEp.ui
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -200,6 +202,11 @@ object PEpUIUtils {
     @JvmStatic
     fun getColorAsString(context: Context, @ColorRes color: Int): String =
             "#${Integer.toHexString(ContextCompat.getColor(context, color) and 0x00ffffff)}"
+
+    fun Context.isValidGlideContext(): Boolean {
+        val baseContext = if(this is ContextWrapper) baseContext else this
+        return baseContext !is Activity || (!baseContext.isDestroyed && !baseContext.isFinishing)
+    }
 
     private fun <E : Any> MutableList<E>.getSpecialFolders(account: Account): List<E?> {
         val inboxFolderName = account.inboxFolderName
