@@ -270,7 +270,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
-            messageLoaderHelper.onDestroyChangingConfigurations();
+            if (messageLoaderHelper != null) {
+                messageLoaderHelper.onDestroyChangingConfigurations();
+            }
             return;
         }
         if (messageLoaderHelper != null) {
