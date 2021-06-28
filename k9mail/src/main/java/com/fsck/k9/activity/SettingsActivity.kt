@@ -108,6 +108,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     lateinit var permissionChecker: PermissionChecker
     @Inject
     lateinit var resourcesProvider: ResourcesProvider
+    @Inject
+    lateinit var preferences: Preferences
 
     private val storageListener = object : StorageManager.StorageListener {
 
@@ -208,7 +210,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             createSpecialAccounts()
         }
 
-        val accounts = Preferences.getPreferences(this).accounts
+        val accounts = preferences.accounts
         if(accounts.size > 0) {
             createComposeDynamicShortcut()
         }
@@ -245,7 +247,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             finish()
             return
         } else if (startup && accounts.size > 0
-                && onOpenAccount(Preferences.getPreferences(this).defaultAccount)) {
+                && onOpenAccount(preferences.defaultAccount)) {
             finish()
             return
         }
@@ -263,7 +265,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             val accountUuid = savedInstanceState.getString("selectedContextAccount")
-            selectedContextAccount = Preferences.getPreferences(this).getAccount(accountUuid)
+            selectedContextAccount = preferences.getAccount(accountUuid)
         }
 
         restoreAccountStats(savedInstanceState)
@@ -371,7 +373,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     public override fun refresh() {
         accounts.clear()
-        accounts.addAll(Preferences.getPreferences(this).accounts)
+        accounts.addAll(preferences.accounts)
 
         if (accounts.size < 1) {
             removeComposeDynamicShortcut()
@@ -616,8 +618,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
                 MessagingController.getInstance(application)
                         .deleteAccount(realAccount)
-                Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
+                preferences.deleteAccount(realAccount)
                 K9.setServicesEnabled(this@SettingsActivity)
 
                 anyAccountWasDeleted = true
@@ -698,7 +699,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private suspend fun moveAccount(account: Account, up: Boolean) = withContext(Dispatchers.IO) {
         launch(Dispatchers.IO) {
-            account.move(Preferences.getPreferences(applicationContext), up)
+            account.move(preferences, up)
         }
         delay(600)
     }
@@ -1149,7 +1150,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 finishAffinity()
                 openSearchAccount(unifiedInboxAccount)
             } else {
-                val defaultAccount = Preferences.getPreferences(this@SettingsActivity).defaultAccount
+                val defaultAccount = preferences.defaultAccount
                 if(accountWasOpenable(defaultAccount)) {
                     finishAffinity()
                     openAccount(defaultAccount)
