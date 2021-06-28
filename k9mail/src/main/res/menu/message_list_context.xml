@@ -29,7 +29,7 @@
         android:id="@+id/move"
         android:title="@string/move_action"
         app:showAsAction="ifRoom"
-        android:icon="?attr/iconActionMove"
+        android:icon="@drawable/ic_folder_toolbar"
     />
     <item
         android:id="@+id/copy"
@@ -40,7 +40,7 @@
         android:id="@+id/flag"
         android:title="@string/flag_action"
         app:showAsAction="ifRoom"
-        android:icon="?attr/iconActionFlag"
+        android:icon="@drawable/ic_flag_action_mode"
     />
     <item
         android:id="@+id/unflag"

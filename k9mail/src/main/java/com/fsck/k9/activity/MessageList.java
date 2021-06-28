@@ -20,14 +20,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -74,7 +72,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import org.jetbrains.annotations.NotNull;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.intro.WelcomeMessageKt;
@@ -342,7 +339,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayoutView.initDrawerView(drawerLayout, this);
+        drawerLayoutView.initDrawerView(MessageList.this, getToolbar(), drawerLayout, this);
         restoreAccountUuid(savedInstanceState);
 
         if (!decodeExtras(getIntent())) {
@@ -358,9 +355,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         displayViews();
         channelUtils.updateChannels();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutView.initializeDrawerToggle(toggle);
+
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
@@ -491,9 +486,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         channelUtils.updateChannels();
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, getToolbar(),
-                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayoutView.initializeDrawerToggle(toggle);
+        drawerLayoutView.initDrawerView(this, getToolbar(), drawerLayout, this);
     }
 
     /**
@@ -796,7 +789,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
 
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
+        setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
+    }
+
+    private void setDefaultFolderNameIfNeeded() {
+        if(mAccount != null && mFolderName == null) {
+            mFolderName = mAccount.getAutoExpandFolderName();
+        }
     }
 
     @Override
@@ -1241,11 +1241,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void checkFlagMenuItemChecked(boolean check) {
         if(check) {
-            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueCheckedIcon));
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagCheckedIcon));
             flaggedCheckbox.setTitle(R.string.unflag_action);
         }
         else {
-            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagOpaqueUncheckedIcon));
+            flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagUncheckedIcon));
             flaggedCheckbox.setTitle(R.string.flag_action);
         }
     }
@@ -1300,6 +1300,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.flag).setVisible(false);
         } else {
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageViewToolbarIconsColor);
+            checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             // hide prev/next buttons in split mode
             if (mDisplayMode != DisplayMode.MESSAGE_VIEW) {
@@ -1320,8 +1321,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 next.setEnabled(canDoNext);
                 next.getIcon().setAlpha(canDoNext ? 255 : 127);
             }
-
-            checkFlagMenuItemChecked(mMessageViewFragment.isMessageFlagged());
 
             // Set title of menu item to toggle the read state of the currently displayed message
             if (mMessageViewFragment.isMessageRead()) {
@@ -1468,7 +1467,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void setUnreadCount(int unread) {
         setActionBarUnread(unread);
-        drawerLayoutView.populateDrawerGroup();
     }
 
     @Override
@@ -1607,7 +1605,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         ft.replace(R.id.message_list_container, fragment);
 
         if(popPrevious) {
-            fm.popBackStack();
+            fm.popBackStackImmediate();
         }
 
         if (addToBackStack)

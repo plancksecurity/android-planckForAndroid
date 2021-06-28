@@ -21,6 +21,7 @@ import com.fsck.k9.activity.compose.Recipient
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
 import security.pEp.permissions.PermissionChecker
+import security.pEp.ui.PEpUIUtils.isValidGlideContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named
@@ -39,7 +40,8 @@ class ContactPictureLoader @Inject constructor(
     }
 
     fun setContactPicture(imageView: ImageView, address: Address) {
-        Glide.with(imageView.context)
+        if(imageView.context.isValidGlideContext()) {
+            Glide.with(imageView.context)
                 .using(AddressModelLoader(backgroundCacheId), Address::class.java)
                 .from(Address::class.java)
                 .`as`(Bitmap::class.java)
@@ -50,6 +52,7 @@ class ContactPictureLoader @Inject constructor(
                 .dontAnimate()
                 .transform(CircleTransform(imageView.context))
                 .into(imageView)
+        }
     }
 
     private inner class ContactImageBitmapDecoder(

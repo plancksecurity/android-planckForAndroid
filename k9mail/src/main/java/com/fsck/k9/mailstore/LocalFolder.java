@@ -37,6 +37,8 @@ import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.AttachmentCounter;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
+import com.fsck.k9.message.extractors.BasicPartInfo;
+import com.fsck.k9.message.extractors.BasicPartInfoExtractor;
 import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
 import com.fsck.k9.message.extractors.PreviewResult;
@@ -94,6 +96,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
     // know whether or not an unread message added to the local folder is actually "new" or not.
     private Integer mLastUid = null;
     private MoreMessages moreMessages = MoreMessages.UNKNOWN;
+    private BasicPartInfoExtractor partInfoExtractor = new BasicPartInfoExtractor();
 
     public LocalFolder(LocalStore localStore, String name) {
         super();
@@ -1525,10 +1528,10 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
     }
 
     private void missingPartToContentValues(ContentValues cv, Part part) throws MessagingException {
-        AttachmentViewInfo attachment = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
-        cv.put("display_name", attachment.displayName);
+        BasicPartInfo partInfo = partInfoExtractor.extractPartInfo(part);
+        cv.put("display_name", partInfo.getDisplayName());
         cv.put("data_location", DataLocation.MISSING);
-        cv.put("decoded_body_size", attachment.size);
+        cv.put("decoded_body_size", partInfo.getSize());
 
         if (MimeUtility.isMultipart(part.getMimeType())) {
             cv.put("boundary", BoundaryGenerator.getInstance().generateBoundary());
@@ -1541,8 +1544,8 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
 
     private File leafPartToContentValues(ContentValues cv, Part part, Body body)
             throws MessagingException, IOException {
-        AttachmentViewInfo attachment = attachmentInfoExtractor.extractAttachmentInfoForDatabase(part);
-        cv.put("display_name", attachment.displayName);
+        String displayName = partInfoExtractor.extractDisplayName(part);
+        cv.put("display_name", displayName);
 
         String encoding = getTransferEncoding(part);
 

@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
@@ -52,7 +52,7 @@ public class ReconstructMessageTest {
                 "------Boundary--\r\n" +
                 "Hi, I'm the epilogue";
 
-        BinaryTempFileBody.setTempDirectory(InstrumentationRegistry.getTargetContext().getCacheDir());
+        BinaryTempFileBody.setTempDirectory(ApplicationProvider.getApplicationContext().getCacheDir());
 
         InputStream messageInputStream = new ByteArrayInputStream(messageSource.getBytes());
         MimeMessage message;

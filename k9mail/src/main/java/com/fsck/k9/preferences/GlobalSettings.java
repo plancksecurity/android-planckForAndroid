@@ -467,12 +467,17 @@ public class GlobalSettings {
 
         @Override
         public Set<String> upgrade(Map<String, Object> settings) {
-            Theme theme = (Theme) settings.get("theme");
-            if (theme == Theme.LIGHT) {
-                settings.put("theme", AppTheme.FOLLOW_SYSTEM);
-            }
-
+            Theme oldTheme = (Theme) settings.get("theme");
+            settings.put("theme", convertTheme(oldTheme));
             return null;
+        }
+
+        private AppTheme convertTheme(Theme oldTheme) {
+            switch (oldTheme) {
+                case DARK: return AppTheme.DARK;
+                case LIGHT: return AppTheme.LIGHT;
+                default: return AppTheme.FOLLOW_SYSTEM;
+            }
         }
     }
 

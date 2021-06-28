@@ -39,12 +39,21 @@ class PassphraseStorage(context: Context) {
 
 
     fun putPassphrase(passphrase: String?) {
-        val editor: SharedPreferences.Editor = preferences.edit()
-        editor.putString(NEW_KEYS_PASSPHRASE_KEY, passphrase)
-        editor.apply()
+        try {
+            val editor: SharedPreferences.Editor = preferences.edit()
+            editor.putString(NEW_KEYS_PASSPHRASE_KEY, passphrase)
+            editor.apply()
+        } catch (e: Exception) {
+            Timber.e(e, "Could not put passphrase into PassphraseStorage")
+        }
     }
 
-    fun getPassphrase() = preferences.getString(NEW_KEYS_PASSPHRASE_KEY, "")
+    fun getPassphrase() = try {
+        preferences.getString(NEW_KEYS_PASSPHRASE_KEY, "")
+    } catch (e: Exception) {
+        Timber.e(e, "Could not get passphrase from PassphraseStorage")
+        ""
+    }
 
     companion object {
         private const val SECRET_SHARED_PREFS_FILENAME = "secret_preferences"

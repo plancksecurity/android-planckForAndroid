@@ -14,7 +14,7 @@
     <!-- MessageView -->
     <item
         android:id="@+id/flag"
-        android:icon="?attr/flagOpaqueUncheckedIcon"
+        android:icon="?attr/flagUncheckedIcon"
         android:title="@string/flag_action"
         android:checkable="true"
         app:showAsAction="always" />
@@ -38,7 +38,7 @@
     <!-- MessageList -->
     <item
         android:id="@+id/search"
-        android:icon="@drawable/ic_magnify_dark"
+        android:icon="@drawable/ic_magnify_toolbar"
         app:showAsAction="always"
         android:title="@string/search_action"/>
 
@@ -81,7 +81,7 @@
     <!-- MessageView -->
     <item
         android:id="@+id/move"
-        android:icon="?attr/iconActionMove"
+        android:icon="@drawable/ic_folder_toolbar"
         app:showAsAction="never"
         android:title="@string/move_action"/>
     <!-- MessageView -->

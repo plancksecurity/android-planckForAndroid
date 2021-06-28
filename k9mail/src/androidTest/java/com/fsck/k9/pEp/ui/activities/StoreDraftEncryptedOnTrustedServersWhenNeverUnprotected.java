@@ -1,17 +1,15 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.res.Resources;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.runner.AndroidJUnit4;
-import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.BySelector;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject2;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
@@ -23,160 +21,100 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import foundation.pEp.jniadapter.Rating;
-import timber.log.Timber;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
+@LargeTest
 @RunWith(AndroidJUnit4.class)
 public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private UiDevice device;
     private TestUtils testUtils;
     private Resources resources;
-    private String messageTo = "username@email.com";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
-    private Instrumentation instrumentation;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
     @Rule
     public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startActivity() {
-        instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
-        resources = InstrumentationRegistry.getTargetContext().getResources();
-        testUtils = new TestUtils(device, instrumentation);
-        testUtils.increaseTimeoutWait();
-        testUtils.startActivity();
+        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        resources = ApplicationProvider.getApplicationContext().getResources();
+        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
+        testUtils.setupAccountIfNeeded();
     }
 
     @After
-    public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+    public void tearDown() {
+        splashActivityTestRule.finishActivity();
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
+    }
+
+    private void assertTextInPopupMenu(boolean isAlwaysSecureAppears) {
+        testUtils.waitUntilViewDisplayed(R.id.actionbar_message_view);
+        onView(withId(R.id.actionbar_message_view)).perform(longClick());
+        device.waitForIdle();
+        onViewOnPopupWindow(R.string.pep_force_unprotected).check(matches(isDisplayed()));
+        if(isAlwaysSecureAppears) {
+            onViewOnPopupWindow(R.string.is_always_secure).check(matches(isDisplayed()));
+        }
+        else {
+            onViewOnPopupWindow(R.string.is_not_always_secure).check(matches(isDisplayed()));
+        }
+
+        testUtils.pressBack();
+    }
+
+    private ViewInteraction onViewOnPopupWindow(int stringId) {
+        return onView(withText(stringId)).inRoot(testUtils.isPopupWindow());
     }
 
     @Test
-    public void StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected() {
-        //testUtils.createAccount();
-        storeMessagesSecurely();
-        testUtils.goBackToMessageListAndPressComposeMessageButton();
+    public void StoreDraftEncryptedOnTrustedServerWhenNeverUnprotected() {
+        deactivateStoreMessagesSecurelyAndReturn();
+        testUtils.composeMessageButton();
+        String messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
+        testUtils.fillMessage(new TestUtils.BasicMessage(messageFrom, MESSAGE_SUBJECT, MESSAGE_BODY, messageFrom), false);
         device.waitForIdle();
-        testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        device.waitForIdle();
-        testUtils.checkStatus(Rating.pEpRatingUnencrypted);
-        testUtils.pressBack();
-        //testUtils.selectoFromMenu(R.string.is_always_secure);
-        goBackAndSaveAsDraft();
+        testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
+
+        assertTextInPopupMenu(true);
+
+        testUtils.selectFromStatusPopupMenu(R.string.is_always_secure);
+        assertTextInPopupMenu(false);
+
+        testUtils.goBackFromMessageCompose(true);
         clickFirstMessageFromDraft();
-        openOptionsMenu();
-        assertsExistsOnScreen(R.string.is_not_always_secure, R.string.is_not_always_secure);
-        testUtils.goBackAndRemoveAccount(true);
+
+        assertTextInPopupMenu(false);
     }
 
     private void clickFirstMessageFromDraft() {
-        selectoFromMenu(R.string.account_settings_folders);
+        String folderName = resources.getString(R.string.special_mailbox_name_drafts);
+        testUtils.goToFolder(folderName);
+        testUtils.clickFirstMessage();
+    }
+
+    private void deactivateStoreMessagesSecurelyAndReturn() {
+        testUtils.selectFromMenu(R.string.action_settings);
+        onView(withRecyclerView(R.id.accounts_list).atPosition(0)).perform(click());
         device.waitForIdle();
-        testUtils.selectFromScreen(R.string.special_mailbox_name_drafts);
-        clickFirstMessage();
-    }
-
-    private void storeMessagesSecurely() {
-        testUtils.openOptionsMenu();
-        //testUtils.selectFromScreen(R.string.preferences_action);
-        testUtils.selectFromScreen(R.string.account_settings_action);
-        testUtils.selectFromScreen(R.string.app_name);
-        selectFromScreen(R.string.pep_mistrust_server_and_store_mails_encrypted);
-    }
-
-    private void openOptionsMenu() {
-        while (exists(onView(withId(R.id.toolbar)))){
-            testUtils.openOptionsMenu();
-            device.waitForIdle();
+        testUtils.selectFromScreen(R.string.privacy_preferences);
+        if(exists(onView(withText(R.string.account_settings_save_encrypted_summary_enabled)))) {
+            testUtils.selectFromScreen(R.string.account_settings_save_encrypted_summary_enabled);
         }
-    }
-
-    private void clickFirstMessage() {
-        Activity currentActivity = testUtils.getCurrentActivity();
-        while (currentActivity == testUtils.getCurrentActivity()) {
-            testUtils.clickFirstMessage();
-            device.waitForIdle();
-        }
-    }
-
-    void selectFromScreen(int resource) {
-        boolean textViewFound = false;
-        BySelector selector = By.clazz("android.widget.TextView");
-        while (!textViewFound) {
-            for (UiObject2 object : device.findObjects(selector)) {
-                try {
-                    if (object.getText().contains(resources.getString(resource))) {
-                        device.waitForIdle();
-                        UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
-                        if (checkbox.isChecked()){
-                            device.waitForIdle();
-                            checkbox.longClick();
-                            device.waitForIdle();
-                        }
-                        if (!checkbox.isChecked()) {
-                            device.waitForIdle();
-                            textViewFound = true;
-                            break;
-                        }
-                    }
-                } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
-                }
-            }
-        }
-    }
-
-    void assertsExistsOnScreen(int resourceOnScreen, int comparedWith) {
-        BySelector selector = By.clazz("android.widget.TextView");
-        String textOnScreen = "Text not found on the Screen";
-            for (UiObject2 object : device.findObjects(selector)) {
-                try {
-                    if (object.getText().contains(resources.getString(resourceOnScreen))) {
-                        device.waitForIdle();
-                        textOnScreen = object.getText();
-                        device.waitForIdle();
-                        break;
-                    }
-                } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
-                }
-            }
-            device.pressBack();
-        onView(withId(R.id.toolbar)).check(matches(valuesAreEqual(textOnScreen, resources.getString(comparedWith))));
-    }
-
-    void goBackAndSaveAsDraft (){
-        Activity currentActivity = testUtils.getCurrentActivity();
-        while (currentActivity == testUtils.getCurrentActivity()){
-            try {
-                device.waitForIdle();
-                device.pressBack();
-                testUtils.doWaitForAlertDialog(splashActivityTestRule, R.string.save_or_discard_draft_message_dlg_title);
-                testUtils.doWaitForObject("android.widget.Button");
-                onView(withText(R.string.save_draft_action)).perform(click());
-            } catch (Exception ex){
-                Timber.i("Ignored exception: " + ex);
-            }
-        }
-        device.waitForIdle();
-    }
-
-    void selectoFromMenu(int viewId){
-        device.waitForIdle();
-        testUtils.openOptionsMenu();
-        testUtils.selectFromScreen(viewId);
+        testUtils.pressBack();
+        testUtils.pressBack();
+        testUtils.pressBack();
     }
 }

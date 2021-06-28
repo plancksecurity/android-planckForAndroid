@@ -1,5 +1,6 @@
 package com.fsck.k9.ui
 
+import android.os.Build
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -16,6 +17,8 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     @Test
     fun settingsTest() {
         openFirstScreen()
+        openNavMenu()
+        openSettings()
         mainSettingsTest()
         globalSettingsTest()
         accountSettingsTest()
@@ -24,8 +27,6 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
     private fun mainSettingsTest() {
         setTestSet("H")
-        openNavMenu()
-        openSettings()
         clickMenu()
         openAboutAndLicense()
         Espresso.pressBack()
@@ -113,10 +114,8 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSetting(R.string.notifications_title)
         getScreenShotCurrentActivity("global notifications setting")
 
-        clickSettingDialog(R.string.global_settings_notification_quick_delete_title
-                , "global show delete button setting")
-        clickSettingDialog(R.string.global_settings_lock_screen_notification_visibility_title
-                , "global lock screen notifications setting")
+        clickSettingDialog(R.string.global_settings_notification_quick_delete_title, "global show delete button setting")
+        clickSettingDialog(R.string.global_settings_lock_screen_notification_visibility_title, "global lock screen notifications setting")
 
         Espresso.pressBack()
     }
@@ -141,7 +140,9 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
     private fun openGlobalAdvancedSettings() {
         clickSetting(R.string.advanced)
         getScreenShotCurrentActivity("global advanced setting")
-        clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            clickSettingDialog(R.string.settings_attachment_default_path, "global attachments save path setting")
+        }
         clickSettingDialog(R.string.background_ops_label, "global background sync setting")
         Espresso.pressBack()
     }
@@ -212,7 +213,7 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
 
         clickSettingDialog(R.string.account_setup_auto_expand_folder, "account auto-expand folder setting")
         clickSettingDialog(R.string.account_settings_folder_display_mode_label, "account folders to display setting")
-        clickSettingDialog(R.string.account_settings_folder_target_mode_label, "account move/copy destination folders setting")
+        clickSettingDialog(R.string.account_settings_folder_target_mode_label, "account move copy destination folders setting")
         clickSettingDialog(R.string.archive_folder_label, "account archive folder setting")
         clickSettingDialog(R.string.drafts_folder_label, "account drafts folder setting")
         clickSettingDialog(R.string.sent_folder_label, "account sent folder setting")
@@ -252,12 +253,13 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         clickSettingDialog(R.string.reset, "account reset setting")
         click(getString(R.string.cancel_action))
 
+        expandSetting(R.string.pep_sync_enable_account)
         importKey()
         Espresso.pressBack()
     }
 
     private fun importKey() {
-        startFileManagerStub("test_key", "asc")
+        testUtils.externalAppRespondWithFile(R.raw.test_key)
 
         clickSetting(R.string.pgp_key_import_title)
         runBlocking { waitForIdle() }

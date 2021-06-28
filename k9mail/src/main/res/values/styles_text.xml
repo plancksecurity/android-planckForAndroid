@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="GrayScaleColorText1">
         <item name="android:textColor">?attr/grayScaleColorOnBackground1</item>
@@ -86,6 +86,11 @@
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:longClickable">false</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="EditTextStyle" parent="@android:style/Widget.EditText">
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:importantForAutofill" tools:targetApi="o">no</item>
     </style>
 
 

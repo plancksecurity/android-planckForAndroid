@@ -1,9 +1,8 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.K9;
@@ -12,24 +11,18 @@ import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.fsck.k9.pEp.ui.activities.TestUtils.TIMEOUT_TEST;
+import static junit.framework.TestCase.assertEquals;
 
 
 public class ImportSettingsDarkThemeTest {
 
     private TestUtils testUtils;
     private UiDevice device;
-    private EspressoTestingIdlingResource espressoTestingIdlingResource;
 
 
     @Rule
@@ -39,37 +32,28 @@ public class ImportSettingsDarkThemeTest {
     public void startpEpApp() {
         device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        testUtils.increaseTimeoutWait();
-        espressoTestingIdlingResource = new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(espressoTestingIdlingResource.getIdlingResource());
+        new EspressoTestingIdlingResource();
+        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
+        testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
         testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
-        testUtils.startActivity();
     }
 
     @After
-    public void unregisterIdlingResource() {
-        IdlingRegistry.getInstance().unregister(espressoTestingIdlingResource.getIdlingResource());
+    public void tearDown() {
+        splashActivityTestRule.finishActivity();
+        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test (timeout = TIMEOUT_TEST)
+    @Test
     public void importSettingDarkTheme() {
-        //testUtils.createAccount();
-        testUtils.pressBack();
-        testUtils.openOptionsMenu();
-        device.waitForIdle();
-        testUtils.selectFromScreen(R.string.import_export_action);
-        device.waitForIdle();
-        testUtils.selectFromScreen(R.string.settings_import);
+        // FIXME: 12/04/2021 This test is fixed by P4A-1331. Please remove this fixme after P4A-1331 is merged.
+        testUtils.selectFromMenu(R.string.settings_import);
+        testUtils.doWaitForAlertDialog(R.string.settings_import_selection);
+        testUtils.clickAcceptButton();
+        testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
         device.waitForIdle();
-        testUtils.clickAcceptButton();
-        device.waitForIdle();
-        onView(withId(R.id.accounts_list)).perform(ViewActions.click());
-        device.waitForIdle();
-        try{
-            Assert.assertEquals(Theme.LIGHT, ThemeManager.getLegacyTheme());
-        }catch (AssertionFailedError exception){
-        }
-        testUtils.goBackAndRemoveAccount();
+        assertEquals(Theme.DARK, ThemeManager.getLegacyTheme());
     }
 }

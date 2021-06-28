@@ -33,7 +33,7 @@
             <FrameLayout
                 android:id="@+id/show_pictures"
                 android:layout_width="wrap_content"
-                android:layout_height="32dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:layout_marginLeft="6dp"
                 android:layout_marginTop="4dp"

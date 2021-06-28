@@ -8,6 +8,7 @@ import android.view.animation.AnimationUtils
 import android.view.animation.TranslateAnimation
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -16,10 +17,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.R
+import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.listeners.folderClickListener
 import com.fsck.k9.pEp.ui.renderers.AccountRenderer
 import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
@@ -28,15 +30,20 @@ import com.google.android.material.navigation.NavigationView
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
+import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
+import security.pEp.foldable.folders.displayers.LevelItemActionListener
+import security.pEp.foldable.folders.model.LevelListItem
+import security.pEp.foldable.folders.util.LevelListBuilder
 import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
 import javax.inject.Named
 
 class DrawerLayoutView @Inject constructor(
-        @Named("ActivityContext") private val context: Context,
-        private var drawerFolderPopulator: DrawerFolderPopulator,
-        private var drawerLayoutPresenter: DrawerLayoutPresenter,
+    @Named("ActivityContext") private val context: Context,
+    private var drawerFolderPopulator: DrawerFolderPopulator,
+    private var drawerLayoutPresenter: DrawerLayoutPresenter,
+    private var messagingController: MessagingController
 ) : DrawerView {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -60,20 +67,32 @@ class DrawerLayoutView @Inject constructor(
     private lateinit var navFoldersAccountsButton: NavFolderAccountButton
     private lateinit var navigationView: NavigationView
     private lateinit var menuHeader: View
-
-    private lateinit var folderAdapter: RVRendererAdapter<FolderModel>
+    private lateinit var folderAdapter: BaseLevelListRVRendererAdapter<FolderModel>
     private lateinit var accountAdapter: RVRendererAdapter<Account>
 
     private lateinit var toggle: ActionBarDrawerToggle
 
     private lateinit var drawerCloseListener: DrawerLayout.DrawerListener
 
-    private val disappearAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_down).apply { duration = 500 }
+    private val disappearAnimation =
+        AnimationUtils.loadAnimation(context, R.anim.scale_down).apply { duration = 500 }
     private val scaleUpAnimation = AnimationUtils.loadAnimation(context, R.anim.scale_up)
 
     private lateinit var messageListView: MessageListView
 
-    fun initDrawerView(drawerLayout: DrawerLayout, messageListView: MessageListView) {
+    private val activityListener = object : ActivityListener() {
+
+        override fun informUserOfStatus() {
+            populateDrawerGroup()
+        }
+    }
+
+    fun initDrawerView(
+        activity: Activity?,
+        toolbar: Toolbar?,
+        drawerLayout: DrawerLayout,
+        messageListView: MessageListView
+    ) {
         this.drawerLayout = drawerLayout
         this.messageListView = messageListView
         drawerLayoutPresenter.init(this)
@@ -82,14 +101,20 @@ class DrawerLayoutView @Inject constructor(
         })
         findViewsById()
         setupCreateConfigAccountListeners()
+        initializeDrawerToggle(activity, toolbar)
     }
 
     fun updateAccount(account: Account) {
         drawerLayoutPresenter.account = account
     }
 
-    fun initializeDrawerToggle(toggle: ActionBarDrawerToggle) {
-        this.toggle = toggle
+    private fun initializeDrawerToggle(activity: Activity?, toolbar: Toolbar?) {
+        toggle = DrawerLayoutToogle(
+            activity, drawerLayout, toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+
+        (toggle as DrawerLayoutToogle).setDrawerLayoutView(this)
         drawerLayout.removeDrawerListener(toggle)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -119,10 +144,10 @@ class DrawerLayoutView @Inject constructor(
         ViewCompat.setOnApplyWindowInsetsListener(navigationView) { _, insets ->
             val view: View = navigationView.findViewById(R.id.menu_header)
             view.setPadding(
-                    view.paddingLeft,
-                    insets.systemWindowInsetTop,
-                    view.paddingRight,
-                    view.paddingBottom
+                view.paddingLeft,
+                insets.systemWindowInsetTop,
+                view.paddingRight,
+                view.paddingBottom
             )
             insets.consumeSystemWindowInsets()
         }
@@ -249,19 +274,28 @@ class DrawerLayoutView @Inject constructor(
         val mainAccountLayoutPosition = IntArray(2)
         goToView.getLocationOnScreen(mainAccountLayoutPosition)
         return TranslateAnimation(
-                0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
-                0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1])
-                .apply { duration = 500 }
+            0F, goToView.x + goToView.width / 2 - firstAccountLayoutPosition[0],
+            0F, goToView.y + goToView.height / 2 - firstAccountLayoutPosition[1]
+        )
+            .apply { duration = 500 }
     }
 
     override fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean) {
         (context as Activity).runOnUiThread {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
-            drawerFolderPopulator.populateFoldersIfNeeded(folderAdapter, foldersFiltered, account, force)
+            drawerFolderPopulator.populateFoldersIfNeeded(
+                folderAdapter,
+                foldersFiltered,
+                account,
+                force
+            )
         }
     }
 
-    override fun setupMainFolders(unifiedInboxAccount: SearchAccount, allMessagesAccount: SearchAccount) {
+    override fun setupMainFolders(
+        unifiedInboxAccount: SearchAccount,
+        allMessagesAccount: SearchAccount
+    ) {
         (context as Activity).runOnUiThread {
             val unifiedInbox = drawerLayout.findViewById<View>(R.id.unified_inbox)
             val allMessagesContainer = drawerLayout.findViewById<View>(R.id.all_messages_container)
@@ -281,7 +315,8 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun setupUnifiedInboxUnreadMessages(stats: AccountStats) {
-        val unifiedInboxMessages = drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
+        val unifiedInboxMessages =
+            drawerLayout.findViewById(R.id.unified_inbox_new_messages) as TextView
         setNewInboxMessages(stats, unifiedInboxMessages)
     }
 
@@ -308,14 +343,21 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    override fun setFolderAdapter(collection: ListAdapteeCollection<FolderModel>) {
+    override fun setFolderAdapter(levelListBuilder: LevelListBuilder<FolderModel>) {
         val folderRenderer = FolderRenderer()
         val rendererFolderBuilder = RendererBuilder(folderRenderer)
-        folderRenderer.setFolderClickListener(folderClickListener(this::folderClicked))
 
         navigationFolders.layoutManager = getDrawerLayoutManager()
-        folderAdapter = RVRendererAdapter(rendererFolderBuilder, collection)
-        navigationFolders.adapter = folderAdapter
+        folderAdapter = BaseLevelListRVRendererAdapter(
+            levelItemActionListener, levelListBuilder, CHILD_FOLDER_INDENT, rendererFolderBuilder
+        )
+        navigationFolders.adapter = folderAdapter.adapter
+    }
+
+    private val levelItemActionListener = object: LevelItemActionListener<FolderModel> {
+        override fun onItemClicked(item: LevelListItem<FolderModel>) {
+            folderClicked(item.item.localFolder)
+        }
     }
 
     private fun folderClicked(folder: LocalFolder) {
@@ -361,7 +403,8 @@ class DrawerLayoutView @Inject constructor(
     }
 
     fun setDrawerEnabled(enabled: Boolean) {
-        val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
+        val lockMode =
+            if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         drawerLayout.setDrawerLockMode(lockMode)
         toggle.isDrawerIndicatorEnabled = enabled
         if (!enabled) {
@@ -393,11 +436,23 @@ class DrawerLayoutView @Inject constructor(
         drawerLayoutPresenter.loadNavigationView()
     }
 
-    fun populateDrawerGroup() {
+    override fun populateDrawerGroup() {
         drawerLayoutPresenter.populateDrawerGroup()
     }
 
     override fun refreshMessages(search: LocalSearch) {
         messageListView.refreshMessages(search)
+    }
+
+    override fun addActivityListener() {
+        messagingController.addListener(activityListener)
+    }
+
+    override fun removeActivityListener() {
+        messagingController.removeListener(activityListener)
+    }
+
+    companion object {
+        private const val CHILD_FOLDER_INDENT = 16F
     }
 }
