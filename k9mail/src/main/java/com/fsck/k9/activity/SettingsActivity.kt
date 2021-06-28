@@ -602,10 +602,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun deleteAccountWork() {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-
-            if (selectedContextAccount is Account) {
-                val realAccount = selectedContextAccount as Account?
-                val deletingDefaultAccount = realAccount!!.uuid == preferences.defaultAccount?.uuid
+            val realAccount = selectedContextAccount
+            if (realAccount is Account) {
+                val deletingDefaultAccount = realAccount.uuid == preferences.defaultAccount?.uuid
                 if(deletingDefaultAccount) {
                     shortcutHelper.removeComposeDynamicShortcut()
                 }
