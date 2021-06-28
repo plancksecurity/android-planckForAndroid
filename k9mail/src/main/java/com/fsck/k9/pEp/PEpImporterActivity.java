@@ -796,11 +796,11 @@ public abstract class PEpImporterActivity extends PepActivity {
                 // Save the account settings
                 mAccount.save(Preferences.getPreferences(mContext));
 
-                // Start services if necessary
-                K9.setServicesEnabled(mContext);
-
                 // Get list of folders from remote server
                 MessagingController.getInstance(mApplication).refreshRemoteSynchronous(mAccount);
+
+                // Start services if necessary
+                K9.setServicesEnabled(mContext);
             } catch (Exception e) {
                 Timber.e(e, "Something went while setting account passwords");
             }
