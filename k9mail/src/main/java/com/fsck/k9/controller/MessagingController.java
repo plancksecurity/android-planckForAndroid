@@ -1,6 +1,8 @@
 package com.fsck.k9.controller;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,6 +140,8 @@ import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
 public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
+    public static final long SHARE_SIZE_THRESHOLD = 64000;
+    public static final int SHARE_MAX_FILENAME_SIZE = 20;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -3829,7 +3833,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             quotedText = MessageExtractor.getTextFromPart(part);
         }
         if (quotedText != null) {
-            msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            if (quotedText.length() > SHARE_SIZE_THRESHOLD || message.hasAttachments()) {
+                shareEmailFile(context, message);
+                return;
+            } else {
+                msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            }
         }
         msg.putExtra(Intent.EXTRA_SUBJECT, message.getSubject());
 
@@ -3856,6 +3865,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         msg.setType("text/plain");
         context.startActivity(Intent.createChooser(msg, context.getString(R.string.send_alternate_chooser_title)));
+    }
+
+    private void shareEmailFile(Context context, LocalMessage message) {
+        String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), SHARE_MAX_FILENAME_SIZE)) + ".eml";
+        File file = new File(context.getExternalCacheDir(), fileName);
+        try {
+            message.writeTo(new FileOutputStream(file));
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+            intent.setType("*/*");
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
+        } catch (IOException | MessagingException e) {
+            Timber.e(e);
+        }
+
+
     }
 
     /**
