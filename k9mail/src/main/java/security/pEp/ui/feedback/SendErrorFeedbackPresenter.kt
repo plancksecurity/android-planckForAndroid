@@ -9,12 +9,15 @@ import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
+import com.fsck.k9.message.html.DisplayHtml
+import com.fsck.k9.pEp.infrastructure.MessageView
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper
 import javax.inject.Inject
 
 class SendErrorFeedbackPresenter @Inject constructor(
     private val preferences: Preferences,
-    private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper
+    private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper,
+    @MessageView private val displayHtml: DisplayHtml
 ) {
     private lateinit var view: SendErrorFeedbackView
     private lateinit var sendFailedData: SendErrorFeedbackActivityData
@@ -51,7 +54,8 @@ class SendErrorFeedbackPresenter @Inject constructor(
     private fun loadMessage(messageReference: MessageReference) {
         simpleMessageLoaderHelper.asyncStartOrResumeLoadingMessage(
             messageReference,
-            messageLoadedCallback
+            messageLoadedCallback,
+            displayHtml
         )
     }
 
