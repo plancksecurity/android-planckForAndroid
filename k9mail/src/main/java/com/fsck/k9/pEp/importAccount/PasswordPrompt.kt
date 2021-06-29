@@ -265,9 +265,9 @@ class PasswordPrompt : WizardActivity(), TextWatcher {
                 }
                 account.isEnabled = true
                 account.save(Preferences.getPreferences(this@PasswordPrompt))
-                K9.setServicesEnabled(this@PasswordPrompt)
                 MessagingController.getInstance(this@PasswordPrompt.applicationContext)
                         .listFolders(account, true, listener)
+                K9.setServicesEnabled(this@PasswordPrompt)
             } catch (e: Exception) {
                 Timber.e(e, "Something happened while setting account passwords")
             }
