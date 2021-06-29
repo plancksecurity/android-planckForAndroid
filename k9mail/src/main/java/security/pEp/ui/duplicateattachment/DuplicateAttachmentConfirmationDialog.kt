@@ -181,8 +181,3 @@ class DuplicateAttachmentConfirmationDialog : DialogFragment(),
 enum class ScreenMode {
     OVERWRITE, RENAME
 }
-
-interface DuplicationAttachmentConfirmationListener {
-    fun attachmentNameConfirmed(newName: String)
-    fun overwriteAttachmentName()
-}
