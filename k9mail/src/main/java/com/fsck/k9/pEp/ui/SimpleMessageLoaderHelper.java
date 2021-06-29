@@ -30,7 +30,8 @@ public class SimpleMessageLoaderHelper {
 
     public void asyncStartOrResumeLoadingMessage(MessageReference messageReference,
                                                  MessageLoaderHelper.MessageLoaderCallbacks callbacks,
-                                                 DisplayHtml displayHtml, boolean forceLoad) {
+                                                 DisplayHtml displayHtml,
+                                                 boolean forceLoad) {
         MessageLoaderHelper messageLoaderHelper = new MessageLoaderHelper(context, loaderManager,
                 fragmentManager, callbacks, displayHtml);
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(messageReference, null, forceLoad);
