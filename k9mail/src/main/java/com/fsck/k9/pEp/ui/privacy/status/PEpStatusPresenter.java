@@ -256,7 +256,7 @@ public class PEpStatusPresenter {
         return callback(() -> currentRating = localMessage.getpEpRating());
     }
 
-    private interface OnMessageCorrectlyLoaderListener {
+    interface OnMessageCorrectlyLoaderListener {
         void onMessageCorrectlyLoaded();
     }
 

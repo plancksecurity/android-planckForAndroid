@@ -1,23 +1,30 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
 import android.os.Looper;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Flag;
+import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -25,9 +32,17 @@ import org.robolectric.shadows.ShadowLooper;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
@@ -35,6 +50,8 @@ public class PEpStatusPresenterTest {
 
     @Captor
     private ArgumentCaptor<PEpProvider.SimpleResultCallback<Rating>> simpleResultCallbackCaptor;
+    @Captor
+    private ArgumentCaptor<MessageLoaderHelper.MessageLoaderCallbacks> loaderCallbacksArgumentCaptor;
 
     @Mock SimpleMessageLoaderHelper simpleMessageLoaderHelper;
     @Mock PEpStatusView pEpStatusView;
@@ -45,26 +62,31 @@ public class PEpStatusPresenterTest {
     @Mock
     DisplayHtml displayHtml;
     @Mock PEpIdentityMapper identityMapper;
+    @Mock
+    LocalMessage mockLocalMessage;
+    @Mock
+    PEpStatusPresenter.OnMessageCorrectlyLoaderListener onMessageCorrectlyLoaderListener;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
+
+        when(mockLocalMessage.makeMessageReference())
+                .thenReturn(new MessageReference("", "", "", null));
         presenter = new PEpStatusPresenter(simpleMessageLoaderHelper,
                 identityMapper);
     }
 
     @Test
     public void shouldStartMessageLoaderWhenLoadMessage() {
-        boolean forceUnencrypted = false;
-        boolean alwaysSecure = false;
         presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, false,
-                senderAddress, forceUnencrypted, alwaysSecure);
+                senderAddress, false, false);
 
         presenter.loadMessage(new MessageReference("", "", "", null));
 
         verify(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
                 any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class),
-                displayHtml
+                eq(displayHtml)
         );
     }
 
@@ -90,24 +112,17 @@ public class PEpStatusPresenterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldExtractRatingWhenOnHandshakeResult() {
-        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true,
-                senderAddress, false, false);
-        Identity identity = new Identity();
-
-        presenter.onHandshakeResult(identity, false);
+    public void shouldExtractRatingWhenOnHandshakeResult() throws Exception {
+        runOnHandshakeResultAndStubCallback(true, false);
 
         verify(provider).incomingMessageRating(any(), any(PEpProvider.SimpleResultCallback.class));
     }
 
     @Test
     public void shouldGetRecipientsWhenOnHandshakeResult() throws Exception {
-        when(uiCache.getRecipients()).thenReturn(recipients());
-        when(identityMapper.mapRecipients(anyList())).thenReturn(mappedRecipients());
+        runOnHandshakeResultAndStubCallback(false, false);
 
-        runOnHandshakeResult(false, false);
-
-        verify(uiCache).getRecipients();
+        verify(uiCache, times(2)).getRecipients();
     }
 
     @Test
@@ -146,7 +161,14 @@ public class PEpStatusPresenterTest {
         when(identityMapper.mapRecipients(anyList())).thenReturn(mappedRecipients());
 
         stubHandshakeCallbackCall();
-        runOnHandshakeResult(isMessageIncoming, trust);
+        stubLoaderCallbacksCall();
+        stubForceLoaderCallbacksCall();
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, isMessageIncoming,
+                senderAddress, false, false);
+
+        presenter.loadMessage(mockLocalMessage.makeMessageReference()); // initialize message in presenter.
+
+        prepareAndRunOnHandshakeResult(trust);
     }
 
     private void stubHandshakeCallbackCall() {
@@ -157,9 +179,32 @@ public class PEpStatusPresenterTest {
                 simpleResultCallbackCaptor.capture());
     }
 
+    private void stubForceLoaderCallbacksCall() {
+        Mockito.doAnswer(invocation -> {
+            loaderCallbacksArgumentCaptor.getValue().onMessageDataLoadFinished(mockLocalMessage);
+            return null;
+        }).when(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
+                any(),
+                loaderCallbacksArgumentCaptor.capture(),
+                any(),
+                eq(true)
+        );
+    }
+
+    private void stubLoaderCallbacksCall() {
+        Mockito.doAnswer(invocation -> {
+            loaderCallbacksArgumentCaptor.getValue().onMessageDataLoadFinished(mockLocalMessage);
+            return null;
+        }).when(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
+                any(),
+                loaderCallbacksArgumentCaptor.capture(),
+                any()
+        );
+    }
+
     @Test
     public void shouldGetRatingWhenonHandshakeResultWithMessageOutgoing() throws Exception {
-        runOnHandshakeResult(false, false);
+        runOnHandshakeResultAndStubCallback(false, false);
 
 
         verify(provider).getRating(eq(senderAddress), eq(addressList()),
@@ -169,20 +214,10 @@ public class PEpStatusPresenterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldGetRatingWhenonHandshakeResultWithMessageIncoming() throws Exception {
-        runOnHandshakeResult(true, false);
+        runOnHandshakeResultAndStubCallback(true, false);
 
 
         verify(provider).incomingMessageRating(any(), any(PEpProvider.SimpleResultCallback.class));
-    }
-
-    private void runOnHandshakeResult(boolean isMessageIncoming, boolean trust) throws Exception {
-        when(uiCache.getRecipients()).thenReturn(recipients());
-        when(identityMapper.mapRecipients(anyList())).thenReturn(mappedRecipients());
-
-        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, isMessageIncoming,
-                senderAddress, false, false);
-
-        prepareAndRunOnHandshakeResult(trust);
     }
 
     private void prepareAndRunOnHandshakeResult(boolean trust) throws Exception {
@@ -232,6 +267,21 @@ public class PEpStatusPresenterTest {
         presenter.setAlwaysSecure(true);
 
         verify(pEpStatusView).setupBackIntent(any(), eq(false), eq(true));
+    }
+
+    @Test
+    public void whenMessageDeletedFlagIsSetThenCallbackJustReturns() {
+        doReturn(true).when(mockLocalMessage).isSet(Flag.DELETED);
+        MessageLoaderHelper.MessageLoaderCallbacks callbacks =
+                presenter.callback(onMessageCorrectlyLoaderListener);
+
+        presenter.initialize(pEpStatusView, uiCache, provider, displayHtml, true,
+                senderAddress, false, false);
+
+        callbacks.onMessageDataLoadFinished(mockLocalMessage);
+
+        verify(pEpStatusView).finish();
+        verify(onMessageCorrectlyLoaderListener, never()).onMessageCorrectlyLoaded();
     }
 
 
