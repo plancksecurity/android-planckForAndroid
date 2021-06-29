@@ -336,7 +336,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         pEpFabMenu.setClickListeners(messageOptionsListener);
     }
 
-    private void displayMessage() {
+    public void displayMessage() {
         Timber.d("MessageView displaying message %s", mMessageReference);
 
         mAccount = Preferences.getPreferences(getApplicationContext()).getAccount(mMessageReference.getAccountUuid());
