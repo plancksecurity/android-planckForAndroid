@@ -77,9 +77,16 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
                 } else if (this.procedence.equals(INCOMING)) {
                     notifyLoaded(PEpSettingsChecker.Redirection.OUTGOING);
-                } else if (this.procedence.equals(OUTGOING) || this.procedence.equals(LOGIN) ){
+                } else if (this.procedence.equals(OUTGOING)){
                     account.setDescription(account.getEmail());
                     notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
+                } else {
+                    account.setDescription(account.getEmail());
+                    if(direction.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
+                        notifyLoaded(Redirection.OUTGOING);
+                    } else {
+                        notifyLoaded(PEpSettingsChecker.Redirection.TO_APP);
+                    }
                 }
             } catch (AuthenticationFailedException exception) {
                 onError(new PEpAuthenticationException(exception));
@@ -100,6 +107,7 @@ public class PEpSettingsCheck implements PEpSettingsChecker {
     }
 
     private void onError(PEpSetupException exception) {
+        exception.direction = direction;
         this.postExecutionThread.post(() -> callback.onError(exception));
     }
 

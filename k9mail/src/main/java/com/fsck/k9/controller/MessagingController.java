@@ -1,6 +1,8 @@
 package com.fsck.k9.controller;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +41,7 @@ import android.os.SystemClock;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
+import androidx.core.content.FileProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.DeletePolicy;
@@ -97,7 +100,7 @@ import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpProviderImpl;
+import com.fsck.k9.pEp.PEpProviderImplKotlin;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
@@ -113,12 +116,10 @@ import com.fsck.k9.search.SqlQueryBuilderInvoker;
 
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
+import foundation.pEp.jniadapter.exceptions.pEpException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import foundation.pEp.jniadapter.exceptions.pEpException;
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -140,6 +141,8 @@ import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
 @SuppressWarnings("unchecked") // TODO change architecture to actually work with generics
 public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
+    public static final long SHARE_SIZE_THRESHOLD = 64000;
+    public static final int SHARE_MAX_FILENAME_SIZE = 20;
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -2443,6 +2446,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void markAllMessagesRead(final Account account, final String folder) {
+        threadPool.execute(() -> {
+            markAllMessagesReadSynchronous(account, folder);
+        });
+    }
+
+    private void markAllMessagesReadSynchronous(final Account account, final String folder) {
         Timber.i("Marking all messages in %s:%s as read", account.getDescription(), folder);
 
         PendingCommand command = PendingMarkAllAsRead.create(folder);
@@ -3831,7 +3840,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
             quotedText = MessageExtractor.getTextFromPart(part);
         }
         if (quotedText != null) {
-            msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            if (quotedText.length() > SHARE_SIZE_THRESHOLD || message.hasAttachments()) {
+                shareEmailFile(context, message);
+                return;
+            } else {
+                msg.putExtra(Intent.EXTRA_TEXT, quotedText);
+            }
         }
         msg.putExtra(Intent.EXTRA_SUBJECT, message.getSubject());
 
@@ -3858,6 +3872,23 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
         msg.setType("text/plain");
         context.startActivity(Intent.createChooser(msg, context.getString(R.string.send_alternate_chooser_title)));
+    }
+
+    private void shareEmailFile(Context context, LocalMessage message) {
+        String fileName = message.getSubject().substring(0, Math.min(message.getSubject().length(), SHARE_MAX_FILENAME_SIZE)) + ".eml";
+        File file = new File(context.getExternalCacheDir(), fileName);
+        try {
+            message.writeTo(new FileOutputStream(file));
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", file);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.setType("*/*");
+            context.startActivity(Intent.createChooser(intent, context.getString(R.string.send_alternate_chooser_title)));
+        } catch (IOException | MessagingException e) {
+            Timber.e(e);
+        }
+
     }
 
     /**
@@ -4533,7 +4564,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.i("messagesArrived newCount = %d, unread count = %d", newCount, unreadMessageCount);
 
                     if (unreadMessageCount == 0) {
-                        notificationController.clearNewMailNotifications(account);
+                        notificationController.clearNewMailNotifications(account, localFolder.getName());
                     }
 
                     for (MessagingListener l : getListeners()) {
@@ -4690,7 +4721,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     return;
                 }
 
-                Message message = PEpProviderImpl.getMimeMessage(pEpMessage);
+                Message message = PEpProviderImplKotlin.getMimeMessage(pEpMessage);
 
                 if (message == null) {
                     Timber.e("pEpEngine  messageToSend: Cannot convert pEpMessage into K9Message");

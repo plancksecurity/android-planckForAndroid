@@ -15,7 +15,7 @@
         android:singleLine="true"
         android:maxLines="1"
         android:gravity="center_vertical"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionDone|flagNoExtractUi"
         style="?android:textAppearanceMedium"
         android:inputType="textAutoComplete|textAutoCorrect"
         tools:ignore="UnusedAttribute" />

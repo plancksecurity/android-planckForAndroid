@@ -4,11 +4,12 @@ buildscript {
                 'compileSdk'           : 30,
                 'targetSdk'            : 30,
                 'minSdk'               : 21,
-                'versionCode'          : 89,
-                'pEpEngineRevision'    : 'Release_2.1.33',
-                'pEpJNIAdapterRevision': 'Release_2.1.27-android',
-                'versionName'          : '1.1.265',
-                'libpEpAdapterRevision': 'Release_2.1.21'
+                'versionCode'          : 90,
+                'pEpEngineRevision'    : 'Release_2.1.37',
+                'pEpJNIAdapterRevision': 'Release_2.1.30',
+                'versionName'          : '1.1.266',
+                'libpEpAdapterRevision': 'Release_2.1.21',
+                'foldersRevision'      : 'v0.2'
         ]
 
         versions = [
@@ -64,7 +65,7 @@ buildscript {
                 'junit'              : '4.12',
                 'robolectric'        : '4.3.1',
                 'runner_rules'       : '1.1.0',
-                'mockito'            : '3.5.0',
+                'mockito'            : '3.9.0',
                 'mockitoKotlin'      : '1.5.0',
                 'truth'              : '1.1',
                 'espresso'           : '3.1.1',
@@ -87,7 +88,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
     }

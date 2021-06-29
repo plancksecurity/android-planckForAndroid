@@ -1,18 +1,30 @@
 
 
+task installApk(type: Exec) {
+    dependsOn uninstallAll
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
+    commandLine command
+}
+
+task installTest(type: Exec) {
+    dependsOn installApk
+    def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
+    commandLine command
+}
+
 task clearDataImportAccount(type: Exec) {
+    dependsOn installTest
     def clearDataCommand = ['adb', 'shell', 'pm', 'clear', 'security.pEp.debug']
     commandLine clearDataCommand
 }
 
 task importAccount(type: Exec) {
     dependsOn clearDataImportAccount
-    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
                             'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#importAccountSetup',
                             'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine autoLoginCommand
 }
-
 
 task clearDataAuto(type: Exec) {
     dependsOn importAccount
@@ -22,7 +34,7 @@ task clearDataAuto(type: Exec) {
 
 task autoLogin(type: Exec) {
     dependsOn clearDataAuto
-    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+    def autoLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
                             'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#automaticAccountSetup',
                             'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine autoLoginCommand
@@ -38,16 +50,25 @@ task clearDataManual(type: Exec) {
 task manualLogin(type: Exec) {
     dependsOn clearDataManual
 
-    def manualLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+    def manualLoginCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
                               'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#manualAccountSetup',
                               'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine manualLoginCommand
 }
 
-task mainTest(type: Exec) {
+task addMessagesToAccount(type: Exec) {
     dependsOn manualLogin
 
-    def mainTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+    def addMessagesToAccountCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
+                                       'class', 'com.fsck.k9.ui.AccountSetupScreenshotTest#addMessagesToAccount',
+                                       'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
+    commandLine addMessagesToAccountCommand
+}
+
+task mainTest(type: Exec) {
+    dependsOn addMessagesToAccount
+
+    def mainTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
                            'class', 'com.fsck.k9.ui.ScreenshotTestSuite',
                            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine mainTestCommand
@@ -55,7 +76,7 @@ task mainTest(type: Exec) {
 
 task syncTest(type: Exec) {
     dependsOn mainTest
-    def syncTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r' ,'-e', 'debug', 'false', '-e',
+    def syncTestCommand = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '-e', 'debug', 'false', '-e',
                            'class', 'com.fsck.k9.ui.SyncScreenshotTest#syncTest',
                            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
 

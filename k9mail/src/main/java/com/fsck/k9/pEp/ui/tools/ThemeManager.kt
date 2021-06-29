@@ -102,7 +102,7 @@ object ThemeManager {
     fun getStatusBarColor(context: Context, toolbarType: ToolbarType): Int {
         val attr = when(toolbarType) {
             ToolbarType.DEFAULT -> R.attr.toolbarDefaultColor
-            ToolbarType.MESSAGEVIEW -> R.attr.messageViewToolbarColor
+            ToolbarType.MESSAGEVIEW -> R.attr.messageViewStatusBarColor
         }
         return getColorFromAttributeResource(context, attr)
     }

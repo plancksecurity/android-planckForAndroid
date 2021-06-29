@@ -78,6 +78,7 @@
     <style name="ToolbarTheme" parent="Theme.K9.DayNight">
         <item name="android:textColorPrimary">?attr/defaultToolbarTextColor</item>
         <item name="android:textColorSecondary">?attr/defaultToolbarTextColor</item>
+        <item name="android:textColorHint">?attr/searchBarHintColor</item>
     </style>
 
     <style name="HandshakeToolbarTheme" parent="Theme.K9.DayNight">

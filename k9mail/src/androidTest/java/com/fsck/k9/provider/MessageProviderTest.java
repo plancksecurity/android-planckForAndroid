@@ -4,15 +4,19 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.provider.ProviderTestRule;
-import androidx.test.runner.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,12 +34,31 @@ public class MessageProviderTest {
                     .Builder(MessageProvider.class, MessageProvider.AUTHORITY)
                     .build();
 
+    @Before
+    public void setUp() {
+        deleteAllAccounts();
+    }
+
+    @After
+    public void tearDown() {
+        deleteAllAccounts();
+    }
+
+    private void deleteAllAccounts() {
+        Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
+        List<Account> accounts = preferences.getAccounts();
+        for(Account account : accounts) {
+            preferences.deleteAccount(account);
+        }
+    }
+
     private void createAccount() {
         Preferences preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
         Account account = preferences.newAccount();
         account.setDescription("TestAccount");
         account.setChipColor(10);
         account.setStoreUri("imap://user@domain.com/");
+        account.setSetupState(Account.SetupState.READY);
         account.save(preferences);
     }
 
@@ -81,7 +104,7 @@ public class MessageProviderTest {
         assertEquals(0, cursor.getColumnIndex(MessageProvider.AccountColumns.ACCOUNT_NUMBER));
         assertEquals(1, cursor.getColumnIndex(MessageProvider.AccountColumns.ACCOUNT_NAME));
         assertEquals(0, cursor.getInt(0));
-        assertEquals("android09@peptest.ch", cursor.getString(1));
+        assertEquals("TestAccount", cursor.getString(1));
     }
 
 
@@ -122,9 +145,9 @@ public class MessageProviderTest {
         cursor.moveToFirst();
 
         assertEquals(2, cursor.getColumnCount());
-        assertEquals(1, cursor.getColumnIndex(MessageProvider.UnreadColumns.ACCOUNT_NAME));
-        assertEquals(0, cursor.getColumnIndex(MessageProvider.UnreadColumns.UNREAD));
-        assertEquals(0, cursor.getInt(0));
-        assertEquals("android09@peptest.ch", cursor.getString(1));
+        assertEquals(0, cursor.getColumnIndex(MessageProvider.UnreadColumns.ACCOUNT_NAME));
+        assertEquals(1, cursor.getColumnIndex(MessageProvider.UnreadColumns.UNREAD));
+        assertEquals(0, cursor.getInt(1));
+        assertEquals("TestAccount", cursor.getString(0));
     }
 }

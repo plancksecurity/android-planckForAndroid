@@ -3,10 +3,15 @@ package com.fsck.k9.pEp.models;
 import com.fsck.k9.Account;
 import com.fsck.k9.mailstore.LocalFolder;
 
-public class FolderModel {
+import org.jetbrains.annotations.NotNull;
+
+import security.pEp.foldable.folders.model.PlainItem;
+
+public class FolderModel extends PlainItem {
     private LocalFolder localFolder;
     private Account account;
     private int unreadCount;
+    private String itemName;
 
     public LocalFolder getLocalFolder() {
         return localFolder;
@@ -14,6 +19,7 @@ public class FolderModel {
 
     public void setLocalFolder(LocalFolder localFolder) {
         this.localFolder = localFolder;
+        this.itemName = localFolder.getName();
     }
 
     public Account getAccount() {
@@ -30,5 +36,23 @@ public class FolderModel {
 
     public int getUnreadCount() {
         return unreadCount;
+    }
+
+    @NotNull
+    @Override
+    public String getItemName() {
+        return itemName;
+    }
+
+    @Override
+    public void setItemName(@NotNull String itemName) {
+        this.itemName = itemName;
+    }
+
+    @Override
+    public boolean isSameContentToShow(@NotNull PlainItem other) {
+        FolderModel otherModel = (FolderModel) other;
+        return itemName.equals(otherModel.itemName) &&
+                account.getUuid().equals(otherModel.account.getUuid());
     }
 }

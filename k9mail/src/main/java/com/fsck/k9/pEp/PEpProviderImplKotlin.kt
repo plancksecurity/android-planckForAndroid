@@ -65,6 +65,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private fun initEngineConfig(engine: Engine) {
+
         engine.config_passive_mode(K9.getPEpPassiveMode())
         //configKeyServerLockup(K9.getPEpUseKeyserver())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
@@ -268,6 +269,11 @@ class PEpProviderImplKotlin @Inject constructor(
 
     override fun setSyncHandshakeCallback(activity: NotifyHandshakeCallback) {
         engine.setNotifyHandshakeCallback(activity)
+    }
+
+    @WorkerThread
+    override fun disableSyncForAllIdentites() {
+        engine.disable_all_sync_channels()
     }
 
     override fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback) {

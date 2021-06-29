@@ -1,48 +1,75 @@
 package com.fsck.k9.pEp.ui.renderers
 
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.listeners.FolderClickListener
-import com.pedrogomez.renderers.Renderer
-import kotlinx.android.synthetic.main.folder_navigation_list_item.view.*
-import kotlinx.coroutines.*
+import security.pEp.foldable.folders.defaults.renderer.DefaultLevelItemRenderer
+import security.pEp.foldable.folders.model.LevelListItem
+import security.pEp.foldable.folders.util.Constants
 
-class FolderRenderer : Renderer<FolderModel>() {
+class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
 
-    lateinit var folderName: TextView
-    lateinit var folderNewMessages: TextView
-    private lateinit var onFolderClickListener: FolderClickListener
-
-
-    override fun setUpView(rootView: View) {
-
-    }
-
-    override fun hookListeners(rootView: View) {
-
-    }
+    private lateinit var folderNewMessages: TextView
+    private lateinit var folderIcon: View
 
     override fun inflate(inflater: LayoutInflater, parent: ViewGroup): View {
         val inflatedView = inflater.inflate(R.layout.folder_navigation_list_item, parent, false)
-        folderName = inflatedView.folder_name
-        folderNewMessages = inflatedView.folder_new_messages
-        inflatedView.folder_layout.setOnClickListener { onFolderClicked() }
+        folderName = inflatedView.findViewById(R.id.folder_name)
+        folderNewMessages = inflatedView.findViewById(R.id.folder_new_messages)
+        showChildrenButton = inflatedView.findViewById(R.id.showchildrenbutton)
+        showChildrenClicker = inflatedView.findViewById(R.id.showchildrenclicker)
+        folderIcon = inflatedView.findViewById(R.id.folder_icon)
         return inflatedView
     }
 
-    override fun render() {
+    override fun bind() {
+        differentiateParentOrChildDisplay()
+        differentiateUnfoldedCondition()
+        val folderModel = content.item
         folderName.text =
-                FolderInfoHolder.getDisplayName(context, content.account, content.localFolder.name)
-        renderUnreadMessages(content.unreadCount)
+            FolderInfoHolder.getDisplayName(context,
+                folderModel.account,
+                content.levelListItemName,
+                content.fullName)
+
+        renderUnreadMessages(folderModel.unreadCount)
     }
 
-    private suspend fun getUnreadMessageCount(): Int = withContext(Dispatchers.IO) {
-        content.localFolder.unreadMessageCount
+    override fun indentByDepth(view: View, item: LevelListItem<FolderModel>) {
+        setIndentForView(folderIcon, 0)
+        setIndentForView(showChildrenButton, 0)
+
+        val indentView: View = if(content.children.isEmpty()) folderIcon else showChildrenButton
+        val px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, indent, view.context.resources.displayMetrics)
+            .toInt()
+        setIndentForView(indentView, item.depth * px)
+    }
+
+    private fun setIndentForView(view: View, indent: Int) {
+        val params : RelativeLayout.LayoutParams = view.layoutParams as RelativeLayout.LayoutParams
+        params.leftMargin = indent
+        view.layoutParams = params
+    }
+
+    override fun differentiateParentOrChildDisplay() {
+        showChildrenButton.visibility =
+        if(content.children.isEmpty()) {
+            if(this.isFlatList && content.depth == 0) View.GONE
+            else View.INVISIBLE
+        } else View.VISIBLE
+        showChildrenClicker.visibility = if(content.children.isEmpty()) View.INVISIBLE else View.VISIBLE
+    }
+
+    override fun differentiateUnfoldedCondition() {
+        showChildrenButton.rotation =
+            if(!content.areChildrenUnfolded) Constants.ARROW_ORIGINAL_ROTATION
+            else Constants.ARROW_FINAL_ROTATION
     }
 
     private fun renderUnreadMessages(unreadMessageCount: Int) {
@@ -51,15 +78,10 @@ class FolderRenderer : Renderer<FolderModel>() {
                 folderNewMessages.visibility = View.VISIBLE
                 folderNewMessages.text = unreadMessageCount.toString()
             }
-            else -> folderNewMessages.visibility = View.GONE
+            else -> {
+                folderNewMessages.text = ""
+                folderNewMessages.visibility = View.INVISIBLE
+            }
         }
-    }
-
-    fun setFolderClickListener(onFolderClickListener: FolderClickListener) {
-        this.onFolderClickListener = onFolderClickListener
-    }
-
-    private fun onFolderClicked() {
-        onFolderClickListener.onClick(content.localFolder)
     }
 }

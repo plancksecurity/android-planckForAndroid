@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class DisplayHtmlTest {
-    val displayHtml = DisplayHtml(HtmlSettings(useDarkMode = false, useFixedWidthFont = false))
+    val displayHtml = DisplayHtml(HtmlSettings(useFixedWidthFont = false))
 
     @Test
     fun wrapMessageContent_addsViewportMetaElement() {
@@ -26,15 +26,6 @@ class DisplayHtmlTest {
         val html = displayHtml.wrapMessageContent("Some text")
 
         assertHtmlContainsElement(html, "head > style")
-    }
-
-    @Test
-    fun wrapMessageContent_whenDarkMessageViewTheme_addsDarkThemeCSS() {
-        val darkModeDisplayHtml = DisplayHtml(HtmlSettings(useDarkMode = true, useFixedWidthFont = false))
-
-        val html = darkModeDisplayHtml.wrapMessageContent("Some text")
-
-        assertHtmlContainsElement(html, "head > style", 2)
     }
 
     @Test

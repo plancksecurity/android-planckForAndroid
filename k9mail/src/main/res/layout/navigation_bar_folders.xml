@@ -17,18 +17,20 @@
             android:id="@+id/unified_inbox_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:background="?attr/unifiedInboxIcon" />
+            android:layout_marginStart="16dp"
+            android:background="?attr/unifiedInboxIcon"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/unified_inbox_new_messages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            android:paddingRight="16dp"
+            android:gravity="center_vertical|end"
+            android:layout_marginEnd="16dp"
             android:fontFamily="sans-serif-medium"
+            android:minEms="1"
             tools:text="7" />
 
         <TextView
@@ -37,9 +39,12 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/unified_inbox_icon"
+            android:layout_toStartOf="@id/unified_inbox_new_messages"
+            android:gravity="center_vertical"
             android:fontFamily="sans-serif-medium"
             android:textColor="?android:attr/textColorPrimary"
-            android:paddingLeft="34dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/integrated_inbox_title" />
 
     </RelativeLayout>
@@ -55,18 +60,20 @@
             android:id="@+id/all_messages_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:background="?attr/allMessagesIcon" />
+            android:layout_marginStart="16dp"
+            android:background="?attr/allMessagesIcon"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/all_messages_new_messages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
+            android:gravity="center_vertical|end"
             android:fontFamily="sans-serif-medium"
-            android:paddingRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:minEms="1"
             tools:text="7" />
 
         <TextView
@@ -77,7 +84,10 @@
             android:fontFamily="sans-serif-medium"
             android:textColor="?android:attr/textColorPrimary"
             android:layout_toEndOf="@+id/all_messages_icon"
-            android:paddingLeft="32dp"
+            android:layout_toStartOf="@id/all_messages_new_messages"
+            android:gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/search_all_messages_title" />
 
     </RelativeLayout>
