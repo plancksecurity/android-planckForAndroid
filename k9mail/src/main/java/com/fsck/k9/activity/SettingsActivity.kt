@@ -1160,8 +1160,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
             anyAccountWasDeleted = false
         }
-        else {
+        else if (preferences.availableAccounts.isNotEmpty()) {
             super.onBackPressed()
+        } else {
+            onActivateAccount(preferences.accounts.first())
         }
     }
 
