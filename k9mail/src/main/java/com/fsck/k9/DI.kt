@@ -27,26 +27,25 @@ object DI {
     }
 
     private val appModules = listOf(
-            mainModule,
-            settingsUiModule,
-            //unreadWidgetModule,
-            endToEndUiModule,
-            openPgpModule,
-            autocryptModule,
-            mailStoreModule
+        mainModule,
+        settingsUiModule,
+        //unreadWidgetModule,
+        endToEndUiModule,
+        openPgpModule,
+        autocryptModule,
+        mailStoreModule
     )
 
-    @JvmStatic fun start(application: Application) {
+    @JvmStatic
+    fun start(application: Application) {
         @Suppress("ConstantConditionIf")
-        (startKoin {
+        startKoin {
             if (BuildConfig.DEBUG) {
                 androidLogger()
             }
-
             androidContext(application)
             modules(appModules)
-        })
-
+        }
     }
 
 }
