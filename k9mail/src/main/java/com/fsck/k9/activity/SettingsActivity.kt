@@ -243,8 +243,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             onOpenAccount(unifiedInboxAccount)
             finish()
             return
-        } else if (startup && accounts.size > 0
-                && onOpenAccount(getAccountToOpen())) {
+        } else if (startup && onOpenAccount(getAccountToOpen())) {
             finish()
             return
         }
