@@ -1,86 +1,61 @@
-def workProfileUser
+def workProfileUser = project.hasProperty("user") ? project.getProperty("user") : 10
 
-task installApkAppConfig(type: Exec) {
-    dependsOn uninstallAll
+task installApkAppConfig(type: Exec, dependsOn: 'uninstallAll') {
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
     commandLine command
 }
 
-task installTestAppConfig(type: Exec) {
-    dependsOn installApkAppConfig
+task installTestAppConfig(type: Exec, dependsOn: 'installApkAppConfig') {
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
     commandLine command
 }
 
-task getUserProfile() {
-    dependsOn installTestAppConfig
-    if (project.hasProperty("user")) {
-        workProfileUser = project.getProperty("user")
-        println "getUserProfile [" + workProfileUser + "]"
-    }
-}
-
-task clearDataAppConfig(type: Exec) {
-    dependsOn getUserProfile
+task clearDataAppConfig(type: Exec, dependsOn: 'installTestAppConfig') {
     def command = ['adb', 'shell', 'pm', 'clear', '--user', workProfileUser, 'security.pEp.debug']
     commandLine command
 }
 
-task automaticStartUp(type: Exec) {
-    dependsOn clearDataAppConfig
-
+task automaticStartUp(type: Exec, dependsOn: 'clearDataAppConfig') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#automaticStartUp',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-task sendMessageToSelf(type: Exec) {
-    dependsOn automaticStartUp
-
+task sendMessageToSelf(type: Exec, dependsOn: 'automaticStartUp') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#sendMessageToSelf',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-task messageListAppRestrictions(type: Exec) {
-    dependsOn sendMessageToSelf
-
+task messageListAppRestrictions(type: Exec, dependsOn: 'sendMessageToSelf') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageListAppRestrictions',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-task messageViewAppRestrictions(type: Exec) {
-    dependsOn messageListAppRestrictions
-
+task messageViewAppRestrictions(type: Exec, dependsOn: 'messageListAppRestrictions') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageViewAppRestrictions',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-task messageComposeAppRestrictions(type: Exec) {
-    dependsOn messageViewAppRestrictions
-
+task messageComposeAppRestrictions(type: Exec, dependsOn: 'messageViewAppRestrictions') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageComposeAppRestrictions',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-task accountSettingsAppRestrictions(type: Exec) {
-    dependsOn messageComposeAppRestrictions
-
+task accountSettingsAppRestrictions(type: Exec, dependsOn: 'messageComposeAppRestrictions') {
     def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
                    'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#accountSettingsAppRestrictions',
                    'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
     commandLine command
 }
 
-
-task testRestrictions() {
-    dependsOn accountSettingsAppRestrictions
+task testRestrictions(dependsOn: 'accountSettingsAppRestrictions') {
 }
