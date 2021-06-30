@@ -87,15 +87,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/pep_status_red" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <security.pEp.ui.toolbar.MeasuredWidthTextView
             android:id="@+id/privacyStatusText"
             style="@style/PEpPrivacyStatusTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/privacy_status_text_height"
             android:layout_marginStart="8dp"
             android:gravity="center_vertical|start"
             android:includeFontPadding="true"
-            android:lines="2"
+            android:maxLines="2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/privacyStatusIcon"
