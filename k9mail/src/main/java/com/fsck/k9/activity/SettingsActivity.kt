@@ -1151,9 +1151,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 finishAffinity()
                 openSearchAccount(unifiedInboxAccount)
             } else {
-                var accountToOpen = getAccountToOpen()
-
-                if(accountToOpen != null){
+                getAccountToOpen() ?.let { accountToOpen ->
                     if(accountWasOpenable(accountToOpen)) {
                         finishAffinity()
                         openAccount(accountToOpen)
