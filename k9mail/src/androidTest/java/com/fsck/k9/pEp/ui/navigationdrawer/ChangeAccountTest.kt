@@ -62,10 +62,9 @@ class ChangeAccountTest {
     }
 
     @Test
-    fun stage2_clickAccountBubbleInfinite() {
+    fun stage2_clickAccountBubble30Times() {
         setupAccounts()
-
-        while (true) {
+        repeat(30) {
             changeAccount()
         }
     }
