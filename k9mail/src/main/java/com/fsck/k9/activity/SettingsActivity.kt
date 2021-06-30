@@ -1146,24 +1146,27 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun onBackPressed() {
-        if(anyAccountWasDeleted) {
-            if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
-                finishAffinity()
-                openSearchAccount(unifiedInboxAccount)
-            } else {
-                getAccountToOpen() ?.let { accountToOpen ->
-                    if(accountWasOpenable(accountToOpen)) {
-                        finishAffinity()
-                        openAccount(accountToOpen)
+        when {
+            anyAccountWasDeleted -> {
+                if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
+                    finishAffinity()
+                    openSearchAccount(unifiedInboxAccount)
+                } else {
+                    getAccountToOpen() ?.let { accountToOpen ->
+                        if(accountWasOpenable(accountToOpen)) {
+                            finishAffinity()
+                            openAccount(accountToOpen)
+                        }
                     }
                 }
+                anyAccountWasDeleted = false
             }
-            anyAccountWasDeleted = false
-        }
-        else if (preferences.availableAccounts.isNotEmpty()) {
-            super.onBackPressed()
-        } else {
-            onActivateAccount(preferences.accounts.first())
+            preferences.availableAccounts.isNotEmpty() -> {
+                super.onBackPressed()
+            }
+            else -> {
+                onActivateAccount(preferences.accounts.first())
+            }
         }
     }
 
