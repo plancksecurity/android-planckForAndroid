@@ -1,14 +1,15 @@
 package com.fsck.k9.pEp.ui.navigationdrawer
 
+import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
@@ -21,11 +22,8 @@ import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
 import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not
+import org.junit.*
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.FixMethodOrder
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
@@ -34,12 +32,19 @@ import org.junit.runners.MethodSorters
 class DrawerLayoutTest : SetupDevTestAccounts() {
 
     @get:Rule
-    var mActivityRule = ActivityTestRule(SplashActivity::class.java)
+    var mActivityRule = IntentsTestRule(SplashActivity::class.java, false, false)
 
     @Before
     fun before() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         testUtils = TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation())
+        mActivityRule.launchActivity(Intent())
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded()
+    }
+
+    @After
+    fun tearDown() {
+        mActivityRule.finishActivity()
     }
 
     @Test
