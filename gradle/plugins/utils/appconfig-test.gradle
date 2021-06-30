@@ -1,4 +1,4 @@
-def workProfileUser
+def workProfileUser = project.hasProperty("user") ? project.getProperty("user") : 10
 
 task installApkAppConfig(type: Exec, dependsOn: 'uninstallAll') {
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
@@ -10,14 +10,7 @@ task installTestAppConfig(type: Exec, dependsOn: 'installApkAppConfig') {
     commandLine command
 }
 
-task getUserProfile(dependsOn: 'installTestAppConfig') {
-    if (project.hasProperty("user")) {
-        workProfileUser = project.getProperty("user")
-        println "getUserProfile [" + workProfileUser + "]"
-    }
-}
-
-task clearDataAppConfig(type: Exec, dependsOn: 'getUserProfile') {
+task clearDataAppConfig(type: Exec, dependsOn: 'installTestAppConfig') {
     def command = ['adb', 'shell', 'pm', 'clear', '--user', workProfileUser, 'security.pEp.debug']
     commandLine command
 }
