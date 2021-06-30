@@ -20,6 +20,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.hamcrest.Matchers.*
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import security.pEp.mdm.ManageableSettingMdmEntry
@@ -27,6 +28,7 @@ import security.pEp.mdm.ManageableSettingMdmEntry
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@Ignore("Only to be run via ./gradlew testRestrictions")
 class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     private var forcedAppConfig = false
