@@ -56,34 +56,6 @@ open class SetupDevTestAccounts {
         addAccount(ANDROID_DEV_TEST_3_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "3")
     }
 
-    private fun passWelcomeScreen() {
-        uiDevice.waitForIdle()
-        onView(withId(R.id.skip)).check(matches(isDisplayed())).perform(click())
-        uiDevice.waitForIdle()
-    }
-
-    private fun grantPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.WRITE_EXTERNAL_STORAGE")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.READ_CONTACTS")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
-            K9.setShallRequestPermissions(false)
-
-            Thread {
-                val prefs = Preferences.getPreferences(InstrumentationRegistry.getInstrumentation().context)
-                val editor = prefs.storage.edit()
-                K9.save(editor)
-                editor.commit()
-            }.start()
-        }
-    }
-
     private fun addAccount(emailAddress: String, password: String, accountName: String) {
         uiDevice.waitForIdle()
         onView(withId(R.id.account_email)).check(matches(isDisplayed())).perform(typeText(emailAddress))
