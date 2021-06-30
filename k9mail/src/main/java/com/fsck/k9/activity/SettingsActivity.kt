@@ -888,10 +888,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 layoutInflater.inflate(R.layout.accounts_item, parent, false)
             }
             view.isLongClickable = true
-            view.setBackgroundColor(ThemeManager.getColorFromAttributeResource(this@SettingsActivity,
-                if(account is Account && !account.isEnabled) R.attr.disabledAccountBackground
-                else R.attr.screenDefaultBackgroundColor
-            ))
+            view.setBackgroundColor(
+                ThemeManager.getColorFromAttributeResource(
+                this@SettingsActivity,
+                    if(account is Account && !account.isEnabled) {
+                        R.attr.disabledAccountBackground
+                    } else {
+                        R.attr.screenDefaultBackgroundColor
+                    }
+                )
+            )
 
             var holder: AccountViewHolder? = view.tag as AccountViewHolder?
             if (holder == null) {
