@@ -244,7 +244,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             finish()
             return
         } else if (startup && accounts.size > 0
-                && onOpenAccount(preferences.defaultAccount)) {
+                && onOpenAccount(getAccountToOpen())) {
             finish()
             return
         }
@@ -1152,10 +1152,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 finishAffinity()
                 openSearchAccount(unifiedInboxAccount)
             } else {
-                val defaultAccount = preferences.defaultAccount
-                if(accountWasOpenable(defaultAccount)) {
-                    finishAffinity()
-                    openAccount(defaultAccount)
+                var accountToOpen = getAccountToOpen()
+
+                if(accountToOpen != null){
+                    if(accountWasOpenable(accountToOpen)) {
+                        finishAffinity()
+                        openAccount(accountToOpen)
+                    }
                 }
             }
             anyAccountWasDeleted = false
@@ -1163,5 +1166,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         else {
             super.onBackPressed()
         }
+    }
+
+    private fun getAccountToOpen(): Account? {
+        return if (preferences.accounts.isNotEmpty()) preferences.defaultAccount
+            ?: preferences.accounts.first() else null
     }
 }
