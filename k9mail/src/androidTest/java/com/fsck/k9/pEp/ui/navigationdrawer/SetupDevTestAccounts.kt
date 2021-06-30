@@ -18,6 +18,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.pEp.ui.activities.UtilsPackage.exists
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -47,8 +48,6 @@ open class SetupDevTestAccounts {
     }
 
     fun setupAccounts() {
-        grantPermissions()
-        passWelcomeScreen()
         addAccount(ANDROID_DEV_TEST_1_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "1")
         Thread.sleep(2000)
         clickAddAccountButton()
