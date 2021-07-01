@@ -61,7 +61,6 @@ import cucumber.api.junit.Cucumber;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
-import static android.provider.UserDictionary.Words.APP_ID;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -990,7 +989,7 @@ public class CucumberTestSteps {
         if (statusRating[0] != null) {
             testUtils.assertMessageStatus(statusRating[0]);
         } else {
-            testUtils.checkToolbarColor(testUtils.colorToID(status));
+            testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
         }
     }
 

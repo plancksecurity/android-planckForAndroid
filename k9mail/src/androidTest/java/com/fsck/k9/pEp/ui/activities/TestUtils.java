@@ -2089,7 +2089,7 @@ public class TestUtils {
         return resources.getIdentifier(color, "color", BuildConfig.APPLICATION_ID);
     }
 
-    public void checkToolbarColor(int color) {
+    public void checkPrivacyTextColor(int color) {
         waitForIdle();
         while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             waitForIdle();
