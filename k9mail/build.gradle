@@ -20,9 +20,11 @@ apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
+apply from: '../gradle/plugins/utils/appconfig-test.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -101,6 +103,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.kotlinCoroutines}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
@@ -131,7 +134,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "com.google.truth:truth:${versions.truth}"
-    testImplementation "org.jdom:jdom2:2.0.6"
+    testImplementation "org.jdom:jdom2:${versions.jdom}"
     testImplementation "org.koin:koin-test:${versions.koin}"
     testImplementation "org.robolectric:shadows-multidex:${versions.robolectric}"
 

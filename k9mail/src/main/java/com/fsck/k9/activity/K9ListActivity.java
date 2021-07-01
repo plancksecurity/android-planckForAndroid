@@ -51,6 +51,14 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
     @Override
     public void onResume() {
         super.onResume();
+        mBase.registerConfigurationManager();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mBase.onPause();
+        mBase.unregisterConfigurationManager();
     }
 
     @Override
@@ -100,12 +108,6 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
         }
 
         return super.onKeyUp(keyCode, event);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mBase.onPause();
     }
 
     @Override

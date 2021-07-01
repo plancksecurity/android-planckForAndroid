@@ -309,4 +309,10 @@
         <item quantity="one">%1$d attachment</item>
         <item quantity="other">%1$d attachments</item>
     </plurals>
+
+    <string name="mdm_controlled_dialog_explanation">This setting is restricted, please contact you IT Manager</string>
+
+    <string name="extra_key">Extra Key</string>
+
+
 </resources>

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
 import timber.log.Timber;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
@@ -65,12 +68,19 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean pEpSyncEnabled;
 
     public boolean ispEpPrivacyProtected() {
-        return pEpPrivacyProtectected;
+        return pEpPrivacyProtected.getValue();
     }
 
+    public ManageableSetting<Boolean> getpEpPrivacyProtected() {
+        return pEpPrivacyProtected;
+    }
+
+    public void setpEpPrivacyProtection(ManageableSetting<Boolean> config) {
+        pEpPrivacyProtected = config;
+    }
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
-         this.pEpPrivacyProtectected = privacyProtection;
+        this.pEpPrivacyProtected.setValue(privacyProtection);
     }
 
     public Boolean isPepSyncEnabled() {
@@ -266,7 +276,7 @@ public class Account implements BaseAccount, StoreConfig {
     private int remoteSearchNumResults;
 
     private boolean pEpUntrustedServer;
-    private boolean pEpPrivacyProtectected;
+    private ManageableSetting<Boolean> pEpPrivacyProtected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -376,7 +386,7 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLedColor(chipColor);
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtectected = DEFAULT_PEP_PRIVACY_PROTECTED;
+        pEpPrivacyProtected = new ManageableSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED, false);
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
@@ -513,7 +523,10 @@ public class Account implements BaseAccount, StoreConfig {
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
         pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
-        pEpPrivacyProtectected = storage.getBoolean(accountUuid + ".pEpPrivacyProtected", DEFAULT_PEP_PRIVACY_PROTECTED);
+
+        pEpPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
+                storage.getString(accountUuid + ".pEpPrivacyProtected", null)
+        );
         pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
 
         // Use email address as account description if necessary
@@ -802,7 +815,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
-        editor.putBoolean(accountUuid + ".pEpPrivacyProtected", pEpPrivacyProtectected);
+        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(pEpPrivacyProtected));
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
 
         for (NetworkType type : NetworkType.values()) {

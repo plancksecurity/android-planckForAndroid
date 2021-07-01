@@ -74,6 +74,8 @@ import javax.inject.Inject;
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.mdm.RestrictionsListener;
+import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -86,7 +88,7 @@ import timber.log.Timber;
  * From this Activity the user can perform all standard message operations.
  */
 public class MessageList extends PepActivity implements MessageListFragmentListener,
-        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker {
+        MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
 
     @Inject
     NotificationChannelManager channelUtils;
@@ -209,6 +211,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     public Boolean isThreadDisplayed() {
         return isThreadDisplayed;
+    }
+
+    @Override
+    public void updatedRestrictions() {
+        if (mMessageViewFragment != null) {
+            mMessageViewFragment.displayMessage();
+        } else if (mMessageListFragment != null) {
+            mMessageListFragment.refreshAccount();
+        }
     }
 
     @Override
@@ -791,6 +802,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         drawerLayoutView.setDrawerEnabled(!Intent.ACTION_SEARCH.equals(getIntent().getAction()));
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
+        setConfigurationManagerListener(this);
     }
 
     private void setDefaultFolderNameIfNeeded() {
