@@ -1,6 +1,11 @@
 def workProfileUser = project.hasProperty("user") ? project.getProperty("user") : 10
 
-task installApkAppConfig(type: Exec, dependsOn: 'uninstallAll') {
+task configRemoveIgnore(type: Exec) {
+    def command = ['sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'enable', 'src/androidTest/java/com/fsck/k9/pEp/ui/restrictions/AppRestrictionsTest.kt']
+    commandLine command
+}
+
+task installApkAppConfig(type: Exec, dependsOn: ['uninstallAll', 'configRemoveIgnore']) {
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebug']
     commandLine command
 }
@@ -57,5 +62,10 @@ task accountSettingsAppRestrictions(type: Exec, dependsOn: 'messageComposeAppRes
     commandLine command
 }
 
-task testRestrictions(dependsOn: 'accountSettingsAppRestrictions') {
+task configAddIgnore(type: Exec, dependsOn: 'accountSettingsAppRestrictions') {
+    def command = ['sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'disable', 'src/androidTest/java/com/fsck/k9/pEp/ui/restrictions/AppRestrictionsTest.kt']
+    commandLine command
+}
+
+task testRestrictions(dependsOn: 'configAddIgnore') {
 }
