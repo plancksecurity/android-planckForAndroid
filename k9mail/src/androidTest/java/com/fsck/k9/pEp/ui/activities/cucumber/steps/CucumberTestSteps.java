@@ -61,6 +61,7 @@ import cucumber.api.junit.Cucumber;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
+import static android.provider.UserDictionary.Words.APP_ID;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -260,7 +261,7 @@ public class CucumberTestSteps {
                 break;
         }
         account = accountAddress(account);
-        if (exists(onView(withId(R.id.recipient_expander)))) {
+        if (viewIsDisplayed(R.id.recipient_expander)) {
             onView(withId(R.id.recipient_expander)).perform(click());
         }
         if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
@@ -278,20 +279,37 @@ public class CucumberTestSteps {
                     onView(withId(viewID)).perform(closeSoftKeyboard());
                     waitForIdle();
                     testUtils.typeTextInField(account, viewID, resourceID);
-                    testUtils.typeTextInField(",", viewID, resourceID);
-                    //onView(withId(viewID)).perform(closeSoftKeyboard());
+                    onView(withId(viewID)).perform(closeSoftKeyboard());
                     filled = true;
                 } catch (Exception ex) {
                     Timber.i("Couldn't find view: " + ex.getMessage());
                 }
             }
         }
-        try {
-            testUtils.typeTextToForceRatingCalculation(R.id.subject);
-            onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
-            onView(withId(viewID)).check(matches(isDisplayed()));
-        } catch (Exception ex) {
-            Timber.i("Couldn't find view: " + ex.getMessage());
+        if (field.equals("BCC")) {
+            try {
+                BySelector selector;
+                selector = By.clazz("android.widget.EditText");
+                for (UiObject2 textView : device.findObjects(selector)) {
+                    if (textView.getResourceName().equals("security.pEp.debug:id/subject")) {
+                        textView.click();
+                        device.waitForIdle();
+                        //Espresso.onIdle();
+                        textView.setText(" ");
+                        device.waitForIdle();
+                        //waitForIdle();
+                        break;
+                    }
+                }
+                //UiObject2 subject = device.findObject(By.res(APP_ID, "subject"));
+                //subject.click();
+                //subject.setText(" ");
+                testUtils.typeTextToForceRatingCalculation(R.id.subject);
+                onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
+                onView(withId(viewID)).check(matches(isDisplayed()));
+            } catch (Exception ex) {
+                Timber.i("Couldn't find view: " + ex.getMessage());
+            }
         }
     }
 
