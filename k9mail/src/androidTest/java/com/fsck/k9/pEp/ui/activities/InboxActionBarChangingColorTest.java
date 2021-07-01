@@ -21,12 +21,6 @@ import org.junit.runner.RunWith;
 
 import foundation.pEp.jniadapter.Rating;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
-
 @RunWith(AndroidJUnit4.class)
 public class InboxActionBarChangingColorTest {
 
@@ -68,8 +62,9 @@ public class InboxActionBarChangingColorTest {
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
+        testUtils.checkToolbarColor(R.color.pep_green);
         testUtils.pressBack();
-        checkToolbarColor(ThemeManager.getAttributeResource(context, R.attr.toolbarDefaultColor));
+        assertToolbarColor();
     }
 
     @Test
@@ -82,19 +77,17 @@ public class InboxActionBarChangingColorTest {
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
+        testUtils.checkToolbarColor(R.color.pep_yellow);
         testUtils.pressBack();
-        checkToolbarColor(ThemeManager.getAttributeResource(context, R.attr.toolbarDefaultColor));
+        assertToolbarColor();
     }
 
-    private void checkToolbarColor(int color) {
-        device.waitForIdle();
-        boolean toolbarExists = false;
-        while (!toolbarExists) {
-            if (exists(onView(withId(R.id.toolbar)))) {
-                onView(withId(R.id.toolbar)).check(matches(withBackgroundColor(color)));
-                toolbarExists = true;
-            }
-        }
+    public void assertToolbarColor() {
+        testUtils.checkToolBarColor(
+                ThemeManager.isDarkTheme()
+                        ? R.color.dark_theme_overlay_1
+                        : R.color.pep_green
+        );
     }
 
     private void composeMessage(String to) {
