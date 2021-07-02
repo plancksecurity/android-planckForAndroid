@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -281,6 +282,12 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean) {
+        if (!::folderAdapter.isInitialized) {
+            if(BuildConfig.DEBUG) {
+                throw IllegalStateException("folderAdapter is not initialized in populateFolders!!")
+            }
+            drawerLayoutPresenter.setFoldersAdapter()
+        }
         (context as Activity).runOnUiThread {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
             drawerFolderPopulator.populateFoldersIfNeeded(

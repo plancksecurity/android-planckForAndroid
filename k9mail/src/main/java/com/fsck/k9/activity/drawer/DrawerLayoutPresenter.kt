@@ -19,6 +19,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 const val DEFAULT_PATH_DEPTH = 4
+const val DEFAULT_SEPARATOR = "."
 
 class DrawerLayoutPresenter @Inject constructor(
         @Named("ActivityContext") private val context: Context,
@@ -99,9 +100,9 @@ class DrawerLayoutPresenter @Inject constructor(
         drawerView.setAccountsAdapter(collection)
     }
 
-    private fun setFoldersAdapter() {
+    fun setFoldersAdapter() {
         val account = account?: return
-        val separator = account.remoteStore?.pathDelimiter ?: return
+        val separator = account.remoteStore?.pathDelimiter ?: DEFAULT_SEPARATOR
         val filter: (LevelListItem<FolderModel>) -> Int = { levelItem ->
             when {
                 levelItem.item.itemName == account.inboxFolderName -> 0
