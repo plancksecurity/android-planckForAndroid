@@ -2014,20 +2014,18 @@ public class TestUtils {
         while (currentActivity == getCurrentActivity()) {
             try {
                 waitForIdle();
-                while (!viewIsDisplayed(R.id.message_content)) {
-                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                if (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
                     waitForIdle();
-                }
-                waitForIdle();
-                pressBack();
-                waitForIdle();
-                if (saveAsDraft) {
-                    onView(withText(R.string.save_draft_action)).perform(click());
-                } else {
-                    onView(withText(R.string.discard_action)).perform(click());
                 }
             } catch (Exception ex) {
                 Timber.i("Ignored exception: " + ex);
+            }
+            waitForIdle();
+            pressBack();
+            waitForIdle();
+            if (saveAsDraft) {
+                onView(withText(R.string.save_draft_action)).perform(click());
             }
         }
         waitForIdle();
