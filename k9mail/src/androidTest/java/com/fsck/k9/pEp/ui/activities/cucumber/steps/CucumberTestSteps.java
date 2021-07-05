@@ -228,7 +228,7 @@ public class CucumberTestSteps {
             case "BCC":
                 viewID = R.id.bcc;
                 break;
-            case "to":
+            case "messageTo":
                 viewID = R.id.to;
                 break;
             default:
@@ -252,7 +252,7 @@ public class CucumberTestSteps {
                 viewID = R.id.bcc;
                 resourceID = "bcc";
                 break;
-            case "TO":
+            case "messageTo":
                 viewID = R.id.to;
                 resourceID = "to";
                 break;
@@ -1696,7 +1696,7 @@ public class CucumberTestSteps {
         }
         testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
-        I_enter_text_in_field("myself", "TO");
+        I_enter_text_in_field("myself", "messageTo");
         //I_fill_subject_field("New");
         I_click_the_send_message_button();
         testUtils.goBackToMessageList();
@@ -2086,9 +2086,9 @@ public class CucumberTestSteps {
     public void I_summon_threads(int total, String address) {
         try {
             for (int i = 0; i < total; i++) {
-                I_enter_text_in_field(address, "TO");
+                I_enter_text_in_field(address, "messageTo");
                 testUtils.summonThreads();
-                I_enter_text_in_field("empty", "TO");
+                I_enter_text_in_field("empty", "messageTo");
                 testUtils.summonThreads();
             }
         } catch (Exception ex) {
