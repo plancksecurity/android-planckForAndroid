@@ -9,7 +9,9 @@ import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.common.BaseTest
+import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.fsck.k9.pEp.ui.activities.UtilsPackage
+import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,36 +31,41 @@ class SetupAccountsTask : BaseTest() {
 
     @Test
     fun setupAccounts() {
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         passWelcomeScreen()
         if (UtilsPackage.viewIsDisplayed(R.id.action_continue)) {
             onView(withId(R.id.action_continue)).perform(click())
         }
         allowPermissions()
-        device.waitForIdle()
-        addAccount(ANDROID_DEV_TEST_1_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "account")
+        TestUtils.waitForIdle()
+        addAccount(
+            emailAddress = ANDROID_DEV_TEST_1_ADDRESS,
+            password = BuildConfig.PEP_TEST_EMAIL_PASSWORD,
+            accountName = "account"
+        )
     }
 
     private fun passWelcomeScreen() {
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.skip)).perform(click())
-        device.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     private fun addAccount(emailAddress: String, password: String, accountName: String) {
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.account_email)).perform(typeText(emailAddress))
         onView(withId(R.id.account_password)).perform(typeText(password))
         Espresso.closeSoftKeyboard()
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.next)).perform(click())
-
-        device.waitForIdle()
+        TestUtils.waitForIdle()
+        sleep(2000)
         onView(withId(R.id.account_name)).perform(clearText(), typeText(accountName))
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         Espresso.closeSoftKeyboard()
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.done)).perform(click())
+        TestUtils.waitForIdle()
     }
 
 }
