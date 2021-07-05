@@ -15,8 +15,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class WidgetsTest {
 
-    lateinit var uiDevice: UiDevice
-    lateinit var testUtils: TestUtils
+    private lateinit var uiDevice: UiDevice
+    private lateinit var testUtils: TestUtils
 
     @get:Rule
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
