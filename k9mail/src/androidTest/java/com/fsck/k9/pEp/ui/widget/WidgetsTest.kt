@@ -35,8 +35,5 @@ class WidgetsTest {
         val list = uiDevice.findObject(By.clazz("android.widget.ListView"))
         list.click()
         TestUtils.waitForIdle()
-        uiDevice.pressBack()
-        TestUtils.waitForIdle()
-        testUtils.openHamburgerMenu()
     }
 }
