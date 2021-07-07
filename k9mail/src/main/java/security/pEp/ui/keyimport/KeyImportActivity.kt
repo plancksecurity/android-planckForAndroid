@@ -3,11 +3,10 @@ package security.pEp.ui.keyimport
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
@@ -38,9 +37,14 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
         }
-        openFileChooser()
+        presenter.restoreInstanceState(savedInstanceState)
+        presenter.onCreate()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenter.onSaveInstanceState(outState)
+    }
     override fun openFileChooser() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -79,6 +83,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             layout.visibility = View.GONE
             presenter.onKeyImportRejected()
         }
+        layout.visibility = View.VISIBLE
+    }
+
+    override fun showLayout() {
         layout.visibility = View.VISIBLE
     }
 
@@ -129,6 +137,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     companion object {
         const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
         const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
+        const val SAVED_STATE_URI = "SAVED_STATE_URI"
         const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
         private fun openMarketIntent(activity: Activity) {
