@@ -3,7 +3,6 @@ package security.pEp.ui.keyimport
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -14,11 +13,6 @@ import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
-
-
-const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
-const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
-const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
 
 class KeyImportActivity : WizardActivity(), KeyImportView {
@@ -112,8 +106,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showLoading() {
-        val title = getString(R.string.settings_import_dialog_title)
-        val message = getString(R.string.settings_import_scanning_file)
 
         confirmationLayout.visibility = View.INVISIBLE
         keyImportLoadingLayout.visibility = View.VISIBLE
@@ -135,7 +127,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     companion object {
-        const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+        const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
         const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
         const val SAVED_STATE_URI = "SAVED_STATE_URI"
         const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
