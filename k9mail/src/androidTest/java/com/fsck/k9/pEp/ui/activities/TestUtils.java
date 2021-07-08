@@ -2027,6 +2027,9 @@ public class TestUtils {
             if (saveAsDraft) {
                 onView(withText(R.string.save_draft_action)).perform(click());
             }
+            if (currentActivity == getCurrentActivity()) {
+                onView(withText(R.string.discard_action)).perform(click());
+            }
         }
         waitForIdle();
     }
