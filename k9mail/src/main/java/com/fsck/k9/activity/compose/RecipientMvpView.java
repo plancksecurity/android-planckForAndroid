@@ -103,12 +103,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         View recipientExpander = activity.findViewById(R.id.recipient_expander);
         recipientExpander.setOnClickListener(this);
 
-        View toLabel = activity.findViewById(R.id.to_label);
-        View ccLabel = activity.findViewById(R.id.cc_label);
-        View bccLabel = activity.findViewById(R.id.bcc_label);
-        toLabel.setOnClickListener(this);
-        ccLabel.setOnClickListener(this);
-        bccLabel.setOnClickListener(this);
+        activity.findViewById(R.id.to_label).setOnClickListener(this);
+        activity.findViewById(R.id.cc_label).setOnClickListener(this);
+        activity.findViewById(R.id.bcc_label).setOnClickListener(this);
+        activity.findViewById(R.id.to_wrapper).setOnClickListener(this);
+        ccWrapper.setOnClickListener(this);
+        bccWrapper.setOnClickListener(this);
 
         pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
     }
@@ -429,14 +429,17 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.to_wrapper:
             case R.id.to_label: {
                 presenter.onClickToLabel();
                 break;
             }
+            case R.id.cc_wrapper:
             case R.id.cc_label: {
                 presenter.onClickCcLabel();
                 break;
             }
+            case R.id.bcc_wrapper:
             case R.id.bcc_label: {
                 presenter.onClickBccLabel();
                 break;
