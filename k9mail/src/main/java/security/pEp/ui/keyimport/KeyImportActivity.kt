@@ -71,7 +71,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
         acceptButton.setOnClickListener {
-            presenter.onKeyImportAccepted(filename)
+            presenter.onKeyImportAccepted()
         }
         cancelButton.setOnClickListener {
             presenter.onKeyImportRejected()

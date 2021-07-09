@@ -73,7 +73,7 @@ class KeyImportPresenter @Inject constructor(
                 firstIdentity?.let {
                     view.showKeyImportConfirmationDialog(firstIdentity, filename)
                     view.showLayout()
-                } ?: replyResult(false,filename)
+                } ?: replyResult(false)
             }
         }
     }
@@ -145,7 +145,7 @@ class KeyImportPresenter @Inject constructor(
         result
     }
 
-    private fun replyResult(success: Boolean, filename: String) {
+    private fun replyResult(success: Boolean) {
         view.hideLoading()
         when {
             success -> view.showCorrectKeyImport()
@@ -153,11 +153,11 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
-    fun onKeyImportAccepted(filename: String) {
+    fun onKeyImportAccepted() {
         view.hideLayout()
         scope.launch {
             val result = onKeyImportConfirmed()
-            replyResult(result, filename)
+            replyResult(result)
         }
     }
 
