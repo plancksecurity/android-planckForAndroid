@@ -172,7 +172,7 @@ class KeyImportPresenter @Inject constructor(
 
     }
 
-    fun onCreate() {
+    fun resumeImport() {
         if (uri != null) {
             view.showLayout()
             onKeyImport()

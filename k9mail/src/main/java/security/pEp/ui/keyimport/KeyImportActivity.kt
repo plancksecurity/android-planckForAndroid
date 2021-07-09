@@ -32,7 +32,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             presenter.initialize(this, accountUuid)
         }
         presenter.restoreInstanceState(savedInstanceState)
-        presenter.onCreate()
+        presenter.resumeImport()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
