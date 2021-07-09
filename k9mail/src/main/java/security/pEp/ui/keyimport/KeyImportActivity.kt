@@ -84,7 +84,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         layout.visibility = View.VISIBLE
     }
 
-    override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
+    override fun showCorrectKeyImport() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
                 .setMessage(getString(R.string.key_import_success))
@@ -94,7 +94,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showFailedKeyImport(filename: String?) {
+    override fun showFailedKeyImport() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
                 .setMessage(getString(R.string.key_import_failure))

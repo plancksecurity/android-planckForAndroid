@@ -146,8 +146,8 @@ class KeyImportPresenter @Inject constructor(
     private fun replyResult(success: Boolean, filename: String) {
         view.hideLoading()
         when {
-            success -> view.showCorrectKeyImport(fingerprint, filename)
-            else -> view.showFailedKeyImport(filename)
+            success -> view.showCorrectKeyImport()
+            else -> view.showFailedKeyImport()
         }
     }
 

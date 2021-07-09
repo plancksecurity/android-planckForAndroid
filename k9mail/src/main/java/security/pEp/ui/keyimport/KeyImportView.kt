@@ -7,9 +7,9 @@ interface KeyImportView {
 
     fun openFileChooser()
 
-    fun showCorrectKeyImport(fingerprint: String, filename: String?)
+    fun showCorrectKeyImport()
 
-    fun showFailedKeyImport(filename: String?)
+    fun showFailedKeyImport()
 
     fun finish()
 
