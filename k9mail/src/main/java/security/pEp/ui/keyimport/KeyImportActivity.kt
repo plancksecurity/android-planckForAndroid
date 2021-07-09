@@ -58,6 +58,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         val infos = packageManager.queryIntentActivities(intent, 0)
         if (infos.isNotEmpty()) {
             startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_PICK_KEY_FILE)
+            presenter.fileManagerOpened()
         } else {
             showNoFileManager()
         }
@@ -132,6 +133,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     companion object {
+        const val IMPORT_STATE = "IMPORT_STATE"
         const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
         const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
         const val SAVED_STATE_URI = "SAVED_STATE_URI"

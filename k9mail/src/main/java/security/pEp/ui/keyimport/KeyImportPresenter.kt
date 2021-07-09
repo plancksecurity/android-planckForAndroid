@@ -14,6 +14,7 @@ import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
 import org.apache.commons.io.IOUtils
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PICK_KEY_FILE
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.IMPORT_STATE
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.SAVED_STATE_URI
 import timber.log.Timber
 import java.io.FileNotFoundException
@@ -34,6 +35,8 @@ class KeyImportPresenter @Inject constructor(
     private lateinit var accountIdentity: Identity
     private lateinit var currentFpr: String
     private lateinit var address: String
+    private lateinit var importState: ImportState
+
     private var uri: Uri? = null
 
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -41,6 +44,7 @@ class KeyImportPresenter @Inject constructor(
     fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
         this.accountUuid = accountUuid
+        this.importState = ImportState.KEY_NOT_SELECTED
         scope.launch {
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
@@ -51,12 +55,14 @@ class KeyImportPresenter @Inject constructor(
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) {
+            this.importState = ImportState.KEY_NOT_SELECTED
             view.finish()
             return
         }
         when (requestCode) {
             ACTIVITY_REQUEST_PICK_KEY_FILE -> data.data?.let { uri ->
                 this.uri = uri
+                this.importState = ImportState.KEY_SELECTED
                 onKeyImport()
             }
         }
@@ -148,8 +154,14 @@ class KeyImportPresenter @Inject constructor(
     private fun replyResult(success: Boolean) {
         view.hideLoading()
         when {
-            success -> view.showCorrectKeyImport()
-            else -> view.showFailedKeyImport()
+            success -> {
+                this.importState = ImportState.KEY_IMPORTED
+                view.showCorrectKeyImport()
+            }
+            else -> {
+                this.importState = ImportState.KEY_NOT_IMPORTED
+                view.showFailedKeyImport()
+            }
         }
     }
 
@@ -163,6 +175,7 @@ class KeyImportPresenter @Inject constructor(
 
     fun onSaveInstanceState(outState: Bundle) {
         outState.putString(SAVED_STATE_URI, uri?.toString())
+        outState.putSerializable(IMPORT_STATE, this.importState)
     }
 
     fun restoreInstanceState(savedInstanceState: Bundle?) {
@@ -171,16 +184,33 @@ class KeyImportPresenter @Inject constructor(
             if (!uriString.isNullOrEmpty()) {
                 uri = Uri.parse(uriString)
             }
+            this.importState = savedInstanceState.get(IMPORT_STATE) as ImportState
         }
 
     }
 
     fun resumeImport() {
-        if (uri != null) {
-            view.showLayout()
-            onKeyImport()
-        } else {
-            view.openFileChooser()
+        when (this.importState) {
+            ImportState.KEY_NOT_SELECTED ->
+                view.openFileChooser()
+            ImportState.KEY_SELECTED ->
+                onKeyImport()
+            ImportState.KEY_IMPORTED ->
+                view.showCorrectKeyImport()
+            ImportState.KEY_NOT_IMPORTED ->
+                view.showFailedKeyImport()
         }
+    }
+
+    fun fileManagerOpened() {
+        this.importState = ImportState.FILE_MANAGER_OPEN
+    }
+
+    enum class ImportState {
+        KEY_NOT_SELECTED,
+        FILE_MANAGER_OPEN,
+        KEY_SELECTED,
+        KEY_IMPORTED,
+        KEY_NOT_IMPORTED
     }
 }
