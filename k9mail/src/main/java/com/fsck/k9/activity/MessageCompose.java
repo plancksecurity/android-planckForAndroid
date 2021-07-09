@@ -662,6 +662,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     protected void onResume() {
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
+        messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
         setConfigurationManagerListener(this);
