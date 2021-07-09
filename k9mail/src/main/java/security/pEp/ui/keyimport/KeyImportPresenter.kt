@@ -66,12 +66,14 @@ class KeyImportPresenter @Inject constructor(
         uri?.let { uri ->
             val filename = uri.path.toString()
             scope.launch {
+                view.showLayout()
                 view.showLoading()
                 val firstIdentity = importKey(uri)
                 view.hideLoading()
                 firstIdentity?.let {
                     view.showKeyImportConfirmationDialog(firstIdentity, filename)
-                } ?: replyResult(false, filename)
+                    view.showLayout()
+                } ?: replyResult(false,filename)
             }
         }
     }
@@ -152,6 +154,7 @@ class KeyImportPresenter @Inject constructor(
     }
 
     fun onKeyImportAccepted(filename: String) {
+        view.hideLayout()
         scope.launch {
             val result = onKeyImportConfirmed()
             replyResult(result, filename)

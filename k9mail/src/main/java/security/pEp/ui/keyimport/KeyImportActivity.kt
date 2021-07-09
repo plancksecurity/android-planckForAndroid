@@ -39,6 +39,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         super.onSaveInstanceState(outState)
         presenter.onSaveInstanceState(outState)
     }
+
     override fun openFileChooser() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -70,18 +71,19 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
         acceptButton.setOnClickListener {
-            layout.visibility = View.GONE
             presenter.onKeyImportAccepted(filename)
         }
         cancelButton.setOnClickListener {
-            layout.visibility = View.GONE
             presenter.onKeyImportRejected()
         }
-        layout.visibility = View.VISIBLE
     }
 
     override fun showLayout() {
         layout.visibility = View.VISIBLE
+    }
+
+    override fun hideLayout() {
+        layout.visibility = View.GONE
     }
 
     override fun showCorrectKeyImport() {
@@ -106,7 +108,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showLoading() {
-
         confirmationLayout.visibility = View.INVISIBLE
         keyImportLoadingLayout.visibility = View.VISIBLE
     }
