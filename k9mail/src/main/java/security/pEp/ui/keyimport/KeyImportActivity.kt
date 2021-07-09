@@ -33,6 +33,16 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         }
         presenter.restoreInstanceState(savedInstanceState)
         presenter.resumeImport()
+        setClickListeners()
+    }
+
+    private fun setClickListeners() {
+        acceptButton.setOnClickListener {
+            presenter.onKeyImportAccepted()
+        }
+        cancelButton.setOnClickListener {
+            presenter.onKeyImportRejected()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -70,12 +80,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
-        acceptButton.setOnClickListener {
-            presenter.onKeyImportAccepted()
-        }
-        cancelButton.setOnClickListener {
-            presenter.onKeyImportRejected()
-        }
     }
 
     override fun showLayout() {
