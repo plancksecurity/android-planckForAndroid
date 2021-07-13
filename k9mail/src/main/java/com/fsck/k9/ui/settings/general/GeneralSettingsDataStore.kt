@@ -52,6 +52,7 @@ class GeneralSettingsDataStore(
             "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
             "pep_enable_sync" -> K9.ispEpSyncEnabled()
             "pep_sync_folder" -> K9.isUsingpEpSyncFolder()
+            "using_passphrase" -> K9.isUsingPassphrase()
             else -> defValue
         }
     }
@@ -92,6 +93,7 @@ class GeneralSettingsDataStore(
             "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
             "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
+            "using_passphrase" -> K9.setUsingPassphrase(value)
             else -> return
         }
 

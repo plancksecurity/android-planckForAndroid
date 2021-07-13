@@ -346,6 +346,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
+    private static boolean usingPassphrase = false;
     private static long appVersionCode = -1;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
@@ -622,6 +623,7 @@ public class K9 extends MultiDexApplication {
 
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
+        editor.putBoolean("usingPassphrase", usingPassphrase);
         editor.putPassphrase(pEpNewKeysPassphrase);
 
         fontSizes.save(editor);
@@ -1024,6 +1026,7 @@ public class K9 extends MultiDexApplication {
         themeValue = storage.getInt("messageComposeTheme", Theme.USE_GLOBAL.ordinal());
         ThemeManager.setK9ComposerTheme(Theme.values()[themeValue]);
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
+        usingPassphrase = storage.getBoolean("usingPassphrase", false);
         pEpNewKeysPassphrase = storage.getPassphrase();
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
@@ -1592,6 +1595,14 @@ public class K9 extends MultiDexApplication {
 
     public static void setUsingpEpSyncFolder(boolean usingpEpSyncFolder) {
         K9.usingpEpSyncFolder = usingpEpSyncFolder;
+    }
+
+    public static boolean isUsingPassphrase() {
+        return usingPassphrase;
+    }
+
+    public static void setUsingPassphrase(boolean usingPassphrase) {
+        K9.usingPassphrase = usingPassphrase;
     }
 
     public static long getAppVersionCode() {
