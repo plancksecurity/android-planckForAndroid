@@ -11,8 +11,8 @@ import timber.log.Timber
 class PassphraseStorage(context: Context) {
 
     private var masterKeyAlias = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
 
     private lateinit var preferences: SharedPreferences
 
@@ -27,15 +27,15 @@ class PassphraseStorage(context: Context) {
     }
 
     private suspend fun createEncryptedSharedPreferencesInternal(context: Context) =
-            withContext(Dispatchers.IO) {
-        preferences = EncryptedSharedPreferences.create(
+        withContext(Dispatchers.IO) {
+            preferences = EncryptedSharedPreferences.create(
                 context,
                 SECRET_SHARED_PREFS_FILENAME,
                 masterKeyAlias,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
+            )
+        }
 
 
     fun putPassphrase(passphrase: String?) {
