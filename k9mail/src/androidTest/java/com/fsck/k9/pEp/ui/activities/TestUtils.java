@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
@@ -57,6 +58,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
 
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -157,6 +159,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
+    private static final String HOST = "@sq.pep.security";
 
 
 
@@ -405,181 +408,182 @@ public class TestUtils {
     }
 
     public void readConfigFile() {
-        File newFile = null;
-         do {
-             //File directory = new File(context.getExternalFilesDir(null).toString());
-             //newFile = new File(directory, "/test_config.txt");
-            File directory = new File(Environment.getExternalStorageDirectory().toString());
-            newFile = new File(directory, "test/test_config.txt");
-        } while (!newFile.exists());
         testConfig = new TestConfig();
-        while (newFile.canRead() && (testConfig.getMail(0) == null || testConfig.getMail(0).equals(""))) {
+        String[] strSplit = new String[0];
+        String[] line = new String[2];
+        boolean configFileReaded = false;
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (manufacturer.equals("Google")) {
+            model = "default";
+        }
+        while (!configFileReaded) {
             try {
-                FileInputStream fin = new FileInputStream(newFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    String[] line = receiveString.split(" = ");
-                    if (line.length > 1) {
-                        switch (line[0]) {
-                            case "mail":
-                                testConfig.setMail(line[1], 0);
-                                if (!testConfig.getMail(0).equals("")) {
-                                    totalAccounts = 1;
-                                }
-                                break;
-                            case "password":
-                                testConfig.setPassword(line[1], 0);
-                                break;case "username":
-                                testConfig.setUsername(line[1], 0);
-                                break;
-                            case "trusted_server":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 0);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 0);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server":
-                                testConfig.setImap_server(line[1], 0);
-                                break;
-                            case "smtp_server":
-                                testConfig.setSmtp_server(line[1], 0);
-                                break;
-                            case "imap_port":
-                                testConfig.setImap_port(line[1], 0);
-                                break;
-                            case "smtp_port":
-                                testConfig.setSmtp_port(line[1], 0);
-                                break;
-                            case "mail2":
-                                testConfig.setMail(line[1], 1);
-                                if (!testConfig.getMail(1).equals("")) {
-                                    totalAccounts = 2;
-                                }
-                                break;
-                            case "password2":
-                                testConfig.setPassword(line[1], 1);
-                                if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                                    assertFailWithMessage("Password is empty");
-                                }
-                                break;case "username2":
-                                testConfig.setUsername(line[1], 1);
-                                break;
-                            case "trusted_server2":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 1);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 1);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server2":
-                                testConfig.setImap_server(line[1], 1);
-                                break;
-                            case "smtp_server2":
-                                testConfig.setSmtp_server(line[1], 1);
-                                break;
-                            case "imap_port2":
-                                testConfig.setImap_port(line[1], 1);
-                                break;
-                            case "smtp_port2":
-                                testConfig.setSmtp_port(line[1], 1);
-                                break;
-                            case "mail3":
-                                testConfig.setMail(line[1], 2);
-                                if (!testConfig.getMail(2).equals("")) {
-                                    totalAccounts = 3;
-                                }
-                                break;
-                            case "password3":
-                                testConfig.setPassword(line[1], 2);
-                                if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                                    assertFailWithMessage("Password is empty");
-                                }
-                                break;case "username3":
-                                testConfig.setUsername(line[1], 2);
-                                break;
-                            case "trusted_server3":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 2);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 2);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server3":
-                                testConfig.setImap_server(line[1], 2);
-                                break;
-                            case "smtp_server3":
-                                testConfig.setSmtp_server(line[1], 2);
-                                break;
-                            case "imap_port3":
-                                testConfig.setImap_port(line[1], 2);
-                                break;
-                            case "smtp_port3":
-                                testConfig.setSmtp_port(line[1], 2);
-                                break;
-                            case "keysync_account_1":
-                                testConfig.setKeySync_account(line[1], 0);
-                                break;
-                            case "keysync_password_1":
-                                testConfig.setKeySync_password(line[1], 0);
-                                break;
-                            case "keysync_account_2":
-                                testConfig.setKeySync_account(line[1], 1);
-                                break;
-                            case "keysync_password_2":
-                                testConfig.setKeySync_password(line[1], 1);
-                                break;
-                            case "test_number":
-                                testConfig.settest_number(line[1]);
-                                if (!testConfig.gettest_number().equals("0")) {
-                                    totalAccounts = 1;
-                                    if(testConfig.gettest_number().equals("3")) {
-                                        totalAccounts = 2;
-                                    }
-                                }
-                                break;
-                            case "passphrase_account_1":
-                                testConfig.setPassphrase_account(line[1], 0);
-                                break;
-                            case "passphrase_password_1":
-                                testConfig.setPassphrase_password(line[1], 0);
-                                break;
-                            case "passphrase_account_2":
-                                testConfig.setPassphrase_account(line[1], 1);
-                                break;
-                            case "passphrase_password_2":
-                                testConfig.setPassphrase_password(line[1], 1);
-                                break;
-                            case "passphrase_account_3":
-                                testConfig.setPassphrase_account(line[1], 2);
-                                break;
-                            case "passphrase_password_3":
-                                testConfig.setPassphrase_password(line[1], 2);
-                                break;
-                            case "format_test_account":
-                                testConfig.setFormat_test_account(line[1]);
-                                break;
-                            case "format_test_password":
-                                testConfig.setFormat_test_password(line[1]);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                fin.close();
-            } catch (Exception e) {
-                Timber.i("Error reading config file, trying again");
+                InputStream is = getInstrumentation().getContext().getAssets().open("features/test_config/" + model + ".txt");
+                String str = IOUtils.toString(is);
+                strSplit = str.split("\n");
+                configFileReaded = true;
+            } catch (IOException e) {
+                model = "default";
+                Timber.i("Cannot find config file for " + model + ", using default file");
             }
         }
+            for (int readingLine = 0; readingLine < strSplit.length; readingLine++) {
+                line = strSplit[readingLine].split(" = ");
+                switch (line[0]) {
+                    case "mail":
+                        testConfig.setMail(line[1], 0);
+                        if (!testConfig.getMail(0).equals("")) {
+                            totalAccounts = 1;
+                        }
+                        break;
+                    case "password":
+                        testConfig.setPassword(line[1], 0);
+                        break;case "username":
+                        testConfig.setUsername(line[1], 0);
+                        break;
+                    case "trusted_server":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 0);
+                        } else if (line[1].equals("false")){
+                            testConfig.setTrusted_server(false, 0);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server":
+                        testConfig.setImap_server(line[1], 0);
+                        break;
+                    case "smtp_server":
+                        testConfig.setSmtp_server(line[1], 0);
+                        break;
+                    case "imap_port":
+                        testConfig.setImap_port(line[1], 0);
+                        break;
+                    case "smtp_port":
+                        testConfig.setSmtp_port(line[1], 0);
+                        break;
+                    case "mail2":
+                        testConfig.setMail(line[1], 1);
+                        if (!testConfig.getMail(1).equals("")) {
+                            totalAccounts = 2;
+                        }
+                        break;
+                    case "password2":
+                        testConfig.setPassword(line[1], 1);
+                        if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
+                            assertFailWithMessage("Password is empty");
+                        }
+                        break;case "username2":
+                        testConfig.setUsername(line[1], 1);
+                        break;
+                    case "trusted_server2":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 1);
+                        } else if (line[1].equals("false")){
+                            testConfig.setTrusted_server(false, 1);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server2":
+                        testConfig.setImap_server(line[1], 1);
+                        break;
+                    case "smtp_server2":
+                        testConfig.setSmtp_server(line[1], 1);
+                        break;
+                    case "imap_port2":
+                        testConfig.setImap_port(line[1], 1);
+                        break;
+                    case "smtp_port2":
+                        testConfig.setSmtp_port(line[1], 1);
+                        break;
+                    case "mail3":
+                        testConfig.setMail(line[1], 2);
+                        if (!testConfig.getMail(2).equals("")) {
+                            totalAccounts = 3;
+                        }
+                        break;
+                    case "password3":
+                        testConfig.setPassword(line[1], 2);
+                        if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
+                            assertFailWithMessage("Password is empty");
+                        }
+                        break;case "username3":
+                        testConfig.setUsername(line[1], 2);
+                        break;
+                    case "trusted_server3":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 2);
+                        } else if (line[1].equals("false")){
+                            testConfig.setTrusted_server(false, 2);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server3":
+                        testConfig.setImap_server(line[1], 2);
+                        break;
+                    case "smtp_server3":
+                        testConfig.setSmtp_server(line[1], 2);
+                        break;
+                    case "imap_port3":
+                        testConfig.setImap_port(line[1], 2);
+                        break;
+                    case "smtp_port3":
+                        testConfig.setSmtp_port(line[1], 2);
+                        break;
+                    case "keysync_account_1":
+                        testConfig.setKeySync_account(line[1], 0);
+                        break;
+                    case "keysync_password_1":
+                        testConfig.setKeySync_password(line[1], 0);
+                        break;
+                    case "keysync_account_2":
+                        testConfig.setKeySync_account(line[1], 1);
+                        break;
+                    case "keysync_password_2":
+                        testConfig.setKeySync_password(line[1], 1);
+                        break;
+                    case "test_number":
+                        testConfig.settest_number(line[1]);
+                        if (!testConfig.gettest_number().equals("0")) {
+                            totalAccounts = 1;
+                            if(testConfig.gettest_number().equals("3")) {
+                                totalAccounts = 2;
+                            }
+                        }
+                        break;
+                    case "passphrase_account_1":
+                        testConfig.setPassphrase_account(line[1], 0);
+                        break;
+                    case "passphrase_password_1":
+                        testConfig.setPassphrase_password(line[1], 0);
+                        break;
+                    case "passphrase_account_2":
+                        testConfig.setPassphrase_account(line[1], 1);
+                        break;
+                    case "passphrase_password_2":
+                        testConfig.setPassphrase_password(line[1], 1);
+                        break;
+                    case "passphrase_account_3":
+                        testConfig.setPassphrase_account(line[1], 2);
+                        break;
+                    case "passphrase_password_3":
+                        testConfig.setPassphrase_password(line[1], 2);
+                        break;
+                    case "format_test_account":
+                        testConfig.setFormat_test_account(line[1]);
+                        break;
+                    case "format_test_password":
+                        testConfig.setFormat_test_password(line[1]);
+                        break;
+                    default:
+                        break;
+                }
+
+        }
+
     }
 
     public void syncDevices () {
@@ -804,25 +808,12 @@ public class TestUtils {
     }
 
     public void readBotList(){
-        File directory = new File(Environment.getExternalStorageDirectory().toString());
-
-        File newFile = new File(directory, "test/botlist.txt");
-        testConfig = new TestConfig();
-        try  {
-            FileInputStream fin = new FileInputStream(newFile);
-            InputStreamReader inputStreamReader = new InputStreamReader(fin);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String receiveString;
+        int millis = (int) System.currentTimeMillis();
             botList = new String[9];
             int position = 0;
-            while ( (receiveString = bufferedReader.readLine()) != null ) {
-                botList[position++] = receiveString;
+            for (; position < botList.length; position++) {
+                botList[position] = "bot" + position + millis;
             }
-            fin.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 
     public int getTotalAccounts() {
@@ -1559,11 +1550,18 @@ public class TestUtils {
 
     private static Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
-        File fileLocation = new File(context.getExternalFilesDir(null), fileName);
-        Uri uri = FileProvider.getUriForFile(context, APP_ID+".provider", fileLocation);
-        resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        resultData.setType("*/*");
-        resultData.setData(uri);
+
+        File fileLocation = new File(Environment.getExternalStorageDirectory()
+                .getAbsolutePath(), fileName);
+        resultData.setData(Uri.parse("file://" + fileLocation));
+
+        if (!fileLocation.exists()) {
+            fileLocation = new File(context.getExternalFilesDir(null), fileName);
+            Uri uri = FileProvider.getUriForFile(context, APP_ID + ".provider", fileLocation);
+            resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            resultData.setType("*/*");
+            resultData.setData(uri);
+        }
         return resultData;
     }
 
@@ -2977,6 +2975,9 @@ public class TestUtils {
     public void emptyFolder (String folderName) {
         waitForIdle();
         File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
+        if (!dir.exists()) {
+            dir = new File(context.getExternalFilesDir(null)+"/" + folderName + "/");
+        }
         if (dir.isDirectory())
         {
             String[] children = dir.list();
