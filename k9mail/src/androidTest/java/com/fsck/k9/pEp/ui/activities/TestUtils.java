@@ -2831,7 +2831,7 @@ public class TestUtils {
         for (int i = 0; i < 10; i++) {
             word += word;
         }
-        return word + "\n";
+        return word;
     }
 
     public String specialCharacters() {
