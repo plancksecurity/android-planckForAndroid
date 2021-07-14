@@ -1478,7 +1478,9 @@ public class TestUtils {
             try {
                 String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
                 File file = new File(extStorageDirectory, fileName);
-
+                if (!file.canRead()) {
+                    file = new File(context.getExternalFilesDir(null), fileName);
+                }
                 final OutputStream outputStream = new FileOutputStream(file);
 
                 final Resources resources = context.getResources();
