@@ -61,6 +61,7 @@ import cucumber.api.junit.Cucumber;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
+import static android.provider.UserDictionary.Words.APP_ID;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -256,6 +257,12 @@ public class CucumberTestSteps {
                 viewID = R.id.to;
                 resourceID = "to";
                 break;
+            case "messageSubject":
+                I_fill_subject_field(account);
+                return;
+            case "messageBody":
+                I_fill_body_field(account);
+                return;
             default:
                 break;
         }
@@ -285,6 +292,8 @@ public class CucumberTestSteps {
                 }
             }
         }
+            testUtils.typeTextToForceRatingCalculation(R.id.subject);
+            onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         if (field.equals("BCC")) {
             try {
                 BySelector selector;
@@ -292,19 +301,14 @@ public class CucumberTestSteps {
                 for (UiObject2 textView : device.findObjects(selector)) {
                     if (textView.getResourceName().equals("security.pEp.debug:id/subject")) {
                         textView.click();
-                        device.waitForIdle();
-                        //Espresso.onIdle();
+                        waitForIdle();
                         textView.setText(" ");
-                        device.waitForIdle();
-                        //waitForIdle();
+                        waitForIdle();
                         break;
                     }
                 }
-                //UiObject2 subject = device.findObject(By.res(APP_ID, "subject"));
-                //subject.click();
-                //subject.setText(" ");
                 testUtils.typeTextToForceRatingCalculation(R.id.subject);
-                onView(withId(R.id.message_content)).perform(click(), closeSoftKeyboard());
+                onView(withId(R.id.toolbar)).perform(click(), closeSoftKeyboard());
                 onView(withId(viewID)).check(matches(isDisplayed()));
             } catch (Exception ex) {
                 Timber.i("Couldn't find view: " + ex.getMessage());
