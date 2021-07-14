@@ -2150,7 +2150,7 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Cannot find subject field");
         }
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 500; i++) {
             waitUntilIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
