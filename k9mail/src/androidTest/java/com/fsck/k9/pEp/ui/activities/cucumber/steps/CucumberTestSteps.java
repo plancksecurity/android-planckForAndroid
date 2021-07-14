@@ -383,7 +383,7 @@ public class CucumberTestSteps {
         switch (name) {
             case "rating":
             case "rating_string":
-                assertText(TestUtils.rating, stringToCompare);
+                assertText(stringToCompare, TestUtils.rating);
                 break;
             case "messageBody":
                 if (stringToCompare.contains("longText")) {
