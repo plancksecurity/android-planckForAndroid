@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -1005,6 +1006,7 @@ public class CucumberTestSteps {
         BySelector subSelector = By.clazz("android.view.View");
         int horizontalWidgetScroll = 0;
         int scroll = 0;
+        int visibleCenterX = 0;
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
@@ -1081,34 +1083,56 @@ public class CucumberTestSteps {
                     for (UiObject2 textView : device.findObjects(selector)) {
                         if (textView.getText().equals("p≡p")) {
                             textView.click();
+                            waitForIdle();
+                            Timber.i("Estoy en 1");
                             int widgetPreview = 0;
-                            for (UiObject2 subTextView : device.findObjects(subSelector)) {
-                                if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
-                                    widgetPreview++;
-                                    if (widgetPreview == widgetToDrag) {
-                                        scroll = horizontalWidgetScroll - 1;
-                                        switch (widgetToDrag) {
-                                            case 1:
-                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                        device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                            while (widgetPreview == 0) {
+                                try {
+                                    for (UiObject2 subTextView : device.findObjects(subSelector)) {
+                                        Timber.i("Estoy en 1a");
+                                        Timber.i("Estoy en subTextView: " + subTextView.getResourceName());
+                                        if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
+                                            widgetPreview++;
+                                            Timber.i("Estoy en 2");
+                                            while (widgetPreview < widgetToDrag) {
                                                 waitForIdle();
-                                                testUtils.clickTextOnScreen("Unified Inbox");
-                                                break;
-                                            case 2:
-                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                        device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
-                                                break;
-                                            case 3:
-                                                device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
-                                                        device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                                                device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
+                                                        10, device.getDisplayHeight() / 2, 15);
                                                 waitForIdle();
-                                                testUtils.clickTextOnScreen("Unified Inbox");
-                                                break;
+                                                widgetPreview++;
+                                            }
+                                            if (widgetPreview == widgetToDrag) {
+                                                scroll = horizontalWidgetScroll - 1;
+                                                Timber.i("Estoy en 3");
+                                                switch (widgetToDrag) {
+                                                    case 1:
+                                                        visibleCenterX = subTextView.getVisibleCenter().x;
+                                                        Timber.i("Estoy en 4");
+                                                        device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                                device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                                                        waitForIdle();
+                                                        Timber.i("Estoy en 5");
+                                                        testUtils.clickTextOnScreen("Unified Inbox");
+                                                        break;
+                                                    case 2:
+                                                        device.drag(visibleCenterX, subTextView.getVisibleCenter().y,
+                                                                device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                                                        break;
+                                                    case 3:
+                                                        device.drag(visibleCenterX, subTextView.getVisibleCenter().y,
+                                                                device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                                                        waitForIdle();
+                                                        testUtils.clickTextOnScreen("Unified Inbox");
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                        if (scroll == horizontalWidgetScroll - 1) {
+                                            break;
                                         }
                                     }
-                                }
-                                if (scroll == horizontalWidgetScroll - 1) {
-                                    break;
+                                } catch (Exception noWidget) {
+                                    Timber.i("Cannot find Widget");
                                 }
                             }
                         }
@@ -1129,6 +1153,7 @@ public class CucumberTestSteps {
         }
         int widgets = 0;
         UiObject2 messagesListWidget = null;
+        Timber.i("Estoy en 6");
         for (UiObject2 view : device.findObjects(selector)) {
             if (view.getText() != null) {
                 if (view.getText().contains("Unified Inbox")) {
@@ -1137,15 +1162,19 @@ public class CucumberTestSteps {
                 }
             }
         }
+        Timber.i("Estoy en 7");
         if (widgets != 3) {
             TestUtils.assertFailWithMessage("Missing a Widget");
         }
+        Timber.i("Estoy en 8");
         if (!testUtils.textExistsOnScreen("WidTest")) {
             TestUtils.assertFailWithMessage("Widget error: wrong message subject");
         }
+        Timber.i("Estoy en 9");
         waitForIdle();
         messagesListWidget.click();
         waitForIdle();
+        Timber.i("Estoy en 10");
     }
 
     @And("^I select from message menu (\\S+)$")
