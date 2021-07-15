@@ -344,7 +344,7 @@
                 android:title="@string/master_key_management"/>
 
             <SwitchPreferenceCompat
-                android:key="using_passphrase"
+                android:key="pep_use_passphrase_for_new_keys"
                 android:title="@string/passhphrase_new_keys_settings_title" />
 
             <SwitchPreferenceCompat

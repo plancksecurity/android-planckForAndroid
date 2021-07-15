@@ -79,7 +79,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeNewKeysPassphrase() {
-        (findPreference(USING_PASSPHRASE) as SwitchPreferenceCompat?)?.apply {
+        (findPreference(PEP_USE_PASSPHRASE_FOR_NEW_KEYS) as SwitchPreferenceCompat?)?.apply {
             this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
                     processNewKeysSwitchClick(preference, newValue)
                 }
@@ -280,7 +280,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             result?.let { intent ->
                 val isChecked = intent.getBooleanExtra(PASSPHRASE_RESULT_KEY, false)
-                (findPreference(USING_PASSPHRASE) as SwitchPreferenceCompat?)?.isChecked = isChecked
+                (findPreference(PEP_USE_PASSPHRASE_FOR_NEW_KEYS) as SwitchPreferenceCompat?)?.isChecked = isChecked
             }
         }
     }
@@ -306,7 +306,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
-        private const val USING_PASSPHRASE = "using_passphrase"
+        private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
 
