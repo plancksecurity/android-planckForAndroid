@@ -74,6 +74,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -122,6 +123,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static java.lang.Thread.sleep;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -405,6 +407,11 @@ public class TestUtils {
             }
         }
         return out;
+    }
+
+    public void moveFile(File file, File dir) throws IOException {
+        File newFile = new File(dir, file.getName());
+        Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
     }
 
     public void readConfigFile() {
