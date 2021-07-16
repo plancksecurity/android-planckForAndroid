@@ -34,7 +34,6 @@ class PassphrasePresenter @Inject constructor(
             PassphraseRequirementType.WRONG_PASSPHRASE -> {
                 view.showRetryPasswordRequest()
                 view.enableNonSyncDismiss()
-
             }
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 view.enableSyncDismiss()
@@ -44,11 +43,18 @@ class PassphrasePresenter @Inject constructor(
                 view.enableNonSyncDismiss()
                 view.showNewKeysPassphrase()
             }
+            PassphraseRequirementType.BROKEN_KEY -> {
+                view.enableNonSyncDismiss()
+                view.showBrokenKeyStore()
+            }
         }
     }
 
     fun cancel() {
         PassphraseProvider.stop()
+        if (type == PassphraseRequirementType.BROKEN_KEY) {
+            view.resetEncryptedSharedPreferences()
+        }
         view.finish()
     }
 
@@ -63,19 +69,30 @@ class PassphrasePresenter @Inject constructor(
                 view.finish()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
-                scope.launch {
-                    K9.setpEpNewKeysPassphrase(passphrase)
-                    val editor = Preferences.getPreferences(context).storage.edit()
-                    K9.save(editor)
-                    editor.commit()
-                    pEp.configPassphraseForNewKeys(true, passphrase)
-                    view.finish(true)
-                }
+                setNewKeysPassphrase(scope, passphrase)
+            }
+            PassphraseRequirementType.BROKEN_KEY -> {
+                view.resetEncryptedSharedPreferences()
+                setNewKeysPassphrase(scope, passphrase)
             }
             else -> {
                 PassphraseProvider.passphrase = passphrase
                 view.finish()
             }
+        }
+    }
+
+    private fun setNewKeysPassphrase(
+        scope: CoroutineScope,
+        passphrase: String
+    ) {
+        scope.launch {
+            K9.setpEpNewKeysPassphrase(passphrase)
+            val editor = Preferences.getPreferences(context).storage.edit()
+            K9.save(editor)
+            editor.commit()
+            pEp.configPassphraseForNewKeys(true, passphrase)
+            view.finish(true)
         }
     }
 
@@ -105,5 +122,6 @@ enum class PassphraseRequirementType {
     MISSING_PASSPHRASE,
     WRONG_PASSPHRASE,
     SYNC_PASSPHRASE,
-    NEW_KEYS_PASSPHRASE
+    NEW_KEYS_PASSPHRASE,
+    BROKEN_KEY
 }

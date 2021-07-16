@@ -1,20 +1,31 @@
 package com.fsck.k9.preferences
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import kotlinx.coroutines.*
+import com.fsck.k9.K9
+import com.fsck.k9.pEp.PEpUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import security.pEp.ui.passphrase.requestPassphraseForNewKeysBrokenKey
 import timber.log.Timber
+import java.security.KeyStoreException
+import java.security.UnrecoverableKeyException
 
+const val ENCRYPTED_PREFERENCES_PATH = "/shared_prefs/secret_preferences.xml"
 
-class PassphraseStorage(context: Context) {
+class PassphraseStorage(val context: Context) {
 
     private var masterKeyAlias = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
 
     private lateinit var preferences: SharedPreferences
+
+    var dataCorrupted = false
 
     init {
         createEncryptedSharedPreferences(context)
@@ -26,20 +37,52 @@ class PassphraseStorage(context: Context) {
         }
     }
 
-    private suspend fun createEncryptedSharedPreferencesInternal(context: Context) =
-        withContext(Dispatchers.IO) {
-            preferences = EncryptedSharedPreferences.create(
-                context,
-                SECRET_SHARED_PREFS_FILENAME,
-                masterKeyAlias,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+    private suspend fun createEncryptedSharedPreferencesInternal(context: Context) {
+        try {
+            withContext(Dispatchers.IO) {
+                preferences = EncryptedSharedPreferences.create(
+                    context,
+                    SECRET_SHARED_PREFS_FILENAME,
+                    masterKeyAlias,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+                dataCorrupted = false
+            }
+        } catch (e: Exception) {
+            when (e) {
+                is KeyStoreException,
+                is UnrecoverableKeyException -> {
+                    dataCorrupted = true
+                }
+            }
         }
+    }
 
+    fun resetEncryptedSharedPreferences() {
+        PEpUtils.removeEncryptedSharedPreferencesFile(context)
+        createEncryptedSharedPreferences(context)
+        dataCorrupted = false
+    }
+
+    fun brokenKeyStore(activity: Activity): Boolean {
+        return if (dataCorrupted) {
+            if (K9.ispEpUsePassphraseForNewKeys()) {
+                activity.requestPassphraseForNewKeysBrokenKey()
+            } else {
+                resetEncryptedSharedPreferences()
+            }
+            true
+        } else {
+            false
+        }
+    }
 
     fun putPassphrase(passphrase: String?) {
         try {
+            if (!::preferences.isInitialized) {
+                throw UninitializedPropertyAccessException("Preferences not initialized")
+            }
             val editor: SharedPreferences.Editor = preferences.edit()
             editor.putString(NEW_KEYS_PASSPHRASE_KEY, passphrase)
             editor.apply()
@@ -49,6 +92,9 @@ class PassphraseStorage(context: Context) {
     }
 
     fun getPassphrase() = try {
+        if (!::preferences.isInitialized) {
+            throw UninitializedPropertyAccessException("Preferences not initialized")
+        }
         preferences.getString(NEW_KEYS_PASSPHRASE_KEY, "")
     } catch (e: Exception) {
         Timber.e(e, "Could not get passphrase from PassphraseStorage")

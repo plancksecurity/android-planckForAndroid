@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -186,8 +187,8 @@ public class Storage {
 
     private Storage(Context context) {
         this.context = context;
-        passphraseStorage = new PassphraseStorage(context);
         loadValues();
+        passphraseStorage = new PassphraseStorage(context);
     }
 
     private void keyChange(String key) {
@@ -351,5 +352,13 @@ public class Storage {
 
     public String getPassphrase() {
         return passphraseStorage.getPassphrase();
+    }
+
+    public boolean brokenKeyStore(Activity activity) {
+        return passphraseStorage.brokenKeyStore(activity);
+    }
+
+    public void resetEncryptedSharedPreferences() {
+        passphraseStorage.resetEncryptedSharedPreferences();
     }
 }

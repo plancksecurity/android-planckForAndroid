@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
@@ -24,9 +25,18 @@ fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
     startActivityForResult(intent, PASSPHRASE_RESULT_CODE)
 }
 
+fun Activity.requestPassphraseForNewKeysBrokenKey() {
+    val intent = Intent(this, PassphraseActivity::class.java)
+    intent.action = PASSPHRASE_REQUEST_ACTION
+    intent.putExtra(REQUEST_TYPE_EXTRA, PassphraseRequirementType.BROKEN_KEY)
+    startActivityForResult(intent, PASSPHRASE_RESULT_CODE)
+}
+
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
+    @Inject
+    lateinit var preferences: Preferences
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -93,6 +103,14 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
 
     override fun showNewKeysPassphrase() {
         description.setText(R.string.passhphrase_body_new_keys_passphrase)
+    }
+
+    override fun showBrokenKeyStore() {
+        description.setText(R.string.passphrase_new_keys_broken_key)
+    }
+
+    override fun resetEncryptedSharedPreferences() {
+        preferences.storage.resetEncryptedSharedPreferences()
     }
 
     companion object {

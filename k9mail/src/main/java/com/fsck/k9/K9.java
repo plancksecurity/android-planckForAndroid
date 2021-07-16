@@ -1948,7 +1948,7 @@ public class K9 extends MultiDexApplication {
 
     }
 
-    private void forceSaveAppSettings() {
+    public void forceSaveAppSettings() {
         StorageEditor editor = Preferences.getPreferences(this).getStorage().edit();
         save(editor);
         editor.commit();

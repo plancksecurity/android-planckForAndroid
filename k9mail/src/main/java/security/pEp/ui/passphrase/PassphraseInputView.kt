@@ -11,4 +11,6 @@ interface PassphraseInputView {
     fun showPasswordRequest()
     fun showSyncPasswordRequest()
     fun showNewKeysPassphrase()
+    fun showBrokenKeyStore()
+    fun resetEncryptedSharedPreferences()
 }

@@ -1,14 +1,10 @@
 package com.fsck.k9.pEp;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
+
 import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
+
 import android.util.Pair;
 
 import com.fsck.k9.Account;
@@ -29,10 +25,10 @@ import com.fsck.k9.message.SimpleMessageFormat;
 import org.apache.commons.io.IOUtils;
 import foundation.pEp.jniadapter.CommType;
 import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.IdentityFlags;
 import foundation.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -47,6 +43,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
+import static com.fsck.k9.preferences.PassphraseStorageKt.ENCRYPTED_PREFERENCES_PATH;
 
 /**
  * some helper stuff
@@ -601,6 +599,19 @@ public class PEpUtils {
             id = pEp.myself(id);
             pEp.setIdentityFlag(id, account.isPepSyncEnabled());
         }
+    }
+
+    public static void brokenKeyStore(Activity activity) {
+        if (Preferences.getPreferences(activity).getStorage().brokenKeyStore(activity)) {
+            K9.setpEpUsePassphraseForNewKeys(false);
+            ((K9) activity.getApplicationContext()).forceSaveAppSettings();
+        }
+    }
+
+    public static void removeEncryptedSharedPreferencesFile(Context context) {
+        String filePath = context.getApplicationContext().getFilesDir().getParent() + ENCRYPTED_PREFERENCES_PATH;
+        File deletePrefFile = new File(filePath);
+        deletePrefFile.delete();
     }
 }
 
