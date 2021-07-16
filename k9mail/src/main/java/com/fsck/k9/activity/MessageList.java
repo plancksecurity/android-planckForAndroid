@@ -26,6 +26,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -215,7 +217,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void updatedRestrictions() {
-        if (mMessageViewFragment != null) {
+        if (mMessageViewFragment != null &&
+                getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             mMessageViewFragment.displayMessage();
         } else if (mMessageListFragment != null) {
             mMessageListFragment.refreshAccount();
