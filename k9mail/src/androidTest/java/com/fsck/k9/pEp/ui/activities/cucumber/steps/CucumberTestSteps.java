@@ -44,6 +44,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -2408,11 +2409,11 @@ public class CucumberTestSteps {
     @Then("^I save test report$")
     public void I_save_report() {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
-        timeRequiredForThisMethod(30);
         try {
-            SetDirectory();
-        } catch (Exception ex) {
-            Timber.e("Error moving cucumber reports1: " + ex.getMessage());
+            File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
+            testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
