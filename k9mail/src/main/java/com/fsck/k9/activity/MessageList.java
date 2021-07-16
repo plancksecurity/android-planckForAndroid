@@ -26,6 +26,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -137,7 +139,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private String accountUuid;
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask, boolean isFolder) {
+                                           boolean noThreading, boolean newTask, boolean isFolder) {
         actionDisplaySearch(context, search, noThreading, newTask, false, isFolder);
     }
 
@@ -147,18 +149,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     public static void actionDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
+                                           boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
         context.startActivity(
                 intentDisplaySearch(context, search, noThreading, newTask, clearTop, isFolder));
     }
 
     public static Intent intentDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask, boolean clearTop) {
+                                             boolean noThreading, boolean newTask, boolean clearTop) {
         return intentDisplaySearch(context, search, noThreading, newTask, clearTop, false);
     }
 
     public static Intent intentDisplaySearch(Context context, SearchSpecification search,
-            boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
+                                             boolean noThreading, boolean newTask, boolean clearTop, boolean isFolder) {
         Intent intent = new Intent(context, MessageList.class);
         intent.putExtra(EXTRA_SEARCH, search);
         intent.putExtra(EXTRA_FOLDER, isFolder);
@@ -215,7 +217,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void updatedRestrictions() {
-        if (mMessageViewFragment != null && mMessageViewFragment.isAdded()) {
+        if (mMessageViewFragment != null
+                && getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
             mMessageViewFragment.displayMessage();
         } else if (mMessageListFragment != null && mMessageListFragment.isAdded()) {
             mMessageListFragment.refreshAccount();
@@ -370,7 +373,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void restoreAccountUuid(Bundle savedInstanceState) {
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             accountUuid = savedInstanceState.getString(STATE_ACCOUNT_UUID);
         }
     }
@@ -395,19 +398,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private Bundle prepareSearch() {
         final Bundle appData = new Bundle();
         String currentSearchName = mActionBarTitle.getText().toString();
-        if(currentSearchName.equals(getString(R.string.integrated_inbox_title))) {
+        if (currentSearchName.equals(getString(R.string.integrated_inbox_title))) {
             specialAccountUuid = SearchAccount.UNIFIED_INBOX;
-        }
-        else if(currentSearchName.equals(getString(R.string.search_all_messages_title))) {
+        } else if (currentSearchName.equals(getString(R.string.search_all_messages_title))) {
             specialAccountUuid = SearchAccount.ALL_MESSAGES;
-        }
-        else {
+        } else {
             specialAccountUuid = null;
-        }    if(specialAccountUuid != null) {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
-            } else {
-                appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
-                appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
+        }
+        if (specialAccountUuid != null) {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, specialAccountUuid);
+        } else {
+            appData.putString(EXTRA_SEARCH_ACCOUNT, mAccount.getUuid());
+            appData.putString(EXTRA_SEARCH_FOLDER, mFolderName);
 
         }
         return appData;
@@ -453,7 +455,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @NonNull
     @SuppressLint("StringFormatInvalid")
     private LocalSearch getLocalSearch(Account account, LocalFolder folder) {
-         String searchTitle = getString(R.string.search_title,
+        String searchTitle = getString(R.string.search_title,
                 getString(R.string.message_list_title, account.getDescription(), folder.getName()),
                 getString(R.string.flagged_modifier));
 
@@ -524,13 +526,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         if (!hasMessageListFragment) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
-            if(mSearch.searchAllAccounts() && specialAccountUuid != null) {
-                if(specialAccountUuid.equals(SearchAccount.UNIFIED_INBOX) || specialAccountUuid.equals(SearchAccount.ALL_MESSAGES)) {
+            if (mSearch.searchAllAccounts() && specialAccountUuid != null) {
+                if (specialAccountUuid.equals(SearchAccount.UNIFIED_INBOX) || specialAccountUuid.equals(SearchAccount.ALL_MESSAGES)) {
                     mMessageListFragment = MessageListFragment.newInstance(mSearch, false, false);
                 }
                 specialAccountUuid = null;
-            }
-            else {
+            } else {
                 mMessageListFragment = MessageListFragment.newInstance(mSearch, false, !mNoThreading);
             }
             ft.add(R.id.message_list_container, mMessageListFragment);
@@ -568,9 +569,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * the availability of a {@link MessageViewFragment} instance.
      * </p>
      *
-     * @param savedInstanceState
-     *         The saved instance state that was passed to the activity as argument to
-     *         {@link #onCreate(Bundle)}. May be {@code null}.
+     * @param savedInstanceState The saved instance state that was passed to the activity as argument to
+     *                           {@link #onCreate(Bundle)}. May be {@code null}.
      */
     private void initializeDisplayMode(Bundle savedInstanceState) {
         messageViewVisible = false;
@@ -601,7 +601,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         return (splitViewMode == SplitViewMode.ALWAYS ||
                 (splitViewMode == SplitViewMode.WHEN_IN_LANDSCAPE &&
-                orientation == Configuration.ORIENTATION_LANDSCAPE));
+                        orientation == Configuration.ORIENTATION_LANDSCAPE));
     }
 
     private void initializeLayout() {
@@ -670,20 +670,17 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 Bundle appData = intent.getBundleExtra(SearchManager.APP_DATA);
                 if (appData != null) {
                     String accountExtra = appData.getString(EXTRA_SEARCH_ACCOUNT);
-                    if(accountExtra.equals(SearchAccount.UNIFIED_INBOX)) {
+                    if (accountExtra.equals(SearchAccount.UNIFIED_INBOX)) {
                         prepareSpecialManualSearch(accountExtra, query, SearchField.INTEGRATE);
-                    }
-                    else if(accountExtra.equals(SearchAccount.ALL_MESSAGES)) {
-                        prepareSpecialManualSearch(accountExtra, query,SearchField.SEARCHABLE);
-                    }
-                    else {
+                    } else if (accountExtra.equals(SearchAccount.ALL_MESSAGES)) {
+                        prepareSpecialManualSearch(accountExtra, query, SearchField.SEARCHABLE);
+                    } else {
                         mSearch.addAccountUuid(appData.getString(EXTRA_SEARCH_ACCOUNT));
                         if (appData.getString(EXTRA_SEARCH_FOLDER) != null) {
                             mSearch.addAllowedFolder(appData.getString(EXTRA_SEARCH_FOLDER));
                         }
                     }
-                }
-                else {
+                } else {
                     mSearch.addAccountUuid(LocalSearch.ALL_ACCOUNTS);
                 }
 
@@ -749,7 +746,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         // now we know if we are in single account mode and need a subtitle
         mActionBarSubTitle.setVisibility((!mSingleFolderMode) ? View.GONE : View.VISIBLE);
 
-        mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode  ? View.GONE : View.VISIBLE);
+        mActionBarSubTitle.setVisibility(Intent.ACTION_SEARCH.equals(intent.getAction()) || !mSingleFolderMode ? View.GONE : View.VISIBLE);
         return true;
     }
 
@@ -783,7 +780,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (!(this instanceof Search)) {
             //necessary b/c no guarantee Search.onStop will be called before MessageList.onResume
             //when returning from search results
-            if(Search.isActive()) {
+            if (Search.isActive()) {
                 Search.setActive(false);
                 hideSearchView();
             }
@@ -806,7 +803,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void setDefaultFolderNameIfNeeded() {
-        if(mAccount != null && mFolderName == null) {
+        if (mAccount != null && mFolderName == null) {
             mFolderName = mAccount.getAutoExpandFolderName();
         }
     }
@@ -870,8 +867,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
         if (isSearchViewVisible()) {
             hideSearchView();
-        }
-        else {
+        } else {
             goBack();
         }
     }
@@ -889,11 +885,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * to consume this key event.
      * </p>
      *
-     * @param keyCode
-     *         The value in {@code event.getKeyCode()}.
-     * @param event
-     *         Description of the key event.
-     *
+     * @param keyCode The value in {@code event.getKeyCode()}.
+     * @param event   Description of the key event.
      * @return {@code true} if this event was consumed.
      */
     public boolean onCustomKeyDown(final int keyCode, final KeyEvent event) {
@@ -1252,11 +1245,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void checkFlagMenuItemChecked(boolean check) {
-        if(check) {
+        if (check) {
             flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagCheckedIcon));
             flaggedCheckbox.setTitle(R.string.unflag_action);
-        }
-        else {
+        } else {
             flaggedCheckbox.setIcon(resourcesProvider.getAttributeResource(R.attr.flagUncheckedIcon));
             flaggedCheckbox.setTitle(R.string.flag_action);
         }
@@ -1277,9 +1269,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
      * visibility of a menu item in this method.
      * </p>
      *
-     * @param menu
-     *         The {@link Menu} instance that should be modified. May be {@code null}; in that case
-     *         the method does nothing and immediately returns.
+     * @param menu The {@link Menu} instance that should be modified. May be {@code null}; in that case
+     *             the method does nothing and immediately returns.
      */
     private void configureMenu(Menu menu) {
         if (menu == null) {
@@ -1420,7 +1411,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
             menu.findItem(R.id.check_mail).setVisible(mMessageListFragment.isCheckMailSupported());
             // configure action bar in search screen
-            if(mMessageListFragment.isManualSearch()) {
+            if (mMessageListFragment.isManualSearch()) {
                 drawerLayoutView.setDrawerEnabled(false);
                 menu.findItem(R.id.check_mail).setVisible(false);
                 menu.findItem(R.id.compose).setVisible(false);
@@ -1504,7 +1495,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             if (direction == null || direction.equals(MessageSwipeDirection.FORWARD)) {
                 ft.setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out);
-            } else  {
+            } else {
                 ft.setCustomAnimations(R.animator.fade_in_right, R.animator.fade_out);
             }
             resetDirection();
@@ -1544,7 +1535,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void onReply(MessageReference messageReference,
                         Rating pEpRating) {
-        onReply(messageReference, null,  pEpRating);
+        onReply(messageReference, null, pEpRating);
     }
 
     @Override
@@ -1616,7 +1607,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         ft.replace(R.id.message_list_container, fragment);
 
-        if(popPrevious) {
+        if (popPrevious) {
             fm.popBackStackImmediate();
         }
 
@@ -1703,9 +1694,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public void goBack() {
         if (mDisplayMode == DisplayMode.MESSAGE_VIEW && mMessageListWasDisplayed) {
             showMessageList();
-        }
-        else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
-            if(isBackstackClear()) {
+        } else if (Intent.ACTION_SEARCH.equals(getIntent().getAction())) {
+            if (isBackstackClear()) {
                 if (mAccount != null) {
                     Router.onOpenAccount(this, mAccount);
                 } else {
@@ -1715,7 +1705,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else if (getIntent().getBooleanExtra(EXTRA_FOLDER, false)) {
-            if(isBackstackClear()) {
+            if (isBackstackClear()) {
                 LocalSearch search = new LocalSearch(mAccount.getAutoExpandFolderName());
                 search.addAllowedFolder(mAccount.getAutoExpandFolderName());
                 search.addAccountUuid(mAccount.getUuid());
@@ -1726,7 +1716,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 finish();
             }
         } else {
-            if(isThreadDisplayed) {
+            if (isThreadDisplayed) {
                 updateToolbarColorToOriginal();
                 isThreadDisplayed = false;
             }
@@ -1735,7 +1725,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private boolean isBackstackClear() {
-        ActivityManager mngr = (ActivityManager) getSystemService( ACTIVITY_SERVICE );
+        ActivityManager mngr = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 
         List<ActivityManager.RunningTaskInfo> taskList = mngr.getRunningTasks(10);
 
@@ -1925,7 +1915,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void startIntentSenderForResult(IntentSender intent, int requestCode, Intent fillInIntent,
-            int flagsMask, int flagsValues, int extraFlags) throws SendIntentException {
+                                           int flagsMask, int flagsValues, int extraFlags) throws SendIntentException {
         requestCode |= REQUEST_MASK_PENDING_INTENT;
         super.startIntentSenderForResult(intent, requestCode, fillInIntent, flagsMask, flagsValues, extraFlags);
     }
