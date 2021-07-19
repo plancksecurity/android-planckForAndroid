@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import timber.log.Timber
 
 class ConfigurationManager(
         private val context: Context,
@@ -91,7 +92,11 @@ class ConfigurationManager(
         context.applicationContext.registerReceiver(
                 restrictionsReceiver, IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
         )
-        loadConfigurations()
+        try {
+            loadConfigurations()
+        } catch (e: Exception) {
+            Timber.e(e, "Could not load configurations after registering the receiver")
+        }
     }
 
     fun setListener(listener: RestrictionsListener) {
