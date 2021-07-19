@@ -45,11 +45,20 @@ class ConfigurationManager(
         value?.let {
             val config = AppConfigEntry(entry.key, value).getValue<List<ExtraKey>>()?.toManageableSetting()
             config?.let {newExtraKeys ->
-                var currentKeys = K9.getMasterKeys().toSet()
+                var currentKeys = if (newExtraKeys.locked) {
+                    emptySet<String>()
+                } else {
+                    K9.getMasterKeys().toSet()
+                }
+
                 newExtraKeys.value.forEach { extraKey ->
                    currentKeys = currentKeys.plus(extraKey.fpr)
                 }
                 K9.setMasterKeys(currentKeys)
+                K9.setpEpExtraKeysNotSelectable(newExtraKeys.locked)
+                val editor = preferences.storage.edit()
+                K9.save(editor)
+                editor.commit()
             }
         }
     }
