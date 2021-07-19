@@ -349,7 +349,7 @@ public class K9 extends MultiDexApplication {
     private static long appVersionCode = -1;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
-
+    private static boolean pEpExtraKeysNotSelectable = true;
 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
@@ -623,6 +623,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
         editor.putPassphrase(pEpNewKeysPassphrase);
+        editor.putBoolean("pEpExtraKeysNotSelectable", true);
 
         fontSizes.save(editor);
     }
@@ -986,6 +987,7 @@ public class K9 extends MultiDexApplication {
         pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
+        pEpExtraKeysNotSelectable = storage.getBoolean("pEpExtraKeysNotSelectable",pEpExtraKeysNotSelectable);
         appVersionCode = storage.getLong("appVersionCode", -1);
 
         mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
@@ -1469,6 +1471,15 @@ public class K9 extends MultiDexApplication {
 
     public static boolean ispEpUsingPassphraseForNewKey() {
         return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
+    }
+
+
+    public static boolean ispEpExtraKeysNotSelectable() {
+        return pEpExtraKeysNotSelectable;
+    }
+
+    public static void setpEpExtraKeysNotSelectable(boolean pEpExtraKeysNotSelectable) {
+        K9.pEpExtraKeysNotSelectable = pEpExtraKeysNotSelectable;
     }
 
     public static synchronized SortType getSortType() {
