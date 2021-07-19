@@ -1,8 +1,10 @@
 package com.fsck.k9.pEp.ui.keys;
 
 import android.content.Context;
+
 import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,94 +15,18 @@ import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Comparator;
 import java.util.List;
 
 public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHolder> {
 
-    private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = new Comparator<KeyListItem>() {
-        @Override
-        public int compare(KeyListItem a, KeyListItem b) {
-            return a.getGpgUid().compareTo(b.getGpgUid());
-        }
-    };
+    private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = (a, b) -> a.getGpgUid().compareTo(b.getGpgUid());
 
     private final SortedList<KeyListItem> dataSet;
     private final OnKeyClickListener onKeyClickListener;
-    private Comparator <KeyListItem> comparator;
-
-
-    public KeyItemAdapter(List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
-        this.comparator = ALPHABETICAL_COMPARATOR;
-        dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
-        if (identities != null) {
-            dataSet.addAll(identities);
-        }
-        this.onKeyClickListener = onKeyClickListener;
-    }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent,
-                                         int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pep_key_row, parent, false);
-        return new ViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        KeyListItem item = dataSet.get(position);
-        holder.render(item);
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return dataSet.size();
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder {
-        TextView identityUserName;
-        TextView identityAddress;
-
-        CheckBox isBlacklistedCheckbox;
-        View container;
-        Context context;
-
-        ViewHolder(View view) {
-            super(view);
-            context = view.getContext();
-            identityUserName = ((TextView) view.findViewById(R.id.tvUsername));
-            identityAddress = ((TextView) view.findViewById(R.id.tvAddress));
-            isBlacklistedCheckbox = ((CheckBox) view.findViewById(R.id.checkboxIsBlacklisted));
-            container = view.findViewById(R.id.recipientContainer);
-
-
-        }
-
-        void render(KeyListItem identity) {
-            renderIdentity(identity);
-        }
-
-        private void renderIdentity(final KeyListItem keyItem) {
-            final String fpr = keyItem.getFpr();
-            String username = keyItem.getGpgUid();
-            identityUserName.setText(username);
-            String formattedFpr = PEpUtils.formatFpr(fpr);
-            identityAddress.setText(formattedFpr);
-            isBlacklistedCheckbox.setChecked(keyItem.isSelected());
-            isBlacklistedCheckbox.setOnClickListener(v -> {
-                boolean checked = ((CheckBox) v).isChecked();
-                keyItem.setSelected(checked);
-                int position = dataSet.indexOf(keyItem);
-                dataSet.get(position).setSelected(checked);
-                onKeyClickListener.onClick(keyItem, checked);
-            });
-        }
-    }
-
-
-
+    private final Comparator<KeyListItem> comparator;
     private final SortedList.Callback<KeyListItem> sortedListCallback = new SortedList.Callback<KeyListItem>() {
 
         @Override
@@ -139,6 +65,33 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
         }
     };
 
+    public KeyItemAdapter(List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
+        this.comparator = ALPHABETICAL_COMPARATOR;
+        dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
+        if (identities != null) {
+            dataSet.addAll(identities);
+        }
+        this.onKeyClickListener = onKeyClickListener;
+    }
+
+    @NotNull
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.pep_key_row, parent, false);
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        KeyListItem item = dataSet.get(position);
+        holder.render(item);
+    }
+
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
+
     public void add(KeyListItem item) {
         dataSet.add(item);
     }
@@ -161,14 +114,52 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
 
     public void replaceAll(List<KeyListItem> models) {
         dataSet.beginBatchedUpdates();
-        for (int i = dataSet.size() - 1; i >= 0; i--) {
-            final KeyListItem model = dataSet.get(i);
+        for (int index = dataSet.size() - 1; index >= 0; index--) {
+            final KeyListItem model = dataSet.get(index);
             if (!models.contains(model)) {
                 dataSet.remove(model);
             }
         }
         dataSet.addAll(models);
         dataSet.endBatchedUpdates();
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView identityUserName;
+        TextView identityAddress;
+
+        CheckBox isBlacklistedCheckbox;
+        View container;
+        Context context;
+
+        ViewHolder(View view) {
+            super(view);
+            context = view.getContext();
+            identityUserName = view.findViewById(R.id.tvUsername);
+            identityAddress = view.findViewById(R.id.tvAddress);
+            isBlacklistedCheckbox = view.findViewById(R.id.checkboxIsBlacklisted);
+            container = view.findViewById(R.id.recipientContainer);
+        }
+
+        void render(KeyListItem identity) {
+            renderIdentity(identity);
+        }
+
+        private void renderIdentity(final KeyListItem keyItem) {
+            final String fpr = keyItem.getFpr();
+            String username = keyItem.getGpgUid();
+            identityUserName.setText(username);
+            String formattedFpr = PEpUtils.formatFpr(fpr);
+            identityAddress.setText(formattedFpr);
+            isBlacklistedCheckbox.setChecked(keyItem.isSelected());
+            isBlacklistedCheckbox.setOnClickListener(v -> {
+                boolean checked = ((CheckBox) v).isChecked();
+                keyItem.setSelected(checked);
+                int position = dataSet.indexOf(keyItem);
+                dataSet.get(position).setSelected(checked);
+                onKeyClickListener.onClick(keyItem, checked);
+            });
+        }
     }
 
 }
