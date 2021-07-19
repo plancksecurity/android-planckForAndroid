@@ -153,12 +153,6 @@ open class BaseScreenshotTest : BaseTest() {
                 )
     }
 
-    fun expandSetting(stringResource: Int) {
-        val string = getString(stringResource)
-        onView(withId(androidx.preference.R.id.recycler_view))
-                .perform(actionOnItem<ViewHolder>(hasDescendant(withSubstring(string)), click()))
-    }
-
     fun setTestSet(string: String) {
         testSet = string
         count = 0

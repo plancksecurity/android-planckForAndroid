@@ -57,5 +57,12 @@ task accountSettingsAppRestrictions(type: Exec, dependsOn: 'messageComposeAppRes
     commandLine command
 }
 
-task testRestrictions(dependsOn: 'accountSettingsAppRestrictions') {
+task extraKeysAppRestrictions(type: Exec, dependsOn: 'messageComposeAppRestrictions') {
+    def command = ['adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser, '-e', 'debug',
+                   'false', '-e', 'class', 'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#extraKeysAppRestrictions',
+                   'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
+    commandLine command
+}
+
+task testRestrictions(dependsOn: 'extraKeysAppRestrictions') {
 }

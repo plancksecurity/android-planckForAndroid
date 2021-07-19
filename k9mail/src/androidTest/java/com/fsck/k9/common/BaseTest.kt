@@ -195,6 +195,20 @@ open class BaseTest {
                 .perform(RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(ViewMatchers.hasDescendant(ViewMatchers.withText(stringResource)), ViewActions.click()))
     }
 
+
+    fun expandSetting(stringResource: Int) {
+        val string = getString(stringResource)
+        Espresso.onView(ViewMatchers.withId(androidx.preference.R.id.recycler_view))
+            .perform(
+                RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
+                    ViewMatchers.hasDescendant(
+                        ViewMatchers.withSubstring(string)
+                    ), ViewActions.click()
+                )
+            )
+    }
+
+
     fun viewIsDisplayed(viewId: Int): Boolean {
         val isDisplayed = booleanArrayOf(true)
         Espresso.onView(ViewMatchers.withId(viewId))

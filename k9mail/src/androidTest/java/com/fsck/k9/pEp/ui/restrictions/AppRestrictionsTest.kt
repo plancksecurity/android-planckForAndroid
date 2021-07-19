@@ -157,6 +157,34 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         sleep(2000)
     }
 
+    @Test
+    fun extraKeysAppRestrictions() {
+        waitListView()
+        onView(withContentDescription(R.string.navigation_drawer_open)).perform(click())
+        click(R.id.menu_header)
+        click(R.id.configure_account_container)
+        clickSetting(R.string.privacy_preferences)
+        expandSetting(R.string.reset)
+
+        openEnforcerSplitScreen(
+            key = "pep_extra_keys",
+            value = pEpExtraKeysJson(listOf(ExtraKey("djweofwefm"), ExtraKey("adsfmjwepoqwe"))),
+            generic = false
+        )
+
+        runBlocking { waitForIdle() }
+        sleep(2000)
+
+
+        clickSetting(R.string.master_key_management)
+        onView(
+            withRecyclerView(R.id.extra_keys_view)
+                .atPositionOnView(0, R.id.checkboxIsBlacklisted)
+        )
+            .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+    }
+
+
     private fun passWelcomeScreen() {
         click(R.id.skip)
         click(R.id.action_continue)
