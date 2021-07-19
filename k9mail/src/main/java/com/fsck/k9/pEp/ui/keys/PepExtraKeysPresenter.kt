@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.keys
 
+import com.fsck.k9.K9
 import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
@@ -16,6 +17,7 @@ class PepExtraKeysPresenter @Inject constructor(
 
     private lateinit var view: PepExtraKeysView
     private lateinit var pEp: PEpProvider
+    private val keys: HashSet<String> = hashSetOf()
 
     fun initialize(view: PepExtraKeysView, pEp: PEpProvider, keys: Set<String>) {
         this.view = view
@@ -39,5 +41,15 @@ class PepExtraKeysPresenter @Inject constructor(
 
     private suspend fun getMasterKeyInfo(): List<KeyListItem>? = withContext(dispatcherProvider.io()) {
         pEp.masterKeysInfo
+    }
+
+    fun addKey(item: KeyListItem) {
+        keys.add(item.fpr)
+        K9.setMasterKeys(keys)
+    }
+
+    fun removeKey(item: KeyListItem) {
+        keys.remove(item.fpr)
+        K9.setMasterKeys(keys)
     }
 }

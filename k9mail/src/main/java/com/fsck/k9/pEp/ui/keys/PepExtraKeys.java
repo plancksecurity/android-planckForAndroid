@@ -35,7 +35,6 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     private PEpProvider pEp;
     private KeyItemAdapter keysAdapter;
     private LinearLayoutManager keysViewManager;
-    private HashSet<String> keys;
 
     public static void actionStart(Context context) {
         Intent i = new Intent(context, PepExtraKeys.class);
@@ -53,7 +52,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysViewManager.setOrientation(LinearLayoutManager.VERTICAL);
         keysView.setLayoutManager(keysViewManager);
 
-        keys = new HashSet<>(K9.getMasterKeys());
+        HashSet<String> keys = new HashSet<>(K9.getMasterKeys());
         presenter.initialize(this, pEp, keys);
         initializeToolbar(true, R.string.master_key_management);
     }
@@ -67,11 +66,9 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     public void showKeys(List<KeyListItem> availableKeys) {
         keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
             if (checked) {
-                keys.add(item.getFpr());
-                K9.setMasterKeys(keys);
+                presenter.addKey(item);
             } else {
-                keys.remove(item.getFpr());
-                K9.setMasterKeys(keys);
+                presenter.removeKey(item);
             }
         });
         keysView.setVisibility(View.VISIBLE);
