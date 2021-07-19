@@ -64,13 +64,15 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             return item1.getFpr().equals(item2.getFpr());
         }
     };
+    private final boolean isClickLocked;
 
-    public KeyItemAdapter(List<KeyListItem> identities, OnKeyClickListener onKeyClickListener) {
+    public KeyItemAdapter(List<KeyListItem> identities, boolean isClickLocked, OnKeyClickListener onKeyClickListener) {
         this.comparator = ALPHABETICAL_COMPARATOR;
         dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
         if (identities != null) {
             dataSet.addAll(identities);
         }
+        this.isClickLocked = isClickLocked;
         this.onKeyClickListener = onKeyClickListener;
     }
 
@@ -84,7 +86,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         KeyListItem item = dataSet.get(position);
-        holder.render(item);
+        holder.render(item, isClickLocked);
     }
 
     @Override
@@ -141,16 +143,21 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             container = view.findViewById(R.id.recipientContainer);
         }
 
-        void render(KeyListItem identity) {
-            renderIdentity(identity);
+        void render(KeyListItem identity, boolean isClickLocked) {
+            renderIdentity(identity, isClickLocked);
         }
 
-        private void renderIdentity(final KeyListItem keyItem) {
+        private void renderIdentity(final KeyListItem keyItem, boolean isClickLocked) {
             final String fpr = keyItem.getFpr();
             String username = keyItem.getGpgUid();
             identityUserName.setText(username);
             String formattedFpr = PEpUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
+            if (isClickLocked) {
+                isBlacklistedCheckbox.setVisibility(View.INVISIBLE);
+            } else {
+                isBlacklistedCheckbox.setVisibility(View.VISIBLE);
+            }
             isBlacklistedCheckbox.setChecked(keyItem.isSelected());
             isBlacklistedCheckbox.setOnClickListener(v -> {
                 boolean checked = ((CheckBox) v).isChecked();

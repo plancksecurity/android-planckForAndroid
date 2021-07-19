@@ -53,7 +53,7 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         keysView.setLayoutManager(keysViewManager);
 
         HashSet<String> keys = new HashSet<>(K9.getMasterKeys());
-        presenter.initialize(this, pEp, keys);
+        presenter.initialize(this, pEp, keys, K9.ispEpExtraKeysNotSelectable());
         initializeToolbar(true, R.string.master_key_management);
     }
 
@@ -63,14 +63,16 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     }
 
     @Override
-    public void showKeys(List<KeyListItem> availableKeys) {
-        keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
-            if (checked) {
-                presenter.addKey(item);
-            } else {
-                presenter.removeKey(item);
-            }
-        });
+    public void showKeys(List<KeyListItem> availableKeys, boolean isClickLocked) {
+        keysAdapter = new KeyItemAdapter(availableKeys,
+                isClickLocked,
+                (item, checked) -> {
+                    if (checked) {
+                        presenter.addKey(item);
+                    } else {
+                        presenter.removeKey(item);
+                    }
+                });
         keysView.setVisibility(View.VISIBLE);
         keysView.setAdapter(keysAdapter);
         keysAdapter.notifyDataSetChanged();

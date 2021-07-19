@@ -84,7 +84,7 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
     }
 
     private fun initializeKeysView() {
-        recipientsAdapter = KeyItemAdapter(keys, OnKeyClickListener { item, checked -> keyChecked(item, checked) })
+        recipientsAdapter = KeyItemAdapter(keys, false, OnKeyClickListener { item, checked -> keyChecked(item, checked) })
         recipientsView.adapter = recipientsAdapter
         recipientsAdapter.notifyDataSetChanged()
     }

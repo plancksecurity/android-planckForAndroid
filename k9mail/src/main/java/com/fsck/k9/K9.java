@@ -349,7 +349,7 @@ public class K9 extends MultiDexApplication {
     private static long appVersionCode = -1;
     private boolean grouped = false;
     private static Set<String> pEpExtraKeys = Collections.emptySet();
-    private static boolean pEpExtraKeysNotSelectable = true;
+    private static boolean pEpExtraKeysNotSelectable = false;
 
     private static int sPgpInlineDialogCounter;
     private static int sPgpSignOnlyDialogCounter;
@@ -623,7 +623,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("pEpSyncFolder", usingpEpSyncFolder);
         editor.putLong("appVersionCode", appVersionCode);
         editor.putPassphrase(pEpNewKeysPassphrase);
-        editor.putBoolean("pEpExtraKeysNotSelectable", true);
+        editor.putBoolean("pEpExtraKeysNotSelectable", false);
 
         fontSizes.save(editor);
     }

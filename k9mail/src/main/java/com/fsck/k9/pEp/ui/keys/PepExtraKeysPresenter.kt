@@ -12,16 +12,23 @@ import java.util.*
 import javax.inject.Inject
 
 class PepExtraKeysPresenter @Inject constructor(
-        private val dispatcherProvider: DispatcherProvider
+    private val dispatcherProvider: DispatcherProvider
 ) {
 
     private lateinit var view: PepExtraKeysView
     private lateinit var pEp: PEpProvider
     private val keys: HashSet<String> = hashSetOf()
+    private var isClickLocked: Boolean = false
 
-    fun initialize(view: PepExtraKeysView, pEp: PEpProvider, keys: Set<String>) {
+    fun initialize(
+        view: PepExtraKeysView,
+        pEp: PEpProvider,
+        keys: Set<String>,
+        isClickLocked: Boolean
+    ) {
         this.view = view
         this.pEp = pEp
+        this.isClickLocked = isClickLocked
         setupMasterKeys(keys)
     }
 
@@ -34,14 +41,15 @@ class PepExtraKeysPresenter @Inject constructor(
                 availableKey.isSelected = keys.contains(availableKey.fpr)
                 masterKeys.add(availableKey)
             }
-            view.showKeys(masterKeys)
+            view.showKeys(masterKeys, isClickLocked)
 
         }
     }
 
-    private suspend fun getMasterKeyInfo(): List<KeyListItem>? = withContext(dispatcherProvider.io()) {
-        pEp.masterKeysInfo
-    }
+    private suspend fun getMasterKeyInfo(): List<KeyListItem>? =
+        withContext(dispatcherProvider.io()) {
+            pEp.masterKeysInfo
+        }
 
     fun addKey(item: KeyListItem) {
         keys.add(item.fpr)
