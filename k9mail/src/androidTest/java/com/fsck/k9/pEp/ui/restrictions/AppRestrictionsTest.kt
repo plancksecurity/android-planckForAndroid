@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.ui.restrictions
 
 import android.content.Intent
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -9,12 +8,9 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiSelector
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.activities.TestUtils.BasicMessage
-import com.fsck.k9.pEp.ui.activities.UtilsPackage
+import com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -22,8 +18,8 @@ import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
+import security.pEp.mdm.ExtraKey
 import security.pEp.mdm.ManageableSettingMdmEntry
-import timber.log.Timber
 
 
 @RunWith(AndroidJUnit4::class)
@@ -36,15 +32,18 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
     fun afterRestrictionTest() {
         if (forcedAppConfig)
             openEnforcerSplitScreen(
-                    key = "pep_disable_privacy_protection",
-                    value = pEpPrivacyJson(true),
-                    generic = false
+                key = "pep_disable_privacy_protection",
+                value = pEpPrivacyJson(true),
+                generic = false
             )
         sleep(3000)
     }
 
     private fun pEpPrivacyJson(enabled: Boolean) =
-            Json.encodeToString(ManageableSettingMdmEntry(locked = true, value = enabled))
+        Json.encodeToString(ManageableSettingMdmEntry(locked = true, value = enabled))
+
+    private fun pEpExtraKeysJson(extraKey: List<ExtraKey>) =
+        Json.encodeToString(ManageableSettingMdmEntry(locked = true, value = extraKey))
 
     @Test
     fun automaticStartUp() {
@@ -66,16 +65,21 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         waitListView()
 
         openEnforcerSplitScreen(
-                key = "pep_disable_privacy_protection",
-                value = pEpPrivacyJson(false),
-                generic = false
+            key = "pep_disable_privacy_protection",
+            value = pEpPrivacyJson(false),
+            generic = false
         )
 
         onData(anything())
-                .inAdapterView(withId(R.id.message_list))
-                .atPosition(0)
-                .onChildView(allOf(withId(R.id.privacyBadge), isDescendantOfA(withId(R.id.message_read_container))))
-                .check(matches(not(isDisplayed())))
+            .inAdapterView(withId(R.id.message_list))
+            .atPosition(0)
+            .onChildView(
+                allOf(
+                    withId(R.id.privacyBadge),
+                    isDescendantOfA(withId(R.id.message_read_container))
+                )
+            )
+            .check(matches(not(isDisplayed())))
     }
 
     @Test
@@ -86,9 +90,9 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         waitMessageView()
 
         openEnforcerSplitScreen(
-                key = "pep_disable_privacy_protection",
-                value = pEpPrivacyJson(false),
-                generic = false
+            key = "pep_disable_privacy_protection",
+            value = pEpPrivacyJson(false),
+            generic = false
         )
 
         onView(withId(R.id.actionbar_message_view)).check(matches(not(isDisplayed())))
@@ -104,9 +108,9 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         onView(withId(R.id.openCloseButton)).perform(click())
 
         openEnforcerSplitScreen(
-                key = "pep_disable_privacy_protection",
-                value = pEpPrivacyJson(false),
-                generic = false
+            key = "pep_disable_privacy_protection",
+            value = pEpPrivacyJson(false),
+            generic = false
         )
 
         onView(withId(R.id.actionbar_message_view)).check(matches(not(isDisplayed())))
@@ -128,9 +132,9 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         clickSetting(R.string.privacy_preferences)
 
         openEnforcerSplitScreen(
-                key = "pep_disable_privacy_protection",
-                value = pEpPrivacyJson(false),
-                generic = false
+            key = "pep_disable_privacy_protection",
+            value = pEpPrivacyJson(false),
+            generic = false
         )
 
         runBlocking { waitForIdle() }
@@ -140,13 +144,13 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
     }
 
     @Test
-    fun receiveMalformedJson(){
+    fun receiveMalformedJson() {
         waitListView()
 
         openEnforcerSplitScreen(
-                key = "pep_disable_privacy_protection",
-                value = "{hello:hello, john:john}",
-                generic = false
+            key = "pep_disable_privacy_protection",
+            value = "{hello:hello, john:john}",
+            generic = false
         )
 
         runBlocking { waitForIdle() }
@@ -176,7 +180,7 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     private fun openEnforcerSplitScreen(key: String, value: String, generic: Boolean) {
         val intent: Intent = context.packageManager.getLaunchIntentForPackage(ENFORCER_PACKAGE_NAME)
-                ?: return
+            ?: return
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.putExtra("inPIP", true)
         intent.putExtra("generic", generic)
