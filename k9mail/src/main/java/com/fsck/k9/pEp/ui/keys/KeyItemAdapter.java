@@ -22,7 +22,15 @@ import java.util.List;
 
 public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHolder> {
 
-    private static final Comparator<KeyListItem> ALPHABETICAL_COMPARATOR = (a, b) -> a.getGpgUid().compareTo(b.getGpgUid());
+    private static final Comparator<KeyListItem> ALPHABETICAL_AND_SELECTED_COMPARATOR = (a, b) -> {
+        if (a.isSelected() && b.isSelected()) {
+            return a.getGpgUid().compareTo(b.getGpgUid());
+        } else if (!a.isSelected()) {
+            return 0;
+        } else {
+            return -1;
+        }
+    };
 
     private final SortedList<KeyListItem> dataSet;
     private final OnKeyClickListener onKeyClickListener;
@@ -67,7 +75,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
     private final boolean isClickLocked;
 
     public KeyItemAdapter(List<KeyListItem> identities, boolean isClickLocked, OnKeyClickListener onKeyClickListener) {
-        this.comparator = ALPHABETICAL_COMPARATOR;
+        this.comparator = ALPHABETICAL_AND_SELECTED_COMPARATOR;
         dataSet = new SortedList<>(KeyListItem.class, sortedListCallback);
         if (identities != null) {
             dataSet.addAll(identities);
@@ -153,11 +161,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             identityUserName.setText(username);
             String formattedFpr = PEpUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
-            if (isClickLocked) {
-                isBlacklistedCheckbox.setVisibility(View.INVISIBLE);
-            } else {
-                isBlacklistedCheckbox.setVisibility(View.VISIBLE);
-            }
+            isBlacklistedCheckbox.setVisibility(isClickLocked ? View.INVISIBLE : View.VISIBLE);
             isBlacklistedCheckbox.setChecked(keyItem.isSelected());
             isBlacklistedCheckbox.setOnClickListener(v -> {
                 boolean checked = ((CheckBox) v).isChecked();
