@@ -23,6 +23,7 @@ class PepExtraKeysPresenterTest {
 
     @Mock
     private lateinit var provider: PEpProvider
+
     @Before
     @Throws(Exception::class)
     fun setUp() {
@@ -33,18 +34,18 @@ class PepExtraKeysPresenterTest {
     @Test
     @Throws(Exception::class)
     fun shouldGetMasterKeysInfoWhenSetupMasterKeys(): Unit =
-            coroutinesTestRule.testDispatcher.run {
-        presenter.initialize(view, provider, keys())
-        Mockito.verify(provider).masterKeysInfo
-    }
+        coroutinesTestRule.testDispatcher.run {
+            presenter.initialize(view, provider, keys(), false)
+            Mockito.verify(provider).masterKeysInfo
+        }
 
     @Test
     @Throws(Exception::class)
     fun shouldShowKeysInfoWhenSetupMasterKeys() =
-            coroutinesTestRule.testDispatcher.run {
-        presenter.initialize(view, provider, keys())
-        Mockito.verify(view).showKeys(any())
-    }
+        coroutinesTestRule.testDispatcher.run {
+            presenter.initialize(view, provider, keys(), false)
+            Mockito.verify(view).showKeys(any(), any())
+        }
 
     private fun keys(): Set<String> {
         return emptySet()
