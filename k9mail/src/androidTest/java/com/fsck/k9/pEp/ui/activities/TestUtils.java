@@ -4067,7 +4067,7 @@ public class TestUtils {
         selectFromScreen(stringToID("account_settings_sync"));
         scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
         pressBack();
-        scrollToViewAndClickIt(stringToID("advanced"));
+        selectFromScreen(stringToID("advanced"));
         scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
         selectItemFromDialogListView(5, true);
         scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
