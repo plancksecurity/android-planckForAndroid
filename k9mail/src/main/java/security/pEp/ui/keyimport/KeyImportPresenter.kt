@@ -199,6 +199,9 @@ class KeyImportPresenter @Inject constructor(
                 view.showCorrectKeyImport()
             ImportState.KEY_NOT_IMPORTED ->
                 view.showFailedKeyImport()
+            else -> {
+                // NOOP
+            }
         }
     }
 
