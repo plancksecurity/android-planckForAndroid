@@ -180,10 +180,8 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         onView(
             withRecyclerView(R.id.extra_keys_view)
                 .atPositionOnView(0, R.id.checkboxIsBlacklisted)
-        )
-            .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
+        ).check(matches(withEffectiveVisibility(Visibility.INVISIBLE)))
     }
-
 
     private fun passWelcomeScreen() {
         click(R.id.skip)
