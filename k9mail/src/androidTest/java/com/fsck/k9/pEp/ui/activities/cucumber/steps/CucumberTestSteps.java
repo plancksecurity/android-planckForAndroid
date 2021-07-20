@@ -2413,7 +2413,7 @@ public class CucumberTestSteps {
             File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
             testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
         } catch (IOException e) {
-            e.printStackTrace();
+            SetDirectory();
         }
     }
 
@@ -2479,7 +2479,7 @@ public class CucumberTestSteps {
     private void CopyAssets() {
         File file = null;
             try {
-                String extStorageDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+                String extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/";
                 file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
