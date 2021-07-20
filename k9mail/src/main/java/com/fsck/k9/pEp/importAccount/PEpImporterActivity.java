@@ -133,6 +133,8 @@ public abstract class PEpImporterActivity extends PepActivity {
                         returnValue = data.getStringArrayListExtra(ACCOUNTS_ID);
                         if (returnValue != null && !returnValue.isEmpty()) {
                             promptServerPasswords(returnValue);
+                        } else {
+                            onImportFinished();
                         }
                         break;
 
