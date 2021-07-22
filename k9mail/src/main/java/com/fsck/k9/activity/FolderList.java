@@ -126,7 +126,7 @@ public class FolderList extends K9ListActivity {
                 public void run() {
                     getToolbar().setTitle(R.string.folders_title);
 
-                    String operation = mAdapter.mListener.getOperation(FolderList.this);
+                    String operation = mAdapter.mListener.getCurrentOperation();
                     if (operation.length() < 1) {
                         getToolbar().setSubtitle(mAccount.getEmail());
                         getToolbar().setTitle(getString(R.string.folders_title));
@@ -771,6 +771,7 @@ public class FolderList extends K9ListActivity {
         private ActivityListener mListener = new ActivityListener() {
             @Override
             public void informUserOfStatus() {
+                mListener.determineCurrentOperation(context.getApplicationContext());
                 mHandler.refreshTitle();
                 mHandler.dataChanged();
             }
