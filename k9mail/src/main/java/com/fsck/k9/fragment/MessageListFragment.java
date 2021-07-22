@@ -423,7 +423,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
             fragmentListener.setMessageListTitle(displayName);
 
-            String operation = activityListener.getOperation(activity);
+            String operation = activityListener.getCurrentOperation();
             if (operation.length() < 1) {
                 fragmentListener.setMessageListSubTitle(account.getEmail());
             } else {
@@ -1663,6 +1663,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void informUserOfStatus() {
+            activityListener.determineCurrentOperation(context);
             handler.refreshTitle();
         }
 

@@ -24,12 +24,22 @@ public class ActivityListener extends SimpleMessagingListener {
     private String mProcessingAccountDescription = null;
     private String mProcessingCommandTitle = null;
 
+    private String currentOperation = "";
+
     private BroadcastReceiver mTickReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             informUserOfStatus();
         }
     };
+
+    public String getCurrentOperation() {
+        return currentOperation;
+    }
+
+    public void determineCurrentOperation(Context context) {
+        currentOperation = getOperation(context);
+    }
 
     public String getOperation(Context context) {
         if (mLoadingAccountDescription  != null
