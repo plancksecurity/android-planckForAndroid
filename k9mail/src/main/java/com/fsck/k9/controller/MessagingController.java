@@ -1676,7 +1676,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Timber.d("pep", "in download loop (nr=" + number + ") post pep");
                             updateStatus(localMessage, message);
                         } catch (MessagingException | RuntimeException me) {
-                            Timber.e(me, "SYNC: fetch small messages");
+                            Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
+                            try {
+                                final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
+                                updateStatus(localMessage, message);
+                            } catch (MessagingException e) {
+                                Timber.e(me, "SYNC: fetch small messages");
+                            }
                         }
                     }
 
