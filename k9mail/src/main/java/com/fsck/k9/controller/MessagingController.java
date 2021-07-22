@@ -1622,7 +1622,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 return;
                             }
 
-                            Timber.d("pep in download loop (nr= + %s ) pre", number);
+                            Timber.d("pep in download loop (nr= %s ) pre", number);
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                             final PEpProvider.DecryptResult result;
                             //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
@@ -1670,7 +1670,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
-                            Timber.d("pep", "in download loop (nr=" + number + ") post pep");
+                            Timber.d("pep in download loop (nr= %s ) post", number);
                             updateStatus(localMessage, message);
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
