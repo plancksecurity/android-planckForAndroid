@@ -106,6 +106,7 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.preferences.FailedToDecryptPreferences;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -143,6 +144,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
     public static final long SHARE_SIZE_THRESHOLD = 64000;
     public static final int SHARE_MAX_FILENAME_SIZE = 20;
+    public static final String DONT_REMOVE_ID = "dontRemoveId";
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -1607,11 +1609,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Fetching %d small messages for folder %s", smallMessages.size(), folder);
 
         List<LocalMessage> messagesToNotify = new ArrayList<>();
+        FailedToDecryptPreferences failedToDecryptPreferences = preferences.getFailedToDecryptPreferences();
+        Set<String> failedToDecryptMessages = failedToDecryptPreferences.getFailedToDecryptMessages();
         remoteFolder.fetch(smallMessages,
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
+                            if (failedToDecryptMessages.contains(String.valueOf(message.getId()))) {
+                                throw new MessagingException(DONT_REMOVE_ID);
+                            }
+                            failedToDecryptPreferences.addMessageId(String.valueOf(message.getId()));
                             long time = System.currentTimeMillis();
 
                             if (!shouldImportMessage(account, message, earliestDate)) {
@@ -1674,19 +1682,26 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            updateStatus(localMessage, message);
+                            updateStatus(localMessage, message, true);
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                updateStatus(localMessage, message);
+                                boolean shouldRemoveId = true;
+                                if (me.getMessage() != null && me.getMessage().equals(DONT_REMOVE_ID)) {
+                                    shouldRemoveId = false;
+                                }
+                                updateStatus(localMessage, message, shouldRemoveId);
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
                             }
                         }
                     }
 
-                    public void updateStatus(final LocalMessage localMessage, T message) {
+                    public void updateStatus(final LocalMessage localMessage, T message, boolean shouldRemoveId) {
+                        if (shouldRemoveId) {
+                            failedToDecryptPreferences.removeMessageId(String.valueOf(message.getId()));
+                        }
                         // Increment the number of "new messages" if the newly downloaded message is
                         // not marked as read.
                         if (!localMessage.isSet(Flag.SEEN)) {
