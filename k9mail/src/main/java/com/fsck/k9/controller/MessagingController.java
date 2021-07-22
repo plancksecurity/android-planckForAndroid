@@ -1670,31 +1670,34 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
-                                    Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
-                                    // not marked as read.
-                                    if (!localMessage.isSet(Flag.SEEN)) {
-                                        newMessages.incrementAndGet();
-                                    }
-
-                                    Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
-                                            account, folder, message.getUid());
-
-                                    // Update the listener with what we've found
-                                    for (MessagingListener l : getListeners()) {
-                                        l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                        if (!localMessage.isSet(Flag.SEEN)) {
-                                            l.synchronizeMailboxNewMessage(account, folder, localMessage);
-                                        }
-                                    }
-                                    // Send a notification of this message
-
-                                    if (shouldNotifyForMessage(account, localFolder, message)) {
-                                        messagesToNotify.add(localMessage);
-                                    }
-                                    //End message Store
-
+                            Timber.d("pep", "in download loop (nr=" + number + ") post pep");
+                            updateStatus(localMessage, message);
                         } catch (MessagingException | RuntimeException me) {
                             Timber.e(me, "SYNC: fetch small messages");
+                        }
+                    }
+
+                    public void updateStatus(final LocalMessage localMessage, T message) {
+                        // Increment the number of "new messages" if the newly downloaded message is
+                        // not marked as read.
+                        if (!localMessage.isSet(Flag.SEEN)) {
+                            newMessages.incrementAndGet();
+                        }
+
+                        Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                                account, folder, message.getUid());
+
+                        // Update the listener with what we've found
+                        for (MessagingListener l : getListeners()) {
+                            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+                            if (!localMessage.isSet(Flag.SEEN)) {
+                                l.synchronizeMailboxNewMessage(account, folder, localMessage);
+                            }
+                        }
+
+                        // Send a notification of this message
+                        if (shouldNotifyForMessage(account, localFolder, message)) {
+                            messagesToNotify.add(localMessage);
                         }
                     }
 
