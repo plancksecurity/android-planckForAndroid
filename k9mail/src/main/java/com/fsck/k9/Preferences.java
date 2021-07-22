@@ -6,6 +6,7 @@ import android.content.Context;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalStore;
+import com.fsck.k9.preferences.FailedToDecryptPreferences;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 
@@ -22,6 +23,7 @@ import timber.log.Timber;
 public class Preferences {
 
     private static Preferences preferences;
+    private static FailedToDecryptPreferences failedToDecryptMessages;
 
     public static synchronized Preferences getPreferences(Context context) {
         Context appContext = context.getApplicationContext();
@@ -46,6 +48,9 @@ public class Preferences {
             StorageEditor editor = storage.edit();
             editor.copy(context.getSharedPreferences("AndroidMail.Main", Context.MODE_PRIVATE));
             editor.commit();
+        }
+        if (failedToDecryptMessages == null) {
+            failedToDecryptMessages = new FailedToDecryptPreferences(context);
         }
     }
 
@@ -218,6 +223,10 @@ public class Preferences {
         StorageEditor editor = getStorage().edit();
         editor.putString("accountUuids", accountUuids);
         editor.commit();
+    }
+
+    public synchronized FailedToDecryptPreferences getFailedToDecryptPreferences() {
+        return failedToDecryptMessages;
     }
 
     /*public synchronized List<String> getMasterKeys(String uid) {
