@@ -1689,10 +1689,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                boolean shouldRemoveId = true;
-                                if (me.getMessage() != null && me.getMessage().equals(DONT_REMOVE_ID)) {
-                                    shouldRemoveId = false;
-                                }
+                                boolean shouldRemoveId = !(me.getMessage() != null && me.getMessage().equals(DONT_REMOVE_ID));
                                 updateStatus(localMessage, message, shouldRemoveId);
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
