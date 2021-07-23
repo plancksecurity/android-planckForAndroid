@@ -217,6 +217,11 @@ public class TestUtils {
             }
         } else {
             clickNextButton();
+            waitForIdle();
+            if (exists(onView(withId(R.id.parentPanel)))) {
+                pressOKButtonInDialog();
+                waitForIdle();
+            }
         }
     }
 
