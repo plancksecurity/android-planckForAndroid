@@ -23,7 +23,6 @@ import timber.log.Timber;
 public class Preferences {
 
     private static Preferences preferences;
-    private static OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences;
 
     public static synchronized Preferences getPreferences(Context context) {
         Context appContext = context.getApplicationContext();
@@ -48,9 +47,6 @@ public class Preferences {
             StorageEditor editor = storage.edit();
             editor.copy(context.getSharedPreferences("AndroidMail.Main", Context.MODE_PRIVATE));
             editor.commit();
-        }
-        if (ongoingDecryptMessagesPreferences == null) {
-            ongoingDecryptMessagesPreferences = new OngoingDecryptMessagesPreferences(context);
         }
     }
 
@@ -223,10 +219,6 @@ public class Preferences {
         StorageEditor editor = getStorage().edit();
         editor.putString("accountUuids", accountUuids);
         editor.commit();
-    }
-
-    public synchronized OngoingDecryptMessagesPreferences getOngoingDecryptMessagesPreferences() {
-        return ongoingDecryptMessagesPreferences;
     }
 
     /*public synchronized List<String> getMasterKeys(String uid) {

@@ -79,6 +79,8 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
 import com.fsck.k9.preferences.OngoingDecryptMessagesPreferences;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1606,17 +1608,17 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Fetching %d small messages for folder %s", smallMessages.size(), folder);
 
         List<LocalMessage> messagesToNotify = new ArrayList<>();
-        OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences = preferences.getOngoingDecryptMessagesPreferences();
-        Set<String> ongoingDecryptMessages = ongoingDecryptMessagesPreferences.getOngoingDecryptMessages();
+        Storage storage = preferences.getStorage();
+        StorageEditor storageEditor = preferences.getStorage().edit();
         remoteFolder.fetch(smallMessages,
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
-                            if (ongoingDecryptMessages.contains(String.valueOf(message.getId()))) {
+                            if (storage.getOngoingDecryptMessages().contains(String.valueOf(message.getId()))) {
                                 throw new MessagingException(DONT_REMOVE_ID);
                             }
-                            ongoingDecryptMessagesPreferences.addOngoingDecryptMessageId(String.valueOf(message.getId()));
+                            storageEditor.addOngoingDecryptMessageId(String.valueOf(message.getId()));
                             long time = System.currentTimeMillis();
 
                             if (!shouldImportMessage(account, message, earliestDate)) {
@@ -1697,7 +1699,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                     public void updateStatus(final LocalMessage localMessage, T message, boolean shouldRemoveId) {
                         if (shouldRemoveId) {
-                            ongoingDecryptMessagesPreferences.removeOngoingDecryptMessageId(String.valueOf(message.getId()));
+                            storageEditor.removeOngoingDecryptMessageId(String.valueOf(message.getId()));
                         }
                         // Increment the number of "new messages" if the newly downloaded message is
                         // not marked as read.
