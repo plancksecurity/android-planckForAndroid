@@ -446,13 +446,14 @@ public class TestUtils {
                         break;
                     case "password":
                         testConfig.setPassword(line[1], 0);
-                        break;case "username":
+                        break;
+                    case "username":
                         testConfig.setUsername(line[1], 0);
                         break;
                     case "trusted_server":
                         if (line[1].equals("true")) {
                             testConfig.setTrusted_server(true, 0);
-                        } else if (line[1].equals("false")){
+                        } else if (line[1].equals("false")) {
                             testConfig.setTrusted_server(false, 0);
                         } else {
                             assertFailWithMessage("Trusted_server must be true or false");
@@ -481,13 +482,14 @@ public class TestUtils {
                         if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
                             assertFailWithMessage("Password is empty");
                         }
-                        break;case "username2":
+                        break;
+                    case "username2":
                         testConfig.setUsername(line[1], 1);
                         break;
                     case "trusted_server2":
                         if (line[1].equals("true")) {
                             testConfig.setTrusted_server(true, 1);
-                        } else if (line[1].equals("false")){
+                        } else if (line[1].equals("false")) {
                             testConfig.setTrusted_server(false, 1);
                         } else {
                             assertFailWithMessage("Trusted_server must be true or false");
@@ -516,13 +518,14 @@ public class TestUtils {
                         if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
                             assertFailWithMessage("Password is empty");
                         }
-                        break;case "username3":
+                        break;
+                    case "username3":
                         testConfig.setUsername(line[1], 2);
                         break;
                     case "trusted_server3":
                         if (line[1].equals("true")) {
                             testConfig.setTrusted_server(true, 2);
-                        } else if (line[1].equals("false")){
+                        } else if (line[1].equals("false")) {
                             testConfig.setTrusted_server(false, 2);
                         } else {
                             assertFailWithMessage("Trusted_server must be true or false");
@@ -553,10 +556,26 @@ public class TestUtils {
                         testConfig.setKeySync_password(line[1], 1);
                         break;
                     case "test_number":
-                        testConfig.settest_number(line[1]);
+                        boolean fileExists = false;
+                        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/");
+                        for (int i=0; i < 20; i++) {
+                            try {
+                                if (new File(directory, i + ".txt").exists()) {
+                                    testConfig.settest_number(String.valueOf(i));
+                                    fileExists = true;
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                Timber.i("Cannot find file " + i + ".txt");
+                            }
+                        }
+                        if (!fileExists) {
+                            Timber.i("Cannot find the file for test_number. Using the test_number in the config_file");
+                            testConfig.settest_number(line[1]);
+                        }
                         if (!testConfig.gettest_number().equals("0")) {
                             totalAccounts = 1;
-                            if(testConfig.gettest_number().equals("3")) {
+                            if (testConfig.gettest_number().equals("3")) {
                                 totalAccounts = 2;
                             }
                         }
