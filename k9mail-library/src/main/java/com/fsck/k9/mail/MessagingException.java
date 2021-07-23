@@ -3,7 +3,6 @@ package com.fsck.k9.mail;
 
 public class MessagingException extends Exception {
     public static final long serialVersionUID = -1;
-    public static final String DONT_REMOVE_ID = "dontRemoveId";
 
     private boolean permanentFailure = false;
 
