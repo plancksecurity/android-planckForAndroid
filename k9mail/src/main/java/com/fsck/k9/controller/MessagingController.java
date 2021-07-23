@@ -143,7 +143,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     public static final long INVALID_MESSAGE_ID = -1;
     public static final long SHARE_SIZE_THRESHOLD = 64000;
     public static final int SHARE_MAX_FILENAME_SIZE = 20;
-    public static final String DONT_REMOVE_ID = "dontRemoveId";
 
     private static final Set<Flag> SYNC_FLAGS = EnumSet.of(Flag.SEEN, Flag.FLAGGED, Flag.ANSWERED, Flag.FORWARDED);
 
@@ -1616,7 +1615,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
                             if (storage.getOngoingDecryptMessages().contains(String.valueOf(message.getId()))) {
-                                throw new MessagingException(DONT_REMOVE_ID);
+                                throw new MessagingException(OngoingDecryptMessagesPreferences.DONT_REMOVE_ID);
                             }
                             storageEditor.addOngoingDecryptMessageId(String.valueOf(message.getId()));
                             long time = System.currentTimeMillis();
@@ -1686,7 +1685,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                boolean shouldRemoveId = !(me.getMessage() != null && me.getMessage().equals(DONT_REMOVE_ID));
+                                boolean shouldRemoveId = !(me.getMessage() != null && me.getMessage().equals(OngoingDecryptMessagesPreferences.DONT_REMOVE_ID));
                                 updateStatus(localMessage, message, shouldRemoveId);
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
