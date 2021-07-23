@@ -28,7 +28,6 @@ import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
