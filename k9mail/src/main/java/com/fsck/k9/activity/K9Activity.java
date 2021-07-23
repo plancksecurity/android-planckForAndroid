@@ -176,6 +176,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
+    public boolean isShowingSearchView() {
+        return isShowingSearchView;
+    }
+
     private void setFocusOnKeyboard() {
         searchInput.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
