@@ -153,6 +153,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         return fragment;
     }
 
+    public void showComposeFab(boolean show) {
+        if(isAdded() && fab != null) {
+            if(show) {
+                fab.show();
+            } else {
+                fab.hide();
+            }
+        }
+    }
+
     public void showLoadingMessages() {
         listView.setVisibility(GONE);
         fab.hide();
