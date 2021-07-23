@@ -17,6 +17,7 @@ import timber.log.Timber;
 public class StorageEditor {
     private Storage storage;
     private PassphraseStorage passphraseStorage;
+    private OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences;
 
     private Map<String, String> changes = new HashMap<>();
     private List<String> removals = new ArrayList<>();
@@ -24,9 +25,13 @@ public class StorageEditor {
     Map<String, String> snapshot = new HashMap<>();
 
 
-    StorageEditor(Storage storage,PassphraseStorage passphraseStorage) {
+    StorageEditor(Storage storage,
+                  PassphraseStorage passphraseStorage,
+                  OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences) {
         this.storage = storage;
         this.passphraseStorage = passphraseStorage;
+        this.ongoingDecryptMessagesPreferences = ongoingDecryptMessagesPreferences;
+
         snapshot.putAll(storage.getAll());
     }
 
@@ -110,5 +115,13 @@ public class StorageEditor {
     public StorageEditor remove(String key) {
         removals.add(key);
         return this;
+    }
+
+    public void addOngoingDecryptMessageId(String messageId) {
+        ongoingDecryptMessagesPreferences.addOngoingDecryptMessageId(messageId);
+    }
+
+    public void removeOngoingDecryptMessageId(String messageId) {
+        ongoingDecryptMessagesPreferences.removeOngoingDecryptMessageId(messageId);
     }
 }
