@@ -30,7 +30,6 @@ import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
-import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
 import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
@@ -377,7 +376,7 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    override fun setAccountsAdapter(collection: ListAdapteeCollection<Account>) {
+    override fun setAccountsAdapter(collection: MutableList<Account>) {
         val accountRenderer = AccountRenderer()
         val rendererAccountBuilder = RendererBuilder(accountRenderer)
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
