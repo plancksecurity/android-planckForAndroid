@@ -178,6 +178,8 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("account fetching email setting scrolled")
 
         clickSettingDialog(R.string.account_settings_incoming_label, "account incoming server setting")
+        expandSetting(R.string.account_settings_mail_display_count_label)
+
         clickSettingDialog(R.string.account_settings_mail_display_count_label, "account local folder size setting")
         clickSettingDialog(R.string.account_settings_message_age_label, "account sync messages from setting")
         clickSettingDialog(R.string.account_settings_autodownload_message_size_label, "account fetch messages up to setting")
@@ -199,9 +201,12 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("account sending email setting")
 
         clickSettingDialog(R.string.account_settings_composition_label, "account composition defaults setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_identities_label, "account manage identities setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_message_format_label, "account message format setting")
         clickSettingDialog(R.string.account_settings_outgoing_label, "account outgoing server setting")
+        expandSetting(R.string.account_settings_quote_style_label)
         clickSettingDialog(R.string.account_settings_quote_style_label, "account reply quoting style setting")
         clickSettingDialog(R.string.account_settings_quote_prefix_label, "account quoted text preview setting")
         Espresso.pressBack()
