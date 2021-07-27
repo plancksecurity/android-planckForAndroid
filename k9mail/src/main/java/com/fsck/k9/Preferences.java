@@ -6,7 +6,6 @@ import android.content.Context;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mailstore.LocalStore;
-import com.fsck.k9.preferences.OngoingDecryptMessagesPreferences;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 
