@@ -217,18 +217,22 @@ public class TestUtils {
             }
         } else {
             clickNextButton();
-            waitForIdle();
-            if (exists(onView(withId(R.id.parentPanel)))) {
-                pressOKButtonInDialog();
-                waitForIdle();
-            }
         }
     }
 
     private void clickNextButton () {
         waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        waitForIdle();
+        for (int i=0;i<100;i++) {
+            waitForIdle();
+        }
+        while (viewIsDisplayed(R.id.account_email)) {
+            waitForIdle();
+        }
+        while (exists(onView(withId(R.id.parentPanel)))) {
+            pressOKButtonInDialog();
+            waitForIdle();
+        }
         try {
             UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             while (uiObject.getText() != null) {
