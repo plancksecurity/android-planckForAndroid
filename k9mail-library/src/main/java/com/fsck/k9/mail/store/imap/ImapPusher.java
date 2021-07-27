@@ -77,6 +77,17 @@ class ImapPusher implements Pusher {
     }
 
     @Override
+    public void stopFolderPusher(String folderName) {
+        synchronized (folderPushers) {
+            for (ImapFolderPusher folderPusher : folderPushers) {
+                if(folderPusher.getName().equals(folderName)) {
+                    folderPusher.stop();
+                }
+            }
+        }
+    }
+
+    @Override
     public int getRefreshInterval() {
         return (store.getStoreConfig().getIdleRefreshMinutes() * 60 * 1000);
     }

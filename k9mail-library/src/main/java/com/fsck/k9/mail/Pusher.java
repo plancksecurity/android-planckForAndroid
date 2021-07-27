@@ -14,4 +14,5 @@ public interface Pusher {
     public int getRefreshInterval();
     public void setLastRefresh(long lastRefresh);
     public long getLastRefresh();
+    void stopFolderPusher(String folderName);
 }
