@@ -167,13 +167,13 @@
                 android:summary="@string/global_settings_threaded_view_summary"
                 android:title="@string/global_settings_threaded_view_label" />
 
-            <!--ListPreference
+            <ListPreference
                 android:dialogTitle="@string/global_settings_splitview_mode_label"
                 android:entries="@array/splitview_mode_entries"
                 android:entryValues="@array/splitview_mode_values"
                 android:key="splitview_mode"
                 android:summary="%s"
-                android:title="@string/global_settings_splitview_mode_label" /-->
+                android:title="@string/global_settings_splitview_mode_label" />
 
         </PreferenceCategory>
 
