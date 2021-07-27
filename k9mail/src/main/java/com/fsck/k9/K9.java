@@ -97,6 +97,7 @@ import timber.log.Timber.DebugTree;
         resToastText = R.string.crash_toast_text)
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
+    public static final int MINIMUM_WIDTH_FOR_SPLIT_SCREEN = 600;
     private Poller poller;
     private boolean needsFastPoll = false;
     private boolean isPollingMessages;
@@ -975,7 +976,7 @@ public class K9 extends MultiDexApplication {
             sLockScreenNotificationVisibility = LockScreenNotificationVisibility.valueOf(lockScreenNotificationVisibility);
         }
 
-        String splitViewMode = storage.getString("splitViewMode", null);
+        String splitViewMode = storage.getString("splitViewMode", getDefaultSplitViewMode(app).name());
         if (splitViewMode != null) {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }
@@ -1026,6 +1027,14 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpNewKeysPassphrase = storage.getPassphrase();
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
+    }
+
+    public static SplitViewMode getDefaultSplitViewMode(Context context) {
+        if (context.getResources().getConfiguration().smallestScreenWidthDp < MINIMUM_WIDTH_FOR_SPLIT_SCREEN) {
+            return SplitViewMode.NEVER;
+        } else {
+            return SplitViewMode.ALWAYS;
+        }
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
