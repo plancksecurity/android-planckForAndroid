@@ -1,10 +1,6 @@
 package com.fsck.k9.ui
 
 import android.app.Activity
-import android.app.Instrumentation
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -20,8 +16,6 @@ import androidx.test.espresso.action.ViewActions.swipeRight
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
@@ -33,7 +27,6 @@ import com.fsck.k9.common.ChildViewAction.clickChildViewWithId
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matcher
-import org.hamcrest.core.IsNot.not
 import org.junit.After
 import timber.log.Timber
 import java.io.File
