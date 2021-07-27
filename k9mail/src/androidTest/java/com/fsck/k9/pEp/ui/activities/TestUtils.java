@@ -3331,11 +3331,20 @@ public class TestUtils {
 
     public void setClipboard(String textToCopy) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.clearPrimaryClip();
+        try {
+            clipboard.clearPrimaryClip();
+        } catch (Throwable tr) {
+            Timber.i("");
+        }
         ClipData clip = ClipData.newPlainText("", textToCopy);
+        clipboard.setPrimaryClip(clip);
         while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
             device.waitForIdle();
-            clipboard.setPrimaryClip(clip);
+            try {
+                clipboard.setPrimaryClip(clip);
+            } catch (Throwable th) {
+                Timber.i("");
+            }
         }
     }
 
