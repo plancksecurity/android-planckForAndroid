@@ -9,6 +9,7 @@ def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
 def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
 def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
 def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
+def apkSplitArchOffset = 10000000L
 
 buildscript {
     repositories {
@@ -196,6 +197,7 @@ android {
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
+        buildConfigField "long", "APK_SPLIT_ARCH_OFFSET", "${apkSplitArchOffset}"
 
         javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
@@ -289,7 +291,7 @@ android {
         variant.outputs.each { output ->
             def baseAbiVersionCode = abiCodes.get(output.getFilter(OutputFile.ABI))
             if (baseAbiVersionCode != null) {
-                output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
+                output.versionCodeOverride = baseAbiVersionCode * apkSplitArchOffset + variant.versionCode
             }
         }
     }
