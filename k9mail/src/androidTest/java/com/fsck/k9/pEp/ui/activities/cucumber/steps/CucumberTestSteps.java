@@ -2409,11 +2409,12 @@ public class CucumberTestSteps {
     @Then("^I save test report$")
     public void I_save_report() {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
+        File file = null;
         try {
-            File file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
+            file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
             testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
-        } catch (IOException e) {
-            SetDirectory();
+        } catch (Throwable e) {
+            SetDirectory(file);
         }
     }
 
@@ -2466,8 +2467,8 @@ public class CucumberTestSteps {
         return cucumberMessageTo;
     }
 
-    private void SetDirectory() {
-        CopyAssets(); // Then run the method to copy the file.
+    private void SetDirectory(File file) {
+        CopyAssets(file); // Then run the method to copy the file.
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 
 
@@ -2476,11 +2477,9 @@ public class CucumberTestSteps {
         }
     }
 
-    private void CopyAssets() {
-        File file = null;
+    private void CopyAssets(File file) {
             try {
                 String extStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/";
-                file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
                 File file2 = new File(extStorageDirectory + "/cucumber.json");
                 FileInputStream in = new FileInputStream(file);
                 file2.createNewFile();
@@ -2493,9 +2492,6 @@ public class CucumberTestSteps {
             } catch (Exception e) {
                 Log.e("tag", e.getMessage());
             }
-        if (!file.exists()) {
-            Assume.assumeTrue("File cucumber.json doesn't exist",false);
-        }
     }
 
     private void copyFile(InputStream in, OutputStream out) {
