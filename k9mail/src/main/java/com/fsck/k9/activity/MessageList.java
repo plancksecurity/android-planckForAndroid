@@ -777,6 +777,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public void onResume() {
         super.onResume();
 
+        if(shouldRecreateToChangeDisplayMode()) {
+            recreate();
+            return;
+        }
+
         if (!(this instanceof Search)) {
             //necessary b/c no guarantee Search.onStop will be called before MessageList.onResume
             //when returning from search results
@@ -800,6 +805,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         setDefaultFolderNameIfNeeded();
         drawerLayoutView.loadNavigationView();
         setConfigurationManagerListener(this);
+    }
+
+    private boolean shouldRecreateToChangeDisplayMode() {
+        return (mDisplayMode == DisplayMode.SPLIT_VIEW && !useSplitView()) ||
+                (mDisplayMode != DisplayMode.SPLIT_VIEW && useSplitView());
     }
 
     private void setDefaultFolderNameIfNeeded() {
