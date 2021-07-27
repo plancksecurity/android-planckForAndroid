@@ -3431,7 +3431,11 @@ public class TestUtils {
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
                 swipeUpScreen();
-                webViewText = wb.getChildren().get(0).getText().split("\n");
+                if (wb.getChildren().get(0).getText() != null) {
+                    webViewText = wb.getChildren().get(0).getText().split("\n");
+                } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
+                    webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
+                }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
