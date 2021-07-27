@@ -86,6 +86,9 @@ task syncTest(type: Exec) {
                            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner']
 
     commandLine syncTestCommand
+    doFirst {
+        println "Waiting for a second device with same account and sync enabled"
+    }
 }
 
 task addIgnore(type: Exec) {
