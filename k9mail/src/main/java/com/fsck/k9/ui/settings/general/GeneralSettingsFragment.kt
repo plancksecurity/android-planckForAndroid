@@ -27,6 +27,7 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import security.pEp.ui.PEpUIUtils.bestSplitScreenModeAvailable
 import security.pEp.ui.passphrase.PassphraseActivity
 import security.pEp.ui.passphrase.PassphraseRequirementType
 import java.io.File
@@ -54,12 +55,24 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeGlobalpEpSync()
         initializeNewKeysPassphrase()
         initializeTheme()
+        initializeSplitViewPreference()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeSplitViewPreference() {
+        findPreference<ListPreference>(PREFERENCE_SPLIT_VIEW)?.apply {
+            val bestSplitModeAvailable = requireContext().bestSplitScreenModeAvailable()
+            if (bestSplitModeAvailable == K9.SplitViewMode.NEVER) {
+                remove()
+            } else if (bestSplitModeAvailable == K9.SplitViewMode.WHEN_IN_LANDSCAPE) {
+                removeEntry(ALWAYS)
+            }
+        }
     }
 
     private fun initializeTheme() {
@@ -273,6 +286,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
         private const val PREFERENCE_THEME = "theme"
+        private const val PREFERENCE_SPLIT_VIEW = "splitview_mode"
+        private const val ALWAYS = "ALWAYS"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(
