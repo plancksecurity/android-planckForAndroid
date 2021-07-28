@@ -3,6 +3,7 @@ package com.fsck.k9.helper
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.os.Build
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
                 NO_APP_VERSION
             }
             oldVersionCode < appVersionCode -> {
+                performSettingsUpdates(oldVersionCode)
                 saveVersionNameAndCode(appVersionCode, context)
                 APP_UPDATED
             }
@@ -60,6 +62,17 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
             K9.save(editor)
             editor.commit()
         }
+    }
+
+    private fun performSettingsUpdates(oldVersionCode: Long) {
+        val realOldVersionCode = extractRealVersionCode(oldVersionCode)
+        if (realOldVersionCode <= 96) {
+            K9.setSplitViewMode(K9.getDefaultSplitViewMode(context))
+        }
+    }
+
+    private fun extractRealVersionCode(versionCode: Long): Long {
+        return versionCode % BuildConfig.APK_SPLIT_ARCH_OFFSET
     }
 
     companion object {
