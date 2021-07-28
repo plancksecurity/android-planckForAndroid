@@ -12,7 +12,7 @@ interface DrawerView {
     fun refreshMessages(search: LocalSearch)
     fun setupNavigationHeaderListeners(showingAccountsMenu: Boolean)
     fun setAccountsDrawerVisible()
-    fun setAccountsAdapter(collection: MutableList<Account>)
+    fun setAccountsAdapter(collection: List<Account>)
     fun setFolderAdapter(levelListBuilder: LevelListBuilder<FolderModel>)
     fun setFoldersDrawerVisible()
     fun populateFolders(account: Account, menuFolders: List<LocalFolder>, force: Boolean)

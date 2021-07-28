@@ -376,7 +376,7 @@ class DrawerLayoutView @Inject constructor(
         }
     }
 
-    override fun setAccountsAdapter(collection: MutableList<Account>) {
+    override fun setAccountsAdapter(collection: List<Account>) {
         val accountRenderer = AccountRenderer()
         val rendererAccountBuilder = RendererBuilder(accountRenderer)
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
