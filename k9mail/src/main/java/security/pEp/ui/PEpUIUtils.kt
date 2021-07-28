@@ -211,13 +211,13 @@ object PEpUIUtils {
 
     fun Context.bestSplitScreenModeAvailable(): K9.SplitViewMode {
         return when {
-            resources.configuration.smallestScreenWidthDp >=
-                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN -> K9.SplitViewMode.ALWAYS
-            resources.configuration.screenWidthDp <
-                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN &&
-                    resources.configuration.screenHeightDp <
-                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN -> K9.SplitViewMode.NEVER
-            else -> K9.SplitViewMode.WHEN_IN_LANDSCAPE
+            resources.configuration.smallestScreenWidthDp >= K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN ->
+                K9.SplitViewMode.ALWAYS
+            resources.configuration.screenWidthDp < K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN
+                    && resources.configuration.screenHeightDp < K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN ->
+                K9.SplitViewMode.NEVER
+            else ->
+                K9.SplitViewMode.WHEN_IN_LANDSCAPE
         }
     }
 
