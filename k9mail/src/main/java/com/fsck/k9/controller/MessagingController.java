@@ -128,6 +128,7 @@ import timber.log.Timber;
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
 import static com.fsck.k9.mail.Flag.X_PEP_DISABLED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
+import static com.fsck.k9.preferences.OngoingDecryptMessagesPreferences.DONT_REMOVE_ID;
 
 /**
  * Starts a long running (application) Thread that will run through commands
@@ -1688,7 +1689,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                boolean shouldRemoveId = !(me.getMessage() != null && me.getMessage().equals(OngoingDecryptMessagesPreferences.DONT_REMOVE_ID));
+                                boolean shouldRemoveId = me.getMessage() == null
+                                        || !me.getMessage().equals(DONT_REMOVE_ID);
                                 updateStatus(localMessage, message, shouldRemoveId);
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
