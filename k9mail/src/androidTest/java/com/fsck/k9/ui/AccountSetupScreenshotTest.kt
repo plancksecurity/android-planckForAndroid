@@ -9,6 +9,7 @@ import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,18 +30,21 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
+    @Ignore
     fun automaticAccountSetup() {
         setTestSet("A")
         accountSetup(true)
     }
 
     @Test
+    @Ignore
     fun manualAccountSetup() {
         setTestSet("B")
         accountSetup(false)
     }
 
     @Test
+    @Ignore
     fun importAccountSetup() {
         setTestSet("L")
         openFirstScreen()
@@ -73,6 +77,7 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
+    @Ignore
     fun addMessagesToAccount() {
         openFirstScreen()
         waitListView()

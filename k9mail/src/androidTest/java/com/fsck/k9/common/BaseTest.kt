@@ -252,9 +252,13 @@ open class BaseTest {
         waitMessageView()
         click(R.id.openCloseButton)
         waitMessageCompose()
+        runBlocking { waitForIdle() }
+        Espresso.closeSoftKeyboard()
         click(R.id.send)
-        sleep(3000)
+        runBlocking { waitForIdle() }
         Espresso.pressBack()
+        runBlocking { waitForIdle() }
+        sleep(3000)
     }
 
     fun sendNewMessageToSelf() {
