@@ -10,6 +10,7 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.PEpUtils.isRatingUnsecure
@@ -206,6 +207,18 @@ object PEpUIUtils {
     fun Context.isValidGlideContext(): Boolean {
         val baseContext = if(this is ContextWrapper) baseContext else this
         return baseContext !is Activity || (!baseContext.isDestroyed && !baseContext.isFinishing)
+    }
+
+    fun Context.bestSplitScreenModeAvailable(): K9.SplitViewMode {
+        return when {
+            resources.configuration.smallestScreenWidthDp >=
+                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN -> K9.SplitViewMode.ALWAYS
+            resources.configuration.screenWidthDp <
+                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN &&
+                    resources.configuration.screenHeightDp <
+                    K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN -> K9.SplitViewMode.NEVER
+            else -> K9.SplitViewMode.WHEN_IN_LANDSCAPE
+        }
     }
 
     private fun <E : Any> MutableList<E>.getSpecialFolders(account: Account): List<E?> {
