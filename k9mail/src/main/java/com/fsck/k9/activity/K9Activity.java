@@ -17,6 +17,7 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -30,6 +31,8 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.pEp.mdm.RestrictionsListener;
+import security.pEp.ui.PEpUIUtils;
+
 import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
@@ -69,6 +72,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
 
 
+        }
+
+        correctSplitScreenModeIfNeeded();
+    }
+
+    private void correctSplitScreenModeIfNeeded() {
+        K9.SplitViewMode bestSplitModeAvailable = PEpUIUtils.INSTANCE.bestSplitScreenModeAvailable(this);
+        if (K9.getSplitViewMode().compare(bestSplitModeAvailable) == 1) {
+            K9.setSplitViewMode(bestSplitModeAvailable);
         }
     }
 

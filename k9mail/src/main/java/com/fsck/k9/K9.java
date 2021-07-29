@@ -293,7 +293,17 @@ public class K9 extends MultiDexApplication {
     public enum SplitViewMode {
         ALWAYS,
         NEVER,
-        WHEN_IN_LANDSCAPE
+        WHEN_IN_LANDSCAPE;
+
+        public int compare(SplitViewMode otherMode) {
+            if (this == otherMode) {
+                return 0;
+            } else if (this == ALWAYS || otherMode == NEVER) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 
     private static boolean mMessageListCheckboxes = true;
