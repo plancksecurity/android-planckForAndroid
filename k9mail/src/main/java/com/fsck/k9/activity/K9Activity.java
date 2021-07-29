@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
@@ -39,6 +40,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.search_input) EditText searchInput;
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
     @Nullable @Bind(R.id.fab_button_compose_message) View fabButton;
+    @Nullable @Bind(R.id.search_bar) MotionLayout searchBarMotionLayout;
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
@@ -171,6 +173,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             searchManager.setOnDismissListener(() -> showComposeFab(true));
         } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
+            searchBarMotionLayout.transitionToEnd();
             toolbarSearchContainer.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.GONE);
             searchInput.setEnabled(true);
@@ -198,15 +201,38 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         if (searchInput != null &&
             toolbarSearchContainer != null && toolbar != null) {
-            toolbarSearchContainer.setVisibility(View.GONE);
-            toolbar.setVisibility(View.VISIBLE);
-            searchInput.setEnabled(false);
-            searchInput.setText(null);
-            KeyboardUtils.hideKeyboard(searchInput);
-            if (onCloseSearchClickListener != null) {
-                onCloseSearchClickListener.onClick(null);
-            }
-            showComposeFab(true);
+            searchBarMotionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
+                @Override
+                public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+
+                }
+
+                @Override
+                public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+
+                }
+
+                @Override
+                public void onTransitionCompleted(MotionLayout motionLayout, int i) {
+                    if(i == R.id.start) {
+                        toolbarSearchContainer.setVisibility(View.GONE);
+                        toolbar.setVisibility(View.VISIBLE);
+                        searchInput.setEnabled(false);
+                        searchInput.setText(null);
+                        KeyboardUtils.hideKeyboard(searchInput);
+                        if (onCloseSearchClickListener != null) {
+                            onCloseSearchClickListener.onClick(null);
+                        }
+                        showComposeFab(true);
+                    }
+                }
+
+                @Override
+                public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
+
+                }
+            });
+            searchBarMotionLayout.transitionToStart();
         }
     }
 
@@ -214,7 +240,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     void onSearchInputChanged(CharSequence query) {
         if (clearSearchIcon != null) {
             if (query.toString().isEmpty()) {
-                clearSearchIcon.setVisibility(View.GONE);
+                //clearSearchIcon.setVisibility(View.GONE);
             } else {
                 clearSearchIcon.setVisibility(View.VISIBLE);
             }
