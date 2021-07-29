@@ -827,7 +827,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void initializeActionBar() {
-        setUpToolbar(true, v -> drawerLayoutView.setDrawerEnabled(true));
+        setUpToolbar(true);
         View customView = getToolbar().findViewById(R.id.actionbar_custom);
         mActionBarMessageList = customView.findViewById(R.id.actionbar_message_list);
         mActionBarMessageView = customView.findViewById(R.id.actionbar_message_view);
@@ -1126,9 +1126,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.search: {
+                item.setVisible(isAndroidLollipop());
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
-                showSearchView();
+                showSearchView(() -> item.setVisible(true));
                 return true;
             }
             case R.id.search_remote: {

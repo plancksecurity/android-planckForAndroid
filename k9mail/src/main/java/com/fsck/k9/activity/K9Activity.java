@@ -165,7 +165,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    public void showSearchView() {
+    public interface AnimationCallback {
+        void onAnimationBackwardsFinished();
+    }
+
+    public void showSearchView() {}
+
+    public void showSearchView(AnimationCallback animationCallback) {
         isShowingSearchView = true;
         if (isAndroidLollipop) {
             onSearchRequested();
@@ -173,14 +179,64 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
             searchManager.setOnDismissListener(() -> showComposeFab(true));
         } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
-            searchBarMotionLayout.transitionToEnd();
+            searchBarMotionLayout.setTransitionListener(
+                    new MotionLayout.TransitionListener() {
+                        @Override
+                        public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+                            if(i == R.id.start) {
+                                searchInput.setError(null);
+                                searchInput.setHint(null);
+                                searchInput.setEnabled(false);
+                                searchInput.setText(null);
+                                toolbarSearchContainer.setVisibility(View.VISIBLE);
+                            }
+                            else if(i == R.id.end) {
+                                toolbar.setAlpha(0);
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+                            if(i == R.id.start) {
+                                toolbar.setAlpha(1-v);
+                            }
+                            else if(i == R.id.end) {
+                                toolbar.setAlpha(v);
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionCompleted(MotionLayout motionLayout, int i) {
+                            if(i == R.id.start) {
+                                toolbarSearchContainer.setVisibility(View.GONE);
+                                toolbar.setVisibility(View.VISIBLE);
+                                KeyboardUtils.hideKeyboard(searchInput);
+                                if (onCloseSearchClickListener != null) {
+                                    onCloseSearchClickListener.onClick(null);
+                                }
+                                showComposeFab(true);
+                                animationCallback.onAnimationBackwardsFinished();
+                            }
+                            else if(i == R.id.end) {
+                                toolbarSearchContainer.setVisibility(View.VISIBLE);
+                                toolbar.setVisibility(View.GONE);
+                                searchInput.setEnabled(true);
+                                searchInput.setHint(R.string.search_action);
+                                setFocusOnKeyboard();
+                                showComposeFab(false);
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
+
+                        }
+                    }
+            );
             toolbarSearchContainer.setVisibility(View.VISIBLE);
-            toolbar.setVisibility(View.GONE);
-            searchInput.setEnabled(true);
-            setFocusOnKeyboard();
-            searchInput.setError(null);
             showComposeFab(false);
             searchInput.setText(searchText);
+            searchBarMotionLayout.transitionToEnd();
         }
     }
 
@@ -201,37 +257,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         if (searchInput != null &&
             toolbarSearchContainer != null && toolbar != null) {
-            searchBarMotionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
-                @Override
-                public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
-
-                }
-
-                @Override
-                public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
-
-                }
-
-                @Override
-                public void onTransitionCompleted(MotionLayout motionLayout, int i) {
-                    if(i == R.id.start) {
-                        toolbarSearchContainer.setVisibility(View.GONE);
-                        toolbar.setVisibility(View.VISIBLE);
-                        searchInput.setEnabled(false);
-                        searchInput.setText(null);
-                        KeyboardUtils.hideKeyboard(searchInput);
-                        if (onCloseSearchClickListener != null) {
-                            onCloseSearchClickListener.onClick(null);
-                        }
-                        showComposeFab(true);
-                    }
-                }
-
-                @Override
-                public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
-
-                }
-            });
+            toolbar.setVisibility(View.VISIBLE);
             searchBarMotionLayout.transitionToStart();
         }
     }
