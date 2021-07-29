@@ -419,6 +419,9 @@ public class TestUtils {
     }
 
     public void moveFile(File file, File dir) throws IOException {
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         File newFile = new File(dir, file.getName());
         Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
     }
