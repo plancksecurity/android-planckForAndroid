@@ -74,6 +74,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import kotlin.jvm.functions.Function0;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.resources.PEpResourcesProvider;
 import security.pEp.ui.resources.ResourcesProvider;
@@ -337,7 +338,7 @@ public class FolderList extends K9ListActivity {
             @Override
             public void onTextChanged(CharSequence query, int start, int before, int count) {
                 if (query.toString().isEmpty()) {
-                    clearSearchIcon.setVisibility(View.GONE);
+                    //clearSearchIcon.setVisibility(View.GONE);
                 } else {
                     clearSearchIcon.setVisibility(View.VISIBLE);
                 }
@@ -380,69 +381,14 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-    private boolean isAndroidLollipop() {
-        return Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
-    }
-
     public void showSearchView(K9Activity.AnimationCallback animationCallback) {
-        if (isAndroidLollipop()) {
-            onSearchRequested();
-        } else if (searchLayout != null) {
-            searchBarMotionLayout.setTransitionListener(
-                    new MotionLayout.TransitionListener() {
-                        @Override
-                        public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
-                            if(i == R.id.start) {
-                                searchInput.setError(null);
-                                searchInput.setHint(null);
-                                searchInput.setEnabled(false);
-                                searchInput.setText(null);
-                                searchLayout.setVisibility(View.VISIBLE);
-                            }
-                            else if(i == R.id.end) {
-                                toolbar.setAlpha(0);
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
-                            if(i == R.id.start) {
-                                toolbar.setAlpha(1-v);
-                            }
-                            else if(i == R.id.end) {
-                                toolbar.setAlpha(v);
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionCompleted(MotionLayout motionLayout, int i) {
-                            if(i == R.id.start) {
-                                searchLayout.setVisibility(View.GONE);
-                                toolbar.setVisibility(View.VISIBLE);
-                                KeyboardUtils.hideKeyboard(searchInput);
-                                animationCallback.onAnimationBackwardsFinished();
-                            }
-                            else if(i == R.id.end) {
-                                magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
-                                searchLayout.setVisibility(View.VISIBLE);
-                                toolbar.setVisibility(View.GONE);
-                                searchInput.setEnabled(true);
-                                searchInput.setHint(R.string.search_action);
-                                setFocusOnKeyboard();
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
-
-                        }
-                    }
-            );
-
-            searchLayout.setVisibility(View.VISIBLE);
-            searchBarMotionLayout.transitionToEnd();
-        }
+        getK9Common().showSearchView(
+                searchBarMotionLayout, searchLayout, searchInput, toolbar, animationCallback,
+                () -> {
+                    onSearchRequested();
+                    return null;
+                }
+        );
     }
 
     public void hideSearchView() {
@@ -450,25 +396,8 @@ public class FolderList extends K9ListActivity {
             ImageView magnifier = searchBarMotionLayout.findViewById(R.id.search_icon);
             int newPaddingRight = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
             magnifier.setPadding(originalPaddingLeft, 0, newPaddingRight, 0);
-            toolbar.setVisibility(View.VISIBLE);
-            searchBarMotionLayout.transitionToStart();
+            getK9Common().hideSearchView(toolbar, searchBarMotionLayout);
         }
-    }
-
-    public void hideSearchViewSimple() {
-        if (searchLayout != null) {
-            searchLayout.setVisibility(View.GONE);
-            getToolbar().setVisibility(View.VISIBLE);
-            searchInput.setEnabled(false);
-            searchInput.setText(null);
-            KeyboardUtils.hideKeyboard(searchInput);
-        }
-    }
-
-    private void setFocusOnKeyboard() {
-        searchInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
     @Override
@@ -645,11 +574,16 @@ public class FolderList extends K9ListActivity {
 
         case R.id.search:
             //folderMenuItem.setVisible(false);
-            item.setVisible(isAndroidLollipop());
+            item.setVisible(getK9Common().isAndroidLollipop());
             showSearchView(new K9Activity.AnimationCallback() {
                 @Override
                 public void onAnimationBackwardsFinished() {
                     item.setVisible(true);
+                }
+
+                @Override
+                public void onAnimationForwardFinished() {
+                    magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
                 }
             });
 

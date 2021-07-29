@@ -32,6 +32,7 @@ import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
+import kotlin.jvm.functions.Function0;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
 
@@ -167,80 +168,24 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     public interface AnimationCallback {
         void onAnimationBackwardsFinished();
+        void onAnimationForwardFinished();
     }
 
     public void showSearchView() {}
 
     public void showSearchView(AnimationCallback animationCallback) {
-        isShowingSearchView = true;
-        if (isAndroidLollipop) {
-            onSearchRequested();
-            showComposeFab(false);
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            searchManager.setOnDismissListener(() -> showComposeFab(true));
-        } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
-            searchBarMotionLayout.setTransitionListener(
-                    new MotionLayout.TransitionListener() {
-                        @Override
-                        public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
-                            if(i == R.id.start) {
-                                searchInput.setError(null);
-                                searchInput.setHint(null);
-                                searchInput.setEnabled(false);
-                                searchInput.setText(null);
-                                toolbarSearchContainer.setVisibility(View.VISIBLE);
-                            }
-                            else if(i == R.id.end) {
-                                toolbar.setAlpha(0);
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
-                            if(i == R.id.start) {
-                                toolbar.setAlpha(1-v);
-                            }
-                            else if(i == R.id.end) {
-                                toolbar.setAlpha(v);
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionCompleted(MotionLayout motionLayout, int i) {
-                            if(i == R.id.start) {
-                                toolbarSearchContainer.setVisibility(View.GONE);
-                                toolbar.setVisibility(View.VISIBLE);
-                                KeyboardUtils.hideKeyboard(searchInput);
-                                showComposeFab(true);
-                                animationCallback.onAnimationBackwardsFinished();
-                            }
-                            else if(i == R.id.end) {
-                                toolbarSearchContainer.setVisibility(View.VISIBLE);
-                                toolbar.setVisibility(View.GONE);
-                                searchInput.setEnabled(true);
-                                searchInput.setHint(R.string.search_action);
-                                setFocusOnKeyboard();
-                                showComposeFab(false);
-                            }
-                        }
-
-                        @Override
-                        public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
-
-                        }
-                    }
-            );
-            toolbarSearchContainer.setVisibility(View.VISIBLE);
-            showComposeFab(false);
-            searchInput.setText(searchText);
-            searchBarMotionLayout.transitionToEnd();
-        }
-    }
-
-    private void setFocusOnKeyboard() {
-        searchInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
+        mBase.showSearchView(
+                searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, animationCallback,
+                () -> {
+                    isShowingSearchView = true;
+                    onSearchRequested();
+                    showComposeFab(false);
+                    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+                    searchManager.setOnDismissListener(() -> showComposeFab(true));
+                    searchInput.setText(searchText);
+                    return null;
+                }
+        );
     }
 
     protected boolean isSearchViewVisible() {
@@ -254,8 +199,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         if (searchInput != null &&
             toolbarSearchContainer != null && toolbar != null) {
-            toolbar.setVisibility(View.VISIBLE);
-            searchBarMotionLayout.transitionToStart();
+            mBase.hideSearchView(toolbar,searchBarMotionLayout);
         }
     }
 

@@ -13,22 +13,34 @@ import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import androidx.appcompat.widget.Toolbar;
+
+import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
+import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import java.util.Locale;
 import java.util.concurrent.Executors;
 
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
+import kotlin.jvm.functions.Function0;
+import kotlin.jvm.internal.FunctionBase;
+import kotlin.jvm.internal.FunctionReference;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;
@@ -44,6 +56,9 @@ public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
     private ConfigurationManager configurationManager;
+
+    private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+            Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
 
     /**
      * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
@@ -214,6 +229,96 @@ public class K9ActivityCommon {
             Timber.e("pEpEngine-passphrase, onReceive");
             PassphraseActivity.launchIntent(context, intent);
         }
+    }
+
+    public boolean isAndroidLollipop() {
+        return isAndroidLollipop;
+    }
+
+    public void showSearchView(
+            MotionLayout searchBarMotionLayout,
+            View searchLayout,
+            EditText searchInput,
+            Toolbar toolbar,
+            K9Activity.AnimationCallback animationCallback,
+            Function0<Void> todoIfIsAndroidLollipop
+    ) {
+        if(isAndroidLollipop) {
+            todoIfIsAndroidLollipop.invoke();
+        }
+        else {
+            searchBarMotionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
+
+                @Override
+                public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+                    if(i == R.id.start) {
+                        searchInput.setError(null);
+                        searchInput.setHint(null);
+                        searchInput.setEnabled(false);
+                        searchInput.setText(null);
+                        searchLayout.setVisibility(View.VISIBLE);
+                    }
+                    else if(i == R.id.end) {
+                        toolbar.setAlpha(0);
+                    }
+                }
+
+                @Override
+                public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+                    if(i == R.id.start) {
+                        toolbar.setAlpha(1-v);
+                    }
+                    else if(i == R.id.end) {
+                        toolbar.setAlpha(v);
+                    }
+                }
+
+                @Override
+                public void onTransitionCompleted(MotionLayout motionLayout, int i) {
+                    if(i == R.id.start) {
+                        backwardsAnimationCompleted(searchLayout, toolbar, searchInput, animationCallback);
+                    }
+                    else if(i == R.id.end) {
+                        forwardAnimationCompleted(searchLayout, toolbar, searchInput, animationCallback);
+                    }
+                }
+
+                @Override
+                public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
+                    // NOP
+                }
+            });
+            searchLayout.setVisibility(View.VISIBLE);
+            searchBarMotionLayout.transitionToEnd();
+        }
+    }
+
+    public void hideSearchView(Toolbar toolbar, MotionLayout searchBarMotionLayout) {
+        toolbar.setVisibility(View.VISIBLE);
+        searchBarMotionLayout.transitionToStart();
+    }
+
+    private void forwardAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, K9Activity.AnimationCallback animationCallback) {
+        searchLayout.setVisibility(View.VISIBLE);
+        toolbar.setVisibility(View.GONE);
+        searchInput.setEnabled(true);
+        searchInput.setHint(R.string.search_action);
+        setFocusOnKeyboard(searchInput);
+        animationCallback.onAnimationForwardFinished();
+    }
+
+    private void backwardsAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, K9Activity.AnimationCallback animationCallback) {
+        searchLayout.setVisibility(View.GONE);
+        toolbar.setVisibility(View.VISIBLE);
+        KeyboardUtils.hideKeyboard(searchInput);
+        animationCallback.onAnimationBackwardsFinished();
+    }
+
+
+    private void setFocusOnKeyboard(EditText searchInput) {
+        searchInput.requestFocus();
+        InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
     }
 
 }

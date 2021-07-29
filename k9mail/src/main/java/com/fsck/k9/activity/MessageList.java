@@ -1129,7 +1129,18 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 item.setVisible(isAndroidLollipop());
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
-                showSearchView(() -> item.setVisible(true));
+                showSearchView(new AnimationCallback() {
+                    @Override
+                    public void onAnimationBackwardsFinished() {
+                        item.setVisible(true);
+                        showComposeFab(true);
+                    }
+
+                    @Override
+                    public void onAnimationForwardFinished() {
+                        // NOP
+                    }
+                });
                 return true;
             }
             case R.id.search_remote: {
