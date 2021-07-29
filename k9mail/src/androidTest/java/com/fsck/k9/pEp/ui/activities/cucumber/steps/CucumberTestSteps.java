@@ -1730,7 +1730,7 @@ public class CucumberTestSteps {
         }
         testUtils.selectFromMenu(R.string.single_message_options_action);
         testUtils.clickTextOnScreen(R.string.compose_title_forward);
-        I_enter_text_in_field("myself", "messageTo");
+        I_enter_text_in_field(testUtils.getFormatAccount(), "messageTo");
         //I_fill_subject_field("New");
         I_click_the_send_message_button();
         testUtils.goBackToMessageList();
@@ -1738,7 +1738,7 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
         //I_click_reply_message();
         waitForIdle();
-        //testUtils.swipeDownScreen();
+        testUtils.swipeUpScreen();
         onView(withId(R.id.message_content)).perform(click());
         int[] firstLetterCentralThickness = new int[2];
         int[] firstLetterTopThickness = new int[2];
