@@ -2,10 +2,8 @@ package com.fsck.k9.activity;
 
 
 import android.annotation.SuppressLint;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -24,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -62,7 +59,6 @@ import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;
@@ -74,7 +70,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import kotlin.jvm.functions.Function0;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.resources.PEpResourcesProvider;
 import security.pEp.ui.resources.ResourcesProvider;
@@ -381,14 +376,9 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-    public void showSearchView(K9Activity.AnimationCallback animationCallback) {
+    public void showSearchView(K9ActivityCommon.SearchAnimationCallback searchAnimationCallback) {
         getK9Common().showSearchView(
-                searchBarMotionLayout, searchLayout, searchInput, toolbar, animationCallback,
-                () -> {
-                    onSearchRequested();
-                    return null;
-                }
-        );
+                searchBarMotionLayout, searchLayout, searchInput, toolbar, searchAnimationCallback);
     }
 
     public void hideSearchView() {
@@ -573,9 +563,8 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            //folderMenuItem.setVisible(false);
             item.setVisible(getK9Common().isAndroidLollipop());
-            showSearchView(new K9Activity.AnimationCallback() {
+            showSearchView(new K9ActivityCommon.SearchAnimationCallback() {
                 @Override
                 public void onAnimationBackwardsFinished() {
                     item.setVisible(true);
@@ -584,6 +573,11 @@ public class FolderList extends K9ListActivity {
                 @Override
                 public void onAnimationForwardFinished() {
                     magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
+                }
+
+                @Override
+                public void todoIfIsAndoidLolllipop() {
+                    onSearchRequested();
                 }
             });
 

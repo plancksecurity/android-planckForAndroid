@@ -1,7 +1,5 @@
 package com.fsck.k9.activity;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -9,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -163,26 +160,13 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     }
 
-    public interface AnimationCallback {
-        void onAnimationBackwardsFinished();
-        void onAnimationForwardFinished();
-    }
-
     public void showSearchView() {}
 
-    public void showSearchView(AnimationCallback animationCallback) {
+    public void showSearchView(K9ActivityCommon.SearchAnimationCallback searchAnimationCallback) {
         showComposeFab(false);
+        isShowingSearchView = true;
         mBase.showSearchView(
-                searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, animationCallback,
-                () -> {
-                    isShowingSearchView = true;
-                    onSearchRequested();
-                    SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-                    searchManager.setOnDismissListener(() -> showComposeFab(true));
-                    searchInput.setText(searchText);
-                    return null;
-                }
-        );
+                searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, searchAnimationCallback);
     }
 
     protected boolean isSearchViewVisible() {

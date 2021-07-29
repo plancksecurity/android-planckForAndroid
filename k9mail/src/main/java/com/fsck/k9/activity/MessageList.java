@@ -66,6 +66,10 @@ import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 
 import org.jetbrains.annotations.NotNull;
+import com.google.android.material.navigation.NavigationView;
+import com.pedrogomez.renderers.ListAdapteeCollection;
+import com.pedrogomez.renderers.RVRendererAdapter;
+import com.pedrogomez.renderers.RendererBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,6 +83,7 @@ import security.pEp.permissions.PermissionRequester;
 import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
+import security.pEp.ui.nav_view.NavFolderAccountButton;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -1129,7 +1134,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 item.setVisible(isAndroidLollipop());
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
-                showSearchView(new AnimationCallback() {
+                showSearchView(new K9ActivityCommon.SearchAnimationCallback() {
                     @Override
                     public void onAnimationBackwardsFinished() {
                         item.setVisible(true);
@@ -1139,6 +1144,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     @Override
                     public void onAnimationForwardFinished() {
                         // NOP
+                    }
+
+                    @Override
+                    public void todoIfIsAndoidLolllipop() {
+                        onSearchRequested();
+                        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+                        searchManager.setOnDismissListener(() -> showComposeFab(true));
                     }
                 });
                 return true;

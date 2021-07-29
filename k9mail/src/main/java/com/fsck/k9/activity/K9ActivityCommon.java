@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.constraintlayout.motion.widget.MotionLayout;
@@ -235,16 +234,21 @@ public class K9ActivityCommon {
         return isAndroidLollipop;
     }
 
+    public interface SearchAnimationCallback {
+        void onAnimationBackwardsFinished();
+        void onAnimationForwardFinished();
+        void todoIfIsAndoidLolllipop();
+    }
+
     public void showSearchView(
             MotionLayout searchBarMotionLayout,
             View searchLayout,
             EditText searchInput,
             Toolbar toolbar,
-            K9Activity.AnimationCallback animationCallback,
-            Function0<Void> todoIfIsAndroidLollipop
+            SearchAnimationCallback searchAnimationCallback
     ) {
         if(isAndroidLollipop) {
-            todoIfIsAndroidLollipop.invoke();
+            searchAnimationCallback.todoIfIsAndoidLolllipop();
         }
         else {
             searchBarMotionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
@@ -276,10 +280,10 @@ public class K9ActivityCommon {
                 @Override
                 public void onTransitionCompleted(MotionLayout motionLayout, int i) {
                     if(i == R.id.start) {
-                        backwardsAnimationCompleted(searchLayout, toolbar, searchInput, animationCallback);
+                        backwardsAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback);
                     }
                     else if(i == R.id.end) {
-                        forwardAnimationCompleted(searchLayout, toolbar, searchInput, animationCallback);
+                        forwardAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback);
                     }
                 }
 
@@ -298,20 +302,20 @@ public class K9ActivityCommon {
         searchBarMotionLayout.transitionToStart();
     }
 
-    private void forwardAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, K9Activity.AnimationCallback animationCallback) {
+    private void forwardAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, SearchAnimationCallback searchAnimationCallback) {
         searchLayout.setVisibility(View.VISIBLE);
         toolbar.setVisibility(View.GONE);
         searchInput.setEnabled(true);
         searchInput.setHint(R.string.search_action);
         setFocusOnKeyboard(searchInput);
-        animationCallback.onAnimationForwardFinished();
+        searchAnimationCallback.onAnimationForwardFinished();
     }
 
-    private void backwardsAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, K9Activity.AnimationCallback animationCallback) {
+    private void backwardsAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, SearchAnimationCallback searchAnimationCallback) {
         searchLayout.setVisibility(View.GONE);
         toolbar.setVisibility(View.VISIBLE);
         KeyboardUtils.hideKeyboard(searchInput);
-        animationCallback.onAnimationBackwardsFinished();
+        searchAnimationCallback.onAnimationBackwardsFinished();
     }
 
 
