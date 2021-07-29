@@ -123,6 +123,28 @@ public class FolderList extends K9ListActivity {
     private int originalPaddingRight, originalPaddingLeft;
     private ImageView magnifier;
     private PEpSearchViewAnimationController searchViewAnimationController;
+    private MenuItem magnifierMenuItem;
+
+    private PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback =
+            new PEpSearchViewAnimationController.SearchAnimationCallback() {
+                @Override
+                public void onAnimationBackwardsFinished() {
+                    magnifierMenuItem.setVisible(true);
+                }
+
+                @Override
+                public void onAnimationForwardFinished() {
+                    magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
+                }
+
+                @Override
+                public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
+                    magnifierMenuItem.setVisible(isAndroidLollipop);
+                    if (isAndroidLollipop) {
+                        onSearchRequested();
+                    }
+                }
+            };
 
     class FolderListHandler extends Handler {
 
@@ -566,25 +588,7 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
-                @Override
-                public void onAnimationBackwardsFinished() {
-                    item.setVisible(true);
-                }
-
-                @Override
-                public void onAnimationForwardFinished() {
-                    magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
-                }
-
-                @Override
-                public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
-                    item.setVisible(isAndroidLollipop);
-                    if(isAndroidLollipop) {
-                        onSearchRequested();
-                    }
-                }
-            });
+            showSearchView(searchAnimationCallback);
 
             return true;
 
@@ -679,6 +683,7 @@ public class FolderList extends K9ListActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.folder_list_option, menu);
         mRefreshMenuItem = menu.findItem(R.id.check_mail);
+        magnifierMenuItem = menu.findItem(R.id.search);
         configureFolderSearchView(menu);
         return true;
     }

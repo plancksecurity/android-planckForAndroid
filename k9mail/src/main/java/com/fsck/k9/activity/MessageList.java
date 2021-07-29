@@ -331,8 +331,34 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     private boolean mMessageListWasDisplayed = false;
     private ViewSwitcher mViewSwitcher;
 
+    private MenuItem magnifierMenuItem;
+
     @Inject
     PermissionChecker permissionChecker;
+
+    private PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback =
+            new PEpSearchViewAnimationController.SearchAnimationCallback() {
+                @Override
+                public void onAnimationBackwardsFinished() {
+                    magnifierMenuItem.setVisible(true);
+                    showComposeFab(true);
+                }
+
+                @Override
+                public void onAnimationForwardFinished() {
+                    // NOP
+                }
+
+                @Override
+                public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
+                    magnifierMenuItem.setVisible(isAndroidLollipop);
+                    if(isAndroidLollipop) {
+                        onSearchRequested();
+                        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+                        searchManager.setOnDismissListener(() -> showComposeFab(true));
+                    }
+                }
+            };
 
     private void askForContactPermission() {
         if (permissionChecker.doesntHaveContactsPermission()) {
@@ -1137,28 +1163,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
-                showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
-                    @Override
-                    public void onAnimationBackwardsFinished() {
-                        item.setVisible(true);
-                        showComposeFab(true);
-                    }
-
-                    @Override
-                    public void onAnimationForwardFinished() {
-                        // NOP
-                    }
-
-                    @Override
-                    public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
-                        item.setVisible(isAndroidLollipop);
-                        if(isAndroidLollipop) {
-                            onSearchRequested();
-                            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-                            searchManager.setOnDismissListener(() -> showComposeFab(true));
-                        }
-                    }
-                });
+                showSearchView(searchAnimationCallback);
                 return true;
             }
             case R.id.search_remote: {
@@ -1271,6 +1276,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
+        magnifierMenuItem = menu.findItem(R.id.search);
         return true;
     }
 
