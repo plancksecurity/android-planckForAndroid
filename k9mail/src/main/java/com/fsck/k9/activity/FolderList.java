@@ -566,7 +566,6 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            item.setVisible(K9ActivityCommon.isAndroidLollipop());
             showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
                 @Override
                 public void onAnimationBackwardsFinished() {
@@ -579,8 +578,11 @@ public class FolderList extends K9ListActivity {
                 }
 
                 @Override
-                public void todoIfIsAndoidLolllipop() {
-                    onSearchRequested();
+                public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
+                    item.setVisible(isAndroidLollipop);
+                    if(isAndroidLollipop) {
+                        onSearchRequested();
+                    }
                 }
             });
 

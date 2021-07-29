@@ -15,7 +15,7 @@ class PEpSearchViewAnimationController(private val activity: Activity) {
     interface SearchAnimationCallback {
         fun onAnimationBackwardsFinished()
         fun onAnimationForwardFinished()
-        fun todoIfIsAndoidLolllipop()
+        fun todoIfIsAndroidLolllipop(isAndroidLollipop: Boolean)
     }
 
     fun showSearchView(
@@ -26,8 +26,9 @@ class PEpSearchViewAnimationController(private val activity: Activity) {
             searchAnimationCallback: SearchAnimationCallback
     ) {
         if (K9ActivityCommon.isAndroidLollipop()) {
-            searchAnimationCallback.todoIfIsAndoidLolllipop()
+            searchAnimationCallback.todoIfIsAndroidLolllipop(true)
         } else {
+            searchAnimationCallback.todoIfIsAndroidLolllipop(false)
             searchBarMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener {
                 override fun onTransitionStarted(motionLayout: MotionLayout, i: Int, i1: Int) {
                     if (i == R.id.start) {

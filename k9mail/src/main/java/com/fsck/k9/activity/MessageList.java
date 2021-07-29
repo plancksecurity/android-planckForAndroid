@@ -1135,7 +1135,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.search: {
-                item.setVisible(isAndroidLollipop());
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
                 showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
@@ -1151,10 +1150,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                     }
 
                     @Override
-                    public void todoIfIsAndoidLolllipop() {
-                        onSearchRequested();
-                        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-                        searchManager.setOnDismissListener(() -> showComposeFab(true));
+                    public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
+                        item.setVisible(isAndroidLollipop);
+                        if(isAndroidLollipop) {
+                            onSearchRequested();
+                            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+                            searchManager.setOnDismissListener(() -> showComposeFab(true));
+                        }
                     }
                 });
                 return true;
