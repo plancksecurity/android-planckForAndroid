@@ -45,6 +45,8 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
+import com.fsck.k9.pEp.models.FolderModel;
+import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.pEp.ui.infrastructure.Router;
@@ -109,6 +111,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     ResourcesProvider resourcesProvider;
     @Inject
     DrawerLayoutView drawerLayoutView;
+    @Inject
+    PEpSearchViewAnimationController searchViewAnimationController;
 
     @Deprecated
     //TODO: Remove after 2017-09-11
@@ -373,7 +377,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         initializeFragments();
         displayViews();
         channelUtils.updateChannels();
-
+        searchViewAnimationController = new PEpSearchViewAnimationController(this);
 
     }
 
@@ -1134,7 +1138,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 item.setVisible(isAndroidLollipop());
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
-                showSearchView(new K9ActivityCommon.SearchAnimationCallback() {
+                showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
                     @Override
                     public void onAnimationBackwardsFinished() {
                         item.setVisible(true);
@@ -1969,5 +1973,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if(mMessageListFragment != null && mMessageListFragment.isResumed()) {
             mMessageListFragment.showFab(show);
         }
+    }
+
+    @Override
+    public PEpSearchViewAnimationController getSearchViewAnimationController() {
+        return searchViewAnimationController;
     }
 }

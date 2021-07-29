@@ -58,6 +58,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
@@ -121,6 +122,7 @@ public class FolderList extends K9ListActivity {
 
     private int originalPaddingRight, originalPaddingLeft;
     private ImageView magnifier;
+    private PEpSearchViewAnimationController searchViewAnimationController;
 
     class FolderListHandler extends Handler {
 
@@ -306,6 +308,7 @@ public class FolderList extends K9ListActivity {
              */
             return;
         }
+        searchViewAnimationController = new PEpSearchViewAnimationController(this);
 
     }
 
@@ -376,8 +379,8 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-    public void showSearchView(K9ActivityCommon.SearchAnimationCallback searchAnimationCallback) {
-        getK9Common().showSearchView(
+    public void showSearchView(PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback) {
+        searchViewAnimationController.showSearchView(
                 searchBarMotionLayout, searchLayout, searchInput, toolbar, searchAnimationCallback);
     }
 
@@ -386,7 +389,7 @@ public class FolderList extends K9ListActivity {
             ImageView magnifier = searchBarMotionLayout.findViewById(R.id.search_icon);
             int newPaddingRight = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
             magnifier.setPadding(originalPaddingLeft, 0, newPaddingRight, 0);
-            getK9Common().hideSearchView(toolbar, searchBarMotionLayout);
+            searchViewAnimationController.hideSearchView(toolbar, searchBarMotionLayout);
         }
     }
 
@@ -563,8 +566,8 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            item.setVisible(getK9Common().isAndroidLollipop());
-            showSearchView(new K9ActivityCommon.SearchAnimationCallback() {
+            item.setVisible(K9ActivityCommon.isAndroidLollipop());
+            showSearchView(new PEpSearchViewAnimationController.SearchAnimationCallback() {
                 @Override
                 public void onAnimationBackwardsFinished() {
                     item.setVisible(true);

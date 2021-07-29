@@ -56,7 +56,7 @@ public class K9ActivityCommon {
     private IntentFilter passphraseReceiverfilter;
     private ConfigurationManager configurationManager;
 
-    private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+    private static final boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
             Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
 
     /**
@@ -230,99 +230,7 @@ public class K9ActivityCommon {
         }
     }
 
-    public boolean isAndroidLollipop() {
+    public static boolean isAndroidLollipop() {
         return isAndroidLollipop;
     }
-
-    public interface SearchAnimationCallback {
-        void onAnimationBackwardsFinished();
-        void onAnimationForwardFinished();
-        void todoIfIsAndoidLolllipop();
-    }
-
-    public void showSearchView(
-            MotionLayout searchBarMotionLayout,
-            View searchLayout,
-            EditText searchInput,
-            Toolbar toolbar,
-            SearchAnimationCallback searchAnimationCallback
-    ) {
-        if(isAndroidLollipop) {
-            searchAnimationCallback.todoIfIsAndoidLolllipop();
-        }
-        else {
-            searchBarMotionLayout.setTransitionListener(new MotionLayout.TransitionListener() {
-
-                @Override
-                public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
-                    if(i == R.id.start) {
-                        searchInput.setError(null);
-                        searchInput.setHint(null);
-                        searchInput.setEnabled(false);
-                        searchInput.setText(null);
-                        searchLayout.setVisibility(View.VISIBLE);
-                    }
-                    else if(i == R.id.end) {
-                        toolbar.setAlpha(0);
-                    }
-                }
-
-                @Override
-                public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
-                    if(i == R.id.start) {
-                        toolbar.setAlpha(1-v);
-                    }
-                    else if(i == R.id.end) {
-                        toolbar.setAlpha(v);
-                    }
-                }
-
-                @Override
-                public void onTransitionCompleted(MotionLayout motionLayout, int i) {
-                    if(i == R.id.start) {
-                        backwardsAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback);
-                    }
-                    else if(i == R.id.end) {
-                        forwardAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback);
-                    }
-                }
-
-                @Override
-                public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
-                    // NOP
-                }
-            });
-            searchLayout.setVisibility(View.VISIBLE);
-            searchBarMotionLayout.transitionToEnd();
-        }
-    }
-
-    public void hideSearchView(Toolbar toolbar, MotionLayout searchBarMotionLayout) {
-        toolbar.setVisibility(View.VISIBLE);
-        searchBarMotionLayout.transitionToStart();
-    }
-
-    private void forwardAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, SearchAnimationCallback searchAnimationCallback) {
-        searchLayout.setVisibility(View.VISIBLE);
-        toolbar.setVisibility(View.GONE);
-        searchInput.setEnabled(true);
-        searchInput.setHint(R.string.search_action);
-        setFocusOnKeyboard(searchInput);
-        searchAnimationCallback.onAnimationForwardFinished();
-    }
-
-    private void backwardsAnimationCompleted(View searchLayout, Toolbar toolbar, EditText searchInput, SearchAnimationCallback searchAnimationCallback) {
-        searchLayout.setVisibility(View.GONE);
-        toolbar.setVisibility(View.VISIBLE);
-        KeyboardUtils.hideKeyboard(searchInput);
-        searchAnimationCallback.onAnimationBackwardsFinished();
-    }
-
-
-    private void setFocusOnKeyboard(EditText searchInput) {
-        searchInput.requestFocus();
-        InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(searchInput, InputMethodManager.SHOW_IMPLICIT);
-    }
-
 }

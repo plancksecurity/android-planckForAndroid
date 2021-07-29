@@ -30,6 +30,7 @@ import butterknife.OnTextChanged;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 import kotlin.jvm.functions.Function0;
+import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
 
@@ -162,7 +163,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     public void showSearchView() {}
 
-    public void showSearchView(K9ActivityCommon.SearchAnimationCallback searchAnimationCallback) {
+    public void showSearchView(PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback) {
         showComposeFab(false);
         isShowingSearchView = true;
         mBase.showSearchView(
@@ -180,7 +181,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
         if (searchInput != null &&
             toolbarSearchContainer != null && toolbar != null) {
-            mBase.hideSearchView(toolbar,searchBarMotionLayout);
+            getSearchViewAnimationController().hideSearchView(toolbar,searchBarMotionLayout);
         }
     }
 
@@ -249,5 +250,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onSaveInstanceState(outState);
         outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
         outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
+    }
+
+    protected PEpSearchViewAnimationController getSearchViewAnimationController() {
+        return null;
     }
 }

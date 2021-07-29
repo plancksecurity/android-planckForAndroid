@@ -11,6 +11,7 @@ import com.fsck.k9.ui.helper.DisplayHtmlUiFactory;
 
 import javax.inject.Named;
 
+import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 import dagger.Module;
 import dagger.Provides;
 import security.pEp.permissions.PermissionRequester;
@@ -66,5 +67,10 @@ public class ActivityModule {
     @MessageView
     public DisplayHtml provideDisplayHtmlForMessageView(DisplayHtmlUiFactory factory) {
         return factory.createForMessageView();
+    }
+
+    @Provides
+    public PEpSearchViewAnimationController provideSearchAnimationController() {
+        return new PEpSearchViewAnimationController(activity);
     }
 }

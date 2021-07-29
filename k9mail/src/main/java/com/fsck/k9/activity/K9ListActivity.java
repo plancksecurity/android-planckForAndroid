@@ -243,10 +243,6 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
 
     }
 
-    protected K9ActivityCommon getK9Common() {
-        return mBase;
-    }
-
     private AdapterView.OnItemClickListener mOnClickListener = new AdapterView.OnItemClickListener() {
         public void onItemClick(AdapterView<?> parent, View v, int position, long id)
         {
