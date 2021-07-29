@@ -403,7 +403,7 @@ public class FolderList extends K9ListActivity {
 
     public void showSearchView(PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback) {
         searchViewAnimationController.showSearchView(
-                searchBarMotionLayout, searchLayout, searchInput, toolbar, searchAnimationCallback);
+                searchBarMotionLayout, searchLayout, searchInput, toolbar, null, searchAnimationCallback);
     }
 
     public void hideSearchView() {

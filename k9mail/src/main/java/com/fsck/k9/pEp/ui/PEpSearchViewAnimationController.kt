@@ -23,6 +23,7 @@ class PEpSearchViewAnimationController(private val activity: Activity) {
             searchLayout: View,
             searchInput: EditText,
             toolbar: Toolbar,
+            previousText: String?,
             searchAnimationCallback: SearchAnimationCallback
     ) {
         if (K9ActivityCommon.isAndroidLollipop()) {
@@ -35,7 +36,7 @@ class PEpSearchViewAnimationController(private val activity: Activity) {
                         searchInput.error = null
                         searchInput.hint = null
                         searchInput.isEnabled = false
-                        searchInput.setText(null)
+                        searchInput.setText(previousText)
                         searchLayout.visibility = View.VISIBLE
                     } else if (i == R.id.end) {
                         toolbar.alpha = 0f

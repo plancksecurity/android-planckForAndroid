@@ -99,7 +99,6 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.NotNull;
 
-import butterknife.ButterKnife;
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;

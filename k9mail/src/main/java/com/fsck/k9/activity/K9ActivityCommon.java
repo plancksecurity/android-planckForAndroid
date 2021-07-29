@@ -13,33 +13,19 @@ import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
-import android.widget.EditText;
-import androidx.appcompat.widget.Toolbar;
-
-import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.helper.NamedThreadFactory;
 import com.fsck.k9.pEp.LangUtils;
-import com.fsck.k9.ui.settings.account.AccountSettingsDataStoreFactory;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 
 import java.util.Locale;
-import java.util.concurrent.Executors;
 
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
-import kotlin.jvm.functions.Function0;
-import kotlin.jvm.internal.FunctionBase;
-import kotlin.jvm.internal.FunctionReference;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;

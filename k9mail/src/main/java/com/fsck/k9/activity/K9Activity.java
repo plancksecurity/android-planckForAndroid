@@ -19,7 +19,6 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import butterknife.Bind;
@@ -29,7 +28,6 @@ import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
-import kotlin.jvm.functions.Function0;
 import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
@@ -47,7 +45,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private View.OnClickListener onCloseSearchClickListener;
     private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
             Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
-    private boolean isShowingSearchView;
+    protected boolean isShowingSearchView;
     private String searchText;
 
     @Override
@@ -166,8 +164,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public void showSearchView(PEpSearchViewAnimationController.SearchAnimationCallback searchAnimationCallback) {
         showComposeFab(false);
         isShowingSearchView = true;
-        mBase.showSearchView(
-                searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, searchAnimationCallback);
+        getSearchViewAnimationController().showSearchView(
+                searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, searchText, searchAnimationCallback);
     }
 
     protected boolean isSearchViewVisible() {
@@ -230,9 +228,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onResume();
         mBase.registerPassphraseReceiver();
         mBase.registerConfigurationManager();
-        if(isShowingSearchView) {
-            showSearchView();
-        }
     }
 
     @Override

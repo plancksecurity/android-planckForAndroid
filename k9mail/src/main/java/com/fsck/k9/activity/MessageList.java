@@ -12,22 +12,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
@@ -45,7 +46,6 @@ import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.models.FolderModel;
 import com.fsck.k9.pEp.ui.PEpSearchViewAnimationController;
 import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
@@ -68,10 +68,6 @@ import com.fsck.k9.view.ViewSwitcher;
 import com.fsck.k9.view.ViewSwitcher.OnSwitchCompleteListener;
 
 import org.jetbrains.annotations.NotNull;
-import com.google.android.material.navigation.NavigationView;
-import com.pedrogomez.renderers.ListAdapteeCollection;
-import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,12 +76,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.mdm.RestrictionsListener;
-import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
-import security.pEp.ui.nav_view.NavFolderAccountButton;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -351,7 +345,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
                 @Override
                 public void todoIfIsAndroidLolllipop(boolean isAndroidLollipop) {
-                    magnifierMenuItem.setVisible(isAndroidLollipop);
+                    if(magnifierMenuItem != null) {
+                        magnifierMenuItem.setVisible(isAndroidLollipop);
+                    }
                     if(isAndroidLollipop) {
                         onSearchRequested();
                         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -811,13 +807,14 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     @Override
     public void onResume() {
         super.onResume();
-
         if (!(this instanceof Search)) {
             //necessary b/c no guarantee Search.onStop will be called before MessageList.onResume
             //when returning from search results
             if (Search.isActive()) {
                 Search.setActive(false);
                 hideSearchView();
+            } else if(isShowingSearchView) {
+                showSearchView(searchAnimationCallback);
             }
         }
 
@@ -1162,7 +1159,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
+                drawerLayoutView.setDrawerEnabled(!isAndroidLollipop());
                 showSearchView(searchAnimationCallback);
                 return true;
             }
