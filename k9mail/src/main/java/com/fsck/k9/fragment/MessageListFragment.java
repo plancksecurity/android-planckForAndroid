@@ -99,6 +99,7 @@ import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.NotNull;
 
+import butterknife.ButterKnife;
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.ArrayList;
@@ -173,6 +174,11 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             fab.show();
         }
         loadingView.setVisibility(View.GONE);
+    }
+
+    public void showFab(boolean show) {
+        if(show) fab.show();
+        else fab.hide();
     }
 
     private static final int ACTIVITY_CHOOSE_FOLDER_MOVE = 1;

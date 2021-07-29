@@ -1951,4 +1951,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     public MessageViewFragment getMessageViewFragment() {
         return mMessageViewFragment;
     }
+
+    @Override
+    protected void showComposeFab(boolean show) {
+        if(mMessageListFragment != null && mMessageListFragment.isResumed()) {
+            mMessageListFragment.showFab(show);
+        }
+    }
 }

@@ -40,7 +40,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
     @Nullable @Bind(R.id.search_input) EditText searchInput;
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
-    @Nullable @Bind(R.id.fab_button_compose_message) View fabButton;
     @Nullable @Bind(R.id.search_bar) MotionLayout searchBarMotionLayout;
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
@@ -161,9 +160,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     protected void showComposeFab(boolean show) {
-        if (fabButton != null) {
-            fabButton.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
+
     }
 
     public interface AnimationCallback {
@@ -174,12 +171,12 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     public void showSearchView() {}
 
     public void showSearchView(AnimationCallback animationCallback) {
+        showComposeFab(false);
         mBase.showSearchView(
                 searchBarMotionLayout, toolbarSearchContainer, searchInput, toolbar, animationCallback,
                 () -> {
                     isShowingSearchView = true;
                     onSearchRequested();
-                    showComposeFab(false);
                     SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
                     searchManager.setOnDismissListener(() -> showComposeFab(true));
                     searchInput.setText(searchText);
