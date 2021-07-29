@@ -2,6 +2,7 @@ package com.fsck.k9.activity;
 
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -9,10 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
@@ -31,12 +32,14 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SearchView;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
@@ -112,12 +115,16 @@ public class FolderList extends K9ListActivity {
     private TextView mActionBarSubTitle;
     private TextView mActionBarUnread;
     private View searchLayout;
+    private MotionLayout searchBarMotionLayout;
     private EditText searchInput;
     private View clearSearchIcon;
 
     private ResourcesProvider resourcesProvider;
 
     private final K9JobManager jobManager = K9.jobManager;
+
+    private int originalPaddingRight, originalPaddingLeft;
+    private ImageView magnifier;
 
     class FolderListHandler extends Handler {
 
@@ -275,6 +282,8 @@ public class FolderList extends K9ListActivity {
         setContentView(R.layout.folder_list);
         initializeActionBar();
         mListView = getListView();
+        searchBarMotionLayout = findViewById(R.id.search_bar);
+        magnifier = searchBarMotionLayout.findViewById(R.id.search_icon);
         mListView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mListView.setLongClickable(true);
         mListView.setFastScrollEnabled(true);
@@ -371,22 +380,82 @@ public class FolderList extends K9ListActivity {
         }
     }
 
-    public void showSearchView() {
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1) {
+    private boolean isAndroidLollipop() {
+        return Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
+                Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
+    }
+
+    public void showSearchView(K9Activity.AnimationCallback animationCallback) {
+        if (isAndroidLollipop()) {
             onSearchRequested();
-        } else {
-            if (searchLayout != null) {
-                getToolbar().setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                searchInput.setEnabled(true);
-                setFocusOnKeyboard();
-                searchInput.setError(null);
-            }
+        } else if (searchLayout != null) {
+            searchBarMotionLayout.setTransitionListener(
+                    new MotionLayout.TransitionListener() {
+                        @Override
+                        public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+                            if(i == R.id.start) {
+                                searchInput.setError(null);
+                                searchInput.setHint(null);
+                                searchInput.setEnabled(false);
+                                searchInput.setText(null);
+                                searchLayout.setVisibility(View.VISIBLE);
+                            }
+                            else if(i == R.id.end) {
+                                toolbar.setAlpha(0);
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+                            if(i == R.id.start) {
+                                toolbar.setAlpha(1-v);
+                            }
+                            else if(i == R.id.end) {
+                                toolbar.setAlpha(v);
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionCompleted(MotionLayout motionLayout, int i) {
+                            if(i == R.id.start) {
+                                searchLayout.setVisibility(View.GONE);
+                                toolbar.setVisibility(View.VISIBLE);
+                                KeyboardUtils.hideKeyboard(searchInput);
+                                animationCallback.onAnimationBackwardsFinished();
+                            }
+                            else if(i == R.id.end) {
+                                magnifier.setPadding(originalPaddingLeft, 0, originalPaddingRight, 0);
+                                searchLayout.setVisibility(View.VISIBLE);
+                                toolbar.setVisibility(View.GONE);
+                                searchInput.setEnabled(true);
+                                searchInput.setHint(R.string.search_action);
+                                setFocusOnKeyboard();
+                            }
+                        }
+
+                        @Override
+                        public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
+
+                        }
+                    }
+            );
+
+            searchLayout.setVisibility(View.VISIBLE);
+            searchBarMotionLayout.transitionToEnd();
         }
     }
 
     public void hideSearchView() {
+        if (searchLayout != null) {
+            ImageView magnifier = searchBarMotionLayout.findViewById(R.id.search_icon);
+            int newPaddingRight = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
+            magnifier.setPadding(originalPaddingLeft, 0, newPaddingRight, 0);
+            toolbar.setVisibility(View.VISIBLE);
+            searchBarMotionLayout.transitionToStart();
+        }
+    }
+
+    public void hideSearchViewSimple() {
         if (searchLayout != null) {
             searchLayout.setVisibility(View.GONE);
             getToolbar().setVisibility(View.VISIBLE);
@@ -463,6 +532,9 @@ public class FolderList extends K9ListActivity {
      */
     @Override public void onResume() {
         super.onResume();
+        ImageView magnifier = searchBarMotionLayout.findViewById(R.id.search_icon);
+        originalPaddingLeft = magnifier.getPaddingLeft();
+        originalPaddingRight = magnifier.getPaddingRight();
         hideSearchView();
         if (!mAccount.isAvailable(this)) {
             Timber.i("account unavaliabale, not showing folder-list but account-list");
@@ -572,7 +644,14 @@ public class FolderList extends K9ListActivity {
             return true;
 
         case R.id.search:
-            showSearchView();
+            //folderMenuItem.setVisible(false);
+            item.setVisible(isAndroidLollipop());
+            showSearchView(new K9Activity.AnimationCallback() {
+                @Override
+                public void onAnimationBackwardsFinished() {
+                    item.setVisible(true);
+                }
+            });
 
             return true;
 

@@ -211,9 +211,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                                 toolbarSearchContainer.setVisibility(View.GONE);
                                 toolbar.setVisibility(View.VISIBLE);
                                 KeyboardUtils.hideKeyboard(searchInput);
-                                if (onCloseSearchClickListener != null) {
-                                    onCloseSearchClickListener.onClick(null);
-                                }
                                 showComposeFab(true);
                                 animationCallback.onAnimationBackwardsFinished();
                             }

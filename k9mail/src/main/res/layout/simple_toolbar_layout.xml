@@ -6,16 +6,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/toolbarDefaultColor"
-        android:elevation="4dp"
-        tools:backgroundTint="?attr/toolbarDefaultColor"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ToolbarTheme">
-    </androidx.appcompat.widget.Toolbar>
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/toolbarDefaultColor"
+            android:elevation="4dp"
+            tools:backgroundTint="?attr/toolbarDefaultColor"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ToolbarTheme">
+        </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/toolbar_search_container"
@@ -23,9 +27,11 @@
         android:layout_height="?attr/actionBarSize"
         android:clipChildren="false"
         android:visibility="gone"
-        android:background="?attr/toolbarDefaultColor">
+        android:background="?attr/toolbarDefaultColor"
+        android:translationZ="16dp">
 
-        <include layout="@layout/include_search_bar" />
-    </FrameLayout>
+            <include layout="@layout/include_search_bar" />
+        </FrameLayout>
+    </RelativeLayout>
 
 </com.google.android.material.appbar.AppBarLayout>
