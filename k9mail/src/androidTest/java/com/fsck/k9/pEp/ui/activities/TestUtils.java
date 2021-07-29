@@ -4533,6 +4533,8 @@ public class TestUtils {
         return testConfig.getMail(account);
     }
 
+    public String getFormatAccount () { return testConfig.format_test_account; }
+
     public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
 
     public String getPassphrasePassword() { return testConfig.getPassphrase_password(Integer.parseInt(testConfig.test_number) - 4);}
