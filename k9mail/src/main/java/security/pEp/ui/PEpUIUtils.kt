@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
+import androidx.window.FoldingFeature
+import androidx.window.WindowLayoutInfo
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -219,6 +221,20 @@ object PEpUIUtils {
             else ->
                 K9.SplitViewMode.WHEN_IN_LANDSCAPE
         }
+    }
+
+    fun WindowLayoutInfo.isUnfoldedFoldableDevice(): Boolean {
+        for (displayFeature in displayFeatures) {
+            if (displayFeature is FoldingFeature) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun Context.isFoldableDeviceUnfolded(): Boolean {
+        return resources.configuration.smallestScreenWidthDp >=
+                K9.MINIMUM_WIDTH_FOR_SPLIT_SCREEN && !K9.isIsTablet()
     }
 
     private fun <E : Any> MutableList<E>.getSpecialFolders(account: Account): List<E?> {
