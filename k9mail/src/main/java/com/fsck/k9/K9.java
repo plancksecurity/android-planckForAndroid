@@ -254,6 +254,16 @@ public class K9 extends MultiDexApplication {
     private static boolean mConfirmDeleteFromNotification = true;
     private static boolean mConfirmMarkAllRead = true;
 
+    private static boolean isTablet;
+
+    public static boolean isIsTablet() {
+        return isTablet;
+    }
+
+    public static void setIsTablet(boolean isTablet) {
+        K9.isTablet = isTablet;
+    }
+
     private static NotificationHideSubject sNotificationHideSubject = NotificationHideSubject.NEVER;
 
     /**
