@@ -87,6 +87,7 @@ import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.KeySyncCleaner;
+import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
@@ -996,7 +997,8 @@ public class K9 extends MultiDexApplication {
             sLockScreenNotificationVisibility = LockScreenNotificationVisibility.valueOf(lockScreenNotificationVisibility);
         }
 
-        String splitViewMode = storage.getString("splitViewMode", getDefaultSplitViewMode(app).name());
+        String splitViewMode = storage.getString(
+                "splitViewMode", PEpUIUtils.INSTANCE.bestSplitScreenModeAvailable(app).name());
         if (splitViewMode != null) {
             sSplitViewMode = SplitViewMode.valueOf(splitViewMode);
         }

@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
             val isFoldableScreenUnfolded = windowLayoutInfo.isUnfoldedFoldableDevice()
             if (isFoldableScreenUnfolded) {
                 if (K9.getSplitViewMode() == K9.SplitViewMode.ALWAYS) {
-                    K9.setSplitViewMode(K9.SplitViewMode.NEVER)
+                    K9.setSplitViewMode(K9.SplitViewMode.WHEN_IN_LANDSCAPE)
                 }
             }
             K9.setIsTablet(

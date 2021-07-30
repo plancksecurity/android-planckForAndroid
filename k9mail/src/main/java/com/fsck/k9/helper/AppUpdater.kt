@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import security.pEp.ui.PEpUIUtils.bestSplitScreenModeAvailable
 import java.io.File
 
 class AppUpdater(private val context: Context, private val cacheDir: File) {
@@ -67,7 +68,7 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
     private fun performSettingsUpdates(oldVersionCode: Long) {
         val realOldVersionCode = extractRealVersionCode(oldVersionCode)
         if (realOldVersionCode <= 96) {
-            K9.setSplitViewMode(K9.getDefaultSplitViewMode(context))
+            K9.setSplitViewMode(context.bestSplitScreenModeAvailable())
         }
     }
 
