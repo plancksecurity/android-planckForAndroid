@@ -601,7 +601,9 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         return (splitViewMode == SplitViewMode.ALWAYS ||
                 (splitViewMode == SplitViewMode.WHEN_IN_LANDSCAPE &&
-                        orientation == Configuration.ORIENTATION_LANDSCAPE));
+                        orientation == Configuration.ORIENTATION_LANDSCAPE) ||
+                (splitViewMode == SplitViewMode.WHEN_IN_LANDSCAPE &&
+                        PEpUIUtils.INSTANCE.isFoldableDeviceUnfolded(this)));
     }
 
     private void initializeLayout() {
