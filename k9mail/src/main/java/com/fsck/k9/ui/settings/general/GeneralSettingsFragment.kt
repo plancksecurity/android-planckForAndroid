@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import security.pEp.ui.PEpUIUtils.bestSplitScreenModeAvailable
+import security.pEp.ui.PEpUIUtils.isFoldableDeviceUnfolded
 import security.pEp.ui.passphrase.PassphraseActivity
 import security.pEp.ui.passphrase.PassphraseRequirementType
 import java.io.File
@@ -69,7 +70,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             val bestSplitModeAvailable = requireContext().bestSplitScreenModeAvailable()
             if (bestSplitModeAvailable == K9.SplitViewMode.NEVER) {
                 remove()
-            } else if (bestSplitModeAvailable == K9.SplitViewMode.WHEN_IN_LANDSCAPE) {
+            } else if (bestSplitModeAvailable == K9.SplitViewMode.WHEN_IN_LANDSCAPE
+                || requireContext().isFoldableDeviceUnfolded()) {
                 removeEntry(ALWAYS)
             }
         }
