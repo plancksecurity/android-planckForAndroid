@@ -341,7 +341,7 @@ public class K9 extends MultiDexApplication {
 
     private static boolean sUseBackgroundAsUnreadIndicator = false;
     private static boolean sThreadedViewEnabled = true;
-    private static SplitViewMode sSplitViewMode = SplitViewMode.NEVER;
+    private static SplitViewMode sSplitViewMode;
     private static boolean sColorizeMissingContactPictures = DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE;
 
     private static boolean sMessageViewArchiveActionVisible = false;
