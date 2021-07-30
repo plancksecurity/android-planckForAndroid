@@ -107,6 +107,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
+    implementation "androidx.window:window:${versions.androidXwindow}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
