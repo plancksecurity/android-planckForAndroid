@@ -128,7 +128,6 @@ import timber.log.Timber;
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
 import static com.fsck.k9.mail.Flag.X_PEP_DISABLED;
 import static com.fsck.k9.mail.Flag.X_REMOTE_COPY_STARTED;
-import static com.fsck.k9.preferences.OngoingDecryptMessagesPreferences.DONT_REMOVE_ID;
 
 /**
  * Starts a long running (application) Thread that will run through commands
@@ -1594,6 +1593,44 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return true;
     }
 
+    private <MSG extends Message> void updateStatus(
+            final Account account,
+            final String folder,
+            final LocalFolder localFolder,
+            final AtomicInteger progress,
+            final AtomicInteger newMessages,
+            final int todo,
+            final LocalMessage localMessage,
+            final MSG originalMessage,
+            final boolean shouldRemoveId,
+            final List<LocalMessage> messagesToNotify,
+            final StorageEditor storageEditor) {
+        if (shouldRemoveId) {
+            storageEditor.removeOngoingDecryptMessageId(String.valueOf(originalMessage.getId()));
+        }
+        // Increment the number of "new messages" if the newly downloaded message is
+        // not marked as read.
+        if (!localMessage.isSet(Flag.SEEN)) {
+            newMessages.incrementAndGet();
+        }
+
+        Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                account, folder, originalMessage.getUid());
+
+        // Update the listener with what we've found
+        for (MessagingListener l : getListeners()) {
+            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+            if (!localMessage.isSet(Flag.SEEN)) {
+                l.synchronizeMailboxNewMessage(account, folder, localMessage);
+            }
+        }
+
+        // Send a notification of this message
+        if (shouldNotifyForMessage(account, localFolder, originalMessage)) {
+            messagesToNotify.add(localMessage);
+        }
+    }
+
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
                                                            final LocalFolder localFolder,
                                                            List<T> smallMessages,
@@ -1619,7 +1656,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
                             if (storage.getOngoingDecryptMessages().contains(String.valueOf(message.getId()))) {
-                                throw new MessagingException(OngoingDecryptMessagesPreferences.DONT_REMOVE_ID);
+                                throw new MessagingException(OngoingDecryptMessagesPreferences.DO_NOT_REMOVE_ID);
                             }
                             storageEditor.addOngoingDecryptMessageId(String.valueOf(message.getId()));
                             long time = System.currentTimeMillis();
@@ -1684,44 +1721,21 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
                             Timber.d("pep in download loop (nr= %s ) post", number);
-                            updateStatus(localMessage, message, true);
+                            updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                    localMessage, message, true, messagesToNotify, storageEditor);
                         } catch (MessagingException | RuntimeException me) {
-                            Timber.e(me, "SYNC: fetch small messages -> Only saving without pEp processing");
+                            Timber.e(me, "SYNC: failed to pEpProcess small messages " +
+                                    "-> Only saving original message without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
                                 boolean shouldRemoveId = me.getMessage() == null
-                                        || !me.getMessage().equals(DONT_REMOVE_ID);
-                                updateStatus(localMessage, message, shouldRemoveId);
+                                        || !me.getMessage().equals(OngoingDecryptMessagesPreferences.DO_NOT_REMOVE_ID);
+                                updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                        localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
+
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
                             }
-                        }
-                    }
-
-                    public void updateStatus(final LocalMessage localMessage, T message, boolean shouldRemoveId) {
-                        if (shouldRemoveId) {
-                            storageEditor.removeOngoingDecryptMessageId(String.valueOf(message.getId()));
-                        }
-                        // Increment the number of "new messages" if the newly downloaded message is
-                        // not marked as read.
-                        if (!localMessage.isSet(Flag.SEEN)) {
-                            newMessages.incrementAndGet();
-                        }
-
-                        Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
-                                account, folder, message.getUid());
-
-                        // Update the listener with what we've found
-                        for (MessagingListener l : getListeners()) {
-                            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                            if (!localMessage.isSet(Flag.SEEN)) {
-                                l.synchronizeMailboxNewMessage(account, folder, localMessage);
-                            }
-                        }
-
-                        // Send a notification of this message
-                        if (shouldNotifyForMessage(account, localFolder, message)) {
-                            messagesToNotify.add(localMessage);
                         }
                     }
 
