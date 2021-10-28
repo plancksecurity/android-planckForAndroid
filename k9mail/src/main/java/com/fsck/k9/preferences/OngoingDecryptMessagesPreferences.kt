@@ -17,8 +17,8 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
     }
 
     @Synchronized
-    fun addOngoingDecryptMessageId(id: String): Boolean {
-        ongoingDecryptMessages.add(id)
+    fun add(messageId: String): Boolean {
+        ongoingDecryptMessages.add(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()
             .putStringSet(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages)
@@ -26,8 +26,8 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
     }
 
     @Synchronized
-    fun removeOngoingDecryptMessageId(id: String): Boolean {
-        ongoingDecryptMessages.remove(id)
+    fun remove(messageId: String): Boolean {
+        ongoingDecryptMessages.remove(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()
             .putStringSet(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages)
@@ -37,7 +37,7 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
     companion object {
         const val ONGOING_DECRYPT_MESSAGES_PREFERENCES = "ONGOING_DECRYPT_MESSAGES_PREFERENCES"
         const val ONGOING_DECRYPT_MESSAGES = "ONGOING_DECRYPT_MESSAGES"
-        const val DONT_REMOVE_ID = "dontRemoveId"
+        const val DO_NOT_REMOVE_ID = "DO_NOT_REMOVE_ID"
     }
 
 }

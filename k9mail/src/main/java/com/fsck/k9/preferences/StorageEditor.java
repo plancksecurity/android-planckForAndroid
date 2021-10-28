@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 
 import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
-
 import timber.log.Timber;
 
 
@@ -118,10 +116,10 @@ public class StorageEditor {
     }
 
     public void addOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.addOngoingDecryptMessageId(messageId);
+        ongoingDecryptMessagesPreferences.add(messageId);
     }
 
     public void removeOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.removeOngoingDecryptMessageId(messageId);
+        ongoingDecryptMessagesPreferences.remove(messageId);
     }
 }
