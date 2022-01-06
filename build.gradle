@@ -5,7 +5,7 @@ buildscript {
                 'targetSdk'            : 30,
                 'minSdk'               : 21,
                 'pEpEngineRevision'    : 'Release_2.1.45',
-                'pEpJNIAdapterRevision': 'Release_2.1.35',
+                'pEpJNIAdapterRevision': 'Release_2.1.35-sequoia_1.3.1',
                 'libpEpAdapterRevision': 'Release_2.1.21',
                 'foldersRevision'      : 'v0.2'
         ]
