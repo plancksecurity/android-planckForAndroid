@@ -196,8 +196,6 @@ android {
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
-
-        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
     flavorDimensions "sync", "store"
 
