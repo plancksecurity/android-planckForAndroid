@@ -24,7 +24,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViews()
-        presenter.initialize(this)
+        presenter.initialize(this, lifecycle)
     }
 
     private fun setupViews() {
