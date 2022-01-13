@@ -4,4 +4,6 @@ interface ExportpEpSupportDataView {
     fun finish()
     fun showSuccess()
     fun showFailed()
+    fun showLoading()
+    fun hideLoading()
 }
