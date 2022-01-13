@@ -24,7 +24,19 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupViews()
+        restoreNonConfigurationInstance()
         presenter.initialize(this, lifecycle)
+    }
+
+    private fun restoreNonConfigurationInstance() {
+        val retainedPresenter = lastCustomNonConfigurationInstance
+        if (retainedPresenter is ExportpEpSupportDataPresenter) {
+            presenter = retainedPresenter
+        }
+    }
+
+    override fun onRetainCustomNonConfigurationInstance(): Any {
+        return presenter
     }
 
     private fun setupViews() {
