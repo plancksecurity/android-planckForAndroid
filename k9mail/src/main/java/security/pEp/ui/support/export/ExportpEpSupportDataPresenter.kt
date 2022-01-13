@@ -1,10 +1,12 @@
 package security.pEp.ui.support.export
 
+import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.fsck.k9.activity.misc.NonConfigurationInstance
 import kotlinx.coroutines.*
 import org.apache.commons.io.FileUtils
 import timber.log.Timber
@@ -16,7 +18,7 @@ import javax.inject.Named
 
 class ExportpEpSupportDataPresenter @Inject constructor(
     @Named("AppContext") private val context: Context,
-) : LifecycleObserver {
+) : LifecycleObserver, NonConfigurationInstance {
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH:MM", Locale.getDefault())
@@ -100,6 +102,14 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             block()
         }
+    }
+
+    override fun retain(): Boolean {
+        return true
+    }
+
+    override fun restore(activity: Activity?) {
+        // NOP
     }
 }
 
