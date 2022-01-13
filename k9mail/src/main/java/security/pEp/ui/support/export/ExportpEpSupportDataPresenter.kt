@@ -2,6 +2,9 @@ package security.pEp.ui.support.export
 
 import android.content.Context
 import android.os.Environment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import kotlinx.coroutines.*
 import org.apache.commons.io.FileUtils
 import timber.log.Timber
@@ -13,25 +16,57 @@ import javax.inject.Named
 
 class ExportpEpSupportDataPresenter @Inject constructor(
     @Named("AppContext") private val context: Context,
-) {
+) : LifecycleObserver {
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH:MM", Locale.getDefault())
+    private var step = ExportPEpDatabasesStep.INITIAL
+    private lateinit var lifecycle: Lifecycle
 
-    fun initialize(view: ExportpEpSupportDataView) {
+    fun initialize(
+        view: ExportpEpSupportDataView,
+        lifecycle: Lifecycle,
+    ) {
         this.view = view
+        this.lifecycle = lifecycle
+        lifecycle.addObserver(this)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    @Suppress("unused")
+    private fun showCurrentScreen() {
+        renderStep()
+    }
+
+    fun renderStep(step: ExportPEpDatabasesStep = this.step) {
+        this.step = step
+        runWithLifecycleSafety {
+            when (step) {
+                ExportPEpDatabasesStep.INITIAL -> {
+                    // NOP
+                }
+                ExportPEpDatabasesStep.EXPORTING -> {
+                    view.showLoading()
+                }
+                ExportPEpDatabasesStep.SUCCESS -> {
+                    view.hideLoading()
+                    view.showSuccess()
+                }
+                ExportPEpDatabasesStep.FAILED -> {
+                    view.hideLoading()
+                    view.showFailed()
+                }
+            }
+        }
     }
 
     fun export() {
         scope.launch {
-            view.showLoading()
-            exportSuspend().also { success ->
-                view.hideLoading()
-                if (success) {
-                    view.showSuccess()
-                } else {
-                    view.showFailed()
-                }
+            renderStep(ExportPEpDatabasesStep.EXPORTING)
+            if (exportSuspend()) {
+                renderStep(ExportPEpDatabasesStep.SUCCESS)
+            } else {
+                renderStep(ExportPEpDatabasesStep.FAILED)
             }
         }
     }
@@ -60,4 +95,14 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     private fun copyFolder(fromFolder: File, toFolder: File) {
         FileUtils.copyDirectory(fromFolder, toFolder)
     }
+
+    private fun runWithLifecycleSafety(block: () -> Unit) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            block()
+        }
+    }
+}
+
+enum class ExportPEpDatabasesStep {
+    INITIAL, EXPORTING, SUCCESS, FAILED
 }
