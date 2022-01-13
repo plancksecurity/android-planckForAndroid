@@ -24,10 +24,14 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 
     fun export() {
         scope.launch {
-            if (exportSuspend()) {
-                view.showSuccess()
-            } else {
-                view.showFailed()
+            view.showLoading()
+            exportSuspend().also { success ->
+                view.hideLoading()
+                if (success) {
+                    view.showSuccess()
+                } else {
+                    view.showFailed()
+                }
             }
         }
     }
