@@ -8,4 +8,12 @@ class ExportpEpSupportDataPresenter @Inject constructor() {
     fun initialize(view: ExportpEpSupportDataView) {
         this.view = view
     }
+
+    fun export() {
+
+    }
+
+    fun cancel() {
+        view.finish()
+    }
 }
