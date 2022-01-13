@@ -359,6 +359,16 @@
                 android:title="@string/pep_sync_folder"
                 app:dependency="pep_enable_sync"/>
 
+            <PreferenceScreen
+                android:key="support"
+                android:title="@string/support_settings_title">
+
+                <Preference
+                    android:key="support_export_pep_data"
+                    android:title="@string/export_pep_support_data_preference_title" />
+
+            </PreferenceScreen>
+
             <PreferenceCategory
                 android:key="pep_gpg_compatibility"
                 android:title="@string/pep_gpg_compatibility">
