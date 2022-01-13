@@ -7,9 +7,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.activity.misc.NonConfigurationInstance
-import kotlinx.coroutines.*
-import org.apache.commons.io.FileUtils
-import timber.log.Timber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +19,7 @@ import javax.inject.Named
 
 class ExportpEpSupportDataPresenter @Inject constructor(
     @Named("AppContext") private val context: Context,
+    private val supportDataExporter: PEpSupportDataExporter,
 ) : LifecycleObserver, NonConfigurationInstance {
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -65,7 +67,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     fun export() {
         scope.launch {
             renderStep(ExportPEpDatabasesStep.EXPORTING)
-            if (exportSuspend()) {
+            if (exportInternal()) {
                 renderStep(ExportPEpDatabasesStep.SUCCESS)
             } else {
                 renderStep(ExportPEpDatabasesStep.FAILED)
@@ -77,25 +79,13 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         view.finish()
     }
 
-    private suspend fun exportSuspend(): Boolean = withContext(Dispatchers.IO) {
-        try {
-            val documentsFolder = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
-            toFolder.mkdirs()
+    private suspend fun exportInternal(): Boolean {
+        val documentsFolder = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
+        val homeDir = context.getDir("home", Context.MODE_PRIVATE)
+        val fromFolder = File(homeDir, ".pEp")
 
-            val homeDir = context.getDir("home", Context.MODE_PRIVATE)
-            val fromFolder = File(homeDir, ".pEp")
-
-            copyFolder(fromFolder, toFolder)
-            File(toFolder, "management.db").exists() && File(toFolder, "keys.db").exists()
-        } catch (e: Exception) {
-            Timber.e(e)
-            false
-        }
-    }
-
-    private fun copyFolder(fromFolder: File, toFolder: File) {
-        FileUtils.copyDirectory(fromFolder, toFolder)
+        return supportDataExporter.export(fromFolder, toFolder)
     }
 
     private fun runWithLifecycleSafety(block: () -> Unit) {
