@@ -11,6 +11,7 @@ class HtmlProcessor(private val htmlSanitizer: HtmlSanitizer, private val displa
 
     private fun addCustomHeadContents(document: Document) {
         document.head().append("<meta name=\"viewport\" content=\"width=device-width\"/>" +
+                displayHtml.cssStyleTheme() +
                 displayHtml.cssStylePre() +
                 displayHtml.cssStyleSignature())
     }

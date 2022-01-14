@@ -8,6 +8,7 @@ import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.webkit.WebViewFeature
 import com.fsck.k9.K9
 import com.fsck.k9.R
 
@@ -17,6 +18,9 @@ object ThemeManager {
 
     @JvmStatic
     fun isDarkTheme(): Boolean = legacyTheme == Theme.DARK
+
+    @JvmStatic
+    val isWebViewDarkThemeSupported: Boolean by lazy { WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK) }
 
     @JvmStatic
     val legacyTheme: Theme

@@ -4,14 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.view.MessageWebView
 import security.pEp.ui.toolbar.ToolBarCustomizer
+import java.io.BufferedReader
+import java.io.InputStream
+import java.io.InputStreamReader
 import javax.inject.Inject
-
-const val GPL_LICENSE = "https://pep-security.lu/gitlab/android/pep/-/raw/develop/LICENSE"
 
 class LicenseActivity : PepActivity() {
 
@@ -25,12 +27,8 @@ class LicenseActivity : PepActivity() {
 
         toolbarCustomizer.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
         initializeToolbar(true, getString(R.string.license))
-
-        val webView = findViewById<MessageWebView>(R.id.license_webview)
-        webView.blockNetworkData(false)
-        webView.refreshTheme()
-
-        webView.loadUrl(GPL_LICENSE)
+        findViewById<TextView>(R.id.licenseText).text =
+            HtmlCompat.fromHtml(getLicenseTextFromResources(), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     override fun inject() {
@@ -44,6 +42,22 @@ class LicenseActivity : PepActivity() {
             }
         }
         return true
+    }
+
+    private fun getLicenseTextFromResources(): String {
+        val inputStream: InputStream = resources.openRawResource(R.raw.gplv3license)
+        val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+        val sb = StringBuilder()
+        bufferedReader.use { reader ->
+            var line: String? = reader.readLine()
+            while (line != null) {
+                line = line.replace("<", "&lt;").replace(">", "&gt;")
+                sb.append(line)
+                sb.append("<br/>")
+                line = reader.readLine()
+            }
+        }
+        return sb.toString()
     }
 }
 
