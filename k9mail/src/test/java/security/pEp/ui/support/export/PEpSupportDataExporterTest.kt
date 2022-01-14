@@ -2,9 +2,8 @@ package security.pEp.ui.support.export
 
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.spy
+import io.mockk.every
+import io.mockk.spyk
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -70,8 +69,8 @@ class PEpSupportDataExporterTest {
     @Test
     fun `export() returns false if an exception is thrown`() {
         runBlocking {
-            val toFolderSpy = spy(toFolder)
-            doThrow(RuntimeException()).`when`(toFolderSpy).mkdirs()
+            val toFolderSpy = spyk(toFolder)
+            every { toFolderSpy.mkdirs() }.throws(RuntimeException())
 
             fromFolder.mkdirs()
             File(fromFolder, "management.db").writeText("test")
@@ -92,8 +91,8 @@ class PEpSupportDataExporterTest {
     @Test
     fun `export() returns false if there is not enough free space in device`() {
         runBlocking {
-            val fromFolderSpy = spy(fromFolder)
-            doReturn(999999999999).`when`(fromFolderSpy).length()
+            val fromFolderSpy = spyk(fromFolder)
+            every { fromFolderSpy.length() }.returns(999999999999)
 
             fromFolder.mkdirs()
             File(fromFolder, "management.db").writeText("test")
