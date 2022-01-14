@@ -21,9 +21,7 @@ class PEpSupportDataExporter @Inject constructor() {
                     false
                 } else {
                     fromFolders.forEach { copyFolder(it, toFolder) }
-                    File(toFolder, "management.db").exists()
-                            && File(toFolder, "keys.db").exists()
-                            && File(toFolder, "system.db").exists()
+                    areFilesCreated(toFolder)
                 }
             }
         } catch (e: Exception) {
@@ -31,6 +29,10 @@ class PEpSupportDataExporter @Inject constructor() {
             Result.success(false)
         }
     }
+
+    private fun areFilesCreated(folder: File) = (File(folder, "management.db").exists()
+            && File(folder, "keys.db").exists()
+            && File(folder, "system.db").exists())
 
     private fun checkEnoughSpaceToCopy(
         fromFolders: List<File>,
