@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.ContentLoadingProgressBar
 import com.fsck.k9.R
@@ -17,6 +18,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     private lateinit var cancelButton: Button
     private lateinit var messageText: TextView
     private lateinit var progressBar: ContentLoadingProgressBar
+    private lateinit var successFailureImage: ImageView
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -48,6 +50,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
         cancelButton = findViewById(R.id.dismissActionButton)
         messageText = findViewById(R.id.message)
         progressBar = findViewById(R.id.loadingProgressBar)
+        successFailureImage = findViewById(R.id.successFailureImage)
 
         exportButton.setOnClickListener { presenter.export() }
         cancelButton.setOnClickListener { presenter.cancel() }
@@ -56,11 +59,17 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     override fun showSuccess() {
         showOkAction()
         messageText.setText(R.string.export_pep_support_data_dialog_success_msg)
+        successFailureImage.setImageResource(R.drawable.ic_success_green_24dp)
+        successFailureImage.contentDescription =
+            getString(R.string.export_pep_support_data_dialog_image_success_content_desc)
     }
 
     override fun showFailed() {
         showOkAction()
         messageText.setText(R.string.export_pep_support_data_dialog_failure_msg)
+        successFailureImage.setImageResource(R.drawable.ic_failure_red_24dp)
+        successFailureImage.contentDescription =
+            getString(R.string.export_pep_support_data_dialog_image_failure_content_desc)
     }
 
     override fun showNotEnoughSpaceInDevice(
@@ -93,12 +102,14 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
         exportButton.visibility = View.VISIBLE
         cancelButton.visibility = View.VISIBLE
         messageText.visibility = View.VISIBLE
+        successFailureImage.visibility = View.VISIBLE
     }
 
     private fun hideDialogContent() {
         exportButton.visibility = View.INVISIBLE
         cancelButton.visibility = View.INVISIBLE
         messageText.visibility = View.INVISIBLE
+        successFailureImage.visibility = View.INVISIBLE
     }
 
     private fun showOkAction() {
