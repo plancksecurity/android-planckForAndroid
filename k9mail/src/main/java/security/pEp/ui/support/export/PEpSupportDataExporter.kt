@@ -1,5 +1,7 @@
 package security.pEp.ui.support.export
 
+import android.os.StatFs
+import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
@@ -11,19 +13,43 @@ class PEpSupportDataExporter @Inject constructor() {
     suspend fun export(
         fromFolder: File,
         toFolder: File
-    ): Boolean = withContext(Dispatchers.IO) {
+    ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            toFolder.mkdirs()
-            copyFolder(fromFolder, toFolder)
-            File(toFolder, "management.db").exists()
-                    && File(toFolder, "keys.db").exists()
+            checkEnoughSpaceToCopy(fromFolder, toFolder).map {
+                toFolder.mkdirs()
+                copyFolder(fromFolder, toFolder)
+                File(toFolder, "management.db").exists()
+                        && File(toFolder, "keys.db").exists()
+            }
         } catch (e: Exception) {
             Timber.e(e)
-            false
+            Result.success(false)
         }
+    }
+
+    private fun checkEnoughSpaceToCopy(
+        fromFolder: File,
+        toFolder: File
+    ): Result<Unit> {
+        val neededBytes = fromFolder.folderSize()
+        val availableSizeInBytes = StatFs(toFolder.absolutePath).availableBytes
+        return if (neededBytes < availableSizeInBytes) Result.success(Unit)
+        else Result.failure(NotEnoughSpaceInDeviceException(neededBytes, availableSizeInBytes))
     }
 
     private fun copyFolder(fromFolder: File, toFolder: File) {
         FileUtils.copyDirectory(fromFolder, toFolder)
+    }
+
+    private fun File.folderSize(): Long {
+        var total = length()
+        listFiles()?.forEach { file ->
+            total += if (file.isDirectory) {
+                file.folderSize()
+            } else {
+                file.length()
+            }
+        }
+        return total
     }
 }
