@@ -20,29 +20,34 @@ class PEpSupportDataExporterTest {
     val coroutinesTestRule = CoroutineTestRule()
 
     private val exporter = PEpSupportDataExporter()
-    private val fromFolder = File("src/test/java/security/pEp/ui/support/export/fromFolder")
+    private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
+    private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
+    private val fromFolders = listOf(homeFolder, trustwordsFolder)
     private val toFolder = File("src/test/java/security/pEp/ui/support/export/toFolder")
 
     @Before
     fun setUp() {
         cleanupFiles()
+        fromFolders.forEach { it.mkdirs() }
     }
 
     @Test
     fun `export() copies files from origin to target directory`() {
         runBlocking {
-            fromFolder.mkdirs()
-            File(fromFolder, "management.db").writeText("test")
-            File(fromFolder, "keys.db").writeText("test")
+            File(homeFolder, "management.db").writeText("test")
+            File(homeFolder, "keys.db").writeText("test")
+            File(trustwordsFolder, "system.db").writeText("test")
 
 
-            val result = exporter.export(fromFolder, toFolder)
+            val result = exporter.export(fromFolders, toFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
             val expectedKeysDb = File(toFolder, "keys.db")
+            val expectedSystemDb = File(toFolder, "system.db")
             assertTrue(expectedManagementDb.exists())
             assertTrue(expectedKeysDb.exists())
+            assertTrue(expectedSystemDb.exists())
             assertTrue(result.isSuccess)
             assertTrue(result.getOrThrow())
         }
@@ -51,16 +56,15 @@ class PEpSupportDataExporterTest {
     @Test
     fun `export() returns false if file copy fails`() {
         runBlocking {
-            fromFolder.mkdirs()
-
-
-            val result = exporter.export(fromFolder, toFolder)
+            val result = exporter.export(fromFolders, toFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
             val expectedKeysDb = File(toFolder, "keys.db")
+            val expectedSystemDb = File(toFolder, "system.db")
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
+            assertFalse(expectedSystemDb.exists())
             assertTrue(result.isSuccess)
             assertFalse(result.getOrThrow())
         }
@@ -72,17 +76,19 @@ class PEpSupportDataExporterTest {
             val toFolderSpy = spyk(toFolder)
             every { toFolderSpy.mkdirs() }.throws(RuntimeException())
 
-            fromFolder.mkdirs()
-            File(fromFolder, "management.db").writeText("test")
-            File(fromFolder, "keys.db").writeText("test")
+            File(homeFolder, "management.db").writeText("test")
+            File(homeFolder, "keys.db").writeText("test")
+            File(trustwordsFolder, "system.db").writeText("test")
 
-            val result = exporter.export(fromFolder, toFolderSpy)
+            val result = exporter.export(fromFolders, toFolderSpy)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
             val expectedKeysDb = File(toFolder, "keys.db")
+            val expectedSystemDb = File(toFolder, "system.db")
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
+            assertFalse(expectedSystemDb.exists())
             assertTrue(result.isSuccess)
             assertFalse(result.getOrThrow())
         }
@@ -91,20 +97,23 @@ class PEpSupportDataExporterTest {
     @Test
     fun `export() returns false if there is not enough free space in device`() {
         runBlocking {
-            val fromFolderSpy = spyk(fromFolder)
-            every { fromFolderSpy.length() }.returns(999999999999)
+            val toFolderSpy = spyk(toFolder)
+            every { toFolderSpy.freeSpace }.returns(0)
 
-            fromFolder.mkdirs()
-            File(fromFolder, "management.db").writeText("test")
-            File(fromFolder, "keys.db").writeText("test")
+            File(homeFolder, "management.db").writeText("test")
+            File(homeFolder, "keys.db").writeText("test")
+            File(trustwordsFolder, "system.db").writeText("test")
 
-            val result = exporter.export(fromFolderSpy, toFolder)
+
+            val result = exporter.export(fromFolders, toFolderSpy)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
             val expectedKeysDb = File(toFolder, "keys.db")
+            val expectedSystemDb = File(toFolder, "system.db")
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
+            assertFalse(expectedSystemDb.exists())
             assertTrue(result.isFailure)
             assertTrue(result.exceptionOrNull() is NotEnoughSpaceInDeviceException)
         }
@@ -116,7 +125,7 @@ class PEpSupportDataExporterTest {
     }
 
     private fun cleanupFiles() {
-        fromFolder.deleteRecursively()
+        fromFolders.forEach { it.deleteRecursively() }
         toFolder.deleteRecursively()
     }
 }
