@@ -37,7 +37,7 @@ class PEpSupportDataExporter @Inject constructor() {
         fromFolders: List<File>,
         toFolder: File
     ): Result<Unit> {
-        val neededBytes = fromFolders.sumOf { it.folderSize() }
+        val neededBytes = fromFolders.sumOf { it.folderSize }
         val availableSizeInBytes = toFolder.freeSpace
         return if (neededBytes < availableSizeInBytes) Result.success(Unit)
         else Result.failure(NotEnoughSpaceInDeviceException(neededBytes, availableSizeInBytes))
@@ -47,15 +47,16 @@ class PEpSupportDataExporter @Inject constructor() {
         FileUtils.copyDirectory(fromFolder, toFolder)
     }
 
-    private fun File.folderSize(): Long {
-        var total = length()
-        listFiles()?.forEach { file ->
-            total += if (file.isDirectory) {
-                file.folderSize()
-            } else {
-                file.length()
+    private val File.folderSize: Long
+        get() {
+            var total = length()
+            listFiles()?.forEach { file ->
+                total += if (file.isDirectory) {
+                    file.folderSize
+                } else {
+                    file.length()
+                }
             }
+            return total
         }
-        return total
-    }
 }
