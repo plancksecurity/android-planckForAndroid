@@ -6,8 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
@@ -15,11 +13,6 @@ import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
-
-
-const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
-const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
-const val ANDROID_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
 
 class KeyImportActivity : WizardActivity(), KeyImportView {
@@ -38,7 +31,23 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
         }
-        openFileChooser()
+        presenter.restoreInstanceState(savedInstanceState)
+        presenter.resumeImport()
+        setClickListeners()
+    }
+
+    private fun setClickListeners() {
+        acceptButton.setOnClickListener {
+            presenter.onKeyImportAccepted()
+        }
+        cancelButton.setOnClickListener {
+            presenter.onKeyImportRejected()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        presenter.onSaveInstanceState(outState)
     }
 
     override fun openFileChooser() {
@@ -49,6 +58,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         val infos = packageManager.queryIntentActivities(intent, 0)
         if (infos.isNotEmpty()) {
             startActivityForResult(Intent.createChooser(intent, null), ACTIVITY_REQUEST_PICK_KEY_FILE)
+            presenter.fileManagerOpened()
         } else {
             showNoFileManager()
         }
@@ -71,18 +81,17 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
         fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
-        acceptButton.setOnClickListener {
-            layout.visibility = View.GONE
-            presenter.onKeyImportAccepted(filename)
-        }
-        cancelButton.setOnClickListener {
-            layout.visibility = View.GONE
-            presenter.onKeyImportRejected()
-        }
+    }
+
+    override fun showLayout() {
         layout.visibility = View.VISIBLE
     }
 
-    override fun showCorrectKeyImport(fingerprint: String, filename: String?) {
+    override fun hideLayout() {
+        layout.visibility = View.GONE
+    }
+
+    override fun showCorrectKeyImport() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_success_header)
                 .setMessage(getString(R.string.key_import_success))
@@ -92,7 +101,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
                 .show()
     }
 
-    override fun showFailedKeyImport(filename: String?) {
+    override fun showFailedKeyImport() {
         AlertDialog.Builder(this)
                 .setTitle(R.string.settings_import_failed_header)
                 .setMessage(getString(R.string.key_import_failure))
@@ -104,9 +113,6 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showLoading() {
-        val title = getString(R.string.settings_import_dialog_title)
-        val message = getString(R.string.settings_import_scanning_file)
-
         confirmationLayout.visibility = View.INVISIBLE
         keyImportLoadingLayout.visibility = View.VISIBLE
     }
@@ -127,8 +133,10 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     companion object {
-        const val ACCOUNT_EXTRA = "ACCOUNT_EXTRA"
+        const val IMPORT_STATE = "IMPORT_STATE"
+        const val ACCOUNT_UUID_EXTRA = "ACCOUNT_UUID_EXTRA"
         const val ACTIVITY_REQUEST_PICK_KEY_FILE = 8
+        const val SAVED_STATE_URI = "SAVED_STATE_URI"
         const val ANDROID_FILE_MANAGER_MARKET_URL = "https://play.google.com/store/apps/details?id=org.openintents.filemanager"
 
         private fun openMarketIntent(activity: Activity) {
