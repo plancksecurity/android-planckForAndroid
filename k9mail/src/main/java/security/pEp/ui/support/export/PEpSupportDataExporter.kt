@@ -15,11 +15,11 @@ class PEpSupportDataExporter @Inject constructor() {
         toFolder: File
     ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            checkEnoughSpaceToCopy(fromFolders, toFolder).map {
-                toFolder.mkdirs()
-                if (!toFolder.exists()) {
-                    false
-                } else {
+            toFolder.mkdirs()
+            if (!toFolder.exists()) {
+                Result.success(false)
+            } else {
+                checkEnoughSpaceToCopy(fromFolders, toFolder).map {
                     fromFolders.forEach { copyFolder(it, toFolder) }
                     areFilesCreated(toFolder)
                 }
