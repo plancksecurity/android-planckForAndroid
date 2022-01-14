@@ -17,9 +17,13 @@ class PEpSupportDataExporter @Inject constructor() {
         try {
             checkEnoughSpaceToCopy(fromFolder, toFolder).map {
                 toFolder.mkdirs()
-                copyFolder(fromFolder, toFolder)
-                File(toFolder, "management.db").exists()
-                        && File(toFolder, "keys.db").exists()
+                if (!toFolder.exists()) {
+                    false
+                } else {
+                    copyFolder(fromFolder, toFolder)
+                    File(toFolder, "management.db").exists()
+                            && File(toFolder, "keys.db").exists()
+                }
             }
         } catch (e: Exception) {
             Timber.e(e)
