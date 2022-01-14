@@ -1,6 +1,8 @@
 package security.pEp.ui.support.export
 
+import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.spy
 import junit.framework.TestCase.assertFalse
@@ -42,7 +44,8 @@ class PEpSupportDataExporterTest {
             val expectedKeysDb = File(toFolder, "keys.db")
             assertTrue(expectedManagementDb.exists())
             assertTrue(expectedKeysDb.exists())
-            assertTrue(result)
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrThrow())
         }
     }
 
@@ -59,7 +62,8 @@ class PEpSupportDataExporterTest {
             val expectedKeysDb = File(toFolder, "keys.db")
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
-            assertFalse(result)
+            assertTrue(result.isSuccess)
+            assertFalse(result.getOrThrow())
         }
     }
 
@@ -80,7 +84,30 @@ class PEpSupportDataExporterTest {
             val expectedKeysDb = File(toFolder, "keys.db")
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
-            assertFalse(result)
+            assertTrue(result.isSuccess)
+            assertFalse(result.getOrThrow())
+        }
+    }
+
+    @Test
+    fun `export() returns false if there is not enough free space in device`() {
+        runBlocking {
+            val fromFolderSpy = spy(fromFolder)
+            doReturn(999999999999).`when`(fromFolderSpy).length()
+
+            fromFolder.mkdirs()
+            File(fromFolder, "management.db").writeText("test")
+            File(fromFolder, "keys.db").writeText("test")
+
+            val result = exporter.export(fromFolderSpy, toFolder)
+
+
+            val expectedManagementDb = File(toFolder, "management.db")
+            val expectedKeysDb = File(toFolder, "keys.db")
+            assertFalse(expectedManagementDb.exists())
+            assertFalse(expectedKeysDb.exists())
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is NotEnoughSpaceInDeviceException)
         }
     }
 
