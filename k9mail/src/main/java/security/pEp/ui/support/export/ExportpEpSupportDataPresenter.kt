@@ -93,11 +93,14 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 
     private suspend fun exportInternal(): Result<Boolean> {
-        val documentsFolder = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
+        val toFolder = context.getExternalFilesDir(
+            "${Environment.DIRECTORY_DOCUMENTS}/pEp/db-export/${sdf.format(Date())}"
+        )
         val homeDir = context.getDir("home", Context.MODE_PRIVATE)
         val fromFolder = File(homeDir, ".pEp")
-        return supportDataExporter.export(fromFolder, toFolder)
+        return toFolder?.let {
+            supportDataExporter.export(fromFolder, toFolder)
+        } ?: Result.success(false)
     }
 
     private fun runWithLifecycleSafety(block: () -> Unit) {
