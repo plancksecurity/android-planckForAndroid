@@ -16,10 +16,8 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Named
 
 class ExportpEpSupportDataPresenter @Inject constructor(
-    @Named("AppContext") private val context: Context,
     private val supportDataExporter: PEpSupportDataExporter,
 ) : LifecycleObserver, NonConfigurationInstance {
     private lateinit var view: ExportpEpSupportDataView
@@ -93,6 +91,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 
     private suspend fun exportInternal(): Result<Boolean> {
+        val context = view.getContext()
         val toFolder = context.getExternalFilesDir(
             "${Environment.DIRECTORY_DOCUMENTS}/pEp/db-export/${sdf.format(Date())}"
         )

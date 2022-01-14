@@ -1,5 +1,7 @@
 package security.pEp.ui.support.export
 
+import android.content.Context
+
 interface ExportpEpSupportDataView {
     fun finish()
     fun showSuccess()
@@ -11,4 +13,5 @@ interface ExportpEpSupportDataView {
 
     fun showLoading()
     fun hideLoading()
+    fun getContext(): Context
 }
