@@ -18,7 +18,7 @@ class PEpSupportDataExporter @Inject constructor() {
             if (!toFolder.exists()) {
                 Result.success(false)
             } else {
-                checkEnoughSpaceToCopy(fromFolders, toFolder).map {
+                checkSpaceAvailability(fromFolders, toFolder).map {
                     fromFolders.forEach { copyFolder(it, toFolder) }
                     areFilesCreated(toFolder)
                 }
@@ -33,7 +33,7 @@ class PEpSupportDataExporter @Inject constructor() {
             && File(folder, "keys.db").exists()
             && File(folder, "system.db").exists())
 
-    private fun checkEnoughSpaceToCopy(
+    private fun checkSpaceAvailability(
         fromFolders: List<File>,
         toFolder: File
     ): Result<Unit> {
