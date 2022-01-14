@@ -1,6 +1,5 @@
 package security.pEp.ui.support.export
 
-import android.os.StatFs
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,7 +38,7 @@ class PEpSupportDataExporter @Inject constructor() {
         toFolder: File
     ): Result<Unit> {
         val neededBytes = fromFolders.sumOf { it.folderSize() }
-        val availableSizeInBytes = StatFs(toFolder.absolutePath).availableBytes
+        val availableSizeInBytes = toFolder.freeSpace
         return if (neededBytes < availableSizeInBytes) Result.success(Unit)
         else Result.failure(NotEnoughSpaceInDeviceException(neededBytes, availableSizeInBytes))
     }
