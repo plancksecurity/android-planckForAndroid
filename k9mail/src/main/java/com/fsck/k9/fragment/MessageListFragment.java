@@ -554,13 +554,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         getpEpComponent().inject(this);
     }
 
-    private void destroyLoaders() {
-        LoaderManager manager = LoaderManager.getInstance(this);
-        for (int i = 0, len = accountUuids.length; i < len; i++) {
-            manager.destroyLoader(i);
-        }
-    }
-
     private boolean anyAccountWasDeleted() {
         for(String uuid : accountUuids) {
             if(preferences.getAccount(uuid) == null) {
@@ -823,7 +816,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         localBroadcastManager.unregisterReceiver(cacheBroadcastReceiver);
         activityListener.onPause(getActivity());
         messagingController.removeListener(activityListener);
-        destroyLoaders();
     }
 
     /**
