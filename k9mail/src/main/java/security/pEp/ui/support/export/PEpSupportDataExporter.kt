@@ -11,18 +11,19 @@ import javax.inject.Inject
 
 class PEpSupportDataExporter @Inject constructor() {
     suspend fun export(
-        fromFolder: File,
+        fromFolders: List<File>,
         toFolder: File
     ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            checkEnoughSpaceToCopy(fromFolder, toFolder).map {
+            checkEnoughSpaceToCopy(fromFolders, toFolder).map {
                 toFolder.mkdirs()
                 if (!toFolder.exists()) {
                     false
                 } else {
-                    copyFolder(fromFolder, toFolder)
+                    fromFolders.forEach { copyFolder(it, toFolder) }
                     File(toFolder, "management.db").exists()
                             && File(toFolder, "keys.db").exists()
+                            && File(toFolder, "system.db").exists()
                 }
             }
         } catch (e: Exception) {
@@ -32,10 +33,10 @@ class PEpSupportDataExporter @Inject constructor() {
     }
 
     private fun checkEnoughSpaceToCopy(
-        fromFolder: File,
+        fromFolders: List<File>,
         toFolder: File
     ): Result<Unit> {
-        val neededBytes = fromFolder.folderSize()
+        val neededBytes = fromFolders.sumOf { it.folderSize() }
         val availableSizeInBytes = StatFs(toFolder.absolutePath).availableBytes
         return if (neededBytes < availableSizeInBytes) Result.success(Unit)
         else Result.failure(NotEnoughSpaceInDeviceException(neededBytes, availableSizeInBytes))

@@ -97,9 +97,10 @@ class ExportpEpSupportDataPresenter @Inject constructor(
             "${Environment.DIRECTORY_DOCUMENTS}/pEp/db-export/${sdf.format(Date())}"
         )
         val homeDir = context.getDir("home", Context.MODE_PRIVATE)
-        val fromFolder = File(homeDir, ".pEp")
+        val pEpFolder = File(homeDir, ".pEp")
+        val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
         return toFolder?.let {
-            supportDataExporter.export(fromFolder, toFolder)
+            supportDataExporter.export(listOf(pEpFolder, trustwordsFolder), toFolder)
         } ?: Result.success(false)
     }
 
