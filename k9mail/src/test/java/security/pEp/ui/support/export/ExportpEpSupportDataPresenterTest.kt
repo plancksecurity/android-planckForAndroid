@@ -63,8 +63,8 @@ class ExportpEpSupportDataPresenterTest {
     }
 
     @Test
-    fun `when presenter renders state Success, view shows successful screen`() {
-        presenter.renderState(ExportPEpDatabasesState.Success)
+    fun `when presenter renders state Succeeded, view shows successful screen`() {
+        presenter.renderState(ExportPEpDatabasesState.Succeeded)
 
         verify { view.showSuccess() }
     }

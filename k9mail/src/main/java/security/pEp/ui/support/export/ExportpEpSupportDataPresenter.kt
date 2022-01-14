@@ -51,7 +51,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
                 is ExportPEpDatabasesState.Exporting -> {
                     view.showLoading()
                 }
-                is ExportPEpDatabasesState.Success -> {
+                is ExportPEpDatabasesState.Succeeded -> {
                     view.hideLoading()
                     view.showSuccess()
                 }
@@ -76,7 +76,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
             exportInternal()
                 .onSuccess { success ->
                     if (success) {
-                        renderState(ExportPEpDatabasesState.Success)
+                        renderState(ExportPEpDatabasesState.Succeeded)
                     } else {
                         renderState(ExportPEpDatabasesState.Failed())
                     }
@@ -121,6 +121,6 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 sealed class ExportPEpDatabasesState {
     object Initial : ExportPEpDatabasesState()
     object Exporting : ExportPEpDatabasesState()
-    object Success : ExportPEpDatabasesState()
+    object Succeeded : ExportPEpDatabasesState()
     class Failed(val cause: Throwable? = null) : ExportPEpDatabasesState()
 }
