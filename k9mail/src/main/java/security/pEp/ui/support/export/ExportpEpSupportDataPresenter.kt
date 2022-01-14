@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.activity.misc.NonConfigurationInstance
+import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -24,7 +25,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH:MM", Locale.getDefault())
-    private var step = ExportPEpDatabasesStep.INITIAL
+    private var step: ExportPEpDatabasesStep = ExportPEpDatabasesStep.Initial
     private lateinit var lifecycle: Lifecycle
 
     fun initialize(
@@ -46,19 +47,26 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         this.step = step
         runWithLifecycleSafety {
             when (step) {
-                ExportPEpDatabasesStep.INITIAL -> {
+                is ExportPEpDatabasesStep.Initial -> {
                     // NOP
                 }
-                ExportPEpDatabasesStep.EXPORTING -> {
+                is ExportPEpDatabasesStep.Exporting -> {
                     view.showLoading()
                 }
-                ExportPEpDatabasesStep.SUCCESS -> {
+                is ExportPEpDatabasesStep.Success -> {
                     view.hideLoading()
                     view.showSuccess()
                 }
-                ExportPEpDatabasesStep.FAILED -> {
+                is ExportPEpDatabasesStep.Failed -> {
                     view.hideLoading()
-                    view.showFailed()
+                    if (step.cause is NotEnoughSpaceInDeviceException) {
+                        view.showNotEnoughSpaceInDevice(
+                            step.cause.neededSpace / 1024,
+                            step.cause.availableSpace / 1024,
+                        )
+                    } else {
+                        view.showFailed()
+                    }
                 }
             }
         }
@@ -66,12 +74,17 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 
     fun export() {
         scope.launch {
-            renderStep(ExportPEpDatabasesStep.EXPORTING)
-            if (exportInternal()) {
-                renderStep(ExportPEpDatabasesStep.SUCCESS)
-            } else {
-                renderStep(ExportPEpDatabasesStep.FAILED)
-            }
+            renderStep(ExportPEpDatabasesStep.Exporting)
+            exportInternal()
+                .onSuccess { success ->
+                    if (success) {
+                        renderStep(ExportPEpDatabasesStep.Success)
+                    } else {
+                        renderStep(ExportPEpDatabasesStep.Failed())
+                    }
+                }.onFailure {
+                    renderStep(ExportPEpDatabasesStep.Failed(it))
+                }
         }
     }
 
@@ -79,12 +92,11 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         view.finish()
     }
 
-    private suspend fun exportInternal(): Boolean {
+    private suspend fun exportInternal(): Result<Boolean> {
         val documentsFolder = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
         val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
         val homeDir = context.getDir("home", Context.MODE_PRIVATE)
         val fromFolder = File(homeDir, ".pEp")
-
         return supportDataExporter.export(fromFolder, toFolder)
     }
 
@@ -103,6 +115,9 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 }
 
-enum class ExportPEpDatabasesStep {
-    INITIAL, EXPORTING, SUCCESS, FAILED
+sealed class ExportPEpDatabasesStep {
+    object Initial : ExportPEpDatabasesStep()
+    object Exporting : ExportPEpDatabasesStep()
+    object Success : ExportPEpDatabasesStep()
+    class Failed(val cause: Throwable? = null) : ExportPEpDatabasesStep()
 }

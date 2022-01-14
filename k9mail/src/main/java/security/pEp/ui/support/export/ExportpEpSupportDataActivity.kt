@@ -62,6 +62,18 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
         messageText.setText(R.string.export_pep_support_data_dialog_failure_msg)
     }
 
+    override fun showNotEnoughSpaceInDevice(
+        neededSpace: Long,
+        availableSpace: Long,
+    ) {
+        showOkAction()
+        messageText.text = getString(
+            R.string.export_pep_support_data_dialog_not_enough_space_msg,
+            neededSpace,
+            availableSpace,
+        )
+    }
+
     override fun showLoading() {
         progressBar.show()
         hideDialogContent()
