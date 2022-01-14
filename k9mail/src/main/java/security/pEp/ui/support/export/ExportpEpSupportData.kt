@@ -8,8 +8,8 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-class PEpSupportDataExporter @Inject constructor() {
-    suspend fun export(
+class ExportpEpSupportData @Inject constructor() {
+    suspend operator fun invoke(
         fromFolders: List<File>,
         toFolder: File
     ): Result<Boolean> = withContext(Dispatchers.IO) {

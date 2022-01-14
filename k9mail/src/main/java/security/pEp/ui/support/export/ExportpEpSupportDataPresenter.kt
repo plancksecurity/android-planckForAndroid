@@ -18,7 +18,7 @@ import java.util.*
 import javax.inject.Inject
 
 class ExportpEpSupportDataPresenter @Inject constructor(
-    private val supportDataExporter: PEpSupportDataExporter,
+    private val exportpEpSupportData: ExportpEpSupportData,
 ) : LifecycleObserver, NonConfigurationInstance {
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -99,7 +99,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         val pEpFolder = File(homeDir, ".pEp")
         val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
         return toFolder?.let {
-            supportDataExporter.export(listOf(pEpFolder, trustwordsFolder), toFolder)
+            exportpEpSupportData(listOf(pEpFolder, trustwordsFolder), toFolder)
         } ?: Result.success(false)
     }
 

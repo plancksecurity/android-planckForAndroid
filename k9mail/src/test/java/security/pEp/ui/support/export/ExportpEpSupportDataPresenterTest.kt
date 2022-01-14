@@ -22,10 +22,10 @@ class ExportpEpSupportDataPresenterTest {
     private val context: Context = mockk()
     private val lifecycle: Lifecycle = mockk(relaxed = true)
     private val view: ExportpEpSupportDataView = mockk(relaxed = true)
-    private val databaseExporter: PEpSupportDataExporter = mockk()
+    private val exportpEpSupportData: ExportpEpSupportData = mockk()
     private val presenter: ExportpEpSupportDataPresenter =
         ExportpEpSupportDataPresenter(
-            databaseExporter,
+            exportpEpSupportData,
         )
 
     @Before
@@ -80,7 +80,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
-        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(true))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(true))
 
 
         presenter.export()
@@ -89,7 +89,7 @@ class ExportpEpSupportDataPresenterTest {
         val fromFoldersSlot = slot<List<File>>()
         val toFolderSlot = slot<File>()
 
-        coVerify { databaseExporter.export(capture(fromFoldersSlot), capture(toFolderSlot)) }
+        coVerify { exportpEpSupportData(capture(fromFoldersSlot), capture(toFolderSlot)) }
 
 
         val fromPaths = fromFoldersSlot.captured.map { it.absolutePath }
@@ -103,7 +103,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export is successful, view shows successful screen`() = runBlocking {
-        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(true))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(true))
 
 
         presenter.export()
@@ -115,7 +115,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export fails, view shows failed screen`() = runBlocking {
-        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(false))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(false))
 
 
         presenter.export()
@@ -127,7 +127,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when there is not enough space left in device, view shows it on screen`() = runBlocking {
-        coEvery { databaseExporter.export(any(), any()) }
+        coEvery { exportpEpSupportData(any(), any()) }
             .returns(Result.failure(NotEnoughSpaceInDeviceException(0, 0)))
 
 
