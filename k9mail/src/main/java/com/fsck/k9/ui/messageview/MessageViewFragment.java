@@ -362,12 +362,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void setToolbar() {
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
-        pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
-        toolBarCustomizer.setToolbarColor(
-                ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
-        toolBarCustomizer.setStatusBarPepColor(
-                ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+        if (isAdded()) {
+            pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+            toolBarCustomizer.setToolbarColor(
+                    ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+            toolBarCustomizer.setStatusBarPepColor(
+                    ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
+        }
     }
 
     private void showUnableToDecodeError() {
