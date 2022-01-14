@@ -25,7 +25,6 @@ class ExportpEpSupportDataPresenterTest {
     private val databaseExporter: PEpSupportDataExporter = mockk()
     private val presenter: ExportpEpSupportDataPresenter =
         ExportpEpSupportDataPresenter(
-            context,
             databaseExporter,
         )
 
@@ -35,6 +34,7 @@ class ExportpEpSupportDataPresenterTest {
         every { context.getExternalFilesDir(any()) }.returns(File("$DOCUMENTS_FOLDER/pEp/db-export/Date"))
         every { context.getDir("home", Context.MODE_PRIVATE) }.returns(File(PEP_HOME_FOLDER))
         every { context.getDir("trustwords", Context.MODE_PRIVATE) }.returns(File(PEP_TRUSTWORDS_FOLDER))
+        every { view.getContext() }.returns(context)
         presenter.initialize(
             view,
             lifecycle,
