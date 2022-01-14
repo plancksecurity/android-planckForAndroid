@@ -3,8 +3,9 @@ package security.pEp.ui.support.export
 import android.content.Context
 import android.os.Environment
 import androidx.lifecycle.Lifecycle
+import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.nhaarman.mockito_kotlin.*
+import io.mockk.*
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -18,10 +19,10 @@ class ExportpEpSupportDataPresenterTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private val context: Context = mock()
-    private val lifecycle: Lifecycle = mock()
-    private val view: ExportpEpSupportDataView = mock()
-    private val databaseExporter: PEpSupportDataExporter = mock()
+    private val context: Context = mockk()
+    private val lifecycle: Lifecycle = mockk(relaxed = true)
+    private val view: ExportpEpSupportDataView = mockk(relaxed = true)
+    private val databaseExporter: PEpSupportDataExporter = mockk()
     private val presenter: ExportpEpSupportDataPresenter =
         ExportpEpSupportDataPresenter(
             context,
@@ -30,7 +31,9 @@ class ExportpEpSupportDataPresenterTest {
 
     @Before
     fun setup() {
-        stubLifecycle()
+        every { lifecycle.currentState }.returns(Lifecycle.State.STARTED)
+        every { context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) }.returns(File(DOCUMENTS_FOLDER))
+        every { context.getDir("home", Context.MODE_PRIVATE) }.returns(File(PEP_HOME_FOLDER))
         presenter.initialize(
             view,
             lifecycle,
@@ -41,57 +44,55 @@ class ExportpEpSupportDataPresenterTest {
     fun `when cancel button is clicked, view finishes`() {
         presenter.cancel()
 
-        verify(view).finish()
+        verify { view.finish() }
     }
 
     @Test
-    fun `when presenter renders step EXPORTING, view shows loading screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.EXPORTING)
+    fun `when presenter renders step Exporting, view shows loading screen`() {
+        presenter.renderStep(ExportPEpDatabasesStep.Exporting)
 
-        verify(view).showLoading()
+        verify { view.showLoading() }
     }
 
     @Test
-    fun `when presenter renders step FAILED, view shows failed screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.FAILED)
+    fun `when presenter renders step Failed, view shows failed screen`() {
+        presenter.renderStep(ExportPEpDatabasesStep.Failed())
 
-        verify(view).showFailed()
+        verify { view.showFailed() }
     }
 
     @Test
-    fun `when presenter renders step SUCCESS, view shows successful screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.SUCCESS)
+    fun `when presenter renders step Success, view shows successful screen`() {
+        presenter.renderStep(ExportPEpDatabasesStep.Success)
 
-        verify(view).showSuccess()
+        verify { view.showSuccess() }
     }
 
     @Test
     fun `when presenter renders step and current lifecycle state is NOT at least STARTED, view does nothing`() {
-        doReturn(Lifecycle.State.CREATED).`when`(lifecycle).currentState
+        every { lifecycle.currentState }.returns(Lifecycle.State.CREATED)
 
-        presenter.renderStep(ExportPEpDatabasesStep.FAILED)
+        presenter.renderStep(ExportPEpDatabasesStep.Failed())
 
-        verifyNoMoreInteractions(view)
+        verify { view.wasNot(called) }
     }
 
     @Test
     fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
-        doReturn(true).`when`(databaseExporter).export(any(), any())
-        doReturn(File(DOCUMENTS_FOLDER)).`when`(context)
-            .getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        doReturn(File(PEP_HOME_FOLDER)).`when`(context).getDir("home", Context.MODE_PRIVATE)
+        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(true))
 
 
         presenter.export()
 
 
-        val fromFolderCaptor = argumentCaptor<File>()
-        val toFolderCaptor = argumentCaptor<File>()
+        val fromFolderSlot = slot<File>()
+        val toFolderSlot = slot<File>()
 
-        verify(databaseExporter).export(fromFolderCaptor.capture(), toFolderCaptor.capture())
+        coVerify { databaseExporter.export(capture(fromFolderSlot), capture(toFolderSlot)) }
 
-        val fromPath = fromFolderCaptor.firstValue.absolutePath
-        val toPath = toFolderCaptor.firstValue.absolutePath
+
+        val fromPath = fromFolderSlot.captured.absolutePath
+        val toPath = toFolderSlot.captured.absolutePath
 
         assertTrue(toPath.contains("$DOCUMENTS_FOLDER/pEp/db-export/"))
         assertTrue(fromPath.contains("$PEP_HOME_FOLDER/.pEp"))
@@ -99,30 +100,40 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export is successful, view shows successful screen`() = runBlocking {
-        doReturn(true).`when`(databaseExporter).export(any(), any())
+        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(true))
 
 
         presenter.export()
 
 
-        verify(view).hideLoading()
-        verify(view).showSuccess()
+        coVerify { view.hideLoading() }
+        coVerify { view.showSuccess() }
     }
 
     @Test
     fun `when export fails, view shows failed screen`() = runBlocking {
-        doReturn(false).`when`(databaseExporter).export(any(), any())
+        coEvery { databaseExporter.export(any(), any()) }.returns(Result.success(false))
 
 
         presenter.export()
 
 
-        verify(view).hideLoading()
-        verify(view).showFailed()
+        coVerify { view.hideLoading() }
+        coVerify { view.showFailed() }
     }
 
-    private fun stubLifecycle() {
-        doReturn(Lifecycle.State.STARTED).`when`(lifecycle).currentState
+    @Test
+    fun `when there is not enough space left in device, view shows it on screen`() = runBlocking {
+        coEvery { databaseExporter.export(any(), any()) }
+            .returns(Result.failure(NotEnoughSpaceInDeviceException(0, 0)))
+
+
+        presenter.export()
+
+
+
+        coVerify { view.hideLoading() }
+        coVerify { view.showNotEnoughSpaceInDevice(0, 0) }
     }
 
     companion object {
