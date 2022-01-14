@@ -145,7 +145,7 @@ public class QuotedMessagePresenter {
     }
 
     private String getEscapedQuotedText(){
-        return quotedText.replace("\n", "\r\n");
+        return view.getQuotedText().replace("\n", "\r\n");
     }
 
     public void builderSetProperties(MessageBuilder builder) {
