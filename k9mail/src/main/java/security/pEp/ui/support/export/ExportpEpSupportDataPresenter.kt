@@ -23,7 +23,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH:MM", Locale.getDefault())
-    private var step: ExportPEpDatabasesStep = ExportPEpDatabasesStep.Initial
+    private var state: ExportPEpDatabasesState = ExportPEpDatabasesState.Initial
     private lateinit var lifecycle: Lifecycle
 
     fun initialize(
@@ -38,29 +38,29 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     @Suppress("unused")
     private fun showCurrentScreen() {
-        renderStep()
+        renderState()
     }
 
-    fun renderStep(step: ExportPEpDatabasesStep = this.step) {
-        this.step = step
+    fun renderState(state: ExportPEpDatabasesState = this.state) {
+        this.state = state
         runWithLifecycleSafety {
-            when (step) {
-                is ExportPEpDatabasesStep.Initial -> {
+            when (state) {
+                is ExportPEpDatabasesState.Initial -> {
                     // NOP
                 }
-                is ExportPEpDatabasesStep.Exporting -> {
+                is ExportPEpDatabasesState.Exporting -> {
                     view.showLoading()
                 }
-                is ExportPEpDatabasesStep.Success -> {
+                is ExportPEpDatabasesState.Success -> {
                     view.hideLoading()
                     view.showSuccess()
                 }
-                is ExportPEpDatabasesStep.Failed -> {
+                is ExportPEpDatabasesState.Failed -> {
                     view.hideLoading()
-                    if (step.cause is NotEnoughSpaceInDeviceException) {
+                    if (state.cause is NotEnoughSpaceInDeviceException) {
                         view.showNotEnoughSpaceInDevice(
-                            step.cause.neededSpace / 1024,
-                            step.cause.availableSpace / 1024,
+                            state.cause.neededSpace / 1024,
+                            state.cause.availableSpace / 1024,
                         )
                     } else {
                         view.showFailed()
@@ -72,16 +72,16 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 
     fun export() {
         scope.launch {
-            renderStep(ExportPEpDatabasesStep.Exporting)
+            renderState(ExportPEpDatabasesState.Exporting)
             exportInternal()
                 .onSuccess { success ->
                     if (success) {
-                        renderStep(ExportPEpDatabasesStep.Success)
+                        renderState(ExportPEpDatabasesState.Success)
                     } else {
-                        renderStep(ExportPEpDatabasesStep.Failed())
+                        renderState(ExportPEpDatabasesState.Failed())
                     }
                 }.onFailure {
-                    renderStep(ExportPEpDatabasesStep.Failed(it))
+                    renderState(ExportPEpDatabasesState.Failed(it))
                 }
         }
     }
@@ -118,9 +118,9 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 }
 
-sealed class ExportPEpDatabasesStep {
-    object Initial : ExportPEpDatabasesStep()
-    object Exporting : ExportPEpDatabasesStep()
-    object Success : ExportPEpDatabasesStep()
-    class Failed(val cause: Throwable? = null) : ExportPEpDatabasesStep()
+sealed class ExportPEpDatabasesState {
+    object Initial : ExportPEpDatabasesState()
+    object Exporting : ExportPEpDatabasesState()
+    object Success : ExportPEpDatabasesState()
+    class Failed(val cause: Throwable? = null) : ExportPEpDatabasesState()
 }
