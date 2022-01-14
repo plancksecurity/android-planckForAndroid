@@ -2996,7 +2996,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (isThreadDisplay && data.getCount() == 0) {
+        if (isThreadDisplay && data.getCount() == 0
+                && activeMessage == null) {
             handler.goBack();
             return;
         }
