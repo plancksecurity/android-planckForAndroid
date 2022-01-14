@@ -49,31 +49,31 @@ class ExportpEpSupportDataPresenterTest {
     }
 
     @Test
-    fun `when presenter renders step Exporting, view shows loading screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.Exporting)
+    fun `when presenter renders state Exporting, view shows loading screen`() {
+        presenter.renderState(ExportPEpDatabasesState.Exporting)
 
         verify { view.showLoading() }
     }
 
     @Test
-    fun `when presenter renders step Failed, view shows failed screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.Failed())
+    fun `when presenter renders state Failed, view shows failed screen`() {
+        presenter.renderState(ExportPEpDatabasesState.Failed())
 
         verify { view.showFailed() }
     }
 
     @Test
-    fun `when presenter renders step Success, view shows successful screen`() {
-        presenter.renderStep(ExportPEpDatabasesStep.Success)
+    fun `when presenter renders state Success, view shows successful screen`() {
+        presenter.renderState(ExportPEpDatabasesState.Success)
 
         verify { view.showSuccess() }
     }
 
     @Test
-    fun `when presenter renders step and current lifecycle state is NOT at least STARTED, view does nothing`() {
+    fun `when presenter renders state and current lifecycle state is NOT at least STARTED, view does nothing`() {
         every { lifecycle.currentState }.returns(Lifecycle.State.CREATED)
 
-        presenter.renderStep(ExportPEpDatabasesStep.Failed())
+        presenter.renderState(ExportPEpDatabasesState.Failed())
 
         verify { view.wasNot(called) }
     }
