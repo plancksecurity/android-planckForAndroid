@@ -15,11 +15,11 @@ import org.junit.Test
 import java.io.File
 
 @ExperimentalCoroutinesApi
-class PEpSupportDataExporterTest {
+class ExportpEpSupportDataTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
 
-    private val exporter = PEpSupportDataExporter()
+    private val exportpEpSupportData = ExportpEpSupportData()
     private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
     private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
     private val fromFolders = listOf(homeFolder, trustwordsFolder)
@@ -39,7 +39,7 @@ class PEpSupportDataExporterTest {
             File(trustwordsFolder, "system.db").writeText("test")
 
 
-            val result = exporter.export(fromFolders, toFolder)
+            val result = exportpEpSupportData(fromFolders, toFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -56,7 +56,7 @@ class PEpSupportDataExporterTest {
     @Test
     fun `export() returns false if file copy fails`() {
         runBlocking {
-            val result = exporter.export(fromFolders, toFolder)
+            val result = exportpEpSupportData(fromFolders, toFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -80,7 +80,7 @@ class PEpSupportDataExporterTest {
             File(homeFolder, "keys.db").writeText("test")
             File(trustwordsFolder, "system.db").writeText("test")
 
-            val result = exporter.export(fromFolders, toFolderSpy)
+            val result = exportpEpSupportData(fromFolders, toFolderSpy)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -105,7 +105,7 @@ class PEpSupportDataExporterTest {
             File(trustwordsFolder, "system.db").writeText("test")
 
 
-            val result = exporter.export(fromFolders, toFolderSpy)
+            val result = exportpEpSupportData(fromFolders, toFolderSpy)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
