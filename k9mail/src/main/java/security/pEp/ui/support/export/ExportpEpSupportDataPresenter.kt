@@ -59,7 +59,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
                 }
                 is ExportPEpDatabasesState.Failed -> {
                     view.hideLoading()
-                    state.cause?.let { Timber.e(it) }
+                    Timber.e(state.cause)
                     if (state.cause is NotEnoughSpaceInDeviceException) {
                         view.showNotEnoughSpaceInDevice()
                     } else {
@@ -76,11 +76,8 @@ class ExportpEpSupportDataPresenter @Inject constructor(
             exportInternal()
                 .onSuccess {
                     renderState(ExportPEpDatabasesState.Succeeded)
-                }.onFailure { throwable ->
-                    when (throwable) {
-                        is NotEnoughSpaceInDeviceException -> renderState(ExportPEpDatabasesState.Failed(throwable))
-                        else -> renderState(ExportPEpDatabasesState.Failed())
-                    }
+                }.onFailure {
+                    renderState(ExportPEpDatabasesState.Failed(it))
                 }
         }
     }
@@ -121,5 +118,5 @@ sealed class ExportPEpDatabasesState {
     object Initial : ExportPEpDatabasesState()
     object Exporting : ExportPEpDatabasesState()
     object Succeeded : ExportPEpDatabasesState()
-    class Failed(val cause: Throwable? = null) : ExportPEpDatabasesState()
+    class Failed(val cause: Throwable) : ExportPEpDatabasesState()
 }

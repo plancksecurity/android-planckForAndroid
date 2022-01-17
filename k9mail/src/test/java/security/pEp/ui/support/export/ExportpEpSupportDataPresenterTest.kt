@@ -58,7 +58,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when presenter renders state Failed, view shows failed screen`() {
-        presenter.renderState(ExportPEpDatabasesState.Failed())
+        presenter.renderState(ExportPEpDatabasesState.Failed(RuntimeException()))
 
         verify { view.showFailed() }
     }
@@ -74,7 +74,7 @@ class ExportpEpSupportDataPresenterTest {
     fun `when presenter renders state and current lifecycle state is NOT at least STARTED, view does nothing`() {
         every { lifecycle.currentState }.returns(Lifecycle.State.CREATED)
 
-        presenter.renderState(ExportPEpDatabasesState.Failed())
+        presenter.renderState(ExportPEpDatabasesState.Failed(RuntimeException()))
 
         verify { view.wasNot(called) }
     }
