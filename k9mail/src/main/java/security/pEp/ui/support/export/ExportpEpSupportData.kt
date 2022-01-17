@@ -49,7 +49,7 @@ class ExportpEpSupportData @Inject constructor() {
 
     private val File.folderSize: Long
         get() {
-            var total = length()
+            var total = 0L
             listFiles()?.forEach { file ->
                 total += if (file.isDirectory) {
                     file.folderSize
