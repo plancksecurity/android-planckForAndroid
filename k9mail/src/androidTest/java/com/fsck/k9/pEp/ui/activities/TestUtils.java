@@ -14,10 +14,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -32,6 +40,7 @@ import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -42,11 +51,6 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
-import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.TextView;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
@@ -54,6 +58,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
 
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,12 +74,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
+
 import static android.content.ContentValues.TAG;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -84,6 +91,7 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Checks.checkNotNull;
@@ -100,8 +108,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import androidx.test.platform.app.InstrumentationRegistry ;
-
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
@@ -117,6 +123,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static java.lang.Thread.sleep;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -154,6 +161,7 @@ public class TestUtils {
     public static String rating;
     public String trustWords = "nothing";
     private String emailForDevice;
+    private static final String HOST = "@sq.pep.security";
 
 
 
@@ -215,7 +223,16 @@ public class TestUtils {
     private void clickNextButton () {
         waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        waitForIdle();
+        for (int i=0;i<100;i++) {
+            waitForIdle();
+        }
+        while (viewIsDisplayed(R.id.account_email)) {
+            waitForIdle();
+        }
+        while (exists(onView(withId(R.id.parentPanel)))) {
+            pressOKButtonInDialog();
+            waitForIdle();
+        }
         try {
             UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
             while (uiObject.getText() != null) {
@@ -401,180 +418,210 @@ public class TestUtils {
         return out;
     }
 
+    public void moveFile(File file, File dir) throws IOException {
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        File newFile = new File(dir, file.getName());
+        Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
+    }
+
     public void readConfigFile() {
-        File newFile = null;
-         do {
-            File directory = new File(Environment.getExternalStorageDirectory().toString());
-            newFile = new File(directory, "test/test_config.txt");
-        } while (!newFile.exists());
         testConfig = new TestConfig();
-        while (newFile.canRead() && (testConfig.getMail(0) == null || testConfig.getMail(0).equals(""))) {
+        String[] strSplit = new String[0];
+        String[] line = new String[2];
+        boolean configFileReaded = false;
+        String manufacturer = Build.MANUFACTURER;
+        String model = Build.MODEL;
+        if (manufacturer.equals("Google")) {
+            model = "default";
+        }
+        while (!configFileReaded) {
             try {
-                FileInputStream fin = new FileInputStream(newFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    String[] line = receiveString.split(" = ");
-                    if (line.length > 1) {
-                        switch (line[0]) {
-                            case "mail":
-                                testConfig.setMail(line[1], 0);
-                                if (!testConfig.getMail(0).equals("")) {
-                                    totalAccounts = 1;
-                                }
-                                break;
-                            case "password":
-                                testConfig.setPassword(line[1], 0);
-                                break;case "username":
-                                testConfig.setUsername(line[1], 0);
-                                break;
-                            case "trusted_server":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 0);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 0);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server":
-                                testConfig.setImap_server(line[1], 0);
-                                break;
-                            case "smtp_server":
-                                testConfig.setSmtp_server(line[1], 0);
-                                break;
-                            case "imap_port":
-                                testConfig.setImap_port(line[1], 0);
-                                break;
-                            case "smtp_port":
-                                testConfig.setSmtp_port(line[1], 0);
-                                break;
-                            case "mail2":
-                                testConfig.setMail(line[1], 1);
-                                if (!testConfig.getMail(1).equals("")) {
-                                    totalAccounts = 2;
-                                }
-                                break;
-                            case "password2":
-                                testConfig.setPassword(line[1], 1);
-                                if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                                    assertFailWithMessage("Password is empty");
-                                }
-                                break;case "username2":
-                                testConfig.setUsername(line[1], 1);
-                                break;
-                            case "trusted_server2":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 1);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 1);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server2":
-                                testConfig.setImap_server(line[1], 1);
-                                break;
-                            case "smtp_server2":
-                                testConfig.setSmtp_server(line[1], 1);
-                                break;
-                            case "imap_port2":
-                                testConfig.setImap_port(line[1], 1);
-                                break;
-                            case "smtp_port2":
-                                testConfig.setSmtp_port(line[1], 1);
-                                break;
-                            case "mail3":
-                                testConfig.setMail(line[1], 2);
-                                if (!testConfig.getMail(2).equals("")) {
-                                    totalAccounts = 3;
-                                }
-                                break;
-                            case "password3":
-                                testConfig.setPassword(line[1], 2);
-                                if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                                    assertFailWithMessage("Password is empty");
-                                }
-                                break;case "username3":
-                                testConfig.setUsername(line[1], 2);
-                                break;
-                            case "trusted_server3":
-                                if (line[1].equals("true")) {
-                                    testConfig.setTrusted_server(true, 2);
-                                } else if (line[1].equals("false")){
-                                    testConfig.setTrusted_server(false, 2);
-                                } else {
-                                    assertFailWithMessage("Trusted_server must be true or false");
-                                }
-                                break;
-                            case "imap_server3":
-                                testConfig.setImap_server(line[1], 2);
-                                break;
-                            case "smtp_server3":
-                                testConfig.setSmtp_server(line[1], 2);
-                                break;
-                            case "imap_port3":
-                                testConfig.setImap_port(line[1], 2);
-                                break;
-                            case "smtp_port3":
-                                testConfig.setSmtp_port(line[1], 2);
-                                break;
-                            case "keysync_account_1":
-                                testConfig.setKeySync_account(line[1], 0);
-                                break;
-                            case "keysync_password_1":
-                                testConfig.setKeySync_password(line[1], 0);
-                                break;
-                            case "keysync_account_2":
-                                testConfig.setKeySync_account(line[1], 1);
-                                break;
-                            case "keysync_password_2":
-                                testConfig.setKeySync_password(line[1], 1);
-                                break;
-                            case "test_number":
-                                testConfig.settest_number(line[1]);
-                                if (!testConfig.gettest_number().equals("0")) {
-                                    totalAccounts = 1;
-                                    if(testConfig.gettest_number().equals("3")) {
-                                        totalAccounts = 2;
-                                    }
-                                }
-                                break;
-                            case "passphrase_account_1":
-                                testConfig.setPassphrase_account(line[1], 0);
-                                break;
-                            case "passphrase_password_1":
-                                testConfig.setPassphrase_password(line[1], 0);
-                                break;
-                            case "passphrase_account_2":
-                                testConfig.setPassphrase_account(line[1], 1);
-                                break;
-                            case "passphrase_password_2":
-                                testConfig.setPassphrase_password(line[1], 1);
-                                break;
-                            case "passphrase_account_3":
-                                testConfig.setPassphrase_account(line[1], 2);
-                                break;
-                            case "passphrase_password_3":
-                                testConfig.setPassphrase_password(line[1], 2);
-                                break;
-                            case "format_test_account":
-                                testConfig.setFormat_test_account(line[1]);
-                                break;
-                            case "format_test_password":
-                                testConfig.setFormat_test_password(line[1]);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                fin.close();
-            } catch (Exception e) {
-                Timber.i("Error reading config file, trying again");
+                InputStream is = getInstrumentation().getContext().getAssets().open("features/test_config/" + model + ".txt");
+                String str = IOUtils.toString(is);
+                strSplit = str.split("\n");
+                configFileReaded = true;
+            } catch (IOException e) {
+                model = "default";
+                Timber.i("Cannot find config file for " + model + ", using default file");
             }
         }
+            for (int readingLine = 0; readingLine < strSplit.length; readingLine++) {
+                line = strSplit[readingLine].split(" = ");
+                switch (line[0]) {
+                    case "mail":
+                        testConfig.setMail(line[1], 0);
+                        if (!testConfig.getMail(0).equals("")) {
+                            totalAccounts = 1;
+                        }
+                        break;
+                    case "password":
+                        testConfig.setPassword(line[1], 0);
+                        break;
+                    case "username":
+                        testConfig.setUsername(line[1], 0);
+                        break;
+                    case "trusted_server":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 0);
+                        } else if (line[1].equals("false")) {
+                            testConfig.setTrusted_server(false, 0);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server":
+                        testConfig.setImap_server(line[1], 0);
+                        break;
+                    case "smtp_server":
+                        testConfig.setSmtp_server(line[1], 0);
+                        break;
+                    case "imap_port":
+                        testConfig.setImap_port(line[1], 0);
+                        break;
+                    case "smtp_port":
+                        testConfig.setSmtp_port(line[1], 0);
+                        break;
+                    case "mail2":
+                        testConfig.setMail(line[1], 1);
+                        if (!testConfig.getMail(1).equals("")) {
+                            totalAccounts = 2;
+                        }
+                        break;
+                    case "password2":
+                        testConfig.setPassword(line[1], 1);
+                        if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
+                            assertFailWithMessage("Password is empty");
+                        }
+                        break;
+                    case "username2":
+                        testConfig.setUsername(line[1], 1);
+                        break;
+                    case "trusted_server2":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 1);
+                        } else if (line[1].equals("false")) {
+                            testConfig.setTrusted_server(false, 1);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server2":
+                        testConfig.setImap_server(line[1], 1);
+                        break;
+                    case "smtp_server2":
+                        testConfig.setSmtp_server(line[1], 1);
+                        break;
+                    case "imap_port2":
+                        testConfig.setImap_port(line[1], 1);
+                        break;
+                    case "smtp_port2":
+                        testConfig.setSmtp_port(line[1], 1);
+                        break;
+                    case "mail3":
+                        testConfig.setMail(line[1], 2);
+                        if (!testConfig.getMail(2).equals("")) {
+                            totalAccounts = 3;
+                        }
+                        break;
+                    case "password3":
+                        testConfig.setPassword(line[1], 2);
+                        if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
+                            assertFailWithMessage("Password is empty");
+                        }
+                        break;
+                    case "username3":
+                        testConfig.setUsername(line[1], 2);
+                        break;
+                    case "trusted_server3":
+                        if (line[1].equals("true")) {
+                            testConfig.setTrusted_server(true, 2);
+                        } else if (line[1].equals("false")) {
+                            testConfig.setTrusted_server(false, 2);
+                        } else {
+                            assertFailWithMessage("Trusted_server must be true or false");
+                        }
+                        break;
+                    case "imap_server3":
+                        testConfig.setImap_server(line[1], 2);
+                        break;
+                    case "smtp_server3":
+                        testConfig.setSmtp_server(line[1], 2);
+                        break;
+                    case "imap_port3":
+                        testConfig.setImap_port(line[1], 2);
+                        break;
+                    case "smtp_port3":
+                        testConfig.setSmtp_port(line[1], 2);
+                        break;
+                    case "keysync_account_1":
+                        testConfig.setKeySync_account(line[1], 0);
+                        break;
+                    case "keysync_password_1":
+                        testConfig.setKeySync_password(line[1], 0);
+                        break;
+                    case "keysync_account_2":
+                        testConfig.setKeySync_account(line[1], 1);
+                        break;
+                    case "keysync_password_2":
+                        testConfig.setKeySync_password(line[1], 1);
+                        break;
+                    case "test_number":
+                        boolean fileExists = false;
+                        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/");
+                        for (int i=0; i < 20; i++) {
+                            try {
+                                if (new File(directory, i + ".txt").exists()) {
+                                    testConfig.settest_number(String.valueOf(i));
+                                    fileExists = true;
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                Timber.i("Cannot find file " + i + ".txt");
+                            }
+                        }
+                        if (!fileExists) {
+                            Timber.i("Cannot find the file for test_number. Using the test_number in the config_file");
+                            testConfig.settest_number(line[1]);
+                        }
+                        if (!testConfig.gettest_number().equals("0")) {
+                            totalAccounts = 1;
+                            if (testConfig.gettest_number().equals("3")) {
+                                totalAccounts = 2;
+                            }
+                        }
+                        break;
+                    case "passphrase_account_1":
+                        testConfig.setPassphrase_account(line[1], 0);
+                        break;
+                    case "passphrase_password_1":
+                        testConfig.setPassphrase_password(line[1], 0);
+                        break;
+                    case "passphrase_account_2":
+                        testConfig.setPassphrase_account(line[1], 1);
+                        break;
+                    case "passphrase_password_2":
+                        testConfig.setPassphrase_password(line[1], 1);
+                        break;
+                    case "passphrase_account_3":
+                        testConfig.setPassphrase_account(line[1], 2);
+                        break;
+                    case "passphrase_password_3":
+                        testConfig.setPassphrase_password(line[1], 2);
+                        break;
+                    case "format_test_account":
+                        testConfig.setFormat_test_account(line[1]);
+                        break;
+                    case "format_test_password":
+                        testConfig.setFormat_test_password(line[1]);
+                        break;
+                    default:
+                        break;
+                }
+
+        }
+
     }
 
     public void syncDevices () {
@@ -773,19 +820,25 @@ public class TestUtils {
     }
 
     public void compareMessageBodyWithText (String cucumberBody) {
+        waitForIdle();
         switch (cucumberBody) {
             case "empty":
-                compareMessageBody("");
+                cucumberBody = "";
                 break;
             case "longText":
-                waitForIdle();
                 cucumberBody = longText();
-                compareMessageBodyLongText(cucumberBody);
+                break;
+            case "longWord":
+                cucumberBody = longWord();
+                break;
+            case "specialCharacters":
+                cucumberBody = specialCharacters();
                 break;
             default:
                 compareMessageBody(cucumberBody);
                 break;
         }
+        compareMessageBodyLongText(cucumberBody);
     }
 
     public static void assertFailWithMessage(String message) {
@@ -793,25 +846,12 @@ public class TestUtils {
     }
 
     public void readBotList(){
-        File directory = new File(Environment.getExternalStorageDirectory().toString());
-
-        File newFile = new File(directory, "test/botlist.txt");
-        testConfig = new TestConfig();
-        try  {
-            FileInputStream fin = new FileInputStream(newFile);
-            InputStreamReader inputStreamReader = new InputStreamReader(fin);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String receiveString;
+        int millis = (int) System.currentTimeMillis();
             botList = new String[9];
             int position = 0;
-            while ( (receiveString = bufferedReader.readLine()) != null ) {
-                botList[position++] = receiveString;
+            for (; position < botList.length; position++) {
+                botList[position] = "bot" + position + millis;
             }
-            fin.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 
     public int getTotalAccounts() {
@@ -896,6 +936,7 @@ public class TestUtils {
     }
 
     public void clickHandShakeButton () {
+        waitForIdle();
         if (exists(onView(withId(R.id.buttonHandshake)))) {
             onView(withId(R.id.buttonHandshake)).perform(click());
             waitForIdle();
@@ -903,6 +944,7 @@ public class TestUtils {
         if (exists(onView(withId(R.id.toolbar)))) {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
+        waitForIdle();
     }
 
     public void goToHandshakeDialog (){
@@ -1109,7 +1151,7 @@ public class TestUtils {
         }
     }
 
-    private void clickFolder (String folder) {
+    public void clickFolder (String folder) {
         String folderToClick = "";
         switch (folder){
             case "Inbox":
@@ -1170,6 +1212,18 @@ public class TestUtils {
             } catch (Exception ex) {
                 Timber.i("Cannot fill account password: " + ex.getMessage());
             }
+        }
+    }
+
+    public void assertTextInView(String text, int view) {
+        waitForIdle();
+        try {
+            waitForIdle();
+            if (!getTextFromView(onView(withId(view))).contains(text)) {
+                assertFailWithMessage("View doesn't contain text: " + text);
+            }
+        } catch (Exception ex) {
+            Timber.i("Cannot find view: " + ex.getMessage());
         }
     }
 
@@ -1359,25 +1413,8 @@ public class TestUtils {
         while (!viewIsDisplayed(R.id.to)) {
             waitForIdle();
         }
-        UiObject2 list = null;
-        Rect bounds = null;
-        while (list == null || bounds == null) {
-            try {
-                waitForIdle();
-                list = device.findObject(By.res(APP_ID, "to"));
-                bounds = list.getVisibleBounds();
-            } catch (Exception ex) {
-                Timber.i("Cannot find view TO");
-            }
-        }
         if (!inputMessage.getTo().equals("")) {
-            onView(withId(R.id.to)).perform(click(), closeSoftKeyboard());
-            device.click(bounds.left - 1, bounds.centerY());
-            waitForIdle();
-            device.click(bounds.left - 1, bounds.centerY());
-            waitForIdle();
-            onView(withId(R.id.to)).perform(appendTextInTextView(inputMessage.getTo()), closeSoftKeyboard());
-
+            typeTextInField(inputMessage.getTo(), R.id.to, "to");
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
                 || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())) {
@@ -1402,6 +1439,26 @@ public class TestUtils {
             String extension = ".png";
             attachFiles(fileName, extension, 3);
         }
+    }
+
+    public void typeTextInField(String text, int field, String resourceID) {
+        UiObject2 list = null;
+        Rect bounds = null;
+        while (list == null || bounds == null) {
+            try {
+                waitForIdle();
+                list = device.findObject(By.res(APP_ID, resourceID));
+                bounds = list.getVisibleBounds();
+            } catch (Exception ex) {
+                Timber.i("Cannot find view TO");
+            }
+        }
+        onView(withId(field)).perform(click(), closeSoftKeyboard());
+        device.click(bounds.left - 1, bounds.centerY());
+        waitForIdle();
+        device.click(bounds.left - 1, bounds.centerY());
+        waitForIdle();
+        onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
     }
 
     private void attachFiles(String fileName, String extension, int total) {
@@ -1459,7 +1516,9 @@ public class TestUtils {
             try {
                 String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
                 File file = new File(extStorageDirectory, fileName);
-
+                if (!file.canRead()) {
+                    file = new File(context.getExternalFilesDir(null), fileName);
+                }
                 final OutputStream outputStream = new FileOutputStream(file);
 
                 final Resources resources = context.getResources();
@@ -1531,11 +1590,18 @@ public class TestUtils {
 
     private static Intent insertFileIntoIntentAsData(String fileName) {
         Intent resultData = new Intent();
-        File fileLocation = new File(context.getExternalFilesDir(null), fileName);
-        Uri uri = FileProvider.getUriForFile(context, APP_ID+".provider", fileLocation);
-        resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        resultData.setType("*/*");
-        resultData.setData(uri);
+
+        File fileLocation = new File(Environment.getExternalStorageDirectory()
+                .getAbsolutePath(), fileName);
+        resultData.setData(Uri.parse("file://" + fileLocation));
+
+        if (!fileLocation.exists()) {
+            fileLocation = new File(context.getExternalFilesDir(null), fileName);
+            Uri uri = FileProvider.getUriForFile(context, APP_ID + ".provider", fileLocation);
+            resultData.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            resultData.setType("*/*");
+            resultData.setData(uri);
+        }
         return resultData;
     }
 
@@ -1973,7 +2039,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    public void goBackAndSaveAsDraft (IntentsTestRule activity){
+    public void goBackAndSaveAsDraft (){
         goBack(true);
     }
 
@@ -1986,20 +2052,25 @@ public class TestUtils {
         while (currentActivity == getCurrentActivity()) {
             try {
                 waitForIdle();
-                while (!viewIsDisplayed(R.id.message_content)) {
-                    onView(withId(R.id.message_content)).perform(closeSoftKeyboard());
+                if (!viewIsDisplayed(R.id.message_content)) {
+                    onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
                     waitForIdle();
-                }
-                waitForIdle();
-                pressBack();
-                waitForIdle();
-                if (saveAsDraft) {
-                    onView(withText(R.string.save_draft_action)).perform(click());
-                } else {
-                    onView(withText(R.string.discard_action)).perform(click());
                 }
             } catch (Exception ex) {
                 Timber.i("Ignored exception: " + ex);
+            }
+            waitForIdle();
+            pressBack();
+            waitForIdle();
+            if (saveAsDraft) {
+                onView(withText(R.string.save_draft_action)).perform(click());
+            }
+            if (currentActivity == getCurrentActivity()) {
+                try {
+                    onView(withText(R.string.discard_action)).perform(click());
+                } catch (Exception noDiscard) {
+                    Timber.i("Cannot discard the message");
+                }
             }
         }
         waitForIdle();
@@ -2061,7 +2132,7 @@ public class TestUtils {
         return resources.getIdentifier(color, "color", BuildConfig.APPLICATION_ID);
     }
 
-    public void checkToolbarColor(int color) {
+    public void checkPrivacyTextColor(int color) {
         waitForIdle();
         while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             waitForIdle();
@@ -2242,7 +2313,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    public void typeTextToForceRatingCaltulation (int view) {
+    public void typeTextToForceRatingCalculation(int view) {
         waitForIdle();
         onView(withId(view)).perform(click(), closeSoftKeyboard());
         onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
@@ -2330,16 +2401,12 @@ public class TestUtils {
     }
 
     public boolean textExistsOnScreen (String text) {
-        boolean viewExists = false;
         waitForIdle();
-        BySelector selector = By.clazz("android.view.View");
-        while (!viewExists) {
-            for (UiObject2 view : device.findObjects(selector)) {
-                if (view.getText() != null) {
-                    viewExists = true;
-                    if (view.getText().contains(text)) {
-                        return true;
-                    }
+        BySelector selector = By.clazz("android.widget.TextView");
+        for (UiObject2 view : device.findObjects(selector)) {
+            if (view.getText() != null) {
+                if (view.getText().contains(text)) {
+                    return true;
                 }
             }
         }
@@ -2426,6 +2493,7 @@ public class TestUtils {
     }
 
     public void selectFromScreen(int resource) {
+        waitForIdle();
         BySelector selector = By.clazz("android.widget.TextView");
         while (true) {
             for (UiObject2 object : device.findObjects(selector)) {
@@ -2452,7 +2520,6 @@ public class TestUtils {
                             return;
                         } catch (Exception ex1) {
                             waitForIdle();
-                            Espresso.onIdle();
                             return;
                         }
                     }
@@ -2600,6 +2667,19 @@ public class TestUtils {
         assertThat(waitForView, notNullValue());
     }
 
+    public void waitForView (int view) {
+        while (true) {
+            try {
+                while (!exists(onView(withId(view)))) {
+                    waitForIdle();
+                }
+                return;
+            } catch (Exception viewIsNotDisplayed) {
+                Timber.i("View is not displayed, waiting for view...");
+            }
+        }
+    }
+
     public void doWaitForResource(int resource) {
         waitForIdle();
         IdlingResource idlingResourceVisibility = null;
@@ -2672,6 +2752,37 @@ public class TestUtils {
         int id = context.getResources().getIdentifier("alertTitle", "id", packageName);
         waitUntilViewDisplayed(onView(withId(id)).inRoot(isDialog()));
         waitForIdle();
+    }
+
+    public void waitForUiObject2 (String textInTheObject, String resourceName, BySelector selector) {
+        waitForIdle();
+        while (true) {
+            for (UiObject2 textView : device.findObjects(selector)) {
+                try {
+                    if (textView.getResourceName().equals(resourceName) && textView.getText().equals(textInTheObject)) {
+                        waitForIdle();
+                        return;
+                    }
+                } catch (Exception nullView) {
+                    waitForIdle();
+                    Timber.i(textInTheObject + " is not ready yet: " + nullView.getMessage());
+                }
+            }
+            waitForIdle();
+        }
+    }
+
+    public void pressOKButtonInDialog () {
+        BySelector selector = By.clazz("android.widget.Button");
+        while (true) {
+            for (UiObject2 button : device.findObjects(selector)) {
+                if (button.getResourceName().equals("android:id/button1")) {
+                    button.click();
+                    waitForIdle();
+                    return;
+                }
+            }
+        }
     }
 
     String getResourceString(int id, int position) {
@@ -2759,6 +2870,56 @@ public class TestUtils {
                 "Mus urna dis enim curabitur erat nisi aenean imperdiet porttitor nulla ad velit, rutrum senectus congue morbi nisl duis pretium augue volutpat et ac vulputate auctor, sodales mi sociosqu facilisis convallis habitant tempor tortor massa at lectus. Sed aliquet sapien sollicitudin fusce cubilia felis consequat malesuada justo lacinia tincidunt viverra, magnis arcu commodo maecenas cum purus potenti massa himenaeos odio. Natoque sodales mauris proin gravida malesuada, faucibus lacinia neque pellentesque, habitant nisl porta velit.";
     }
 
+    public String longWord() {
+        String word = "ji";
+        for (int i = 0; i < 10; i++) {
+            word += word;
+        }
+        return word;
+    }
+
+    public String specialCharacters() {
+        return "¡¢£¤¥§¨©ª«¬®¯°±´µ¶·¸º»¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÕØßàáâãäåæçñõ÷øÿ₫¦²³¼½¾ÐðÞþ×αΓβΛγΣπΠσΩς<>≠′≤″≥∂≡∫≈∑∞∏√•€™†‡◊‰←↑→↓♠♣♥♦‹›☺☻♀♂♪♫►ΦΘε~бвгґѓдђєжийлљњћќўфцчџшщъыьэюяスーパーオファーお客様に限り貸切可";
+    }
+
+    public void insertTextNTimes (String messageText, int repetitionsOfTheText) {
+        waitForIdle();
+        BySelector selector = By.clazz("android.widget.EditText");
+        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 scroll;
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getResourceName().equals(uiObject.getResourceName())) {
+                while (!object.getText().contains(messageText)) {
+                    try {
+                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                        waitForIdle();
+                        object.click();
+                        String finalMessageText = messageText;
+                        waitForIdle();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setClipboard(finalMessageText);
+                            }
+                        });
+                        waitForIdle();
+                        for (int i = 0; i < repetitionsOfTheText; i++) {
+                            waitForIdle();
+                            scroll.swipe(Direction.UP, 1.0f);
+                            pasteClipboard();
+                            waitForIdle();
+                        }
+                        object.click();
+                    } catch (Exception ex) {
+                        Timber.i("Cannot fill long text: " + ex.getMessage());
+                    }
+                }
+            }
+        }
+        Espresso.onIdle();
+        scrollUpToSubject();
+    }
+
     public boolean clickLastMessage() {
         boolean messageClicked = false;
         boolean encrypted = false;
@@ -2772,7 +2933,6 @@ public class TestUtils {
                         onData(anything()).inAdapterView(withId(R.id.message_list)).atPosition(0).perform(click());
                         messageClicked = true;
                         waitForIdle();
-                        waitUntilIdle();
                     }
                     if (viewIsDisplayed(R.id.fab_button_compose_message)) {
                         try {
@@ -2790,11 +2950,8 @@ public class TestUtils {
                 messageClicked = true;
             }
         }
-        try {
-            onView(withText(R.string.cancel_action)).perform(click());
+        if (viewIsDisplayed(R.id.error_message)) {
             encrypted = true;
-        } catch (NoMatchingViewException ignoredException) {
-            Timber.i("Ignored exception. Email is not encrypted");
         }
         try {
             readAttachedJSONFile();
@@ -2802,7 +2959,6 @@ public class TestUtils {
             Timber.i("There are no JSON files attached");
         }
         waitForIdle();
-        Espresso.onIdle();
         return encrypted;
     }
 
@@ -2863,6 +3019,9 @@ public class TestUtils {
     public void emptyFolder (String folderName) {
         waitForIdle();
         File dir = new File(Environment.getExternalStorageDirectory()+"/" + folderName + "/");
+        if (!dir.exists()) {
+            dir = new File(context.getExternalFilesDir(null)+"/" + folderName + "/");
+        }
         if (dir.isDirectory())
         {
             String[] children = dir.list();
@@ -3011,7 +3170,7 @@ public class TestUtils {
     public void waitForNewMessage() {
         boolean newEmail = false;
         waitForIdle();
-        while (!exists(onView(withId(R.id.message_list)))){
+        while (!exists(onView(withId(R.id.message_list)))) {
             waitForIdle();
         }
         doWaitForResource(R.id.message_list);
@@ -3023,24 +3182,18 @@ public class TestUtils {
                 waitForIdle();
                 swipeDownMessageList();
                 waitForIdle();
-                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
-                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
-                if (messageListSize[1] > messageListSize[0]){
-                    newEmail = true;
+                if (viewIsDisplayed(R.id.message_list)) {
+                    onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 1));
+                    if (messageListSize[1] > messageListSize[0]) {
+                        newEmail = true;
+                        waitForIdle();
+                    }
                 }
             } catch (Exception ex) {
                 Timber.i("Waiting for new message : " + ex);
             }
         }
-        if (viewIsDisplayed(R.id.delete)) {
-            pressBack();
-            waitForIdle();
-        }
         getMessageListSize();
-        if (viewIsDisplayed(R.id.delete)) {
-            pressBack();
-            waitForIdle();
-        }
     }
 
     public void assertThereAreXMessages(int numberOfMessages) {
@@ -3060,17 +3213,19 @@ public class TestUtils {
 
     public void getMessageListSize() {
         waitForIdle();
-        swipeDownMessageList();
-        waitForIdle();
-        while (exists(onView(withId(R.id.message_list)))) {
-            try {
-                waitForIdle();
-                onView(withId(R.id.message_list)).check(matches(isDisplayed()));
-                onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
-                return;
-            } catch (Exception ex) {
-                Timber.i("Cannot find view message_list: " + ex.getMessage());
+        if (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.special_mailbox_name_inbox))) {
+            swipeDownMessageList();
+            waitForIdle();
+            while (exists(onView(withId(R.id.message_list)))) {
+                try {
+                    waitForIdle();
+                    onView(withId(R.id.message_list)).perform(saveSizeInInt(messageListSize, 0));
+                    return;
+                } catch (Exception ex) {
+                    Timber.i("Cannot find view message_list: " + ex.getMessage());
+                }
             }
+            waitForIdle();
         }
     }
 
@@ -3183,10 +3338,20 @@ public class TestUtils {
 
     public void setClipboard(String textToCopy) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(null, textToCopy);
+        try {
+            clipboard.clearPrimaryClip();
+        } catch (Throwable tr) {
+            Timber.i("");
+        }
+        ClipData clip = ClipData.newPlainText("", textToCopy);
+        clipboard.setPrimaryClip(clip);
         while (clipboard.getPrimaryClip() == null || clipboard.getPrimaryClip().toString().equals("")) {
             device.waitForIdle();
-            clipboard.setPrimaryClip(clip);
+            try {
+                clipboard.setPrimaryClip(clip);
+            } catch (Throwable th) {
+                Timber.i("");
+            }
         }
     }
 
@@ -3199,7 +3364,7 @@ public class TestUtils {
 
     public void compareMessageBody(String cucumberBody) {
         String [] body;
-        while (!viewIsDisplayed(R.id.message_content) || !viewIsDisplayed(R.id.message_container)) {
+        while (!viewIsDisplayed(R.id.to)) {
             waitForIdle();
         }
         swipeUpScreen();
@@ -3244,7 +3409,8 @@ public class TestUtils {
                 waitForIdle();
                 onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                 waitForIdle();
-                if (!object.getText().contains(cucumberBody)) {
+                String messageBody = object.getText().replaceAll("\n", "");
+                if (!messageBody.contains(cucumberBody)) {
                     assertFailWithMessage("Error: body text != textToCompare --> bodyText = " + object.getText() + " ************  !=  *********** textToCompare = " +cucumberBody);
                 }
                 return;
@@ -3268,7 +3434,11 @@ public class TestUtils {
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
                 swipeUpScreen();
-                webViewText = wb.getChildren().get(0).getText().split("\n");
+                if (wb.getChildren().get(0).getText() != null) {
+                    webViewText = wb.getChildren().get(0).getText().split("\n");
+                } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
+                    webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
+                }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
             }
@@ -3336,6 +3506,29 @@ public class TestUtils {
         }
     }
 
+    public void assertCheckBox(int resource, boolean check) {
+        boolean textViewFound = false;
+        BySelector selector = By.clazz("android.widget.TextView");
+        while (!textViewFound) {
+            for (UiObject2 object : device.findObjects(selector)) {
+                try {
+                    if (object.getText().contains(resources.getString(resource))) {
+                        waitForIdle();
+                        UiObject2 checkbox = object.getParent().getParent().getChildren().get(1).getChildren().get(0);
+                        if (checkbox.isChecked() == check) {
+                            return;
+                        } else {
+                            textViewFound = true;
+                        }
+                    }
+                } catch (Exception ex){
+                    Timber.i("Cannot find CheckBox on screen: " + ex);
+                }
+            }
+        }
+        assertFailWithMessage("CheckBox " +  resources.getString(resource) + " is not " + check);
+    }
+
     public void getScreenShot() {
         waitForIdle();
         File imageDir = new File(Environment.getExternalStorageDirectory().toString());
@@ -3361,7 +3554,19 @@ public class TestUtils {
         onView(withId(R.id.subject)).perform(click());
     }
 
-    public void scrollToCheckBoxAndCheckIt(boolean isChecked, int view) {
+    public void scrollDownToView (int view) {
+        while (!viewIsDisplayed(view)) {
+            try {
+                waitForIdle();
+                onView(withId(R.id.message_list)).perform(swipeUp());
+                waitForIdle();
+            } catch (Exception e) {
+                Timber.i("Cannot swipe down");
+            }
+        }
+    }
+
+    public void scrollToCheckBoxAndSetIt(boolean isChecked, int view) {
         scrollToView(resources.getString(view));
         if (isChecked) {
             checkBoxOnScreenChecked(view, false);
@@ -3372,23 +3577,45 @@ public class TestUtils {
         }
     }
 
+    public void scrollToCheckBoxAndAssertIt(boolean isChecked, int view) {
+        scrollToView(resources.getString(view));
+        assertCheckBox(view, isChecked);
+    }
+
     public void scrollToViewAndClickIt(int view) {
         scrollToView(resources.getString(view));
         selectFromScreen(view);
     }
 
     public void scrollToView (String text){
+        waitForIdle();
         UiObject textView = device.findObject(new UiSelector().text(text).className("android.widget.TextView"));
-            waitForIdle();
-            Espresso.onIdle();
+        waitForIdle();
+        Espresso.onIdle();
         try {
             textView.dragTo(500,500,30);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
+        waitForIdle();
     }
 
-    private void setCheckBox(String resourceText, boolean checked) {
+    public void scrollUpToView (int view){
+        UiObject2 scroll;
+        do {
+            try {
+                scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+                waitForIdle();
+                scroll.swipe(Direction.DOWN, 1.0f);
+                waitForIdle();
+            } catch (Exception e) {
+                pressBack();
+            }
+        } while (!viewIsDisplayed(view));
+        onView(withId(view)).check(matches(isCompletelyDisplayed()));
+    }
+
+    public void setCheckBox(String resourceText, boolean checked) {
         BySelector selector = By.clazz("android.widget.CheckBox");
         while (true) {
             for (UiObject2 checkbox : device.findObjects(selector)) {
@@ -3406,9 +3633,747 @@ public class TestUtils {
                         }
                     }
                 } catch (Exception ex){
-                    Timber.i("Cannot find text on screen: " + ex);
+                    Timber.i("Cannot find checkbox in screen: " + ex);
                 }
             }
+        }
+    }
+
+    public void selectItemFromDialogListView (int item, boolean boxChecked) {
+        BySelector selector = By.clazz("android.widget.ListView");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 listView : device.findObjects(selector)) {
+                try {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")
+                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                        if (listView.getChildren().get(item).isChecked() != boxChecked) {
+                            listView.getChildren().get(item).click();
+                        } else {
+                            boolean existsOKButton = false;
+                            selector = By.clazz("android.widget.Button");
+                            for (UiObject2 button : device.findObjects(selector)) {
+                                if (button.getResourceName().equals("android:id/button1")) {
+                                    existsOKButton = true;
+                                }
+                            }
+                            if (!existsOKButton) {
+                                pressBack();
+                            }
+                        }
+                        waitForIdle();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find item in the dialog list: " + ex);
+                }
+            }
+        }
+    }
+
+    public void assertItemFromDialogListViewIsSelected(int item, boolean isSelected) {
+        BySelector selector = By.clazz("android.widget.ListView");
+        boolean itemSelected = true;
+        waitForIdle();
+        while (itemSelected) {
+            for (UiObject2 listView : device.findObjects(selector)) {
+                try {
+                    if (listView.getResourceName().equals("android:id/select_dialog_listview")
+                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                        if (listView.getChildren().get(item).isChecked() != isSelected) {
+                            itemSelected = false;
+                        } else {
+                            pressBack();
+                            return;
+                        }
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find dialog list or item in the list: " + ex);
+                }
+            }
+        }
+        assertFailWithMessage("Item " + item + " of the list is not " + isSelected);
+    }
+
+    public void setTimeInRadialPicker (int hour) {
+        BySelector selector = By.clazz("android.view.View");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 clock : device.findObjects(selector)) {
+                try {
+                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                        clock.getChildren().get(hour).click();
+                        return;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void checkTimeInRadialPickerIsSelected (int hour) {
+        BySelector selector = By.clazz("android.widget.RelativeLayout");
+        boolean timeAssertDone = false;
+        waitForIdle();
+        while (!timeAssertDone) {
+            for (UiObject2 time : device.findObjects(selector)) {
+                try {
+                    if (time.getResourceName().equals("security.pEp.debug:id/time_header")) {
+                        if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
+                            assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
+                        }
+                        timeAssertDone = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+        selector = By.clazz("android.view.View");
+        waitForIdle();
+        while (true) {
+            for (UiObject2 clock : device.findObjects(selector)) {
+                try {
+                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                        if (!clock.getChildren().get(hour).isSelected()) {
+                            assertFailWithMessage("Wrong time selected");
+                        }
+                        return;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find the time in the screen: " + ex);
+                }
+            }
+        }
+    }
+
+    public void goToDisplayAndAssertSettings () {
+        selectFromScreen(stringToID("display_preferences"));
+        selectFromScreen(stringToID("font_size_settings_title"));
+        selectFromScreen(stringToID("font_size_account_list"));
+        selectFromScreen(stringToID("font_size_account_name"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_account_description"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_folder_list"));
+        selectFromScreen(stringToID("font_size_folder_name"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_folder_status"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_list"));
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_list_date"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_list_preview"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_view"));
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_view_to"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_view_cc"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_view_date"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("font_size_message_view_additional_headers"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_compose"));
+        selectFromScreen(stringToID("font_size_message_compose_input"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        pressBack();
+        pressBack();
+        scrollToCheckBoxAndAssertIt(false, stringToID("animations_title"));
+        scrollToView(resources.getString(R.string.accountlist_preferences));
+        scrollToCheckBoxAndAssertIt(false, stringToID("measure_accounts_title"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("count_search_title"));
+        scrollToView(resources.getString(stringToID("folderlist_preferences")));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        scrollToView(resources.getString(stringToID("messagelist_preferences")));
+        scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
+        assertItemFromDialogListViewIsSelected(3, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_flag_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_checkbox_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_correspondent_names_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_sender_above_subject_label"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_show_contact_name_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_show_contact_picture_label"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_threaded_view_label"));
+        scrollToView(resources.getString(stringToID("messageview_preferences")));
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        assertItemFromDialogListViewIsSelected(0, false);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        assertItemFromDialogListViewIsSelected(1, true);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        assertItemFromDialogListViewIsSelected(3, true);
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        assertItemFromDialogListViewIsSelected(4, true);
+        //pressOKButtonInDialog();
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_autofit_width_label"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        pressBack();
+    }
+
+    public void goToInteractionAndAssertSettings () {
+        selectFromScreen(stringToID("interaction_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("gestures_title"));
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        assertItemFromDialogListViewIsSelected(1, true);
+        scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_messageview_return_to_list_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("global_settings_messageview_show_next_label"));
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(1, true);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(2, false);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(3, true);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(4, false);
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        assertItemFromDialogListViewIsSelected(5, false);
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("start_integrated_inbox_title"));
+        pressBack();
+    }
+
+    public void goToNotificationsAndAssertSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("quiet_time"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("quiet_time_notification"));
+        scrollToViewAndClickIt(stringToID("quiet_time_starts"));
+        checkTimeInRadialPickerIsSelected(1);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("quiet_time_ends"));
+        checkTimeInRadialPickerIsSelected(4);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
+        assertItemFromDialogListViewIsSelected(3, true);
+        pressBack();
+    }
+
+    public void goToPrivacyAndAssertSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("pep_passive_mode"));
+        //scrollToCheckBoxAndAssertIt(true, stringToID("pep_forward_warning"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        //scrollToViewAndClickIt(stringToID("master_key_management"));
+        //pressBack();
+        scrollToView(resources.getString(stringToID("pep_sync")));
+        scrollToView(resources.getString(stringToID("pep_sync_folder")));
+        scrollToCheckBoxAndAssertIt(false, stringToID("pep_subject_protection"));
+        scrollToView(resources.getString(stringToID("blacklist_title")));
+        scrollToCheckBoxAndAssertIt(true, stringToID("global_settings_privacy_hide_timezone"));
+        pressBack();
+    }
+
+    public void goToAdvancedAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToViewAndClickIt(stringToID("background_ops_label"));
+        assertItemFromDialogListViewIsSelected(1, true);
+        //checkItemFromDialogListViewIsSelected(1, true);
+        //selectItemFromDialogListView(1, true);
+        //scrollToCheckBoxAndAssertIt(false, stringToID("debug_enable_debug_logging_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("debug_enable_sensitive_logging_title"));
+        pressBack();
+    }
+
+    private void aboutMenu () {
+        openOptionsMenu();
+        selectFromScreen(stringToID("about_action"));
+        String aboutText = getTextFromView(onView(withId(R.id.aboutText)));
+        String librariesText = getTextFromView(onView(withId(R.id.librariesText)));
+        String[][] shortTextInAbout = new String[3][2];
+        shortTextInAbout[0] = resources.getString(stringToID("app_authors_fmt")).split("%");
+        shortTextInAbout[1] = resources.getString(stringToID("app_libraries")).split("%");
+        shortTextInAbout[2] = resources.getString(stringToID("app_copyright_fmt")).split("%");
+        if (!aboutText.contains(shortTextInAbout[0][0])
+                || !librariesText.contains(shortTextInAbout[1][0])
+                || !aboutText.contains(shortTextInAbout[2][0])) {
+            assertFailWithMessage("Wrong text in About");
+        }
+        pressBack();
+    }
+
+        public void goToDisplayAndChangeSettings () {
+        selectFromScreen(stringToID("display_preferences"));
+        selectFromScreen(stringToID("font_size_settings_title"));
+        selectFromScreen(stringToID("font_size_account_list"));
+        selectFromScreen(stringToID("font_size_account_name"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_account_description"));
+        selectItemFromDialogListView(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_folder_list"));
+        selectFromScreen(stringToID("font_size_folder_name"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_folder_status"));
+        selectItemFromDialogListView(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_list"));
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_list_date"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_list_preview"));
+        selectItemFromDialogListView(2, true);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_view"));
+        selectFromScreen(stringToID("font_size_message_list_sender"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_view_to"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_view_cc"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_list_subject"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_view_date"));
+        selectItemFromDialogListView(2, true);
+        selectFromScreen(stringToID("font_size_message_view_additional_headers"));
+        selectItemFromDialogListView(2, true);
+        //selectFromScreen(stringToID("font_size_message_view_content"));
+        //selectItemFromDialogListView(2);
+        pressBack();
+        selectFromScreen(stringToID("font_size_message_compose"));
+        selectFromScreen(stringToID("font_size_message_compose_input"));
+        selectItemFromDialogListView(2, true);
+        pressBack();
+        pressBack();
+        scrollToCheckBoxAndSetIt(false, stringToID("animations_title"));
+        scrollToView(resources.getString(R.string.accountlist_preferences));
+        scrollToCheckBoxAndSetIt(false, stringToID("measure_accounts_title"));
+        scrollToCheckBoxAndSetIt(false, stringToID("count_search_title"));
+        scrollToView(resources.getString(stringToID("folderlist_preferences")));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_folderlist_wrap_folder_names_label"));
+        scrollToView(resources.getString(stringToID("messagelist_preferences")));
+        scrollToViewAndClickIt(stringToID("global_settings_preview_lines_label"));
+        selectItemFromDialogListView(3, true);
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_flag_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_checkbox_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_show_correspondent_names_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_sender_above_subject_label"));
+        //scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_show_contact_name_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_show_contact_picture_label"));
+        //scrollToCheckBoxAndCheckIt(true, stringToID("global_settings_colorize_missing_contact_pictures_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_background_as_unread_indicator_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_threaded_view_label"));
+        scrollToView(resources.getString(stringToID("messageview_preferences")));
+        selectFromScreen(stringToID("global_settings_messageview_visible_refile_actions_title"));
+        selectItemFromDialogListView(0, false);
+        selectItemFromDialogListView(1, true);
+        selectItemFromDialogListView(2, true);
+        selectItemFromDialogListView(3, true);
+        selectItemFromDialogListView(4, true);
+        pressOKButtonInDialog();
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_autofit_width_label"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_fixedwidth_label"));
+        pressBack();
+    }
+
+    public void goToInteractionAndChangeSettings () {
+        selectFromScreen(stringToID("interaction_preferences"));
+        scrollToCheckBoxAndSetIt(true, stringToID("gestures_title"));
+        scrollToViewAndClickIt(stringToID("volume_navigation_title"));
+        selectItemFromDialogListView(0, true);
+        selectItemFromDialogListView(1, true);
+        pressOKButtonInDialog();
+        scrollToView(resources.getString(R.string.global_settings_messageiew_after_delete_behavior_title));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_messageview_return_to_list_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("global_settings_messageview_show_next_label"));
+        scrollToViewAndClickIt(stringToID("global_settings_confirm_actions_title"));
+        selectItemFromDialogListView(0, true);
+        selectItemFromDialogListView(1, true);
+        selectItemFromDialogListView(2, false);
+        selectItemFromDialogListView(3, true);
+        selectItemFromDialogListView(4, false);
+        selectItemFromDialogListView(5, false);
+        pressOKButtonInDialog();
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("start_integrated_inbox_title"));
+        pressBack();
+    }
+
+    public void goToNotificationsAndChangeSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("quiet_time"));
+        scrollToCheckBoxAndSetIt(false, stringToID("quiet_time_notification"));
+        scrollToViewAndClickIt(stringToID("quiet_time_starts"));
+        setTimeInRadialPicker(1);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("quiet_time_ends"));
+        setTimeInRadialPicker(4);
+        pressOKButtonInDialog();
+        scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));
+        selectItemFromDialogListView(2, true);
+        scrollToViewAndClickIt(stringToID("global_settings_lock_screen_notification_visibility_title"));
+        selectItemFromDialogListView(3, true);
+        pressBack();
+    }
+
+    public void goToPrivacyAndChangeSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_passive_mode"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_forward_warning"));
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        //scrollToViewAndClickIt(stringToID("master_key_management"));
+        //pressBack();
+        scrollToView(resources.getString(stringToID("pep_sync")));
+        scrollToView(resources.getString(stringToID("pep_sync_folder")));
+        scrollToCheckBoxAndSetIt(false, stringToID("pep_subject_protection"));
+        scrollToView(resources.getString(stringToID("blacklist_title")));
+        scrollToCheckBoxAndSetIt(true, stringToID("global_settings_privacy_hide_timezone"));
+        pressBack();
+    }
+
+    public void goToAdvancedAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_push_advanced_title"));
+        scrollToViewAndClickIt(stringToID("background_ops_label"));
+        selectItemFromDialogListView(1, true);
+        //scrollToCheckBoxAndCheckIt(false, stringToID("debug_enable_debug_logging_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("debug_enable_sensitive_logging_title"));
+        pressBack();
+    }
+
+    public void changeGlobalSettings () {
+        aboutMenu();
+        goToDisplayAndChangeSettings();
+        goToInteractionAndChangeSettings();
+        goToNotificationsAndChangeSettings();
+        goToPrivacyAndChangeSettings();
+        goToAdvancedAndChangeSettings();
+    }
+
+    public void assertGloblaSettings () {
+        goToDisplayAndAssertSettings();
+        goToInteractionAndAssertSettings();
+        goToNotificationsAndAssertSettings();
+        goToPrivacyAndAssertSettings();
+        goToAdvancedAndAssertSettings();
+    }
+
+    public void goToAccountSettingsGeneralAccountAndChangeSettings() {
+        selectFromScreen(stringToID("account_settings_general_title"));
+        scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        introduceTextInDialogWindow("newname");
+        //scrollToCheckBoxAndCheckIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void introduceTextInDialogWindow (String text) {
+        BySelector selector = By.clazz("android.widget.EditText");
+        boolean accountNameChanged = false;
+        waitForIdle();
+        while (!accountNameChanged) {
+            for (UiObject2 editText : device.findObjects(selector)) {
+                try {
+                    if (editText.getResourceName().equals("android:id/edit")) {
+                        editText.setText(text);
+                        accountNameChanged = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find account name: " + ex);
+                }
+            }
+        }
+        pressOKButtonInDialog();
+    }
+
+    public void goToAccountSettingsFetchingAccountAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_sync"));
+        scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
+        pressBack();
+        selectFromScreen(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
+        selectItemFromDialogListView(10, true);
+        scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
+        selectItemFromDialogListView(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToCheckBoxAndSetIt(false, stringToID("push_poll_on_connect_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
+        selectItemFromDialogListView(6, true);
+        scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
+        selectItemFromDialogListView(3, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsSendingEmailAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_composition"));
+        scrollToViewAndClickIt(stringToID("account_settings_composition_label"));
+        onView(withId(R.id.account_name)).perform(closeSoftKeyboard());
+        pressBack();
+        scrollToViewAndClickIt(stringToID("account_settings_identities_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
+        selectItemFromDialogListView(2, true);
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_outgoing_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_reply_after_quote_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_strip_signature_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_prefix_label"));
+        introduceTextInDialogWindow("prefixtext");
+        pressBack();
+    }
+
+    public void goToAccountSettingsDefaultFoldersAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_folders"));
+        scrollToViewAndClickIt(stringToID("account_setup_auto_expand_folder"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_display_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_target_mode_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("archive_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("drafts_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("sent_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("spam_folder_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToViewAndClickIt(stringToID("trash_folder_label"));
+        selectItemFromDialogListView(0, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsNotificationsAndChangeSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_notify_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_notify_contacts_mail_only_label"));
+        //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
+        selectItemFromDialogListView(4, true);
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_notify_self_label"));
+        scrollToCheckBoxAndSetIt(false, stringToID("account_settings_notify_sync_label"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        pressBack();
+    }
+
+    public void goToAccountSettingsSearchAndChangeSettings () {
+        selectFromScreen(stringToID("account_settings_search"));
+        scrollToCheckBoxAndSetIt(true, stringToID("account_settings_remote_search_enabled"));
+        scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
+        selectItemFromDialogListView(7, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsPrivacyAndChangeSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndSetIt(true, stringToID("pep_enable_privacy_protection"));
+        scrollToCheckBoxAndSetIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        //scrollToCheckBoxAndCheckIt(false, stringToID("pep_sync_enable_account"));
+        pressBack();
+    }
+
+
+    public void changeAccountSettings () {
+        for (int account = 0; account < 3; account++) {
+            selectAccountSettingsFromList(account);
+            goToAccountSettingsGeneralAccountAndChangeSettings();
+            goToAccountSettingsFetchingAccountAndChangeSettings();
+            goToAccountSettingsSendingEmailAndChangeSettings();
+            goToAccountSettingsDefaultFoldersAndChangeSettings();
+            goToAccountSettingsNotificationsAndChangeSettings();
+            goToAccountSettingsSearchAndChangeSettings();
+            goToAccountSettingsPrivacyAndChangeSettings();
+            pressBack();
+        }
+    }
+
+    public void goToAccountSettingsGeneralAccountAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_general_title"));
+        scrollToViewAndClickIt(stringToID("account_settings_description_label"));
+        assertTextInDialogWindow("newname");
+        //scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_show_pictures_label"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_mark_message_as_read_on_view_label"));
+        pressBack();
+    }
+
+    public void assertTextInDialogWindow(String text) {
+        BySelector selector = By.clazz("android.widget.EditText");
+        boolean accountNameHasBeenChecked = false;
+        boolean fail = false;
+        waitForIdle();
+        while (!accountNameHasBeenChecked) {
+            for (UiObject2 editText : device.findObjects(selector)) {
+                try {
+                    if (editText.getResourceName().equals("android:id/edit")) {
+                        if (!editText.getText().contains(text)) {
+                            fail = true;
+                        }
+                        accountNameHasBeenChecked = true;
+                        break;
+                    }
+                } catch (Exception ex) {
+                    Timber.i("Cannot find account name: " + ex);
+                }
+            }
+        }
+        if (fail) {
+            assertFailWithMessage("Account name has not been modified");
+        }
+        pressOKButtonInDialog();
+    }
+
+    public void goToAccountSettingsFetchingAccountAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_sync"));
+        scrollToViewAndClickIt(stringToID("account_settings_incoming_label"));
+        pressBack();
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_mail_display_count_label"));
+        assertItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_message_age_label"));
+        assertItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_autodownload_message_size_label"));
+        assertItemFromDialogListViewIsSelected(10, true);
+        scrollToViewAndClickIt(stringToID("account_settings_mail_check_frequency_label"));
+        assertItemFromDialogListViewIsSelected(5, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_sync_mode_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_push_mode_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_sync_remote_deletetions_label"));
+        scrollToViewAndClickIt(stringToID("account_setup_incoming_delete_policy_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_setup_expunge_policy_label"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("push_poll_on_connect_label"));
+        //scrollToViewAndClickIt(stringToID("account_setup_push_limit_label"));
+        //assertItemFromDialogListViewIsSelected(6, true);
+        scrollToViewAndClickIt(stringToID("idle_refresh_period_label"));
+        assertItemFromDialogListViewIsSelected(3, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsSendingEmailAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_composition"));
+        scrollToViewAndClickIt(stringToID("account_settings_message_format_label"));
+        assertItemFromDialogListViewIsSelected(2, true);
+        //scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_always_show_cc_bcc_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_default_quoted_text_shown_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_style_label"));
+        selectItemFromDialogListView(0, true);
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_reply_after_quote_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_strip_signature_label"));
+        scrollToViewAndClickIt(stringToID("account_settings_quote_prefix_label"));
+        assertTextInDialogWindow("prefixtext");
+        pressBack();
+    }
+
+    public void goToAccountSettingsDefaultFoldersAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_folders"));
+        scrollToViewAndClickIt(stringToID("account_setup_auto_expand_folder"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_display_mode_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("account_settings_folder_target_mode_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("archive_folder_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("drafts_folder_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("sent_folder_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("spam_folder_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        scrollToViewAndClickIt(stringToID("trash_folder_label"));
+        assertItemFromDialogListViewIsSelected(0, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsNotificationsAndAssertSettings () {
+        selectFromScreen(stringToID("notifications_title"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notify_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_notify_contacts_mail_only_label"));
+        //scrollToViewAndClickIt(stringToID("account_settings_notification_open_system_notifications_label"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        scrollToViewAndClickIt(stringToID("account_settings_folder_notify_new_mail_mode_label"));
+        assertItemFromDialogListViewIsSelected(4, true);
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_self_label"));
+        scrollToCheckBoxAndAssertIt(false, stringToID("account_settings_notify_sync_label"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_notification_opens_unread_label"));
+        pressBack();
+    }
+
+    public void goToAccountSettingsSearchAndAssertSettings () {
+        selectFromScreen(stringToID("account_settings_search"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("account_settings_remote_search_enabled"));
+        scrollToViewAndClickIt(stringToID("account_settings_remote_search_num_label"));
+        assertItemFromDialogListViewIsSelected(7, true);
+        pressBack();
+    }
+
+    public void goToAccountSettingsPrivacyAndAssertSettings () {
+        selectFromScreen(stringToID("privacy_preferences"));
+        scrollToCheckBoxAndAssertIt(true, stringToID("pep_enable_privacy_protection"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("pep_mistrust_server_and_store_mails_encrypted"));
+        scrollToViewAndClickIt(stringToID("advanced"));
+        //scrollToCheckBoxAndAssertIt(false, stringToID("pep_sync_enable_account"));
+        pressBack();
+    }
+
+    public void assertAccountSettings () {
+        for (int account = 0; account < 3; account++) {
+            selectAccountSettingsFromList(account);
+            goToAccountSettingsGeneralAccountAndAssertSettings();
+            goToAccountSettingsFetchingAccountAndAssertSettings();
+            goToAccountSettingsSendingEmailAndAssertSettings();
+            goToAccountSettingsDefaultFoldersAndAssertSettings();
+            goToAccountSettingsNotificationsAndAssertSettings();
+            goToAccountSettingsSearchAndAssertSettings();
+            goToAccountSettingsPrivacyAndAssertSettings();
+            pressBack();
         }
     }
 
@@ -3458,6 +4423,7 @@ public class TestUtils {
     public String getEmailAccount (int account) { return testConfig.getMail(account);}
 
     public static void getJSONObject(String object) {
+        waitForIdle();
         switch (object) {
             case "keys":
                 String keys = null;
@@ -3504,6 +4470,7 @@ public class TestUtils {
                     Timber.i("Cannot find json object");
                 }
         }
+        waitForIdle();
     }
 
     private static String readJsonFile(String fileName) {
@@ -3554,6 +4521,22 @@ public class TestUtils {
             Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
         }
     }
+
+    public String getAccountPassword () {
+        while (testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getPassword(Integer.parseInt(testConfig.test_number));
+    }
+
+    public String getAccountAddress (int account) {
+        while (testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getMail(account);
+    }
+
+    public String getFormatAccount () { return testConfig.format_test_account; }
 
     public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
 
