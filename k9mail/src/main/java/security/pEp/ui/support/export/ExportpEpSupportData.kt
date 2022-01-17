@@ -14,14 +14,13 @@ class ExportpEpSupportData @Inject constructor() {
         toFolder: File
     ): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            toFolder.mkdirs()
-            if (!toFolder.exists()) {
-                Result.success(false)
-            } else {
+            if (toFolder.exists() || toFolder.mkdirs()) {
                 checkSpaceAvailability(fromFolders, toFolder).map {
                     fromFolders.forEach { copyFolder(it, toFolder) }
                     areFilesCreated(toFolder)
                 }
+            } else {
+                Result.success(false)
             }
         } catch (e: Exception) {
             Timber.e(e)
