@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.activity.misc.NonConfigurationInstance
+import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,14 +74,13 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         scope.launch {
             renderState(ExportPEpDatabasesState.Exporting)
             exportInternal()
-                .onSuccess { success ->
-                    if (success) {
-                        renderState(ExportPEpDatabasesState.Succeeded)
-                    } else {
-                        renderState(ExportPEpDatabasesState.Failed())
+                .onSuccess {
+                    renderState(ExportPEpDatabasesState.Succeeded)
+                }.onFailure { throwable ->
+                    when (throwable) {
+                        is NotEnoughSpaceInDeviceException -> renderState(ExportPEpDatabasesState.Failed(throwable))
+                        else -> renderState(ExportPEpDatabasesState.Failed())
                     }
-                }.onFailure {
-                    renderState(ExportPEpDatabasesState.Failed(it))
                 }
         }
     }
@@ -89,7 +89,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         view.finish()
     }
 
-    private suspend fun exportInternal(): Result<Boolean> {
+    private suspend fun exportInternal(): Result<Unit> {
         val context = view.getContext()
         val toFolder = context.getExternalFilesDir(
             "${Environment.DIRECTORY_DOCUMENTS}/pEp/db-export/${sdf.format(Date())}"
@@ -99,7 +99,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
         return toFolder?.let {
             exportpEpSupportData(listOf(pEpFolder, trustwordsFolder), toFolder)
-        } ?: Result.success(false)
+        } ?: Result.failure(CouldNotExportPEpDataException())
     }
 
     private fun runWithLifecycleSafety(block: () -> Unit) {

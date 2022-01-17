@@ -1,5 +1,6 @@
 package security.pEp.ui.support.export
 
+import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.every
@@ -49,7 +50,6 @@ class ExportpEpSupportDataTest {
             assertTrue(expectedKeysDb.exists())
             assertTrue(expectedSystemDb.exists())
             assertTrue(result.isSuccess)
-            assertTrue(result.getOrThrow())
         }
     }
 
@@ -65,8 +65,8 @@ class ExportpEpSupportDataTest {
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
             assertFalse(expectedSystemDb.exists())
-            assertTrue(result.isSuccess)
-            assertFalse(result.getOrThrow())
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is CouldNotExportPEpDataException)
         }
     }
 
@@ -89,8 +89,8 @@ class ExportpEpSupportDataTest {
             assertFalse(expectedManagementDb.exists())
             assertFalse(expectedKeysDb.exists())
             assertFalse(expectedSystemDb.exists())
-            assertTrue(result.isSuccess)
-            assertFalse(result.getOrThrow())
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is CouldNotExportPEpDataException)
         }
     }
 

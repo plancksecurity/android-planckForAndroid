@@ -2,6 +2,7 @@ package security.pEp.ui.support.export
 
 import android.content.Context
 import androidx.lifecycle.Lifecycle
+import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
@@ -80,7 +81,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(true))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
@@ -103,7 +104,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export is successful, view shows successful screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(true))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
@@ -115,7 +116,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export fails, view shows failed screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(false))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
 
 
         presenter.export()

@@ -1,5 +1,6 @@
 package security.pEp.ui.support.export
 
+import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,19 +13,20 @@ class ExportpEpSupportData @Inject constructor() {
     suspend operator fun invoke(
         fromFolders: List<File>,
         toFolder: File
-    ): Result<Boolean> = withContext(Dispatchers.IO) {
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
             if (toFolder.exists() || toFolder.mkdirs()) {
-                checkSpaceAvailability(fromFolders, toFolder).map {
+                checkSpaceAvailability(fromFolders, toFolder).flatMap {
                     fromFolders.forEach { copyFolder(it, toFolder) }
-                    areFilesCreated(toFolder)
+                    if (areFilesCreated(toFolder)) Result.success(Unit)
+                    else Result.failure(CouldNotExportPEpDataException())
                 }
             } else {
-                Result.success(false)
+                Result.failure(CouldNotExportPEpDataException())
             }
         } catch (e: Exception) {
             Timber.e(e)
-            Result.success(false)
+            Result.failure(CouldNotExportPEpDataException(e))
         }
     }
 
@@ -58,4 +60,10 @@ class ExportpEpSupportData @Inject constructor() {
             }
             return total
         }
+
+    private fun <Type, NewType> Result<Type>.flatMap(block: (Type) -> Result<NewType>): Result<NewType> =
+        fold(
+            onSuccess = { block(it) },
+            onFailure = { Result.failure(it) }
+        )
 }
