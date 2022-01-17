@@ -58,13 +58,8 @@ class ExportpEpSupportDataPresenter @Inject constructor(
                 }
                 is ExportPEpDatabasesState.Failed -> {
                     view.hideLoading()
+                    state.cause?.let { Timber.e(it) }
                     if (state.cause is NotEnoughSpaceInDeviceException) {
-                        with(state.cause) {
-                            Timber.e(
-                                "ERROR: Not enough space available to export pEp data: " +
-                                        "needed space is $neededSpace, available space is $availableSpace"
-                            )
-                        }
                         view.showNotEnoughSpaceInDevice()
                     } else {
                         view.showFailed()
