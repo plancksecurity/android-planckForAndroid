@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -58,10 +59,13 @@ class ExportpEpSupportDataPresenter @Inject constructor(
                 is ExportPEpDatabasesState.Failed -> {
                     view.hideLoading()
                     if (state.cause is NotEnoughSpaceInDeviceException) {
-                        view.showNotEnoughSpaceInDevice(
-                            state.cause.neededSpace / 1024,
-                            state.cause.availableSpace / 1024,
-                        )
+                        with(state.cause) {
+                            Timber.e(
+                                "ERROR: Not enough space available to export pEp data: " +
+                                        "needed space is $neededSpace, available space is $availableSpace"
+                            )
+                        }
+                        view.showNotEnoughSpaceInDevice()
                     } else {
                         view.showFailed()
                     }
