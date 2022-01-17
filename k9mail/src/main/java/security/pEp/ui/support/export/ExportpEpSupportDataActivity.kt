@@ -72,16 +72,9 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
             getString(R.string.export_pep_support_data_dialog_image_failure_content_desc)
     }
 
-    override fun showNotEnoughSpaceInDevice(
-        neededSpace: Long,
-        availableSpace: Long,
-    ) {
+    override fun showNotEnoughSpaceInDevice() {
         showOkAction()
-        messageText.text = getString(
-            R.string.export_pep_support_data_dialog_not_enough_space_msg,
-            neededSpace,
-            availableSpace,
-        )
+        messageText.setText(R.string.export_pep_support_data_dialog_not_enough_space_msg)
         successFailureImage.setImageResource(R.drawable.ic_failure_red_24dp)
         successFailureImage.contentDescription =
             getString(R.string.export_pep_support_data_dialog_image_failure_content_desc)

@@ -136,7 +136,7 @@ class ExportpEpSupportDataPresenterTest {
 
 
         coVerify { view.hideLoading() }
-        coVerify { view.showNotEnoughSpaceInDevice(0, 0) }
+        coVerify { view.showNotEnoughSpaceInDevice() }
     }
 
     companion object {
