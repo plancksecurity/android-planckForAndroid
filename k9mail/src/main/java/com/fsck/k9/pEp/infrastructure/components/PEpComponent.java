@@ -35,6 +35,7 @@ import security.pEp.ui.intro.IntroFirstFragment;
 import security.pEp.ui.intro.IntroFourthFragment;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.permissions.PermissionsActivity;
+import security.pEp.ui.support.export.ExportpEpSupportDataActivity;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {
@@ -101,4 +102,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(IntroFourthFragment frag);
 
     void inject(PassphraseActivity activity);
+
+    void inject(ExportpEpSupportDataActivity activity);
 }
