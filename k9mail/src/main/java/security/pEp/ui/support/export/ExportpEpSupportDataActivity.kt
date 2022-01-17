@@ -82,6 +82,9 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
             neededSpace,
             availableSpace,
         )
+        successFailureImage.setImageResource(R.drawable.ic_failure_red_24dp)
+        successFailureImage.contentDescription =
+            getString(R.string.export_pep_support_data_dialog_image_failure_content_desc)
     }
 
     override fun showLoading() {
