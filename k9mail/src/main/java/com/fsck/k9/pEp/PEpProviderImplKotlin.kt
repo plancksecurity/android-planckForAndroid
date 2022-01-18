@@ -579,11 +579,13 @@ class PEpProviderImplKotlin @Inject constructor(
             flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1, srcMsg.isEncrypted())
 
         } catch (t: Throwable) {
-            Timber.e(t, "%s %s", TAG, source.subject +
-                    "\n${source.from[0]}" +
-                    "\n${source.sentDate}" +
-                    "\n${source.messageId}")
-            throw AppCannotDecryptException("Could not decrypt", t)
+            Timber.e(t, "%s %s %s",
+                TAG,
+                "\n${source.sentDate}",
+                "\n${source.messageId}"
+            )
+            DecryptResult(source, Rating.pEpRatingUndefined, -1, false)
+
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
