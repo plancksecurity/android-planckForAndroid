@@ -10,6 +10,7 @@ import androidx.preference.*
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
@@ -17,7 +18,6 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.Theme
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
@@ -27,13 +27,20 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
+import security.pEp.permissions.PermissionChecker
+import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.passphrase.PassphraseActivity
 import security.pEp.ui.passphrase.PassphraseRequirementType
+import security.pEp.ui.support.export.ExportpEpSupportDataActivity
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
     private val fileBrowserHelper: FileBrowserHelper by inject()
+    private val permissionChecker: PermissionChecker by inject()
+    private val permissionRequester: PermissionRequester by inject {
+        mapOf("activity" to requireActivity())
+    }
 
     private lateinit var attachmentDefaultPathPreference: Preference
 
@@ -52,6 +59,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
+        initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeTheme()
     }
@@ -167,6 +175,17 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun initializeExportPEpSupportDataPreference() {
+        findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.onClick {
+            if (permissionChecker.doesntHaveWriteExternalPermission()) {
+                permissionRequester.requestStoragePermission((requireActivity() as K9Activity).rootView)
+            }
+            if (permissionChecker.hasWriteExternalPermission()) {
+                ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
+            }
+        }
+    }
+
     private fun processKeySyncSwitchClick(preference: Preference, newValue: Any): Boolean {
         if (preference is SwitchPreferenceCompat && newValue is Boolean) {
             if (!newValue) {
@@ -273,6 +292,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
         private const val PREFERENCE_THEME = "theme"
+        private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

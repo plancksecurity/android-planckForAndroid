@@ -1,5 +1,7 @@
 package security.pEp.ui.support.export
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -107,5 +109,12 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
         exportButton.setText(R.string.okay_action)
         exportButton.setOnClickListener { presenter.cancel() }
         cancelButton.visibility = View.GONE
+    }
+
+    companion object {
+        fun showExportPEpSupportDataDialog(activity: Activity) {
+            val intent = Intent(activity, ExportpEpSupportDataActivity::class.java)
+            activity.startActivity(intent)
+        }
     }
 }
