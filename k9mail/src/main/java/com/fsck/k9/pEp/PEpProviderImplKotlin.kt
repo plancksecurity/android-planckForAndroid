@@ -23,7 +23,6 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
-import foundation.pEp.jniadapter.decrypt_message_Return
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
@@ -617,7 +616,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
             when (decReturn.rating) {
                 Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
-                    notifyError(AppCannotDecryptException(KEY_MIOSSING_ERORR_MESSAGE), callback)
+                    notifyError(AppCannotDecryptException(KEY_MISSING_ERROR_MESSAGE), callback)
                 else -> {
                     val message = decReturn.dst
                     val decMsg = getMimeMessage(source, message)

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -15,7 +16,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
-import timber.log.Timber;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -44,7 +44,9 @@ import com.fsck.k9.ui.message.LocalMessageLoader;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 
-import static com.fsck.k9.pEp.PEpProvider.KEY_MIOSSING_ERORR_MESSAGE;
+import timber.log.Timber;
+
+import static com.fsck.k9.pEp.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
 
 
 /** This class is responsible for loading a message start to finish, and
@@ -525,8 +527,8 @@ public class MessageLoaderHelper {
 
             @Override
             public void onError(Throwable throwable) {
-                if (decryptCallback != null && throwable.getMessage().equals(KEY_MIOSSING_ERORR_MESSAGE)) {
-                    decryptCallback.onMessageDataDecryptFailed(KEY_MIOSSING_ERORR_MESSAGE);
+                if (decryptCallback != null && throwable.getMessage().equals(KEY_MISSING_ERROR_MESSAGE)) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_MISSING_ERROR_MESSAGE);
                 }
             }
         });
