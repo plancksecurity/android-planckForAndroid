@@ -23,7 +23,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 ) : LifecycleObserver, NonConfigurationInstance {
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val sdf = SimpleDateFormat("yyyyMMdd-HH:MM", Locale.getDefault())
+    private val sdf = SimpleDateFormat("yyyyMMdd-HH_mm", Locale.getDefault())
     private var state: ExportPEpDatabasesState = ExportPEpDatabasesState.Initial
     private lateinit var lifecycle: Lifecycle
 
