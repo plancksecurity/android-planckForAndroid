@@ -23,7 +23,7 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     private lateinit var view: ExportpEpSupportDataView
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val sdf = SimpleDateFormat("yyyyMMdd-HH_mm", Locale.getDefault())
-    private var state: ExportPEpDatabasesState = ExportPEpDatabasesState.Initial
+    private var state: ExportpEpDataState = ExportpEpDataState.Initial
     private lateinit var lifecycle: Lifecycle
 
     fun initialize(
@@ -41,21 +41,21 @@ class ExportpEpSupportDataPresenter @Inject constructor(
         renderState()
     }
 
-    fun renderState(state: ExportPEpDatabasesState = this.state) {
+    fun renderState(state: ExportpEpDataState = this.state) {
         this.state = state
         runWithLifecycleSafety {
             when (state) {
-                is ExportPEpDatabasesState.Initial -> {
+                is ExportpEpDataState.Initial -> {
                     // NOP
                 }
-                is ExportPEpDatabasesState.Exporting -> {
+                is ExportpEpDataState.Exporting -> {
                     view.showLoading()
                 }
-                is ExportPEpDatabasesState.Succeeded -> {
+                is ExportpEpDataState.Succeeded -> {
                     view.hideLoading()
                     view.showSuccess()
                 }
-                is ExportPEpDatabasesState.Failed -> {
+                is ExportpEpDataState.Failed -> {
                     view.hideLoading()
                     Timber.e(state.cause)
                     if (state.cause is NotEnoughSpaceInDeviceException) {
@@ -70,12 +70,12 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 
     fun export() {
         scope.launch {
-            renderState(ExportPEpDatabasesState.Exporting)
+            renderState(ExportpEpDataState.Exporting)
             exportInternal()
                 .onSuccess {
-                    renderState(ExportPEpDatabasesState.Succeeded)
+                    renderState(ExportpEpDataState.Succeeded)
                 }.onFailure {
-                    renderState(ExportPEpDatabasesState.Failed(it))
+                    renderState(ExportpEpDataState.Failed(it))
                 }
         }
     }
@@ -105,9 +105,9 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 }
 
-sealed class ExportPEpDatabasesState {
-    object Initial : ExportPEpDatabasesState()
-    object Exporting : ExportPEpDatabasesState()
-    object Succeeded : ExportPEpDatabasesState()
-    class Failed(val cause: Throwable) : ExportPEpDatabasesState()
+sealed class ExportpEpDataState {
+    object Initial : ExportpEpDataState()
+    object Exporting : ExportpEpDataState()
+    object Succeeded : ExportpEpDataState()
+    class Failed(val cause: Throwable) : ExportpEpDataState()
 }

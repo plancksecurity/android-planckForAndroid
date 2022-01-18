@@ -47,21 +47,21 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when presenter renders state Exporting, view shows loading screen`() {
-        presenter.renderState(ExportPEpDatabasesState.Exporting)
+        presenter.renderState(ExportpEpDataState.Exporting)
 
         verify { view.showLoading() }
     }
 
     @Test
     fun `when presenter renders state Failed, view shows failed screen`() {
-        presenter.renderState(ExportPEpDatabasesState.Failed(RuntimeException()))
+        presenter.renderState(ExportpEpDataState.Failed(RuntimeException()))
 
         verify { view.showFailed() }
     }
 
     @Test
     fun `when presenter renders state Succeeded, view shows successful screen`() {
-        presenter.renderState(ExportPEpDatabasesState.Succeeded)
+        presenter.renderState(ExportpEpDataState.Succeeded)
 
         verify { view.showSuccess() }
     }
@@ -70,7 +70,7 @@ class ExportpEpSupportDataPresenterTest {
     fun `when presenter renders state and current lifecycle state is NOT at least STARTED, view does nothing`() {
         every { lifecycle.currentState }.returns(Lifecycle.State.CREATED)
 
-        presenter.renderState(ExportPEpDatabasesState.Failed(RuntimeException()))
+        presenter.renderState(ExportpEpDataState.Failed(RuntimeException()))
 
         verify { view.wasNot(called) }
     }
