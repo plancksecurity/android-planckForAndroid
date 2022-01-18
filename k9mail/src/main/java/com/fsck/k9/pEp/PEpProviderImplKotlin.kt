@@ -67,7 +67,6 @@ class PEpProviderImplKotlin @Inject constructor(
     private fun initEngineConfig(engine: Engine) {
 
         engine.config_passive_mode(K9.getPEpPassiveMode())
-        //configKeyServerLockup(K9.getPEpUseKeyserver())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
         engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
@@ -83,9 +82,6 @@ class PEpProviderImplKotlin @Inject constructor(
             return engine
         }
 
-    private fun configKeyServerLockup(pEpUseKeyserver: Boolean) {
-        if (pEpUseKeyserver) startKeyserverLookup() else stopKeyserverLookup()
-    }
 
     @Deprecated("unencrypted for some is not supported anymore")
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
@@ -1247,16 +1243,6 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
-    }
-    @Deprecated("Sequoia does not support server lookup")
-    override fun startKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.startKeyserverLookup()
-    }
-    @Deprecated("Sequoia does not support server lookup")
-    override fun stopKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.stopKeyserverLookup()
     }
 
     @WorkerThread // DONE
