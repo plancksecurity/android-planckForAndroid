@@ -46,6 +46,7 @@ import org.openintents.openpgp.OpenPgpDecryptionResult;
 
 import timber.log.Timber;
 
+import static com.fsck.k9.pEp.PEpProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
 import static com.fsck.k9.pEp.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
 
 
@@ -529,6 +530,8 @@ public class MessageLoaderHelper {
             public void onError(Throwable throwable) {
                 if (decryptCallback != null && throwable.getMessage().equals(KEY_MISSING_ERROR_MESSAGE)) {
                     decryptCallback.onMessageDataDecryptFailed(KEY_MISSING_ERROR_MESSAGE);
+                } else if (decryptCallback != null) {
+                    decryptCallback.onMessageDataDecryptFailed(KEY_COULD_NOT_DECRYPT_MESSAGE);
                 }
             }
         });

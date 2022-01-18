@@ -41,6 +41,8 @@ public interface PEpProvider extends AutoCloseable {
     String PEP_ALWAYS_SECURE_TRUE = "yes";
     String PEP_KEY_LIST_SEPARATOR = ",";
     String KEY_MISSING_ERROR_MESSAGE = "keyMissing";
+    String KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt";
+
 
     void setup();
 
