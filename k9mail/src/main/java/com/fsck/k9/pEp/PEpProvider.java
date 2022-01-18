@@ -9,6 +9,7 @@ import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Message;
@@ -16,7 +17,6 @@ import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import timber.log.Timber;
-import java.util.Vector;
 
 /**
  * Created by dietz on 01.07.15.
@@ -40,7 +40,9 @@ public interface PEpProvider extends AutoCloseable {
 
     String PEP_ALWAYS_SECURE_TRUE = "yes";
     String PEP_KEY_LIST_SEPARATOR = ",";
-    String KEY_MIOSSING_ERORR_MESSAGE = "Key missing";
+    String KEY_MISSING_ERROR_MESSAGE = "keyMissing";
+    String KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt";
+
 
     void setup();
 
@@ -178,9 +180,6 @@ public interface PEpProvider extends AutoCloseable {
     Identity setOwnIdentity(Identity id, String fpr);
 
     void setPassiveModeEnabled(boolean enable);
-
-    void startKeyserverLookup();
-    void stopKeyserverLookup();
 
     KeyDetail getOwnKeyDetails(Message message);
 

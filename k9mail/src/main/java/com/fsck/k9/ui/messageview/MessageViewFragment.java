@@ -902,8 +902,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onMessageDataDecryptFailed(String errorMessage) {
-            if (errorMessage.equals(PEpProvider.KEY_MIOSSING_ERORR_MESSAGE)) {
+            if (errorMessage.equals(PEpProvider.KEY_MISSING_ERROR_MESSAGE)) {
                 showKeyNotFoundFeedback();
+            } else {
+                showGenericErrorFeedback();
             }
         }
     };
@@ -998,6 +1000,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         mMessageView.setToErrorState(
                 pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey),
                 pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
+        );
+    }
+    private void showGenericErrorFeedback() {
+        mMessageView.setToErrorState(
+                pePUIArtefactCache.getTitle(Rating.pEpRatingCannotDecrypt),
+                pePUIArtefactCache.getExplanation(Rating.pEpRatingCannotDecrypt)
         );
     }
 
