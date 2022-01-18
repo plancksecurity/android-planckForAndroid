@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.webkit.MimeTypeMap
-import com.fsck.k9.pEp.MediaStoreUtis
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.pEp.saveToDocuments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
@@ -60,9 +60,8 @@ class ExportpEpSupportData @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val subfolder = toFolder.absolutePath.substringAfter(Environment.DIRECTORY_DOCUMENTS + "/")
             fromFolder.listFiles()?.forEach { file ->
-                MediaStoreUtis.saveFileToDocuments(
+                file.inputStream().saveToDocuments(
                     context,
-                    file.inputStream(),
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
                     file.name,
                     subfolder
