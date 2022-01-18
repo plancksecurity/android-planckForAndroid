@@ -2,6 +2,7 @@ package security.pEp.ui.support.export
 
 import android.content.Context
 import androidx.lifecycle.Lifecycle
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
@@ -13,9 +14,11 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.File
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class ExportpEpSupportDataPresenterTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()

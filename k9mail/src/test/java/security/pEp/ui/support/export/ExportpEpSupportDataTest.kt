@@ -1,8 +1,10 @@
 package security.pEp.ui.support.export
 
+import android.content.Context
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.nhaarman.mockito_kotlin.mock
 import io.mockk.every
 import io.mockk.spyk
 import junit.framework.TestCase.assertFalse
@@ -19,8 +21,8 @@ import java.io.File
 class ExportpEpSupportDataTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
-
-    private val exportpEpSupportData = ExportpEpSupportData()
+    private val context: Context = mock()
+    private val exportpEpSupportData = ExportpEpSupportData(context)
     private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
     private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
     private val fromFolders = listOf(homeFolder, trustwordsFolder)
