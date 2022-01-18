@@ -1,5 +1,10 @@
 package security.pEp.ui.support.export
 
+import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.webkit.MimeTypeMap
+import com.fsck.k9.pEp.MediaStoreUtis
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.Dispatchers
@@ -8,8 +13,11 @@ import org.apache.commons.io.FileUtils
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Named
 
-class ExportpEpSupportData @Inject constructor() {
+class ExportpEpSupportData @Inject constructor(
+    @Named("AppContext") private val context: Context,
+) {
     suspend operator fun invoke(
         fromFolders: List<File>,
         toFolder: File
@@ -45,7 +53,20 @@ class ExportpEpSupportData @Inject constructor() {
     }
 
     private fun copyFolder(fromFolder: File, toFolder: File) {
-        FileUtils.copyDirectory(fromFolder, toFolder)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val subfolder = toFolder.absolutePath.substringAfter(Environment.DIRECTORY_DOCUMENTS + "/")
+            fromFolder.listFiles()?.forEach { file ->
+                MediaStoreUtis.saveFileToDocuments(
+                    context,
+                    file.inputStream(),
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
+                    file.name,
+                    subfolder
+                )
+            }
+        } else {
+            FileUtils.copyDirectory(fromFolder, toFolder)
+        }
     }
 
     private val File.folderSize: Long
