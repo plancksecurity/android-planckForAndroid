@@ -1,6 +1,5 @@
 package security.pEp.ui.support.export
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -88,10 +87,6 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     override fun hideLoading() {
         showDialogContent()
         progressBar.hide()
-    }
-
-    override fun getContext(): Context {
-        return applicationContext
     }
 
     private fun showDialogContent() {

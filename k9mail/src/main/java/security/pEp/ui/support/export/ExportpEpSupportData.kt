@@ -19,9 +19,13 @@ class ExportpEpSupportData @Inject constructor(
     @Named("AppContext") private val context: Context,
 ) {
     suspend operator fun invoke(
-        fromFolders: List<File>,
         toFolder: File
     ): Result<Unit> = withContext(Dispatchers.IO) {
+        val homeDir = context.getDir("home", Context.MODE_PRIVATE)
+        val pEpFolder = File(homeDir, ".pEp")
+        val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
+        val fromFolders = listOf(pEpFolder, trustwordsFolder)
+
         try {
             if (toFolder.exists() || toFolder.mkdirs()) {
                 checkSpaceAvailability(fromFolders, toFolder).flatMap {

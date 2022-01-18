@@ -1,7 +1,6 @@
 package security.pEp.ui.support.export
 
 import android.app.Activity
-import android.content.Context
 import android.os.Environment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -86,13 +85,9 @@ class ExportpEpSupportDataPresenter @Inject constructor(
     }
 
     private suspend fun exportInternal(): Result<Unit> {
-        val context = view.getContext()
         val documentsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
         val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
-        val homeDir = context.getDir("home", Context.MODE_PRIVATE)
-        val pEpFolder = File(homeDir, ".pEp")
-        val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
-        return exportpEpSupportData(listOf(pEpFolder, trustwordsFolder), toFolder)
+        return exportpEpSupportData(toFolder)
     }
 
     private fun runWithLifecycleSafety(block: () -> Unit) {

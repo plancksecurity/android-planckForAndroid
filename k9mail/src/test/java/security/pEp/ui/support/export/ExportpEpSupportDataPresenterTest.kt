@@ -1,13 +1,11 @@
 package security.pEp.ui.support.export
 
-import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
-import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -23,7 +21,6 @@ class ExportpEpSupportDataPresenterTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private val context: Context = mockk()
     private val lifecycle: Lifecycle = mockk(relaxed = true)
     private val view: ExportpEpSupportDataView = mockk(relaxed = true)
     private val exportpEpSupportData: ExportpEpSupportData = mockk()
@@ -35,10 +32,6 @@ class ExportpEpSupportDataPresenterTest {
     @Before
     fun setup() {
         every { lifecycle.currentState }.returns(Lifecycle.State.STARTED)
-        every { context.getExternalFilesDir(any()) }.returns(File("$DOCUMENTS_FOLDER/pEp/db-export/Date"))
-        every { context.getDir("home", Context.MODE_PRIVATE) }.returns(File(PEP_HOME_FOLDER))
-        every { context.getDir("trustwords", Context.MODE_PRIVATE) }.returns(File(PEP_TRUSTWORDS_FOLDER))
-        every { view.getContext() }.returns(context)
         presenter.initialize(
             view,
             lifecycle,
@@ -84,30 +77,25 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
+        coEvery { exportpEpSupportData(any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
 
 
-        val fromFoldersSlot = slot<List<File>>()
         val toFolderSlot = slot<File>()
 
-        coVerify { exportpEpSupportData(capture(fromFoldersSlot), capture(toFolderSlot)) }
+        coVerify { exportpEpSupportData(capture(toFolderSlot)) }
 
 
-        val fromPaths = fromFoldersSlot.captured.map { it.absolutePath }
         val toPath = toFolderSlot.captured.absolutePath
 
         assertTrue(toPath.contains("$DOCUMENTS_FOLDER/pEp/db-export/"))
-        assertEquals(2, fromPaths.size)
-        assertTrue(fromPaths.first().contains("$PEP_HOME_FOLDER/.pEp"))
-        assertTrue(fromPaths[1].contains(PEP_TRUSTWORDS_FOLDER))
     }
 
     @Test
     fun `when export is successful, view shows successful screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
+        coEvery { exportpEpSupportData(any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
@@ -119,7 +107,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export fails, view shows failed screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
+        coEvery { exportpEpSupportData(any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
 
 
         presenter.export()
@@ -131,7 +119,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when there is not enough space left in device, view shows it on screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any(), any()) }
+        coEvery { exportpEpSupportData(any()) }
             .returns(Result.failure(NotEnoughSpaceInDeviceException(0, 0)))
 
 
