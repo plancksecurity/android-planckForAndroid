@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import timber.log.Timber
 import java.io.*
 
-@Suppress("SameParameterValue")
 @RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
 fun InputStream.saveToDocuments(
