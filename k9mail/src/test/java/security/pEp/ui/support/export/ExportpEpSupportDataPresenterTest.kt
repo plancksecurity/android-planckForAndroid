@@ -77,25 +77,28 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
-        coEvery { exportpEpSupportData(any()) }.returns(Result.success(Unit))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
 
 
-        val toFolderSlot = slot<File>()
+        val baseFolderSlot = slot<File>()
+        val subFolderSlot = slot<String>()
 
-        coVerify { exportpEpSupportData(capture(toFolderSlot)) }
+        coVerify { exportpEpSupportData(capture(baseFolderSlot), capture(subFolderSlot)) }
 
 
-        val toPath = toFolderSlot.captured.absolutePath
+        val baseFolder = baseFolderSlot.captured
+        val subFolder = subFolderSlot.captured
+        val toPath = File(baseFolder, subFolder).absolutePath
 
         assertTrue(toPath.contains("$DOCUMENTS_FOLDER/pEp/db-export/"))
     }
 
     @Test
     fun `when export is successful, view shows successful screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any()) }.returns(Result.success(Unit))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
@@ -107,7 +110,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when export fails, view shows failed screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
+        coEvery { exportpEpSupportData(any(), any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
 
 
         presenter.export()
@@ -119,7 +122,7 @@ class ExportpEpSupportDataPresenterTest {
 
     @Test
     fun `when there is not enough space left in device, view shows it on screen`() = runBlocking {
-        coEvery { exportpEpSupportData(any()) }
+        coEvery { exportpEpSupportData(any(), any()) }
             .returns(Result.failure(NotEnoughSpaceInDeviceException(0, 0)))
 
 

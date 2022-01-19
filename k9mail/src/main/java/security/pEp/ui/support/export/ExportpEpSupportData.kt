@@ -2,7 +2,6 @@ package security.pEp.ui.support.export
 
 import android.content.Context
 import android.os.Build
-import android.os.Environment
 import android.webkit.MimeTypeMap
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
@@ -19,17 +18,19 @@ class ExportpEpSupportData @Inject constructor(
     @Named("AppContext") private val context: Context,
 ) {
     suspend operator fun invoke(
-        toFolder: File
+        baseFolder: File,
+        subFolder: String,
     ): Result<Unit> = withContext(Dispatchers.IO) {
-        val homeDir = context.getDir("home", Context.MODE_PRIVATE)
-        val pEpFolder = File(homeDir, ".pEp")
-        val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
-        val fromFolders = listOf(pEpFolder, trustwordsFolder)
-
         try {
+            val homeDir = context.getDir("home", Context.MODE_PRIVATE)
+            val pEpFolder = File(homeDir, ".pEp")
+            val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
+            val fromFolders = listOf(pEpFolder, trustwordsFolder)
+            val toFolder = File(baseFolder, subFolder)
+
             if (toFolder.exists() || toFolder.mkdirs()) {
-                checkSpaceAvailability(fromFolders, toFolder).flatMap {
-                    fromFolders.forEach { copyFolder(it, toFolder) }
+                checkSpaceAvailability(fromFolders, baseFolder).flatMap {
+                    fromFolders.forEach { copyFolder(it, baseFolder, subFolder) }
                     if (areFilesCreated(toFolder)) Result.success(Unit)
                     else Result.failure(CouldNotExportPEpDataException())
                 }
@@ -56,18 +57,22 @@ class ExportpEpSupportData @Inject constructor(
         else Result.failure(NotEnoughSpaceInDeviceException(neededBytes, availableSizeInBytes))
     }
 
-    private fun copyFolder(fromFolder: File, toFolder: File) {
+    private fun copyFolder(
+        fromFolder: File,
+        destinationBaseFolder: File,
+        destinationSubFolder: String,
+    ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val subfolder = toFolder.absolutePath.substringAfter(Environment.DIRECTORY_DOCUMENTS + "/")
             fromFolder.listFiles()?.forEach { file ->
                 file.inputStream().saveToDocuments(
                     context,
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
                     file.name,
-                    subfolder
+                    destinationSubFolder
                 )
             }
         } else {
+            val toFolder = File(destinationBaseFolder, destinationSubFolder)
             FileUtils.copyDirectory(fromFolder, toFolder)
         }
     }

@@ -31,7 +31,9 @@ class ExportpEpSupportDataTest {
     private val pEpFolder = File(homeFolder, ".pEp")
     private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
     private val fromFolders = listOf(pEpFolder, trustwordsFolder)
-    private val toFolder = File("src/test/java/security/pEp/ui/support/export/toFolder")
+    private val destinationBaseFolder = File("src/test/java/security/pEp/ui/support/export")
+    private val destinationSubFolder = "toFolder"
+    private val toFolder = File(destinationBaseFolder, destinationSubFolder)
 
     @Before
     fun setUp() {
@@ -49,7 +51,7 @@ class ExportpEpSupportDataTest {
             File(trustwordsFolder, "system.db").writeText("test")
 
 
-            val result = exportpEpSupportData(toFolder)
+            val result = exportpEpSupportData(destinationBaseFolder, destinationSubFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -65,7 +67,7 @@ class ExportpEpSupportDataTest {
     @Test
     fun `export() returns false if file copy fails`() {
         runBlocking {
-            val result = exportpEpSupportData(toFolder)
+            val result = exportpEpSupportData(destinationBaseFolder, destinationSubFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -82,14 +84,13 @@ class ExportpEpSupportDataTest {
     @Test
     fun `export() returns false if an exception is thrown`() {
         runBlocking {
-            val toFolderSpy = spyk(toFolder)
-            every { toFolderSpy.mkdirs() }.throws(RuntimeException())
+            every { context.getDir("home", Context.MODE_PRIVATE) }.throws(RuntimeException())
 
             File(pEpFolder, "management.db").writeText("test")
             File(pEpFolder, "keys.db").writeText("test")
             File(trustwordsFolder, "system.db").writeText("test")
 
-            val result = exportpEpSupportData(toFolderSpy)
+            val result = exportpEpSupportData(destinationBaseFolder, destinationSubFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")
@@ -106,15 +107,15 @@ class ExportpEpSupportDataTest {
     @Test
     fun `export() returns false if there is not enough free space in device`() {
         runBlocking {
-            val toFolderSpy = spyk(toFolder)
-            every { toFolderSpy.freeSpace }.returns(0)
+            val baseFolderSpy = spyk(destinationBaseFolder)
+            every { baseFolderSpy.freeSpace }.returns(0)
 
             File(pEpFolder, "management.db").writeText("test")
             File(pEpFolder, "keys.db").writeText("test")
             File(trustwordsFolder, "system.db").writeText("test")
 
 
-            val result = exportpEpSupportData(toFolderSpy)
+            val result = exportpEpSupportData(baseFolderSpy, destinationSubFolder)
 
 
             val expectedManagementDb = File(toFolder, "management.db")

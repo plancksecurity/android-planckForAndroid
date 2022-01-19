@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -86,8 +85,8 @@ class ExportpEpSupportDataPresenter @Inject constructor(
 
     private suspend fun exportInternal(): Result<Unit> {
         val documentsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val toFolder = File(documentsFolder, "pEp/db-export/${sdf.format(Date())}")
-        return exportpEpSupportData(toFolder)
+        val subFolder = "pEp/db-export/${sdf.format(Date())}"
+        return exportpEpSupportData(documentsFolder, subFolder)
     }
 
     private fun runWithLifecycleSafety(block: () -> Unit) {
