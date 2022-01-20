@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
@@ -13,6 +14,8 @@ import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
 import org.apache.commons.io.IOUtils
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ACTIVITY_REQUEST_PICK_KEY_FILE
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.IMPORT_STATE
+import security.pEp.ui.keyimport.KeyImportActivity.Companion.SAVED_STATE_URI
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -20,8 +23,8 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class KeyImportPresenter @Inject constructor(
-        private val preferences: Preferences,
-        @Named("NewInstance") private val pEp: PEpProvider
+    private val preferences: Preferences,
+    @Named("NewInstance") private val pEp: PEpProvider
 ) {
 
     private lateinit var fingerprint: String
@@ -32,12 +35,16 @@ class KeyImportPresenter @Inject constructor(
     private lateinit var accountIdentity: Identity
     private lateinit var currentFpr: String
     private lateinit var address: String
+    private lateinit var importState: ImportState
+
+    private var uri: Uri? = null
 
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun initialize(view: KeyImportView, accountUuid: String) {
         this.view = view
         this.accountUuid = accountUuid
+        this.importState = ImportState.KEY_NOT_SELECTED
         scope.launch {
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
@@ -48,24 +55,32 @@ class KeyImportPresenter @Inject constructor(
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode != Activity.RESULT_OK || data == null) {
+            this.importState = ImportState.KEY_NOT_SELECTED
             view.finish()
             return
         }
         when (requestCode) {
-            ACTIVITY_REQUEST_PICK_KEY_FILE -> data.data?.let { onKeyImport(it) }
+            ACTIVITY_REQUEST_PICK_KEY_FILE -> data.data?.let { uri ->
+                this.uri = uri
+                this.importState = ImportState.KEY_SELECTED
+                onKeyImport()
+            }
         }
     }
 
-    private fun onKeyImport(uri: Uri) {
-        val filename = uri.path.toString()
-
-        scope.launch {
-            view.showLoading()
-            val firstIdentity = importKey(uri)
-            view.hideLoading()
-            firstIdentity?.let {
-                view.showKeyImportConfirmationDialog(firstIdentity, filename)
-            } ?: replyResult(false, filename)
+    fun onKeyImport() {
+        uri?.let { uri ->
+            val filename = uri.path.toString()
+            scope.launch {
+                view.showLayout()
+                view.showLoading()
+                val firstIdentity = importKey(uri)
+                view.hideLoading()
+                firstIdentity?.let {
+                    view.showKeyImportConfirmationDialog(firstIdentity, filename)
+                    view.showLayout()
+                } ?: replyResult(false)
+            }
         }
     }
 
@@ -97,7 +112,7 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
-    private suspend fun importKey(uri: Uri): Identity?  = withContext(Dispatchers.IO){
+    private suspend fun importKey(uri: Uri): Identity? = withContext(Dispatchers.IO) {
         var result: Identity?
         try {
             val resolver = context.contentResolver
@@ -136,19 +151,69 @@ class KeyImportPresenter @Inject constructor(
         result
     }
 
-    private fun replyResult(success: Boolean, filename: String) {
+    private fun replyResult(success: Boolean) {
         view.hideLoading()
         when {
-            success -> view.showCorrectKeyImport(fingerprint, filename)
-            else -> view.showFailedKeyImport(filename)
+            success -> {
+                this.importState = ImportState.KEY_IMPORTED
+                view.showCorrectKeyImport()
+            }
+            else -> {
+                this.importState = ImportState.KEY_NOT_IMPORTED
+                view.showFailedKeyImport()
+            }
         }
     }
 
-    fun onKeyImportAccepted(filename: String) {
+    fun onKeyImportAccepted() {
+        view.hideLayout()
         scope.launch {
             val result = onKeyImportConfirmed()
-            replyResult(result, filename)
+            replyResult(result)
         }
     }
 
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.putString(SAVED_STATE_URI, uri?.toString())
+        outState.putSerializable(IMPORT_STATE, this.importState)
+    }
+
+    fun restoreInstanceState(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            val uriString = savedInstanceState.getString(SAVED_STATE_URI)
+            if (!uriString.isNullOrEmpty()) {
+                uri = Uri.parse(uriString)
+            }
+            this.importState = savedInstanceState.get(IMPORT_STATE) as ImportState
+        }
+
+    }
+
+    fun resumeImport() {
+        when (this.importState) {
+            ImportState.KEY_NOT_SELECTED ->
+                view.openFileChooser()
+            ImportState.KEY_SELECTED ->
+                onKeyImport()
+            ImportState.KEY_IMPORTED ->
+                view.showCorrectKeyImport()
+            ImportState.KEY_NOT_IMPORTED ->
+                view.showFailedKeyImport()
+            else -> {
+                // NOOP
+            }
+        }
+    }
+
+    fun fileManagerOpened() {
+        this.importState = ImportState.FILE_MANAGER_OPEN
+    }
+
+    enum class ImportState {
+        KEY_NOT_SELECTED,
+        FILE_MANAGER_OPEN,
+        KEY_SELECTED,
+        KEY_IMPORTED,
+        KEY_NOT_IMPORTED
+    }
 }
