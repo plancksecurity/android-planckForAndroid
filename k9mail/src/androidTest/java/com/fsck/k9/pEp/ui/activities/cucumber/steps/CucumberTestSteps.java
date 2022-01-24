@@ -7,7 +7,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -36,7 +35,6 @@ import com.fsck.k9.pEp.ui.activities.TestUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -44,7 +42,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
@@ -63,7 +60,6 @@ import cucumber.api.junit.Cucumber;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
-import static android.provider.UserDictionary.Words.APP_ID;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -328,6 +324,24 @@ public class CucumberTestSteps {
     public void I_fill_body_field(String cucumberBody) {
         timeRequiredForThisMethod(1);
         textViewEditor(cucumberBody, "message_content");
+    }
+
+    @When("^I enter (\\d+) recipients in the (\\S+) field")
+    public void I_fill_n_recipients(int recipients, String field) {
+        timeRequiredForThisMethod(1);
+        String recipient = "filling@email.pep";
+        for (int loop = 0; loop < recipients; loop++) {
+            I_enter_text_in_field(String.valueOf(recipients) + recipient, field);
+        }
+    }
+
+    @When("^I paste (\\d+) recipients in the (\\S+) field")
+    public void I_paste_n_recipients(int recipients, String field) {
+        timeRequiredForThisMethod(1);
+        String recipient = "filling@email.pep";
+        for (int loop = 0; loop < recipients; loop++) {
+            I_enter_text_in_field(String.valueOf(recipients) + recipient, field);
+        }
     }
 
     private void textViewEditor(String text, String viewName) {
@@ -715,6 +729,91 @@ public class CucumberTestSteps {
         }
         return LocalStore.getInstance(ac, K9.app);
     }
+
+    @When("^Normal use of sync for devices (\\S+) and (\\S+) for (\\d+) days$")
+    public void Normal_use_sync_devices(String device1, String device2, int totalDays) {
+        int minutesInADay = 1440;
+        int delayTimeMinutes = 1 / 5;
+        getBotsList();
+        I_sync_devices(device1, device2);
+        testUtils.readConfigFile();
+        for (int currentDay = 1; currentDay <= 2; currentDay++) {
+            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 330) {
+                I_check_1_and_2_sync(device1, device2);
+                testUtils.getMessageListSize();
+                switch (testUtils.test_number()) {
+                    case "1":
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is("pep_yellow");
+                        testUtils.pressBack();
+                        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 1 to 2" + currentDay);
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "2":
+                        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 2 to 1" + currentDay);
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is("pep_yellow");
+                        testUtils.pressBack();
+                        break;
+                }
+                //Export DB and check flat is 256
+                try {
+                    Thread.sleep(1000 * 60 * delayTimeMinutes);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            switch (testUtils.test_number()) {
+                case "1":
+                    I_remove_all_messages();
+                    I_select_account("0");
+                    I_send_message_to_address(1, "bot" + currentDay, "Handshake", "Doing Handshake with bot" + currentDay);
+                    I_click_the_last_message_received();
+                    I_click_confirm_trust_words();
+                    I_check_toolBar_color_is("pep_green");
+                    I_click_reply_message();
+                    I_reset_handshake();
+                    I_check_toolBar_color_is("pep_no_color");
+                    I_discard_the_message();
+                    testUtils.pressBack();
+                    I_send_message_to_address(1, "bot" + currentDay, "Handshake-2nd", "Sending message after reset with bot" + currentDay);
+                    I_click_the_last_message_received();
+                    I_check_toolBar_color_is("pep_yellow");
+                    testUtils.pressBack();
+                    break;
+                case "2":
+                    while (testUtils.getListSize() != 0) {
+                        testUtils.getMessageListSize();
+                        waitForIdle();
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    I_wait_for_the_message_and_click_it();
+                    I_check_toolBar_color_is("pep_yellow");
+                    testUtils.pressBack();
+                    I_wait_for_the_message_and_click_it();
+                    I_check_toolBar_color_is("pep_yellow");
+                    testUtils.pressBack();
+                    break;
+                default:
+                    TestUtils.assertFailWithMessage("Unknown Sync Device: " + testUtils.test_number());
+                    break;
+            }
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @When("^I sync devices (\\S+) and (\\S+)$")
     public void I_sync_devices(String device1, String device2) {
@@ -1546,26 +1645,26 @@ public class CucumberTestSteps {
         startTest(folder, accountSelected);
     }
 
-    @When("^I disable protection on device (\\S+)$")
-    public void I_disable_protection(String device) {
+    @When("^I (\\S+) protection on device (\\S+)$")
+    public void I_disable_protection(String protection, String device) {
         switch (testUtils.test_number()) {
             case "1":
                 if (device.equals("A")) {
-                    testUtils.disableProtection(0);
+                    testUtils.modifyProtection(0);
                 }
                 break;
             case "2":
                 if (device.equals("B")) {
-                    testUtils.disableProtection(0);
+                    testUtils.modifyProtection(0);
                 }
                 break;
             case "3":
                 if (device.equals("C")) {
-                    testUtils.disableProtection(0);
+                    testUtils.modifyProtection(0);
                 }
                 break;
             default:
-                Timber.i("Cannot disable protection on: " + device);
+                Timber.i("Cannot " + protection + " protection on: " + device);
                 break;
         }
     }
@@ -1664,6 +1763,11 @@ public class CucumberTestSteps {
     }
 
     public void startTest(String folder, int accountToStart) {
+        getBotsList();
+        testUtils.selectAccount(folder, accountToStart);
+    }
+
+    private void getBotsList(){
         boolean botListFull = false;
         while (!botListFull) {
             botListFull = true;
@@ -1675,7 +1779,6 @@ public class CucumberTestSteps {
             }
         }
         bot = testUtils.botList;
-        testUtils.selectAccount(folder, accountToStart);
     }
 
     @And("^I click to load more messages$")
@@ -2008,6 +2111,27 @@ public class CucumberTestSteps {
             testUtils.clickLastMessage();
             testUtils.clickView(R.id.delete);
             testUtils.goBackToMessageList();
+        }
+    }
+
+    @Then("^I remove all messages$")
+    public void I_remove_all_messages() {
+        testUtils.selectAccount("Inbox", 0);
+        testUtils.getMessageListSize();
+        if (testUtils.getListSize() > 0) {
+            testUtils.clickLastMessage();
+        }
+        while (!viewIsDisplayed(R.id.fab_button_compose_message)) {
+            try {
+                testUtils.clickView(R.id.delete);
+            } catch (Exception ex) {
+                Timber.i("There are no more messages to remove");
+            }
+            waitForIdle();
+        }
+        while (!exists(onView(withId(R.id.available_accounts_title)))) {
+            testUtils.pressBack();
+            waitForIdle();
         }
     }
 

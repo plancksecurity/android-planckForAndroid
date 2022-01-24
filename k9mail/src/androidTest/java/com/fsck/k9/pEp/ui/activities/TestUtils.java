@@ -861,6 +861,7 @@ public class TestUtils {
     private void createNewAccountWithPermissions() {
         testReset = false;
         try {
+            //clickView(R.id.next);
             onView(withId(R.id.next)).perform(click());
             waitForIdle();
             try {
@@ -1017,7 +1018,7 @@ public class TestUtils {
         }
     }
 
-    public void disableProtection (int account) {
+    public void modifyProtection(int account) {
         if (!exists(onView(withId(R.id.available_accounts_title)))) {
             selectFromMenu(R.string.action_settings);
         }

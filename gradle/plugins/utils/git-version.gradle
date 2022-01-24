@@ -1,10 +1,11 @@
 buildscript {
     repositories {
         //FIXME: Use another repo keeping jcenter because is not available mavenCentral
-        jcenter()
+        //jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.0'
+        classpath 'org.ajoberstar.grgit:grgit-gradle:4.1.1'
     }
 }
 
