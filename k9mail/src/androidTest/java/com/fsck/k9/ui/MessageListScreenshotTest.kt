@@ -5,7 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.R
-import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -14,6 +14,7 @@ import org.junit.runner.RunWith
 class MessageListScreenshotTest : BaseScreenshotTest() {
 
     @Test
+    @Ignore
     fun messageListTest() {
         setTestSet("C")
         openFirstScreen()

@@ -1,7 +1,5 @@
 buildscript {
     repositories {
-        //FIXME: Use another repo keeping jcenter because is not available mavenCentral
-        //jcenter()
         mavenCentral()
     }
     dependencies {

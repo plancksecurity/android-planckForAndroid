@@ -314,5 +314,15 @@
 
     <string name="extra_key">Extra Key</string>
 
+    <string name="support_settings_title">Support</string>
+    <string name="export_pep_support_data_preference_title">Export p≡p databases to file system</string>
+    <string name="export_pep_support_data_dialog_title">Export p≡p databases</string>
+    <string name="export_pep_support_data_dialog_confirmation_msg">Do you really want to export the pEp databases to Documents/pEp/db-export/ on your local file system? Warning. The databases contain confidential information like private keys.</string>
+    <string name="export_pep_support_data_dialog_failure_msg">Exporting databases failed.</string>
+    <string name="export_pep_support_data_dialog_not_enough_space_msg">There is no enough space available. Exporting databases failed.</string>
+    <string name="export_pep_support_data_dialog_success_msg">Databases successfully exported.</string>
+    <string name="export_action">Export</string>
+    <string name="export_pep_support_data_dialog_image_success_content_desc">Success</string>
+    <string name="export_pep_support_data_dialog_image_failure_content_desc">Failure</string>
 
 </resources>
