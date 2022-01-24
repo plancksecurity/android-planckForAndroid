@@ -23,7 +23,6 @@ import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
-import foundation.pEp.jniadapter.decrypt_message_Return
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
@@ -67,7 +66,6 @@ class PEpProviderImplKotlin @Inject constructor(
     private fun initEngineConfig(engine: Engine) {
 
         engine.config_passive_mode(K9.getPEpPassiveMode())
-        //configKeyServerLockup(K9.getPEpUseKeyserver())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
         engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
@@ -83,9 +81,6 @@ class PEpProviderImplKotlin @Inject constructor(
             return engine
         }
 
-    private fun configKeyServerLockup(pEpUseKeyserver: Boolean) {
-        if (pEpUseKeyserver) startKeyserverLookup() else stopKeyserverLookup()
-    }
 
     @Deprecated("unencrypted for some is not supported anymore")
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
@@ -584,11 +579,13 @@ class PEpProviderImplKotlin @Inject constructor(
             flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1, srcMsg.isEncrypted())
 
         } catch (t: Throwable) {
-            Timber.e(t, "%s %s", TAG, source.subject +
-                    "\n${source.from[0]}" +
-                    "\n${source.sentDate}" +
-                    "\n${source.messageId}")
-            throw AppCannotDecryptException("Could not decrypt", t)
+            Timber.e(t, "%s %s %s",
+                TAG,
+                "\n${source.sentDate}",
+                "\n${source.messageId}"
+            )
+            DecryptResult(source, Rating.pEpRatingUndefined, -1, false)
+
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
@@ -621,7 +618,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
             when (decReturn.rating) {
                 Rating.pEpRatingCannotDecrypt, Rating.pEpRatingHaveNoKey ->
-                    notifyError(AppCannotDecryptException(KEY_MIOSSING_ERORR_MESSAGE), callback)
+                    notifyError(AppCannotDecryptException(KEY_MISSING_ERROR_MESSAGE), callback)
                 else -> {
                     val message = decReturn.dst
                     val decMsg = getMimeMessage(source, message)
@@ -1247,16 +1244,6 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "setIdentityFlag: ")
         }
-    }
-    @Deprecated("Sequoia does not support server lookup")
-    override fun startKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.startKeyserverLookup()
-    }
-    @Deprecated("Sequoia does not support server lookup")
-    override fun stopKeyserverLookup() {
-        createEngineInstanceIfNeeded()
-        engine.stopKeyserverLookup()
     }
 
     @WorkerThread // DONE

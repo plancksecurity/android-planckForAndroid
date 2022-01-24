@@ -720,7 +720,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         String[] accountUuids = mSearch.getAccountUuids();
         if (mSearch.searchAllAccounts()) {
-            List<Account> accounts = preferences.getAccounts();
+            List<Account> accounts = new ArrayList<>(preferences.getAvailableAccounts());
             mSingleAccountMode = (accounts.size() == 1);
             mAccount = accounts.get(0);
         } else {

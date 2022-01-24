@@ -7,9 +7,9 @@ interface KeyImportView {
 
     fun openFileChooser()
 
-    fun showCorrectKeyImport(fingerprint: String, filename: String?)
+    fun showCorrectKeyImport()
 
-    fun showFailedKeyImport(filename: String?)
+    fun showFailedKeyImport()
 
     fun finish()
 
@@ -20,4 +20,8 @@ interface KeyImportView {
     fun hideLoading()
 
     fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String)
+
+    fun showLayout()
+
+    fun hideLayout()
 }

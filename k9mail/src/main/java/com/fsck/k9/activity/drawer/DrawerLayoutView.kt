@@ -12,6 +12,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
@@ -288,7 +290,7 @@ class DrawerLayoutView @Inject constructor(
             }
             drawerLayoutPresenter.setFoldersAdapter()
         }
-        (context as Activity).runOnUiThread {
+        if((context as LifecycleOwner).lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             val foldersFiltered: List<LocalFolder> = filterLocalFolders(menuFolders)
             drawerFolderPopulator.populateFoldersIfNeeded(
                 folderAdapter,

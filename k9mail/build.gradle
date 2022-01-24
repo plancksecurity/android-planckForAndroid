@@ -120,6 +120,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.mockito:mockito-inline:${versions.mockito}"
     testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
+    testImplementation "io.mockk:mockk:${versions.mockk}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
 
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
@@ -196,8 +197,6 @@ android {
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
-
-        javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
     flavorDimensions "sync", "store"
 

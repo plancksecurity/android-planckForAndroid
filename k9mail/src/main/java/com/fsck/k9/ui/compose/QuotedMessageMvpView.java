@@ -108,6 +108,10 @@ public class QuotedMessageMvpView {
         mFontSizes.setViewTextSize(mQuotedText, fontSize);
     }
 
+    public String getQuotedText() {
+        return mQuotedText.getCharacters();
+    }
+
     public void setQuotedHtml(String quotedContent, AttachmentResolver attachmentResolver) {
         mQuotedHTML.displayHtmlContentWithInlineAttachments(
                 displayHtml.wrapMessageContent(quotedContent),
