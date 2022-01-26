@@ -58,6 +58,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matcher;
 import org.json.JSONArray;
@@ -1462,6 +1463,49 @@ public class TestUtils {
         onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
     }
 
+    public void exportDB(){
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("advanced"));
+        scrollToView(resources.getString(stringToID("support_settings_title")));
+        selectFromScreen(stringToID("support_settings_title"));
+        removeDBFolder();
+        waitForIdle();
+        selectFromScreen(stringToID("export_pep_support_data_preference_title"));
+        waitForIdle();
+        //onView(withId(R.id.afirmativeActionButton)).perform(click());
+        //testUtils.doWaitForDialog(resources.getString(testUtils.stringToID("export_pep_support_data_dialog_title")),testUtils.stringToID("export_pep_support_data_dialog_confirmation_msg"));
+        selectButtonFromScreen(stringToID("export_action"));
+        waitForIdle();
+        //testUtils.pressOKButtonInDialog();
+        ////testUtils.selectFromScreen(testUtils.stringToID("okay_action"));
+        selectButtonFromScreen(stringToID("okay_action"));
+        File db = readDBFile();
+
+    }
+
+    private void removeDBFolder() {
+        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+        if (directory.exists()) {
+            try {
+                FileUtils.deleteDirectory(directory);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private File readDBFile() {
+        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+        String[] directoryPath = directory.list();
+        if (directoryPath.length > 1) {
+            assertFailWithMessage("There are more than 1 DB");
+        }
+        File dbFile = new File(directory.getAbsolutePath()+"/"+directoryPath[0] + "/management.db");
+        return dbFile;
+    }
+
+
+
     private void attachFiles(String fileName, String extension, int total) {
         for (int fileNumber = 0; fileNumber < total; fileNumber++) {
             Instrumentation.ActivityResult fileForActivityResultStub = createFileForActivityResultStub(fileName + fileNumber + extension);
@@ -2736,8 +2780,12 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
+        doWaitForDialog("alertTitle", displayText);
+    }
+
+    public void doWaitForDialog (String name, int displayText) {
         waitForIdle();
-        int id = context.getResources().getIdentifier("alertTitle", "id", "android");
+        int id = context.getResources().getIdentifier(name, "id", "android");
         ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
         waitUntilViewDisplayed(dialogHeaderViewInteraction);
 

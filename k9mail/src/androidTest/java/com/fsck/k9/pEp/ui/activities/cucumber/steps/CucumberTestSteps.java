@@ -735,31 +735,36 @@ public class CucumberTestSteps {
         int minutesInADay = 1440;
         int delayTimeMinutes = 1 / 5;
         getBotsList();
-        I_sync_devices(device1, device2);
+        //I_sync_devices(device1, device2);
         testUtils.readConfigFile();
-        for (int currentDay = 1; currentDay <= 2; currentDay++) {
+        for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
             for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 330) {
-                I_check_1_and_2_sync(device1, device2);
-                testUtils.getMessageListSize();
-                switch (testUtils.test_number()) {
-                    case "1":
-                        I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is("pep_yellow");
-                        testUtils.pressBack();
-                        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 1 to 2" + currentDay);
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case "2":
-                        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 2 to 1" + currentDay);
-                        I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is("pep_yellow");
-                        testUtils.pressBack();
-                        break;
-                }
+                //I_check_1_and_2_sync(device1, device2);
+                //testUtils.getMessageListSize();
+                //switch (testUtils.test_number()) {
+                //    case "1":
+                //        I_wait_for_the_message_and_click_it();
+                //        I_check_toolBar_color_is("pep_yellow");
+                //        testUtils.pressBack();
+                //        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 1 to 2" + currentDay);
+                //        try {
+                //            Thread.sleep(10000);
+                //        } catch (InterruptedException e) {
+                //            e.printStackTrace();
+                //        }
+                //        break;
+                //    case "2":
+                //        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 2 to 1" + currentDay);
+                //        I_wait_for_the_message_and_click_it();
+                //        I_check_toolBar_color_is("pep_yellow");
+                //        testUtils.pressBack();
+                //        testUtils.getMessageListSize();
+                //        break;
+                //}
+
+                I_go_back_to_accounts_list();
+                testUtils.exportDB();
+
                 //Export DB and check flat is 256
                 try {
                     Thread.sleep(1000 * 60 * delayTimeMinutes);
@@ -769,8 +774,23 @@ public class CucumberTestSteps {
             }
             switch (testUtils.test_number()) {
                 case "1":
-                    I_remove_all_messages();
-                    I_select_account("0");
+                    I_wait_for_the_message_and_click_it();
+                    I_check_toolBar_color_is("pep_yellow");
+                    testUtils.pressBack();
+                    I_wait_for_the_message_and_click_it();
+                    I_check_toolBar_color_is("pep_yellow");
+                    testUtils.pressBack();
+                    while (testUtils.getListSize() > 1) {
+                        testUtils.getMessageListSize();
+                        waitForIdle();
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+                case "2":
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake", "Doing Handshake with bot" + currentDay);
                     I_click_the_last_message_received();
                     I_click_confirm_trust_words();
@@ -784,23 +804,13 @@ public class CucumberTestSteps {
                     I_click_the_last_message_received();
                     I_check_toolBar_color_is("pep_yellow");
                     testUtils.pressBack();
-                    break;
-                case "2":
-                    while (testUtils.getListSize() != 0) {
-                        testUtils.getMessageListSize();
-                        waitForIdle();
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        Thread.sleep(20000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    I_wait_for_the_message_and_click_it();
-                    I_check_toolBar_color_is("pep_yellow");
-                    testUtils.pressBack();
-                    I_wait_for_the_message_and_click_it();
-                    I_check_toolBar_color_is("pep_yellow");
-                    testUtils.pressBack();
+                    I_remove_all_messages();
+                    I_select_account("0");
                     break;
                 default:
                     TestUtils.assertFailWithMessage("Unknown Sync Device: " + testUtils.test_number());
