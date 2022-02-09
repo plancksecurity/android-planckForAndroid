@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -20,6 +22,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -65,25 +68,39 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assume;
+import org.sqldroid.SQLDroidConnection;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import cucumber.api.java.en.Then;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
+import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
+import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -132,6 +149,12 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertThat;
 
+import java.sql.DriverManager;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+
+
 
 public class TestUtils {
 
@@ -163,7 +186,7 @@ public class TestUtils {
     public String trustWords = "nothing";
     private String emailForDevice;
     private static final String HOST = "@sq.pep.security";
-
+    private Connection connection;
 
 
     public TestUtils(UiDevice device, Instrumentation instrumentation) {
@@ -1463,7 +1486,81 @@ public class TestUtils {
         onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
     }
 
-    public void exportDB(){
+    public void checkOwnKey(String mainKeyID, boolean isTheSame){
+        //checkKeyIsInTheJSON(mainKeyID);
+        if (json.toString().contains(mainKeyID) != isTheSame) {
+            assertFailWithMessage("Own Key is not in the JSON file");
+        }
+        String newMainKeyID = getValueFromDB("person","main_key_id");
+        if ((mainKeyID.equals(newMainKeyID)) != isTheSame) {
+            assertFailWithMessage("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
+        }
+    }
+
+    public void checkKeyIsInTheJSON(String key) {
+        getJSONObject("keys");
+        waitForIdle();
+        if (!jsonArray.toString().contains(key)) {
+            assertFailWithMessage("The key " + key + " is not in the JSON file");
+        }
+    }
+
+    public String getValueFromDB(String table, String column) {
+        try {
+            File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+            String[] directoryPath = directory.list();
+            SQLiteDatabase database = openOrCreateDatabase(directory.getAbsolutePath() + "/" + directoryPath[0] + "/management.db", null);
+            Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    return cursor.getString(cursor.getColumnIndex(column));
+                }
+            }
+        } catch (Exception e) {
+            removeDBFolder();
+            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column);
+        }
+        return "DB is empty";
+    }
+
+    public void checkValueIsInDB(String table, String column, String value) {
+        exportDB();
+        boolean rightValue = false;
+        try {
+            File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+            String[] directoryPath = directory.list();
+            SQLiteDatabase database = openOrCreateDatabase(directory.getAbsolutePath() + "/" + directoryPath[0] + "/management.db", null);
+            Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        if (cursor.getString(cursor.getColumnIndex(column)).equals(value)) {
+                            rightValue = true;
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+        } catch (Exception e) {
+            removeDBFolder();
+            assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column + "/" + value);
+        }
+        removeDBFolder();
+        if (!rightValue) {
+            assertFailWithMessage("Column " + column + " does not contain " + value);
+        }
+    }
+
+    public void resetMyOwnKey(){
+        selectFromScreen(stringToID("privacy_preferences"));
+        selectFromScreen(stringToID("advanced"));
+        scrollToView(resources.getString(stringToID("reset")));
+        selectFromScreen(stringToID("reset"));
+        waitForIdle();
+        pressOKButtonInDialog();
+        waitForIdle();
+    }
+
+    public void exportDB() {
         selectFromScreen(stringToID("privacy_preferences"));
         selectFromScreen(stringToID("advanced"));
         scrollToView(resources.getString(stringToID("support_settings_title")));
@@ -1472,18 +1569,12 @@ public class TestUtils {
         waitForIdle();
         selectFromScreen(stringToID("export_pep_support_data_preference_title"));
         waitForIdle();
-        //onView(withId(R.id.afirmativeActionButton)).perform(click());
-        //testUtils.doWaitForDialog(resources.getString(testUtils.stringToID("export_pep_support_data_dialog_title")),testUtils.stringToID("export_pep_support_data_dialog_confirmation_msg"));
         selectButtonFromScreen(stringToID("export_action"));
         waitForIdle();
-        //testUtils.pressOKButtonInDialog();
-        ////testUtils.selectFromScreen(testUtils.stringToID("okay_action"));
         selectButtonFromScreen(stringToID("okay_action"));
-        File db = readDBFile();
-
     }
 
-    private void removeDBFolder() {
+    public void removeDBFolder() {
         File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
         if (directory.exists()) {
             try {
@@ -1492,15 +1583,23 @@ public class TestUtils {
                 e.printStackTrace();
             }
         }
+        if (directory.exists()) {
+            assertFailWithMessage("Cannot remove the old DB");
+        }
     }
 
-    private File readDBFile() {
+    private FileWriter readDBFile() {
         File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
         String[] directoryPath = directory.list();
         if (directoryPath.length > 1) {
             assertFailWithMessage("There are more than 1 DB");
         }
-        File dbFile = new File(directory.getAbsolutePath()+"/"+directoryPath[0] + "/management.db");
+        FileWriter dbFile = null;
+        try {
+            dbFile = new FileWriter(directory.getAbsolutePath()+"/"+directoryPath[0] + "/management.db");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return dbFile;
     }
 
@@ -4731,5 +4830,36 @@ public class TestUtils {
                 .check(matches(isDisplayed()))
                 .perform(listSize);
         return listSize.getSize();
+    }
+
+    public static class JDBCUtil {
+        //JDBC and database properties.
+        private static final String DB_DRIVER =
+                "oracle.jdbc.driver.OracleDriver";
+        private static final String DB_URL =
+                "jdbc:oracle:thin:@localhost:1521:XE";
+        private static final String DB_USERNAME = "system";
+        private static final String DB_PASSWORD = "";
+
+        public static Connection getConnection(){
+            Connection conn = null;
+            try{
+                //Register the JDBC driver
+                Class.forName(DB_DRIVER);
+
+                //Open the connection
+                conn = DriverManager.
+                        getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+
+                if(conn != null){
+                    System.out.println("Successfully connected.");
+                }else{
+                    System.out.println("Failed to connect.");
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            return conn;
+        }
     }
 }

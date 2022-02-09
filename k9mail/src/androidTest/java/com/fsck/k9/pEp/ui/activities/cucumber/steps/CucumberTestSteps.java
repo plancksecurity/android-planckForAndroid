@@ -78,6 +78,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.TestUtils.assertFailWithMessage;
 import static com.fsck.k9.pEp.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
@@ -733,45 +734,62 @@ public class CucumberTestSteps {
     @When("^Normal use of sync for devices (\\S+) and (\\S+) for (\\d+) days$")
     public void Normal_use_sync_devices(String device1, String device2, int totalDays) {
         int minutesInADay = 1440;
-        int delayTimeMinutes = 1 / 5;
+        int delayTimeMinutes = 26;
         getBotsList();
-        //I_sync_devices(device1, device2);
+        I_sync_devices(device1, device2);
         testUtils.readConfigFile();
+        int message = 1;
         for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
-            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 330) {
-                //I_check_1_and_2_sync(device1, device2);
-                //testUtils.getMessageListSize();
-                //switch (testUtils.test_number()) {
-                //    case "1":
-                //        I_wait_for_the_message_and_click_it();
-                //        I_check_toolBar_color_is("pep_yellow");
-                //        testUtils.pressBack();
-                //        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 1 to 2" + currentDay);
-                //        try {
-                //            Thread.sleep(10000);
-                //        } catch (InterruptedException e) {
-                //            e.printStackTrace();
-                //        }
-                //        break;
-                //    case "2":
-                //        I_send_message_to_address(1, "bot" + currentDay, "30minsMessage", "From device 2 to 1" + currentDay);
-                //        I_wait_for_the_message_and_click_it();
-                //        I_check_toolBar_color_is("pep_yellow");
-                //        testUtils.pressBack();
-                //        testUtils.getMessageListSize();
-                //        break;
-                //}
-
+            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 30) {
+                I_check_1_and_2_sync(device1, device2);
+                testUtils.getMessageListSize();
+                switch (testUtils.test_number()) {
+                    case "1":
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is("pep_yellow");
+                        testUtils.pressBack();
+                        I_send_message_to_address(1, "bot" + currentDay, "DeviceA_2ndMessage", "message " + message + "from device 1 to 2, day " + currentDay);
+                        while (testUtils.getListSize() > 1) {
+                            testUtils.getMessageListSize();
+                            waitForIdle();
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        waitForIdle();
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        testUtils.getMessageListSize();
+                        break;
+                    case "2":
+                        I_send_message_to_address(1, "bot" + currentDay, "DeviceB_1stMessage", "message " + message + "from device 2 to 1, day " + currentDay);
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is("pep_yellow");
+                        testUtils.pressBack();
+                        I_remove_all_messages();
+                        I_select_account("0");
+                        testUtils.getMessageListSize();
+                        break;
+                }
                 I_go_back_to_accounts_list();
-                testUtils.exportDB();
-
-                //Export DB and check flat is 256
+                testUtils.checkValueIsInDB("identity","flags", "256");
+                testUtils.pressBack();
+                testUtils.pressBack();
+                I_select_account("0");
+                testUtils.getMessageListSize();
                 try {
                     Thread.sleep(1000 * 60 * delayTimeMinutes);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                message ++;
             }
+            message = 1;
             switch (testUtils.test_number()) {
                 case "1":
                     I_wait_for_the_message_and_click_it();
@@ -822,6 +840,54 @@ public class CucumberTestSteps {
                 e.printStackTrace();
             }
         }
+    }
+
+    @When("^I reset my own key$")
+    public void I_reset_own_key() {
+        switch (testUtils.test_number()) {
+            case "0":
+            case "1":
+                I_go_back_to_accounts_list();
+                testUtils.exportDB();
+                String mainKeyID = testUtils.getValueFromDB("person","main_key_id");
+                testUtils.pressBack();
+                testUtils.pressBack();
+                I_select_account("0");
+                testUtils.getMessageListSize();
+                I_send_message_to_address(1, "bot1", "ResetKeyTest_1", "Sending message to Bot before Reset");
+                I_click_the_last_message_received();
+                 testUtils.checkOwnKey(mainKeyID, true);
+                testUtils.pressBack();
+                I_go_back_to_accounts_list();
+                testUtils.resetMyOwnKey();
+                testUtils.pressBack();
+                testUtils.exportDB();
+                testUtils.getValueFromDB("person","main_key_id");
+                testUtils.pressBack();
+                testUtils.pressBack();
+                I_select_account("0");
+                I_send_message_to_address(1, "myself", "ResetKeyTest_2", "Reset Own Key done");
+                I_send_message_to_address(1, "bot7", "KeyIsReset", "Sending message to Bot after Reset");
+                I_click_the_last_message_received();
+                testUtils.checkOwnKey(mainKeyID, false);
+                testUtils.pressBack();
+                I_send_message_to_address(1, "bot1", "ResetKeyTest_3", "Sending message to Bot after Reset");
+                if (testUtils.clickLastMessage()) {
+                    assertFailWithMessage("Cannot read New Bot's message after Reset");
+                }
+                break;
+            case "2":
+                //get Main key
+                //wait bot
+                //wait myself
+                //check new key
+                //wait bot
+                //can read
+                break;
+            default:
+                TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
+        }
+
     }
 
 
@@ -2065,6 +2131,9 @@ public class CucumberTestSteps {
     public void I_send_message_to_address(int totalMessages, String botName, String subject, String body) {
         String messageTo = "nothing";
         switch (botName) {
+            case "myself":
+                messageTo = testUtils.getAccountAddress(accountSelected);
+                break;
             case "bot1":
                 messageTo = bot[0] + "acc" + accountSelected + HOST;
                 break;
