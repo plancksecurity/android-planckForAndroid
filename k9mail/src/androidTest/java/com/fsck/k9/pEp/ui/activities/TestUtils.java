@@ -1487,10 +1487,15 @@ public class TestUtils {
 
     public void checkOwnKey(String mainKeyID, boolean isTheSame){
         //checkKeyIsInTheJSON(mainKeyID);
-        if (json.toString().contains(mainKeyID) != isTheSame) {
-            assertFailWithMessage("Own Key is not in the JSON file");
+        try {
+            if ((json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr").equals(mainKeyID)) != isTheSame) {
+            //if (json.getJSONArray("keyring_keys").getJSONObject(0).getJSONObject("pEp_keys.db").get("KeyID").equals(mainKeyID) != isTheSame) {
+                assertFailWithMessage("Own Key is not in the JSON file");
+            }
+        } catch (JSONException e) {
+            Timber.e("Cannot read the Key from the JSON file");
         }
-        String newMainKeyID = getValueFromDB("person","main_key_id");
+        String newMainKeyID = getValueFromDB("identity","user_id");
         if ((mainKeyID.equals(newMainKeyID)) != isTheSame) {
             assertFailWithMessage("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
         }
@@ -1505,6 +1510,7 @@ public class TestUtils {
     }
 
     public String getValueFromDB(String table, String column) {
+        String keys = "";
         try {
             File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
             String[] directoryPath = directory.list();
@@ -1512,9 +1518,12 @@ public class TestUtils {
             Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
             if (cursor != null) {
                 if (cursor.moveToFirst()) {
-                    return cursor.getString(cursor.getColumnIndex(column));
+                    if (cursor.getString(cursor.getColumnIndex(column)).equals("pEp_own_userId")) {
+                        keys = cursor.getString(cursor.getColumnIndex("main_key_id"));
+                    }
                 }
             }
+            return keys;
         } catch (Exception e) {
             removeDBFolder();
             assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column);

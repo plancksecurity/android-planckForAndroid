@@ -849,7 +849,7 @@ public class CucumberTestSteps {
             case "1":
                 I_go_back_to_accounts_list();
                 testUtils.exportDB();
-                String mainKeyID = testUtils.getValueFromDB("person","main_key_id");
+                String mainKeyID = testUtils.getValueFromDB("identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
@@ -862,13 +862,12 @@ public class CucumberTestSteps {
                 testUtils.resetMyOwnKey();
                 testUtils.pressBack();
                 testUtils.exportDB();
-                testUtils.getValueFromDB("person","main_key_id");
+                testUtils.getValueFromDB("identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
                 I_send_message_to_address(1, "myself", "ResetKeyTest_2", "Reset Own Key done");
-                I_send_message_to_address(1, "bot7", "KeyIsReset", "Sending message to Bot after Reset");
-                I_click_the_last_message_received();
+                I_wait_for_the_message_and_click_it();
                 testUtils.checkOwnKey(mainKeyID, false);
                 testUtils.pressBack();
                 I_send_message_to_address(1, "bot1", "ResetKeyTest_3", "Sending message to Bot after Reset");
@@ -877,12 +876,32 @@ public class CucumberTestSteps {
                 }
                 break;
             case "2":
-                //get Main key
-                //wait bot
-                //wait myself
-                //check new key
-                //wait bot
-                //can read
+                testUtils.getMessageListSize();
+                I_go_back_to_accounts_list();
+                testUtils.exportDB();
+                String mainKeyID2 = testUtils.getValueFromDB("identity","user_id");
+                testUtils.pressBack();
+                testUtils.pressBack();
+                I_select_account("0");
+                I_wait_for_the_message_and_click_it();
+                testUtils.checkOwnKey(mainKeyID2, true);
+                testUtils.pressBack();
+                I_wait_for_the_message_and_click_it();
+                testUtils.pressBack();
+                I_go_back_to_accounts_list();
+                testUtils.exportDB();
+                testUtils.getValueFromDB("identity","user_id");
+                testUtils.pressBack();
+                testUtils.pressBack();
+                I_select_account("0");
+                I_send_message_to_address(1, "bot6", "KeyIsReset", "Sending message to Bot after Reset");
+                I_click_the_last_message_received();
+                testUtils.checkOwnKey(mainKeyID2, false);
+                testUtils.pressBack();
+                I_wait_for_the_new_message();
+                if (testUtils.clickLastMessage()) {
+                    assertFailWithMessage("Cannot read New Bot's message after Reset");
+                }
                 break;
             default:
                 TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
@@ -2132,7 +2151,23 @@ public class CucumberTestSteps {
         String messageTo = "nothing";
         switch (botName) {
             case "myself":
-                messageTo = testUtils.getAccountAddress(accountSelected);
+                switch (testUtils.test_number()) {
+                    case "0":
+                        messageTo = testUtils.getAccountAddress(accountSelected);
+                        break;
+                    case "1":
+                    case "2":
+                    case "3":
+                        messageTo = testUtils.getKeySyncAccount(0);
+                        break;
+                    case "4":
+                    case "5":
+                    case "6":
+                        messageTo = testUtils.getPassphraseAccount();
+                        break;
+                    default:
+                        TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
+                }
                 break;
             case "bot1":
                 messageTo = bot[0] + "acc" + accountSelected + HOST;
