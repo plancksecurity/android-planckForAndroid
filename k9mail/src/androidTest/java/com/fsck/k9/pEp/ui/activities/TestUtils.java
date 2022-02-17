@@ -22,7 +22,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.StrictMode;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -78,27 +77,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
-import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.Then;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
-import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
 import static android.database.sqlite.SQLiteDatabase.openOrCreateDatabase;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -147,12 +137,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertThat;
-
-import java.sql.DriverManager;
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.SQLException;
-
 
 
 public class TestUtils {
@@ -243,10 +227,10 @@ public class TestUtils {
         }
     }
 
-    private void clickNextButton () {
+    private void clickNextButton() {
         waitForIdle();
         onView(withId(R.id.next)).perform(click());
-        for (int i=0;i<100;i++) {
+        for (int i = 0; i < 100; i++) {
             waitForIdle();
         }
         while (viewIsDisplayed(R.id.account_email)) {
@@ -345,10 +329,10 @@ public class TestUtils {
 
     void goBackToMessageCompose() {
         boolean backToMessageCompose = false;
-        while (!backToMessageCompose){
+        while (!backToMessageCompose) {
             pressBack();
             waitForIdle();
-            if (exists(onView(withId(R.id.send)))){
+            if (exists(onView(withId(R.id.send)))) {
                 backToMessageCompose = true;
             }
         }
@@ -364,7 +348,7 @@ public class TestUtils {
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
         }
         while (!buttonClicked) {
-            if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)){
+            if (exists(onView(withId(viewId))) || viewIsDisplayed(viewId)) {
                 waitForIdle();
                 try {
                     onView(withId(viewId)).check(matches(isDisplayed()));
@@ -375,7 +359,7 @@ public class TestUtils {
                 } catch (Exception ex) {
                     Timber.i("View not found, cannot click it: " + ex);
                 }
-            }else {
+            } else {
                 buttonClicked = true;
             }
         }
@@ -388,17 +372,17 @@ public class TestUtils {
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
-     public Activity getCurrentActivity() {
+    public Activity getCurrentActivity() {
 
-         final Activity[] resumedActivity = {null};
-         getInstrumentation().runOnMainSync(() -> {
-             Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
-                     .getActivitiesInStage(RESUMED);
-             if (resumedActivities.iterator().hasNext()) {
-                 resumedActivity[0] = (Activity) resumedActivities.iterator().next();
-             }
-         });
-         return resumedActivity[0];
+        final Activity[] resumedActivity = {null};
+        getInstrumentation().runOnMainSync(() -> {
+            Collection resumedActivities = ActivityLifecycleMonitorRegistry.getInstance()
+                    .getActivitiesInStage(RESUMED);
+            if (resumedActivities.iterator().hasNext()) {
+                resumedActivity[0] = (Activity) resumedActivities.iterator().next();
+            }
+        });
+        return resumedActivity[0];
     }
 
     public void createAccount() {
@@ -409,15 +393,15 @@ public class TestUtils {
     }
 
     public String getAccountEmailForDevice() {
-        if(emailForDevice != null) return emailForDevice;
+        if (emailForDevice != null) return emailForDevice;
         String out = "error: email for device not initialized";
         File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
+        File directory = new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
         File configFile = new File(directory, "test_config.txt");
-        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        if (!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
 
         FileInputStream fin;
-        if(configFile.canRead()) {
+        if (configFile.canRead()) {
             try {
                 fin = new FileInputStream(configFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fin);
@@ -428,12 +412,11 @@ public class TestUtils {
                 }
                 fin.close();
                 bufferedReader.close();
-                if(receiveString != null && !receiveString.isEmpty()) {
+                if (receiveString != null && !receiveString.isEmpty()) {
                     String[] line = receiveString.split(" = ");
                     out = emailForDevice = line[1];
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Timber.e(e, "could not read from file %s", configFile);
                 out = e.getMessage();
             }
@@ -470,184 +453,184 @@ public class TestUtils {
                 Timber.i("Cannot find config file for " + model + ", using default file");
             }
         }
-            for (int readingLine = 0; readingLine < strSplit.length; readingLine++) {
-                line = strSplit[readingLine].split(" = ");
-                switch (line[0]) {
-                    case "mail":
-                        testConfig.setMail(line[1], 0);
-                        if (!testConfig.getMail(0).equals("")) {
-                            totalAccounts = 1;
+        for (int readingLine = 0; readingLine < strSplit.length; readingLine++) {
+            line = strSplit[readingLine].split(" = ");
+            switch (line[0]) {
+                case "mail":
+                    testConfig.setMail(line[1], 0);
+                    if (!testConfig.getMail(0).equals("")) {
+                        totalAccounts = 1;
+                    }
+                    break;
+                case "password":
+                    testConfig.setPassword(line[1], 0);
+                    break;
+                case "username":
+                    testConfig.setUsername(line[1], 0);
+                    break;
+                case "trusted_server":
+                    if (line[1].equals("true")) {
+                        testConfig.setTrusted_server(true, 0);
+                    } else if (line[1].equals("false")) {
+                        testConfig.setTrusted_server(false, 0);
+                    } else {
+                        assertFailWithMessage("Trusted_server must be true or false");
+                    }
+                    break;
+                case "imap_server":
+                    testConfig.setImap_server(line[1], 0);
+                    break;
+                case "smtp_server":
+                    testConfig.setSmtp_server(line[1], 0);
+                    break;
+                case "imap_port":
+                    testConfig.setImap_port(line[1], 0);
+                    break;
+                case "smtp_port":
+                    testConfig.setSmtp_port(line[1], 0);
+                    break;
+                case "mail2":
+                    testConfig.setMail(line[1], 1);
+                    if (!testConfig.getMail(1).equals("")) {
+                        totalAccounts = 2;
+                    }
+                    break;
+                case "password2":
+                    testConfig.setPassword(line[1], 1);
+                    if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
+                        assertFailWithMessage("Password is empty");
+                    }
+                    break;
+                case "username2":
+                    testConfig.setUsername(line[1], 1);
+                    break;
+                case "trusted_server2":
+                    if (line[1].equals("true")) {
+                        testConfig.setTrusted_server(true, 1);
+                    } else if (line[1].equals("false")) {
+                        testConfig.setTrusted_server(false, 1);
+                    } else {
+                        assertFailWithMessage("Trusted_server must be true or false");
+                    }
+                    break;
+                case "imap_server2":
+                    testConfig.setImap_server(line[1], 1);
+                    break;
+                case "smtp_server2":
+                    testConfig.setSmtp_server(line[1], 1);
+                    break;
+                case "imap_port2":
+                    testConfig.setImap_port(line[1], 1);
+                    break;
+                case "smtp_port2":
+                    testConfig.setSmtp_port(line[1], 1);
+                    break;
+                case "mail3":
+                    testConfig.setMail(line[1], 2);
+                    if (!testConfig.getMail(2).equals("")) {
+                        totalAccounts = 3;
+                    }
+                    break;
+                case "password3":
+                    testConfig.setPassword(line[1], 2);
+                    if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
+                        assertFailWithMessage("Password is empty");
+                    }
+                    break;
+                case "username3":
+                    testConfig.setUsername(line[1], 2);
+                    break;
+                case "trusted_server3":
+                    if (line[1].equals("true")) {
+                        testConfig.setTrusted_server(true, 2);
+                    } else if (line[1].equals("false")) {
+                        testConfig.setTrusted_server(false, 2);
+                    } else {
+                        assertFailWithMessage("Trusted_server must be true or false");
+                    }
+                    break;
+                case "imap_server3":
+                    testConfig.setImap_server(line[1], 2);
+                    break;
+                case "smtp_server3":
+                    testConfig.setSmtp_server(line[1], 2);
+                    break;
+                case "imap_port3":
+                    testConfig.setImap_port(line[1], 2);
+                    break;
+                case "smtp_port3":
+                    testConfig.setSmtp_port(line[1], 2);
+                    break;
+                case "keysync_account_1":
+                    testConfig.setKeySync_account(line[1], 0);
+                    break;
+                case "keysync_password_1":
+                    testConfig.setKeySync_password(line[1], 0);
+                    break;
+                case "keysync_account_2":
+                    testConfig.setKeySync_account(line[1], 1);
+                    break;
+                case "keysync_password_2":
+                    testConfig.setKeySync_password(line[1], 1);
+                    break;
+                case "test_number":
+                    boolean fileExists = false;
+                    File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/");
+                    for (int i = 0; i < 20; i++) {
+                        try {
+                            if (new File(directory, i + ".txt").exists()) {
+                                testConfig.settest_number(String.valueOf(i));
+                                fileExists = true;
+                                break;
+                            }
+                        } catch (Exception e) {
+                            Timber.i("Cannot find file " + i + ".txt");
                         }
-                        break;
-                    case "password":
-                        testConfig.setPassword(line[1], 0);
-                        break;
-                    case "username":
-                        testConfig.setUsername(line[1], 0);
-                        break;
-                    case "trusted_server":
-                        if (line[1].equals("true")) {
-                            testConfig.setTrusted_server(true, 0);
-                        } else if (line[1].equals("false")) {
-                            testConfig.setTrusted_server(false, 0);
-                        } else {
-                            assertFailWithMessage("Trusted_server must be true or false");
-                        }
-                        break;
-                    case "imap_server":
-                        testConfig.setImap_server(line[1], 0);
-                        break;
-                    case "smtp_server":
-                        testConfig.setSmtp_server(line[1], 0);
-                        break;
-                    case "imap_port":
-                        testConfig.setImap_port(line[1], 0);
-                        break;
-                    case "smtp_port":
-                        testConfig.setSmtp_port(line[1], 0);
-                        break;
-                    case "mail2":
-                        testConfig.setMail(line[1], 1);
-                        if (!testConfig.getMail(1).equals("")) {
+                    }
+                    if (!fileExists) {
+                        Timber.i("Cannot find the file for test_number. Using the test_number in the config_file");
+                        testConfig.settest_number(line[1]);
+                    }
+                    if (!testConfig.gettest_number().equals("0")) {
+                        totalAccounts = 1;
+                        if (testConfig.gettest_number().equals("3")) {
                             totalAccounts = 2;
                         }
-                        break;
-                    case "password2":
-                        testConfig.setPassword(line[1], 1);
-                        if (testConfig.getPassword(1).equals("") && !testConfig.getMail(1).equals("")) {
-                            assertFailWithMessage("Password is empty");
-                        }
-                        break;
-                    case "username2":
-                        testConfig.setUsername(line[1], 1);
-                        break;
-                    case "trusted_server2":
-                        if (line[1].equals("true")) {
-                            testConfig.setTrusted_server(true, 1);
-                        } else if (line[1].equals("false")) {
-                            testConfig.setTrusted_server(false, 1);
-                        } else {
-                            assertFailWithMessage("Trusted_server must be true or false");
-                        }
-                        break;
-                    case "imap_server2":
-                        testConfig.setImap_server(line[1], 1);
-                        break;
-                    case "smtp_server2":
-                        testConfig.setSmtp_server(line[1], 1);
-                        break;
-                    case "imap_port2":
-                        testConfig.setImap_port(line[1], 1);
-                        break;
-                    case "smtp_port2":
-                        testConfig.setSmtp_port(line[1], 1);
-                        break;
-                    case "mail3":
-                        testConfig.setMail(line[1], 2);
-                        if (!testConfig.getMail(2).equals("")) {
-                            totalAccounts = 3;
-                        }
-                        break;
-                    case "password3":
-                        testConfig.setPassword(line[1], 2);
-                        if (testConfig.getPassword(2).equals("") && !testConfig.getMail(2).equals("")) {
-                            assertFailWithMessage("Password is empty");
-                        }
-                        break;
-                    case "username3":
-                        testConfig.setUsername(line[1], 2);
-                        break;
-                    case "trusted_server3":
-                        if (line[1].equals("true")) {
-                            testConfig.setTrusted_server(true, 2);
-                        } else if (line[1].equals("false")) {
-                            testConfig.setTrusted_server(false, 2);
-                        } else {
-                            assertFailWithMessage("Trusted_server must be true or false");
-                        }
-                        break;
-                    case "imap_server3":
-                        testConfig.setImap_server(line[1], 2);
-                        break;
-                    case "smtp_server3":
-                        testConfig.setSmtp_server(line[1], 2);
-                        break;
-                    case "imap_port3":
-                        testConfig.setImap_port(line[1], 2);
-                        break;
-                    case "smtp_port3":
-                        testConfig.setSmtp_port(line[1], 2);
-                        break;
-                    case "keysync_account_1":
-                        testConfig.setKeySync_account(line[1], 0);
-                        break;
-                    case "keysync_password_1":
-                        testConfig.setKeySync_password(line[1], 0);
-                        break;
-                    case "keysync_account_2":
-                        testConfig.setKeySync_account(line[1], 1);
-                        break;
-                    case "keysync_password_2":
-                        testConfig.setKeySync_password(line[1], 1);
-                        break;
-                    case "test_number":
-                        boolean fileExists = false;
-                        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/");
-                        for (int i=0; i < 20; i++) {
-                            try {
-                                if (new File(directory, i + ".txt").exists()) {
-                                    testConfig.settest_number(String.valueOf(i));
-                                    fileExists = true;
-                                    break;
-                                }
-                            } catch (Exception e) {
-                                Timber.i("Cannot find file " + i + ".txt");
-                            }
-                        }
-                        if (!fileExists) {
-                            Timber.i("Cannot find the file for test_number. Using the test_number in the config_file");
-                            testConfig.settest_number(line[1]);
-                        }
-                        if (!testConfig.gettest_number().equals("0")) {
-                            totalAccounts = 1;
-                            if (testConfig.gettest_number().equals("3")) {
-                                totalAccounts = 2;
-                            }
-                        }
-                        break;
-                    case "passphrase_account_1":
-                        testConfig.setPassphrase_account(line[1], 0);
-                        break;
-                    case "passphrase_password_1":
-                        testConfig.setPassphrase_password(line[1], 0);
-                        break;
-                    case "passphrase_account_2":
-                        testConfig.setPassphrase_account(line[1], 1);
-                        break;
-                    case "passphrase_password_2":
-                        testConfig.setPassphrase_password(line[1], 1);
-                        break;
-                    case "passphrase_account_3":
-                        testConfig.setPassphrase_account(line[1], 2);
-                        break;
-                    case "passphrase_password_3":
-                        testConfig.setPassphrase_password(line[1], 2);
-                        break;
-                    case "format_test_account":
-                        testConfig.setFormat_test_account(line[1]);
-                        break;
-                    case "format_test_password":
-                        testConfig.setFormat_test_password(line[1]);
-                        break;
-                    default:
-                        break;
-                }
+                    }
+                    break;
+                case "passphrase_account_1":
+                    testConfig.setPassphrase_account(line[1], 0);
+                    break;
+                case "passphrase_password_1":
+                    testConfig.setPassphrase_password(line[1], 0);
+                    break;
+                case "passphrase_account_2":
+                    testConfig.setPassphrase_account(line[1], 1);
+                    break;
+                case "passphrase_password_2":
+                    testConfig.setPassphrase_password(line[1], 1);
+                    break;
+                case "passphrase_account_3":
+                    testConfig.setPassphrase_account(line[1], 2);
+                    break;
+                case "passphrase_password_3":
+                    testConfig.setPassphrase_password(line[1], 2);
+                    break;
+                case "format_test_account":
+                    testConfig.setFormat_test_account(line[1]);
+                    break;
+                case "format_test_password":
+                    testConfig.setFormat_test_password(line[1]);
+                    break;
+                default:
+                    break;
+            }
 
         }
 
     }
 
-    public void syncDevices () {
+    public void syncDevices() {
         waitForSyncPopUp();
         onView(withId(R.id.afirmativeActionButton)).perform(click());
         waitForIdle();
@@ -670,15 +653,16 @@ public class TestUtils {
         }
     }
 
-    public void waitForSyncPopUp () {
+    public void waitForSyncPopUp() {
         waitForIdle();
         Espresso.onIdle();
         while (!viewIsDisplayed(R.id.main_container) || !viewIsDisplayed(R.id.afirmativeActionButton)) {
             waitForIdle();
             Espresso.onIdle();
-        }}
+        }
+    }
 
-    public void checkSyncIsWorking_FirstDevice () {
+    public void checkSyncIsWorking_FirstDevice() {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
@@ -703,7 +687,7 @@ public class TestUtils {
         pressBack();
     }
 
-    public void checkIsNotProtected_FirstDevice () {
+    public void checkIsNotProtected_FirstDevice() {
         getMessageListSize();
         composeMessageButton();
         fillMessage(new TestUtils.BasicMessage("",
@@ -720,7 +704,7 @@ public class TestUtils {
         pressBack();
     }
 
-    public void checkSyncIsWorking_SecondDevice () {
+    public void checkSyncIsWorking_SecondDevice() {
         waitForIdle();
         getMessageListSize();
         waitForIdle();
@@ -739,7 +723,7 @@ public class TestUtils {
         waitForNewMessage();
     }
 
-    public void checkIsNotProtected_SecondDevice () {
+    public void checkIsNotProtected_SecondDevice() {
         getMessageListSize();
         waitForMessageAndClickIt();
         compareMessageBodyWithText("Account is not protected");
@@ -756,7 +740,7 @@ public class TestUtils {
         waitForNewMessage();
     }
 
-    public void checkSyncIsNotWorking_FirstDevice () {
+    public void checkSyncIsNotWorking_FirstDevice() {
         getMessageListSize();
         composeMessageButton();
         fillMessage(new TestUtils.BasicMessage("",
@@ -775,7 +759,7 @@ public class TestUtils {
         }
     }
 
-    public void checkSyncIsNotWorking_SecondDevice () {
+    public void checkSyncIsNotWorking_SecondDevice() {
         getMessageListSize();
         if (waitForMessageAndClickIt()) {
             pressBack();
@@ -803,7 +787,7 @@ public class TestUtils {
         selectButtonFromScreen(stringToID("keysync_disable_warning_action_disable"));
     }
 
-    public void enableAccountGlobalKeySync(){
+    public void enableAccountGlobalKeySync() {
         selectFromMenu(R.string.prefs_title);
         goToTheAccountSettings(1);
         selectFromScreen(stringToID("privacy_preferences"));
@@ -833,16 +817,17 @@ public class TestUtils {
         while (testConfig.gettest_number().equals("-10")) {
             readConfigFile();
         }
-        return testConfig.gettest_number();}
+        return testConfig.gettest_number();
+    }
 
-    public boolean keySyncAccountsExist () {
+    public boolean keySyncAccountsExist() {
         return testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_password(0) != null
                 && testConfig.getKeySync_account(1) != null
                 && testConfig.getKeySync_password(1) != null;
     }
 
-    public void compareMessageBodyWithText (String cucumberBody) {
+    public void compareMessageBodyWithText(String cucumberBody) {
         waitForIdle();
         switch (cucumberBody) {
             case "empty":
@@ -865,16 +850,16 @@ public class TestUtils {
     }
 
     public static void assertFailWithMessage(String message) {
-        Assume.assumeTrue(message,false);
+        Assume.assumeTrue(message, false);
     }
 
-    public void readBotList(){
+    public void readBotList() {
         int millis = (int) System.currentTimeMillis();
-            botList = new String[9];
-            int position = 0;
-            for (; position < botList.length; position++) {
-                botList[position] = "bot" + position + millis;
-            }
+        botList = new String[9];
+        int position = 0;
+        for (; position < botList.length; position++) {
+            botList[position] = "bot" + position + millis;
+        }
     }
 
     public int getTotalAccounts() {
@@ -959,7 +944,7 @@ public class TestUtils {
         }
     }
 
-    public void clickHandShakeButton () {
+    public void clickHandShakeButton() {
         waitForIdle();
         if (exists(onView(withId(R.id.buttonHandshake)))) {
             onView(withId(R.id.buttonHandshake)).perform(click());
@@ -971,17 +956,17 @@ public class TestUtils {
         waitForIdle();
     }
 
-    public void goToHandshakeDialog (){
+    public void goToHandshakeDialog() {
         waitForIdle();
         clickStatus();
         doWaitForResource(R.id.toolbar);
         clickHandShakeButton();
     }
 
-    public void resetHandshake(){
+    public void resetHandshake() {
         waitForIdle();
         try {
-           onView(withId(R.id.recipientContainer)).perform(ViewActions.longClick());
+            onView(withId(R.id.recipientContainer)).perform(ViewActions.longClick());
             waitForIdle();
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ListView"));
             scroll.click();
@@ -993,11 +978,11 @@ public class TestUtils {
         }
     }
 
-    public void createNAccounts (int n, boolean isKeySync, boolean isThirdSync) {
+    public void createNAccounts(int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
                 waitForIdle();
-                while(exists(onView(withId(R.id.message_list)))) {
+                while (exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
                     selectFromMenu(R.string.action_settings);
                     waitForIdle();
@@ -1031,7 +1016,7 @@ public class TestUtils {
         }
     }
 
-    public void addAccount () {
+    public void addAccount() {
         try {
             swipeUpScreen();
             onView(withId(R.id.add_account_container)).perform(click());
@@ -1054,7 +1039,7 @@ public class TestUtils {
         }
     }
 
-    public void selectAccount (String folder, int accountToSelect) {
+    public void selectAccount(String folder, int accountToSelect) {
         while (true) {
             try {
                 waitForIdle();
@@ -1069,7 +1054,7 @@ public class TestUtils {
                 } else if (exists(onView(withId(android.R.id.list)))) {
                     clickFolder(folder);
                     return;
-                } else if (!exists(onView(withId(R.id.available_accounts_title)))){
+                } else if (!exists(onView(withId(R.id.available_accounts_title)))) {
                     selectFromMenu(R.string.action_settings);
                     selectAccountFromList(folder, accountToSelect);
                     getMessageListSize();
@@ -1080,7 +1065,7 @@ public class TestUtils {
                     waitForIdle();
                 }
             } catch (Exception ex) {
-                Timber.i("Cannot click account " +accountToSelect +": " + ex.getMessage());
+                Timber.i("Cannot click account " + accountToSelect + ": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
                     pressBack();
                     waitForIdle();
@@ -1089,7 +1074,7 @@ public class TestUtils {
         }
     }
 
-    public static void swipeDownScreen () {
+    public static void swipeDownScreen() {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             waitForIdle();
@@ -1100,7 +1085,7 @@ public class TestUtils {
         }
     }
 
-    public static void swipeUpScreen () {
+    public static void swipeUpScreen() {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             waitForIdle();
@@ -1111,15 +1096,16 @@ public class TestUtils {
         }
     }
 
-    private void selectAccountFromHamburgerMenu (int accountToSelect) {
+    private void selectAccountFromHamburgerMenu(int accountToSelect) {
         /*waitForIdle();
         openHamburgerMenu();
         clickView(R.id.nav_header_accounts);
         waitForIdle();
         onView(withId(R.id.navigation_accounts)).perform(RecyclerViewActions.actionOnItemAtPosition(accountToSelect, click()));
-    */}
+    */
+    }
 
-    private void selectAccountFromList (String folder, int accountToSelect) {
+    private void selectAccountFromList(String folder, int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
             swipeUpScreen();
         }
@@ -1130,7 +1116,7 @@ public class TestUtils {
         }
     }
 
-    public void selectAccountSettingsFromList (int accountToSelect) {
+    public void selectAccountSettingsFromList(int accountToSelect) {
         while (!viewIsDisplayed(R.id.accounts_list)) {
             swipeUpScreen();
         }
@@ -1142,7 +1128,7 @@ public class TestUtils {
         waitForIdle();
     }
 
-    private void goToFolder(String folder, int accountToSelect){
+    private void goToFolder(String folder, int accountToSelect) {
         while (true) {
             waitForIdle();
             try {
@@ -1159,7 +1145,7 @@ public class TestUtils {
         }
     }
 
-    private void goToTheAccountSettings (int accountToSelect){
+    private void goToTheAccountSettings(int accountToSelect) {
         while (true) {
             waitForIdle();
             try {
@@ -1175,9 +1161,9 @@ public class TestUtils {
         }
     }
 
-    public void clickFolder (String folder) {
+    public void clickFolder(String folder) {
         String folderToClick = "";
-        switch (folder){
+        switch (folder) {
             case "Inbox":
                 folderToClick = resources.getString(R.string.special_mailbox_name_inbox);
                 break;
@@ -1195,7 +1181,7 @@ public class TestUtils {
                 break;
             case "Spam":
                 folderToClick = resources.getString(R.string.special_mailbox_name_spam)
-                 + " (" + resources.getString(R.string.special_mailbox_name_spam) + ")";
+                        + " (" + resources.getString(R.string.special_mailbox_name_spam) + ")";
                 break;
             case "Trash":
                 folderToClick = resources.getString(R.string.special_mailbox_name_trash);
@@ -1292,10 +1278,10 @@ public class TestUtils {
             waitForIdle();
         }
         while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer) &&
-            exists(onView(withId(R.id.account_server_label)))) {
+                exists(onView(withId(R.id.account_server_label)))) {
             try {
                 waitForIdle();
-                while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
+                while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
                     removeTextFromTextView("account_server");
                 }
                 waitForIdle();
@@ -1349,12 +1335,12 @@ public class TestUtils {
         while (!exists(onView(withId(R.id.account_server)))) {
             waitForIdle();
         }
-        while (!getTextFromView(onView(withId(R.id.account_server))).equals("")){
+        while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
             removeTextFromTextView("account_server");
         }
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
-        while (exists(onView(withId(R.id.account_server))) && !getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)){
+        while (exists(onView(withId(R.id.account_server))) && !getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
             try {
                 waitForIdle();
                 waitForIdle();
@@ -1369,7 +1355,7 @@ public class TestUtils {
                     if (exists(onView(withId(R.id.alertTitle)))) {
                         pressBack();
                         waitForIdle();
-                    }else if (!exists(onView(withId(R.id.account_server)))) {
+                    } else if (!exists(onView(withId(R.id.account_server)))) {
                         return;
                     } else {
                         onView(withId(R.id.next)).perform(click());
@@ -1384,7 +1370,7 @@ public class TestUtils {
         }
     }
 
-    private void allowPermissions(){
+    private void allowPermissions() {
         waitForIdle();
         try {
             BySelector popUpMessage = By.clazz("android.widget.Button");
@@ -1404,11 +1390,11 @@ public class TestUtils {
         do {
             allowPermissions(2);
             allowPermissions(1);
-        }while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
+        } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
     }
 
     private void allowPermissions(int index) {
-        while (true){
+        while (true) {
             try {
                 waitForIdle();
                 UiObject allowPermissions = device.findObject(new UiSelector()
@@ -1485,17 +1471,23 @@ public class TestUtils {
         onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
     }
 
-    public void checkOwnKey(String mainKeyID, boolean isTheSame){
-        //checkKeyIsInTheJSON(mainKeyID);
+    public void checkOwnKey(String mainKeyID, boolean isTheSame) {
+        checkOwnKeyInJSON(mainKeyID, isTheSame);
+        checkOwnKeyInDB(mainKeyID, isTheSame);
+    }
+
+    public void checkOwnKeyInJSON(String mainKeyID, boolean isTheSame) {
         try {
             if ((json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr").equals(mainKeyID)) != isTheSame) {
-            //if (json.getJSONArray("keyring_keys").getJSONObject(0).getJSONObject("pEp_keys.db").get("KeyID").equals(mainKeyID) != isTheSame) {
-                assertFailWithMessage("Own Key is not in the JSON file");
+                assertFailWithMessage("Own Key: " + mainKeyID + " // Key JSON file: " + json.getJSONObject("attributes").getJSONObject("from_decrypted").get("fpr"));
             }
         } catch (JSONException e) {
             Timber.e("Cannot read the Key from the JSON file");
         }
-        String newMainKeyID = getValueFromDB("identity","user_id");
+    }
+
+    public void checkOwnKeyInDB(String mainKeyID, boolean isTheSame) {
+        String newMainKeyID = getOwnKeyFromDB("management.db", "identity", "user_id");
         if ((mainKeyID.equals(newMainKeyID)) != isTheSame) {
             assertFailWithMessage("Old own key: " + mainKeyID + " /// New own key: " + newMainKeyID);
         }
@@ -1509,7 +1501,12 @@ public class TestUtils {
         }
     }
 
-    public String getValueFromDB(String table, String column) {
+    public String getOwnKeyFromDB(String db, String table, String column) {
+        Cursor cursor = getCursorFromDB(db, table, column, "pEp_own_userId");
+        return cursor.getString(cursor.getColumnIndex("main_key_id"));
+    }
+
+    public Cursor getCursorFromDB(String db, String table, String column, String valueToFindInColumn) {
         String keys = "";
         try {
             File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
@@ -1517,19 +1514,21 @@ public class TestUtils {
             SQLiteDatabase database = openOrCreateDatabase(directory.getAbsolutePath() + "/" + directoryPath[0] + "/management.db", null);
             Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
             if (cursor != null) {
-                if (cursor.moveToFirst()) {
-                    if (cursor.getString(cursor.getColumnIndex(column)).equals("pEp_own_userId")) {
-                        keys = cursor.getString(cursor.getColumnIndex("main_key_id"));
+                cursor.moveToFirst();
+                while (true) {
+                    if (cursor.getString(cursor.getColumnIndex(column)).equals(valueToFindInColumn)) {
+                        return cursor;
                     }
+                    cursor.moveToNext();
                 }
             }
-            return keys;
         } catch (Exception e) {
             removeDBFolder();
             assertFailWithMessage("Failed to read DB when trying to find: " + table + "/" + column);
         }
-        return "DB is empty";
+        return null;
     }
+
 
     public void checkValueIsInDB(String table, String column, String value) {
         exportDB();

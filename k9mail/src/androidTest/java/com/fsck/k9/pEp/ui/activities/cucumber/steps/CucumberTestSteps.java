@@ -736,7 +736,6 @@ public class CucumberTestSteps {
         int minutesInADay = 1440;
         int delayTimeMinutes = 26;
         getBotsList();
-        I_sync_devices(device1, device2);
         testUtils.readConfigFile();
         int message = 1;
         for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
@@ -849,24 +848,24 @@ public class CucumberTestSteps {
             case "1":
                 I_go_back_to_accounts_list();
                 testUtils.exportDB();
-                String mainKeyID = testUtils.getValueFromDB("identity","user_id");
+                String mainKeyID = testUtils.getOwnKeyFromDB("management.db","identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
                 testUtils.getMessageListSize();
                 I_send_message_to_address(1, "bot1", "ResetKeyTest_1", "Sending message to Bot before Reset");
                 I_click_the_last_message_received();
-                 testUtils.checkOwnKey(mainKeyID, true);
+                testUtils.checkOwnKey(mainKeyID, true);
                 testUtils.pressBack();
                 I_go_back_to_accounts_list();
                 testUtils.resetMyOwnKey();
                 testUtils.pressBack();
                 testUtils.exportDB();
-                testUtils.getValueFromDB("identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
-                I_send_message_to_address(1, "myself", "ResetKeyTest_2", "Reset Own Key done");
+                I_send_message_to_address(1, "myself", "ResetKeyDone", "Old: " + mainKeyID + " // New: " +
+                        testUtils.getOwnKeyFromDB("management.db","identity","user_id"));
                 I_wait_for_the_message_and_click_it();
                 testUtils.checkOwnKey(mainKeyID, false);
                 testUtils.pressBack();
@@ -874,23 +873,24 @@ public class CucumberTestSteps {
                 if (testUtils.clickLastMessage()) {
                     assertFailWithMessage("Cannot read New Bot's message after Reset");
                 }
+                testUtils.checkOwnKey(mainKeyID, false);
                 break;
             case "2":
                 testUtils.getMessageListSize();
                 I_go_back_to_accounts_list();
                 testUtils.exportDB();
-                String mainKeyID2 = testUtils.getValueFromDB("identity","user_id");
+                String mainKeyID2 = testUtils.getOwnKeyFromDB("management.db","identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
                 I_wait_for_the_message_and_click_it();
                 testUtils.checkOwnKey(mainKeyID2, true);
                 testUtils.pressBack();
-                I_wait_for_the_message_and_click_it();
+                I_wait_for_the_new_message();
                 testUtils.pressBack();
                 I_go_back_to_accounts_list();
                 testUtils.exportDB();
-                testUtils.getValueFromDB("identity","user_id");
+                testUtils.getOwnKeyFromDB("management.db","identity","user_id");
                 testUtils.pressBack();
                 testUtils.pressBack();
                 I_select_account("0");
@@ -902,6 +902,7 @@ public class CucumberTestSteps {
                 if (testUtils.clickLastMessage()) {
                     assertFailWithMessage("Cannot read New Bot's message after Reset");
                 }
+                testUtils.checkOwnKey(mainKeyID2, false);
                 break;
             default:
                 TestUtils.assertFailWithMessage("Unknown Device for this test: " + testUtils.test_number());
@@ -1863,6 +1864,13 @@ public class CucumberTestSteps {
     }
 
     private void getBotsList(){
+        try {
+            if (bot[0] != null) {
+                return;
+            }
+        } catch (Exception e) {
+            Timber.i("bot list doesn't exist");
+        }
         boolean botListFull = false;
         while (!botListFull) {
             botListFull = true;
