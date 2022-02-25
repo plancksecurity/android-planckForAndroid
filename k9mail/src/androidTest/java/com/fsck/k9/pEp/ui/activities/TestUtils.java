@@ -439,7 +439,7 @@ public class TestUtils {
         boolean configFileReaded = false;
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
-        if (manufacturer.equals("Google")) {
+        if (manufacturer.equals("Google")&& !model.equals("Pixel 3 XL")) {
             model = "default";
         }
         while (!configFileReaded) {
@@ -869,7 +869,6 @@ public class TestUtils {
     private void createNewAccountWithPermissions() {
         testReset = false;
         try {
-            //clickView(R.id.next);
             onView(withId(R.id.next)).perform(click());
             waitForIdle();
             try {
@@ -3058,9 +3057,9 @@ public class TestUtils {
                             }
                         });
                         waitForIdle();
+                        scroll.swipe(Direction.UP, 1.0f);
                         for (int i = 0; i < repetitionsOfTheText; i++) {
                             waitForIdle();
-                            scroll.swipe(Direction.UP, 1.0f);
                             pasteClipboard();
                             waitForIdle();
                         }
