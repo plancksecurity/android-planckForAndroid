@@ -806,6 +806,8 @@ public class CucumberTestSteps {
                             e.printStackTrace();
                         }
                     }
+                    testUtils.getMessageListSize();
+                    I_wait_for_the_new_message();
                     break;
                 case "2":
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake", "Doing Handshake with bot" + currentDay);
@@ -828,6 +830,8 @@ public class CucumberTestSteps {
                     }
                     I_remove_all_messages();
                     I_select_account("0");
+                    testUtils.getMessageListSize();
+                    I_send_message_to_address(1, "bot" + currentDay, "Bucle"+currentDay+"Done", "Finishing first bucle");
                     break;
                 default:
                     TestUtils.assertFailWithMessage("Unknown Sync Device: " + testUtils.test_number());
