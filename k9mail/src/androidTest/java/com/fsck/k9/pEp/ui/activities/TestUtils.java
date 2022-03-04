@@ -2465,6 +2465,7 @@ public class TestUtils {
 
     public void typeTextToForceRatingCalculation(int view) {
         waitForIdle();
+        try {
         onView(withId(view)).perform(click(), closeSoftKeyboard());
         onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
         waitForIdle();
@@ -2472,6 +2473,10 @@ public class TestUtils {
             device.pressKeyCode(KeyEvent.KEYCODE_DEL);
         }
         waitForIdle();
+
+    } catch (Exception ex) {
+        Timber.i("Toolbar is not closed yet");
+    }
     }
 
     public static void waitForToolbar() {
@@ -3036,31 +3041,35 @@ public class TestUtils {
         return "¡¢£¤¥§¨©ª«¬®¯°±´µ¶·¸º»¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÕØßàáâãäåæçñõ÷øÿ₫¦²³¼½¾ÐðÞþ×αΓβΛγΣπΠσΩς<>≠′≤″≥∂≡∫≈∑∞∏√•€™†‡◊‰←↑→↓♠♣♥♦‹›☺☻♀♂♪♫►ΦΘε~бвгґѓдђєжийлљњћќўфцчџшщъыьэюяスーパーオファーお客様に限り貸切可";
     }
 
-    public void insertTextNTimes (String messageText, int repetitionsOfTheText) {
+    public void  insertTextNTimes (String messageText, int repetitionsOfTheText) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.EditText");
         UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
-        UiObject2 scroll;
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
                 while (!object.getText().contains(messageText)) {
                     try {
-                        scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                         waitForIdle();
                         object.click();
                         String finalMessageText = messageText;
                         waitForIdle();
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                setClipboard(finalMessageText);
-                            }
-                        });
                         waitForIdle();
-                        scroll.swipe(Direction.UP, 1.0f);
                         for (int i = 0; i < repetitionsOfTheText; i++) {
                             waitForIdle();
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setClipboard(finalMessageText);
+                                }
+                            });
+                            waitForIdle();
+                            Thread.sleep(2000);
                             pasteClipboard();
+                            waitForIdle();
+                            Thread.sleep(2000);
+                            scroll.swipe(Direction.DOWN, 1f);
+                            scroll.swipe(Direction.DOWN, 1f);
                             waitForIdle();
                         }
                         object.click();
@@ -3070,7 +3079,10 @@ public class TestUtils {
                 }
             }
         }
-        Espresso.onIdle();
+        for (int i = 0; i < repetitionsOfTheText/4; i++) {
+            scroll.swipe(Direction.DOWN, 1f);
+        }
+        waitForIdle();
         scrollUpToSubject();
     }
 
@@ -3218,6 +3230,7 @@ public class TestUtils {
                     waitForIdle();
                     while (json == null) {
                         try {
+                            Thread.sleep(2000);
                             downloadAttachedFile("results.json");
                             waitForIdle();
                             String js = readJsonFile("results.json");
@@ -3259,7 +3272,6 @@ public class TestUtils {
                     waitForIdle();
                     object.getParent().getChildren().get(0).click();
                     waitForIdle();
-                    waitForToolbar();
                     onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
                     return;
                 }
@@ -3327,9 +3339,9 @@ public class TestUtils {
         while (!exists(onView(withId(R.id.message_list)))) {
             waitForIdle();
         }
-        doWaitForResource(R.id.message_list);
-        doWaitForIdlingListViewResource(R.id.message_list);
-        onView(withId(R.id.message_list)).check(matches(isDisplayed()));
+        //doWaitForResource(R.id.message_list);
+        //doWaitForIdlingListViewResource(R.id.message_list);
+        //onView(withId(R.id.message_list)).check(matches(isDisplayed()));
         waitForIdle();
         while (!newEmail) {
             try {
@@ -3584,14 +3596,17 @@ public class TestUtils {
         while (true) {
             try {
                 waitForIdle();
-                waitUntilIdle();
                 wb = device.findObject(By.clazz("android.webkit.WebView"));
                 wb.click();
                 swipeUpScreen();
-                if (wb.getChildren().get(0).getText() != null) {
-                    webViewText = wb.getChildren().get(0).getText().split("\n");
-                } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
-                    webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
+                while (webViewText[0] == null) {
+                    waitForIdle();
+                    Timber.i("Trying to find webView text");
+                    if (wb.getChildren().get(0).getText() != null) {
+                        webViewText = wb.getChildren().get(0).getText().split("\n");
+                    } else if (wb.getChildren().get(0).getChildren().get(0).getContentDescription() != null) {
+                        webViewText = wb.getChildren().get(0).getChildren().get(0).getContentDescription().split("\n");
+                    }
                 }
             } catch (Exception ex) {
                 Timber.i("Cannot find webView: " + ex.getMessage());
@@ -3693,19 +3708,31 @@ public class TestUtils {
     }
 
     public void scrollUpToSubject (){
+        scrollUpToID(R.id.subject, true);
+    }
+
+    public void scrollDownToSubject (){
+        scrollUpToID(R.id.subject, false);
+    }
+
+    private void scrollUpToID (int id, boolean up) {
         UiObject2 scroll;
         do {
             try {
                 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
                 waitForIdle();
-                scroll.swipe(Direction.DOWN, 1.0f);
+                if (up){
+                    scroll.swipe(Direction.DOWN, 1.0f);
+                } else {
+                    scroll.swipe(Direction.UP, 1.0f);
+                }
                 waitForIdle();
             } catch (Exception e) {
                 pressBack();
             }
-        } while (!viewIsDisplayed(R.id.subject));
-        onView(withId(R.id.subject)).check(matches(isCompletelyDisplayed()));
-        onView(withId(R.id.subject)).perform(click());
+        } while (!viewIsDisplayed(id));
+        onView(withId(id)).check(matches(isCompletelyDisplayed()));
+        onView(withId(id)).perform(click());
     }
 
     public void scrollDownToView (int view) {

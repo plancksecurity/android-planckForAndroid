@@ -330,9 +330,32 @@ public class CucumberTestSteps {
     @When("^I enter (\\d+) recipients in the (\\S+) field")
     public void I_fill_n_recipients(int recipients, String field) {
         timeRequiredForThisMethod(1);
-        String recipient = "filling@email.pep";
+        String recipient = "recipients@email.pep";
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
-            I_enter_text_in_field(String.valueOf(recipients) + recipient, field);
+            //scroll.swipe(Direction.UP, 1f);
+            scroll.swipe(Direction.UP, 1f);
+            scroll.swipe(Direction.UP, 1f);
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                Timber.i("Waiting 2 seconds");
+            }
+            waitForIdle();
+            testUtils.clickView(R.id.subject);
+            waitForIdle();
+            scroll.swipe(Direction.UP, 1f);
+            scroll.swipe(Direction.UP, 1f);
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                Timber.i("Waiting 2 seconds");
+            }
+            waitForIdle();
+            testUtils.scrollDownToSubject();
+            waitForIdle();
+            I_enter_text_in_field(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient, field);
+            I_enter_text_in_field(";", field);
         }
     }
 
@@ -377,11 +400,22 @@ public class CucumberTestSteps {
                 testUtils.scrollUpToSubject();
                 while (!(containstText(onView(withId(viewId)), text))) {
                     try {
+                        Thread.sleep(2000);
+                        waitForIdle();
                         onView(withId(viewId)).perform(closeSoftKeyboard());
+                        waitForIdle();
+                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(click());
+                        waitForIdle();
+                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(closeSoftKeyboard());
+                        waitForIdle();
+                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(typeTextIntoFocusedView(text), closeSoftKeyboard());
+                        waitForIdle();
+                        Thread.sleep(2000);
                         onView(withId(viewId)).perform(closeSoftKeyboard());
+                        waitForIdle();
                     } catch (Exception ex) {
                         if (viewIsDisplayed((viewId))) {
                             onView(withId(viewId)).perform(closeSoftKeyboard());
@@ -734,12 +768,12 @@ public class CucumberTestSteps {
     @When("^Normal use of sync for devices (\\S+) and (\\S+) for (\\d+) days$")
     public void Normal_use_sync_devices(String device1, String device2, int totalDays) {
         int minutesInADay = 1440;
-        int delayTimeMinutes = 26;
+        int delayTimeMinutes = 1/6;
         getBotsList();
         testUtils.readConfigFile();
         int message = 1;
         for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
-            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 30) {
+            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 330) {
                 I_check_1_and_2_sync(device1, device2);
                 testUtils.getMessageListSize();
                 switch (testUtils.test_number()) {
@@ -2219,6 +2253,10 @@ public class CucumberTestSteps {
             waitForIdle();
             testUtils.sendMessage();
             waitForIdle();
+            while (!viewIsDisplayed(R.id.message_list)) {
+                testUtils.pressBack();
+                waitForIdle();
+            }
             testUtils.waitForNewMessage();
         }
         waitForIdle();
