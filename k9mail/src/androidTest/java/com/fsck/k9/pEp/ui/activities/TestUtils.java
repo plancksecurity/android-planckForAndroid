@@ -1701,9 +1701,12 @@ public class TestUtils {
         }
     }
 
-    public StringBuilder readFile (String folder, String fileName) {
+    public String readFile (String folder, String fileName) {
         StringBuilder text = new StringBuilder();
         File directory = new File(Environment.getExternalStorageDirectory().toString() + folder);
+        if (folder.equals("")) {
+            directory = new File("/storage/emulated/0/Android/data/security.pEp.debug/files/");
+        }
         File[] files = directory.listFiles();
         for (File fileOpen : files) {
             if (fileOpen.getName().equals(fileName)) {
@@ -1725,7 +1728,7 @@ public class TestUtils {
                 }
             }
         }
-        return text;
+        return text.toString();
     }
 
     private Intent insertFileIntoIntentAsData(int id) {
@@ -3774,7 +3777,7 @@ public class TestUtils {
         waitForIdle();
         Espresso.onIdle();
         try {
-            textView.dragTo(500,500,30);
+            textView.dragTo(1000,1000,40);
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
         }
@@ -4205,7 +4208,7 @@ public class TestUtils {
         scrollToViewAndClickIt(stringToID("quiet_time_starts"));
         setTimeInRadialPicker(1);
         pressOKButtonInDialog();
-        scrollToViewAndClickIt(stringToID("quiet_time_ends"));
+        selectFromScreen(stringToID("quiet_time_ends"));
         setTimeInRadialPicker(4);
         pressOKButtonInDialog();
         scrollToViewAndClickIt(stringToID("global_settings_notification_quick_delete_title"));

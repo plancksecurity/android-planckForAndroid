@@ -2559,19 +2559,19 @@ public class CucumberTestSteps {
     @And("^I open attached Master Key$")
     public void I_open_attached_Master_Key() {
         testUtils.emptyFolder("Download");
-        String masterKeyText = "";
-        String masterKeyText2;
-        while (masterKeyText.equals("")) {
+        String masterKeyText = null;
+        String masterKeyText2 = null;
+        while (masterKeyText == null) {
             openAttachedMasterKey();
             waitForIdle();
             try {
-                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc").toString();
+                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc");
             } catch (Exception e) {
                 Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
             }
         }
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
-        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc").toString();
+        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
             TestUtils.assertFailWithMessage("Wrong Master key file");
         }
