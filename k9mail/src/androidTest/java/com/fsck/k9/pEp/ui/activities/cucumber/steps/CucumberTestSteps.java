@@ -1238,10 +1238,14 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.widget.TextView");
         BySelector horizontalScroll = By.clazz("android.widget.LinearLayout");
         BySelector subSelector = By.clazz("android.view.View");
+        String elementsOnScreen = "";
+        String oldElementsOnScreen = "";
         int horizontalWidgetScroll = 0;
         int scroll = 0;
         int visibleCenterX = 0;
+        boolean verticalRightScroll = true;
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
+            device.pressBack();
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
                 device.drag(device.getDisplayWidth() / 2, device.getDisplayHeight() * 15 / 20,
@@ -1290,14 +1294,34 @@ public class CucumberTestSteps {
                                 }
                             }
                             widgetPreview++;
+                        } else if (!elementsOnScreen.equals("SelectedScroll")){
+                            elementsOnScreen += textView.getText();
                         }
                         if (widgetPreview > widgetToDrag) {
                             break;
                         }
                     }
+                    if (!elementsOnScreen.equals("SelectedScroll")) {
+                        elementsOnScreen = elementsOnScreen.substring(elementsOnScreen.indexOf("%"));
+                    }
+                    if (!oldElementsOnScreen.equals("")) {
+                        if (elementsOnScreen.equals(oldElementsOnScreen)) {
+                            verticalRightScroll = false;
+                        }
+                        elementsOnScreen = "SelectedScroll";
+                        oldElementsOnScreen = "";
+                    } else if (!elementsOnScreen.equals("SelectedScroll")){
+                        oldElementsOnScreen = elementsOnScreen;
+                        elementsOnScreen = "";
+                    }
                     waitForIdle();
-                    device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
-                            device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
+                    if (verticalRightScroll) {
+                        device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
+                                device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
+                    } else {
+                        device.drag(1, device.getDisplayHeight() - 5,
+                                1, device.getDisplayHeight() * 3 / 4, 15);
+                    }
                     waitForIdle();
                     if (widgetPreview > widgetToDrag) {
                         break;
@@ -1318,16 +1342,12 @@ public class CucumberTestSteps {
                         if (textView.getText().equals("p≡p")) {
                             textView.click();
                             waitForIdle();
-                            Timber.i("Estoy en 1");
                             int widgetPreview = 0;
                             while (widgetPreview == 0) {
                                 try {
                                     for (UiObject2 subTextView : device.findObjects(subSelector)) {
-                                        Timber.i("Estoy en 1a");
-                                        Timber.i("Estoy en subTextView: " + subTextView.getResourceName());
                                         if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
                                             widgetPreview++;
-                                            Timber.i("Estoy en 2");
                                             while (widgetPreview < widgetToDrag) {
                                                 waitForIdle();
                                                 device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
@@ -1337,15 +1357,12 @@ public class CucumberTestSteps {
                                             }
                                             if (widgetPreview == widgetToDrag) {
                                                 scroll = horizontalWidgetScroll - 1;
-                                                Timber.i("Estoy en 3");
                                                 switch (widgetToDrag) {
                                                     case 1:
                                                         visibleCenterX = subTextView.getVisibleCenter().x;
-                                                        Timber.i("Estoy en 4");
                                                         device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
                                                                 device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
                                                         waitForIdle();
-                                                        Timber.i("Estoy en 5");
                                                         testUtils.clickTextOnScreen("Unified Inbox");
                                                         break;
                                                     case 2:
@@ -1385,9 +1402,9 @@ public class CucumberTestSteps {
                 }
             }
         }
+        device.pressBack();
         int widgets = 0;
         UiObject2 messagesListWidget = null;
-        Timber.i("Estoy en 6");
         for (UiObject2 view : device.findObjects(selector)) {
             if (view.getText() != null) {
                 if (view.getText().contains("Unified Inbox")) {
@@ -1396,19 +1413,15 @@ public class CucumberTestSteps {
                 }
             }
         }
-        Timber.i("Estoy en 7");
         if (widgets != 3) {
             TestUtils.assertFailWithMessage("Missing a Widget");
         }
-        Timber.i("Estoy en 8");
         if (!testUtils.textExistsOnScreen("WidTest")) {
             TestUtils.assertFailWithMessage("Widget error: wrong message subject");
         }
-        Timber.i("Estoy en 9");
         waitForIdle();
         messagesListWidget.click();
         waitForIdle();
-        Timber.i("Estoy en 10");
     }
 
     @And("^I select from message menu (\\S+)$")
