@@ -1532,6 +1532,7 @@ public class TestUtils {
     public void checkValueIsInDB(String table, String column, String value) {
         exportDB();
         boolean rightValue = false;
+        String valueInDB = "";
         try {
             File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
             String[] directoryPath = directory.list();
@@ -1542,6 +1543,8 @@ public class TestUtils {
                     do {
                         if (cursor.getString(cursor.getColumnIndex(column)).equals(value)) {
                             rightValue = true;
+                        } else {
+                            valueInDB += cursor.getString(cursor.getColumnIndex(column)) + " // ";
                         }
                     } while (cursor.moveToNext());
                 }
@@ -1552,7 +1555,7 @@ public class TestUtils {
         }
         removeDBFolder();
         if (!rightValue) {
-            assertFailWithMessage("Column " + column + " does not contain " + value);
+            assertFailWithMessage("Column " + column + " is " + valueInDB + " and it should be " + value);
         }
     }
 
