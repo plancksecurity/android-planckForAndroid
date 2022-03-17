@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -1270,6 +1271,20 @@ public class CucumberTestSteps {
                 for (scroll = 95; scroll > 0; scroll--) {
                     for (UiObject2 textView : device.findObjects(selector)) {
                         if (textView.getText().contains("p≡p")) {
+                            try {
+                                if (textView.getParent().getChildren().get(0).getText().equals("p≡p")) {
+                                    textView.click();
+                                    device.drag(1, device.getDisplayHeight() - 5, 1, device.getDisplayHeight() * 3 / 5, 15);
+                                    for (UiObject2 tableLayout : device.findObjects(By.clazz("android.widget.TableLayout"))) {
+                                        if (tableLayout.getResourceName().equals("com.google.android.apps.nexuslauncher:id/widgets_table")) {
+                                            textView = tableLayout.getChildren().get(widgetToDrag - 1).getChildren().get(0).getChildren().get(0).getChildren().get(0);
+                                            widgetPreview = widgetToDrag;
+                                        }
+                                    }
+                                }
+                            } catch (Exception exception) {
+                                Timber.i("Test shouldn't be here");
+                            }
                             if (widgetPreview == widgetToDrag) {
                                 switch (widgetToDrag) {
                                     case 1:
@@ -1294,15 +1309,12 @@ public class CucumberTestSteps {
                                 }
                             }
                             widgetPreview++;
-                        } else if (!elementsOnScreen.equals("SelectedScroll")){
+                        } else if (!elementsOnScreen.equals("SelectedScroll") && !textView.getResourceName().equals("com.android.systemui:id/clock")){
                             elementsOnScreen += textView.getText();
                         }
                         if (widgetPreview > widgetToDrag) {
                             break;
                         }
-                    }
-                    if (!elementsOnScreen.equals("SelectedScroll")) {
-                        elementsOnScreen = elementsOnScreen.substring(elementsOnScreen.indexOf("%"));
                     }
                     if (!oldElementsOnScreen.equals("")) {
                         if (elementsOnScreen.equals(oldElementsOnScreen)) {
@@ -1337,7 +1349,8 @@ public class CucumberTestSteps {
                     }
                     scroll = 0;
                 }
-                for (; scroll < horizontalWidgetScroll - 1; scroll++) {
+                for (; scroll < horizontalWidgetScroll; scroll++) {
+                    waitForIdle();
                     for (UiObject2 textView : device.findObjects(selector)) {
                         if (textView.getText().equals("p≡p")) {
                             textView.click();
@@ -1345,13 +1358,15 @@ public class CucumberTestSteps {
                             int widgetPreview = 0;
                             while (widgetPreview == 0) {
                                 try {
-                                    for (UiObject2 subTextView : device.findObjects(subSelector)) {
-                                        if (subTextView.getResourceName().equals("com.sec.android.app.launcher:id/widget_preview")) {
+                                    Rect visibleBounds;
+                                    for (UiObject2 subTextView : device.findObjects(horizontalScroll)) {
+                                        if (subTextView.getResourceName() != null && subTextView.getResourceName().equals("com.sec.android.app.launcher:id/add_widget_preview_background")) {
                                             widgetPreview++;
+                                            visibleBounds = subTextView.getVisibleBounds();
                                             while (widgetPreview < widgetToDrag) {
                                                 waitForIdle();
-                                                device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
-                                                        10, device.getDisplayHeight() / 2, 15);
+                                                device.swipe(visibleBounds.right + 25, visibleBounds.bottom + 5,
+                                                        visibleBounds.left - 25, visibleBounds.bottom + 5, 30);
                                                 waitForIdle();
                                                 widgetPreview++;
                                             }
@@ -1360,17 +1375,17 @@ public class CucumberTestSteps {
                                                 switch (widgetToDrag) {
                                                     case 1:
                                                         visibleCenterX = subTextView.getVisibleCenter().x;
-                                                        device.drag(subTextView.getVisibleCenter().x, subTextView.getVisibleCenter().y,
+                                                        device.drag(visibleBounds.centerX(), visibleBounds.centerY(),
                                                                 device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
                                                         waitForIdle();
                                                         testUtils.clickTextOnScreen("Unified Inbox");
                                                         break;
                                                     case 2:
-                                                        device.drag(visibleCenterX, subTextView.getVisibleCenter().y,
+                                                        device.drag(visibleCenterX, visibleBounds.centerY(),
                                                                 device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
                                                         break;
                                                     case 3:
-                                                        device.drag(visibleCenterX, subTextView.getVisibleCenter().y,
+                                                        device.drag(visibleCenterX, visibleBounds.centerY(),
                                                                 device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
                                                         waitForIdle();
                                                         testUtils.clickTextOnScreen("Unified Inbox");
