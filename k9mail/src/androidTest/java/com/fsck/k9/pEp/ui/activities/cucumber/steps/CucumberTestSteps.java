@@ -185,6 +185,7 @@ public class CucumberTestSteps {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        testUtils.allowPermissions(2);
         if (exists(onView(withId(R.id.passphrase)))) {
             testUtils.readConfigFile();
             while (getTextFromView(onView(withId(R.id.passphrase))).equals("")) {
@@ -1244,9 +1245,25 @@ public class CucumberTestSteps {
         int horizontalWidgetScroll = 0;
         int scroll = 0;
         int visibleCenterX = 0;
-        boolean verticalRightScroll = true;
+        boolean verticalLeftScroll = true;
         for (int widgetToDrag = 1; widgetToDrag < 4; widgetToDrag++) {
+            waitForIdle();
             device.pressBack();
+            String text = "";
+            switch (widgetToDrag) {
+                case 1:
+                    text = "p≡p Unread";
+                    break;
+                case 2:
+                    text = "p≡p Message List";
+                    break;
+                case 3:
+                    text = "p≡p Accounts";
+                    break;
+                default:
+                    text = "p≡p";
+                    break;
+            }
             while (!testUtils.textExistsOnScreen("Widgets")) {
                 waitForIdle();
                 device.drag(device.getDisplayWidth() / 2, device.getDisplayHeight() * 15 / 20,
@@ -1255,7 +1272,7 @@ public class CucumberTestSteps {
             }
             testUtils.selectFromScreen("Widgets");
             waitForIdle();
-            if (horizontalWidgetScroll == 0) {
+            if (horizontalWidgetScroll == 0) { //Horizontal scroll
                 horizontalWidgetScroll = -1;
                 for (UiObject2 linearLayout : device.findObjects(horizontalScroll)) {
                     if (linearLayout.getResourceName() != null) {
@@ -1265,81 +1282,28 @@ public class CucumberTestSteps {
                     }
                 }
             }
-            if (horizontalWidgetScroll == -1) {
+            if (horizontalWidgetScroll == -1) { //Vertical scroll
                 device.click(5, device.getDisplayHeight() - 5);
-                int widgetPreview = 0;
-                for (scroll = 95; scroll > 0; scroll--) {
+                boolean openWidgetMenu = true;
+                for (scroll = 1; scroll < 30; scroll++) {
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText().contains("p≡p")) {
-                            try {
-                                if (textView.getParent().getChildren().get(0).getText().equals("p≡p")) {
-                                    textView.click();
-                                    device.drag(1, device.getDisplayHeight() - 5, 1, device.getDisplayHeight() * 3 / 5, 15);
-                                    for (UiObject2 tableLayout : device.findObjects(By.clazz("android.widget.TableLayout"))) {
-                                        if (tableLayout.getResourceName().equals("com.google.android.apps.nexuslauncher:id/widgets_table")) {
-                                            textView = tableLayout.getChildren().get(widgetToDrag - 1).getChildren().get(0).getChildren().get(0).getChildren().get(0);
-                                            widgetPreview = widgetToDrag;
-                                        }
-                                    }
-                                }
-                            } catch (Exception exception) {
-                                Timber.i("Test shouldn't be here");
-                            }
-                            if (widgetPreview == widgetToDrag) {
-                                switch (widgetToDrag) {
-                                    case 1:
-                                        device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                                                device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
-                                        waitForIdle();
-                                        testUtils.clickTextOnScreen("Unified Inbox");
-                                        break;
-                                    case 2:
-                                        device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                                                device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
-                                        break;
-                                    case 3:
-                                        device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                                                device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
-                                        waitForIdle();
-                                        testUtils.clickTextOnScreen("Unified Inbox");
-                                        break;
-                                }
-                                if (scroll == horizontalWidgetScroll - 1) {
-                                    break;
-                                }
-                            }
-                            widgetPreview++;
-                        } else if (!elementsOnScreen.equals("SelectedScroll") && !textView.getResourceName().equals("com.android.systemui:id/clock")){
-                            elementsOnScreen += textView.getText();
-                        }
-                        if (widgetPreview > widgetToDrag) {
+                        if (openWidgetMenu && textView.getText().equals("p≡p")) {
+                            textView.click();
+                            openWidgetMenu = false;
                             break;
+                        } else if (!openWidgetMenu && textView.getText().equals(text)) {
+                            testUtils.dragWidget(widgetToDrag, textView.getParent().getChildren().get(0));
+                            scroll = 30;
+                            break;
+                        } else if (textView.getResourceName().equals("com.android.launcher3:id/section") &&
+                            textView.getVisibleBounds().left == 0){
+                            verticalLeftScroll = false;
                         }
                     }
-                    if (!oldElementsOnScreen.equals("")) {
-                        if (elementsOnScreen.equals(oldElementsOnScreen)) {
-                            verticalRightScroll = false;
-                        }
-                        elementsOnScreen = "SelectedScroll";
-                        oldElementsOnScreen = "";
-                    } else if (!elementsOnScreen.equals("SelectedScroll")){
-                        oldElementsOnScreen = elementsOnScreen;
-                        elementsOnScreen = "";
-                    }
-                    waitForIdle();
-                    if (verticalRightScroll) {
-                        device.drag(device.getDisplayWidth() - 5, device.getDisplayHeight() * scroll / 100,
-                                device.getDisplayWidth() - 5, device.getDisplayHeight() * (scroll - 1) / 100, 15);
-                    } else {
-                        device.drag(1, device.getDisplayHeight() - 5,
-                                1, device.getDisplayHeight() * 3 / 4, 15);
-                    }
-                    waitForIdle();
-                    if (widgetPreview > widgetToDrag) {
-                        break;
-                    }
+
+                    testUtils.verticalScreenScroll(verticalLeftScroll, device.getDisplayHeight() * scroll / 30, device.getDisplayHeight() * scroll / 10 + 3);
                 }
-            } else {
+            } else {  //Horizontal scroll
                 if (scroll == 0) {
                     for (; scroll < horizontalWidgetScroll - 1; scroll++) {
                         waitForIdle();
@@ -1352,7 +1316,7 @@ public class CucumberTestSteps {
                 for (; scroll < horizontalWidgetScroll; scroll++) {
                     waitForIdle();
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText().equals("p≡p")) {
+                        if (textView.getText() != null && textView.getText().equals("p≡p")) {
                             textView.click();
                             waitForIdle();
                             int widgetPreview = 0;

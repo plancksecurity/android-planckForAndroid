@@ -1392,7 +1392,7 @@ public class TestUtils {
         } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
     }
 
-    private void allowPermissions(int index) {
+    public void allowPermissions(int index) {
         while (true) {
             try {
                 waitForIdle();
@@ -1400,7 +1400,7 @@ public class TestUtils {
                         .clickable(true)
                         .checkable(false)
                         .index(index));
-                if (allowPermissions.exists()) {
+                if (allowPermissions.exists() && !allowPermissions.getText().equals("")) {
                     allowPermissions.click();
                     waitForIdle();
                 } else {
@@ -4707,6 +4707,39 @@ public class TestUtils {
         } catch (Exception ex) {
             Log.e(TAG, "Could not use reflection to change animation scale to: " + animationScale, ex);
         }
+    }
+
+    public void dragWidget (int widgetToDrag, UiObject2 textView) {
+        switch (widgetToDrag) {
+            case 1:
+                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                        device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                waitForIdle();
+                clickTextOnScreen("Unified Inbox");
+                break;
+            case 2:
+                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                        device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                break;
+            case 3:
+                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
+                        device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                waitForIdle();
+                clickTextOnScreen("Unified Inbox");
+                break;
+        }
+    }
+
+    public void verticalScreenScroll (boolean verticalLeftScroll, int start, int end) {
+        waitForIdle();
+        if (verticalLeftScroll) {
+            device.drag(1, device.getDisplayHeight() * 3/4,
+                    1, device.getDisplayHeight() * 1/2, 15);
+        } else {
+            device.swipe(device.getDisplayWidth() - 3, start,
+                    device.getDisplayWidth() - 3, end, 15);
+        }
+        waitForIdle();
     }
 
     public String getAccountPassword () {
