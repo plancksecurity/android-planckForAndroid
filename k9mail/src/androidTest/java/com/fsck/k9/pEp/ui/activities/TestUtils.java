@@ -1393,23 +1393,18 @@ public class TestUtils {
     }
 
     public void allowPermissions(int index) {
-        while (true) {
-            try {
+        try {
+            waitForIdle();
+            UiObject allowPermissions = device.findObject(new UiSelector()
+                    .clickable(true)
+                    .checkable(false)
+                    .index(index));
+            if (allowPermissions.exists()) {
+                allowPermissions.click();
                 waitForIdle();
-                UiObject allowPermissions = device.findObject(new UiSelector()
-                        .clickable(true)
-                        .checkable(false)
-                        .index(index));
-                if (allowPermissions.exists() && !allowPermissions.getText().equals("")) {
-                    allowPermissions.click();
-                    waitForIdle();
-                } else {
-                    Timber.i("There is no permissions dialog to interact with ");
-                    return;
-                }
-            } catch (Exception ignoredException) {
-                Timber.i(ignoredException, "Failed trying to allow permission");
             }
+        } catch (Exception ignoredException) {
+            Timber.i(ignoredException, "Failed trying to allow permission");
         }
     }
 
@@ -4709,21 +4704,18 @@ public class TestUtils {
         }
     }
 
-    public void dragWidget (int widgetToDrag, UiObject2 textView) {
+    public void dragWidget(int widgetToDrag, int x, int y) {
         switch (widgetToDrag) {
             case 1:
-                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                        device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
+                device.drag(x, y, device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
                 waitForIdle();
                 clickTextOnScreen("Unified Inbox");
                 break;
             case 2:
-                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                        device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
+                device.drag(x, y, device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
                 break;
             case 3:
-                device.drag(textView.getVisibleCenter().x, textView.getVisibleCenter().y,
-                        device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
+                device.drag(x, y, device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
                 waitForIdle();
                 clickTextOnScreen("Unified Inbox");
                 break;

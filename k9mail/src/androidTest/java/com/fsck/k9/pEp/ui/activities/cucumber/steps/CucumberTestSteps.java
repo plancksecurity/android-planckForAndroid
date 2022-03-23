@@ -185,7 +185,7 @@ public class CucumberTestSteps {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        testUtils.allowPermissions(2);
+        testUtils.allowPermissions(1);
         if (exists(onView(withId(R.id.passphrase)))) {
             testUtils.readConfigFile();
             while (getTextFromView(onView(withId(R.id.passphrase))).equals("")) {
@@ -1292,7 +1292,7 @@ public class CucumberTestSteps {
                             openWidgetMenu = false;
                             break;
                         } else if (!openWidgetMenu && textView.getText().equals(text)) {
-                            testUtils.dragWidget(widgetToDrag, textView.getParent().getChildren().get(0));
+                            testUtils.dragWidget(widgetToDrag, textView.getParent().getChildren().get(0).getVisibleCenter().x, textView.getParent().getChildren().get(0).getVisibleCenter().y);
                             scroll = 30;
                             break;
                         } else if (textView.getResourceName().equals("com.android.launcher3:id/section") &&
@@ -1336,25 +1336,10 @@ public class CucumberTestSteps {
                                             }
                                             if (widgetPreview == widgetToDrag) {
                                                 scroll = horizontalWidgetScroll - 1;
-                                                switch (widgetToDrag) {
-                                                    case 1:
-                                                        visibleCenterX = subTextView.getVisibleCenter().x;
-                                                        device.drag(visibleBounds.centerX(), visibleBounds.centerY(),
-                                                                device.getDisplayWidth() / 6, device.getDisplayHeight() * 3 / 5, 30);
-                                                        waitForIdle();
-                                                        testUtils.clickTextOnScreen("Unified Inbox");
-                                                        break;
-                                                    case 2:
-                                                        device.drag(visibleCenterX, visibleBounds.centerY(),
-                                                                device.getDisplayWidth() / 2, device.getDisplayHeight() / 3, 30);
-                                                        break;
-                                                    case 3:
-                                                        device.drag(visibleCenterX, visibleBounds.centerY(),
-                                                                device.getDisplayWidth() / 3, device.getDisplayHeight() * 3 / 5, 30);
-                                                        waitForIdle();
-                                                        testUtils.clickTextOnScreen("Unified Inbox");
-                                                        break;
+                                                if (visibleCenterX == 0) {
+                                                    visibleCenterX = subTextView.getVisibleCenter().x;
                                                 }
+                                                testUtils.dragWidget(widgetToDrag, visibleCenterX, visibleBounds.centerY());
                                             }
                                         }
                                         if (scroll == horizontalWidgetScroll - 1) {
