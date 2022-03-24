@@ -1305,7 +1305,6 @@ public class CucumberTestSteps {
                                 device.getDisplayWidth() - 10, device.getDisplayHeight() / 2, 10);
                         waitForIdle();
                     }
-                    scroll = 0;
                 }
                 for (scroll = 0; scroll < horizontalWidgetScroll; scroll++) {
                     waitForIdle();
