@@ -180,12 +180,9 @@ public class CucumberTestSteps {
     @When(value = "^I created an account$")
     public void I_create_account() {
         waitForIdle();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (!exists(onView(withId(R.id.message_list)))) {
+            testUtils.allowPermissions(1);
         }
-        testUtils.allowPermissions(1);
         if (exists(onView(withId(R.id.passphrase)))) {
             testUtils.readConfigFile();
             while (getTextFromView(onView(withId(R.id.passphrase))).equals("")) {
@@ -1239,9 +1236,6 @@ public class CucumberTestSteps {
         device.pressHome();
         BySelector selector = By.clazz("android.widget.TextView");
         BySelector horizontalScroll = By.clazz("android.widget.LinearLayout");
-        BySelector subSelector = By.clazz("android.view.View");
-        String elementsOnScreen = "";
-        String oldElementsOnScreen = "";
         int horizontalWidgetScroll = 0;
         int scroll = 0;
         int visibleCenterX = 0;
@@ -1313,8 +1307,9 @@ public class CucumberTestSteps {
                     }
                     scroll = 0;
                 }
-                for (; scroll < horizontalWidgetScroll; scroll++) {
+                for (scroll = 0; scroll < horizontalWidgetScroll; scroll++) {
                     waitForIdle();
+                    int elements = 0;
                     for (UiObject2 textView : device.findObjects(selector)) {
                         if (textView.getText() != null && textView.getText().equals("p≡p")) {
                             textView.click();
@@ -1329,8 +1324,8 @@ public class CucumberTestSteps {
                                             visibleBounds = subTextView.getVisibleBounds();
                                             while (widgetPreview < widgetToDrag) {
                                                 waitForIdle();
-                                                device.swipe(visibleBounds.right + 25, visibleBounds.bottom + 5,
-                                                        visibleBounds.left - 25, visibleBounds.bottom + 5, 30);
+                                                device.swipe(visibleBounds.right + 5, visibleBounds.bottom + 5,
+                                                        visibleBounds.left - 5, visibleBounds.bottom + 5, 30);
                                                 waitForIdle();
                                                 widgetPreview++;
                                             }
@@ -1340,18 +1335,22 @@ public class CucumberTestSteps {
                                                     visibleCenterX = subTextView.getVisibleCenter().x;
                                                 }
                                                 testUtils.dragWidget(widgetToDrag, visibleCenterX, visibleBounds.centerY());
+                                                scroll = horizontalWidgetScroll;
+                                                break;
                                             }
                                         }
-                                        if (scroll == horizontalWidgetScroll - 1) {
-                                            break;
-                                        }
+                                        //if (scroll == horizontalWidgetScroll - 1) {
+                                        //    break;
+                                        //}
                                     }
                                 } catch (Exception noWidget) {
                                     Timber.i("Cannot find Widget");
                                 }
                             }
+                        } else {
+                            elements++;
                         }
-                        if (scroll == horizontalWidgetScroll - 1) {
+                        if (scroll == horizontalWidgetScroll) {
                             break;
                         }
                     }
@@ -1360,9 +1359,13 @@ public class CucumberTestSteps {
                         break;
                     }
                     waitForIdle();
-                    device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
-                            10, device.getDisplayHeight() / 2, 15);
-                    waitForIdle();
+                    if (elements > 4) {
+                        device.drag(device.getDisplayWidth() - 10, device.getDisplayHeight() / 2,
+                                10, device.getDisplayHeight() / 2, 15);
+                        waitForIdle();
+                    } else {
+                        scroll--;
+                    }
                 }
             }
         }
