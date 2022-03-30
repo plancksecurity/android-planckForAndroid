@@ -943,6 +943,10 @@ public class TestUtils {
         }
     }
 
+    public void setTestNumber (int number) {
+        testConfig.settest_number(String.valueOf(number));
+    }
+
     public void clickHandShakeButton() {
         waitForIdle();
         if (exists(onView(withId(R.id.buttonHandshake)))) {
