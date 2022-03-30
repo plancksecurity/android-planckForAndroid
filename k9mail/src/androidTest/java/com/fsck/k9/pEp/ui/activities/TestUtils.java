@@ -977,6 +977,20 @@ public class TestUtils {
         }
     }
 
+    public String getMessageBody () {
+        String message = "";
+        waitForIdle();
+        BySelector selector = By.clazz("android.widget.FrameLayout");
+        for (UiObject2 frameLayout : device.findObjects(selector)) {
+            if (frameLayout.getResourceName() != null && frameLayout.getResourceName().equals("security.pEp.debug:id/message_container")) {
+                message = frameLayout.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(0).getText();
+                message = message.substring(0, message.indexOf("\n"));
+                break;
+            }
+        }
+        return message;
+    }
+
     public void createNAccounts(int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
