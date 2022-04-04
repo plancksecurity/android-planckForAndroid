@@ -180,7 +180,11 @@ public class CucumberTestSteps {
     @When(value = "^I created an account$")
     public void I_create_account() {
         waitForIdle();
-        if (!exists(onView(withId(R.id.message_list)))) {
+        try {
+            if (!exists(onView(withId(R.id.message_list)))) {
+                testUtils.allowPermissions(1);
+            }
+        } catch (Exception exception) {
             testUtils.allowPermissions(1);
         }
         if (exists(onView(withId(R.id.passphrase)))) {
@@ -764,15 +768,71 @@ public class CucumberTestSteps {
         return LocalStore.getInstance(ac, K9.app);
     }
 
+    @When("^Normal use of 2 users between A and B for (\\d+) days$")
+    public void _use_sync_devices(int totalDays) {
+        String emailAccount = "";
+        int messagesInADay = 2000;
+        getBotsList();
+        testUtils.readConfigFile();
+        switch (testUtils.test_number()) {
+            case "1":
+                testUtils.getMessageListSize();
+                I_wait_for_the_message_and_click_it();
+                emailAccount = testUtils.getMessageBody();
+                testUtils.pressBack();
+                I_send_message_to_address(1, "myself", "A account", testUtils.getAccountAddress(0));
+                I_go_back_to_accounts_list();
+                break;
+            case "2":
+                I_send_message_to_address(1, "myself", "B account", testUtils.getAccountAddress(0));
+                I_wait_for_the_message_and_click_it();
+                emailAccount = testUtils.getMessageBody();
+                testUtils.pressBack();
+                I_disable_sync("B");
+                break;
+        }
+        I_go_back_to_accounts_list();
+        I_remove_account();
+        testUtils.setTestNumber(0);
+        testUtils.createNAccounts(1, false, false);
+        testUtils.readConfigFile();
+        String pepColor = "pep_yellow";
+        for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
+            for (int currentMessage = 0; currentMessage < messagesInADay; currentMessage++) {
+                testUtils.getMessageListSize();
+                switch (testUtils.test_number()) {
+                    case "1":
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is(pepColor);
+                        testUtils.pressBack();
+                        I_remove_all_messages();
+                        I_select_account("0");
+                        testUtils.getMessageListSize();
+                        I_send_message_to_address(1, emailAccount, "Message from A to B", "Day " + currentDay + ", message " + currentMessage);
+                        break;
+                    case "2":
+                        I_send_message_to_address(1, emailAccount, "Message from B to A", "Day " + currentDay + ", message " + currentMessage);
+                        I_wait_for_the_message_and_click_it();
+                        I_check_toolBar_color_is(pepColor);
+                        testUtils.pressBack();
+                        I_remove_all_messages();
+                        I_select_account("0");
+                        testUtils.getMessageListSize();
+                        break;
+                }
+            }
+        }
+    }
+
     @When("^Normal use of sync for devices (\\S+) and (\\S+) for (\\d+) days$")
     public void Normal_use_sync_devices(String device1, String device2, int totalDays) {
         int minutesInADay = 1440;
-        int delayTimeMinutes = 1/6;
+        int delayTimeMinutes = 26;
         getBotsList();
         testUtils.readConfigFile();
         int message = 1;
         for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
-            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 330) {
+            for (int currentMinutes = 0; currentMinutes < minutesInADay; currentMinutes += 30) {
                 I_check_1_and_2_sync(device1, device2);
                 testUtils.getMessageListSize();
                 switch (testUtils.test_number()) {
