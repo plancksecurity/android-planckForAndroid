@@ -18,8 +18,10 @@ import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
@@ -158,7 +160,7 @@ public class SettingsImporterTest {
 
     @Test
     public void importSettings_disablesAccountsNeedingPasswords() throws SettingsImportExportException {
-        Mockito.mockStatic(PEpUtils.class);
+        MockedStatic<PEpUtils> pEpUtilsMock = Mockito.mockStatic(PEpUtils.class);
         stubApplication();
         String validUUID = UUID.randomUUID().toString();
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
@@ -191,6 +193,7 @@ public class SettingsImporterTest {
 
         assertFalse(Preferences.getPreferences(ApplicationProvider.getApplicationContext())
                 .getAccount(validUUID).isEnabled());
+        pEpUtilsMock.close();
     }
 
     private void stubApplication() {
