@@ -48,7 +48,7 @@ object FakeAndroidKeyStore {
         override fun engineGetCertificateChain(alias: String?): Array<Certificate> = wrapped.getCertificateChain(alias)
         override fun engineSetCertificateEntry(alias: String?, cert: Certificate?) = wrapped.setCertificateEntry(alias, cert)
         override fun engineGetCertificateAlias(cert: Certificate?): String = wrapped.getCertificateAlias(cert)
-        override fun engineGetKey(alias: String?, password: CharArray?): Key = wrapped.getKey(alias, password)
+        override fun engineGetKey(alias: String?, password: CharArray?): Key? = wrapped.getKey(alias, password)
     }
 
     @Suppress("unused")
