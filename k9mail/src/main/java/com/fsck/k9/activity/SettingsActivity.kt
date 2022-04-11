@@ -1161,6 +1161,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
                 anyAccountWasDeleted = false
             }
+            isTaskRoot ||
             preferences.availableAccounts.isNotEmpty() -> {
                 super.onBackPressed()
             }
