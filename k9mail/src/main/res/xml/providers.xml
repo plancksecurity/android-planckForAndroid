@@ -760,9 +760,9 @@
         <incoming uri="imap+ssl+://peptest.ch" username="$email" />
         <outgoing uri="smtp+tls+://peptest.ch" username="$email" />
     </provider>
-    <provider id="pepSecurity" label="pEp Security" domain="pep-security.net">
-        <incoming uri="imap+ssl+://mail.pep-security.net" username="$user@pep-security.net" />
-        <outgoing uri="smtp+tls+://mail.pep-security.net" username="$user@pep-security.net" />
+    <provider id="pepSecurity" label="pEp Security" domain="pep.security">
+        <incoming uri="imap+ssl+://mail.pep.security" username="$email" />
+        <outgoing uri="smtp+ssl+://mail.pep.security" username="$email" />
     </provider>
     <provider id="pepProject" label="pEp Project" domain="pep-project.org">
         <incoming uri="imap+ssl+://dragon.pibit.ch" username="$user" />
