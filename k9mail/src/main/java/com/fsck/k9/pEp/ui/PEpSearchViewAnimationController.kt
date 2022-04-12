@@ -31,35 +31,35 @@ class PEpSearchViewAnimationController(private val activity: Activity) {
         } else {
             searchAnimationCallback.todoIfIsAndroidLolllipop(false)
             searchBarMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener {
-                override fun onTransitionStarted(motionLayout: MotionLayout, i: Int, i1: Int) {
-                    if (i == R.id.start) {
+                override fun onTransitionStarted(motionLayout: MotionLayout, id: Int, i1: Int) {
+                    if (id == R.id.start) {
                         searchInput.error = null
                         searchInput.hint = null
                         searchInput.isEnabled = false
                         searchInput.setText(previousText)
                         searchLayout.visibility = View.VISIBLE
-                    } else if (i == R.id.end) {
+                    } else if (id == R.id.end) {
                         toolbar.alpha = 0f
                     }
                 }
 
-                override fun onTransitionChange(motionLayout: MotionLayout, i: Int, i1: Int, v: Float) {
-                    if (i == R.id.start) {
+                override fun onTransitionChange(motionLayout: MotionLayout, id: Int, i1: Int, v: Float) {
+                    if (id == R.id.start) {
                         toolbar.alpha = 1 - v
-                    } else if (i == R.id.end) {
+                    } else if (id == R.id.end) {
                         toolbar.alpha = v
                     }
                 }
 
-                override fun onTransitionCompleted(motionLayout: MotionLayout, i: Int) {
-                    if (i == R.id.start) {
+                override fun onTransitionCompleted(motionLayout: MotionLayout, id: Int) {
+                    if (id == R.id.start) {
                         backwardsAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback)
-                    } else if (i == R.id.end) {
+                    } else if (id == R.id.end) {
                         forwardAnimationCompleted(searchLayout, toolbar, searchInput, searchAnimationCallback)
                     }
                 }
 
-                override fun onTransitionTrigger(motionLayout: MotionLayout, i: Int, b: Boolean, v: Float) {
+                override fun onTransitionTrigger(motionLayout: MotionLayout, id: Int, b: Boolean, v: Float) {
                     // NOP
                 }
             })
