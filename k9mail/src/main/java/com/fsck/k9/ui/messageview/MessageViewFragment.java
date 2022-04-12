@@ -1017,7 +1017,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void refreshMessage() {
         //If get support manager is null, it means that you don't have a fragment to refresh
-        mFragmentListener.refreshMessageViewFragment();
+        if (mFragmentListener != null) {
+            mFragmentListener.refreshMessageViewFragment();
+        }
     }
 
     @Override
