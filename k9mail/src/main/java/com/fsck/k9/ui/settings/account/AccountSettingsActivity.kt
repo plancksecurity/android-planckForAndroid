@@ -40,7 +40,7 @@ class AccountSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback, R
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.menu_account_settings, menu)
+        menuInflater.inflate(R.menu.account_settings_option, menu)
         return true
     }
 
