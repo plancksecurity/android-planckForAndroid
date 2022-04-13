@@ -4,7 +4,7 @@ task installApkAddAccount(type: Exec, dependsOn: 'uninstallAll') {
     commandLine command
 }
 
-task installTestAddAccount(type: Exec, dependsOn: 'installApkAppConfig') {
+task installTestAddAccount(type: Exec, dependsOn: 'installApkAddAccount') {
     def command = ['../gradlew', 'installWithkeysyncPlayStoreDebugAndroidTest']
     commandLine command
 }
