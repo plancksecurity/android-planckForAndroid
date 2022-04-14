@@ -805,6 +805,7 @@ public class CucumberTestSteps {
                         I_wait_for_the_message_and_click_it();
                         I_check_toolBar_color_is(pepColor);
                         testUtils.pressBack();
+                        testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
                         I_select_account("0");
                         testUtils.getMessageListSize();
@@ -815,6 +816,7 @@ public class CucumberTestSteps {
                         I_wait_for_the_message_and_click_it();
                         I_check_toolBar_color_is(pepColor);
                         testUtils.pressBack();
+                        testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
                         I_select_account("0");
                         testUtils.getMessageListSize();
@@ -827,7 +829,7 @@ public class CucumberTestSteps {
     @When("^Normal use of sync for devices (\\S+) and (\\S+) for (\\d+) days$")
     public void Normal_use_sync_devices(String device1, String device2, int totalDays) {
         int minutesInADay = 1440;
-        int delayTimeMinutes = 26;
+        int delayTimeMinutes = 1/6;
         getBotsList();
         testUtils.readConfigFile();
         int message = 1;
@@ -863,6 +865,7 @@ public class CucumberTestSteps {
                         I_wait_for_the_message_and_click_it();
                         I_check_toolBar_color_is("pep_yellow");
                         testUtils.pressBack();
+                        testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
                         I_select_account("0");
                         testUtils.getMessageListSize();
@@ -921,6 +924,7 @@ public class CucumberTestSteps {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                     I_remove_all_messages();
                     I_select_account("0");
                     testUtils.getMessageListSize();
@@ -1021,7 +1025,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount("Inbox", 0);
+                    testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 0);
                 }
                 break;
             case "2":
@@ -1031,7 +1035,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount("Inbox", 0);
+                    testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 0);
                 }
                 break;
             case "3":
@@ -1041,7 +1045,7 @@ public class CucumberTestSteps {
                 }
                 if (exists(onView(withId(R.id.available_accounts_title)))) {
                     ignoreThisTest = false;
-                    testUtils.selectAccount("Inbox", 1);
+                    testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 1);
                 }
                 break;
             default:
@@ -1109,7 +1113,7 @@ public class CucumberTestSteps {
 
     @When("^I check account devices (\\S+) and (\\S+) are not protected$")
     public void I_check_1_and_2_not_protected(String firstDevice, String secondDevice) {
-        testUtils.selectAccount("Inbox", 0);
+        testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 0);
         switch (testUtils.test_number()) {
             case "1":
                 testUtils.checkAccountIsNotProtected("A", firstDevice, secondDevice, syncThirdDevice);
@@ -1433,7 +1437,7 @@ public class CucumberTestSteps {
         UiObject2 messagesListWidget = null;
         for (UiObject2 view : device.findObjects(selector)) {
             if (view.getText() != null) {
-                if (view.getText().contains("Unified Inbox")) {
+                if (view.getText().contains(resources.getString(testUtils.stringToID("integrated_inbox_title")))) {
                     messagesListWidget = view;
                     widgets++;
                 }
@@ -1745,7 +1749,7 @@ public class CucumberTestSteps {
 
     @When("^I run the tests")
     public void I_run_the_tests() {
-        startTest("Inbox", 0);
+        startTest(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 0);
     }
 
     @When("^I test Unified Inbox (\\d+) times")
@@ -1803,7 +1807,7 @@ public class CucumberTestSteps {
         if (!(accountSelected < testUtils.getTotalAccounts())) {
             skipTest("No more accounts");
         }
-        startTest("Inbox", accountSelected);
+        startTest(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
     }
 
     @When("^I select (\\S+) folder of account (\\S+)$")
@@ -2319,7 +2323,6 @@ public class CucumberTestSteps {
 
     @Then("^I remove all messages$")
     public void I_remove_all_messages() {
-        testUtils.selectAccount("Inbox", 0);
         testUtils.getMessageListSize();
         if (testUtils.getListSize() > 0) {
             testUtils.clickLastMessage();
@@ -2383,6 +2386,13 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.goBackToMessageList();
         testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
+    }
+
+    @And("^I select the inbox$")
+    public void I_select_the_inbox() {
+        timeRequiredForThisMethod(25);
+        waitForIdle();
+        testUtils.goToFolder(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")));
     }
 
     @And("^I enable passive mode$")
