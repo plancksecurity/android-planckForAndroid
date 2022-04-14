@@ -17,12 +17,12 @@ import security.pEp.ui.resources.ResourcesProvider
 import java.util.concurrent.ConcurrentHashMap
 
 class AccountListAdapter(
-        private val accounts: List<BaseAccount>,
-        private val indexedFolderClickListener: IndexedFolderClickListener,
-        private val resourcesProvider: ResourcesProvider,
-        private val fontSizes: FontSizes,
-        private val accountStats: ConcurrentHashMap<String, AccountStats>) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
-        , AccountClickListener {
+    private val accounts: List<BaseAccount>,
+    private val indexedFolderClickListener: IndexedFolderClickListener,
+    private val resourcesProvider: ResourcesProvider,
+    private val fontSizes: FontSizes,
+    private val accountStats: ConcurrentHashMap<String, AccountStats>
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), AccountClickListener {
 
     private lateinit var context: Context
 

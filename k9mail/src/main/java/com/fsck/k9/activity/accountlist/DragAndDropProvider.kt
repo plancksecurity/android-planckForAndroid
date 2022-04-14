@@ -57,7 +57,9 @@ class DragAndDropProvider @Inject constructor() : ItemTouchHelper.Callback() {
     fun initialize(
         list: RecyclerView,
         data: List<Any>
-    , itemReleasedListener: ItemReleasedListener) {
+    ,
+        itemReleasedListener: ItemReleasedListener
+    ) {
         this.list = list
         this.data = data
         this.itemReleasedListener = itemReleasedListener
