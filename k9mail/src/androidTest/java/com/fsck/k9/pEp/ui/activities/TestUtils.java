@@ -2624,11 +2624,20 @@ public class TestUtils {
     }
 
     public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        waitUntilViewDisplayed(viewInteraction, 0L);
+    }
+
+    private boolean waitUntilViewDisplayed(ViewInteraction viewInteraction, long timeout) {
+        long initialTime = System.currentTimeMillis();
         boolean displayed = false;
         while(!displayed) {
             displayed = viewIsDisplayed(viewInteraction);
             device.waitForIdle();
+            if(timeout > 0 && System.currentTimeMillis() - initialTime > timeout) {
+                return false;
+            }
         }
+        return true;
     }
 
     private void doWaitForIdlingListViewResource(int resource){
@@ -2655,13 +2664,23 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
+        doWaitForAlertDialog(displayText, false, 0L);
+    }
+
+    private boolean doWaitForAlertDialog(int displayText, boolean isOwnPackage, long timeout) {
+        String packageName = isOwnPackage
+                ? context.getPackageName()
+                : "android";
         waitForIdle();
-        int id = context.getResources().getIdentifier("alertTitle", "id", "android");
+        int id = context.getResources().getIdentifier("alertTitle", "id", packageName);
         ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
-        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+        if(!waitUntilViewDisplayed(dialogHeaderViewInteraction, timeout)) {
+            return false;
+        }
 
         onView(withText(displayText)).check(matches(isDisplayed()));
         waitForIdle();
+        return true;
     }
 
     public void doWaitForNextAlertDialog(boolean isOwnPackage) {
