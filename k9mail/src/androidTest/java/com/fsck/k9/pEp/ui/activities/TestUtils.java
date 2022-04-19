@@ -1572,6 +1572,8 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
+        acceptCertificateIfNeeded(true);
+        acceptCertificateIfNeeded(true);
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if(!withSync) {
