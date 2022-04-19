@@ -87,8 +87,8 @@ public class AccountSetupBasicsTest {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        acceptCertificate(true);
-        acceptCertificate(true);
+        testUtils.acceptCertificateIfNeeded(true);
+        testUtils.acceptCertificateIfNeeded(true);
         accountSetupName(false);
         checkLastAccountInSettings();
     }
@@ -150,7 +150,7 @@ public class AccountSetupBasicsTest {
 
     private void setupOutgoingSettings() {
         setupSettings(R.string.account_setup_outgoing_title);
-        acceptCertificate(false);
+        testUtils.acceptCertificateIfNeeded(false);
     }
 
     private void setupSettings(int stringResource) {
@@ -167,24 +167,7 @@ public class AccountSetupBasicsTest {
     private void setupIncomingSettings() {
         setupSettings(R.string.account_setup_incoming_title);
 
-        acceptCertificate(false);
-    }
-
-    private void acceptCertificate(boolean automaticSetup) {
-        if (
-            testUtils.doWaitForAlertDialog(
-                R.string.account_setup_failed_dlg_invalid_certificate_title,
-                automaticSetup,
-                1000L
-            )
-        ) {
-            clickAccept();
-            TestUtils.waitForIdle();
-        }
-    }
-
-    private void clickAccept() {
-        onView(withId(android.R.id.button1)).perform(click());
+        testUtils.acceptCertificateIfNeeded(false);
     }
 
     private void setupEmailAndPassword() {

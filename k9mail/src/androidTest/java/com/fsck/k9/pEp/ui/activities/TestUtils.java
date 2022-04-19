@@ -14,8 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
@@ -1580,6 +1580,23 @@ public class TestUtils {
         }
         onView(withId(R.id.done)).perform(click());
         waitForIdle();
+    }
+
+    public void acceptCertificateIfNeeded(boolean automaticSetup) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+            if (doWaitForAlertDialog(
+                    R.string.account_setup_failed_dlg_invalid_certificate_title,
+                    automaticSetup,
+                    1000L
+                )) {
+                clickDialogAccept();
+                TestUtils.waitForIdle();
+            }
+        }
+    }
+
+    public void clickDialogAccept() {
+        onView(withId(android.R.id.button1)).perform(click());
     }
 
     private void setupEmailAndPassword() {
