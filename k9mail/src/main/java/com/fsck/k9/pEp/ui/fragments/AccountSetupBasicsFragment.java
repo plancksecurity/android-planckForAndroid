@@ -1087,6 +1087,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             } else {
                 mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.OUTGOING,
                         certificate);
+                mAccount.setDescription(mAccount.getEmail());
                 onSettingsChecked(PEpSettingsChecker.Redirection.TO_APP);
             }
         } catch (CertificateException e) {
