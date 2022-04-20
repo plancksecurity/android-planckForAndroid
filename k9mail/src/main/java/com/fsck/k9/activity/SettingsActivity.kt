@@ -30,12 +30,9 @@ import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
-import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
-import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
-import com.fsck.k9.pEp.ui.listeners.OnFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.preferences.SettingsExporter
 import com.fsck.k9.search.LocalSearch
@@ -53,7 +50,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
-import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
@@ -68,7 +64,9 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
-class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback, ItemReleasedListener {
+class SettingsActivity : PEpImporterActivity(),
+    PreferenceFragmentCompat.OnPreferenceStartScreenCallback,
+    ItemReleasedListener {
 
     private var controller: MessagingController? = null
 
@@ -432,9 +430,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun initList() {
         adapter = AccountListAdapter(accounts,
                 indexedFolderClickListener { position ->
-                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    val account = adapter?.getItem(position)
                     onEditAccount(account as Account)
-                }
+                },
+                resourcesProvider,
+                fontSizes,
+                accountStats
         )
         val layoutManager = LinearLayoutManager(this);
         accountsList.layoutManager = layoutManager;
@@ -821,157 +822,6 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         val asyncTask = ExportAsyncTask(this, exportGlobalSettings, exportAccountUuids, documentsUri)
         setNonConfigurationInstance(asyncTask)
         asyncTask.execute()
-    }
-
-
-    internal inner class AccountListAdapter(
-            accounts: List<BaseAccount>,
-            private val indexedFolderClickListener: IndexedFolderClickListener)
-        : ArrayAdapter<BaseAccount>(this@SettingsActivity, 0, accounts) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val account = getItem(position)
-            val view: View = if (convertView != null) {
-                convertView
-            } else {
-                layoutInflater.inflate(R.layout.accounts_item, parent, false)
-            }
-            view.isLongClickable = true
-            var holder: AccountViewHolder? = view.tag as AccountViewHolder?
-            if (holder == null) {
-                holder = AccountViewHolder()
-                holder.description = view.findViewById<View>(R.id.description) as TextView
-                holder.descriptionUnreadMessages = view.findViewById<View>(R.id.description_unread_messages) as TextView
-                holder.email = view.findViewById<View>(R.id.email) as TextView
-                holder.newMessageCount = view.findViewById<View>(R.id.new_message_count) as TextView
-                holder.flaggedMessageCount = view.findViewById<View>(R.id.flagged_message_count) as TextView
-                holder.newMessageCountWrapper = view.findViewById(R.id.new_message_count_wrapper)
-                holder.flaggedMessageCountWrapper = view.findViewById(R.id.flagged_message_count_wrapper)
-                holder.newMessageCountIcon = view.findViewById(R.id.new_message_count_icon)
-                holder.flaggedMessageCountIcon = view.findViewById(R.id.flagged_message_count_icon)
-                holder.activeIcons = view.findViewById<View>(R.id.active_icons) as RelativeLayout
-
-                holder.folders = view.findViewById<View>(R.id.folders) as ImageButton
-                holder.settings = view.findViewById<View>(R.id.account_settings) as ImageButton
-                holder.accountsItemLayout = view.findViewById<View>(R.id.accounts_item_layout) as LinearLayout
-                val accountsDescriptionLayout = view.findViewById<View>(R.id.accounts_description_layout) as LinearLayout
-
-                view.tag = holder
-
-                holder.accountsItemLayout!!.setOnClickListener { indexedFolderClickListener.onClick(position) }
-            }
-            val stats = accountStats[account!!.uuid]
-
-            if (stats != null && account is Account && stats.size >= 0) {
-                holder.email!!.text = SizeFormatter.formatSize(this@SettingsActivity, stats.size)
-                holder.email!!.visibility = View.VISIBLE
-            } else {
-                if (account.email == account.description) {
-                    holder.email!!.visibility = View.GONE
-                } else {
-                    holder.email!!.visibility = View.VISIBLE
-                    holder.email!!.text = account.email
-                }
-            }
-
-            var description: String? = account.description
-            if (description == null || description.isEmpty()) {
-                description = account.email
-            }
-
-            holder.description!!.text = description
-
-            var unreadMessageCount: Int? = null
-            if (stats != null) {
-                unreadMessageCount = stats.unreadMessageCount
-                holder.descriptionUnreadMessages!!.text = String.format("%d", unreadMessageCount)
-                holder.newMessageCount!!.text = String.format("%d", unreadMessageCount)
-
-                holder.flaggedMessageCount!!.text = String.format("%d", stats.flaggedMessageCount)
-                holder.flaggedMessageCountWrapper!!.visibility = if (K9.messageListStars() && stats.flaggedMessageCount > 0) {
-                    View.VISIBLE
-                } else View.GONE
-
-                holder.flaggedMessageCountWrapper!!.setOnClickListener(createFlaggedSearchListener(account))
-                holder.newMessageCountWrapper!!.setOnClickListener(createUnreadSearchListener(account))
-
-                holder.activeIcons!!.setOnClickListener {
-                    FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint))
-                }
-
-            } else {
-                holder.newMessageCountWrapper!!.visibility = View.GONE
-                holder.flaggedMessageCountWrapper!!.visibility = View.GONE
-            }
-
-            holder.flaggedMessageCountIcon!!.setBackgroundResource(resourcesProvider.getAttributeResource(R.attr.iconFlagButton));
-
-
-            fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
-            fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
-
-            if (account is SearchAccount) {
-                holder.folders!!.visibility = View.GONE
-            } else {
-                holder.folders?.let {
-                    it.visibility = View.VISIBLE
-                    it.drawable.alpha = 255
-                    it.setOnClickListener { FolderList.actionHandleAccount(this@SettingsActivity, account as Account) }
-                }
-
-                holder.settings?.let {
-                    it.drawable.alpha = 255
-                    it.setOnClickListener { onEditAccount(account as Account) }
-                }
-            }
-
-            return view
-        }
-
-
-        private fun createFlaggedSearchListener(account: BaseAccount): OnClickListener {
-            val searchTitle = getString(R.string.search_title, account.description,
-                    getString(R.string.flagged_modifier))
-
-            val search: LocalSearch
-            if (account is SearchAccount) {
-                search = account.relatedSearch.clone()
-                search.name = searchTitle
-            } else {
-                search = LocalSearch(searchTitle)
-                search.addAccountUuid(account.uuid)
-
-                val realAccount = account as Account
-                realAccount.excludeSpecialFolders(search)
-                realAccount.limitToDisplayableFolders(search)
-            }
-
-            search.and(SearchField.FLAGGED, "1", Attribute.EQUALS)
-
-            return AccountClickListener(search)
-        }
-
-        private fun createUnreadSearchListener(account: BaseAccount): OnClickListener {
-            val search = createUnreadSearch(this@SettingsActivity, account)
-            return AccountClickListener(search)
-        }
-
-        internal inner class AccountViewHolder {
-            var description: TextView? = null
-            var email: TextView? = null
-            var newMessageCount: TextView? = null
-            var flaggedMessageCount: TextView? = null
-            var newMessageCountIcon: View? = null
-            var flaggedMessageCountIcon: View? = null
-            var newMessageCountWrapper: View? = null
-            var flaggedMessageCountWrapper: View? = null
-            var activeIcons: RelativeLayout? = null
-            var chip: View? = null
-            var folders: ImageButton? = null
-            var settings: ImageButton? = null
-            var accountsItemLayout: LinearLayout? = null
-            var descriptionUnreadMessages: TextView? = null
-        }
     }
 
     companion object {
