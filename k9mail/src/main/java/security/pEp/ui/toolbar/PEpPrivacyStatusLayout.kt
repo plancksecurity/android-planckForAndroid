@@ -43,18 +43,23 @@ class PEpPrivacyStatusLayout(context: Context, attrs: AttributeSet?) : Constrain
     }
 
     override fun onMeasuredWdithTextViewDrawn(textWidth: Int) {
-        val previousVisibility = visibility
-        visibility = View.INVISIBLE
-        setLeftMargin(0)
-        val totalSpaceNeeded = privacyStatusIcon!!.width + textWidth + privacyStatusText!!.marginLeft
-        val leftMargin = (width - totalSpaceNeeded)/2
-        setLeftMargin(leftMargin)
-        visibility = previousVisibility
+        val statusIcon = privacyStatusIcon
+        val statusText = privacyStatusText
+        if (statusIcon != null && statusText != null) {
+            val previousVisibility = visibility
+            visibility = View.INVISIBLE
+            setLeftMargin(0)
+            val totalSpaceNeeded = statusIcon.width + textWidth + statusText.marginLeft
+            val leftMargin = (width - totalSpaceNeeded) / 2
+            setLeftMargin(leftMargin)
+            visibility = previousVisibility
+        }
     }
 
     private fun setLeftMargin(px: Int) {
-        val params = privacyStatusIcon!!.layoutParams as LayoutParams
-        params.setMargins(px, params.topMargin, params.rightMargin, params.bottomMargin)
-        privacyStatusIcon!!.layoutParams = params
+        (privacyStatusIcon?.layoutParams as? LayoutParams)?.let { params ->
+            params.setMargins(px, params.topMargin, params.rightMargin, params.bottomMargin)
+            privacyStatusIcon?.layoutParams = params
+        }
     }
 }
