@@ -666,8 +666,13 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private void checkSettings() {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, AccountSetupCheckSettingsFragment.INCOMING,
-                false, basicsSettingsCheckCallback);
+        pEpSettingsChecker.checkSettings(
+            mAccount,
+            AccountSetupCheckSettings.CheckDirection.INCOMING,
+            AccountSetupCheckSettingsFragment.INCOMING,
+            false,
+            basicsSettingsCheckCallback
+        );
     }
 
     private void goForward() {

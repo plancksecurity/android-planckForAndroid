@@ -83,8 +83,11 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     private String mProcedence;
 
 
-    public static AccountSetupCheckSettingsFragment actionCheckSettings(Account account,
-                                                                        AccountSetupCheckSettings.CheckDirection direction, String procedence) {
+    public static AccountSetupCheckSettingsFragment actionCheckSettings(
+            Account account,
+            AccountSetupCheckSettings.CheckDirection direction,
+            String procedence)
+    {
         AccountSetupCheckSettingsFragment fragment = new AccountSetupCheckSettingsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
@@ -114,7 +117,8 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
         mProgressBar.setIndeterminate(true);
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
-        mAccount = Preferences.getPreferences(getActivity()).getAccountAllowingIncomplete(accountUuid);
+        mAccount = Preferences.getPreferences(getActivity())
+                .getAccountAllowingIncomplete(accountUuid);
         mDirection = (AccountSetupCheckSettings.CheckDirection) getArguments().getSerializable(EXTRA_CHECK_DIRECTION);
 
         mProcedence = getArguments().getString(EXTRA_PROCEDENCE);
@@ -325,8 +329,12 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
                     R.string.account_setup_failed_dlg_certificate_message_fmt,
                     e.getMessage() == null ? "" : e.getMessage());
         }
-        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment = AccountSetupCheckSettingsFragment.actionCheckSettings(mAccount,
-                mDirection, AccountSetupCheckSettingsFragment.INCOMING);
+        AccountSetupCheckSettingsFragment accountSetupOutgoingFragment =
+                AccountSetupCheckSettingsFragment.actionCheckSettings(
+                    mAccount,
+                    mDirection,
+                    AccountSetupCheckSettingsFragment.INCOMING
+                );
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -412,7 +420,8 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
                             .replace(R.id.account_setup_container, accountSetupBasicsFragment, "accountSetupBasicsFragment")
                             .commit();
                 } else {
-                    AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
+                    AccountSetupOutgoingFragment accountSetupOutgoingFragment =
+                            AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
                     getFragmentManager()
                             .beginTransaction()
                             .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -569,7 +578,8 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
     }
 
     private void goToOutgoingSettings() {
-        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment =
+                AccountSetupOutgoingFragment.actionOutgoingSettings(mAccount);
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)

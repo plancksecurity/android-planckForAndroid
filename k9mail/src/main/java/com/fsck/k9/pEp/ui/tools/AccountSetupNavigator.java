@@ -51,8 +51,12 @@ public class AccountSetupNavigator {
         }
     }
 
-    private void goFromOutgoingSettingsToAccountSetupOptions(FragmentManager fragmentManager, Account account) {
-        AccountSetupOptionsFragment accountSetupOptionsFragment = AccountSetupOptionsFragment.actionOptions(account);
+    private void goFromOutgoingSettingsToAccountSetupOptions(
+        FragmentManager fragmentManager,
+        Account account
+    ) {
+        AccountSetupOptionsFragment accountSetupOptionsFragment =
+                AccountSetupOptionsFragment.actionOptions(account);
         fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -61,8 +65,12 @@ public class AccountSetupNavigator {
                 .commit();
     }
 
-    private void goFromIncomingSettingsToOutgoingSettings(FragmentManager fragmentManager, Account account) {
-        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(account);
+    private void goFromIncomingSettingsToOutgoingSettings(
+        FragmentManager fragmentManager,
+        Account account
+    ) {
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment =
+                AccountSetupOutgoingFragment.actionOutgoingSettings(account);
         fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
@@ -71,8 +79,12 @@ public class AccountSetupNavigator {
                 .commit();
     }
 
-    private void goFromChooseAccountTypeToIncomingSettings(FragmentManager fragmentManager, Account account) {
-        AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(account);
+    private void goFromChooseAccountTypeToIncomingSettings(
+        FragmentManager fragmentManager,
+        Account account
+    ) {
+        AccountSetupIncomingFragment accountSetupIncomingFragment =
+                AccountSetupIncomingFragment.actionIncomingSettings(account);
         fragmentManager.beginTransaction()
                 .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
                 .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")

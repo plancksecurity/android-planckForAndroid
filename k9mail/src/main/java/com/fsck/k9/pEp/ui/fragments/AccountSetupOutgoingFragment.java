@@ -311,8 +311,13 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
 
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, AccountSetupCheckSettingsFragment.OUTGOING,
-                false, basicsSettingsCheckCallback);
+        pEpSettingsChecker.checkSettings(
+            mAccount,
+            AccountSetupCheckSettings.CheckDirection.OUTGOING,
+            AccountSetupCheckSettingsFragment.OUTGOING,
+            false,
+            basicsSettingsCheckCallback
+        );
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {

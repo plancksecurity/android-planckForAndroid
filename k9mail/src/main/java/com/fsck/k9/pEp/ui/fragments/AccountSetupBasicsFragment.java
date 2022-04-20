@@ -485,8 +485,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void checkSettings(AccountSetupCheckSettings.CheckDirection direction) {
         AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
         ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, direction, AccountSetupCheckSettingsFragment.LOGIN,
-                false, basicsSettingsCheckCallback);
+        pEpSettingsChecker.checkSettings(
+            mAccount,
+            direction,
+            AccountSetupCheckSettingsFragment.LOGIN,
+            false,
+            basicsSettingsCheckCallback
+        );
     }
 
     private void saveCredentialsInPreferences() {
@@ -657,19 +662,23 @@ public class AccountSetupBasicsFragment extends PEpFragment
                     //We've successfully checked incoming.  Now check outgoing.
                     mCheckedIncoming = true;
                     saveCredentialsInPreferences();
-                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, AccountSetupCheckSettingsFragment.LOGIN,
-                            false,
-                            new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                                @Override
-                                public void onError(PEpSetupException exception) {
-                                    handleErrorCheckingSettings(exception);
-                                }
+                    pEpSettingsChecker.checkSettings(
+                        mAccount,
+                        AccountSetupCheckSettings.CheckDirection.OUTGOING,
+                        AccountSetupCheckSettingsFragment.LOGIN,
+                        false,
+                        new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
+                            @Override
+                            public void onError(PEpSetupException exception) {
+                                handleErrorCheckingSettings(exception);
+                            }
 
-                                @Override
-                                public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                    goForward();
-                                }
-                            });
+                            @Override
+                            public void onLoaded(PEpSettingsChecker.Redirection redirection) {
+                                goForward();
+                            }
+                        }
+                    );
                 } else {
                     //We've successfully checked outgoing as well.
                     mAccount.setDescription(mAccount.getEmail());
