@@ -1153,15 +1153,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                     && preferences.availableAccounts.isNotEmpty()) {
                     finishAffinity()
                     openSearchAccount(unifiedInboxAccount)
+                    anyAccountWasDeleted = false
                 } else {
                     getAccountToOpen() ?.let { accountToOpen ->
                         if(accountWasOpenable(accountToOpen)) {
                             finishAffinity()
                             openAccount(accountToOpen)
+                            anyAccountWasDeleted = false
                         }
                     }
                 }
-                anyAccountWasDeleted = false
             }
             isTaskRoot ||
             preferences.availableAccounts.isNotEmpty() -> {
