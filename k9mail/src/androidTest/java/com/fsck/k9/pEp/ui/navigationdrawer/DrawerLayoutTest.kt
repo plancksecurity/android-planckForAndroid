@@ -71,6 +71,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
     }
 
     @Test
+    @Ignore("ignoring until P4A-1212 is done")
     fun stage3_clickAccountBall() {
         // TODO https://pep.foundation/jira/browse/P4A-1212
         testUtils.openHamburgerMenu()
