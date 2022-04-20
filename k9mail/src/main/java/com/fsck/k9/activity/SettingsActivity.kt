@@ -239,7 +239,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
 
         val startup = intent.getBooleanExtra(EXTRA_STARTUP, true)
-        if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
+        if (startup && K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()
+            && preferences.availableAccounts.isNotEmpty()) {
             onOpenAccount(unifiedInboxAccount)
             finish()
             return
@@ -1148,7 +1149,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     override fun onBackPressed() {
         when {
             anyAccountWasDeleted -> {
-                if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()) {
+                if (K9.startIntegratedInbox() && !K9.isHideSpecialAccounts()
+                    && preferences.availableAccounts.isNotEmpty()) {
                     finishAffinity()
                     openSearchAccount(unifiedInboxAccount)
                 } else {
