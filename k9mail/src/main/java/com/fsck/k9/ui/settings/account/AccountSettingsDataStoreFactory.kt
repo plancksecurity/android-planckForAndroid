@@ -14,6 +14,12 @@ class AccountSettingsDataStoreFactory(
         account: Account,
         defaultAccountChangedListener: AccountSettingsDataStore.DefaultAccountChangedListener
     ): AccountSettingsDataStore {
-        return AccountSettingsDataStore(context, preferences, executorService, account, defaultAccountChangedListener)
+        return AccountSettingsDataStore(
+            context,
+            preferences,
+            executorService,
+            account,
+            defaultAccountChangedListener
+        )
     }
 }
