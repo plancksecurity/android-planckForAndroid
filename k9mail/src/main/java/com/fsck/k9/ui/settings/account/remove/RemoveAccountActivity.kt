@@ -3,6 +3,7 @@ package com.fsck.k9.ui.settings.account.remove
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -23,6 +24,7 @@ class RemoveAccountActivity : WizardActivity() {
 
         val binding = ActivityRemoveAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setUpFloatingWindow()
         view.initialize(
             binding,
             onAcceptButtonClicked = { presenter.onAcceptButtonClicked() },
@@ -65,6 +67,13 @@ class RemoveAccountActivity : WizardActivity() {
         override fun finish() {
             this@RemoveAccountActivity.finish()
         }
+    }
+
+    override fun setUpFloatingWindow() {
+        super.setUpFloatingWindow()
+        val layoutParams = window.attributes
+        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        window.attributes = layoutParams
     }
 
     companion object {
