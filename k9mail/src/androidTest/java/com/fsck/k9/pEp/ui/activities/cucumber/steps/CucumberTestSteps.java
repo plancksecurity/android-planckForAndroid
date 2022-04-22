@@ -1790,6 +1790,7 @@ public class CucumberTestSteps {
 
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
+        testUtils.rotateDevice();
         accountSelected = Integer.parseInt(account);
         while (testUtils.getTotalAccounts() == -1) {
             testUtils.readConfigFile();
@@ -1798,6 +1799,7 @@ public class CucumberTestSteps {
             skipTest("No more accounts");
         }
         startTest(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
+        testUtils.rotateDevice();
     }
 
     @When("^I select (\\S+) folder of account (\\S+)$")

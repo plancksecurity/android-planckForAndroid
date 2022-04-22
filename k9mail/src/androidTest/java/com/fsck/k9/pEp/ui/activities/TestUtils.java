@@ -3621,6 +3621,30 @@ public class TestUtils {
         }
     }
 
+    public void rotateDevice() {
+        try {
+            waitForIdle();
+            device.setOrientationLeft();
+            waitForIdle();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            device.setOrientationNatural();
+            for (int i = 0; i < 5; i++) {
+                waitForIdle();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
