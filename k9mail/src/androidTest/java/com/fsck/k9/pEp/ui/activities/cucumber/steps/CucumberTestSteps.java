@@ -13,9 +13,13 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -115,16 +119,12 @@ public class CucumberTestSteps {
     String fingerprint = "empty";
     private final Timer timer = new Timer();
     private final int[] time = {0};
-    @Rule
-    public IntentsTestRule<SplashActivity> activityTestRule = new IntentsTestRule<>(SplashActivity.class, true, false);
+
+    private ActivityScenario<SplashActivity> scenario;
 
     @Before
     public void setup() {
-        try {
-            Thread.sleep(25000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        scenario =ActivityScenario.launch(SplashActivity.class);
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -135,17 +135,7 @@ public class CucumberTestSteps {
             bot = new String[9];
             resources = getApplicationContext().getResources();
             //startTimer(2000);
-            waitForIdle();
-            if (testUtils.getCurrentActivity() == null) {
-                //startTimer(350);
-                testUtils.testReset = true;
-                try {
-                    activityTestRule.launchActivity(new Intent());
-                    //testUtils.waitForIdle();
-                } catch (Exception ex) {
-                    Timber.i("Cannot launch activity");
-                }
-            }
+            testUtils.testReset = true;
         }
     }
 
@@ -159,7 +149,6 @@ public class CucumberTestSteps {
         if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
             testUtils.selectFromMenu(R.string.action_settings);
             waitForIdle();
-            Espresso.onIdle();
         }
         if (!exists(onView(withId(R.id.account_email)))) {
             while (!exists(onView(withId(R.id.available_accounts_title)))) {
@@ -173,7 +162,8 @@ public class CucumberTestSteps {
             }
         }
         waitForIdle();
-        activityTestRule.finishActivity();
+        scenario.close();
+        scenario.moveToState(Lifecycle.State.DESTROYED);
         waitForIdle();
     }
 
@@ -2854,7 +2844,7 @@ public class CucumberTestSteps {
                 public void run() {
                     time[0]++;
                     Timber.i("Timeout: " + time[0] + "/" + finalTime);
-                    if (activityTestRule == null) {
+                    if (scenario == null) {
                         time[0] = 0;
                         TestUtils.assertFailWithMessage("Timeout. Couldn't finish the test");
                     } else if (time[0] > finalTime) {
