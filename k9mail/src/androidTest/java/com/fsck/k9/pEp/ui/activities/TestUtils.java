@@ -22,6 +22,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -32,6 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.lifecycle.Lifecycle;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingPolicies;
@@ -1179,38 +1182,14 @@ public class TestUtils {
     }
 
     public void clickFolder(String folder) {
-        String folderToClick = "";
-        switch (folder) {
-            case "Inbox":
-                folderToClick = resources.getString(R.string.special_mailbox_name_inbox);
-                break;
-            case "Sent":
-                folderToClick = resources.getString(R.string.special_mailbox_name_sent);
-                break;
-            case "Drafts":
-                folderToClick = resources.getString(R.string.special_mailbox_name_drafts);
-                break;
-            case "Outbox":
-                folderToClick = resources.getString(R.string.special_mailbox_name_outbox);
-                break;
-            case "Archive":
-                folderToClick = resources.getString(R.string.special_mailbox_name_archive);
-                break;
-            case "Spam":
-                folderToClick = resources.getString(R.string.special_mailbox_name_spam)
-                        + " (" + resources.getString(R.string.special_mailbox_name_spam) + ")";
-                break;
-            case "Trash":
-                folderToClick = resources.getString(R.string.special_mailbox_name_trash);
-                break;
-            default:
-                Timber.e("Is not possible to select folder: " + folder);
+        if (folder.equals("Spam")) {
+            folder = folder
+                    + " (" + folder + ")";
         }
-        waitForToolbar();
         waitForIdle();
         while (true) {
             try {
-                selectFromScreen(folderToClick);
+                selectFromScreen(folder);
                 waitForIdle();
                 waitForToolbar();
                 return;
@@ -1448,8 +1427,11 @@ public class TestUtils {
                 device.findObject(By.res(APP_ID, "message_content")).click();
                 waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
+                rotateDevice();
                 waitForIdle();
+                onView(withId(R.id.message_content)).perform(click());
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
+                rotateDevice();
                 waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Could not fill message: " + ex);
@@ -2981,7 +2963,7 @@ public class TestUtils {
             waitForIdle();
             waitForToolbar();
             if (exists(onView(withId(android.R.id.list)))) {
-                clickFolder("Inbox");
+                clickFolder(resources.getString(stringToID("special_mailbox_name_inbox")));
             }
             waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
@@ -3642,7 +3624,7 @@ public class TestUtils {
     public void startActivity() {
         device.pressHome();
         final String launcherPackage = getLauncherPackageName();
-        assertThat(launcherPackage, notNullValue());
+        //assertThat(launcherPackage, notNullValue());
         device.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final Intent intent = context.getPackageManager().getLaunchIntentForPackage(APP_ID);
