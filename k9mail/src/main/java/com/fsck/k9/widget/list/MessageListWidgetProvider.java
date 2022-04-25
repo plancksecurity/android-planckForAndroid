@@ -33,6 +33,7 @@ public class MessageListWidgetProvider extends AppWidgetProvider {
 
         Intent intent = new Intent(context, MessageListWidgetProvider.class);
         intent.setAction(ACTION_UPDATE_MESSAGE_LIST);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
         context.sendBroadcast(intent);
     }
