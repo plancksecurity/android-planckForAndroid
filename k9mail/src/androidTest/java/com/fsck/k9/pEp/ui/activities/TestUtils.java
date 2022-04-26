@@ -1563,14 +1563,26 @@ public class TestUtils {
     }
 
     public void setupAccountIfNeeded() {
+        setupAccountIfNeeded(false, null);
+    }
+
+    public void setupAccountIfNeeded(boolean withSync, String email) {
         skipTutorialAndAllowPermissionsIfNeeded();
         if(exists(onView(withText(R.string.account_setup_basics_title)))) {
-            setupAccountAutomatically(false);
+            setupAccountAutomatically(withSync, email);
         }
     }
 
     public void setupAccountAutomatically(boolean withSync) {
-        setupEmailAndPassword();
+        setupAccountAutomatically(withSync, null);
+    }
+
+    public void setupAccountAutomatically(boolean withSync, String email) {
+        if(!exists(onView(withText(R.string.account_setup_basics_title)))) {
+            selectFromMenu(R.string.action_settings);
+            onView(withText(R.string.add_account_action)).perform(scrollTo(), click());
+        }
+        setupEmailAndPassword(email);
         onView(withId(R.id.next)).perform(click());
         acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
@@ -1608,12 +1620,19 @@ public class TestUtils {
     }
 
     private void setupEmailAndPassword() {
+        setupEmailAndPassword(null);
+    }
+
+    private void setupEmailAndPassword(String accountEmail) {
         onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = getAccountEmailForDevice();
+
+        String email = accountEmail != null
+                ? accountEmail
+                : getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
