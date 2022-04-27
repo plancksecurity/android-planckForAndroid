@@ -1,22 +1,29 @@
 package security.pEp.ui.passphrase
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
-import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.pEp.manualsync.WizardActivity
+import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.activity_passphrase.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 const val REQUEST_TYPE_EXTRA: String = "requestTypeExtra"
 const val PASSPHRASE_REQUEST_ACTION: String = "PASSPHRASE_REQUEST"
+const val PASSPHRASE_RESULT_CODE: Int = 1500
+const val PASSPHRASE_RESULT_KEY: String = "PASSPHRASE_RESULT_KEY"
+
+fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
+    val intent = Intent(this.context, PassphraseActivity::class.java)
+    intent.action = PASSPHRASE_REQUEST_ACTION
+    intent.putExtra(REQUEST_TYPE_EXTRA, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
+    startActivityForResult(intent, PASSPHRASE_RESULT_CODE)
+}
+
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
@@ -59,6 +66,13 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
         dismissActionButton.setOnClickListener {
             presenter.cancel()
         }
+    }
+
+    override fun finish(passphraseAdded: Boolean) {
+        val returnIntent = Intent()
+        returnIntent.putExtra(PASSPHRASE_RESULT_KEY, passphraseAdded)
+        setResult(Activity.RESULT_OK, returnIntent)
+        finish()
     }
 
     override fun enableActionConfirmation(enabled: Boolean) {

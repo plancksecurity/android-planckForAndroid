@@ -29,8 +29,7 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
-import security.pEp.ui.passphrase.PassphraseActivity
-import security.pEp.ui.passphrase.PassphraseRequirementType
+import security.pEp.ui.passphrase.*
 import security.pEp.ui.support.export.ExportpEpSupportDataActivity
 import java.io.File
 
@@ -80,11 +79,22 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeNewKeysPassphrase() {
-        findPreference<Preference>(NEW_KEYS_PASSPHRASE)?.onClick {
-            context?.let {
-                PassphraseActivity.notifyRequest(it, PassphraseRequirementType.NEW_KEYS_PASSPHRASE)
+        findPreference<SwitchPreferenceCompat>(PEP_USE_PASSPHRASE_FOR_NEW_KEYS)?.apply {
+            this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+                    processNewKeysSwitchClick(preference, newValue)
+                }
+        }
+    }
+
+    private fun processNewKeysSwitchClick(preference: Preference, newValue: Any): Boolean {
+        if (preference is SwitchPreferenceCompat && newValue is Boolean) {
+            if (!newValue) {
+                preference.isChecked = false
+            } else {
+                requestPassphraseForNewKeys()
             }
         }
+        return false
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
@@ -267,6 +277,12 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 setAttachmentDefaultPath(file.path)
             }
         }
+        if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
+            result?.let { intent ->
+                val isChecked = intent.getBooleanExtra(PASSPHRASE_RESULT_KEY, false)
+                (findPreference(PEP_USE_PASSPHRASE_FOR_NEW_KEYS) as SwitchPreferenceCompat?)?.isChecked = isChecked
+            }
+        }
     }
 
     private fun attachmentDefaultPath() = dataStore.getString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, "")
@@ -290,7 +306,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
-        private const val NEW_KEYS_PASSPHRASE = "new_keys_passphrase"
+        private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
 
