@@ -153,6 +153,10 @@ public class NotificationController {
         }
     }
 
+    public void updateChannels() {
+        channelUtils.updateChannels();
+    }
+
     String getAccountName(Account account) {
         String accountDescription = account.getDescription();
         return TextUtils.isEmpty(accountDescription) ? account.getEmail() : accountDescription;

@@ -4336,6 +4336,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         memorizingMessagingListener.removeAccount(account);
         Address address = new Address(account.getEmail());
         pEpProvider.setIdentityFlag(PEpUtils.createIdentity(address, context), false);
+        notificationController.updateChannels();
     }
 
     /**
