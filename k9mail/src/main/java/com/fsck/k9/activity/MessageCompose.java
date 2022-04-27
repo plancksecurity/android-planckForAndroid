@@ -822,7 +822,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 .setDraft(isDraft)
                 .setIsPgpInlineEnabled(cryptoStatus.isPgpInlineModeEnabled())
                 .setForcedUnencrypted(recipientPresenter.isForceUnencrypted())
-                .setAlwaysSecure(recipientPresenter.isAlwaysSecure());
+                .setAlwaysSecure(recipientPresenter.isAlwaysSecure())
+                .setpEpRating(recipientMvpView.getpEpRating());
 
         quotedMessagePresenter.builderSetProperties(builder);
 
