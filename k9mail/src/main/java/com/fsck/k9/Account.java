@@ -702,7 +702,16 @@ public class Account implements BaseAccount, StoreConfig {
         preferences.loadAccounts();
     }
 
-    public synchronized void save(Preferences preferences) {
+    public void save(Preferences preferences) {
+        synchronized (preferences) {
+            saveSynchronized(preferences);
+        }
+    }
+
+    private synchronized void saveSynchronized(Preferences preferences) {
+        if(preferences.getAccount(accountUuid) == null) {
+            return;
+        }
         if(setupState == SetupState.INITIAL && BuildConfig.DEBUG) {
             throw new IllegalStateException("Trying to save an account in state INITIAL");
         }
