@@ -596,6 +596,7 @@ public class PEpUtils {
             id = pEp.myself(id);
             pEp.setIdentityFlag(id, account.isPepSyncEnabled());
         }
+        pEp.close();
     }
 }
 
