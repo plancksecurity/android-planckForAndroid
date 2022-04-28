@@ -89,7 +89,7 @@ public class SetupDragonAccountTest {
     }
 
     private void clickAccept() {
-        onView(withId(android.R.id.button1)).perform(click());
+        testUtils.clickAndroidDialogAccept();
     }
 
     private void clickNext() {

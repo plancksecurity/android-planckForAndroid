@@ -106,7 +106,7 @@ public class SetupDragonAccountWithErrorsTest {
 
     private void clickAccept() {
         doWait();
-        onView(withId(android.R.id.button1)).perform(click());
+        testUtils.clickAndroidDialogAccept();
     }
 
     private void clickNext() {
