@@ -788,6 +788,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     @VisibleForTesting
     void synchronizeMailboxSynchronous(final Account account, final String folder, final MessagingListener listener,
                                        Folder providedRemoteFolder) {
+        if(preferences.getAccount(account.getUuid()) == null) {
+            return;
+        }
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -1053,6 +1056,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private void synchronizepEpSyncMailboxSynchronous(final Account account, final String folder) {
+        if(preferences.getAccount(account.getUuid()) == null) {
+            return;
+        }
         Folder remoteFolder = null;
         LocalFolder tLocalFolder = null;
 
@@ -1944,6 +1950,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private void queuePendingCommand(Account account, PendingCommand command) {
         try {
+            if(preferences.getAccount(account.getUuid()) == null) {
+                return;
+            }
             LocalStore localStore = account.getLocalStore();
             localStore.addPendingCommand(command);
         } catch (Exception e) {
@@ -4537,6 +4546,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
             public void run() {
                 LocalFolder localFolder = null;
                 try {
+                    if(preferences.getAccount(account.getUuid()) == null) {
+                        return;
+                    }
                     LocalStore localStore = account.getLocalStore();
                     localFolder = localStore.getFolder(remoteFolder.getName());
                     localFolder.open(Folder.OPEN_MODE_RW);
@@ -4680,6 +4692,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
+        if(preferences.getAccount(account.getUuid()) == null) {
+            return null;
+        }
         Message localMessage = null;
         LocalStore localStore = account.getLocalStore();
         LocalFolder localFolder = localStore.getFolder(account.getCurrentpEpSyncFolderName());
