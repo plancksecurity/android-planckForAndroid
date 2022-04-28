@@ -392,7 +392,6 @@ public class PEpUtils {
         } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
             app.setpEpSyncEnabled(true);
         }
-        app.pEpInitSyncEnvironment();
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
