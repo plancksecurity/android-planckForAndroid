@@ -87,8 +87,7 @@ public class AccountSetupBasicsTest {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        testUtils.acceptCertificateIfNeeded(true);
-        testUtils.acceptCertificateIfNeeded(true);
+        testUtils.acceptAutomaticSetupCertificatesIfNeeded();
         accountSetupName(false);
         checkLastAccountInSettings();
     }

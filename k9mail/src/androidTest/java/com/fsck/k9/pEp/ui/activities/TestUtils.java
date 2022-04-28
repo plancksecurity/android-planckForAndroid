@@ -1572,8 +1572,7 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
-        acceptCertificateIfNeeded(true);
-        acceptCertificateIfNeeded(true);
+        acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if(!withSync) {
@@ -1582,6 +1581,13 @@ public class TestUtils {
         }
         onView(withId(R.id.done)).perform(click());
         waitForIdle();
+    }
+
+    public void acceptAutomaticSetupCertificatesIfNeeded() {
+        // incoming settings certificate
+        acceptCertificateIfNeeded(true);
+        // outgoing settings certificate
+        acceptCertificateIfNeeded(true);
     }
 
     public void acceptCertificateIfNeeded(boolean automaticSetup) {
