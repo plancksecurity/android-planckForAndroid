@@ -1598,13 +1598,13 @@ public class TestUtils {
                     automaticSetup,
                     1000L
                 )) {
-                clickDialogAccept();
+                clickAndroidDialogAccept();
                 TestUtils.waitForIdle();
             }
         }
     }
 
-    public void clickDialogAccept() {
+    public void clickAndroidDialogAccept() {
         onView(withId(android.R.id.button1)).perform(click());
     }
 
