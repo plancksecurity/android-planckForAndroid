@@ -606,17 +606,18 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
             if (selectedContextAccount is Account) {
                 val realAccount = selectedContextAccount as Account?
+                MessagingController.getInstance(application)
+                    .deleteAccount(realAccount)
+                Preferences.getPreferences(this@SettingsActivity)
+                    .deleteAccount(realAccount)
                 try {
                     realAccount!!.localStore.delete()
                 } catch (e: Exception) {
                     // Ignore, this may lead to localStores on sd-cards that
                     // are currently not inserted to be left
                 }
-
-                MessagingController.getInstance(application)
-                        .deleteAccount(realAccount)
                 Preferences.getPreferences(this@SettingsActivity)
-                        .deleteAccount(realAccount)
+                    .deleteAccount(realAccount)
                 K9.setServicesEnabled(this@SettingsActivity)
 
                 anyAccountWasDeleted = true
