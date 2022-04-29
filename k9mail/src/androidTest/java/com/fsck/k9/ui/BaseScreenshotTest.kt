@@ -50,10 +50,11 @@ open class BaseScreenshotTest : BaseTest() {
 
     private fun getScreenShot(className: String, action: String) {
         sleep(500) // Wait for screen to change
-        val imageDir = File(IMAGE_DIR)
-        if (!imageDir.exists()) imageDir.mkdir()
         val index = testSet + "%2d".format(count++)
-        device.takeScreenshot(File("$IMAGE_DIR$index $className ${action}.png"), 0.5f, 25)
+        val destinationFolder = File(context.getExternalFilesDir(null), PEP_SCREENSHOTS_DIR)
+        if(!destinationFolder.exists()) destinationFolder.mkdirs()
+        val destinationFile = File(destinationFolder, "${File.separator}$index $className ${action}.png")
+        device.takeScreenshot(destinationFile, 0.5f, 25)
         Timber.e("Screenshot #" + (count - 1))
     }
 
@@ -158,7 +159,7 @@ open class BaseScreenshotTest : BaseTest() {
     }
 
     companion object {
-        private const val IMAGE_DIR = "/sdcard/Screenshots/"
+        const val PEP_SCREENSHOTS_DIR = "PEpScreenshots"
         const val SWIPE_LEFT_ACTION = "SWIPE_LEFT_ACTION"
         const val SWIPE_RIGHT_ACTION = "SWIPE_RIGHT_ACTION"
         private var count = 0
