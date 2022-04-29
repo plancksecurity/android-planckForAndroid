@@ -153,6 +153,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         return fragment;
     }
 
+    public void showComposeFab(boolean show) {
+        if(isAdded() && fab != null) {
+            if(show) {
+                fab.show();
+            } else {
+                fab.hide();
+            }
+        }
+    }
+
     public void showLoadingMessages() {
         listView.setVisibility(GONE);
         fab.hide();
@@ -170,7 +180,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             }
         } else {
             listView.setVisibility(View.VISIBLE);
-            fab.show();
+            if(!shouldHideComposeFab()) {
+                fab.show();
+            }
         }
         loadingView.setVisibility(View.GONE);
     }
@@ -869,11 +881,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             toolBarCustomizer.setToolbarColor(worstThreadRating);
             toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
         }
-        if (isThreadDisplay || isManualSearch()) {
+        if (shouldHideComposeFab()) {
             fab.hide();
         } else {
             fab.show();
         }
+    }
+
+    private boolean shouldHideComposeFab() {
+        return isThreadDisplay || isManualSearch()
+                || ((MessageList) requireActivity()).isShowingSearchView();
     }
 
     private void startGlobalLayoutListener() {
