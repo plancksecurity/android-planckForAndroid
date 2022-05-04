@@ -259,6 +259,15 @@ public class CucumberTestSteps {
         if (viewIsDisplayed(R.id.recipient_expander)) {
             onView(withId(R.id.recipient_expander)).perform(click());
         }
+        while (!viewIsDisplayed(viewID)) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            waitForIdle();
+        }
+        waitForIdle();
         if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
             try {
                 testUtils.typeTextInField(account, viewID, resourceID);
