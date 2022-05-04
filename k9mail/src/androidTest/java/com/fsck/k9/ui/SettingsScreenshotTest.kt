@@ -13,10 +13,10 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class SettingsScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    @Ignore
     fun settingsTest() {
         openFirstScreen()
         openNavMenu()

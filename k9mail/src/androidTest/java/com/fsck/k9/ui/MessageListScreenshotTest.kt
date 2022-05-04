@@ -11,10 +11,10 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class MessageListScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    @Ignore
     fun messageListTest() {
         setTestSet("C")
         openFirstScreen()
