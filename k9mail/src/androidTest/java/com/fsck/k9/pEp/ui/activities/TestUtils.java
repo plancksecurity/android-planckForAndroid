@@ -42,6 +42,7 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -60,6 +61,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
+import com.fsck.k9.pEp.ui.activities.cucumber.steps.CucumberTestSteps;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -867,6 +869,12 @@ public class TestUtils {
         return totalAccounts;
     }
 
+    public int getAvailableAccounts() {
+        int[] accounts = new int[1];
+        onView(withId(R.id.accounts_list)).perform(saveSizeInInt(accounts, 0));
+        return accounts[0];
+    }
+
     private void createNewAccountWithPermissions() {
         testReset = false;
         try {
@@ -1083,6 +1091,9 @@ public class TestUtils {
                     waitForIdle();
                 }
             } catch (Exception ex) {
+                if (!(accountToSelect < getAvailableAccounts())) {
+                    assertFailWithMessage("Cannot find account " + accountToSelect);
+                }
                 Timber.i("Cannot click account " + accountToSelect + ": " + ex.getMessage());
                 while (!exists(onView(withId(R.id.accounts_list)))) {
                     pressBack();
@@ -1128,6 +1139,9 @@ public class TestUtils {
             swipeUpScreen();
         }
         onView(withId(R.id.accounts_list)).check(matches(isCompletelyDisplayed()));
+        if (!(accountToSelect < getAvailableAccounts())) {
+            assertFailWithMessage("Cannot find account " + accountToSelect);
+        }
         goToFolder(folder, accountToSelect);
         if (exists(onView(withId(R.id.message_list)))) {
             getMessageListSize();
