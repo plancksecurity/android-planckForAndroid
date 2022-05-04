@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -45,6 +46,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.List;
@@ -120,7 +122,8 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        scenario =ActivityScenario.launch(SplashActivity.class);
+        scenario = ActivityScenario.launch(SplashActivity.class);
+        Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -158,9 +161,7 @@ public class CucumberTestSteps {
             }
         }
         waitForIdle();
-        scenario.close();
-        scenario.moveToState(Lifecycle.State.DESTROYED);
-        waitForIdle();
+        Intents.release();
     }
 
     @When(value = "^I created an account$")
@@ -1786,7 +1787,7 @@ public class CucumberTestSteps {
 
     @When("^I select account (\\S+)$")
     public void I_select_account(String account) {
-        testUtils.rotateDevice();
+         testUtils.rotateDevice();
         accountSelected = Integer.parseInt(account);
         while (testUtils.getTotalAccounts() == -1) {
             testUtils.readConfigFile();
