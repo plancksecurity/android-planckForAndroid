@@ -1685,6 +1685,11 @@ public class CucumberTestSteps {
                 waitForIdle();
                 fileName = "aµØßàåæçñяΣオ可.pdf";
                 break;
+            case "calendarEvent":
+                raw = R.raw.calendar_invite;
+                waitForIdle();
+                fileName = "calendar.ics";
+                break;
             case "passphrase":
                 switch (testUtils.test_number()) {
                     case "4":
