@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -130,7 +131,7 @@ public class AccountSetupBasicsTest {
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_names_title)));
-
+        closeSoftKeyboard();
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if (!withSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
