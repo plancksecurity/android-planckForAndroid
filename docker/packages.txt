@@ -1,0 +1,11 @@
+build-tools;30.0.0
+build-tools;30.0.2
+build-tools;30.0.3
+cmake;3.10.2.4988404
+extras;android;m2repository
+extras;google;m2repository
+ndk;21.0.6113669
+ndk;22.0.7026061
+platform-tools
+platforms;android-30
+tools
