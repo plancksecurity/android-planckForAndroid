@@ -13,6 +13,8 @@ import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
+
+import security.pEp.ui.calendar.CalendarInviteLayout;
 import security.pEp.ui.about.AboutActivity;
 import security.pEp.ui.about.LicenseActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
@@ -104,4 +106,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(PassphraseActivity activity);
 
     void inject(ExportpEpSupportDataActivity activity);
+
+    void inject(CalendarInviteLayout layout);
 }
