@@ -1,7 +1,8 @@
 package com.fsck.k9.pEp.ui.navigationdrawer
 
 import android.app.Activity
-import android.os.Build
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -18,7 +19,6 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.BuildConfig
-import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
@@ -57,7 +57,7 @@ class ChangeAccountTest {
 
     @Test
     fun stage1_clearAccounts() {
-        uiDevice.waitForIdle()
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded()
         clearAccounts()
     }
 
@@ -76,7 +76,8 @@ class ChangeAccountTest {
         if (activity is MessageList) {
             Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
             val settingText = activity.resources?.getString(R.string.action_settings) ?: ""
-            onView(ViewMatchers.withText(settingText)).check(ViewAssertions.matches(ViewMatchers.isDisplayed())).perform(click())
+            onView(ViewMatchers.withText(settingText)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+                .perform(click())
             val accountsSize = Preferences.getPreferences(activity).accounts.size
             repeat(accountsSize) {
                 testUtils.goBackAndRemoveAccount()
@@ -86,7 +87,8 @@ class ChangeAccountTest {
 
     private fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
         uiDevice.waitForIdle()
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+        val activities: Collection<Activity> =
+            ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         return@runBlocking Iterables.getOnlyElement(activities)
     }
 
@@ -105,8 +107,8 @@ class ChangeAccountTest {
             e.printStackTrace()
         }
     }
+
     private fun setupAccounts() {
-        grantPermissions()
         passWelcomeScreen()
         testUtils.externalAppRespondWithFile(R.raw.account_folders1)
         importAccount()
@@ -141,41 +143,21 @@ class ChangeAccountTest {
 
     private fun passWelcomeScreen() {
         uiDevice.waitForIdle()
-        onView(withId(R.id.skip)).check(ViewAssertions.matches(ViewMatchers.isDisplayed())).perform(click())
+        onView(withId(R.id.skip)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .perform(click())
         uiDevice.waitForIdle()
     }
 
-    private fun grantPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.WRITE_EXTERNAL_STORAGE")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.READ_CONTACTS")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
-            K9.setShallRequestPermissions(false)
-
-            Thread {
-                val prefs = Preferences.getPreferences(InstrumentationRegistry.getInstrumentation().context)
-                val editor = prefs.storage.edit()
-                K9.save(editor)
-                editor.commit()
-            }.start()
-        }
-    }
-
-
-    private fun getString(resourceId: Int): String = getCurrentActivity()?.resources?.getString(resourceId)
-            ?: ""
+    private fun getString(resourceId: Int): String =
+        ApplicationProvider.getApplicationContext<Context>().resources.getString(resourceId)
 
     private fun click(string: String) {
-        onView(ViewMatchers.withText(string)).check(ViewAssertions.matches(ViewMatchers.isDisplayed())).perform(click())
+        onView(ViewMatchers.withText(string)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .perform(click())
     }
 
     private fun addTextTo(resourceId: Int, text: String) {
-        onView(withId(resourceId)).check(ViewAssertions.matches(ViewMatchers.isDisplayed())).perform(ViewActions.typeText(text))
+        onView(withId(resourceId)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            .perform(ViewActions.typeText(text))
     }
 }
