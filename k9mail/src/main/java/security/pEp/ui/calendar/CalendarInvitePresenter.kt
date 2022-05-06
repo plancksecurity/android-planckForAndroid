@@ -23,6 +23,7 @@ class CalendarInvitePresenter @Inject constructor(
 ) {
 
     private lateinit var view: CalendarInviteView
+    private lateinit var viewDelegate: CalendarInviteViewDelegate
     private lateinit var messageViewInfo: MessageViewInfo
     private lateinit var calendarAttachment: AttachmentViewInfo
     private lateinit var icalendar: ICalendar
@@ -32,17 +33,21 @@ class CalendarInvitePresenter @Inject constructor(
 
     fun initialize(
         view: CalendarInviteView,
+        viewDelegate: CalendarInviteViewDelegate,
         calendarAttachment: AttachmentViewInfo,
         messageViewInfo: MessageViewInfo,
     ) {
         this.view = view
+        this.viewDelegate = viewDelegate
         this.messageViewInfo = messageViewInfo
         this.calendarAttachment = calendarAttachment
         renderCalendarInvite()
     }
 
-    fun openCalendarButtonClicked() {
-
+    fun openCalendar() {
+        if (!viewDelegate.openCalendarApp(calendarAttachment)) {
+            view.showNoCalendarApp()
+        }
     }
 
     private fun renderCalendarInvite() {
