@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CalendarInviteScreen">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/calendarInviteLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/openCalendarImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:contentDescription="@string/calendar_event_open_calendar_desc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_edit_calendar_24" />
+
+        <TextView
+            android:id="@+id/eventSummary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            android:autoLink="all"
+            app:layout_constraintEnd_toStartOf="@+id/openCalendarImg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Association meeting" />
+
+        <TextView
+            android:id="@+id/eventDescription"
+            style="@style/CalendarInviteText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/eventSummary"
+            app:layout_constraintBottom_toTopOf="@id/message_content"
+            android:visibility="gone"
+            tools:visibility="visible"
+            tools:text="This is the event description" />
+
+        <com.fsck.k9.view.MessageWebView
+            android:id="@+id/message_content"
+            style="@style/CalendarInviteText"
+            android:layout_width="match_parent"
+            app:layout_constraintBottom_toTopOf="@id/eventLocation"
+            app:layout_constraintTop_toBottomOf="@+id/eventDescription"
+            tools:text="Association meeting for networking purposes." />
+
+        <TextView
+            android:id="@+id/eventLocation"
+            style="@style/CalendarInviteText"
+            android:layout_width="match_parent"
+            android:contentDescription="@string/calendar_event_location_content_desc"
+            app:drawableStartCompat="@drawable/ic_baseline_location_on_24"
+            app:layout_constraintBottom_toTopOf="@id/eventTime"
+            app:layout_constraintTop_toBottomOf="@+id/message_content"
+            tools:text="Plaza Cataluña, Barcelona" />
+
+        <TextView
+            android:id="@+id/eventTime"
+            style="@style/CalendarInviteText"
+            android:layout_width="match_parent"
+            android:contentDescription="@string/calendar_event_time_content_desc"
+            app:drawableStartCompat="@drawable/ic_baseline_time_24"
+            app:layout_constraintBottom_toTopOf="@id/eventInvitees"
+            app:layout_constraintTop_toBottomOf="@+id/eventLocation"
+            tools:text="28/11/2021 16:00 to 28/11/2021 18:00" />
+
+        <TextView
+            android:id="@+id/eventInvitees"
+            style="@style/CalendarInviteText"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="@string/calendar_event_invitees_content_desc"
+            app:drawableStartCompat="@drawable/ic_baseline_groups_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/eventTime"
+            tools:text="invitee1@sample.com, invitee2@sample.com" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/calendarInviteProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+</FrameLayout>
