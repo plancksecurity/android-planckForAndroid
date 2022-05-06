@@ -93,6 +93,15 @@
         <item name="android:importantForAutofill" tools:targetApi="o">no</item>
     </style>
 
+    <style name="CalendarInviteText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:autoLink">all</item>
+    </style>
+
 
 </resources>
 
