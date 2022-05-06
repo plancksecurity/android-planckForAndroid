@@ -35,6 +35,8 @@ class CalendarInviteLayout(
 
     @Inject
     lateinit var presenter: CalendarInvitePresenter
+    @Inject
+    lateinit var viewDelegate: CalendarInviteViewDelegateAndroid
 
     init {
         inflate(context, R.layout.calendar_invite, this)
@@ -46,7 +48,7 @@ class CalendarInviteLayout(
         calendarAttachment: AttachmentViewInfo,
         messageViewInfo: MessageViewInfo,
     ) {
-        presenter.initialize(this, calendarAttachment, messageViewInfo)
+        presenter.initialize(this, viewDelegate, calendarAttachment, messageViewInfo)
     }
 
     override fun showLoading() {
@@ -135,7 +137,7 @@ class CalendarInviteLayout(
         layout = findViewById(R.id.calendarInviteLayout)
 
         openCalendarButton.setOnClickListener {
-            presenter.openCalendarButtonClicked()
+            presenter.openCalendar()
         }
     }
 
