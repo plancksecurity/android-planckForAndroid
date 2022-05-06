@@ -10,6 +10,7 @@ import com.fsck.k9.mailstore.BinaryMemoryBody
 import com.fsck.k9.mailstore.FileBackedBody
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.pEp.DispatcherProvider
+import com.fsck.k9.view.MessageWebView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 class CalendarInvitePresenter @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
-) {
+) : MessageWebView.OnHtmlSetListener {
 
     private lateinit var view: CalendarInviteView
     private lateinit var viewDelegate: CalendarInviteViewDelegate
@@ -30,6 +31,7 @@ class CalendarInvitePresenter @Inject constructor(
     private val coroutineScope = CoroutineScope(
         dispatcherProvider.main() + SupervisorJob()
     )
+    private var messageContent: String = ""
 
     fun initialize(
         view: CalendarInviteView,
@@ -70,6 +72,7 @@ class CalendarInvitePresenter @Inject constructor(
     private fun populateCalendarInvite() {
         val event = icalendar.events.first()
         showOrHideSummary(event)
+        replaceMessageContentIfNeeded()
         showOrHideLocation(event)
         showOrHideDates(event)
         showOrHideInvitees(event)
@@ -150,5 +153,27 @@ class CalendarInvitePresenter @Inject constructor(
             Biweekly.parse(decodedData.decodeToString()).first()
                 ?: throw IllegalStateException("Failed parsing calendar")
         }.onFailure { Timber.e(it) }
+    }
+
+    override fun onHtmlSet(htmlText: String?) {
+        messageContent = htmlText.orEmpty()
+        if (::icalendar.isInitialized) {
+            replaceMessageContentIfNeeded()
+        }
+    }
+
+    private fun replaceMessageContentIfNeeded() {
+        if (icalendar.events.isEmpty()) {
+            return
+        }
+        val description = icalendar.events.first().description?.value
+        if (
+            !description.isNullOrBlank()
+            && !messageContent.contains(description)
+            && messageContent.length <= description.length
+        ) {
+            view.showDescription(description)
+            view.hideMessageContent()
+        }
     }
 }

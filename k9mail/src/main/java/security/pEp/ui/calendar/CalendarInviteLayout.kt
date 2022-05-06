@@ -35,6 +35,7 @@ class CalendarInviteLayout(
 
     @Inject
     lateinit var presenter: CalendarInvitePresenter
+
     @Inject
     lateinit var viewDelegate: CalendarInviteViewDelegateAndroid
 
@@ -48,6 +49,7 @@ class CalendarInviteLayout(
         calendarAttachment: AttachmentViewInfo,
         messageViewInfo: MessageViewInfo,
     ) {
+        messageContent.setOnHtmlSetListener(presenter)
         presenter.initialize(this, viewDelegate, calendarAttachment, messageViewInfo)
     }
 
