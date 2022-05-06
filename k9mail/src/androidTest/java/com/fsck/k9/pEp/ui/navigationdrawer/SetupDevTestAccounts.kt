@@ -70,7 +70,9 @@ open class SetupDevTestAccounts {
         uiDevice.waitForIdle()
         Thread.sleep(1000)
         onView(withId(R.id.account_name)).check(matches(isDisplayed())).perform(clearText(), typeText(accountName))
-        onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
+        if(BuildConfig.WITH_KEY_SYNC) {
+            onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
+        }
         Espresso.closeSoftKeyboard()
         uiDevice.waitForIdle()
         Thread.sleep(1000)
