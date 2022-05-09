@@ -64,6 +64,9 @@ open class SetupDevTestAccounts {
         uiDevice.waitForIdle()
         onView(withId(R.id.next)).check(matches(isDisplayed())).perform(click())
 
+        testUtils.acceptAutomaticSetupCertificatesIfNeeded()
+
+
         uiDevice.waitForIdle()
         Thread.sleep(1000)
         onView(withId(R.id.account_name)).check(matches(isDisplayed())).perform(clearText(), typeText(accountName))
