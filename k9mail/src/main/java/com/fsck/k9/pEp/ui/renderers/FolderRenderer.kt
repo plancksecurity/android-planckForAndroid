@@ -58,12 +58,21 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
     }
 
     override fun differentiateParentOrChildDisplay() {
-        showChildrenButton.visibility =
-        if(content.children.isEmpty()) {
-            if(this.isFlatList && content.depth == 0) View.GONE
-            else View.INVISIBLE
-        } else View.VISIBLE
-        showChildrenClicker.visibility = if(content.children.isEmpty()) View.INVISIBLE else View.VISIBLE
+        showChildrenButton.visibility = if(content.children.isEmpty()) {
+            if(this.isFlatList && content.depth == 0) {
+                View.GONE
+            }
+            else {
+                View.INVISIBLE
+            }
+        } else {
+            View.VISIBLE
+        }
+        showChildrenClicker.visibility = if(content.children.isEmpty()) {
+            View.INVISIBLE
+        } else {
+            View.VISIBLE
+        }
     }
 
     override fun differentiateUnfoldedCondition() {

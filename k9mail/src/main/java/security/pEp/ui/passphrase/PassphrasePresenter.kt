@@ -60,6 +60,7 @@ class PassphrasePresenter @Inject constructor(
                 scope.launch {
                     pEp.configPassphrase(passphrase)
                 }
+                view.finish()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 scope.launch {
@@ -68,11 +69,14 @@ class PassphrasePresenter @Inject constructor(
                     K9.save(editor)
                     editor.commit()
                     pEp.configPassphraseForNewKeys(true, passphrase)
+                    view.finish(true)
                 }
             }
-            else -> PassphraseProvider.passphrase = passphrase
+            else -> {
+                PassphraseProvider.passphrase = passphrase
+                view.finish()
+            }
         }
-        view.finish()
     }
 
     fun validateInput(passphrase: String) {

@@ -26,6 +26,7 @@ apply from: '../gradle/plugins/checkstyle-android.gradle'
 apply from: '../gradle/plugins/utils/screenshots.gradle'
 apply from: '../gradle/plugins/utils/appconfig-test.gradle'
 apply from: '../gradle/plugins/utils/git-version.gradle'
+apply from: '../gradle/plugins/utils/addaccount.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -106,6 +107,8 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinCoroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
+
+    implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {

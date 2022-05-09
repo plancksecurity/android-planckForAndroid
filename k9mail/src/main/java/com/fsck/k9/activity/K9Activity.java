@@ -38,7 +38,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
     @Nullable @Bind(R.id.search_input) EditText searchInput;
     @Nullable @Bind(R.id.search_clear) View clearSearchIcon;
-    @Nullable @Bind(R.id.fab_button_compose_message) View fabButton;
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
@@ -157,11 +156,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return isAndroidLollipop;
     }
 
-    protected void showComposeFab(boolean show) {
-        if (fabButton != null) {
-            fabButton.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-    }
+    protected void showComposeFab(boolean show) {}
 
     public void showSearchView() {
         isShowingSearchView = true;
@@ -179,6 +174,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             showComposeFab(false);
             searchInput.setText(searchText);
         }
+    }
+
+    public boolean isShowingSearchView() {
+        return isShowingSearchView;
     }
 
     private void setFocusOnKeyboard() {
