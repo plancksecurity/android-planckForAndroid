@@ -67,6 +67,7 @@ class ChangeAccountTest {
         repeat(30) {
             changeAccount()
         }
+        testUtils.goToSettingsAndRemoveAllAccounts()
     }
 
     private fun clearAccounts() {
@@ -93,11 +94,13 @@ class ChangeAccountTest {
     }
 
     private fun changeAccount() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         sleep((1000..2000).random())
+        TestUtils.waitForIdle()
         onView(withId(R.id.first_account)).perform(click())
+        TestUtils.waitForIdle()
     }
 
     fun sleep(time: Int) {
@@ -109,7 +112,7 @@ class ChangeAccountTest {
     }
 
     private fun setupAccounts() {
-        passWelcomeScreen()
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded()
         testUtils.externalAppRespondWithFile(R.raw.account_folders1)
         importAccount()
         uiDevice.waitForIdle()
@@ -138,13 +141,6 @@ class ChangeAccountTest {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
-    }
-
-    private fun passWelcomeScreen() {
-        uiDevice.waitForIdle()
-        onView(withId(R.id.skip)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-            .perform(click())
         uiDevice.waitForIdle()
     }
 
