@@ -48,6 +48,7 @@ public class SetupDragonAccountWithErrorsTest {
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         activityTestRule.launchActivity(new Intent());
         testUtils.skipTutorialAndAllowPermissionsIfNeeded();
+        testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }
 
     @After
