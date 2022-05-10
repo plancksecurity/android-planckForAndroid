@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -15,7 +16,6 @@ import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -39,12 +39,14 @@ public class SetupDragonAccountWithErrorsTest {
     private TestUtils testUtils;
 
     @Rule
-    public ActivityTestRule<AccountSetupBasics> activityTestRule = new ActivityTestRule<>(AccountSetupBasics.class);
+    public ActivityTestRule<SplashActivity> activityTestRule = new ActivityTestRule<>(
+            SplashActivity.class, false, false);
 
     @Before
     public void setUp() {
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
+        activityTestRule.launchActivity(new Intent());
         testUtils.skipTutorialAndAllowPermissionsIfNeeded();
     }
 
@@ -52,6 +54,7 @@ public class SetupDragonAccountWithErrorsTest {
     public void tearDown() {
         finishSetup();
         testUtils.goToSettingsAndRemoveAllAccounts();
+        activityTestRule.finishActivity();
     }
 
     @Test
