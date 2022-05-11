@@ -23,6 +23,8 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.view.KeyEvent;
+
 
 @RunWith(AndroidJUnit4.class)
 public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
@@ -93,10 +95,18 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
     }
 
     private void assertStatusGoesBackToNormalOnRemovingRecipient(Rating originalStatus, boolean clickableExpected) {
-        testUtils.removeTextFromTextView(R.id.to, UNKNOWN_ADDRESS + "\n");
+        deleteLastPartOfEmail();
         device.waitForIdle();
         testUtils.assertMessageStatus(originalStatus, clickableExpected);
         testUtils.goBackFromMessageCompose(false);
+    }
+
+    private void deleteLastPartOfEmail() {
+        for (int i = 0; i <= UNKNOWN_ADDRESS.length(); i++) {
+            TestUtils.waitForIdle();
+            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            TestUtils.waitForIdle();
+        }
     }
 
     private void sendMessage(String messageTo) {
