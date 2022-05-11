@@ -59,11 +59,11 @@ class CalendarInvitePresenterTest {
 
         verify { view.setSummary(TestICalendarCreator.EVENT_SUMMARY) }
         verify {
-            view.setInvitees(
+            view.setShortInvitees(
                 with(TestICalendarCreator) {
-                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
-                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [organizer]"
-                }
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)"
+                },
+                2
             )
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
@@ -99,11 +99,11 @@ class CalendarInvitePresenterTest {
 
         verify { view.setSummary(TestICalendarCreator.EVENT_SUMMARY) }
         verify {
-            view.setInvitees(
+            view.setShortInvitees(
                 with(TestICalendarCreator) {
-                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
-                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [organizer]"
-                }
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)"
+                },
+                2
             )
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
