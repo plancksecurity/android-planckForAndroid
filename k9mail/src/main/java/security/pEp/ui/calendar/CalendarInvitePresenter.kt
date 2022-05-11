@@ -52,6 +52,16 @@ class CalendarInvitePresenter @Inject constructor(
         }
     }
 
+    fun showLongInvitees() {
+        val event = icalendar.events.first()
+        val invitees = event.getInvitees()
+        showTextIfAvailable(
+            invitees.joinToString("\n"),
+            view::setLongInvitees,
+            view::hideInvitees
+        )
+    }
+
     private fun renderCalendarInvite() {
         coroutineScope.launch {
             view.showLoading()
@@ -75,7 +85,7 @@ class CalendarInvitePresenter @Inject constructor(
         replaceMessageContentIfNeeded()
         showOrHideLocation(event)
         showOrHideDates(event)
-        showOrHideInvitees(event)
+        showShortInvitees(event)
     }
 
     private fun showOrHideSummary(event: VEvent) {
@@ -112,13 +122,14 @@ class CalendarInvitePresenter @Inject constructor(
         )
     }
 
-    private fun showOrHideInvitees(event: VEvent) {
+    private fun showShortInvitees(event: VEvent) {
         val invitees = event.getInvitees()
-        showTextIfAvailable(
-            invitees.joinToString("\n"),
-            view::setInvitees,
-            view::hideInvitees
-        )
+        if (invitees.isNotEmpty()) {
+            val rest = invitees.size - 1
+            view.setShortInvitees(invitees.first(), rest)
+        } else {
+            view.hideInvitees()
+        }
     }
 
     private fun showTextIfAvailable(

@@ -96,8 +96,18 @@ class CalendarInviteLayout(
         eventTimeText.visibility = View.GONE
     }
 
-    override fun setInvitees(invitees: String) {
+    override fun setShortInvitees(firstInvitee: String, rest: Int) {
+        eventInviteesText.text = context.getString(
+            R.string.calendar_invite_short_invitees, firstInvitee, rest
+        )
+        eventInviteesText.setOnClickListener {
+            presenter.showLongInvitees()
+        }
+    }
+
+    override fun setLongInvitees(invitees: String) {
         eventInviteesText.text = invitees
+        eventInviteesText.setOnClickListener(null)
     }
 
     override fun hideInvitees() {
