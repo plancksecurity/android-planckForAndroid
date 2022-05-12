@@ -132,7 +132,7 @@ class PEpProviderImplKotlin @Inject constructor(
             if (address.hostname.contains("peptunnel")) {
                 decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT, address.personal)
                 decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true")
-            } else if (address.address.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))) {
+            } else if (address.address.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.uppercase(Locale.ROOT))) {
                 decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true")
             } else {
                 replyTo.add(address)
