@@ -6,16 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
@@ -27,8 +27,6 @@ import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 
-import foundation.pEp.jniadapter.Identity;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +36,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import foundation.pEp.jniadapter.Identity;
 import security.pEp.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
@@ -213,18 +212,11 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 }
 
                 return true;
-            case R.id.catalan:
+            case R.id.english:
                 return changeTrustwordsLanguage(0);
             case R.id.german:
                 return changeTrustwordsLanguage(1);
-            case R.id.spanish:
-                return changeTrustwordsLanguage(2);
-            case R.id.french:
-                return changeTrustwordsLanguage(3);
-            case R.id.turkish:
-                return changeTrustwordsLanguage(4);
-            case R.id.english:
-                return changeTrustwordsLanguage(5);
+
         }
         return true;
     }

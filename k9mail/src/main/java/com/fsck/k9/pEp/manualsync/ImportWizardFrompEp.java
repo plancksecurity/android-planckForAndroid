@@ -336,20 +336,10 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             //TODO: USE ENGINE LANGUAGES
-            case R.id.catalan:
+            case R.id.english:
                 return presenter.changeTrustwordsLanguage(0);
             case R.id.german:
                 return presenter.changeTrustwordsLanguage(1);
-            case R.id.spanish:
-                return presenter.changeTrustwordsLanguage(2);
-            case R.id.french:
-                return presenter.changeTrustwordsLanguage(3);
-            case R.id.turkish:
-                return presenter.changeTrustwordsLanguage(4);
-            case R.id.english:
-                return presenter.changeTrustwordsLanguage(5);
-            case R.id.nederlands:
-                return presenter.changeTrustwordsLanguage(6);
         }
         return true;
     }
