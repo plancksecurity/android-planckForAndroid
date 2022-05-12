@@ -3,14 +3,8 @@
 
     <string-array name="supported_languages" translatable="false">
         <item></item>
-        <item>ca</item>
         <item>de</item>
         <item>en</item>
-        <item>es</item>
-        <item>nl</item>
-        <item>tr</item>
-        <item>fr</item>
-        <item>sk</item>
     </string-array>
 
     <string-array name="language_entries" translatable="false">
