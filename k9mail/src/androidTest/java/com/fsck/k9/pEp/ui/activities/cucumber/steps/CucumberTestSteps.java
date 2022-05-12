@@ -2221,6 +2221,9 @@ public class CucumberTestSteps {
             testUtils.pressBack();
         }
         testUtils.clickSearch();
+        if (viewIsDisplayed(R.id.fab_button_compose_message)) {
+            assertFailWithMessage("Compose message button is shown");
+        }
         if (exists(onView(withId(R.id.search_clear)))) {
             try {
                 onView(withId(R.id.search_clear)).perform(click());
