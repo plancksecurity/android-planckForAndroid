@@ -133,12 +133,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                 List<Account> accounts = Preferences.getPreferences(PEpAddDevice.this).getAccounts();
 
                 try {
-                    Timber.e("------------------------");
-                    Timber.e(getIntent().getStringExtra(TRUSTWORDS));
-                    Timber.e(myIdentity.fpr);
-                    Timber.e(partnerIdentity.fpr);
-                    //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
-                    Timber.e("------------------------");
+                    showDebugInfo();
                 } catch (Exception ignored) {}
 
                 intent.removeExtra(TRUSTWORDS);
@@ -149,6 +144,15 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         }
 
         setUpFloatingWindow();
+    }
+
+    private void showDebugInfo() {
+        Timber.e("------------------------");
+        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
+        Timber.e(myIdentity.fpr);
+        Timber.e(partnerIdentity.fpr);
+        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
+        Timber.e("------------------------");
     }
 
     @Override
@@ -190,24 +194,14 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
                     item.setTitle(R.string.pep_menu_short_trustwords);
                     changeTrustwordsLength(false);
                     try {
-                        Timber.e("------------------------");
-                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
-                        Timber.e(myIdentity.fpr);
-                        Timber.e(partnerIdentity.fpr);
-                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
-                        Timber.e("------------------------");
+                        showDebugInfo();
                     } catch (Exception ignored) {}
                 }
                 else{
                     item.setTitle(getString(R.string.pep_menu_long_trustwords));
                     changeTrustwordsLength(true);
                     try {
-                        Timber.e("------------------------");
-                        Timber.e(getIntent().getStringExtra(TRUSTWORDS));
-                        Timber.e(myIdentity.fpr);
-                        Timber.e(partnerIdentity.fpr);
-                        //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
-                        Timber.e("------------------------");
+                        showDebugInfo();
                     } catch (Exception ignored) {}
                 }
 
@@ -223,12 +217,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
 
     private boolean changeTrustwordsLanguage(Integer languagePosition) {
         try {
-            Timber.e("------------------------");
-            Timber.e(getIntent().getStringExtra(TRUSTWORDS));
-            Timber.e(myIdentity.fpr);
-            Timber.e(partnerIdentity.fpr);
-            //FeedbackTools.showLongFeedback(getRootView(), myIdentity.fpr + "::" + partnerIdentity.fpr);
-            Timber.e("------------------------");
+            showDebugInfo();
         } catch (Exception ignored) {}
         final List pEpLanguages = PEpUtils.getPEpLocales();
         String language = pEpLanguages.get(languagePosition).toString();
