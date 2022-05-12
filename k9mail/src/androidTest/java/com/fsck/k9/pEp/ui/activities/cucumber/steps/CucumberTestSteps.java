@@ -12,11 +12,13 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
@@ -86,6 +88,7 @@ import static com.fsck.k9.pEp.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromWebView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
@@ -450,6 +453,40 @@ public class CucumberTestSteps {
     public void I_compare_body(String cucumberBody) {
         timeRequiredForThisMethod(10);
         testUtils.compareMessageBodyWithText(cucumberBody);
+    }
+
+    @When("^I check that the Calendar is correct and body text is (\\S+)")
+    public void I_check_calendar(String bodyText) {
+        timeRequiredForThisMethod(10);
+        if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
+                !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
+                        "Southern Island, NBI 8250012 B, Japan") ||
+                !getTextFromView(onView(withId(R.id.eventTime))).equals("Sat Nov 13 09:00:00 GMT+01:00 2021 - Sat Nov 13 10:00:00 GMT+01:00 2021") ||
+                !getTextFromView(onView(withId(R.id.eventInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
+                        "Master Roshi (turtle@mail.es)\n" +
+                        "Organizer Name (organizer@mail.es) [organizer]")) {
+            assertFailWithMessage("Wrong Calendar Text");
+        }
+        BySelector selector = By.clazz("android.webkit.WebView");
+        for (UiObject2 webv : device.findObjects(selector)) {
+            if (webv.getParent().getResourceName() != null &&
+                    webv.getParent().getResourceName().equals("security.pEp.debug:id/calendarInviteLayout") &&
+                    !webv.getChildren().get(0).getChildren().get(0).getText().contains(bodyText)) {
+                assertFailWithMessage("Wrong message body");
+            }
+        }
+        waitForIdle();
+        ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
+        testUtils.longClick("openCalendarImg");
+        waitForIdle();
+        if (viewIsDisplayed(calendarButton)) {
+            assertFailWithMessage("Calendar Button is not openning the calendar");
+        }
+        device.pressBack();
+        waitForIdle();
+        if (!viewIsDisplayed(calendarButton)) {
+            assertFailWithMessage("Calendar Button!!!");
+        }
     }
 
 
