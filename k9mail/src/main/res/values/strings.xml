@@ -126,8 +126,8 @@
     <string name="send_alternate_action">Share</string>
     <string name="print_action">Print</string>
     <string name="send_alternate_chooser_title">Choose sender</string>
-    <string name="flag_action">Add star</string>
-    <string name="unflag_action">Remove star</string>
+    <string name="flag_action">Add flag</string>
+    <string name="unflag_action">Remove flag</string>
     <string name="copy_action">Copy</string>
     <string name="select_text_action">Select text</string>
     <string name="show_headers_action">Show headers</string>
@@ -274,7 +274,7 @@
     <string name="global_settings_confirm_actions_title">Confirm actions</string>
     <string name="global_settings_confirm_actions_summary">Show a dialog whenever you perform selected actions</string>
     <string name="global_settings_confirm_action_delete">Delete</string>
-    <string name="global_settings_confirm_action_delete_starred">Delete Starred (in message view)</string>
+    <string name="global_settings_confirm_action_delete_starred">Delete Flagged (in message view)</string>
     <string name="global_settings_confirm_action_spam">Spam</string>
     <string name="global_settings_confirm_menu_discard">Discard message</string>
     <string name="global_settings_confirm_menu_mark_all_read">Mark all messages as read</string>
@@ -635,8 +635,8 @@
     <string name="sort_subject_re_alpha">Subject reverse alphabetical</string>
     <string name="sort_sender_alpha">Sender alphabetical</string>
     <string name="sort_sender_re_alpha">Sender reverse alphabetical</string>
-    <string name="sort_flagged_first">Starred messages first</string>
-    <string name="sort_flagged_last">Unstarred messages first</string>
+    <string name="sort_flagged_first">Flagged messages first</string>
+    <string name="sort_flagged_last">Unflagged messages first</string>
     <string name="sort_unread_first">Unread messages first</string>
     <string name="sort_unread_last">Read messages first</string>
     <string name="sort_attach_first">Messages with attachments first</string>
@@ -646,7 +646,7 @@
     <string name="sort_by_arrival">Arrival</string>
     <string name="sort_by_subject">Subject</string>
     <string name="sort_by_sender">Sender</string>
-    <string name="sort_by_flag">Star</string>
+    <string name="sort_by_flag">Flag</string>
     <string name="sort_by_unread">Read/unread</string>
     <string name="sort_by_attach">Attachments</string>
     <string name="account_delete_dlg_title">Remove Account</string>
@@ -719,13 +719,13 @@
     <string name="hide_special_accounts_title">Hide special accounts</string>
     <string name="hide_special_accounts_summary">Hide the unified inbox and all messages accounts</string>
     <string name="search_title"><xliff:g id="search_name">%1$s</xliff:g> <xliff:g id="modifier">%2$s</xliff:g></string>
-    <string name="flagged_modifier"> - Starred</string>
+    <string name="flagged_modifier"> - Flagged</string>
     <string name="unread_modifier"> - Unread</string>
     <string name="search_all_messages_title">All messages</string>
     <string name="search_all_messages_detail">All messages in searchable folders</string>
     <string name="integrated_inbox_title">Unified Inbox</string>
     <string name="integrated_inbox_detail">All messages in unified folders</string>
-    <string name="tap_hint">Tap circle or star for unread or starred messages</string>
+    <string name="tap_hint">Tap circle or star for unread or flagged messages</string>
     <string name="folder_settings_include_in_integrated_inbox_label">Unify</string>
     <string name="folder_settings_include_in_integrated_inbox_summary">All messages are shown in Unified Inbox</string>
     <string name="account_settings_searchable_label">Folders to search</string>
