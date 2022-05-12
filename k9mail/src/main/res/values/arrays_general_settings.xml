@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="supported_languages" translatable="false">
-        <item></item>
+        <item />
         <item>de</item>
         <item>en</item>
     </string-array>
@@ -88,7 +88,7 @@
     </string-array>
 
     <string-array name="language_values" translatable="false">
-        <item></item>
+        <item />
         <item>af</item>
         <item>id</item>
         <item>ms</item>
