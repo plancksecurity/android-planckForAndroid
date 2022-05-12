@@ -27,6 +27,7 @@ class CalendarInviteLayout(
     private lateinit var eventLocationText: TextView
     private lateinit var eventTimeText: TextView
     private lateinit var eventInviteesText: TextView
+    private lateinit var showAllInviteesButton: ImageButton
     private lateinit var progressBar: ContentLoadingProgressBar
     private lateinit var layout: View
 
@@ -100,18 +101,17 @@ class CalendarInviteLayout(
         eventInviteesText.text = context.getString(
             R.string.calendar_invite_short_invitees, firstInvitee, rest
         )
-        eventInviteesText.setOnClickListener {
-            presenter.showLongInvitees()
-        }
+        showAllInviteesButton.visibility = View.VISIBLE
     }
 
     override fun setLongInvitees(invitees: String) {
         eventInviteesText.text = invitees
-        eventInviteesText.setOnClickListener(null)
+        showAllInviteesButton.visibility = View.GONE
     }
 
     override fun hideInvitees() {
         eventInviteesText.visibility = View.GONE
+        showAllInviteesButton.visibility = View.GONE
     }
 
     override fun showCalendarIcon() {
@@ -128,6 +128,7 @@ class CalendarInviteLayout(
         eventLocationText.visibility = View.GONE
         eventTimeText.visibility = View.GONE
         eventInviteesText.visibility = View.GONE
+        showAllInviteesButton.visibility = View.GONE
     }
 
     override fun showNoCalendarApp() {
@@ -145,11 +146,15 @@ class CalendarInviteLayout(
         eventLocationText = findViewById(R.id.eventLocation)
         eventTimeText = findViewById(R.id.eventTime)
         eventInviteesText = findViewById(R.id.eventInvitees)
+        showAllInviteesButton = findViewById(R.id.showAllInvitees)
         progressBar = findViewById(R.id.calendarInviteProgressBar)
         layout = findViewById(R.id.calendarInviteLayout)
 
         openCalendarButton.setOnClickListener {
             presenter.openCalendar()
+        }
+        showAllInviteesButton.setOnClickListener {
+            presenter.showLongInvitees()
         }
     }
 

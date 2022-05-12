@@ -332,5 +332,6 @@
     <string name="no_calendar_app_found_msg">No calendar app was found, please install one.</string>
     <string name="calendar_invite_error_title">Error loading calendar invite.</string>
     <string name="calendar_invite_short_invitees">%s &amp; %d more</string>
+    <string name="calendar_invite_show_all_invitees_desc">Show all invitees</string>
 
 </resources>
