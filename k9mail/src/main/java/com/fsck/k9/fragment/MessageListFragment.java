@@ -1839,8 +1839,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 actionMode = null;
             }
         }
-
-        adapter.notifyDataSetChanged();
+        if(!adapter.getCursor().isClosed()) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void toggleMessageSelect(int listViewPosition) {
