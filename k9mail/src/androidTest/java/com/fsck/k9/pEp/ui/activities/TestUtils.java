@@ -1909,7 +1909,7 @@ public class TestUtils {
         }
     }
 
-    private void assertSecurityStatusText(Rating status) {
+    public void assertSecurityStatusText(Rating status) {
         String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
         ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
 
