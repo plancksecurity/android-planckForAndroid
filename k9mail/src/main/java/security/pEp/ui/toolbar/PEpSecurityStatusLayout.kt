@@ -1,8 +1,8 @@
 package security.pEp.ui.toolbar
 
 import android.content.Context
+import android.graphics.PorterDuff
 import android.util.AttributeSet
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -36,34 +36,22 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
 
         securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating))
 
+        setSecurityStatusColors(rating)
+        setSecurityStatusText(rating)
+    }
+
+    private fun setSecurityStatusColors(rating: Rating?) {
         if (!encrypt)
             securityStatusIcon?.setColorFilter(
                 ContextCompat.getColor(
                     context,
                     R.color.pep_no_color
-                ), android.graphics.PorterDuff.Mode.SRC_IN
+                ),
+                PorterDuff.Mode.SRC_IN
             )
         else
             securityStatusIcon?.clearColorFilter()
 
-        var firstLine = context.getString(getRatingTextRes(rating, encrypt))
-        secondLineText?.let { secondTextView ->
-            var secondLine = ""
-            if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
-                val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
-                if (afterLimit.contains(" ")) {
-                    secondLine = afterLimit.substringAfter(" ")
-                    firstLine = firstLine.substringBefore(secondLine)
-                }
-            }
-            if (secondLine.isNotBlank()) {
-                secondTextView.visibility = View.VISIBLE
-                secondTextView.text = secondLine
-            } else {
-                secondTextView.visibility = View.GONE
-            }
-        }
-        securityStatusText?.text = firstLine
         securityStatusText?.setTextColor(
             ContextCompat.getColor(
                 context,
@@ -76,5 +64,26 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
                 getRatingColorRes(rating, encrypt)
             )
         )
+    }
+
+    private fun setSecurityStatusText(rating: Rating?) {
+        var firstLine = context.getString(getRatingTextRes(rating, encrypt))
+        secondLineText?.let { secondTextView ->
+            var secondLine = ""
+            if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
+                val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
+                if (afterLimit.contains(" ")) {
+                    secondLine = afterLimit.substringAfter(" ")
+                    firstLine = firstLine.substringBefore(secondLine)
+                }
+            }
+            if (secondLine.isNotBlank()) {
+                secondTextView.visibility = VISIBLE
+                secondTextView.text = secondLine
+            } else {
+                secondTextView.visibility = GONE
+            }
+        }
+        securityStatusText?.text = firstLine
     }
 }
