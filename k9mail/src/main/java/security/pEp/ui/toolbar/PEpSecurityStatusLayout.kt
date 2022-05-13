@@ -15,7 +15,9 @@ import security.pEp.ui.PEpUIUtils.getRatingTextRes
 import security.pEp.ui.PEpUIUtils.getToolbarRatingVisibility
 
 private const val MIN_LENGTH_BEFORE_LINEBREAK = 8
-class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
+
+class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
+    ConstraintLayout(context, attrs) {
 
     private var securityStatusIcon: AppCompatImageView? = null
     private var securityStatusText: AppCompatTextView? = null
@@ -35,21 +37,26 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : Constrai
         securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating))
 
         if (!encrypt)
-            securityStatusIcon?.setColorFilter(ContextCompat.getColor(context, R.color.pep_no_color), android.graphics.PorterDuff.Mode.SRC_IN)
+            securityStatusIcon?.setColorFilter(
+                ContextCompat.getColor(
+                    context,
+                    R.color.pep_no_color
+                ), android.graphics.PorterDuff.Mode.SRC_IN
+            )
         else
             securityStatusIcon?.clearColorFilter()
 
         var firstLine = context.getString(getRatingTextRes(rating, encrypt))
-        secondLineText ?.let { secondTextView ->
+        secondLineText?.let { secondTextView ->
             var secondLine = ""
-            if(firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
+            if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
                 val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
-                if(afterLimit.contains(" ")) {
+                if (afterLimit.contains(" ")) {
                     secondLine = afterLimit.substringAfter(" ")
                     firstLine = firstLine.substringBefore(secondLine)
                 }
             }
-            if(secondLine.isNotBlank()) {
+            if (secondLine.isNotBlank()) {
                 secondTextView.visibility = View.VISIBLE
                 secondTextView.text = secondLine
             } else {
@@ -57,7 +64,17 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) : Constrai
             }
         }
         securityStatusText?.text = firstLine
-        securityStatusText?.setTextColor(ContextCompat.getColor(context, getRatingColorRes(rating, encrypt)))
-        secondLineText?.setTextColor(ContextCompat.getColor(context, getRatingColorRes(rating, encrypt)))
+        securityStatusText?.setTextColor(
+            ContextCompat.getColor(
+                context,
+                getRatingColorRes(rating, encrypt)
+            )
+        )
+        secondLineText?.setTextColor(
+            ContextCompat.getColor(
+                context,
+                getRatingColorRes(rating, encrypt)
+            )
+        )
     }
 }
