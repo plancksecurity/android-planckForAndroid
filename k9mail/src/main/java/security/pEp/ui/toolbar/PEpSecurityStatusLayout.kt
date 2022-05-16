@@ -6,11 +6,10 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import com.fsck.k9.R
 import foundation.pEp.jniadapter.Rating
+import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.PEpUIUtils.getDrawableForToolbarRating
-import security.pEp.ui.PEpUIUtils.getRatingColorRes
 import security.pEp.ui.PEpUIUtils.getRatingTextRes
 import security.pEp.ui.PEpUIUtils.getToolbarRatingVisibility
 
@@ -43,25 +42,24 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     private fun setSecurityStatusColors(rating: Rating?) {
         if (!encrypt)
             securityStatusIcon?.setColorFilter(
-                ContextCompat.getColor(
-                    context,
-                    R.color.pep_no_color
-                ),
+                PEpUIUtils.getRatingColor(context, rating, encrypt),
                 PorterDuff.Mode.SRC_IN
             )
         else
             securityStatusIcon?.clearColorFilter()
 
         securityStatusText?.setTextColor(
-            ContextCompat.getColor(
+            PEpUIUtils.getRatingColor(
                 context,
-                getRatingColorRes(rating, encrypt)
+                rating,
+                encrypt
             )
         )
         secondLineText?.setTextColor(
-            ContextCompat.getColor(
+            PEpUIUtils.getRatingColor(
                 context,
-                getRatingColorRes(rating, encrypt)
+                rating,
+                encrypt
             )
         )
     }
