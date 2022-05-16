@@ -460,7 +460,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(10);
         if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
                 !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
-                        "Southern Island, NBI 8250012 B, Japan") ||
+                        "Southern Island, NBI 8250012 B, https://www.pep.security") ||
                 !getTextFromView(onView(withId(R.id.eventTime))).equals("Sat Nov 13 09:00:00 GMT+01:00 2021 - Sat Nov 13 10:00:00 GMT+01:00 2021") ||
                 !getTextFromView(onView(withId(R.id.eventInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
@@ -477,6 +477,13 @@ public class CucumberTestSteps {
         }
         waitForIdle();
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
+        testUtils.clickTextInTextView("https://www.pep.security");
+        waitForIdle();
+        if (testUtils.textExistsOnScreen("https://www.pep.security")) {
+            assertFailWithMessage("URLs has not been clicked");
+        }
+        device.pressBack();
+        waitForIdle();
         testUtils.longClick("openCalendarImg");
         waitForIdle();
         if (viewIsDisplayed(calendarButton)) {
