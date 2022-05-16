@@ -72,6 +72,7 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.openLinkWithText;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -477,8 +478,11 @@ public class CucumberTestSteps {
         }
         waitForIdle();
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
-        testUtils.clickTextInTextView("https://www.pep.security");
+        onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.pep.security"));
         waitForIdle();
+        for (int i = 0; i < 500; i++) {
+            waitForIdle();
+        }
         if (testUtils.textExistsOnScreen("https://www.pep.security")) {
             assertFailWithMessage("URLs has not been clicked");
         }
@@ -2568,7 +2572,7 @@ public class CucumberTestSteps {
             Timber.i("Cannot find subject field");
         }
         for (int i = 0; i < 500; i++) {
-            waitUntilIdle();
+            waitForIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
