@@ -132,7 +132,7 @@ class PEpProviderImplKotlin @Inject constructor(
             if (address.hostname.contains("peptunnel")) {
                 decMsg.addHeader(MimeHeader.HEADER_PEP_KEY_IMPORT, address.personal)
                 decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true")
-            } else if (address.address.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.toUpperCase(Locale.ROOT))) {
+            } else if (address.address.contains(MimeHeader.HEADER_PEP_AUTOCONSUME.uppercase(Locale.ROOT))) {
                 decMsg.addHeader(MimeHeader.HEADER_PEP_AUTOCONSUME, "true")
             } else {
                 replyTo.add(address)
@@ -294,22 +294,37 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     override fun obtainLanguages(): Map<String, PEpLanguage>? {
         return try {
-            val languages: MutableMap<String, PEpLanguage> = HashMap()
-            val languageList = engine._languagelist
-            val languageCharacters = languageList.split("\n").filter { it.isNotBlank() }.toTypedArray()
-            for (languageCharacter in languageCharacters) {
-                val split = languageCharacter.split(",").toTypedArray()
-                val pEpLanguage =
-                        PEpLanguage(getElementAtPosition(split[0]),
-                                getElementAtPosition(split[1]),
-                                getElementAtPosition(split[2]))
-                languages[getElementAtPosition(split[0])] = pEpLanguage
-            }
-            languages
+            val supportedLocales = listOf("en", "de")
+            val pEpRawLanguages = engine._languagelist
+
+            parseRawLanguages(pEpRawLanguages, supportedLocales)
         } catch (e: pEpException) {
             Timber.e(e)
-            null
+            emptyMap()
         }
+    }
+
+    private fun parseRawLanguages(
+        pEpRawLanguages: String,
+        supportedLocales: List<String>
+    ): MutableMap<String, PEpLanguage> {
+        val rawLanguages = pEpRawLanguages
+            .split("\n")
+            .filter { it.isNotBlank() }
+            .toTypedArray()
+        val availableLanguages: MutableMap<String, PEpLanguage> = HashMap()
+
+        for (rawLanguage in rawLanguages) {
+            val languageInfo = rawLanguage.split(",").toTypedArray()
+            val locale = getElementAtPosition(languageInfo[0])
+            if (locale in supportedLocales) {
+                val language = getElementAtPosition(languageInfo[1])
+                val title = getElementAtPosition(languageInfo[2])
+                val pEpLanguage = PEpLanguage(locale, language, title)
+                availableLanguages[locale] = pEpLanguage
+            }
+        }
+        return availableLanguages
     }
 
     @Deprecated("not needed with KeySync")
