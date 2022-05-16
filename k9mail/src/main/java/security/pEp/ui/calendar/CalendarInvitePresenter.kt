@@ -55,7 +55,7 @@ class CalendarInvitePresenter @Inject constructor(
     fun showLongInvitees() {
         val event = icalendar.events.first()
         val invitees = event.getInvitees()
-        showTextIfAvailable(
+        showText(
             invitees.joinToString("\n"),
             view::setLongInvitees,
             view::hideInvitees
@@ -95,7 +95,7 @@ class CalendarInvitePresenter @Inject constructor(
 
     private fun showOrHideSummary(event: VEvent) {
         val summary = event.summary?.value?.trim()
-        showTextIfAvailable(
+        showText(
             summary,
             view::setSummary,
             view::hideSummary
@@ -104,7 +104,7 @@ class CalendarInvitePresenter @Inject constructor(
 
     private fun showOrHideLocation(event: VEvent) {
         val location = event.location?.value?.trim()
-        showTextIfAvailable(
+        showText(
             location,
             view::setLocation,
             view::hideLocation
@@ -120,7 +120,7 @@ class CalendarInvitePresenter @Inject constructor(
             } else {
                 null
             }
-        showTextIfAvailable(
+        showText(
             timeText,
             view::setStartAndEndTime,
             view::hideStartAndEndTime
@@ -137,15 +137,15 @@ class CalendarInvitePresenter @Inject constructor(
         }
     }
 
-    private fun showTextIfAvailable(
+    private fun showText(
         text: String?,
-        ifAvailable: (String) -> Unit,
-        ifNotAvailable: () -> Unit
+        onAvailable: (String) -> Unit,
+        onNotAvailable: () -> Unit
     ) {
         if (text.isNullOrBlank()) {
-            ifNotAvailable()
+            onNotAvailable()
         } else {
-            ifAvailable(text)
+            onAvailable(text)
         }
     }
 
