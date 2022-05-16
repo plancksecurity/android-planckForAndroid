@@ -1,5 +1,6 @@
 package security.pEp.ui.calendar
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -177,6 +178,10 @@ class CalendarInviteLayout(
         eventInviteesText.setInAnimation(context, android.R.anim.slide_in_left)
         eventInviteesText.setOutAnimation(context, android.R.anim.slide_out_right)
 
+
+        layoutTransition = LayoutTransition().apply {
+            enableTransitionType(LayoutTransition.CHANGING)
+        }
     }
 
     private fun initializeInjector() {
