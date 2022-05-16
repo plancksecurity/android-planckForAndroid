@@ -1,4 +1,5 @@
 variables:
+  DOCKER_REGISTRY_HOST: dockerreg.pep.security
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   GIT_SUBMODULE_STRATEGY: recursive
   IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/pep_for_android_env
