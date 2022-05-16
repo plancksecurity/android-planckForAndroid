@@ -1,0 +1,88 @@
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  GIT_SUBMODULE_STRATEGY: recursive
+  IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/pep_for_android_env
+  DOCKERFILE: pep_for_android_env.Dockerfile
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
+stages:
+  - build-docker
+  - build
+  - test
+  - docs
+
+# Jobs:
+build-docker:
+  extends: .docker_in_docker
+  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.12
+  stage: build-docker
+  before_script:
+  # Auth to our registry using runner-provided credentials
+    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+  script:
+    - docker pull --quiet ${IMAGE_NAME}:latest
+    - docker build
+      --cache-from ${IMAGE_NAME}:latest
+      --tag=${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+      --tag=${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}:latest
+      .
+    - docker push --quiet ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+    - docker push --quiet ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+    - docker push --quiet ${IMAGE_NAME}:latest
+  rules:
+    - changes:
+    # Only run this job when the Dockerfile is modified
+        - Dockerfile
+
+build:
+  image: ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+  stage: build
+  script:
+    - ./gradlew --build-cache assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - build
+      - .gradle
+
+test:
+  # DinD service is required for Testcontainers
+  extends: .docker_in_docker
+  image: ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+  stage: test
+  before_script:
+  # Auth to our registry using runner-provided credentials
+    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+  script:
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - docker pull -q ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+    - docker tag ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG} pep_for_android_env:latest
+    - docker rmi ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+    - ./gradlew check --rerun-tasks
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
+  artifacts:
+    when: always
+    reports:
+      junit: "$CI_PROJECT_DIR/**/build/test-results/test/**/TEST-*.xml"
+
+.docker_in_docker:
+  services:
+    - name: docker:20.10.12-dind
+      # explicitly disable tls to avoid docker startup interruption
+      command: [ "--tls=false" ]
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
