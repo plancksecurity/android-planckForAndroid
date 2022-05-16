@@ -1,4 +1,5 @@
 variables:
+  DOCKER_REGISTRY_HOST: dockerreg.pep.security
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   GIT_SUBMODULE_STRATEGY: recursive
   IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/pep_for_android_env
@@ -19,13 +20,13 @@ stages:
 # Jobs:
 build-docker:
   extends: .docker_in_docker
-  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.12
+  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.16
   stage: build-docker
   before_script:
   # Auth to our registry using runner-provided credentials
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
   script:
-    - docker pull --quiet ${IMAGE_NAME}:latest
+    - docker pull --quiet ${IMAGE_NAME}:latest || true
     - docker build
       --cache-from ${IMAGE_NAME}:latest
       --tag=${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
@@ -79,10 +80,6 @@ test:
 
 .docker_in_docker:
   services:
-    - name: docker:20.10.12-dind
-      # explicitly disable tls to avoid docker startup interruption
-      command: [ "--tls=false" ]
+    - name: docker:20.10.16-dind
   variables:
-    DOCKER_HOST: "tcp://docker:2375"
-    DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
