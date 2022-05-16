@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:animateLayoutChanges="true"
     style="@style/CalendarInviteScreen">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -72,18 +73,37 @@
             app:layout_constraintTop_toBottomOf="@+id/eventLocation"
             tools:text="28/11/2021 16:00 to 28/11/2021 18:00" />
 
-        <TextView
+        <TextSwitcher
             android:id="@+id/eventInvitees"
-            style="@style/CalendarInviteText"
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:contentDescription="@string/calendar_event_invitees_content_desc"
-            app:drawableStartCompat="@drawable/ic_baseline_groups_24"
+            android:layout_marginTop="8dp"
+            android:animateLayoutChanges="true"
+            android:measureAllChildren="false"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/eventTime"
             app:layout_constraintEnd_toStartOf="@id/showAllInvitees"
-            tools:text="invitee1@sample.com, invitee2@sample.com" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/eventTime">
+
+            <TextView
+                android:id="@+id/shortInvitees"
+                style="@style/CalendarInviteText"
+                android:layout_marginTop="0dp"
+                android:layout_width="wrap_content"
+                android:contentDescription="@string/calendar_event_invitees_content_desc"
+                app:drawableStartCompat="@drawable/ic_baseline_groups_24"
+                tools:text="invitee1@sample.com, invitee2@sample.com" />
+
+            <TextView
+                android:id="@+id/longInvitees"
+                style="@style/CalendarInviteText"
+                android:layout_marginTop="0dp"
+                android:layout_width="wrap_content"
+                android:contentDescription="@string/calendar_event_invitees_content_desc"
+                app:drawableStartCompat="@drawable/ic_baseline_groups_24"
+                tools:text="invitee1@sample.com, invitee2@sample.com" />
+        </TextSwitcher>
 
         <ImageButton
             android:id="@+id/showAllInvitees"
@@ -92,11 +112,9 @@
             android:layout_marginStart="8dp"
             android:background="?android:selectableItemBackground"
             android:contentDescription="@string/calendar_invite_show_all_invitees_desc"
-            app:layout_constraintTop_toTopOf="@id/eventInvitees"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="?attr/iconActionExpand"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            app:layout_constraintTop_toTopOf="@id/eventInvitees"
+            app:srcCompat="?attr/iconActionExpand" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

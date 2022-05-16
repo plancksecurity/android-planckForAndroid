@@ -62,6 +62,11 @@ class CalendarInvitePresenter @Inject constructor(
         )
     }
 
+    fun showShortInvitees() {
+        val event = icalendar.events.first()
+        showShortInvitees(event)
+    }
+
     private fun renderCalendarInvite() {
         coroutineScope.launch {
             view.showLoading()

@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.TextSwitcher
 import android.widget.TextView
 import androidx.core.widget.ContentLoadingProgressBar
 import com.fsck.k9.R
@@ -16,6 +17,10 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.view.MessageWebView
 import javax.inject.Inject
 
+private const val ARROW_ORIGINAL_ROTATION = 0f
+private const val ARROW_FINAL_ROTATION = 180f
+private const val ARROW_ROTATION_TIME = 200L
+
 class CalendarInviteLayout(
     context: Context,
     attrs: AttributeSet?
@@ -26,7 +31,7 @@ class CalendarInviteLayout(
     private lateinit var messageContent: MessageWebView
     private lateinit var eventLocationText: TextView
     private lateinit var eventTimeText: TextView
-    private lateinit var eventInviteesText: TextView
+    private lateinit var eventInviteesText: TextSwitcher
     private lateinit var showAllInviteesButton: ImageButton
     private lateinit var progressBar: ContentLoadingProgressBar
     private lateinit var layout: View
@@ -98,15 +103,31 @@ class CalendarInviteLayout(
     }
 
     override fun setShortInvitees(firstInvitee: String, rest: Int) {
-        eventInviteesText.text = context.getString(
-            R.string.calendar_invite_short_invitees, firstInvitee, rest
+        showAllInviteesButton.setOnClickListener(null)
+        eventInviteesText.setText(
+            context.getString(
+                R.string.calendar_invite_short_invitees, firstInvitee, rest
+            )
         )
-        showAllInviteesButton.visibility = View.VISIBLE
+        showAllInviteesButton.animate().rotation(
+            ARROW_ORIGINAL_ROTATION
+        ).withEndAction {
+            showAllInviteesButton.setOnClickListener {
+                presenter.showLongInvitees()
+            }
+        }.duration = ARROW_ROTATION_TIME
     }
 
     override fun setLongInvitees(invitees: String) {
-        eventInviteesText.text = invitees
-        showAllInviteesButton.visibility = View.GONE
+        showAllInviteesButton.setOnClickListener(null)
+        eventInviteesText.setText(invitees)
+        showAllInviteesButton.animate().rotation(
+            ARROW_FINAL_ROTATION
+        ).withEndAction {
+            showAllInviteesButton.setOnClickListener {
+                presenter.showShortInvitees()
+            }
+        }.duration = ARROW_ROTATION_TIME
     }
 
     override fun hideInvitees() {
@@ -153,9 +174,9 @@ class CalendarInviteLayout(
         openCalendarButton.setOnClickListener {
             presenter.openCalendar()
         }
-        showAllInviteesButton.setOnClickListener {
-            presenter.showLongInvitees()
-        }
+        eventInviteesText.setInAnimation(context, android.R.anim.slide_in_left)
+        eventInviteesText.setOutAnimation(context, android.R.anim.slide_out_right)
+
     }
 
     private fun initializeInjector() {
