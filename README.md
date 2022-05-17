@@ -17,7 +17,6 @@ If the app is not behaving like it should, you might find these resources helpfu
 
 - [User Manual](https://prettyeasyprivacy.com/docs/)
 - [Frequently Asked Questions](https://prettyeasyprivacy.com/faq/)
-- [Support] (https://prettyeasyprivacy.com/contact-us/)
 
 
 
