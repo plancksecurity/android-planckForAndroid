@@ -1649,13 +1649,25 @@ public class TestUtils {
 
     public void removeAccountAtPosition(int position) {
         waitForIdle();
-        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        int[] accountListSize = new int[2];
+        onView(withId(R.id.accounts_list)).perform(UtilsPackage.saveSizeInInt(accountListSize, 0));
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position))
+                .perform(scrollTo(), ViewActions.longClick());
         waitForIdle();
         selectFromScreen(R.string.remove_account_action);
         waitForIdle();
 
         clickAcceptButton();
         waitForIdle();
+        if(accountListSize[0] > 1) {
+            do {
+                onView(withId(R.id.accounts_list))
+                        .perform(UtilsPackage.saveSizeInInt(accountListSize, 1));
+                waitForIdle();
+            } while (accountListSize[1] != accountListSize[0] - 1);
+        } else {
+            waitUntilViewDisplayed(onView(withText(R.string.account_setup_basics_title)));
+        }
     }
 
     public void skipTutorialAndAllowPermissionsIfNeeded() {
