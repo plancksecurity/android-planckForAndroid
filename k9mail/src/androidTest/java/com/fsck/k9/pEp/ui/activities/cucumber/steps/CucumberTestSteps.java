@@ -480,7 +480,7 @@ public class CucumberTestSteps {
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
         onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.pep.security"));
         waitForIdle();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 2000; i++) {
             waitForIdle();
         }
         if (testUtils.textExistsOnScreen("https://www.pep.security")) {
