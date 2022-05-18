@@ -2,8 +2,7 @@ variables:
   DOCKER_REGISTRY_HOST: dockerreg.pep.security
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
   GIT_SUBMODULE_STRATEGY: recursive
-  IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/pep_for_android_env
-  DOCKERFILE: pep_for_android_env.Dockerfile
+  IMAGE_NAME: ${DOCKER_REGISTRY_HOST}/${CI_PROJECT_PATH_SLUG}
 
 workflow:
   rules:
@@ -11,38 +10,87 @@ workflow:
       when: never
     - when: always
 
+.compose_deps: &compose_deps
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
+  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter/raw/tag/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES | sed '/^#/d'
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "pEpEngine Version = ${pEpEngine}"
+  - echo "libpEpAdapter Version = ${libpEpAdapter}"
+  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpEngine/raw/tag/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - cat DEPENDENCIES
+  - source DEPENDENCIES
+  - echo "Sequoia Version = ${sequoia}"
+
 stages:
-  - build-docker
+  - toolchain
+  - base
   - build
   - test
   - docs
 
 # Jobs:
-build-docker:
+toolchain image:
   extends: .docker_in_docker
   image: ${DOCKER_REGISTRY_HOST}/docker:20.10.16
-  stage: build-docker
+  stage: toolchain
   before_script:
   # Auth to our registry using runner-provided credentials
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
   script:
-    - docker pull --quiet ${IMAGE_NAME}:latest || true
+    - docker pull --quiet ${IMAGE_NAME}/toolchain:latest || true
     - docker build
-      --cache-from ${IMAGE_NAME}:latest
-      --tag=${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
-      --tag=${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
-      --tag=${IMAGE_NAME}:latest
+      --cache-from ${IMAGE_NAME}/toolchain:latest
+      --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
+      --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}/toolchain:latest
+      --file Dockerfile.toolchain
       .
-    - docker push --quiet ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
-    - docker push --quiet ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
-    - docker push --quiet ${IMAGE_NAME}:latest
+    - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
+    - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+    - docker push --quiet ${IMAGE_NAME}/toolchain:latest
   rules:
     - changes:
     # Only run this job when the Dockerfile is modified
-        - Dockerfile
+        - Dockerfile.toolchain
+
+base image:
+  extends: .docker_in_docker
+  image: ${DOCKER_REGISTRY_HOST}/docker:20.10.16
+  stage: base
+  before_script:
+  # Auth to our registry using runner-provided credentials
+    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
+    - *compose_deps
+  script:
+    - cat DEPENDENCIES
+    - docker pull --quiet ${IMAGE_NAME}/base:latest || true
+    - docker build
+      --cache-from ${IMAGE_NAME}/base:latest
+      --build-arg ENGINE_VERSION=${pEpEngine}
+      --build-arg JNI_ADAPTER_VERSION=${pEpJNIAdapter}
+      --build-arg LIBPEPADAPTER_VERSION=${libpEpAdapter}
+      --build-arg FOLDABLE_FOLDER_VERSION=${foldableFolderList}
+      --build-arg TOOLCHAIN_IMAGE_NAME=${IMAGE_NAME}/toolchain
+      --build-arg YML2_VERSION=${yml2}
+      --tag=${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+      --tag=${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+      --tag=${IMAGE_NAME}/base:latest
+      --file Dockerfile.base
+      .
+    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+    - docker push --quiet ${IMAGE_NAME}/base:latest
+  rules:
+    - changes:
+        - DEPENDENCIES
+        - Dockerfile.base
+        - Dockerfile.toolchain
 
 build:
-  image: ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
+  image: ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
   stage: build
   script:
     - ./gradlew --build-cache assemble

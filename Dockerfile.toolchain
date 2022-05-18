@@ -34,52 +34,12 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 
 # download android sdk
 RUN mkdir -p $ANDROID_HOME/cmdline-tools/latest
-RUN curl --connect-timeout 30 --retry 5 --retry-delay 5 \
+RUN curl -sL --connect-timeout 30 --retry 5 --retry-delay 5 \
     https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -o android-sdk.zip
 RUN unzip android-sdk.zip -d .
 RUN mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest
 RUN rm android-sdk.zip
 RUN rm -r cmdline-tools
-
-# yml2
-RUN git clone https://gitea.pep.foundation/fdik/yml2.git $HOME/yml2
-
-# sdkmanager init
-COPY docker/packages.txt .
-RUN yes | sdkmanager --licenses
-RUN sdkmanager --package_file=packages.txt
-
-# ASN1C
-RUN git clone https://github.com/vlm/asn1c.git $HOME/code/asn1c
-RUN cd $HOME/code/asn1c && \
-    git checkout tags/v0.9.28 -b pep-engine && \
-    autoreconf -iv && \
-    ./configure && \
-    make && \
-    make install
-
-# pEp for Android
-RUN git clone https://gitea.pep.foundation/pEp.foundation/pEpEngine.git $HOME/code/pEpEngine
-RUN git clone https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter.git $HOME/code/pEpJNIAdapter
-RUN git clone https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git $HOME/code/libpEpAdapter
-RUN git clone http://pep-security.lu/gitlab/android/pep.git $HOME/code/pEp
-RUN git clone http://pep-security.lu/gitlab/android/foldable-folder-list.git $HOME/code/foldable-folder-list
-
-# version checkout
-RUN cd $HOME/code/pEpEngine ; git checkout Release_2.1.56
-RUN cd $HOME/code/pEpJNIAdapter ; git checkout Release_2.1.41
-RUN cd $HOME/code/libpEpAdapter ; git checkout Release_2.1.22
-RUN cd $HOME/code/pEp ; git checkout develop
-RUN cd $HOME/code/foldable-folder-list ; git checkout v0.2
-
-RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
-RUN echo "ENGINE_INC_PATH=$HOME/code/pEpEngine/build-android/include/" >> $HOME/code/pEpJNIAdapter/local.conf
-RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
-
-
-# WORKAROUND JNI-176
-RUN cd $HOME/code/pEpEngine && \
-    sh build-android/takeOutHeaderFiles.sh $PWD
 
 # ADD RUST TARGETS
 RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
@@ -101,9 +61,3 @@ RUN echo " \n\
     ar = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android-ar\" \n\
     linker = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android21-clang\" \n\
     " > $HOME/.cargo/config
-
-
-# BUILD ANDROID
-RUN echo "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> $HOME/code/pEp/gradle.properties
-RUN echo "\nthreadsToUse=1" >> $HOME/code/pEp/gradle.properties
-# RUN ./$HOME/code/pEp/gradlew externalNativeBuildDebug
