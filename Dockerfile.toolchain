@@ -21,11 +21,17 @@ RUN apt-get update -yqq && \
     rm -rf /var/lib/apt/lists/*
 RUN update-java-alternatives -s adoptopenjdk-8-hotspot-amd64
 
+# setup locales
+RUN apt-get update -yqq && \
+    apt-get install -yqq locales-all && \
+    rm -rf /var/lib/apt/lists/*
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_US.UTF-8 && \
+    dpkg-reconfigure --frontend=noninteractive locales
 
 # paths and aliases
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
 ENV ANDROID_HOME=/usr/lib/android-sdk
 ENV ANDROID_NDK=$ANDROID_HOME/ndk/21.0.6113669
 ENV PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
