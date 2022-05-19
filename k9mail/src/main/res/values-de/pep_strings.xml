@@ -188,10 +188,10 @@
     <string name="intro_frag_first_text_3">Und in der oberen Leiste, wenn Sie eine E-Mail öffnen oder schreiben:</string>
     <string name="intro_frag_first_text_2">Sie können diese Anleitung jederzeit schließen. 
 \n 
-\n&lt;font color=#4caf50&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
+\n&lt;font color=#4caf50&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
 \n 
-\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
-\n 
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
+\n
 \nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt</string>
     <string name="message_failed_to_encrypt">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
@@ -237,7 +237,6 @@
     <string name="passhphrase_body_insert_passphrase">Um weiterzufahren, geben Sie Ihre Passphrase ein</string>
     <string name="passhphrase_input_hint">Passphrase</string>
     <string name="passhphrase_title">Passphrase</string>
-    <string name="about_contact">Kontakt:</string>
     <string name="pep_sync_folder_is_disabled">p≡p Sync Ordner ist deaktiviert, INBOX/Posteingang wird verwendet</string>
     <string name="pep_sync_folder_is_enabled">p≡p Sync Ordner ist aktiviert</string>
     <string name="pep_sync_folder">p≡p Sync Ordner</string>
@@ -257,7 +256,6 @@
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
     <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
-    <string name="support_email" translatable="false">support@pep.security</string>
     <string name="message_view_message_no_longer_available">Diese Nachricht ist nicht mehr verfügbar, vermutlich wurde sie mittels eines anderen E-Mail-Programmes gelöscht.</string>
     <string name="no_results_found">Kein Ergebnis gefunden</string>
     <string name="pgp_key_import_disabled_summary">Dieses Gerät ist Teil einer Gerätegruppe, Schlüssel kann nicht importiert werden</string>
