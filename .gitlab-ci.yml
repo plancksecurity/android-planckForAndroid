@@ -66,7 +66,7 @@ base image:
     - *compose_deps
   script:
     - cat DEPENDENCIES
-    - docker pull --quiet ${IMAGE_NAME}/base:latest || true
+    - docker pull --quiet ${IMAGE_NAME}/base:latest || docker pull --quiet ${IMAGE_NAME}/toolchain:latest
     - docker build
       --cache-from ${IMAGE_NAME}/base:latest
       --build-arg ENGINE_VERSION=${pEpEngine}
