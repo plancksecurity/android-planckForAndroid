@@ -1,6 +1,9 @@
 ARG TOOLCHAIN_IMAGE_NAME
 FROM ${TOOLCHAIN_IMAGE_NAME}
 
+# Disable detached head message from git
+RUN git config --global advice.detachedHead false
+
 # yml2
 ARG YML2_VERSION
 RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VERSION} $HOME/yml2
