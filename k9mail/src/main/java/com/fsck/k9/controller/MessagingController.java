@@ -4734,6 +4734,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             Timber.e(e, "%s %s", "pEpEngine", "Could not append sync message");
 
                             sendpEpSyncMessage(fromAccount, message);
+                        } catch (IllegalStateException e) {
+                            String errorMsg = e.getMessage();
+                            if(errorMsg != null && errorMsg.contains("attempt to re-open an already-closed object: SQLiteDatabase:")) {
+                                Timber.e(e);
+                            } else {
+                                throw e;
+                            }
                         }
                     }
 
