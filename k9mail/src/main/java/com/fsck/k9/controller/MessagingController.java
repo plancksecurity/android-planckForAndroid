@@ -1455,7 +1455,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (oldestExtantMessage.before(downloadStarted) &&
                     oldestExtantMessage.after(new Date(account.getLatestOldMessageSeenTime()))) {
                 account.setLatestOldMessageSeenTime(oldestExtantMessage.getTime());
-                account.save(preferences);
+                account.save(preferences, false);
             }
 
         }
