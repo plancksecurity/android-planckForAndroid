@@ -7,7 +7,7 @@ RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VER
 
 # sdkmanager init
 COPY docker/packages.txt .
-RUN yes | sdkmanager --licenses
+RUN yes | sdkmanager --licenses | grep "All SDK package licenses accepted"
 RUN sdkmanager --package_file=packages.txt
 
 # ASN1C
