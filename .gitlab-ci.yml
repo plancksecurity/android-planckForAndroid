@@ -80,7 +80,7 @@ base image:
       --tag=${IMAGE_NAME}/base:latest
       --file Dockerfile.base
       .
-    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+    - docker push ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
     - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
     - docker push --quiet ${IMAGE_NAME}/base:latest
   rules:
