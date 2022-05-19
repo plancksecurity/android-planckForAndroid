@@ -133,11 +133,13 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void fillComposeFields(String messageTo) {
-        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
-        device.waitForIdle();
+        testUtils.doWait("to");
+        TestUtils.waitForIdle();
         onView(withId(R.id.subject)).perform(replaceText(MESSAGE_SUBJECT));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.message_content)).perform(typeText(MESSAGE_BODY));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
+        onView(withId(R.id.to))
+                .perform(typeText(messageTo + "\n"), closeSoftKeyboard());
     }
 }
