@@ -703,12 +703,16 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public synchronized void save(Preferences preferences) {
+        save(preferences, true);
+    }
+
+    public synchronized void save(Preferences preferences, boolean saveUuid) {
         if(setupState == SetupState.INITIAL && BuildConfig.DEBUG) {
             throw new IllegalStateException("Trying to save an account in state INITIAL");
         }
         StorageEditor editor = preferences.getStorage().edit();
 
-        if (!preferences.getStorage().getString("accountUuids", "").contains(accountUuid)) {
+        if (saveUuid && !preferences.getStorage().getString("accountUuids", "").contains(accountUuid)) {
             /*
              * When the account is first created we assign it a unique account number. The
              * account number will be unique to that account for the lifetime of the account.
