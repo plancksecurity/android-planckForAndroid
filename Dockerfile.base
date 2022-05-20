@@ -51,3 +51,5 @@ RUN echo -e "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=16384m -XX:+HeapDumpOnO
 RUN echo -e "\nthreadsToUse=4" >> $HOME/code/pEp/gradle.properties
 RUN cat $HOME/code/pEp/gradle.properties
 RUN ./gradlew -q externalNativeBuildDebug
+RUN du -hs $HOME && \
+    du -hs $HOME/code/*
