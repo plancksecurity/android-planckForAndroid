@@ -55,6 +55,7 @@ toolchain image:
     - changes:
     # Only run this job when the Dockerfile is modified
         - Dockerfile.toolchain
+        - docker/packages.txt
 
 base image:
   extends: .docker_in_docker
