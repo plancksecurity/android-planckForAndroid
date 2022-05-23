@@ -179,7 +179,7 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = testUtils.getAccountEmailForDevice();
+        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));

@@ -369,39 +369,6 @@ public class TestUtils {
         }
     }
 
-    public String getAccountEmailForDevice() {
-        if(emailForDevice != null) return emailForDevice;
-        String out = "error: email for device not initialized";
-        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
-        File configFile = new File(directory, "test_config.txt");
-        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
-
-        FileInputStream fin;
-        if(configFile.canRead()) {
-            try {
-                fin = new FileInputStream(configFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null && !receiveString.contains("mail")) {
-                    Timber.v("Searching for test email address for device...");
-                }
-                fin.close();
-                bufferedReader.close();
-                if(receiveString != null && !receiveString.isEmpty()) {
-                    String[] line = receiveString.split(" = ");
-                    out = emailForDevice = line[1];
-                }
-            }
-            catch (Exception e) {
-                Timber.e(e, "could not read from file %s", configFile);
-                out = e.getMessage();
-            }
-        }
-        return out;
-    }
-
     public void readConfigFile() {
         File newFile = null;
          do {
@@ -1573,6 +1540,7 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
+        TestUtils.waitForIdle();
         acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
@@ -1609,15 +1577,18 @@ public class TestUtils {
     }
 
     private void setupEmailAndPassword() {
+        TestUtils.waitForIdle();
         onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
-        onView(withId(R.id.account_email)).perform(replaceText(email));
+        String accountEmail = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        onView(withId(R.id.account_email)).perform(replaceText(accountEmail));
+        TestUtils.waitForIdle();
         onView(withId(R.id.account_password)).perform(replaceText(pass));
+        TestUtils.waitForIdle();
     }
 
     public void goToSettingsAndRemoveAllAccounts() {
