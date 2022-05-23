@@ -8,6 +8,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.common.BaseAndroidTest;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
 import org.junit.After;
@@ -19,29 +20,14 @@ import org.junit.runner.RunWith;
 import foundation.pEp.jniadapter.Rating;
 
 @RunWith(AndroidJUnit4.class)
-public class MessageUnsecureWhenDisableProtectionTest {
-    private TestUtils testUtils;
+public class MessageUnsecureWhenDisableProtectionTest extends BaseAndroidTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
-
     @Before
     public void startActivity() {
-        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.setupAccountIfNeeded();
     }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
-    }
-
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {

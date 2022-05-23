@@ -9,51 +9,27 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
-import android.app.Instrumentation;
-
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
-
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import foundation.pEp.jniadapter.Rating;
 
 
-public class StatusIncomingMessageTest {
+public class StatusIncomingMessageTest extends BaseAndroidTest {
 
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private TestUtils testUtils;
     private final String messageTo = System.currentTimeMillis() + "@" + HOST;
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        UiDevice device = UiDevice.getInstance(instrumentation);
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        testUtils = new TestUtils(device, instrumentation);
         testUtils.setupAccountIfNeeded();
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)

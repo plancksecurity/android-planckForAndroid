@@ -1,28 +1,20 @@
 package com.fsck.k9.activity.setup;
 
-import android.content.Intent;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.common.BaseAndroidTest;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,32 +37,15 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class AccountSetupBasicsTest {
+public class AccountSetupBasicsTest extends BaseAndroidTest {
 
-    private TestUtils testUtils;
     private Preferences preferences;
     private List<Account> previousAccounts;
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(
-            SplashActivity.class, false, false);
 
     @Before
     public void setUp() throws Exception {
         preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        splashActivityTestRule.launchActivity(new Intent());
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)

@@ -1,46 +1,22 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
-
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 
 
-public class ImportSettingsDarkThemeTest {
-
-    private TestUtils testUtils;
-
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+public class ImportSettingsDarkThemeTest extends BaseAndroidTest {
 
     @Before
     public void startpEpApp() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
         testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)

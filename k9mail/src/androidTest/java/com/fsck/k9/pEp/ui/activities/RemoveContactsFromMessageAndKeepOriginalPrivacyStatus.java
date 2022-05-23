@@ -1,17 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,32 +21,16 @@ import android.view.KeyEvent;
 
 
 @RunWith(AndroidJUnit4.class)
-public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
+public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus extends BaseAndroidTest {
 
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private static final String UNKNOWN_ADDRESS = "unkown@user.is";
 
-    private TestUtils testUtils;
-    private UiDevice device;
-
-    @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
-
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.setupAccountIfNeeded();
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)

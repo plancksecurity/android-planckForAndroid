@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.ui.activities;
 
 
-import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -9,19 +8,16 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
+import com.fsck.k9.common.BaseAndroidTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,19 +30,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class SetupDragonAccountTest {
-    private TestUtils testUtils;
-
-    @Rule
-    public ActivityTestRule<SplashActivity> activityTestRule = new ActivityTestRule<>(
-            SplashActivity.class, false, false);
-
+public class SetupDragonAccountTest extends BaseAndroidTest {
     @Before
     public void setUp() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        activityTestRule.launchActivity(new Intent());
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }
 
@@ -54,7 +40,6 @@ public class SetupDragonAccountTest {
     public void tearDown() {
         finishSetup();
         testUtils.goToSettingsAndRemoveAllAccounts();
-        activityTestRule.finishActivity();
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)

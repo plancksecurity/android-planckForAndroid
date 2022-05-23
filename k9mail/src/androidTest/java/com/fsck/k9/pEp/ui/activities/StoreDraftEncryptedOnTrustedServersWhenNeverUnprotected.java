@@ -3,20 +3,14 @@ package com.fsck.k9.pEp.ui.activities;
 import android.content.res.Resources;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,29 +28,15 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
-    private TestUtils testUtils;
+public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected extends BaseAndroidTest {
     private Resources resources;
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
-
     @Before
     public void startActivity() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         resources = ApplicationProvider.getApplicationContext().getResources();
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.setupAccountIfNeeded();
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     private void assertTextInPopupMenu(boolean isAlwaysSecureAppears) {

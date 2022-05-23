@@ -1,23 +1,17 @@
 package com.fsck.k9.pEp.ui.activities;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -33,29 +27,11 @@ import static junit.framework.TestCase.assertEquals;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class ImportSettingsCancelActivateAccountTest {
-
-    private TestUtils testUtils;
-    private final int[] accountListSize = new int[2];
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+public class ImportSettingsCancelActivateAccountTest extends BaseAndroidTest {
 
     @Before
     public void startpEpApp() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.externalAppRespondWithFile(R.raw.test);
-    }
-
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
     // DO NOT RUN INDIVIDUALLY, RUN WHOLE CLASS.
