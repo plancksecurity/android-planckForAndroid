@@ -49,13 +49,13 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage1_clearAccounts() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         clearAccounts()
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage2_setupAccount() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         setupAccounts()
     }
 
@@ -83,9 +83,9 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         var foldersSize = testUtils.getListSize(R.id.navigation_folders)
 
         onView(withId(R.id.second_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
         onView(withId(R.id.nav_header_contact_text)).check(matches(withText(secondBallText)))
         onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
@@ -106,9 +106,9 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         foldersSize = testUtils.getListSize(R.id.navigation_folders)
 
         onView(withId(R.id.first_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
         onView(withId(R.id.nav_header_contact_text)).check(matches(withText(firstBallText)))
         onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
@@ -145,32 +145,32 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         // click unified account
         testUtils.openHamburgerMenu()
         onView(withId(R.id.unified_inbox)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.integrated_inbox_title))))
         // click all messages
         testUtils.openHamburgerMenu()
         onView(withId(R.id.all_messages_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.search_all_messages_title))))
         // click inbox folder
         testUtils.openHamburgerMenu()
         val action = GetNavigationFolderTextAction()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.navigation_folders))
                 .check(matches(isDisplayed()))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, action),
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
         // click last folder
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         val size = testUtils.getListSize(R.id.navigation_folders)
         onView(withId(R.id.navigation_folders))
                 .check(matches(isDisplayed()))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, action),
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, click()))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
 
     }
@@ -195,7 +195,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.navigation_accounts)).check(matches(isDisplayed()))
 
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(withText(email)))
         onView(withId(R.id.navigation_accounts))
                 .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
@@ -206,7 +206,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         assertTrue(testUtils.currentActivity is AccountSetupBasics)
     }
 
@@ -215,7 +215,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.configure_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         assertTrue(testUtils.currentActivity is SettingsActivity)
     }
 }

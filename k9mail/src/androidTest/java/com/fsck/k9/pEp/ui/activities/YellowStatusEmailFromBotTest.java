@@ -35,7 +35,6 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 @RunWith(AndroidJUnit4.class)
 public class YellowStatusEmailFromBotTest {
 
-    private UiDevice device;
     private TestUtils testUtils;
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
@@ -50,7 +49,7 @@ public class YellowStatusEmailFromBotTest {
     @Before
     public void startpEpApp() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
+        UiDevice device = UiDevice.getInstance(instrumentation);
         testUtils = new TestUtils(device, instrumentation);
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -73,31 +72,31 @@ public class YellowStatusEmailFromBotTest {
         testUtils.getMessageListSize();
         sendMessage(botMail);
         testUtils.waitForNewMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.clickFirstMessage();
 
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
         testUtils.pressBack();
 
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         fillComposeFields(botMail);
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.goBackFromMessageCompose(false);
     }
 
     private void twoStatusMessageYellowAndGray() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         String ownAddress = testUtils.getTextFromTextViewThatContainsText("@");
 
         fillComposeFields(botMail + "\n" + UNKNOWN_ADDRESS + "\n" + ownAddress);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         selectPrivacyStatusFromMenu();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         checkToolbarColor(R.color.pep_no_color);
         onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
@@ -110,17 +109,17 @@ public class YellowStatusEmailFromBotTest {
 
     private void sendMessage(String messageTo) {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         fillComposeFields(messageTo);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void selectPrivacyStatusFromMenu() {
         testUtils.openOptionsMenu();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.selectFromScreen(R.string.pep_title_activity_privacy_status);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void checkToolbarColor(int color) {

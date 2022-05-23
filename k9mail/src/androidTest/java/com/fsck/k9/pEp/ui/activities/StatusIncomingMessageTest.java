@@ -34,7 +34,6 @@ public class StatusIncomingMessageTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private UiDevice device;
     private TestUtils testUtils;
     private final String messageTo = System.currentTimeMillis() + "@" + HOST;
 
@@ -44,7 +43,7 @@ public class StatusIncomingMessageTest {
     @Before
     public void startpEpApp() {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
+        UiDevice device = UiDevice.getInstance(instrumentation);
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils = new TestUtils(device, instrumentation);
@@ -75,9 +74,9 @@ public class StatusIncomingMessageTest {
     }
 
     private void sendMessageToBot() {
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         fillMessage();
 
@@ -107,10 +106,10 @@ public class StatusIncomingMessageTest {
     }
 
     private void assertPartnerIsGreenAndSendMessage() {
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.getMessageListSize();
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         fillMessage();
         testUtils.assertSecurityStatusText(Rating.pEpRatingTrustedAndAnonymized);
 

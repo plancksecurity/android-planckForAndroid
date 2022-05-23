@@ -5,7 +5,6 @@ import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
-import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.tools.Theme;
@@ -22,7 +21,6 @@ import static junit.framework.TestCase.assertEquals;
 public class ImportSettingsDarkThemeTest {
 
     private TestUtils testUtils;
-    private UiDevice device;
 
 
     @Rule
@@ -30,7 +28,7 @@ public class ImportSettingsDarkThemeTest {
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -52,7 +50,7 @@ public class ImportSettingsDarkThemeTest {
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         assertEquals(Theme.DARK, ThemeManager.getLegacyTheme());
     }
 }

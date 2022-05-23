@@ -28,17 +28,15 @@ public class InboxActionBarChangingColorTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private UiDevice device;
     private TestUtils testUtils;
     private String messageTo;
-    private Context context = ApplicationProvider.getApplicationContext();
 
     @Rule
     public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -56,10 +54,10 @@ public class InboxActionBarChangingColorTest {
     public void assertSelfMessageColor(){
         testUtils.getMessageListSize();
         composeMessageToMyself();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
@@ -72,10 +70,10 @@ public class InboxActionBarChangingColorTest {
     public void assertBotMessageColor(){
         testUtils.getMessageListSize();
         composeMessage(messageTo);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingUndefined, false);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
@@ -94,13 +92,13 @@ public class InboxActionBarChangingColorTest {
 
     private void composeMessage(String to) {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, to), false);
     }
 
     private void composeMessageToMyself() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }

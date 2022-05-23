@@ -36,7 +36,6 @@ import static junit.framework.TestCase.assertEquals;
 public class ImportSettingsCancelActivateAccountTest {
 
     private TestUtils testUtils;
-    private UiDevice device;
     private final int[] accountListSize = new int[2];
 
     @Rule
@@ -44,7 +43,7 @@ public class ImportSettingsCancelActivateAccountTest {
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -75,7 +74,7 @@ public class ImportSettingsCancelActivateAccountTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
         onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
         testUtils.clickCancelButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(saveSizeInInt(accountListSize, 1));
         testUtils.removeAllAccounts();
         assertEquals(accountListSize[0] + 1, accountListSize[1]);
@@ -93,7 +92,7 @@ public class ImportSettingsCancelActivateAccountTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
         onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
         testUtils.clickCancelButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         List<Account> accounts =
                 Preferences.getPreferences(ApplicationProvider.getApplicationContext()).getAccounts();
         assertEquals(1, accounts.size());

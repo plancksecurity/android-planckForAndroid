@@ -39,12 +39,11 @@ class ChangeAccountTest {
     var mActivityRule = IntentsTestRule(SplashActivity::class.java, false, false)
 
 
-    lateinit var uiDevice: UiDevice
     lateinit var testUtils: TestUtils
 
     @Before
     fun before() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         testUtils = TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation())
         testUtils.startActivity()
         Intents.init()
@@ -87,7 +86,7 @@ class ChangeAccountTest {
     }
 
     private fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         val activities: Collection<Activity> =
             ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
         return@runBlocking Iterables.getOnlyElement(activities)
@@ -115,7 +114,7 @@ class ChangeAccountTest {
         testUtils.skipTutorialAndAllowPermissionsIfNeeded()
         testUtils.externalAppRespondWithFile(R.raw.account_folders1)
         importAccount()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.externalAppRespondWithFile(R.raw.account_folders2)
         clickAddAccountButton()
         importAccount()
@@ -123,25 +122,25 @@ class ChangeAccountTest {
 
     private fun importAccount() {
         Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         click(getString(R.string.settings_import))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         click(getString(R.string.okay_action))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         click(getString(R.string.okay_action))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         addTextTo(R.id.incoming_server_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.clickAcceptButton()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     private fun clickAddAccountButton() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     private fun getString(resourceId: Int): String =

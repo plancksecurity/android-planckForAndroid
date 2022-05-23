@@ -48,7 +48,6 @@ import static org.junit.Assert.assertEquals;
 public class AccountSetupBasicsTest {
 
     private TestUtils testUtils;
-    private UiDevice device;
     private Preferences preferences;
     private List<Account> previousAccounts;
 
@@ -59,7 +58,7 @@ public class AccountSetupBasicsTest {
     @Before
     public void setUp() throws Exception {
         preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -109,7 +108,7 @@ public class AccountSetupBasicsTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
         onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
         testUtils.clickAcceptButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         checkLastAccountInSettings();
     }
 
@@ -163,7 +162,7 @@ public class AccountSetupBasicsTest {
         String server = BuildConfig.PEP_TEST_EMAIL_SERVER;
 
         onView(withId(R.id.account_server)).perform(replaceText(server));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 

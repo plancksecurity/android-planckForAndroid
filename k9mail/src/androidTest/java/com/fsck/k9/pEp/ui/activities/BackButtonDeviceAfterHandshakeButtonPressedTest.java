@@ -27,7 +27,6 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
 
-    private UiDevice device;
     private TestUtils testUtils;
     private String messageTo;
 
@@ -36,7 +35,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
 
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -53,21 +52,21 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
         sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.clickStatus();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.confirmHandshake)).perform(click());
         testUtils.pressBack();
     }
 
     private void sendMessage() {
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_BODY, MESSAGE_SUBJECT, messageTo), false);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

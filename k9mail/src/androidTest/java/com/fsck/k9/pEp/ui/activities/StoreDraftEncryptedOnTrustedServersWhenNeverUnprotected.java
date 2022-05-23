@@ -35,7 +35,6 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
-    private UiDevice device;
     private TestUtils testUtils;
     private Resources resources;
     private static final String MESSAGE_SUBJECT = "Subject";
@@ -46,7 +45,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
 
     @Before
     public void startActivity() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         resources = ApplicationProvider.getApplicationContext().getResources();
@@ -63,7 +62,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private void assertTextInPopupMenu(boolean isAlwaysSecureAppears) {
         testUtils.waitUntilViewDisplayed(R.id.actionbar_message_view);
         onView(withId(R.id.actionbar_message_view)).perform(longClick());
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onViewOnPopupWindow(R.string.pep_force_unprotected).check(matches(isDisplayed()));
         if(isAlwaysSecureAppears) {
             onViewOnPopupWindow(R.string.is_always_secure).check(matches(isDisplayed()));
@@ -85,7 +84,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         testUtils.composeMessageButton();
         String messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage(messageFrom, MESSAGE_SUBJECT, MESSAGE_BODY, messageFrom), false);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
 
         assertTextInPopupMenu(true);
@@ -108,7 +107,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
     private void deactivateStoreMessagesSecurelyAndReturn() {
         testUtils.selectFromMenu(R.string.action_settings);
         onView(withRecyclerView(R.id.accounts_list).atPosition(0)).perform(click());
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.selectFromScreen(R.string.privacy_preferences);
         if(exists(onView(withText(R.string.account_settings_save_encrypted_summary_enabled)))) {
             testUtils.selectFromScreen(R.string.account_settings_save_encrypted_summary_enabled);

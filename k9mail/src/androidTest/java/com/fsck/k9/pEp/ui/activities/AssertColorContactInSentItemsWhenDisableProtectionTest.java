@@ -22,7 +22,6 @@ import foundation.pEp.jniadapter.Rating;
 
 @RunWith(AndroidJUnit4.class)
 public class AssertColorContactInSentItemsWhenDisableProtectionTest {
-    private UiDevice device;
     private TestUtils testUtils;
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
@@ -33,7 +32,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     @Before
     public void startActivity() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -54,7 +53,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
         testUtils.selectFromStatusPopupMenu(R.string.pep_force_unprotected);
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false, false);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
         clickFirstMessageFromSentFolder();
@@ -63,7 +62,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     private void composeMessage() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         String messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
     }

@@ -23,7 +23,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ImportSettingsAcceptTest {
     private lateinit var testUtils: TestUtils
-    private lateinit var device: UiDevice
     private val accountListSize = IntArray(2)
 
     @get:Rule
@@ -31,7 +30,7 @@ class ImportSettingsAcceptTest {
 
     @Before
     fun startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         testUtils = TestUtils(device, InstrumentationRegistry.getInstrumentation())
         EspressoTestingIdlingResource()
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource())
@@ -59,7 +58,7 @@ class ImportSettingsAcceptTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header)
         Espresso.onView(ViewMatchers.withId(R.id.incoming_server_password)).perform(ViewActions.replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD))
         testUtils.clickAcceptButton()
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         Espresso.onView(ViewMatchers.withId(R.id.accounts_list)).perform(UtilsPackage.saveSizeInInt(accountListSize, 1))
 
         checkLastAccountInSettings()

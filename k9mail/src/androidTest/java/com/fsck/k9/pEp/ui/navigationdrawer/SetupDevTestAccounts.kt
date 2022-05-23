@@ -57,34 +57,34 @@ open class SetupDevTestAccounts {
     }
 
     private fun addAccount(emailAddress: String, password: String, accountName: String) {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.account_email)).check(matches(isDisplayed())).perform(typeText(emailAddress))
         onView(withId(R.id.account_password)).check(matches(isDisplayed())).perform(typeText(password))
         Espresso.closeSoftKeyboard()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.next)).check(matches(isDisplayed())).perform(click())
 
         testUtils.acceptAutomaticSetupCertificatesIfNeeded()
 
 
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         Thread.sleep(1000)
         onView(withId(R.id.account_name)).perform(replaceText(accountName))
         if(BuildConfig.WITH_KEY_SYNC) {
             onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
         }
         Espresso.closeSoftKeyboard()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         Thread.sleep(1000)
         onView(withId(R.id.done)).check(matches(isDisplayed())).perform(click())
     }
 
     private fun clickAddAccountButton() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     private fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {

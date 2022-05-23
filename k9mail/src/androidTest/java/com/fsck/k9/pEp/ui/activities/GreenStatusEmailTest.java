@@ -24,7 +24,6 @@ import foundation.pEp.jniadapter.Rating;
 @RunWith(AndroidJUnit4.class)
 public class GreenStatusEmailTest  {
 
-    private UiDevice device;
     private TestUtils testUtils;
 
     @Rule
@@ -33,7 +32,7 @@ public class GreenStatusEmailTest  {
     @Before
     public void startpEpApp() {
 
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         testUtils = new TestUtils(device, instrumentation);
         new EspressoTestingIdlingResource();
@@ -75,6 +74,6 @@ public class GreenStatusEmailTest  {
     private void prepareMessageCompose() {
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

@@ -20,7 +20,6 @@ import foundation.pEp.jniadapter.Rating;
 
 @RunWith(AndroidJUnit4.class)
 public class MessageUnsecureWhenDisableProtectionTest {
-    private UiDevice uiDevice;
     private TestUtils testUtils;
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
@@ -30,7 +29,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
 
     @Before
     public void startActivity() {
-        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         testUtils = new TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
@@ -50,19 +49,19 @@ public class MessageUnsecureWhenDisableProtectionTest {
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
         testUtils.selectFromStatusPopupMenu(R.string.pep_force_unprotected);
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false, false);
-        uiDevice.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
-        uiDevice.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingUndefined, false);
     }
 
     private void composeMessage() {
         testUtils.composeMessageButton();
-        uiDevice.waitForIdle();
+        TestUtils.waitForIdle();
         String messageTo = testUtils.getTextFromTextViewThatContainsText("@");
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
-        uiDevice.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

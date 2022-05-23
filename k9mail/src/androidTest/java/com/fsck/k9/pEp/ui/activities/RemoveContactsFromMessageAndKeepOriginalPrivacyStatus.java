@@ -58,7 +58,7 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalPrivacyStatus() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         String messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
 
         assertStatusWhenUnkownRecipient(messageFrom, false);
@@ -68,11 +68,11 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
         testUtils.getMessageListSize();
         sendMessage(botRecipient);
         testUtils.waitForNewMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
 
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         assertStatusWhenUnkownRecipient(botRecipient, false);
         assertStatusGoesBackToNormalOnRemovingRecipient(Rating.pEpRatingReliable, true);
@@ -80,24 +80,24 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
 
     private void fillMessageWithOneKnownReceiverAndOneUnknown(String to, String subject, String message){
         testUtils.doWait("to");
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.subject)).perform(replaceText(subject));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.message_content)).perform(typeText(message));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.to)).perform(typeText(to +  "\n" + UNKNOWN_ADDRESS + "\n"), closeSoftKeyboard());
     }
 
     private void assertStatusWhenUnkownRecipient(String messageTo, boolean clickableExpected){
         fillMessageWithOneKnownReceiverAndOneUnknown(messageTo, "Subject", "Message");
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingUndefined, clickableExpected);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void assertStatusGoesBackToNormalOnRemovingRecipient(Rating originalStatus, boolean clickableExpected) {
         deleteLastPartOfEmail();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(originalStatus, clickableExpected);
         testUtils.goBackFromMessageCompose(false);
     }
@@ -111,10 +111,11 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
     }
 
     private void sendMessage(String messageTo) {
+        TestUtils.waitForIdle();
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

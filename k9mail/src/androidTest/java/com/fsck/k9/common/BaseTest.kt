@@ -129,7 +129,7 @@ open class BaseTest {
 
     suspend fun waitForIdle() = withContext(Dispatchers.IO) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
-        device.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
@@ -277,7 +277,7 @@ open class BaseTest {
 
     fun allowPermissions() {
         Timber.e("allowPermissions")
-        device.waitForIdle()
+        TestUtils.waitForIdle()
         try {
             val popUpMessage = By.clazz("android.widget.Button")
             var buttonExists = true
