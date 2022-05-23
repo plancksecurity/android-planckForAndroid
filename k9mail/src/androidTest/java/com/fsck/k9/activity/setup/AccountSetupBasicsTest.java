@@ -1,5 +1,6 @@
 package com.fsck.k9.activity.setup;
 
+import android.content.Intent;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -52,7 +53,8 @@ public class AccountSetupBasicsTest {
     private List<Account> previousAccounts;
 
     @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(
+            SplashActivity.class, false, false);
 
     @Before
     public void setUp() throws Exception {
@@ -61,6 +63,7 @@ public class AccountSetupBasicsTest {
         testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         new EspressoTestingIdlingResource();
         IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
+        splashActivityTestRule.launchActivity(new Intent());
         testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }
