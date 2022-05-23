@@ -8,11 +8,6 @@ RUN git config --global advice.detachedHead false
 ARG YML2_VERSION
 RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VERSION} $HOME/yml2
 
-# sdkmanager init
-COPY docker/packages.txt .
-RUN yes | sdkmanager --licenses | grep "All SDK package licenses accepted"
-RUN sdkmanager --package_file=packages.txt
-
 # ASN1C
 RUN git clone https://github.com/vlm/asn1c.git $HOME/code/asn1c
 RUN cd $HOME/code/asn1c && \

@@ -47,6 +47,11 @@ RUN mv cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest
 RUN rm android-sdk.zip
 RUN rm -r cmdline-tools
 
+# sdkmanager init
+COPY docker/packages.txt .
+RUN yes | sdkmanager --licenses | grep "All SDK package licenses accepted"
+RUN sdkmanager --package_file=packages.txt
+
 # ADD RUST TARGETS
 RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
