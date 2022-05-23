@@ -256,4 +256,14 @@
     <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="support_email" translatable="false">support@pep.security</string>
+
+    <string name="calendar_event_time_content_desc">Datum und Zeit des Events</string>
+    <string name="calendar_event_location_content_desc">Ort des Events</string>
+    <string name="calendar_event_invitees_content_desc">Eingeladene Personen</string>
+    <string name="calendar_event_open_calendar_desc">Im Kalender öffnen</string>
+    <string name="no_calendar_app_found_msg">Es wurde keine Kalenderapp gefunden, bitte installiere eine.</string>
+    <string name="calendar_invite_error_title">Fehler: Event-Einladung kann nicht geladen werden</string>
+    <string name="calendar_invite_short_invitees">%s und %d weitere</string>
+    <string name="calendar_invite_show_all_invitees_desc">(alle) eingeladenen Personen anzeigen</string>
+    <string name="organizer_tag">Veranstalter</string>
 </resources>
