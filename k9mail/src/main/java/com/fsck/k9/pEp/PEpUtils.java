@@ -587,16 +587,17 @@ public class PEpUtils {
     }
 
     public static void updateSyncAccountsConfig(Context context) {
-        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
-        pEp.disableSyncForAllIdentites();
+        try (PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context)) {
+            pEp.disableSyncForAllIdentites();
 
-        for (Account account : Preferences.getPreferences(context).getAccounts()) {
-            Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
-            // TODO: 04/08/2020 Move to PepProvider.
-            id = pEp.myself(id);
-            pEp.setIdentityFlag(id, account.isPepSyncEnabled());
+            for (Account account : Preferences.getPreferences(context).getAccounts()) {
+                Identity id = createIdentity(
+                        new Address(account.getEmail(), account.getName()), context);
+                // TODO: 04/08/2020 Move to PepProvider.
+                id = pEp.myself(id);
+                pEp.setIdentityFlag(id, account.isPepSyncEnabled());
+            }
         }
-        pEp.close();
     }
 }
 
