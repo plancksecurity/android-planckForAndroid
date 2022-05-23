@@ -106,6 +106,7 @@ public class K9 extends MultiDexApplication {
     private Account currentAccount;
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
+    private boolean pEpSyncEnvironmentInitialized;
 
     public static K9JobManager jobManager;
 
@@ -800,7 +801,12 @@ public class K9 extends MultiDexApplication {
                 mailSyncJobManager, pusherRefreshJobManager);
     }
 
+    public boolean ispEpSyncEnvironmentInitialized() {
+        return pEpSyncEnvironmentInitialized;
+    }
+
     public void pEpInitSyncEnvironment() {
+        pEpSyncEnvironmentInitialized = true;
         if (pEpSyncProvider == null) {
             pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
         }

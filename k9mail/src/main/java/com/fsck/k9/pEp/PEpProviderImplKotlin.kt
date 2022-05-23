@@ -686,8 +686,8 @@ class PEpProviderImplKotlin @Inject constructor(
         Timber.e("%s %s", TAG, "calling myself")
         try {
             engine.myself(myId)
-        } catch (exception: pEpCannotCreateKey) {
-            Timber.e(exception, "%s %s", TAG, "could not create key in PEpProviderImpl.myself")
+        } catch (exception: pEpException) {
+            Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
             myId
         }
     }
