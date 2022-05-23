@@ -50,7 +50,7 @@ public class ImportSettingsCancelTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void importSettingsFromAccountSetupCancelTest() {
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
         testUtils.selectFromMenu(R.string.settings_import);
@@ -58,7 +58,7 @@ public class ImportSettingsCancelTest {
         onView(withText(R.string.account_setup_basics_title)).check(matches(isDisplayed()));
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void importSettingsFromSettingsCancelTest() {
         testUtils.setupAccountIfNeeded();
         testUtils.selectFromMenu(R.string.action_settings);

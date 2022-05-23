@@ -47,19 +47,19 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         mActivityRule.finishActivity()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage1_clearAccounts() {
         uiDevice.waitForIdle()
         clearAccounts()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage2_setupAccount() {
         uiDevice.waitForIdle()
         setupAccounts()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_navDrawerIsNotEmpty() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.menu_header)).check(matches(isDisplayed()))
@@ -70,7 +70,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navigation_folders)).check(matches(not(hasChildCount(0))))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     @Ignore("ignoring until P4A-1212 is done")
     fun stage3_clickAccountBall() {
         // TODO https://pep.foundation/jira/browse/P4A-1212
@@ -128,7 +128,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         return action.text.toString()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_changeAccountFolders() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
@@ -140,7 +140,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickFolders() {
         // click unified account
         testUtils.openHamburgerMenu()
@@ -175,7 +175,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
 
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickAccountInList() {
         testUtils.openHamburgerMenu()
 
@@ -201,7 +201,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
                 .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickAddAccount() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
@@ -210,7 +210,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         assertTrue(testUtils.currentActivity is AccountSetupBasics)
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickSettings() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())

@@ -52,7 +52,7 @@ public class InboxActionBarChangingColorTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertSelfMessageColor(){
         composeMessageToMyself();
         device.waitForIdle();
@@ -67,7 +67,7 @@ public class InboxActionBarChangingColorTest {
         assertToolbarColor();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertBotMessageColor(){
         composeMessage(messageTo);
         device.waitForIdle();

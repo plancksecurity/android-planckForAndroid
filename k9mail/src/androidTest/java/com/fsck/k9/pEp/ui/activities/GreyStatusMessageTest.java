@@ -42,7 +42,7 @@ public class GreyStatusMessageTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST * 2)
     public void greyStatusEmail() {
         greyStatusEmailTest();
     }

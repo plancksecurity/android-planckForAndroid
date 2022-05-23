@@ -55,7 +55,7 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalPrivacyStatus() {
         testUtils.composeMessageButton();
         device.waitForIdle();

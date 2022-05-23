@@ -45,7 +45,7 @@ class ImportSettingsAcceptTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource())
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun importSettingsWithAccountAccept() {
         testUtils.externalAppRespondWithFile(R.raw.test)
         testUtils.selectFromMenu(R.string.action_settings)

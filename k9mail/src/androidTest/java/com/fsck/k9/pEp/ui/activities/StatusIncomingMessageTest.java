@@ -57,7 +57,7 @@ public class StatusIncomingMessageTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void pEpStatusIncomingTrustedMessageShouldBeGreen() {
         acceptHandshakeWithPartner();
         assertPartnerIsGreenAndSendMessage();

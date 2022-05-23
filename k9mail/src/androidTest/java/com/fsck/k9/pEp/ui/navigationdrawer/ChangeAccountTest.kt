@@ -61,7 +61,7 @@ class ChangeAccountTest {
         clearAccounts()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST * 3)
     fun stage2_clickAccountBubble30Times() {
         setupAccounts()
         repeat(30) {

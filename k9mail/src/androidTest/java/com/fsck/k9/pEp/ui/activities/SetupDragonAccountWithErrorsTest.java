@@ -58,7 +58,7 @@ public class SetupDragonAccountWithErrorsTest {
         activityTestRule.finishActivity();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void setupDragonAccountWithErrorsTest() {
         accountSetupBasics();
         incomingSettings();

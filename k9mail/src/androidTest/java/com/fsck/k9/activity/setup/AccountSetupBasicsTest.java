@@ -71,7 +71,7 @@ public class AccountSetupBasicsTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testManualSetup() {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
@@ -83,7 +83,7 @@ public class AccountSetupBasicsTest {
         checkLastAccountInSettings();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testAutomaticSetup() {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
@@ -93,7 +93,7 @@ public class AccountSetupBasicsTest {
         checkLastAccountInSettings();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testImportAccount() {
         testUtils.externalAppRespondWithFile(R.raw.test);
         previousAccounts = preferences.getAccounts();

@@ -44,7 +44,7 @@ public class MessageUnsecureWhenDisableProtectionTest {
     }
 
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
         composeMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);

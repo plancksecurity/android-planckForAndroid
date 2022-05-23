@@ -57,7 +57,7 @@ public class SetupDragonAccountTest {
         activityTestRule.finishActivity();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void setupDragonAccountTest() {
         accountSetupBasics();
         incomingSettings();

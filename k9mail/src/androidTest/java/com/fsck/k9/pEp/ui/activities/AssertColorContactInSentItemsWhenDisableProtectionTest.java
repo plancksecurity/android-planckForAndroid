@@ -47,7 +47,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST * 2)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
         composeMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);

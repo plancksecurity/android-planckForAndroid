@@ -79,7 +79,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected {
         return onView(withText(stringId)).inRoot(testUtils.isPopupWindow());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void StoreDraftEncryptedOnTrustedServerWhenNeverUnprotected() {
         deactivateStoreMessagesSecurelyAndReturn();
         testUtils.composeMessageButton();

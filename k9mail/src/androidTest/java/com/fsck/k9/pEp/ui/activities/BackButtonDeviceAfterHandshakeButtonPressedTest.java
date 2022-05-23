@@ -50,7 +50,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void backButtonDeviceAfterHandshakeButtonPressed() {
         sendMessage();
         device.waitForIdle();

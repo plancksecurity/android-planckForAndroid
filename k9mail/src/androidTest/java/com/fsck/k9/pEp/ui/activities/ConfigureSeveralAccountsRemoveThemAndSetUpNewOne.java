@@ -38,7 +38,7 @@ public class ConfigureSeveralAccountsRemoveThemAndSetUpNewOne {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void ConfigureAccountRemoveThemSetUpNewAccount() {
         int total = 8;
         for (int account = 0; account < total; account++) {

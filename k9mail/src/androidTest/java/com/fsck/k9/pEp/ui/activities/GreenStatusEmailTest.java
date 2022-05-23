@@ -47,7 +47,7 @@ public class GreenStatusEmailTest  {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST * 2)
     public void greenStatusMessage() {
         greenStatusMessageTest();
     }

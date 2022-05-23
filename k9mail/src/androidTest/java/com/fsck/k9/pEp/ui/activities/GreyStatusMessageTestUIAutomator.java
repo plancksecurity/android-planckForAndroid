@@ -40,11 +40,7 @@ public class GreyStatusMessageTestUIAutomator {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
-    public void greyStatusMessage(){
-        greyStatusMessageTest();
-    }
-
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void greyStatusMessageTest() {
         prepareMessageCompose();
         testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),

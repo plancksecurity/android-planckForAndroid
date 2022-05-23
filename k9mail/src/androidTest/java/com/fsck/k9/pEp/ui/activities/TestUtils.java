@@ -146,7 +146,7 @@ public class TestUtils {
     private int totalAccounts = -1;
     private int account = 0;
 
-    public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
+    public static final long TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
     public String[] botList;
     public boolean testReset = false;

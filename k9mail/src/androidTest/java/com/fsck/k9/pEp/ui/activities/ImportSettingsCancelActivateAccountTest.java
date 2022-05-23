@@ -60,7 +60,7 @@ public class ImportSettingsCancelActivateAccountTest {
     }
 
     // DO NOT RUN INDIVIDUALLY, RUN WHOLE CLASS.
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void importSettingsWithAccountFromSettingsCancelTest() {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
         testUtils.clickCancelButton();
@@ -82,7 +82,7 @@ public class ImportSettingsCancelActivateAccountTest {
     }
 
     // DO NOT RUN INDIVIDUALLY, RUN WHOLE CLASS.
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void importSettingsWithAccountFromAccountSetupCancelTest() {
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
         testUtils.selectFromMenu(R.string.settings_import);

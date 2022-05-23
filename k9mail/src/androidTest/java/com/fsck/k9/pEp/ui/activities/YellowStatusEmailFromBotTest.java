@@ -63,7 +63,7 @@ public class YellowStatusEmailFromBotTest {
         IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void yellowStatusEmailFromBot (){
         sendMessageAndAssertYellowStatusMessage();
         twoStatusMessageYellowAndGray();
