@@ -54,6 +54,7 @@ public class InboxActionBarChangingColorTest {
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertSelfMessageColor(){
+        testUtils.getMessageListSize();
         composeMessageToMyself();
         device.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
@@ -69,6 +70,7 @@ public class InboxActionBarChangingColorTest {
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertBotMessageColor(){
+        testUtils.getMessageListSize();
         composeMessage(messageTo);
         device.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingUndefined, false);

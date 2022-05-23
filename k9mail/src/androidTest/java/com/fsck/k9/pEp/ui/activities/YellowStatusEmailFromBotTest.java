@@ -70,6 +70,7 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void sendMessageAndAssertYellowStatusMessage() {
+        testUtils.getMessageListSize();
         sendMessage(botMail);
         testUtils.waitForNewMessage();
         device.waitForIdle();

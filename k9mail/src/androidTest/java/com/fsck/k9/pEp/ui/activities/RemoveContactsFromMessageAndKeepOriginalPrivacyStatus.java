@@ -65,6 +65,7 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
         assertStatusGoesBackToNormalOnRemovingRecipient(Rating.pEpRatingTrustedAndAnonymized, false);
 
         String botRecipient = System.currentTimeMillis() + "@" + HOST;
+        testUtils.getMessageListSize();
         sendMessage(botRecipient);
         testUtils.waitForNewMessage();
         device.waitForIdle();

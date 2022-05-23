@@ -85,6 +85,7 @@ public class StatusIncomingMessageTest {
     }
 
     private void acceptHandshakeWithPartner() {
+        testUtils.getMessageListSize();
         sendMessageToBot();
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
@@ -107,6 +108,7 @@ public class StatusIncomingMessageTest {
 
     private void assertPartnerIsGreenAndSendMessage() {
         device.waitForIdle();
+        testUtils.getMessageListSize();
         testUtils.composeMessageButton();
         device.waitForIdle();
         fillMessage();

@@ -49,6 +49,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest {
 
     @Test(timeout = TestUtils.TIMEOUT_TEST * 2)
     public void sendMessageToYourselfWithDisabledProtectionAndCheckReceivedMessageIsUnsecure() {
+        testUtils.getMessageListSize();
         composeMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
         testUtils.selectFromStatusPopupMenu(R.string.pep_force_unprotected);
