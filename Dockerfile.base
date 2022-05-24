@@ -50,3 +50,5 @@ RUN du -hs $HOME && \
     du -hs $HOME/* && \
     du -hs $HOME/code/* && \
     rm -rf $HOME/code/pEp
+
+WORKDIR /root/code
