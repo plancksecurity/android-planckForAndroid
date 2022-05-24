@@ -47,4 +47,6 @@ RUN echo -e "\nthreadsToUse=4" >> $HOME/code/pEp/gradle.properties
 RUN cat $HOME/code/pEp/gradle.properties
 RUN ./gradlew -q externalNativeBuildDebug
 RUN du -hs $HOME && \
-    du -hs $HOME/code/*
+    du -hs $HOME/* && \
+    du -hs $HOME/code/* && \
+    rm -rf $HOME/code/pEp
