@@ -39,12 +39,16 @@ RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
 RUN cd $HOME/code/pEpEngine && \
     sh build-android/takeOutHeaderFiles.sh $PWD
 
+# SET GRADLE DAEMON CONFIGURATION
+RUN mkdir -p $HOME/.gradle
+RUN echo -e "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> $HOME/.gradle/gradle.properties
+RUN echo -e "\nthreadsToUse=4" >> $HOME/.gradle/gradle.properties
+RUN cat $HOME/.gradle/gradle.properties
+
+
 # BUILD DEPENDENCIES
 WORKDIR /root/code/pEp
 
-RUN echo -e "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> $HOME/code/pEp/gradle.properties
-RUN echo -e "\nthreadsToUse=4" >> $HOME/code/pEp/gradle.properties
-RUN cat $HOME/code/pEp/gradle.properties
 RUN ./gradlew -q externalNativeBuildDebug
 RUN du -hs $HOME && \
     du -hs $HOME/* && \
