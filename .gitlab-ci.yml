@@ -95,7 +95,7 @@ build:
   image: ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
   stage: build
   script:
-    - ./gradlew --build-cache assemble
+    - ./gradlew --build-cache assembleWithkeysyncPlayStoreDebug
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
