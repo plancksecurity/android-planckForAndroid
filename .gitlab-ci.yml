@@ -103,7 +103,7 @@ build:
     - ./gradlew --build-cache assembleWithkeysyncPlayStoreDebug
   cache:
     key: "$CI_COMMIT_REF_NAME"
-    policy: push
+    policy: pull-push
     paths:
       - build
       - .gradle
