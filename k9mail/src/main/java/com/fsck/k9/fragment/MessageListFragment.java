@@ -979,8 +979,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void onMessageLongClicked(int position) {
-        toggleMessageSelectWithAdapterPosition(position);
-        if (actionMode == null) {
+        boolean isSelected =  toggleMessageSelectWithAdapterPosition(position);
+
+        if (actionMode == null && !isSelected) {
             getActivity().startActionMode(new android.view.ActionMode.Callback() {
                 @Override
                 public boolean onCreateActionMode(android.view.ActionMode mode, Menu menu) {
@@ -1860,7 +1861,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         setFlag(adapterPosition,Flag.FLAGGED, !flagged);
     }
 
-    void toggleMessageSelectWithAdapterPosition(int adapterPosition) {
+    boolean toggleMessageSelectWithAdapterPosition(int adapterPosition) {
         Cursor cursor = (Cursor) adapter.getItem(adapterPosition);
         long uniqueId = cursor.getLong(uniqueIdColumn);
 
@@ -1889,7 +1890,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
             if (selectedCount <= 0 && selected) {
                 actionMode.finish();
                 actionMode = null;
-                return;
+                return selected;
             }
         } else {
             startAndPrepareActionMode();
@@ -1901,6 +1902,8 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         computeSelectAllVisibility();
 
         adapter.notifyDataSetChanged();
+
+        return selected;
     }
 
     private void updateActionModeTitle() {
