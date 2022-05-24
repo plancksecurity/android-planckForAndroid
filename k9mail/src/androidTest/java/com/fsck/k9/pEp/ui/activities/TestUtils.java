@@ -1538,7 +1538,15 @@ public class TestUtils {
     }
 
     public void setupAccountAutomatically(boolean withSync) {
-        setupEmailAndPassword();
+        setupAccountAutomatically(withSync, BuildConfig.PEP_TEST_EMAIL_ADDRESS);
+    }
+
+    public void setupAccountAutomatically(boolean withSync, String email) {
+        if(!exists(onView(withText(R.string.account_setup_basics_title)))) {
+            selectFromMenu(R.string.action_settings);
+            onView(withText(R.string.add_account_action)).perform(scrollTo(), click());
+        }
+        setupEmailAndPassword(email);
         onView(withId(R.id.next)).perform(click());
         TestUtils.waitForIdle();
         acceptAutomaticSetupCertificatesIfNeeded();
@@ -1576,7 +1584,7 @@ public class TestUtils {
         onView(withId(android.R.id.button1)).perform(click());
     }
 
-    private void setupEmailAndPassword() {
+    private void setupEmailAndPassword(String accountEmail) {
         TestUtils.waitForIdle();
         onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
         onView(allOf(isAssignableFrom(TextView.class),
@@ -1584,7 +1592,6 @@ public class TestUtils {
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
-        String accountEmail = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
         onView(withId(R.id.account_email)).perform(replaceText(accountEmail));
         TestUtils.waitForIdle();
         onView(withId(R.id.account_password)).perform(replaceText(pass));
