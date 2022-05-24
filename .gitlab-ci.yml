@@ -28,8 +28,6 @@ stages:
   - toolchain
   - base
   - build
-  - test
-  - docs
 
 # Jobs:
 toolchain image:
@@ -109,31 +107,6 @@ build:
     paths:
       - build
       - .gradle
-
-test:
-  # DinD service is required for Testcontainers
-  extends: .docker_in_docker
-  image: ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
-  stage: test
-  before_script:
-  # Auth to our registry using runner-provided credentials
-    - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
-  script:
-    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
-    - docker pull -q ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
-    - docker tag ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG} pep_for_android_env:latest
-    - docker rmi ${IMAGE_NAME}:${CI_COMMIT_REF_SLUG}
-    - ./gradlew check --rerun-tasks
-  cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: pull
-    paths:
-      - build
-      - .gradle
-  artifacts:
-    when: always
-    reports:
-      junit: "$CI_PROJECT_DIR/**/build/test-results/test/**/TEST-*.xml"
 
 .docker_in_docker:
   services:
