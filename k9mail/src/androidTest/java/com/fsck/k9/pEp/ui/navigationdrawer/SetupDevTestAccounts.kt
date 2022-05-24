@@ -18,6 +18,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.pEp.ui.activities.UtilsPackage.exists
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -47,8 +48,6 @@ open class SetupDevTestAccounts {
     }
 
     fun setupAccounts() {
-        grantPermissions()
-        passWelcomeScreen()
         addAccount(ANDROID_DEV_TEST_1_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "1")
         Thread.sleep(2000)
         clickAddAccountButton()
@@ -57,58 +56,35 @@ open class SetupDevTestAccounts {
         addAccount(ANDROID_DEV_TEST_3_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "3")
     }
 
-    private fun passWelcomeScreen() {
-        uiDevice.waitForIdle()
-        onView(withId(R.id.skip)).check(matches(isDisplayed())).perform(click())
-        uiDevice.waitForIdle()
-    }
-
-    private fun grantPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.WRITE_EXTERNAL_STORAGE")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.READ_CONTACTS")
-            InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand(
-                    "pm grant " + InstrumentationRegistry.getInstrumentation().context.packageName
-                            + " android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS")
-            K9.setShallRequestPermissions(false)
-
-            Thread {
-                val prefs = Preferences.getPreferences(InstrumentationRegistry.getInstrumentation().context)
-                val editor = prefs.storage.edit()
-                K9.save(editor)
-                editor.commit()
-            }.start()
-        }
-    }
-
     private fun addAccount(emailAddress: String, password: String, accountName: String) {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.account_email)).check(matches(isDisplayed())).perform(typeText(emailAddress))
         onView(withId(R.id.account_password)).check(matches(isDisplayed())).perform(typeText(password))
         Espresso.closeSoftKeyboard()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.next)).check(matches(isDisplayed())).perform(click())
 
-        uiDevice.waitForIdle()
+        testUtils.acceptAutomaticSetupCertificatesIfNeeded()
+
+
+        TestUtils.waitForIdle()
         Thread.sleep(1000)
-        onView(withId(R.id.account_name)).check(matches(isDisplayed())).perform(clearText(), typeText(accountName))
-        onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
+        onView(withId(R.id.account_name)).perform(replaceText(accountName))
+        if(BuildConfig.WITH_KEY_SYNC) {
+            onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
+        }
         Espresso.closeSoftKeyboard()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         Thread.sleep(1000)
         onView(withId(R.id.done)).check(matches(isDisplayed())).perform(click())
     }
 
     private fun clickAddAccountButton() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
     }
 
     private fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {

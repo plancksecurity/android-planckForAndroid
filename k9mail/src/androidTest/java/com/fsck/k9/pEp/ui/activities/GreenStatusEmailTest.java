@@ -1,19 +1,12 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Instrumentation;
 
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,32 +15,14 @@ import foundation.pEp.jniadapter.Rating;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class GreenStatusEmailTest  {
-
-    private UiDevice device;
-    private TestUtils testUtils;
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+public class GreenStatusEmailTest extends BaseAndroidTest {
 
     @Before
     public void startpEpApp() {
-
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        testUtils = new TestUtils(device, instrumentation);
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.setupAccountIfNeeded();
     }
 
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
-    }
-
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST * 2)
     public void greenStatusMessage() {
         greenStatusMessageTest();
     }
@@ -75,6 +50,6 @@ public class GreenStatusEmailTest  {
     private void prepareMessageCompose() {
         testUtils.composeMessageButton();
         testUtils.testStatusEmpty();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

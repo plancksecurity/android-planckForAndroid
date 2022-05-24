@@ -14,8 +14,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
@@ -146,7 +146,7 @@ public class TestUtils {
     private int totalAccounts = -1;
     private int account = 0;
 
-    public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
+    public static final long TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
     public String[] botList;
     public boolean testReset = false;
@@ -367,39 +367,6 @@ public class TestUtils {
         if (test_number().equals("0")) {
             getMessageListSize();
         }
-    }
-
-    public String getAccountEmailForDevice() {
-        if(emailForDevice != null) return emailForDevice;
-        String out = "error: email for device not initialized";
-        File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File directory =  new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
-        File configFile = new File(directory, "test_config.txt");
-        if(!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
-
-        FileInputStream fin;
-        if(configFile.canRead()) {
-            try {
-                fin = new FileInputStream(configFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString;
-                while ((receiveString = bufferedReader.readLine()) != null && !receiveString.contains("mail")) {
-                    Timber.v("Searching for test email address for device...");
-                }
-                fin.close();
-                bufferedReader.close();
-                if(receiveString != null && !receiveString.isEmpty()) {
-                    String[] line = receiveString.split(" = ");
-                    out = emailForDevice = line[1];
-                }
-            }
-            catch (Exception e) {
-                Timber.e(e, "could not read from file %s", configFile);
-                out = e.getMessage();
-            }
-        }
-        return out;
     }
 
     public void readConfigFile() {
@@ -1573,9 +1540,11 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
+        TestUtils.waitForIdle();
+        acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if(!withSync) {
+        if(!withSync && BuildConfig.WITH_KEY_SYNC) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
             waitForIdle();
         }
@@ -1583,16 +1552,43 @@ public class TestUtils {
         waitForIdle();
     }
 
+    public void acceptAutomaticSetupCertificatesIfNeeded() {
+        // incoming settings certificate
+        acceptCertificateIfNeeded(true);
+        // outgoing settings certificate
+        acceptCertificateIfNeeded(true);
+    }
+
+    public void acceptCertificateIfNeeded(boolean automaticSetup) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+            if (doWaitForAlertDialog(
+                    R.string.account_setup_failed_dlg_invalid_certificate_title,
+                    automaticSetup,
+                    1000L
+                )) {
+                clickAndroidDialogAccept();
+                TestUtils.waitForIdle();
+            }
+        }
+    }
+
+    public void clickAndroidDialogAccept() {
+        onView(withId(android.R.id.button1)).perform(click());
+    }
+
     private void setupEmailAndPassword() {
+        TestUtils.waitForIdle();
         onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
-        onView(withId(R.id.account_email)).perform(replaceText(email));
+        String accountEmail = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        onView(withId(R.id.account_email)).perform(replaceText(accountEmail));
+        TestUtils.waitForIdle();
         onView(withId(R.id.account_password)).perform(replaceText(pass));
+        TestUtils.waitForIdle();
     }
 
     public void goToSettingsAndRemoveAllAccounts() {
@@ -1624,13 +1620,25 @@ public class TestUtils {
 
     public void removeAccountAtPosition(int position) {
         waitForIdle();
-        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        int[] accountListSize = new int[2];
+        onView(withId(R.id.accounts_list)).perform(UtilsPackage.saveSizeInInt(accountListSize, 0));
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position))
+                .perform(scrollTo(), ViewActions.longClick());
         waitForIdle();
         selectFromScreen(R.string.remove_account_action);
         waitForIdle();
 
         clickAcceptButton();
         waitForIdle();
+        if(accountListSize[0] > 1) {
+            do {
+                onView(withId(R.id.accounts_list))
+                        .perform(UtilsPackage.saveSizeInInt(accountListSize, 1));
+                waitForIdle();
+            } while (accountListSize[1] != accountListSize[0] - 1);
+        } else {
+            waitUntilViewDisplayed(onView(withText(R.string.account_setup_basics_title)));
+        }
     }
 
     public void skipTutorialAndAllowPermissionsIfNeeded() {
@@ -2638,11 +2646,20 @@ public class TestUtils {
     }
 
     public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        waitUntilViewDisplayed(viewInteraction, 0L);
+    }
+
+    private boolean waitUntilViewDisplayed(ViewInteraction viewInteraction, long timeout) {
+        long initialTime = System.currentTimeMillis();
         boolean displayed = false;
         while(!displayed) {
             displayed = viewIsDisplayed(viewInteraction);
             device.waitForIdle();
+            if(timeout > 0 && System.currentTimeMillis() - initialTime > timeout) {
+                return false;
+            }
         }
+        return true;
     }
 
     private void doWaitForIdlingListViewResource(int resource){
@@ -2669,13 +2686,23 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
+        doWaitForAlertDialog(displayText, false, 0L);
+    }
+
+    private boolean doWaitForAlertDialog(int displayText, boolean isOwnPackage, long timeout) {
+        String packageName = isOwnPackage
+                ? context.getPackageName()
+                : "android";
         waitForIdle();
-        int id = context.getResources().getIdentifier("alertTitle", "id", "android");
+        int id = context.getResources().getIdentifier("alertTitle", "id", packageName);
         ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
-        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+        if(!waitUntilViewDisplayed(dialogHeaderViewInteraction, timeout)) {
+            return false;
+        }
 
         onView(withText(displayText)).check(matches(isDisplayed()));
         waitForIdle();
+        return true;
     }
 
     public void doWaitForNextAlertDialog(boolean isOwnPackage) {

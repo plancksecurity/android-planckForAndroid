@@ -11,11 +11,12 @@ import com.fsck.k9.R
 import com.fsck.k9.common.BaseTest
 import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.fsck.k9.pEp.ui.activities.UtilsPackage
-import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
 @Suppress("SameParameterValue")
+@Ignore("Only to be run via ./gradlew setupAccount")
 class SetupAccountsTask : BaseTest() {
 
     @get:Rule

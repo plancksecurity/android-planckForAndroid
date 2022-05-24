@@ -1,14 +1,15 @@
 package com.fsck.k9.pEp.ui.navigationdrawer
 
+import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
@@ -21,11 +22,8 @@ import com.fsck.k9.pEp.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
 import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not
+import org.junit.*
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.FixMethodOrder
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
@@ -34,27 +32,34 @@ import org.junit.runners.MethodSorters
 class DrawerLayoutTest : SetupDevTestAccounts() {
 
     @get:Rule
-    var mActivityRule = ActivityTestRule(SplashActivity::class.java)
+    var mActivityRule = IntentsTestRule(SplashActivity::class.java, false, false)
 
     @Before
     fun before() {
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
         testUtils = TestUtils(uiDevice, InstrumentationRegistry.getInstrumentation())
+        mActivityRule.launchActivity(Intent())
+        testUtils.skipTutorialAndAllowPermissionsIfNeeded()
     }
 
-    @Test
+    @After
+    fun tearDown() {
+        mActivityRule.finishActivity()
+    }
+
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage1_clearAccounts() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         clearAccounts()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage2_setupAccount() {
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         setupAccounts()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_navDrawerIsNotEmpty() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.menu_header)).check(matches(isDisplayed()))
@@ -65,7 +70,8 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navigation_folders)).check(matches(not(hasChildCount(0))))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
+    @Ignore("ignoring until P4A-1212 is done")
     fun stage3_clickAccountBall() {
         // TODO https://pep.foundation/jira/browse/P4A-1212
         testUtils.openHamburgerMenu()
@@ -77,9 +83,9 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         var foldersSize = testUtils.getListSize(R.id.navigation_folders)
 
         onView(withId(R.id.second_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
         onView(withId(R.id.nav_header_contact_text)).check(matches(withText(secondBallText)))
         onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
@@ -100,9 +106,9 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         foldersSize = testUtils.getListSize(R.id.navigation_folders)
 
         onView(withId(R.id.first_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(not(withText(email))))
         onView(withId(R.id.nav_header_contact_text)).check(matches(withText(firstBallText)))
         onView(withId(R.id.second_account)).check(matches(withText(currentBallText)))
@@ -122,7 +128,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         return action.text.toString()
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_changeAccountFolders() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
@@ -134,42 +140,42 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navigation_folders)).check(matches(isDisplayed()))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickFolders() {
         // click unified account
         testUtils.openHamburgerMenu()
         onView(withId(R.id.unified_inbox)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.integrated_inbox_title))))
         // click all messages
         testUtils.openHamburgerMenu()
         onView(withId(R.id.all_messages_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(testUtils.getString(R.string.search_all_messages_title))))
         // click inbox folder
         testUtils.openHamburgerMenu()
         val action = GetNavigationFolderTextAction()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.navigation_folders))
                 .check(matches(isDisplayed()))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, action),
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
         // click last folder
         testUtils.openHamburgerMenu()
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         val size = testUtils.getListSize(R.id.navigation_folders)
         onView(withId(R.id.navigation_folders))
                 .check(matches(isDisplayed()))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, action),
                         actionOnItemAtPosition<RecyclerView.ViewHolder>(size - 1, click()))
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.actionbar_title_first)).check(matches(withText(action.text.toString())))
 
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickAccountInList() {
         testUtils.openHamburgerMenu()
 
@@ -189,27 +195,27 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.navigation_accounts)).check(matches(isDisplayed()))
 
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         onView(withId(R.id.nav_header_email)).check(matches(withText(email)))
         onView(withId(R.id.navigation_accounts))
                 .check(matches(CoreMatchers.anyOf(withChild(not(withText(email))), not(withText(email)))))
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickAddAccount() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         assertTrue(testUtils.currentActivity is AccountSetupBasics)
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     fun stage3_clickSettings() {
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.configure_account_container)).perform(click())
-        uiDevice.waitForIdle()
+        TestUtils.waitForIdle()
         assertTrue(testUtils.currentActivity is SettingsActivity)
     }
 }

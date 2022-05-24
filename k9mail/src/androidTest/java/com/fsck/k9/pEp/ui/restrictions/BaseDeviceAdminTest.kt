@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.restrictions
 
 import androidx.test.uiautomator.By
 import com.fsck.k9.common.BaseTest
+import com.fsck.k9.pEp.ui.activities.TestUtils
 import org.junit.Assert.assertFalse
 import org.junit.Test
 
@@ -18,7 +19,7 @@ open class BaseDeviceAdminTest : BaseTest() {
         while (!textViewFound) {
             device.findObjects(selector).forEach { obj ->
                 if (obj.text.contains(resources.getString(textId))) {
-                    device.waitForIdle()
+                    TestUtils.waitForIdle()
                     val checkbox = obj.parent.parent.children[1].children[0]
                     assertFalse(checkbox.isChecked)
                     return

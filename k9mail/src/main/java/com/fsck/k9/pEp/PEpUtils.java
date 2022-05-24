@@ -6,6 +6,7 @@ import android.util.Pair;
 import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -381,12 +382,15 @@ public class PEpUtils {
         // As global sync cannot be enabled if there is no enabled account, we disable it if we only
         // have one account an disabled sync on it
         // If we add an account with sync enabled, we enable sync globally if it was not already enabled
-        if (!account.isPepSyncEnabled() && Preferences.getPreferences(context).getAccounts().size() == 1) {
-            app.setpEpSyncEnabled(false);
-        } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
-            app.setpEpSyncEnabled(true);
-        } else {
-            app.pEpInitSyncEnvironment();
+        if(BuildConfig.WITH_KEY_SYNC) {
+            if (!account.isPepSyncEnabled()
+                    && Preferences.getPreferences(context).getAccounts().size() == 1) {
+                app.setpEpSyncEnabled(false);
+            } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
+                app.setpEpSyncEnabled(true);
+            } else {
+                app.pEpInitSyncEnvironment();
+            }
         }
     }
 

@@ -176,6 +176,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeGlobalpEpSync() {
         if (!BuildConfig.WITH_KEY_SYNC) {
             findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
+            findPreference<Preference>(PREFERENCE_PEP_SYNC_FOLDER)?.remove()
         } else {
             (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
                 this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
@@ -304,6 +305,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"
+        private const val PREFERENCE_PEP_SYNC_FOLDER = "pep_sync_folder"
         private const val MESSAGEVIEW_RETURN_TO_LIST = "messageview_return_to_list"
         private const val MESSAGEVIEW_SHOW_NEXT_MSG = "messageview_show_next"
         private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
