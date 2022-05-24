@@ -130,9 +130,10 @@ object PEpUIUtils {
 
 
     @JvmStatic
-    fun getRatingColor(context: Context, rating: Rating?): Int {
+    @JvmOverloads
+    fun getRatingColor(context: Context, rating: Rating?, encrypt: Boolean = true): Int {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-        return ContextCompat.getColor(context, getRatingColorRes(rating))
+        return ContextCompat.getColor(context, getRatingColorRes(rating, encrypt))
     }
 
     @JvmStatic
