@@ -9,8 +9,8 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
         Context.MODE_PRIVATE
     )
     private val ongoingDecryptMessages: MutableSet<String> =
-        ongoingDecryptMessagesPreferences.getStringSet(ONGOING_DECRYPT_MESSAGES, null)
-            ?: mutableSetOf()
+        ongoingDecryptMessagesPreferences.getString(ONGOING_DECRYPT_MESSAGES, null)
+            .orEmpty().split(",").filter { it.isNotBlank() }.toMutableSet()
 
     fun getOngoingDecryptMessages(): Set<String> {
         return ongoingDecryptMessages
@@ -21,7 +21,7 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
         ongoingDecryptMessages.add(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()
-            .putStringSet(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages)
+            .putString(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages.joinToString(","))
             .commit()
     }
 
@@ -30,7 +30,7 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
         ongoingDecryptMessages.remove(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()
-            .putStringSet(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages)
+            .putString(ONGOING_DECRYPT_MESSAGES, ongoingDecryptMessages.joinToString(","))
             .commit()
     }
 
