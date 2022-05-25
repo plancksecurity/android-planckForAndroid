@@ -9,11 +9,16 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
         Context.MODE_PRIVATE
     )
     private val ongoingDecryptMessages: MutableSet<String> =
-        ongoingDecryptMessagesPreferences.getString(ONGOING_DECRYPT_MESSAGES, null)
-            .orEmpty().split(",").filter { it.isNotBlank() }.toMutableSet()
+        getMutableSet(ONGOING_DECRYPT_MESSAGES)
+
+    private val tempFilePaths: MutableSet<String> = getMutableSet(TEMPORARY_FILES)
 
     fun getOngoingDecryptMessages(): Set<String> {
         return ongoingDecryptMessages
+    }
+
+    fun getTempFilePaths(): Set<String> {
+        return tempFilePaths
     }
 
     @Synchronized
@@ -34,9 +39,33 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
             .commit()
     }
 
+    @Synchronized
+    fun addTempFilePaths(filePaths: Collection<String>): Boolean {
+        tempFilePaths.addAll(filePaths)
+        return ongoingDecryptMessagesPreferences
+            .edit()
+            .putString(TEMPORARY_FILES, tempFilePaths.joinToString(","))
+            .commit()
+    }
+
+    @Synchronized
+    fun clearTempFilePaths(): Boolean {
+        tempFilePaths.clear()
+        return ongoingDecryptMessagesPreferences
+            .edit()
+            .remove(TEMPORARY_FILES)
+            .commit()
+    }
+
+    private fun getMutableSet(key: String): MutableSet<String> {
+        return ongoingDecryptMessagesPreferences.getString(key, null)
+            .orEmpty().split(",").filter { it.isNotBlank() }.toMutableSet()
+    }
+
     companion object {
         const val ONGOING_DECRYPT_MESSAGES_PREFERENCES = "ONGOING_DECRYPT_MESSAGES_PREFERENCES"
         const val ONGOING_DECRYPT_MESSAGES = "ONGOING_DECRYPT_MESSAGES"
+        const val TEMPORARY_FILES = "TEMPORARY_FILES"
         const val DO_NOT_REMOVE_ID = "DO_NOT_REMOVE_ID"
     }
 

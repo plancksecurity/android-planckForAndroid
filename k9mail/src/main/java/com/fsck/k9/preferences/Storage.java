@@ -359,4 +359,8 @@ public class Storage {
     public Set<String> getOngoingDecryptMessages() {
         return ongoingDecryptMessagesPreferences.getOngoingDecryptMessages();
     }
+
+    public Set<String> getOngoingDecryptMessageTempFilePaths() {
+        return ongoingDecryptMessagesPreferences.getTempFilePaths();
+    }
 }

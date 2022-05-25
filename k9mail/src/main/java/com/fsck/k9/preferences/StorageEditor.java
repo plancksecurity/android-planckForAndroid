@@ -2,6 +2,7 @@ package com.fsck.k9.preferences;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,5 +122,13 @@ public class StorageEditor {
 
     public void removeOngoingDecryptMessageId(String messageId) {
         ongoingDecryptMessagesPreferences.removeMessageId(messageId);
+    }
+
+    public void addOngoingDecryptMessageTempFilePaths(Collection<String> filePaths) {
+        ongoingDecryptMessagesPreferences.addTempFilePaths(filePaths);
+    }
+
+    public void clearOngoingDecryptMessageTempFilePaths() {
+        ongoingDecryptMessagesPreferences.clearTempFilePaths();
     }
 }
