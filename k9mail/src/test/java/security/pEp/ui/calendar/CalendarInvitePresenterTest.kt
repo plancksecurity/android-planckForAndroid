@@ -186,6 +186,7 @@ class CalendarInvitePresenterTest {
         val invite = TestICalendarCreator.getMacosCalendarInvite()
         stubAttachment(invite)
         every { viewDelegate.openCalendarApp(any()) }.returns(false)
+        every { viewDelegate.getOrganizerTag() }.returns("Organizer")
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
@@ -197,7 +198,7 @@ class CalendarInvitePresenterTest {
                 with(TestICalendarCreator) {
                     "$INVITEE_1_NAME ($INVITEE_1_EMAIL)" +
                             "\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
-                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [organizer]"
+                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [Organizer]"
                 }
             )
         }

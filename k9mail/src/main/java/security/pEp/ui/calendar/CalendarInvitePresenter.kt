@@ -71,13 +71,13 @@ class CalendarInvitePresenter @Inject constructor(
         val invitees = attendees.mapNotNull { invitee ->
             val displayName = getInviteeDisplayName(invitee.commonName, invitee.email)
             if (organizer != null && invitee.email != null && invitee.email == organizer.email) {
-                displayName?.plus(" [organizer]")
+                displayName?.plus(" [${viewDelegate.getOrganizerTag()}]")
             } else displayName
         }
         organizer?.let { organizer ->
             if (attendees.find { it.email == organizer.email } == null) {
                 getInviteeDisplayName(organizer.commonName, organizer.email)?.let {
-                    return invitees + "$it [organizer]"
+                    return invitees + "$it [${viewDelegate.getOrganizerTag()}]"
                 }
             }
         }
