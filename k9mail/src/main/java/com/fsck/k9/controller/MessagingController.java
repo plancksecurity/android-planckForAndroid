@@ -1735,6 +1735,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             } catch (MessagingException e) {
                                 Timber.e(me, "SYNC: fetch small messages");
                             }
+                        } finally {
+                            Set<String> filePaths = storage.getOngoingDecryptMessageTempFilePaths();
+                            for (String filePath : filePaths) {
+                                if(!new File(filePath).delete()) {
+                                    Timber.i("Could not delete temp file %s", filePath);
+                                }
+                            }
+                            storageEditor.clearOngoingDecryptMessageTempFilePaths();
                         }
                     }
 
