@@ -17,7 +17,7 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
     }
 
     @Synchronized
-    fun add(messageId: String): Boolean {
+    fun addMessageId(messageId: String): Boolean {
         ongoingDecryptMessages.add(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()
@@ -26,7 +26,7 @@ class OngoingDecryptMessagesPreferences(val context: Context) {
     }
 
     @Synchronized
-    fun remove(messageId: String): Boolean {
+    fun removeMessageId(messageId: String): Boolean {
         ongoingDecryptMessages.remove(messageId)
         return ongoingDecryptMessagesPreferences
             .edit()

@@ -116,10 +116,10 @@ public class StorageEditor {
     }
 
     public void addOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.add(messageId);
+        ongoingDecryptMessagesPreferences.addMessageId(messageId);
     }
 
     public void removeOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.remove(messageId);
+        ongoingDecryptMessagesPreferences.removeMessageId(messageId);
     }
 }
