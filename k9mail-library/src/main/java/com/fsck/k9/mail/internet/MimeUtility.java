@@ -16,6 +16,7 @@ import org.apache.james.mime4j.codec.Base64InputStream;
 import org.apache.james.mime4j.codec.QuotedPrintableInputStream;
 import org.apache.james.mime4j.util.MimeUtil;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1015,6 +1016,10 @@ public class MimeUtility {
      * merged into {@link Body}.
      */
     public static InputStream decodeBody(Body body) throws MessagingException {
+        return decodeBody(body, true);
+    }
+
+    public static InputStream decodeBody(Body body, boolean deleteTempFile) throws MessagingException {
         InputStream inputStream;
         if (body instanceof RawDataBody) {
             RawDataBody rawDataBody = (RawDataBody) body;
@@ -1022,7 +1027,16 @@ public class MimeUtility {
             final InputStream rawInputStream = rawDataBody.getInputStream();
             if (MimeUtil.ENC_7BIT.equalsIgnoreCase(encoding) || MimeUtil.ENC_8BIT.equalsIgnoreCase(encoding)
                     || MimeUtil.ENC_BINARY.equalsIgnoreCase(encoding)) {
-                inputStream = rawInputStream;
+                if(deleteTempFile) {
+                    inputStream = rawInputStream;
+                } else {
+                    inputStream = new FilterInputStream(rawInputStream) {
+                        @Override
+                        public void close() throws IOException {
+                            closeInputStreamWithoutDeletingTemporaryFiles(rawInputStream);
+                        }
+                    };
+                }
             } else if (MimeUtil.ENC_BASE64.equalsIgnoreCase(encoding)) {
                 inputStream = new Base64InputStream(rawInputStream, false) {
                     @Override
