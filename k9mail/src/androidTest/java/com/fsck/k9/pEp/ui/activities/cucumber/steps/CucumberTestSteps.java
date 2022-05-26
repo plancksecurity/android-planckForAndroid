@@ -1521,6 +1521,17 @@ public class CucumberTestSteps {
         testUtils.openOptionsMenu();
     }
 
+    @Then("^I check toolBar is visible$")
+    public void I_check_toolbar_is_visible() {
+        timeRequiredForThisMethod(10);
+        waitForIdle();
+        if (viewIsDisplayed(onView(withId(R.id.delete)))) {
+            testUtils.pressBack();
+            waitForIdle();
+            assertFailWithMessage("Toolbar is showing Message Options when there are no messages selected");
+        }
+    }
+
     @Then("^I select from screen (\\S+)$")
     public void I_select_from_screen(String textToSelect) {
         timeRequiredForThisMethod(15);
