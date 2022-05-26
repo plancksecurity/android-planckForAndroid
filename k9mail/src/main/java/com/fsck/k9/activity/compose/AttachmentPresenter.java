@@ -24,6 +24,8 @@ import com.fsck.k9.activity.misc.Attachment.LoadingState;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
 
+import timber.log.Timber;
+
 
 public class AttachmentPresenter {
     private static final String STATE_KEY_ATTACHMENTS = "com.fsck.k9.activity.MessageCompose.attachments";
@@ -245,8 +247,11 @@ public class AttachmentPresenter {
                     attachments.put(attachment.uri, attachment);
                     if (areAttachmentsTooBig()) {
                         attachmentMvpView.showAttachmentsTooBigFeedback();
+                        Timber.i("Attempt to attach a bigger than 25 MB file to a message");
+                        removeAttachment(attachment);
+                    } else {
+                        initAttachmentContentLoader(attachment);
                     }
-                    initAttachmentContentLoader(attachment);
                 }
 
                 @Override
