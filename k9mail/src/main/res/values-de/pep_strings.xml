@@ -275,6 +275,8 @@
     <string name="calendar_invite_short_invitees">%s und %d weitere</string>
     <string name="calendar_invite_show_all_invitees_desc">(alle) eingeladenen Personen anzeigen</string>
     <string name="organizer_tag">Veranstalter</string>
+    <string name="compose_message_attachments_too_big">Der Anhang ist zu groß. Die maximale Größe ist %1$d MB.</string>
+
 
     <string name="compose_unsecure_delivery_warning">Sichere Nachrichtenübertragung unmöglich. Bitte erwägen Sie, markierte Empfänger zu entfernen, um eine sichere Emailübertragung zu gewährleisten.</string>
 </resources>

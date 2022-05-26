@@ -34,6 +34,8 @@ public class AttachmentPresenter {
     private static final int LOADER_ID_MASK = 1 << 6;
     private static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
     private static final int REQUEST_CODE_ATTACHMENT_URI = 1;
+    private static final int ATTACHMENTS_MAX_ALLOWED_SIZE = 25000000;
+    public static final int ATTACHMENTS_MAX_ALLOWED_SIZE_MB = 25;
 
 
     // injected state
@@ -241,6 +243,9 @@ public class AttachmentPresenter {
 
                     attachmentMvpView.updateAttachmentView(attachment);
                     attachments.put(attachment.uri, attachment);
+                    if (areAttachmentsTooBig()) {
+                        attachmentMvpView.showAttachmentsTooBigFeedback();
+                    }
                     initAttachmentContentLoader(attachment);
                 }
 
@@ -249,6 +254,16 @@ public class AttachmentPresenter {
                     // nothing to do
                 }
             };
+
+    private boolean areAttachmentsTooBig() {
+        long totalSize = 0;
+        for (Attachment att : attachments.values()) {
+            if(att.size != null) {
+                totalSize += att.size;
+            }
+        }
+        return totalSize > ATTACHMENTS_MAX_ALLOWED_SIZE;
+    }
 
     private LoaderManager.LoaderCallbacks<Attachment> mAttachmentContentLoaderCallback =
             new LoaderManager.LoaderCallbacks<Attachment>() {
@@ -381,6 +396,7 @@ public class AttachmentPresenter {
         void performSaveAfterChecks();
 
         void showMissingAttachmentsPartialMessageWarning();
+        void showAttachmentsTooBigFeedback();
     }
 
     public interface AttachmentsChangedListener {

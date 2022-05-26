@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
@@ -1977,6 +1978,15 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         @Override
         public void showMissingAttachmentsPartialMessageWarning() {
             FeedbackTools.showLongFeedback(getRootView(), getString(R.string.message_compose_attachments_skipped_toast));
+        }
+
+        @Override
+        public void showAttachmentsTooBigFeedback() {
+            Toast.makeText(
+                    getBaseContext(),
+                    getString(R.string.compose_message_attachments_too_big, AttachmentPresenter.ATTACHMENTS_MAX_ALLOWED_SIZE_MB),
+                    Toast.LENGTH_LONG)
+                    .show();
         }
     };
 
