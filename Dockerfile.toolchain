@@ -58,7 +58,7 @@ RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-a
 RUN echo " \n\
     [target.armv7-linux-androideabi] \n\
     ar = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi-ar\" \n\
-    linker = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi18-clang\" \n\
+    linker = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang\" \n\
 \n\   
     [target.aarch64-linux-android] \n\
     ar = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-ar\" \n\
@@ -66,7 +66,7 @@ RUN echo " \n\
 \n\
     [target.i686-linux-android] \n\
     ar = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-ar\" \n\
-    linker = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android18-clang\"   \n\
+    linker = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android21-clang\"   \n\
 \n\
     [target.x86_64-linux-android] \n\
     ar = \"${ANDROID_NDK}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android-ar\" \n\
