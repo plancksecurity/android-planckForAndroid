@@ -189,8 +189,6 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
-        buildConfigField "String", "ENGINE_REVISION", "\"${buildConfig.pEpEngineRevision}\""
-        buildConfigField "String", "ADAPTER_REVISION", "\"${buildConfig.pEpJNIAdapterRevision}\""
         buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
         buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
         buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"

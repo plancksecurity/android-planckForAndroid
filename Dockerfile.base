@@ -1,0 +1,58 @@
+ARG TOOLCHAIN_IMAGE_NAME
+FROM ${TOOLCHAIN_IMAGE_NAME}
+
+# Disable detached head message from git
+RUN git config --global advice.detachedHead false
+
+# yml2
+ARG YML2_VERSION
+RUN git clone --depth=1 https://gitea.pep.foundation/fdik/yml2.git -b ${YML2_VERSION} $HOME/yml2
+
+# ASN1C
+RUN git clone https://github.com/vlm/asn1c.git $HOME/code/asn1c
+RUN cd $HOME/code/asn1c && \
+    git checkout tags/v0.9.28 -b pep-engine && \
+    autoreconf -iv && \
+    ./configure && \
+    make && \
+    make install
+
+ARG ENGINE_VERSION
+ARG JNI_ADAPTER_VERSION
+ARG LIBPEPADAPTER_VERSION
+ARG FOLDABLE_FOLDER_VERSION
+
+# Fetch pEp for Android First-Party Dependencies
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
+RUN git clone --depth=1 http://pep-security.lu/gitlab/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
+
+COPY . /root/code/pEp
+
+RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "ENGINE_INC_PATH=$HOME/code/pEpEngine/build-android/include/" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
+
+
+# WORKAROUND JNI-176
+RUN cd $HOME/code/pEpEngine && \
+    sh build-android/takeOutHeaderFiles.sh $PWD
+
+# SET GRADLE DAEMON CONFIGURATION
+RUN mkdir -p $HOME/.gradle
+RUN echo -e "\norg.gradle.jvmargs=-Xmx4g -XX:MaxPermSize=16384m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> $HOME/.gradle/gradle.properties
+RUN echo -e "\nthreadsToUse=4" >> $HOME/.gradle/gradle.properties
+RUN cat $HOME/.gradle/gradle.properties
+
+
+# BUILD DEPENDENCIES
+WORKDIR /root/code/pEp
+
+RUN ./gradlew -q externalNativeBuildDebug
+RUN du -hs $HOME && \
+    du -hs $HOME/* && \
+    du -hs $HOME/code/* && \
+    rm -rf $HOME/code/pEp
+
+WORKDIR /root/code
