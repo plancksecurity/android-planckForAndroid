@@ -1656,6 +1656,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 throw new MessagingException(OngoingDecryptMessagesPreferences.DO_NOT_REMOVE_ID);
                             }
                             storageEditor.addOngoingDecryptMessageId(String.valueOf(message.getId()));
+                            storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
                             long time = System.currentTimeMillis();
 
                             if (!shouldImportMessage(account, message, earliestDate)) {
