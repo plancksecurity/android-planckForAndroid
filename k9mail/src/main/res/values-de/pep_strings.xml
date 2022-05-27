@@ -188,10 +188,10 @@
     <string name="intro_frag_first_text_3">Und in der oberen Leiste, wenn Sie eine E-Mail öffnen oder schreiben:</string>
     <string name="intro_frag_first_text_2">Sie können diese Anleitung jederzeit schließen. 
 \n 
-\n&lt;font color=#4caf50&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
+\n&lt;font color=#4caf50&gt;p≡p&lt;/font&gt; verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
 \n 
-\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen. 
-\n 
+\nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt.<font color="#4caf50">p≡p</font> verwendet einen Datenschutzstatus, um die Sicherheit Ihrer Kommunikation anzuzeigen.
+\n
 \nDieser Datenschutzstatus wird als Symbol im Avatar des Benutzers angezeigt</string>
     <string name="message_failed_to_encrypt">Die Nachricht konnte nicht verschlüsselt werden.</string>
     <string name="only_own_identities">Dies ist eine eigene Nachricht, an der kein Kommunikationspartner beteiligt ist.</string>
@@ -267,4 +267,14 @@
     <string name="pgp_key_import_confirmation_dialog_question">Sind sich sicher dass Sie diesen Schlüssel importieren und nutzen wollen\?</string>
     <string name="pgp_key_import_confirmation_confirm">Ja</string>
     <string name="pgp_key_import_confirmation_reject">Nein</string>
+
+    <string name="calendar_event_time_content_desc">Datum und Zeit des Events</string>
+    <string name="calendar_event_location_content_desc">Ort des Events</string>
+    <string name="calendar_event_invitees_content_desc">Eingeladene Personen</string>
+    <string name="calendar_event_open_calendar_desc">Im Kalender öffnen</string>
+    <string name="no_calendar_app_found_msg">Es wurde keine Kalenderapp gefunden, bitte installiere eine.</string>
+    <string name="calendar_invite_error_title">Fehler: Event-Einladung kann nicht geladen werden</string>
+    <string name="calendar_invite_short_invitees">%s und %d weitere</string>
+    <string name="calendar_invite_show_all_invitees_desc">(alle) eingeladenen Personen anzeigen</string>
+    <string name="organizer_tag">Veranstalter</string>
 </resources>

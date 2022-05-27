@@ -8,6 +8,13 @@
             <action android:name="android.intent.action.GET_CONTENT" />
             <data android:mimeType="*/*" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="content"
+                  android:host="com.android.calendar"
+                  android:path="/events"
+            />
+        </intent>
     </queries>
 
     <uses-feature

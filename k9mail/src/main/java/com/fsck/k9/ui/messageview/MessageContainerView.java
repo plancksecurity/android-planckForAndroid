@@ -1,6 +1,7 @@
 package com.fsck.k9.ui.messageview;
 
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.webkit.WebView;
 import android.webkit.WebView.HitTestResult;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,6 +40,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
+import security.pEp.ui.calendar.CalendarInviteLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +84,8 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     private String currentHtmlText;
     private AttachmentResolver currentAttachmentResolver;
 
+    private CalendarInviteLayout calendarInviteLayout;
+
     @Inject
     @MessageView
     DisplayHtml displayHtml;
@@ -88,14 +93,6 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-
-        mMessageContentView = (MessageWebView) findViewById(R.id.message_content);
-        mMessageContentView.refreshTheme();
-        if (!isInEditMode()) {
-            mMessageContentView.configure();
-        }
-        mMessageContentView.setOnCreateContextMenuListener(this);
-        mMessageContentView.setVisibility(View.VISIBLE);
 
         mAttachmentsContainer = findViewById(R.id.attachments_container);
         mAttachments = (LinearLayout) findViewById(R.id.attachments);
@@ -109,6 +106,12 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         Context context = getContext();
         mInflater = LayoutInflater.from(context);
         mClipboardManager = ClipboardManager.getInstance(context);
+
+        LayoutTransition transition = new LayoutTransition();
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        setLayoutTransition(
+                transition
+        );
     }
 
     @Override
@@ -388,6 +391,8 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
 
         this.attachmentCallback = attachmentCallback;
 
+        initializeMessageContentView(messageViewInfo);
+
         resetView();
 
         renderAttachments(messageViewInfo);
@@ -425,6 +430,39 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
             unsignedTextDivider.setVisibility(hideUnsignedTextDivider ? View.GONE : View.VISIBLE);
             unsignedText.setText(messageViewInfo.extraText);
         }
+    }
+
+    private void initializeMessageContentView(MessageViewInfo messageViewInfo) {
+        if (mMessageContentView == null) {
+            AttachmentViewInfo calendarAttachment =
+                    AttachmentController.findCalendarInviteAttachment(messageViewInfo);
+            if (calendarAttachment != null) {
+                mMessageContentView = findViewById(R.id.message_content);
+                initCalendarInviteView(messageViewInfo, calendarAttachment);
+                this.removeView(mMessageContentView);
+            }
+            mSavedState = null;
+            mMessageContentView = findViewById(R.id.message_content);
+            mMessageContentView.refreshTheme();
+            if (!isInEditMode()) {
+                mMessageContentView.configure();
+            }
+            mMessageContentView.setOnCreateContextMenuListener(this);
+            mMessageContentView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void initCalendarInviteView(
+            MessageViewInfo messageViewInfo,
+            AttachmentViewInfo calendarAttachment
+    ) {
+        calendarInviteLayout = new CalendarInviteLayout(
+                        getContext(),
+                        null
+                );
+        calendarInviteLayout.initialize(calendarAttachment, messageViewInfo);
+        FrameLayout calendarInviteContainer = findViewById(R.id.calendar_invite_container);
+        calendarInviteContainer.addView(calendarInviteLayout);
     }
 
     public boolean hasHiddenExternalImages() {

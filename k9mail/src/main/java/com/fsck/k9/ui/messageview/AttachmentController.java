@@ -28,6 +28,7 @@ import com.fsck.k9.mail.internet.MimeUtility;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
+import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
 
@@ -369,5 +370,14 @@ public class AttachmentController {
                 displayAttachmentNotSavedMessage();
             }
         }
+    }
+
+    public static AttachmentViewInfo findCalendarInviteAttachment(MessageViewInfo messageViewInfo) {
+        for(AttachmentViewInfo attachmentViewInfo : messageViewInfo.attachments) {
+            if(attachmentViewInfo.mimeType.equals("text/calendar")) {
+                return attachmentViewInfo;
+            }
+        }
+        return null;
     }
 }

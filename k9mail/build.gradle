@@ -108,6 +108,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:${versions.kotlinSerialization}"
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
+    implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
+
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'

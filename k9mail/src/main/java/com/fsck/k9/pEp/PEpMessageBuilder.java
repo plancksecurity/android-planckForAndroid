@@ -37,6 +37,7 @@ import java.util.Vector;
 
 class PEpMessageBuilder {
     private static final String DEFAULT_FILENAME = "noname";
+    private static final String INVITE_CALENDAR_FILE_NAME = "invite.ics";
     private MimeMessage mm;
 
     PEpMessageBuilder(MimeMessage m) {
@@ -303,6 +304,9 @@ class PEpMessageBuilder {
         String filename = MimeUtility.getHeaderParameter(part.getContentType(), "name");
         if (part.getMimeType().equalsIgnoreCase("message/rfc822")) return "ForwardedMessage.eml";
         if (filename == null) {
+            if (part.getMimeType().equalsIgnoreCase("text/calendar")) {
+                return INVITE_CALENDAR_FILE_NAME;
+            }
             String disposition = MimeUtility.unfoldAndDecode(part.getDisposition());
             if (isAnAttachment(part)) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
