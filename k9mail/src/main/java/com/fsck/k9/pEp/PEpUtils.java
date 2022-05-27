@@ -229,10 +229,6 @@ public class PEpUtils {
 //        return rv.replace("\n", "<nl>").replace("\r", "<cr>");
 //    }
 
-    static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
-        return extractBodyContent(body, true);
-    }
-
     static byte[] extractBodyContent(
             Body body,
             boolean deleteTempFile
