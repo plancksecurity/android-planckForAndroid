@@ -4,29 +4,23 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
+import com.fsck.k9.common.BaseAndroidTest;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -43,34 +37,18 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class AccountSetupBasicsTest {
+public class AccountSetupBasicsTest extends BaseAndroidTest {
 
-    private TestUtils testUtils;
-    private UiDevice device;
     private Preferences preferences;
     private List<Account> previousAccounts;
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
 
     @Before
     public void setUp() throws Exception {
         preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }
 
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
-    }
-
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testManualSetup() {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
@@ -82,16 +60,17 @@ public class AccountSetupBasicsTest {
         checkLastAccountInSettings();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testAutomaticSetup() {
         previousAccounts = preferences.getAccounts();
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
+        testUtils.acceptAutomaticSetupCertificatesIfNeeded();
         accountSetupName(false);
         checkLastAccountInSettings();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void testImportAccount() {
         testUtils.externalAppRespondWithFile(R.raw.test);
         previousAccounts = preferences.getAccounts();
@@ -104,7 +83,7 @@ public class AccountSetupBasicsTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
         onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
         testUtils.clickAcceptButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         checkLastAccountInSettings();
     }
 
@@ -129,9 +108,9 @@ public class AccountSetupBasicsTest {
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_names_title)));
-
+        closeSoftKeyboard();
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if (!withSync) {
+        if (!withSync && BuildConfig.WITH_KEY_SYNC) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
         }
         onView(withId(R.id.done)).perform(click());
@@ -148,6 +127,7 @@ public class AccountSetupBasicsTest {
 
     private void setupOutgoingSettings() {
         setupSettings(R.string.account_setup_outgoing_title);
+        testUtils.acceptCertificateIfNeeded(false);
     }
 
     private void setupSettings(int stringResource) {
@@ -157,12 +137,14 @@ public class AccountSetupBasicsTest {
         String server = BuildConfig.PEP_TEST_EMAIL_SERVER;
 
         onView(withId(R.id.account_server)).perform(replaceText(server));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.next)).perform(click());
     }
 
     private void setupIncomingSettings() {
         setupSettings(R.string.account_setup_incoming_title);
+
+        testUtils.acceptCertificateIfNeeded(false);
     }
 
     private void setupEmailAndPassword() {
@@ -171,7 +153,7 @@ public class AccountSetupBasicsTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = testUtils.getAccountEmailForDevice();
+        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));

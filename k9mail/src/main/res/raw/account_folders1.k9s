@@ -65,7 +65,7 @@
     <value key="pEpUseKeyserver">true</value>
     <value key="pEpPassiveMode">false</value>
     <value key="pEpForwardWarningEnabled">false</value>
-    <value key="pEpEnableSync">true</value>
+    <value key="pEpEnableSync">false</value>
     <value key="pEpSubjectProtection">true</value>
     <value key="pEpSyncFolder">true</value>
   </global>
@@ -125,7 +125,7 @@
         <value key="notifySelfNewMail">true</value>
         <value key="pEpPrivacyProtected">{"value":true,"locked":false}</value>
         <value key="pEpStoreEncryptedOnServer">true</value>
-        <value key="pEpSync">true</value>
+        <value key="pEpSync">false</value>
         <value key="pushPollOnConnect">true</value>
         <value key="quotePrefix">&gt;</value>
         <value key="quoteStyle">PREFIX</value>

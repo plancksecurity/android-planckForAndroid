@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.activities.test;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import cucumber.api.CucumberOptions;
@@ -37,5 +38,6 @@ import cucumber.api.junit.Cucumber;
 )
 // This class must be in a different package than the glue code
 // (this class is in '...cucumber.test' and glue is in '...cucumber.steps')
+@Ignore("Only to be run in Cucumber")
 public class CucumberTestCase extends CucumberAndroidJUnitRunner {
 }

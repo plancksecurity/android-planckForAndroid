@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class AccountSetupScreenshotTest : BaseScreenshotTest() {
 
     @get:Rule
@@ -30,21 +31,18 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
-    @Ignore
     fun automaticAccountSetup() {
         setTestSet("A")
         accountSetup(true)
     }
 
     @Test
-    @Ignore
     fun manualAccountSetup() {
         setTestSet("B")
         accountSetup(false)
     }
 
     @Test
-    @Ignore
     fun importAccountSetup() {
         setTestSet("L")
         openFirstScreen()
@@ -77,7 +75,6 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
     @Test
-    @Ignore
     fun addMessagesToAccount() {
         openFirstScreen()
         waitListView()

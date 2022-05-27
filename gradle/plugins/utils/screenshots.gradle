@@ -1,7 +1,10 @@
 
 task removeIgnore(type: Exec) {
     dependsOn uninstallAll
-    def command = ['./../gradle/plugins/utils/initScreenshotTest.sh', 'enable']
+    def command = [
+            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'enable',
+            'src/androidTest/java/com/fsck/k9/ui/*',
+    ]
     commandLine command
 }
 
@@ -93,7 +96,10 @@ task syncTest(type: Exec) {
 
 task addIgnore(type: Exec) {
     dependsOn syncTest
-    def command = ['./../gradle/plugins/utils/initScreenshotTest.sh', 'disable']
+    def command = [
+            'sh', '../gradle/plugins/utils/enableIgnoredTest.sh', 'disable',
+            'src/androidTest/java/com/fsck/k9/ui/*',
+    ]
     commandLine command
 }
 
