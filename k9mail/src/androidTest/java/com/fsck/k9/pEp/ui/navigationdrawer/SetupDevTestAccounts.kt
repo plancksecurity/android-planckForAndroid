@@ -67,22 +67,20 @@ open class SetupDevTestAccounts {
         testUtils.acceptAutomaticSetupCertificatesIfNeeded()
 
 
-        TestUtils.waitForIdle()
-        Thread.sleep(1000)
+        testUtils.waitUntilViewDisplayed(R.id.account_name)
         onView(withId(R.id.account_name)).perform(replaceText(accountName))
         if(BuildConfig.WITH_KEY_SYNC) {
             onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
         }
-        Espresso.closeSoftKeyboard()
-        TestUtils.waitForIdle()
-        Thread.sleep(1000)
         onView(withId(R.id.done)).check(matches(isDisplayed())).perform(click())
+        TestUtils.waitForIdle()
     }
 
     private fun clickAddAccountButton() {
         TestUtils.waitForIdle()
         testUtils.openHamburgerMenu()
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
+        TestUtils.waitForIdle()
         onView(withId(R.id.add_account_container)).perform(click())
         TestUtils.waitForIdle()
     }
