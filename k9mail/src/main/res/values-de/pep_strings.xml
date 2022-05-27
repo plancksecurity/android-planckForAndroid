@@ -237,7 +237,6 @@
     <string name="passhphrase_body_insert_passphrase">Um weiterzufahren, geben Sie Ihre Passphrase ein</string>
     <string name="passhphrase_input_hint">Passphrase</string>
     <string name="passhphrase_title">Passphrase</string>
-    <string name="about_contact">Kontakt:</string>
     <string name="pep_sync_folder_is_disabled">p≡p Sync Ordner ist deaktiviert, INBOX/Posteingang wird verwendet</string>
     <string name="pep_sync_folder_is_enabled">p≡p Sync Ordner ist aktiviert</string>
     <string name="pep_sync_folder">p≡p Sync Ordner</string>
@@ -257,7 +256,6 @@
     <string name="global_settings_extra_keys_summary">Verwende zusätzliche Schlüssel für die Kommunikation.</string>
     <string name="key_reset_own_identity_feedback_error">Das Konto konnte nicht zurückgesetzt werden.</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
-    <string name="support_email" translatable="false">support@pep.security</string>
     <string name="message_view_message_no_longer_available">Diese Nachricht ist nicht mehr verfügbar, vermutlich wurde sie mittels eines anderen E-Mail-Programmes gelöscht.</string>
     <string name="no_results_found">Kein Ergebnis gefunden</string>
     <string name="pgp_key_import_disabled_summary">Dieses Gerät ist Teil einer Gerätegruppe, Schlüssel kann nicht importiert werden</string>
