@@ -1,6 +1,8 @@
 
 package com.fsck.k9.mail;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +12,7 @@ import org.apache.james.mime4j.util.MimeUtil;
 import com.fsck.k9.mail.internet.CharsetSupport;
 import com.fsck.k9.mail.internet.TextBody;
 
-public abstract class Multipart implements Body {
+public abstract class Multipart implements Body, TransitoryFileBody {
     private Part mParent;
 
     private final List<BodyPart> mParts = new ArrayList<BodyPart>();
@@ -75,4 +77,19 @@ public abstract class Multipart implements Body {
 
     public abstract byte[] getPreamble();
     public abstract byte[] getEpilogue();
+
+    @NonNull
+    @Override
+    public List<String> getTransitoryFilePaths() {
+        List<String> out = new ArrayList<>();
+        for (BodyPart part : mParts) {
+            Body body = part.getBody();
+            if (body instanceof TransitoryFileBody) {
+                List<String> transitoryFiles =
+                        ((TransitoryFileBody) body).getTransitoryFilePaths();
+                out.addAll(transitoryFiles);
+            }
+        }
+        return out;
+    }
 }

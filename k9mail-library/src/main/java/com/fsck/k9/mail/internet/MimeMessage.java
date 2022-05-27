@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
@@ -24,6 +26,8 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Multipart;
 import com.fsck.k9.mail.Part;
+import com.fsck.k9.mail.TransitoryFileBody;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.MimeException;
 import org.apache.james.mime4j.dom.field.DateTimeField;
@@ -730,5 +734,15 @@ public class MimeMessage extends Message {
             }
         }
         return new MimeBodyPart(contentHeaders, getBody());
+    }
+
+    @NonNull
+    @Override
+    public List<String> getTransitoryFilePaths() {
+        if (mBody instanceof TransitoryFileBody) {
+            return ((TransitoryFileBody) mBody).getTransitoryFilePaths();
+        } else {
+            return new ArrayList<>();
+        }
     }
 }
