@@ -96,10 +96,9 @@ build:
   script:
     - pwd
     - echo ${HOME}
-    - ln -s ${HOME}/code/pEpEngine ../pEpEngine
-    - ln -s ${HOME}/code/pEpJNIAdapter ../pEpJNIAdapter
-    - ln -s ${HOME}/code/libpEpAdapter ../libpEpAdapter
-    - ln -s ${HOME}/code/foldable-folder-list ../foldable-folder-list
+    - for i in "pEpEngine" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+      do rm -f ../$i && 
+      ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
     - ./gradlew --build-cache assembleWithkeysyncPlayStoreDebug
   cache:
