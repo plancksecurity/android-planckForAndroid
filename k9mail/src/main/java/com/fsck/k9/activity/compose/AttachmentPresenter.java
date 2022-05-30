@@ -355,11 +355,14 @@ public class AttachmentPresenter {
     public void onClickRemoveAttachment(Uri uri) {
         Attachment attachment = attachments.get(uri);
 
+        removeAttachment(attachment);
+    }
+
+    private void removeAttachment(Attachment attachment) {
         loaderManager.destroyLoader(attachment.loaderId);
 
         attachmentMvpView.removeAttachmentView(attachment);
-        attachments.remove(uri);
-        listener.onAttachmentRemoved();
+        attachments.remove(attachment.uri);
     }
 
     public void onActivityResult(int resultCode, int requestCode, Intent data) {
