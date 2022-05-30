@@ -17,7 +17,8 @@ interface CalendarInviteView {
     fun setStartAndEndTime(timeText: String)
     fun hideStartAndEndTime()
 
-    fun setInvitees(invitees: String)
+    fun setShortInvitees(firstInvitee: String, rest: Int)
+    fun setLongInvitees(invitees: String)
     fun hideInvitees()
 
     fun showCalendarIcon()

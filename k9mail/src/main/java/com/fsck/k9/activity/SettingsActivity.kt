@@ -213,11 +213,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         // TODO: 04/08/2020 Relocate, it is here because it does not work on SplashActivity
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        scope.launch {
-            val app = application as K9
-            app.pEpInitSyncEnvironment()
-        }
+        initializeSyncEnvironmentOnStartup()
 
         val intent = intent
         //onNewIntent(intent);
@@ -275,6 +271,15 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
+    }
+
+    private fun initializeSyncEnvironmentOnStartup() {
+        if(!k9.ispEpSyncEnvironmentInitialized()) {
+            val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+            scope.launch {
+                k9.pEpInitSyncEnvironment()
+            }
+        }
     }
 
     override fun search(query: String) {

@@ -92,8 +92,7 @@ public class StatusIncomingMessageTest {
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
 
-        onView(withId(R.id.securityStatusText)).check(matches(withText(
-                testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
+        testUtils.assertSecurityStatusText(Rating.pEpRatingReliable);
 
         testUtils.clickMessageStatus();
 
@@ -112,8 +111,7 @@ public class StatusIncomingMessageTest {
         testUtils.composeMessageButton();
         device.waitForIdle();
         fillMessage();
-        onView(withId(R.id.securityStatusText)).check(matches(withText(
-                testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
+        testUtils.assertSecurityStatusText(Rating.pEpRatingTrustedAndAnonymized);
 
         testUtils.sendMessage();
     }

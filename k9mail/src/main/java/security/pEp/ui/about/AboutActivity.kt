@@ -50,11 +50,6 @@ class AboutActivity : PepActivity() {
         aboutText.movementMethod = LinkMovementMethod.getInstance()
         aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        contact_button.setOnClickListener {
-            MessageActions.actionCompose(this, "mailto:" + getString(R.string.support_email))
-        }
-        contact_button.paintFlags = contact_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-
         documentation_button.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.pEp_documentation_url))))
         }

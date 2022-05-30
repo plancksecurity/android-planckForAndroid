@@ -1,15 +1,9 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.os.Looper;
-import androidx.annotation.WorkerThread;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Pair;
+
+import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -27,10 +21,6 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.message.SimpleMessageFormat;
 
 import org.apache.commons.io.IOUtils;
-import foundation.pEp.jniadapter.CommType;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.IdentityFlags;
-import foundation.pEp.jniadapter.Rating;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,6 +38,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import foundation.pEp.jniadapter.CommType;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
+
 /**
  * some helper stuff
  */
@@ -58,7 +52,7 @@ public class PEpUtils {
     private static final String TRUSTWORDS_SEPARATOR = " ";
     private static final int CHUNK_SIZE = 4;
 
-    private static final List<String> pEpLanguages = Arrays.asList("ca", "de", "es", "fr", "tr", "en", "nl");
+    private static final List<String> pEpLanguages = Arrays.asList("en", "de");
 
     public static List<String> getPEpLocales() {
         return pEpLanguages;
@@ -391,8 +385,9 @@ public class PEpUtils {
             app.setpEpSyncEnabled(false);
         } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
             app.setpEpSyncEnabled(true);
+        } else {
+            app.pEpInitSyncEnvironment();
         }
-        app.pEpInitSyncEnvironment();
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
@@ -592,14 +587,16 @@ public class PEpUtils {
     }
 
     public static void updateSyncAccountsConfig(Context context) {
-        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
-        pEp.disableSyncForAllIdentites();
+        try (PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context)) {
+            pEp.disableSyncForAllIdentites();
 
-        for (Account account : Preferences.getPreferences(context).getAccounts()) {
-            Identity id = createIdentity(new Address(account.getEmail(), account.getName()), context);
-            // TODO: 04/08/2020 Move to PepProvider.
-            id = pEp.myself(id);
-            pEp.setIdentityFlag(id, account.isPepSyncEnabled());
+            for (Account account : Preferences.getPreferences(context).getAccounts()) {
+                Identity id = createIdentity(
+                        new Address(account.getEmail(), account.getName()), context);
+                // TODO: 04/08/2020 Move to PepProvider.
+                id = pEp.myself(id);
+                pEp.setIdentityFlag(id, account.isPepSyncEnabled());
+            }
         }
     }
 }

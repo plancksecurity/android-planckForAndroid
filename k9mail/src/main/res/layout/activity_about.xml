@@ -41,27 +41,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/icon"
                 tools:text="asdfasofmawfmaewf awefoawef awefoawe f" />
 
-            <TextView
-                android:id="@+id/contact_label"
-                style="@style/GrayScaleColorText1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/about_contact"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
-
-            <TextView
-                android:id="@+id/contact_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginStart="4dp"
-                android:text="@string/support_email"
-                android:textColor="?attr/colorPrimary"
-                app:layout_constraintStart_toEndOf="@+id/contact_label"
-                app:layout_constraintTop_toTopOf="@+id/contact_label" />
-
 
             <TextView
                 android:id="@+id/documentation_label"
@@ -72,7 +51,7 @@
                 android:layout_marginStart="16dp"
                 android:text="@string/about_documentation"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/contact_button" />
+                app:layout_constraintTop_toBottomOf="@+id/aboutText" />
 
             <TextView
                 android:id="@+id/documentation_button"

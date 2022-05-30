@@ -53,7 +53,7 @@ public class UtilsPackage {
             return atPositionOnView(position, -1);
         }
 
-        public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
+        public Matcher<View> atPositionOnView(final int position, final int... targetViewId) {
 
             return new TypeSafeMatcher<View>() {
                 Resources resources = null;
@@ -94,10 +94,13 @@ public class UtilsPackage {
                         }
                     }
 
-                    if (targetViewId == -1) {
+                    if (targetViewId.length == 0 || targetViewId[0] == -1) {
                         return view == childView;
                     } else {
-                        View targetView = childView.findViewById(targetViewId);
+                        View targetView = childView;
+                        for(int id : targetViewId) {
+                           targetView = targetView.findViewById(id);
+                        }
                         return view == targetView;
                     }
 

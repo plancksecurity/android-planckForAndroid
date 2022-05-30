@@ -7,7 +7,6 @@
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
-    <string name="support_email" translatable="false">support@pep.security</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
@@ -288,7 +287,6 @@
     <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
     <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
 
-    <string name="about_contact">Contact:</string>
     <string name="about_documentation">Documentation:</string>
 
     <string name="passhphrase_title">Passphrase</string>
@@ -328,8 +326,11 @@
     <string name="calendar_event_time_content_desc">Event date and time</string>
     <string name="calendar_event_location_content_desc">Event location</string>
     <string name="calendar_event_invitees_content_desc">Event invitees</string>
-    <string name="calendar_event_open_calendar_desc">Open calendar</string>
+    <string name="calendar_event_open_calendar_desc">Open with calendar</string>
     <string name="no_calendar_app_found_msg">No calendar app was found, please install one.</string>
     <string name="calendar_invite_error_title">Error loading calendar invite.</string>
+    <string name="calendar_invite_short_invitees">%s &amp; %d more</string>
+    <string name="calendar_invite_show_all_invitees_desc">Show all invitees</string>
+    <string name="organizer_tag">Organizer</string>
 
 </resources>

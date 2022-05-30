@@ -81,27 +81,50 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/securityStatusText"
+            app:layout_constraintEnd_toStartOf="@+id/securityText"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/pep_status_red" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/securityStatusText"
-            style="@style/PEpSecurityStatusTextView"
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/securityText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:gravity="center_vertical|start"
-            android:includeFontPadding="true"
-            android:lines="2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/securityStatusIcon"
+            app:layout_constraintStart_toEndOf="@id/securityStatusIcon"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/pep_rating_secure"
-            tools:visibility="visible" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/securityStatusText"
+                style="@style/PEpSecurityStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:includeFontPadding="true"
+                android:maxLines="1"
+                android:padding="0dp"
+                android:lineSpacingExtra="0dp"
+                tools:text="@string/pep_rating_secure_trusted" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/securityStatusSecondLine"
+                style="@style/PEpSecurityStatusTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:includeFontPadding="true"
+                android:maxLines="1"
+                android:padding="0dp"
+                android:lineSpacingExtra="0dp"
+                android:visibility="gone"
+                tools:text="@string/pep_rating_secure_trusted"
+                tools:visibility="visible" />
+
+        </LinearLayout>
 
         <com.fsck.k9.view.MessageTitleView
             android:id="@+id/message_title_view"

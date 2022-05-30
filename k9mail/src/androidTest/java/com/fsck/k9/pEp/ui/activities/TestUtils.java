@@ -139,6 +139,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 
@@ -2086,7 +2087,7 @@ public class TestUtils {
             if (R.id.securityStatusIcon != statusColor) {
                 assertFailWithMessage("Wrong Status color");
             }
-            onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+            assertSecurityStatusText(status);
         }
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -2123,7 +2124,7 @@ public class TestUtils {
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
             }
             else {
-                onView(withId(R.id.securityStatusText)).check(matches(withText(getResourceString(R.array.pep_title, status.value))));
+                assertSecurityStatusText(status);
             }
         }
 
@@ -2135,6 +2136,19 @@ public class TestUtils {
             waitForIdle();
             pressBack();
         }
+    }
+
+    public void assertSecurityStatusText(Rating status) {
+        String firstLineText = getTextFromView(onView(withId(R.id.securityStatusText)));
+        ViewInteraction secondLine = onView(withId(R.id.securityStatusSecondLine));
+
+        String secondLineText = exists(secondLine)
+                ? getTextFromView(onView(withId(R.id.securityStatusSecondLine)))
+                : "";
+        assertEquals(
+                getResourceString(R.array.pep_title, status.value),
+                firstLineText + secondLineText
+        );
     }
 
     private int getSecurityStatusDrawableColor(Rating rating){

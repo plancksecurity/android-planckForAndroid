@@ -1,6 +1,7 @@
 package com.fsck.k9.ui.messageview;
 
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -105,6 +106,12 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
         Context context = getContext();
         mInflater = LayoutInflater.from(context);
         mClipboardManager = ClipboardManager.getInstance(context);
+
+        LayoutTransition transition = new LayoutTransition();
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        setLayoutTransition(
+                transition
+        );
     }
 
     @Override

@@ -52,6 +52,50 @@ class CalendarInvitePresenter @Inject constructor(
         }
     }
 
+    fun showLongInvitees() {
+        val event = icalendar.events.first()
+        val invitees = event.getInvitees()
+        showText(
+            invitees.joinToString("\n"),
+            view::setLongInvitees,
+            view::hideInvitees
+        )
+    }
+
+    fun showShortInvitees() {
+        val event = icalendar.events.first()
+        showShortInvitees(event)
+    }
+
+    private fun VEvent.getInvitees(): List<String> {
+        val invitees = attendees.mapNotNull { invitee ->
+            val displayName = getInviteeDisplayName(invitee.commonName, invitee.email)
+            if (organizer != null && invitee.email != null && invitee.email == organizer.email) {
+                displayName?.plus(" [${viewDelegate.getOrganizerTag()}]")
+            } else displayName
+        }
+        organizer?.let { organizer ->
+            if (attendees.find { it.email == organizer.email } == null) {
+                getInviteeDisplayName(organizer.commonName, organizer.email)?.let {
+                    return invitees + "$it [${viewDelegate.getOrganizerTag()}]"
+                }
+            }
+        }
+        return invitees
+    }
+
+    private fun getInviteeDisplayName(name: String?, email: String?): String? {
+        return if (name.isNullOrBlank()) {
+            if (!email.isNullOrBlank()) email else null
+        } else {
+            if (email.isNullOrBlank() || name == email) {
+                name
+            } else {
+                "$name ($email)"
+            }
+        }
+    }
+
     private fun renderCalendarInvite() {
         coroutineScope.launch {
             view.showLoading()
@@ -75,12 +119,12 @@ class CalendarInvitePresenter @Inject constructor(
         replaceMessageContentIfNeeded()
         showOrHideLocation(event)
         showOrHideDates(event)
-        showOrHideInvitees(event)
+        showShortInvitees(event)
     }
 
     private fun showOrHideSummary(event: VEvent) {
         val summary = event.summary?.value?.trim()
-        showTextIfAvailable(
+        showText(
             summary,
             view::setSummary,
             view::hideSummary
@@ -89,7 +133,7 @@ class CalendarInvitePresenter @Inject constructor(
 
     private fun showOrHideLocation(event: VEvent) {
         val location = event.location?.value?.trim()
-        showTextIfAvailable(
+        showText(
             location,
             view::setLocation,
             view::hideLocation
@@ -105,31 +149,32 @@ class CalendarInvitePresenter @Inject constructor(
             } else {
                 null
             }
-        showTextIfAvailable(
+        showText(
             timeText,
             view::setStartAndEndTime,
             view::hideStartAndEndTime
         )
     }
 
-    private fun showOrHideInvitees(event: VEvent) {
+    private fun showShortInvitees(event: VEvent) {
         val invitees = event.getInvitees()
-        showTextIfAvailable(
-            invitees.joinToString("\n"),
-            view::setInvitees,
-            view::hideInvitees
-        )
+        if (invitees.isNotEmpty()) {
+            val rest = invitees.size - 1
+            view.setShortInvitees(invitees.first(), rest)
+        } else {
+            view.hideInvitees()
+        }
     }
 
-    private fun showTextIfAvailable(
+    private fun showText(
         text: String?,
-        ifAvailable: (String) -> Unit,
-        ifNotAvailable: () -> Unit
+        onAvailable: (String) -> Unit,
+        onNotAvailable: () -> Unit
     ) {
         if (text.isNullOrBlank()) {
-            ifNotAvailable()
+            onNotAvailable()
         } else {
-            ifAvailable(text)
+            onAvailable(text)
         }
     }
 

@@ -59,11 +59,11 @@ class CalendarInvitePresenterTest {
 
         verify { view.setSummary(TestICalendarCreator.EVENT_SUMMARY) }
         verify {
-            view.setInvitees(
+            view.setShortInvitees(
                 with(TestICalendarCreator) {
-                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
-                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [organizer]"
-                }
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)"
+                },
+                2
             )
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
@@ -99,11 +99,11 @@ class CalendarInvitePresenterTest {
 
         verify { view.setSummary(TestICalendarCreator.EVENT_SUMMARY) }
         verify {
-            view.setInvitees(
+            view.setShortInvitees(
                 with(TestICalendarCreator) {
-                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
-                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [organizer]"
-                }
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)"
+                },
+                2
             )
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
@@ -158,6 +158,50 @@ class CalendarInvitePresenterTest {
 
         verify { viewDelegate.openCalendarApp(calendarAttachment) }
         verify { view.showNoCalendarApp() }
+    }
+
+    @Test
+    fun `showShortInvitees calls view_setShortInvitees`() {
+        val invite = TestICalendarCreator.getMacosCalendarInvite()
+        stubAttachment(invite)
+        every { viewDelegate.openCalendarApp(any()) }.returns(false)
+
+
+        presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        presenter.showShortInvitees()
+
+
+        verify {
+            view.setShortInvitees(
+                with(TestICalendarCreator) {
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)"
+                },
+                2
+            )
+        }
+    }
+
+    @Test
+    fun `showLontInvitees calls view_setLongInvitees`() {
+        val invite = TestICalendarCreator.getMacosCalendarInvite()
+        stubAttachment(invite)
+        every { viewDelegate.openCalendarApp(any()) }.returns(false)
+        every { viewDelegate.getOrganizerTag() }.returns("Organizer")
+
+
+        presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        presenter.showLongInvitees()
+
+
+        verify {
+            view.setLongInvitees(
+                with(TestICalendarCreator) {
+                    "$INVITEE_1_NAME ($INVITEE_1_EMAIL)" +
+                            "\n$INVITEE_2_NAME ($INVITEE_2_EMAIL)" +
+                            "\n$ORGANIZER_NAME ($ORGANIZER_EMAIL) [Organizer]"
+                }
+            )
+        }
     }
 
     private fun stubAttachment(iCalendar: ICalendar) {

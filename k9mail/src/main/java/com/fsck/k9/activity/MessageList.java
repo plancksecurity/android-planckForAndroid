@@ -1946,4 +1946,15 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mMessageListFragment.showComposeFab(show);
         }
     }
+
+    @Override
+    public void refreshMessageViewFragment() {
+        if(mMessageViewFragment != null) {
+            MessageViewFragment fragment = MessageViewFragment.newInstance(mMessageViewFragment.getMessageReference());
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.message_view_container, fragment);
+            mMessageViewFragment = fragment;
+            ft.commitNow();
+        }
+    }
 }
