@@ -459,13 +459,16 @@ public class CucumberTestSteps {
     @When("^I check that the Calendar is correct and body text is (\\S+)")
     public void I_check_calendar(String bodyText) {
         timeRequiredForThisMethod(10);
+        waitForIdle();
+        onView(withId(R.id.showAllInvitees)).perform(click());
+        waitForIdle();
         if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
                 !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
                         "Southern Island, NBI 8250012 B, https://www.pep.security") ||
                 !getTextFromView(onView(withId(R.id.eventTime))).equals("Sat Nov 13 09:00:00 GMT+01:00 2021 - Sat Nov 13 10:00:00 GMT+01:00 2021") ||
-                !getTextFromView(onView(withId(R.id.eventInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
+                !getTextFromView(onView(withId(R.id.shortInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
-                        "Organizer Name (organizer@mail.es) [organizer]")) {
+                        "Organizer Name (organizer@mail.es) [Organizer]")) {
             assertFailWithMessage("Wrong Calendar Text");
         }
         BySelector selector = By.clazz("android.webkit.WebView");
