@@ -5,9 +5,19 @@ import android.net.Uri
 import com.fsck.k9.mail.Address
 import foundation.pEp.jniadapter.Rating
 
-class RatedRecipient(private val baseRecipient: Recipient) : Recipient(baseRecipient.address) {
+class RatedRecipient private constructor(
+    private val baseRecipient: Recipient
+) : Recipient(baseRecipient.address) {
 
-    var rating: Rating = Rating.pEpRatingUndefined
+    lateinit var rating: Rating
+        private set
+
+    constructor(
+        baseRecipient: Recipient,
+        rating: Rating
+    ) : this(baseRecipient) {
+        this.rating = rating
+    }
 
     override fun getAddress(): Address {
         return baseRecipient.address
