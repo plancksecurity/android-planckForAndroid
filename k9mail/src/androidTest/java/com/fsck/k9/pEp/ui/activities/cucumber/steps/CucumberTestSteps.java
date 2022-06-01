@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -483,14 +484,16 @@ public class CucumberTestSteps {
         ViewInteraction calendarButton = onView(withId(R.id.openCalendarImg));
         onView(withId(R.id.eventLocation)).perform(openLinkWithText("https://www.pep.security"));
         waitForIdle();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1500; i++) {
             waitForIdle();
         }
         if (testUtils.textExistsOnScreen("https://www.pep.security")) {
             assertFailWithMessage("URLs has not been clicked");
         }
-        device.pressBack();
-        waitForIdle();
+        while (!testUtils.textExistsOnScreen("https://www.pep.security")) {
+            device.pressBack();
+            waitForIdle();
+        }
         testUtils.longClick("openCalendarImg");
         waitForIdle();
         if (viewIsDisplayed(calendarButton)) {
