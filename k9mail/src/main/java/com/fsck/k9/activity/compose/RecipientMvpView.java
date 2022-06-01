@@ -304,6 +304,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return bccView.getObjects();
     }
 
+    private boolean hasRecipients() {
+        return !getToRecipients().isEmpty()
+                || !getCcRecipients().isEmpty()
+                || !getBccRecipients().isEmpty();
+    }
+
     public boolean recipientToHasUncompletedText() {
         return toView.hasUncompletedText();
     }
