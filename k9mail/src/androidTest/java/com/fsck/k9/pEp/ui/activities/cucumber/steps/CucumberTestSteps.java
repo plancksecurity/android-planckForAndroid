@@ -167,6 +167,23 @@ public class CucumberTestSteps {
         }
         waitForIdle();
         Intents.release();
+        device.pressHome();
+        waitForIdle();
+        try {
+            device.pressRecentApps();
+            waitForIdle();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        UiObject2 clear = device.findObject(By.res("com.sec.android.app.launcher:id/clear_all_button"));
+        {
+            try {
+                clear.click();
+                waitForIdle();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @When(value = "^I created an account$")
