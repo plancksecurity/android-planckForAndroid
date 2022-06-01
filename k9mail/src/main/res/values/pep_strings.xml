@@ -333,4 +333,6 @@
     <string name="calendar_invite_show_all_invitees_desc">Show all invitees</string>
     <string name="organizer_tag">Organizer</string>
 
+    <string name="compose_unsecure_delivery_warning">Unable to establish secure message delivery. Please consider removing highlighted recipients to guarantee a safe transmission of this email.</string>
+
 </resources>
