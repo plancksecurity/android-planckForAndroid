@@ -111,6 +111,7 @@
         <item name="iconActionSelectAll">@drawable/ic_select_all_light</item>
         <item name="iconActionSave">@drawable/ic_floppy_light</item>
         <item name="iconActionCancel">@drawable/ic_clear_light</item>
+        <item name="removeRecipientButtonColor">@color/remove_recipient_button_light</item>
         <item name="iconActionRequestReadReceipt">@drawable/ic_action_request_read_receipt_light</item>
         <item name="iconActionExpand">@drawable/ic_chevron_down_light</item>
         <item name="iconActionCollapse">@drawable/ic_chevron_up_light</item>
@@ -258,6 +259,7 @@
         <item name="iconActionSelectAll">@drawable/ic_select_all_dark</item>
         <item name="iconActionSave">@drawable/ic_floppy_dark</item>
         <item name="iconActionCancel">@drawable/ic_clear_dark</item>
+        <item name="removeRecipientButtonColor">@color/remove_recipient_button_dark</item>
         <item name="iconActionRequestReadReceipt">@drawable/ic_action_request_read_receipt_dark</item>
         <item name="iconActionExpand">@drawable/ic_chevron_down_dark</item>
         <item name="iconActionCollapse">@drawable/ic_chevron_up_dark</item>
