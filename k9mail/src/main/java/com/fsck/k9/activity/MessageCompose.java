@@ -845,7 +845,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             return;
         }
 
-        if (isForwardedpEpMessage()
+        if (false && isForwardedpEpMessage()
                 && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageRating)) {
             if (K9.ispEpForwardWarningEnabled()) showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
             else performSendAfterChecks();
