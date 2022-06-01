@@ -325,7 +325,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                showAlternatesPopup(data);
+                withRatedRecipientsSorted(
+                        data,
+                        pEp,
+                        recipients -> showAlternatesPopup(recipients)
+                );
             }
         });
     }
