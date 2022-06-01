@@ -1,6 +1,8 @@
 package com.fsck.k9.activity.compose;
 
 
+import static com.fsck.k9.activity.compose.RSVUtilsKt.withRatedRecipientsSorted;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
@@ -38,8 +40,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import org.apache.james.mime4j.util.CharsetUtil;
 import foundation.pEp.jniadapter.Rating;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -274,40 +275,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        List<RatedRecipient> ratedRecipients = new ArrayList<>();
-        for (Recipient recipient : recipients) {
-            RatedRecipient ratedRecipient = new RatedRecipient(recipient);
-            pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
-                @Override
-                public void onLoaded(Rating rating) {
-                    ratedRecipient.setRating(rating);
-                    ratedRecipients.add(ratedRecipient);
-                    if(ratedRecipients.size() == recipients.length) {
-                        orderRecipientsByRating(ratedRecipients);
-                        for (Recipient ratedRecipient : ratedRecipients) {
-                            addObject(ratedRecipient);
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    ratedRecipient.setRating(Rating.pEpRatingUndefined);
-                    ratedRecipients.add(ratedRecipient);
-                    if(ratedRecipients.size() == recipients.length) {
-                        orderRecipientsByRating(ratedRecipients);
-                        for (Recipient ratedRecipient : ratedRecipients) {
-                            addObject(ratedRecipient);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private void orderRecipientsByRating(List<RatedRecipient> recipients) {
-        Collections.sort(recipients, (o1, o2) -> {
-            return Integer.compare(o1.getRating().value, o2.getRating().value);
+        withRatedRecipientsSorted(Arrays.asList(recipients), pEp, ratedRecipients -> {
+            for (Recipient recipient : ratedRecipients) {
+                addObject(recipient);
+            }
         });
     }
 
