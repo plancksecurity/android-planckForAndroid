@@ -60,4 +60,12 @@
         android:visibility="gone"
         app:srcCompat="@drawable/status_dots_3" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/remove_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="6dp"
+        app:srcCompat="@drawable/recipient_item_remove"
+        android:layout_gravity="center_vertical" />
+
 </LinearLayout>
