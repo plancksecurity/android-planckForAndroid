@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -33,13 +32,14 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
 import foundation.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -141,20 +141,24 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
 
         holder.bind(recipient);
+        if (recipient instanceof RatedRecipient) {
+            holder.updateRating(((RatedRecipient) recipient).getRating());
+            postInvalidateDelayed(100);
+        } else {
+            pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    holder.updateRating(rating);
+                    postInvalidateDelayed(100);
+                }
 
-        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                holder.updateRating(rating);
-                postInvalidateDelayed(100);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                holder.updateRating(Rating.pEpRatingUndefined);
-                postInvalidateDelayed(100);
-            }
-        });
+                @Override
+                public void onError(Throwable throwable) {
+                    holder.updateRating(Rating.pEpRatingUndefined);
+                    postInvalidateDelayed(100);
+                }
+            });
+        }
     }
 
     @Override
@@ -270,9 +274,41 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
+        List<RatedRecipient> ratedRecipients = new ArrayList<>();
         for (Recipient recipient : recipients) {
-            addObject(recipient);
+            RatedRecipient ratedRecipient = new RatedRecipient(recipient);
+            pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    ratedRecipient.setRating(rating);
+                    ratedRecipients.add(ratedRecipient);
+                    if(ratedRecipients.size() == recipients.length) {
+                        orderRecipientsByRating(ratedRecipients);
+                        for (Recipient ratedRecipient : ratedRecipients) {
+                            addObject(ratedRecipient);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    ratedRecipient.setRating(Rating.pEpRatingUndefined);
+                    ratedRecipients.add(ratedRecipient);
+                    if(ratedRecipients.size() == recipients.length) {
+                        orderRecipientsByRating(ratedRecipients);
+                        for (Recipient ratedRecipient : ratedRecipients) {
+                            addObject(ratedRecipient);
+                        }
+                    }
+                }
+            });
         }
+    }
+
+    private void orderRecipientsByRating(List<RatedRecipient> recipients) {
+        Collections.sort(recipients, (o1, o2) -> {
+            return Integer.compare(o1.getRating().value, o2.getRating().value);
+        });
     }
 
     public Address[] getAddresses() {
