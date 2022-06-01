@@ -7,7 +7,10 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
+
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +22,13 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.ThemeUtils;
 
@@ -30,6 +36,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import foundation.pEp.jniadapter.Rating;
 
 
 public class AlternateRecipientAdapter extends BaseAdapter {
@@ -142,6 +150,13 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         holder.setShowAsHeader(true);
 
         holder.headerName.setText(recipient.getNameOrUnknown(context));
+
+        colorizeUnsecureRecipientText(
+                (RatedRecipient) recipient,
+                holder.headerName,
+                getHeaderDefaultTextColor(holder.headerName.getContext())
+        );
+
         if (!TextUtils.isEmpty(recipient.getAddressLabel())) {
             holder.headerAddressLabel.setText(recipient.getAddressLabel());
             holder.headerAddressLabel.setVisibility(View.VISIBLE);
@@ -169,6 +184,13 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         String address = recipient.getAddress().getAddress();
         holder.itemAddress.setText(address);
+
+        colorizeUnsecureRecipientText(
+                (RatedRecipient) recipient,
+                holder.itemAddress,
+                getBodyDefaultTextColor(holder.itemAddress.getContext())
+        );
+
         if (!TextUtils.isEmpty(recipient.getAddressLabel())) {
             holder.itemAddressLabel.setText(recipient.getAddressLabel());
             holder.itemAddressLabel.setVisibility(View.VISIBLE);
@@ -188,6 +210,28 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         });
 
         configureCryptoStatusView(holder, recipient);
+    }
+
+    private void colorizeUnsecureRecipientText(
+            RatedRecipient recipient,
+            TextView textView,
+            @ColorInt int defaultColor
+    ) {
+        Rating rating = recipient.getRating();
+        int textColor = account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)
+                ? ContextCompat.getColor(context, R.color.pep_red)
+                : defaultColor;
+        textView.setTextColor(textColor);
+    }
+
+    private int getHeaderDefaultTextColor(Context context) {
+        return ThemeManager.getColorFromAttributeResource(
+                context, R.attr.textColorPrimaryRecipientDropdown);
+    }
+
+    private int getBodyDefaultTextColor(Context context) {
+        return ThemeManager.getColorFromAttributeResource(
+        context, R.attr.textColorSecondaryRecipientDropdown);
     }
 
     private void configureCryptoStatusView(RecipientTokenHolder holder, Recipient recipient) {
