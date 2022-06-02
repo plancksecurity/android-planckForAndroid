@@ -1839,7 +1839,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                 actionMode = null;
             }
         }
-        if(!adapter.getCursor().isClosed()) {
+        if (adapter != null && !adapter.isClosed()) {
             adapter.notifyDataSetChanged();
         }
     }
