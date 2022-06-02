@@ -60,7 +60,7 @@ public class InboxActionBarChangingColorTest extends BaseAndroidTest {
     }
 
     public void assertToolbarColor() {
-        testUtils.checkToolBarColor(
+        testUtils.checkToolbarColor(
                 ThemeManager.isDarkTheme()
                         ? R.color.dark_theme_overlay_1
                         : R.color.pep_green

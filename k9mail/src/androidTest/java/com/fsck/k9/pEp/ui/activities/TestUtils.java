@@ -2173,7 +2173,7 @@ public class TestUtils {
         if(clickableExpected) {
             waitForIdle();
             waitForToolbar();
-            checkToolBarColor(getPEpStatusDueColor(status));
+            checkToolbarColor(getPEpStatusDueColor(status));
             waitForIdle();
             pressBack();
         }
@@ -3556,15 +3556,21 @@ public class TestUtils {
         waitForIdle();
     }
 
-    void checkToolBarColor(int color) {
+    public void checkToolbarColor(int color) {
         waitForIdle();
-        while (!exists(onView(withId(R.id.toolbar)))) {
-            doWaitForResource(R.id.toolbar);
+        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
             waitForIdle();
         }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
-        waitForIdle();
-        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        while (true) {
+            waitForIdle();
+            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
+                waitForIdle();
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
+                //checkUpperToolbar(color);
+                return;
+            }
+        }
     }
 
     void goBackToMessageListAndPressComposeMessageButton() {
