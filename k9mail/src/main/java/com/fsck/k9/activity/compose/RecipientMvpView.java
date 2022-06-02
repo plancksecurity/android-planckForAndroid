@@ -502,17 +502,26 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     void handlepEpState(boolean... withToast) {
+        handleToolbarRating();
+        handleUnsecureDeliveryWarning();
+    }
+
+    private void handleToolbarRating() {
         if (mAccount.ispEpPrivacyProtected()) {
-            boolean reallyWithToast = true;
-            if (withToast.length > 0) reallyWithToast = withToast[0];
             activity.setToolbarRating(pEpRating);
+        } else {
+            activity.hideUnsecureDeliveryWarning();
+        }
+    }
+
+    private void handleUnsecureDeliveryWarning() {
+        if (mAccount.ispEpPrivacyProtected()) {
             if(hasRecipients() && (pEpRating == null || PEpUtils.isRatingUnsecure(pEpRating))) {
                 activity.showUnsecureDeliveryWarning();
             } else {
                 activity.hideUnsecureDeliveryWarning();
             }
         } else {
-            activity.setToolbarRating(Rating.pEpRatingUnencrypted);
             activity.hideUnsecureDeliveryWarning();
         }
     }
