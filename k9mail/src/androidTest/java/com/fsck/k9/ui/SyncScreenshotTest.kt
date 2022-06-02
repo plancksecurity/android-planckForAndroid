@@ -12,10 +12,10 @@ import org.junit.runner.RunWith
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@Ignore("Only to be run via ./gradlew generateScreenshots")
 class SyncScreenshotTest : BaseScreenshotTest() {
 
     @Test
-    @Ignore
     fun syncTest() {
         openFirstScreen()
         setTestSet("K")

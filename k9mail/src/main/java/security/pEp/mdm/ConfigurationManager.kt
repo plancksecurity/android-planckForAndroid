@@ -6,6 +6,10 @@ import androidx.annotation.VisibleForTesting
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class ConfigurationManager(
@@ -22,13 +26,28 @@ class ConfigurationManager(
     private lateinit var accounts: MutableList<Account>
 
     fun loadConfigurations() {
-        accounts = preferences.accounts
-        val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
-        val restrictions = manager.applicationRestrictions
-        val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
-        mapRestrictions(entries, restrictions)
-        saveAccounts()
-        sendRemoteConfig()
+        CoroutineScope(Dispatchers.Main).launch {
+            loadConfigurationsSuspend()
+                .onSuccess { sendRemoteConfig() }
+                .onFailure {
+                    Timber.e(
+                        it,
+                        "Could not load configurations after registering the receiver"
+                    )
+                }
+        }
+    }
+
+    private suspend fun loadConfigurationsSuspend(): Result<Unit> = withContext(Dispatchers.IO) {
+        kotlin.runCatching {
+            accounts = preferences.accounts
+            val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE)
+                    as RestrictionsManager
+            val restrictions = manager.applicationRestrictions
+            val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
+            mapRestrictions(entries, restrictions)
+            saveAccounts()
+        }
     }
 
     private fun mapRestrictions(entries: List<RestrictionEntry>, restrictions: Bundle) {
@@ -92,11 +111,6 @@ class ConfigurationManager(
         context.applicationContext.registerReceiver(
                 restrictionsReceiver, IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED)
         )
-        try {
-            loadConfigurations()
-        } catch (e: Exception) {
-            Timber.e(e, "Could not load configurations after registering the receiver")
-        }
     }
 
     fun setListener(listener: RestrictionsListener) {

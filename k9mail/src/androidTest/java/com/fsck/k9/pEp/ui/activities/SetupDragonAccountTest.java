@@ -8,20 +8,16 @@ import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.setup.AccountSetupBasics;
+import com.fsck.k9.common.BaseAndroidTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,17 +30,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class SetupDragonAccountTest {
-    private TestUtils testUtils;
-
-    @Rule
-    public ActivityTestRule<AccountSetupBasics> activityTestRule = new ActivityTestRule<>(AccountSetupBasics.class);
-
+public class SetupDragonAccountTest extends BaseAndroidTest {
     @Before
     public void setUp() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded();
+        testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }
 
     @After
@@ -53,7 +42,7 @@ public class SetupDragonAccountTest {
         testUtils.goToSettingsAndRemoveAllAccounts();
     }
 
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void setupDragonAccountTest() {
         accountSetupBasics();
         incomingSettings();
@@ -89,7 +78,7 @@ public class SetupDragonAccountTest {
     }
 
     private void clickAccept() {
-        onView(withId(android.R.id.button1)).perform(click());
+        testUtils.clickAndroidDialogAccept();
     }
 
     private void clickNext() {
@@ -140,7 +129,9 @@ public class SetupDragonAccountTest {
         clickNext();
         testUtils.waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        if(BuildConfig.WITH_KEY_SYNC) {
+            onView(withId(R.id.pep_enable_sync_account)).perform(click());
+        }
         onView(withId(R.id.done)).perform(click());
     }
 }

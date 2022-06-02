@@ -9,6 +9,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
+import com.fsck.k9.common.BaseAndroidTest;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 
 import org.junit.After;
@@ -33,70 +34,55 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 
 @RunWith(AndroidJUnit4.class)
-public class YellowStatusEmailFromBotTest {
+public class YellowStatusEmailFromBotTest extends BaseAndroidTest {
 
-    private UiDevice device;
-    private TestUtils testUtils;
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private static final String UNKNOWN_ADDRESS = "unkown@user.is";
 
-    private String botMail = System.currentTimeMillis() + "@" + HOST;
-
-    @Rule
-    public IntentsTestRule<SplashActivity> splashActivityTestRule = new IntentsTestRule<>(SplashActivity.class);
+    private final String botMail = System.currentTimeMillis() + "@" + HOST;
 
     @Before
     public void startpEpApp() {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        device = UiDevice.getInstance(instrumentation);
-        testUtils = new TestUtils(device, instrumentation);
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
         testUtils.setupAccountIfNeeded();
     }
 
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
-    }
-
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void yellowStatusEmailFromBot (){
         sendMessageAndAssertYellowStatusMessage();
         twoStatusMessageYellowAndGray();
     }
 
     private void sendMessageAndAssertYellowStatusMessage() {
+        testUtils.getMessageListSize();
         sendMessage(botMail);
         testUtils.waitForNewMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.clickFirstMessage();
 
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
         testUtils.pressBack();
 
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         fillComposeFields(botMail);
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.goBackFromMessageCompose(false);
     }
 
     private void twoStatusMessageYellowAndGray() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         String ownAddress = testUtils.getTextFromTextViewThatContainsText("@");
 
         fillComposeFields(botMail + "\n" + UNKNOWN_ADDRESS + "\n" + ownAddress);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         selectPrivacyStatusFromMenu();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         checkToolbarColor(R.color.pep_no_color);
         onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
@@ -109,17 +95,17 @@ public class YellowStatusEmailFromBotTest {
 
     private void sendMessage(String messageTo) {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         fillComposeFields(messageTo);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void selectPrivacyStatusFromMenu() {
         testUtils.openOptionsMenu();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.selectFromScreen(R.string.pep_title_activity_privacy_status);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void checkToolbarColor(int color) {
@@ -133,11 +119,13 @@ public class YellowStatusEmailFromBotTest {
     }
 
     private void fillComposeFields(String messageTo) {
-        onView(withId(R.id.to)).perform(typeText(messageTo), closeSoftKeyboard());
-        device.waitForIdle();
+        testUtils.doWait("to");
+        TestUtils.waitForIdle();
         onView(withId(R.id.subject)).perform(replaceText(MESSAGE_SUBJECT));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.message_content)).perform(typeText(MESSAGE_BODY));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
+        onView(withId(R.id.to))
+                .perform(typeText(messageTo + "\n"), closeSoftKeyboard());
     }
 }

@@ -1,17 +1,11 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import androidx.test.espresso.IdlingRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.uiautomator.UiDevice;
 
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
+import com.fsck.k9.common.BaseAndroidTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,53 +17,40 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.view.KeyEvent;
+
 
 @RunWith(AndroidJUnit4.class)
-public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
+public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus extends BaseAndroidTest {
 
     private static final String HOST = "sq.pep.security";
     private static final String MESSAGE_SUBJECT = "Subject";
     private static final String MESSAGE_BODY = "Message";
     private static final String UNKNOWN_ADDRESS = "unkown@user.is";
 
-    private TestUtils testUtils;
-    private UiDevice device;
-
-    @Rule
-    public ActivityTestRule<SplashActivity> splashActivityTestRule = new ActivityTestRule<>(SplashActivity.class);
-
     @Before
     public void startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        new EspressoTestingIdlingResource();
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
-        testUtils = new TestUtils(device, InstrumentationRegistry.getInstrumentation());
         testUtils.setupAccountIfNeeded();
     }
 
-    @After
-    public void tearDown() {
-        splashActivityTestRule.finishActivity();
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
-    }
-
-    @Test
+    @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void assertRemoveTwoDifferentColorContactsAndKeepOriginalPrivacyStatus() {
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         String messageFrom = testUtils.getTextFromTextViewThatContainsText("@");
 
         assertStatusWhenUnkownRecipient(messageFrom, false);
         assertStatusGoesBackToNormalOnRemovingRecipient(Rating.pEpRatingTrustedAndAnonymized, false);
 
         String botRecipient = System.currentTimeMillis() + "@" + HOST;
+        testUtils.getMessageListSize();
         sendMessage(botRecipient);
         testUtils.waitForNewMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
 
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
 
         assertStatusWhenUnkownRecipient(botRecipient, false);
         assertStatusGoesBackToNormalOnRemovingRecipient(Rating.pEpRatingReliable, true);
@@ -77,33 +58,42 @@ public class RemoveContactsFromMessageAndKeepOriginalPrivacyStatus {
 
     private void fillMessageWithOneKnownReceiverAndOneUnknown(String to, String subject, String message){
         testUtils.doWait("to");
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.subject)).perform(replaceText(subject));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.message_content)).perform(typeText(message));
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         onView(withId(R.id.to)).perform(typeText(to +  "\n" + UNKNOWN_ADDRESS + "\n"), closeSoftKeyboard());
     }
 
     private void assertStatusWhenUnkownRecipient(String messageTo, boolean clickableExpected){
         fillMessageWithOneKnownReceiverAndOneUnknown(messageTo, "Subject", "Message");
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(Rating.pEpRatingUndefined, clickableExpected);
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 
     private void assertStatusGoesBackToNormalOnRemovingRecipient(Rating originalStatus, boolean clickableExpected) {
-        testUtils.removeTextFromTextView(R.id.to, UNKNOWN_ADDRESS + "\n");
-        device.waitForIdle();
+        deleteLastPartOfEmail();
+        TestUtils.waitForIdle();
         testUtils.assertMessageStatus(originalStatus, clickableExpected);
         testUtils.goBackFromMessageCompose(false);
     }
 
+    private void deleteLastPartOfEmail() {
+        for (int i = 0; i <= UNKNOWN_ADDRESS.length(); i++) {
+            TestUtils.waitForIdle();
+            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            TestUtils.waitForIdle();
+        }
+    }
+
     private void sendMessage(String messageTo) {
+        TestUtils.waitForIdle();
         testUtils.composeMessageButton();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
         testUtils.fillMessage(new TestUtils.BasicMessage("", MESSAGE_SUBJECT, MESSAGE_BODY, messageTo), false);
         testUtils.sendMessage();
-        device.waitForIdle();
+        TestUtils.waitForIdle();
     }
 }

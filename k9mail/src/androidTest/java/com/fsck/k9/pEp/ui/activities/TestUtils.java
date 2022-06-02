@@ -163,7 +163,7 @@ public class TestUtils {
     private int totalAccounts = -1;
     private int account = 0;
 
-    public static final int TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
+    public static final long TIMEOUT_TEST = FIVE_MINUTES * MINUTE_IN_SECONDS * SECOND_IN_MILIS;
     private TestConfig testConfig;
     public String[] botList;
     public boolean testReset = false;
@@ -1802,9 +1802,11 @@ public class TestUtils {
     public void setupAccountAutomatically(boolean withSync) {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
+        TestUtils.waitForIdle();
+        acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if(!withSync) {
+        if(!withSync && BuildConfig.WITH_KEY_SYNC) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
             waitForIdle();
         }
@@ -1812,16 +1814,43 @@ public class TestUtils {
         waitForIdle();
     }
 
+    public void acceptAutomaticSetupCertificatesIfNeeded() {
+        // incoming settings certificate
+        acceptCertificateIfNeeded(true);
+        // outgoing settings certificate
+        acceptCertificateIfNeeded(true);
+    }
+
+    public void acceptCertificateIfNeeded(boolean automaticSetup) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+            if (doWaitForAlertDialog(
+                    R.string.account_setup_failed_dlg_invalid_certificate_title,
+                    automaticSetup,
+                    1000L
+                )) {
+                clickAndroidDialogAccept();
+                TestUtils.waitForIdle();
+            }
+        }
+    }
+
+    public void clickAndroidDialogAccept() {
+        onView(withId(android.R.id.button1)).perform(click());
+    }
+
     private void setupEmailAndPassword() {
+        TestUtils.waitForIdle();
         onView(allOf(withId(R.id.next), withText(R.string.next_action))).check(matches(isDisplayed()));
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = getAccountEmailForDevice();
         String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
-        onView(withId(R.id.account_email)).perform(replaceText(email));
+        String accountEmail = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        onView(withId(R.id.account_email)).perform(replaceText(accountEmail));
+        TestUtils.waitForIdle();
         onView(withId(R.id.account_password)).perform(replaceText(pass));
+        TestUtils.waitForIdle();
     }
 
     public void goToSettingsAndRemoveAllAccounts() {
@@ -1853,13 +1882,25 @@ public class TestUtils {
 
     public void removeAccountAtPosition(int position) {
         waitForIdle();
-        onView(withRecyclerView(R.id.accounts_list).atPosition(position)).perform(scrollTo(), ViewActions.longClick());
+        int[] accountListSize = new int[2];
+        onView(withId(R.id.accounts_list)).perform(UtilsPackage.saveSizeInInt(accountListSize, 0));
+        onView(withRecyclerView(R.id.accounts_list).atPosition(position))
+                .perform(scrollTo(), ViewActions.longClick());
         waitForIdle();
         selectFromScreen(R.string.remove_account_action);
         waitForIdle();
 
         clickAcceptButton();
         waitForIdle();
+        if(accountListSize[0] > 1) {
+            do {
+                onView(withId(R.id.accounts_list))
+                        .perform(UtilsPackage.saveSizeInInt(accountListSize, 1));
+                waitForIdle();
+            } while (accountListSize[1] != accountListSize[0] - 1);
+        } else {
+            waitUntilViewDisplayed(onView(withText(R.string.account_setup_basics_title)));
+        }
     }
 
     public void skipTutorialAndAllowPermissionsIfNeeded() {
@@ -2886,11 +2927,20 @@ public class TestUtils {
     }
 
     public void waitUntilViewDisplayed(ViewInteraction viewInteraction) {
+        waitUntilViewDisplayed(viewInteraction, 0L);
+    }
+
+    private boolean waitUntilViewDisplayed(ViewInteraction viewInteraction, long timeout) {
+        long initialTime = System.currentTimeMillis();
         boolean displayed = false;
         while(!displayed) {
             displayed = viewIsDisplayed(viewInteraction);
             device.waitForIdle();
+            if(timeout > 0 && System.currentTimeMillis() - initialTime > timeout) {
+                return false;
+            }
         }
+        return true;
     }
 
     private void doWaitForIdlingListViewResource(int resource){
@@ -2917,17 +2967,30 @@ public class TestUtils {
     }
 
     public void doWaitForAlertDialog(int displayText) {
-        doWaitForDialog("alertTitle", displayText);
+        doWaitForAlertDialog(displayText, false, 0L);
     }
 
     public void doWaitForDialog (String name, int displayText) {
+        doWaitForAlertDialog(displayText, false, 0L, name);
+    }
+    private boolean doWaitForAlertDialog(int displayText, boolean isOwnPackage, long timeout) {
+        return doWaitForAlertDialog(displayText, isOwnPackage, timeout, "alertTitle");
+    }
+
+    private boolean doWaitForAlertDialog(int displayText, boolean isOwnPackage, long timeout, String name) {
+        String packageName = isOwnPackage
+                ? context.getPackageName()
+                : "android";
         waitForIdle();
-        int id = context.getResources().getIdentifier(name, "id", "android");
+        int id = context.getResources().getIdentifier(name, "id", packageName);
         ViewInteraction dialogHeaderViewInteraction = onView(withId(id)).inRoot(isDialog());
-        waitUntilViewDisplayed(dialogHeaderViewInteraction);
+        if(!waitUntilViewDisplayed(dialogHeaderViewInteraction, timeout)) {
+            return false;
+        }
 
         onView(withText(displayText)).check(matches(isDisplayed()));
         waitForIdle();
+        return true;
     }
 
     public void doWaitForNextAlertDialog(boolean isOwnPackage) {

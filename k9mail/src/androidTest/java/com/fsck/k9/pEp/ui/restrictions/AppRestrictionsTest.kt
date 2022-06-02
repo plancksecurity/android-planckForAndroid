@@ -1,33 +1,34 @@
 package com.fsck.k9.pEp.ui.restrictions
 
+import android.app.Activity
 import android.content.Intent
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiSelector
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.activities.TestUtils.BasicMessage
-import com.fsck.k9.pEp.ui.activities.UtilsPackage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.hamcrest.Matchers.*
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import security.pEp.mdm.ManageableSettingMdmEntry
-import timber.log.Timber
 
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@Ignore("Only to be run via ./gradlew testRestrictions")
 class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     private var forcedAppConfig = false
@@ -174,17 +175,20 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         click(R.id.done)
     }
 
-    private fun openEnforcerSplitScreen(key: String, value: String, generic: Boolean) {
-        val intent: Intent = context.packageManager.getLaunchIntentForPackage(ENFORCER_PACKAGE_NAME)
-                ?: return
-        intent.addCategory(Intent.CATEGORY_LAUNCHER)
-        intent.putExtra("inPIP", true)
-        intent.putExtra("generic", generic)
-        intent.putExtra("key", key)
-        intent.putExtra("value", value)
-        getCurrentActivity()?.startActivity(intent)
-        sleep(5000)
-        forcedAppConfig = true
-    }
+    private fun openEnforcerSplitScreen(key: String, value: String, generic: Boolean) =
+        runBlocking(Dispatchers.Main) {
+            val intent: Intent =
+                context.packageManager.getLaunchIntentForPackage(ENFORCER_PACKAGE_NAME)
+                    ?: return@runBlocking
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
+            intent.putExtra("inPIP", true)
+            intent.putExtra("generic", generic)
+            intent.putExtra("key", key)
+            intent.putExtra("value", value)
+            val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry
+                .getInstance().getActivitiesInStage(Stage.RESUMED)
+            Iterables.getOnlyElement(activities)?.startActivity(intent)
+            forcedAppConfig = true
+        }
 
 }

@@ -64,7 +64,7 @@ public class PEpStatusPresenterTest {
 
         verify(simpleMessageLoaderHelper).asyncStartOrResumeLoadingMessage(
                 any(MessageReference.class), any(MessageLoaderHelper.MessageLoaderCallbacks.class),
-                displayHtml
+                eq(displayHtml)
         );
     }
 
