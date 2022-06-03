@@ -141,24 +141,19 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
 
         holder.bind(recipient);
-        if (recipient instanceof RatedRecipient) {
-            holder.updateRating(((RatedRecipient) recipient).getRating());
-            postInvalidateDelayed(100);
-        } else {
-            pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
-                @Override
-                public void onLoaded(Rating rating) {
-                    holder.updateRating(rating);
-                    postInvalidateDelayed(100);
-                }
+        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                holder.updateRating(rating);
+                postInvalidateDelayed(100);
+            }
 
-                @Override
-                public void onError(Throwable throwable) {
-                    holder.updateRating(Rating.pEpRatingUndefined);
-                    postInvalidateDelayed(100);
-                }
-            });
-        }
+            @Override
+            public void onError(Throwable throwable) {
+                holder.updateRating(Rating.pEpRatingUndefined);
+                postInvalidateDelayed(100);
+            }
+        });
     }
 
     @Override
