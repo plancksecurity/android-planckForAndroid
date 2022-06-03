@@ -29,6 +29,8 @@ public class Recipient implements Serializable {
     @NonNull
     private RecipientSelectView.RecipientCryptoStatus cryptoStatus;
 
+    private int displayedNameAllowedSize = -1;
+
     public Recipient(@NonNull Address address) {
         this.address = address;
         this.contactId = null;
@@ -63,11 +65,24 @@ public class Recipient implements Serializable {
 
     String getDisplayNameOrAddress() {
         String displayName = getDisplayName();
-        if (displayName != null) {
-            return displayName;
-        }
+        String nameToDisplay = displayName!= null
+                ? displayName
+                : address.getAddress();
+        return displayedNameAllowedSize > 0
+                ? nameToDisplay.substring(0, displayedNameAllowedSize) + "..."
+                : nameToDisplay;
+    }
 
-        return address.getAddress();
+    public void truncateDisplayedName(int allowedSize) {
+        displayedNameAllowedSize = allowedSize;
+    }
+
+    public void restoreFullDisplayedName() {
+        displayedNameAllowedSize = -1;
+    }
+
+    public boolean isDisplayedNameTruncated() {
+        return displayedNameAllowedSize > 0;
     }
 
     boolean isValidEmailAddress() {

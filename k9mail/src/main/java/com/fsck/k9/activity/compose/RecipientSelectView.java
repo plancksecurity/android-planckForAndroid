@@ -15,6 +15,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -35,6 +36,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
@@ -141,6 +143,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
 
         holder.bind(recipient);
+
         pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
@@ -174,6 +177,71 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
 
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void performCollapse(boolean hasFocus) {
+        super.performCollapse(hasFocus);
+        if(!hasFocus) {
+            truncateFirstDisplayNameIfNeeded();
+        } else {
+            restoreFirstDisplayNameIfNeeded();
+        }
+    }
+
+    private void restoreFirstDisplayNameIfNeeded() {
+        List<Recipient> recipients = getObjects();
+        if (!recipients.isEmpty()) {
+            if (recipients.get(0).isDisplayedNameTruncated()) {
+                for (Recipient recipient : recipients) {
+                    removeObject(recipient);
+                }
+                recipients.get(0).restoreFullDisplayedName();
+                for (Recipient recipient : recipients) {
+                    addObject(recipient);
+                }
+            }
+        }
+    }
+
+    private void truncateFirstDisplayNameIfNeeded() {
+        Editable editable = getText();
+        if (editable != null) {
+            CountSpan[] countSpans = editable.getSpans(
+                    0, editable.length(), CountSpan.class);
+            if (countSpans.length > 0) {
+                CountSpan countSpan = countSpans[0];
+                if (editable.getSpanStart(countSpan) >= 0) {
+                    try {
+                        int count = Integer.parseInt(countSpans[0].text.substring(1));
+                        if (count == getTokenCount()) {
+                            truncateFirstDisplayName(countSpans[0].text);
+                        }
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void truncateFirstDisplayName(String countText) {
+        List<Recipient> recipients = getObjects();
+        String textToDisplay = recipients.get(0).getDisplayNameOrAddress();
+        Layout lastLayout = getLayout();
+        float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+        for (Recipient recipient : recipients) {
+            removeObject(recipient);
+        }
+        while (maxTextWidth() - requiredWidth < 80) {
+            textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
+            requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+        }
+
+        recipients.get(0).truncateDisplayedName(textToDisplay.length() - 1);
+        for (Recipient recipient : recipients) {
+            addObject(recipient);
+        }
     }
 
     @Override
