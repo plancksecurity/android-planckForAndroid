@@ -439,6 +439,17 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return super.onKeyDown(keyCode, event);
     }
 
+    public void removeRecipient(Recipient recipient) {
+        removeObject(recipient);
+        post(() -> {
+            if (getTokenCount() == 1) {
+                requestFocus();
+            } else if (getTokenCount() > 1) {
+                truncateFirstDisplayNameIfNeeded();
+            }
+        });
+    }
+
     @Override
     public Loader<List<Recipient>> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -515,7 +526,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public void onRecipientRemove(Recipient currentRecipient) {
         alternatesPopup.dismiss();
-        removeObject(currentRecipient);
+        removeRecipient(currentRecipient);
     }
 
     @Override
