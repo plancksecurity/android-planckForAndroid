@@ -35,6 +35,7 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
@@ -151,12 +152,20 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                addUnsecureRecipientIfNeeded(
+                        recipient,
+                        account.ispEpPrivacyProtected()
+                                && PEpUtils.isRatingUnsecure(rating)
+                );
+                setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
             }
 
             @Override
             public void onError(Throwable throwable) {
+                addUnsecureRecipientIfNeeded(recipient, account.ispEpPrivacyProtected());
+                setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
             }
@@ -267,6 +276,24 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         recipients.get(0).truncateDisplayedName(textToDisplay.length() - 1);
         for (Recipient recipient : recipients) {
             addObject(recipient);
+        }
+    }
+
+    private void setCountColorIfNeeded() {
+        Editable editable = getText();
+        if(editable != null) {
+            CountSpan[] countSpans = editable.getSpans(0, editable.length(), CountSpan.class);
+            if (countSpans.length > 0) {
+                CountSpan countSpan = countSpans[0];
+                if(editable.getSpanStart(countSpan) >= 0) {
+                    try {
+                        int count = Integer.parseInt(countSpan.text.substring(1));
+                        setCountColor(editable, countSpan, count);
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
+            }
         }
     }
 
