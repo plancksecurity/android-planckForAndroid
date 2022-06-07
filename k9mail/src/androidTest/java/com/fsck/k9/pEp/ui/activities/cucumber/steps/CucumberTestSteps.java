@@ -443,6 +443,10 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I check is unsecure")
+    public void I_check_is_unsecure() {
+
+    }
 
     @When("^I compare (\\S+) from json file with (\\S+)")
     public void I_compare_jsonfile_with_string(String name, String stringToCompare) {
