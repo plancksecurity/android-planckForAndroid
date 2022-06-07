@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 import android.text.Editable;
 import android.text.Layout;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -42,6 +44,7 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import org.apache.james.mime4j.util.CharsetUtil;
 import foundation.pEp.jniadapter.Rating;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,6 +77,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Context context;
     private Account account;
     private PePUIArtefactCache uiCache;
+    private final List<Recipient> unsecureRecipients = new ArrayList<>();
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
@@ -183,7 +187,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     public void performCollapse(boolean hasFocus) {
         super.performCollapse(hasFocus);
         if(!hasFocus) {
-            truncateFirstDisplayNameIfNeeded();
+            truncateFirstDisplayNameAndSetCountColorIfNeeded();
         } else {
             restoreFirstDisplayNameIfNeeded();
         }
@@ -204,7 +208,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
     }
 
-    private void truncateFirstDisplayNameIfNeeded() {
+    private void truncateFirstDisplayNameAndSetCountColorIfNeeded() {
         Editable editable = getText();
         if (editable != null) {
             CountSpan[] countSpans = editable.getSpans(
@@ -217,12 +221,34 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                         if (count == getTokenCount()) {
                             truncateFirstDisplayName(countSpans[0].text);
                         }
+                        setCountColor(editable, countSpan, count);
                     } catch (NumberFormatException ignored) {
 
                     }
                 }
             }
         }
+    }
+
+    private void setCountColor(Editable editable, CountSpan countSpan, int count) {
+        int countColor = hasUnsecureRecipients(count)
+                ? ContextCompat.getColor(context, R.color.pep_red)
+                : getCurrentTextColor();
+
+        CountSpan coloredCountSpan = new CountSpan(
+                count,
+                getContext(),
+                countColor,
+                (int) getTextSize(),
+                (int) maxTextWidth()
+        );
+        editable.setSpan(
+                coloredCountSpan,
+                editable.getSpanStart(countSpan),
+                editable.getSpanEnd(countSpan),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        editable.removeSpan(countSpan);
     }
 
     private void truncateFirstDisplayName(String countText) {
@@ -242,6 +268,17 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         for (Recipient recipient : recipients) {
             addObject(recipient);
         }
+    }
+
+    private boolean hasUnsecureRecipients(int count) {
+        List<Recipient> recipients = getObjects();
+        for (Recipient recipient : unsecureRecipients) {
+            int start = getTokenCount() - count;
+            if (recipients.indexOf(recipient) >= start) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -313,6 +350,16 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         } else {
             super.performCompletion();
         }
+    }
+
+    private void addUnsecureRecipientIfNeeded(Recipient recipient, boolean unsecure) {
+        if(unsecure && !unsecureRecipients.contains(recipient)) {
+            unsecureRecipients.add(recipient);
+        }
+    }
+
+    private void removeUnsecureRecipient(Recipient recipient) {
+        unsecureRecipients.remove(recipient);
     }
 
     @Override
@@ -445,7 +492,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             if (getTokenCount() == 1) {
                 requestFocus();
             } else if (getTokenCount() > 1) {
-                truncateFirstDisplayNameIfNeeded();
+                truncateFirstDisplayNameAndSetCountColorIfNeeded();
             }
         });
     }
