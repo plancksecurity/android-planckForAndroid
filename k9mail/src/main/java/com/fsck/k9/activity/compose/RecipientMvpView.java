@@ -167,6 +167,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onToTokenChanged();
             }
+
+            @Override
+            public void updateRecipientSecurity(boolean unsecure) {
+                handleUnsecureDeliveryWarning(unsecure);
+            }
         });
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
@@ -184,6 +189,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onCcTokenChanged();
             }
+
+            @Override
+            public void updateRecipientSecurity(boolean unsecure) {
+                handleUnsecureDeliveryWarning(unsecure);
+            }
         });
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
@@ -200,6 +210,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onBccTokenChanged();
+            }
+
+            @Override
+            public void updateRecipientSecurity(boolean unsecure) {
+                handleUnsecureDeliveryWarning(unsecure);
             }
         });
     }
@@ -503,7 +518,6 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     void handlepEpState(boolean... withToast) {
         handleToolbarRating();
-        handleUnsecureDeliveryWarning();
     }
 
     private void handleToolbarRating() {
@@ -514,13 +528,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    private void handleUnsecureDeliveryWarning() {
-        if (mAccount.ispEpPrivacyProtected()) {
-            if(hasRecipients() && (pEpRating == null || PEpUtils.isRatingUnsecure(pEpRating))) {
-                activity.showUnsecureDeliveryWarning();
-            } else {
-                activity.hideUnsecureDeliveryWarning();
-            }
+    private void handleUnsecureDeliveryWarning(boolean unsecure) {
+        if (unsecure) {
+            activity.showUnsecureDeliveryWarning();
         } else {
             activity.hideUnsecureDeliveryWarning();
         }

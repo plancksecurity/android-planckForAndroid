@@ -173,6 +173,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                         account.ispEpPrivacyProtected()
                                 && PEpUtils.isRatingUnsecure(rating)
                 );
+                if (listener != null) {
+                    listener.updateRecipientSecurity(hasUnsecureRecipients(getTokenCount()));
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
@@ -181,6 +184,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             @Override
             public void onError(Throwable throwable) {
                 addUnsecureRecipientIfNeeded(recipient, account.ispEpPrivacyProtected());
+                if (listener != null) {
+                    listener.updateRecipientSecurity(true);
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
@@ -403,6 +409,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private void removeUnsecureRecipient(Recipient recipient) {
         unsecureRecipients.remove(recipient);
+        if (listener != null) {
+            listener.updateRecipientSecurity(hasUnsecureRecipients(getTokenCount()));
+        }
     }
 
     @Override
@@ -710,6 +719,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
+        void updateRecipientSecurity(boolean unsecure);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {
