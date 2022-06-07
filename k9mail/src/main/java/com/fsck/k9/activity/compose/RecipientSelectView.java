@@ -514,6 +514,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void removeRecipient(Recipient recipient) {
+        removeUnsecureRecipient(recipient);
         removeObject(recipient);
         post(() -> {
             if (getTokenCount() == 1) {
