@@ -53,10 +53,6 @@ open class BaseTest {
     @get:Rule
     var mActivityRule = ActivityTestRule(SplashActivity::class.java)
 
-    @Test
-    fun emptyTest() {
-    }
-
     @Before
     fun setUp() {
         Timber.e("New testcase starts here ======================>")
