@@ -307,6 +307,7 @@ public class CucumberTestSteps {
                 }
             }
         }
+        testUtils.scrollDownToSubject();
             testUtils.typeTextToForceRatingCalculation(R.id.subject);
             onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         if (field.equals("BCC")) {
