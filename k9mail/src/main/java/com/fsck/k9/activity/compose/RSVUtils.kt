@@ -7,21 +7,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-fun List<Recipient>.withRatedRecipientsSorted(
+fun List<Recipient>.withRatedRecipients(
     pEp: PEpProvider,
-    ratedRecipientsReadyListener: RatedRecipientsReadyListener
+    ratedRecipientsReadyListener: RecipientsReadyListener
 ) {
     CoroutineScope(Dispatchers.Main).launch {
         map { recipient ->
             recipient.toRatedRecipient(pEp.getRating(recipient.address))
-        }.sortedBy {
-            it.rating.value
-        }.also { ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList()) }
+        }.also { ratedRecipientsReadyListener.recipientsReady(it.toMutableList()) }
+    }
+}
+
+fun Array<Recipient>.withRecipientsSortedByRating(
+    pEp: PEpProvider,
+    recipientsReadyListener: RecipientsReadyListener
+) {
+    CoroutineScope(Dispatchers.Main).launch {
+        map { recipient ->
+            Pair(recipient, pEp.getRating(recipient.address))
+        }.sortedBy { pair ->
+            pair.second
+        }.map { pair ->
+            pair.first
+        }.also { recipientsReadyListener.recipientsReady(it.toMutableList()) }
     }
 }
 
 fun Recipient.toRatedRecipient(rating: Rating) = RatedRecipient(this, rating)
 
-interface RatedRecipientsReadyListener {
-    fun ratedRecipientsReady(recipients: MutableList<Recipient>)
+interface RecipientsReadyListener {
+    fun recipientsReady(recipients: MutableList<Recipient>)
 }

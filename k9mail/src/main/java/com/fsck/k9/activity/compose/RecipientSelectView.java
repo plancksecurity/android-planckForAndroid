@@ -1,7 +1,8 @@
 package com.fsck.k9.activity.compose;
 
 
-import static com.fsck.k9.activity.compose.RSVUtilsKt.withRatedRecipientsSorted;
+import static com.fsck.k9.activity.compose.RSVUtilsKt.withRatedRecipients;
+import static com.fsck.k9.activity.compose.RSVUtilsKt.withRecipientsSortedByRating;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -436,11 +437,15 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        withRatedRecipientsSorted(Arrays.asList(recipients), pEp, ratedRecipients -> {
-            for (Recipient recipient : ratedRecipients) {
-                addObject(recipient);
-            }
-        });
+        if (recipients.length == 1) {
+            addObject(recipients[0]);
+        } else {
+            withRecipientsSortedByRating(recipients, pEp, ratedRecipients -> {
+                for (Recipient recipient : ratedRecipients) {
+                    addObject(recipient);
+                }
+            });
+        }
     }
 
     public Address[] getAddresses() {
@@ -486,7 +491,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                withRatedRecipientsSorted(
+                withRatedRecipients(
                         data,
                         pEp,
                         recipients -> showAlternatesPopup(recipients)
