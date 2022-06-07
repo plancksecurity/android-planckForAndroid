@@ -121,6 +121,22 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
         setLongClickable(false);
+        setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
+            @Override
+            public void onTokenAdded(Recipient token) {
+                if (listener != null) {
+                    listener.onTokenAdded(token);
+                }
+            }
+
+            @Override
+            public void onTokenRemoved(Recipient token) {
+                removeUnsecureRecipient(token);
+                if (listener != null) {
+                    listener.onTokenRemoved(token);
+                }
+            }
+        });
     }
 
     @Override
@@ -673,7 +689,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      * adding a callback for onTokenChanged.
      */
     public void setTokenListener(TokenListener<Recipient> listener) {
-        super.setTokenListener(listener);
         this.listener = listener;
     }
 
