@@ -1,20 +1,58 @@
 package com.fsck.k9.activity.compose
 
-import com.fsck.k9.mail.Message
+import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.PEpUtils
 import foundation.pEp.jniadapter.Rating
+import javax.inject.Inject
+import javax.inject.Named
 
-class RecipientSelectViewPresenter (
-    private val presenter: RecipientPresenter,
-    private val type: Message.RecipientType
+class RecipientSelectViewPresenter @Inject constructor(
+    @Named("MainUI") private val pEp: PEpProvider,
 ) {
-    fun hasUnsecureRecipients(count: Int): Boolean {
-        return presenter.hasUnsecureAddresses(count, type)
-    }
+    private val unsecureAddresses = mutableListOf<Address>()
+
     fun getRecipientRating(
-        recipient: Recipient?,
-        callback: PEpProvider.ResultCallback<Rating?>?
+        address: Address,
+        isPEpPrivacyProtected: Boolean,
+        callback: PEpProvider.ResultCallback<Rating?>
     ) {
-        presenter.getRecipientRating(recipient, type, callback)
+        pEp.getRating(address, object : PEpProvider.ResultCallback<Rating> {
+            override fun onLoaded(rating: Rating) {
+                if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(rating)) {
+                    addUnsecureAddress(address)
+                }
+                callback.onLoaded(rating)
+            }
+
+            override fun onError(throwable: Throwable) {
+                addUnsecureAddress(address)
+                callback.onError(throwable)
+            }
+        })
+    }
+
+    private fun addUnsecureAddress(address: Address) {
+        if (!unsecureAddresses.contains(address)) {
+            unsecureAddresses.add(address)
+        }
+    }
+
+    fun removeUnsecureAddress(address: Address) {
+        unsecureAddresses.remove(address)
+    }
+
+    fun hasUnsecureAddresses(): Boolean {
+        return unsecureAddresses.isNotEmpty()
+    }
+
+    fun hasUnsecureAddresses(addresses: Array<Address>, count: Int): Boolean {
+        for (address in unsecureAddresses) {
+            val start = addresses.size - count
+            if (addresses.indexOf(address) >= start) {
+                return true
+            }
+        }
+        return false
     }
 }
