@@ -1,6 +1,8 @@
 package com.fsck.k9.activity.compose;
 
 
+import static com.fsck.k9.mail.Message.RecipientType.CC;
+
 import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -21,6 +23,7 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
@@ -147,8 +150,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
         if (presenter == null) {
             toView.setTokenListener(null);
+            toView.setPresenter(null);
             ccView.setTokenListener(null);
+            ccView.setPresenter(null);
             bccView.setTokenListener(null);
+            bccView.setPresenter(null);
             return;
         }
 
@@ -160,19 +166,19 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onTokenRemoved(Recipient recipient) {
-                presenter.onToTokenRemoved();
+                if (!toView.isProcessing()) {
+                    presenter.removeToUsecureAddress(recipient.getAddress());
+                    presenter.onToTokenRemoved();
+                }
             }
 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onToTokenChanged();
             }
-
-            @Override
-            public void updateRecipientSecurity(boolean unsecure) {
-                handleUnsecureDeliveryWarning(unsecure);
-            }
         });
+
+        toView.setPresenter(new RecipientSelectViewPresenter(presenter, RecipientType.TO));
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
             @Override
@@ -182,19 +188,19 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onTokenRemoved(Recipient recipient) {
-                presenter.onCcTokenRemoved();
+                if (!ccView.isProcessing()) {
+                    presenter.removeCcUsecureAddress(recipient.getAddress());
+                    presenter.onCcTokenRemoved();
+                }
             }
 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onCcTokenChanged();
             }
-
-            @Override
-            public void updateRecipientSecurity(boolean unsecure) {
-                handleUnsecureDeliveryWarning(unsecure);
-            }
         });
+
+        ccView.setPresenter(new RecipientSelectViewPresenter(presenter, RecipientType.CC));
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
             @Override
@@ -204,19 +210,19 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onTokenRemoved(Recipient recipient) {
-                presenter.onBccTokenRemoved();
+                if (!bccView.isProcessing()) {
+                    presenter.removeBccUsecureAddress(recipient.getAddress());
+                    presenter.onBccTokenRemoved();
+                }
             }
 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onBccTokenChanged();
             }
-
-            @Override
-            public void updateRecipientSecurity(boolean unsecure) {
-                handleUnsecureDeliveryWarning(unsecure);
-            }
         });
+
+        ccView.setPresenter(new RecipientSelectViewPresenter(presenter, RecipientType.BCC));
     }
 
     public void addTextChangedListener(TextWatcher textWatcher) {
@@ -528,7 +534,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    private void handleUnsecureDeliveryWarning(boolean unsecure) {
+    public void handleUnsecureDeliveryWarning(boolean unsecure) {
         if (unsecure) {
             activity.showUnsecureDeliveryWarning();
         } else {

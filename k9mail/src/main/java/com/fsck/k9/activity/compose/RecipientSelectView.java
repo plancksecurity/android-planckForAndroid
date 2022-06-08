@@ -35,6 +35,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Message;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -81,6 +82,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private PePUIArtefactCache uiCache;
     private final List<Recipient> unsecureRecipients = new ArrayList<>();
     private boolean isProcessing;
+    private RecipientSelectViewPresenter presenter;
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
@@ -98,6 +100,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     public RecipientSelectView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView(context);
+    }
+
+    public boolean isProcessing() {
+        return isProcessing;
     }
 
     private void initView(Context context) {
@@ -123,24 +129,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
         setLongClickable(false);
-        setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
-            @Override
-            public void onTokenAdded(Recipient token) {
-                if (listener != null) {
-                    listener.onTokenAdded(token);
-                }
-            }
-
-            @Override
-            public void onTokenRemoved(Recipient token) {
-                if (!isProcessing) {
-                    removeUnsecureRecipient(token);
-                }
-                if (listener != null) {
-                    listener.onTokenRemoved(token);
-                }
-            }
-        });
     }
 
     @Override
@@ -169,33 +157,23 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.bind(recipient);
 
-        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                addUnsecureRecipientIfNeeded(
-                        recipient,
-                        account.ispEpPrivacyProtected()
-                                && PEpUtils.isRatingUnsecure(rating)
-                );
-                if (listener != null) {
-                    listener.updateRecipientSecurity(hasUnsecureRecipients());
+        if (presenter != null) {
+            presenter.getRecipientRating(recipient, new PEpProvider.ResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    setCountColorIfNeeded();
+                    holder.updateRating(rating);
+                    postInvalidateDelayed(100);
                 }
-                setCountColorIfNeeded();
-                holder.updateRating(rating);
-                postInvalidateDelayed(100);
-            }
 
-            @Override
-            public void onError(Throwable throwable) {
-                addUnsecureRecipientIfNeeded(recipient, account.ispEpPrivacyProtected());
-                if (listener != null) {
-                    listener.updateRecipientSecurity(true);
+                @Override
+                public void onError(Throwable throwable) {
+                    setCountColorIfNeeded();
+                    holder.updateRating(Rating.pEpRatingUndefined);
+                    postInvalidateDelayed(100);
                 }
-                setCountColorIfNeeded();
-                holder.updateRating(Rating.pEpRatingUndefined);
-                postInvalidateDelayed(100);
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -268,7 +246,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     private void setCountColor(Editable editable, CountSpan countSpan, int count) {
-        int countColor = hasUnsecureRecipients(count)
+        boolean unsecure = presenter.hasUnsecureRecipients(count);
+        int countColor = unsecure
                 ? ContextCompat.getColor(context, R.color.pep_red)
                 : getCurrentTextColor();
 
@@ -323,21 +302,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 }
             }
         }
-    }
-
-    private boolean hasUnsecureRecipients() {
-        return !unsecureRecipients.isEmpty();
-    }
-
-    private boolean hasUnsecureRecipients(int count) {
-        List<Recipient> recipients = getObjects();
-        for (Recipient recipient : unsecureRecipients) {
-            int start = getTokenCount() - count;
-            if (recipients.indexOf(recipient) >= start) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -408,19 +372,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             }
         } else {
             super.performCompletion();
-        }
-    }
-
-    private void addUnsecureRecipientIfNeeded(Recipient recipient, boolean unsecure) {
-        if(unsecure && !unsecureRecipients.contains(recipient)) {
-            unsecureRecipients.add(recipient);
-        }
-    }
-
-    private void removeUnsecureRecipient(Recipient recipient) {
-        unsecureRecipients.remove(recipient);
-        if (listener != null) {
-            listener.updateRecipientSecurity(hasUnsecureRecipients(getTokenCount()));
         }
     }
 
@@ -553,7 +504,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void removeRecipient(Recipient recipient) {
-        removeUnsecureRecipient(recipient);
         removeObject(recipient);
         post(() -> {
             if (getTokenCount() == 1) {
@@ -712,7 +662,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      * adding a callback for onTokenChanged.
      */
     public void setTokenListener(TokenListener<Recipient> listener) {
+        super.setTokenListener(listener);
         this.listener = listener;
+    }
+
+    public void setPresenter(RecipientSelectViewPresenter presenter) {
+        this.presenter = presenter;
     }
 
     public void notifyDatasetChanged() {
@@ -733,7 +688,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
-        void updateRecipientSecurity(boolean unsecure);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {

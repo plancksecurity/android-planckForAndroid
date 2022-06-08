@@ -35,6 +35,7 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -103,6 +104,9 @@ public class RecipientPresenter {
     private Rating privacyState = Rating.pEpRatingUnencrypted;
     private boolean dirty;
     private boolean isReplyToEncryptedMessage = false;
+    private final List<Address> toUnsecureAddresses = new ArrayList<>();
+    private final List<Address> ccUnsecureAddresses = new ArrayList<>();
+    private final List<Address> bccUnsecureAddresses = new ArrayList<>();
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
@@ -498,6 +502,110 @@ public class RecipientPresenter {
     void onBccTokenChanged() {
         updateCryptoStatus();
         listener.onRecipientsChanged();
+    }
+
+    private boolean hasUnsecureAddresses() {
+        return !toUnsecureAddresses.isEmpty()
+                || !ccUnsecureAddresses.isEmpty()
+                || !bccUnsecureAddresses.isEmpty();
+    }
+
+    public boolean hasUnsecureAddresses(int count, RecipientType type) {
+        List<Address> addresses = new ArrayList<>();
+        List<Address> unsecureAddresses = new ArrayList<>();
+        switch (type) {
+            case TO:
+                addresses = recipientMvpView.getToAddresses();
+                unsecureAddresses = toUnsecureAddresses;
+                break;
+            case CC:
+                addresses = recipientMvpView.getCcAddresses();
+                unsecureAddresses = ccUnsecureAddresses;
+                break;
+            case BCC:
+                addresses = recipientMvpView.getBccAddresses();
+                unsecureAddresses = bccUnsecureAddresses;
+                break;
+        }
+        int size = addresses.size();
+        for (Address address : unsecureAddresses) {
+            int start = size - count;
+            if (addresses.indexOf(address) >= start) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addUnsecureAddress(Address address, RecipientType type) {
+        switch (type) {
+            case TO:
+                addToUnsecureAddress(address);
+                break;
+            case CC:
+                addCcUnsecureAddress(address);
+                break;
+            case BCC:
+                addBccUnsecureAddres(address);
+                break;
+        }
+    }
+
+    private void addToUnsecureAddress(Address address) {
+        if (!toUnsecureAddresses.contains(address)) {
+            toUnsecureAddresses.add(address);
+        }
+    }
+
+    private void addCcUnsecureAddress(Address address) {
+        if (!ccUnsecureAddresses.contains(address)) {
+            ccUnsecureAddresses.add(address);
+        }
+    }
+
+    private void addBccUnsecureAddres(Address address) {
+        if (!bccUnsecureAddresses.contains(address)) {
+            bccUnsecureAddresses.add(address);
+        }
+    }
+
+    public void removeToUsecureAddress(Address address) {
+        toUnsecureAddresses.remove(address);
+        recipientMvpView.handleUnsecureDeliveryWarning(hasUnsecureAddresses());
+    }
+
+    public void removeCcUsecureAddress(Address address) {
+        ccUnsecureAddresses.remove(address);
+        recipientMvpView.handleUnsecureDeliveryWarning(hasUnsecureAddresses());
+    }
+
+    public void removeBccUsecureAddress(Address address) {
+        bccUnsecureAddresses.remove(address);
+        recipientMvpView.handleUnsecureDeliveryWarning(hasUnsecureAddresses());
+    }
+
+    public void getRecipientRating(
+            Recipient recipient,
+            RecipientType type,
+            PEpProvider.ResultCallback<Rating> callback
+    ) {
+        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                if (account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)) {
+                    addUnsecureAddress(recipient.getAddress(), type);
+                }
+                recipientMvpView.handleUnsecureDeliveryWarning(hasUnsecureAddresses());
+                callback.onLoaded(rating);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                addUnsecureAddress(recipient.getAddress(), type);
+                recipientMvpView.handleUnsecureDeliveryWarning(true);
+                callback.onError(throwable);
+            }
+        });
     }
 
     public void onCryptoModeChanged(CryptoMode cryptoMode) {
