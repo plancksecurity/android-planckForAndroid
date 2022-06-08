@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.PEpContactBadge
@@ -74,6 +75,9 @@ class RecipientTokenViewHolder internal constructor(
             else -> {
                 view.setBackgroundResource(R.drawable.recipient_token_shape)
             }
+        }
+        if (BuildConfig.SHOW_PEP_STATUS_IN_RECIPIENT) {
+            contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
         }
     }
 }

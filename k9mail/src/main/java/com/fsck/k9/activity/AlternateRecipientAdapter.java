@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
@@ -166,7 +167,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
         contactPictureLoader.setContactPicture(holder.headerPhoto, recipient.getAddress());
         holder.headerPhoto.assignContactUri(recipient.getContactLookupUri());
-        if (false && account != null) {
+        if (BuildConfig.SHOW_PEP_STATUS_IN_RECIPIENT) {
             holder.headerPhoto.setPepRating(
                     ((RatedRecipient) recipient).getRating(),
                     account.ispEpPrivacyProtected()
