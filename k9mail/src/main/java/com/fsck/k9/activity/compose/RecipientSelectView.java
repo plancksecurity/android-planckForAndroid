@@ -80,6 +80,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PePUIArtefactCache uiCache;
     private final List<Recipient> unsecureRecipients = new ArrayList<>();
+    private boolean isProcessing;
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
@@ -175,7 +176,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                                 && PEpUtils.isRatingUnsecure(rating)
                 );
                 if (listener != null) {
-                    listener.updateRecipientSecurity(hasUnsecureRecipients(getTokenCount()));
+                    listener.updateRecipientSecurity(hasUnsecureRecipients());
                 }
                 setCountColorIfNeeded();
                 holder.updateRating(rating);
@@ -318,6 +319,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 }
             }
         }
+    }
+
+    private boolean hasUnsecureRecipients() {
+        return !unsecureRecipients.isEmpty();
     }
 
     private boolean hasUnsecureRecipients(int count) {
