@@ -133,7 +133,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
             @Override
             public void onTokenRemoved(Recipient token) {
-                removeUnsecureRecipient(token);
+                if (!isProcessing) {
+                    removeUnsecureRecipient(token);
+                }
                 if (listener != null) {
                     listener.onTokenRemoved(token);
                 }
@@ -218,12 +220,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Override
     public void performCollapse(boolean hasFocus) {
+        isProcessing = true;
         super.performCollapse(hasFocus);
         if(!hasFocus) {
             truncateFirstDisplayNameAndSetCountColorIfNeeded();
         } else {
             restoreFirstDisplayNameIfNeeded();
         }
+        post(() -> isProcessing = false);
     }
 
     private void restoreFirstDisplayNameIfNeeded() {
