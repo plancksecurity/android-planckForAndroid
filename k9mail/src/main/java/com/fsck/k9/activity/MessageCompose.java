@@ -226,8 +226,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      */
     private boolean relatedMessageProcessed = false;
 
-    private PEpProvider pEp;
-
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
     private boolean finishAfterDraftSaved;
@@ -365,7 +363,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
                 openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
-                pEp,
+                getK9().pEpProvider,
                 new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();

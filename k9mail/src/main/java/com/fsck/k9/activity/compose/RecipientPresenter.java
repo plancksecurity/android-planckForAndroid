@@ -897,7 +897,6 @@ public class RecipientPresenter {
             ccAdresses = newCcAdresses;
             bccAdresses = newBccAdresses;
             recipientMvpView.messageRatingIsBeingLoaded();
-            pEp = ((K9) context.getApplicationContext()).getpEpProvider();
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
                 public void onLoaded(Rating rating) {
