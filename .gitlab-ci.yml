@@ -101,12 +101,18 @@ build:
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
     - ./gradlew --build-cache assembleEnterprisePlayStoreDebug
+    - mkdir -p packages
+    - mv k9mail/build/outputs/apk/* packages/
+    - du -h packages
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull-push
     paths:
       - build
       - .gradle
+  artifacts:
+    paths:
+      - packages
 
 .docker_in_docker:
   services:
