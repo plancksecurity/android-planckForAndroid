@@ -167,6 +167,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onToTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                handleUnsecureDeliveryWarning();
+            }
         });
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
@@ -184,6 +189,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onCcTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                handleUnsecureDeliveryWarning();
+            }
         });
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
@@ -200,6 +210,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onBccTokenChanged();
+            }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                handleUnsecureDeliveryWarning();
             }
         });
     }
@@ -302,6 +317,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public List<Recipient> getBccRecipients() {
         return bccView.getObjects();
+    }
+
+    private boolean hasRecipients() {
+        return !getToRecipients().isEmpty()
+                || !getCcRecipients().isEmpty()
+                || !getBccRecipients().isEmpty();
     }
 
     public boolean recipientToHasUncompletedText() {
@@ -496,12 +517,25 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     void handlepEpState(boolean... withToast) {
+        handleToolbarRating();
+    }
+
+    private void handleToolbarRating() {
         if (mAccount.ispEpPrivacyProtected()) {
-            boolean reallyWithToast = true;
-            if (withToast.length > 0) reallyWithToast = withToast[0];
             activity.setToolbarRating(pEpRating);
         } else {
-            activity.setToolbarRating(Rating.pEpRatingUnencrypted);
+            activity.hideUnsecureDeliveryWarning();
+        }
+    }
+
+    public void handleUnsecureDeliveryWarning() {
+        boolean unsecure = toView.hasUnsecureRecipients()
+                || ccView.hasUnsecureRecipients()
+                || bccView.hasUnsecureRecipients();
+        if (unsecure) {
+            activity.showUnsecureDeliveryWarning();
+        } else {
+            activity.hideUnsecureDeliveryWarning();
         }
     }
 

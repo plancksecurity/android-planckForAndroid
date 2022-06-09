@@ -38,6 +38,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -101,6 +102,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 
@@ -224,8 +226,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      */
     private boolean relatedMessageProcessed = false;
 
-    private PEpProvider pEp;
-
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
     private boolean finishAfterDraftSaved;
@@ -272,6 +272,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     DisplayHtml displayHtml;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private Snackbar unsafeDeliveryWarning;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -362,7 +363,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         OpenPgpApiManager openPgpApiManager = new OpenPgpApiManager(getApplicationContext(), this);
         recipientPresenter = new RecipientPresenter(getApplicationContext(), getSupportLoaderManager(),
                 openPgpApiManager, recipientMvpView, account, composePgpInlineDecider,
-                pEp,
+                getK9().pEpProvider,
                 new ReplyToParser(), this
         );
         recipientPresenter.updateCryptoStatus();
@@ -671,6 +672,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Override
     public void onPause() {
         super.onPause();
+        hideUnsecureDeliveryWarning();
         MessagingController.getInstance(this).removeListener(messagingListener);
 
         boolean isPausingOnConfigurationChange = (getChangingConfigurations() & ActivityInfo.CONFIG_ORIENTATION)
@@ -845,7 +847,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             return;
         }
 
-        if (isForwardedpEpMessage()
+        if (false && isForwardedpEpMessage()
                 && recipientPresenter.isForwardedMessageWeakestThanOriginal(originalMessageRating)) {
             if (K9.ispEpForwardWarningEnabled()) showDialog(DIALOG_FORWARD_WEAKER_TRUST_LEVEL);
             else performSendAfterChecks();
@@ -2025,6 +2027,25 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
         pEpSecurityStatusLayout.setEncrypt(encrypt);
         pEpSecurityStatusLayout.setRating(rating);
+    }
+
+    public void showUnsecureDeliveryWarning() {
+        if (unsafeDeliveryWarning == null || !unsafeDeliveryWarning.isShown()) {
+            unsafeDeliveryWarning = FeedbackTools.showIndefiniteFeedback(
+                    getRootView(),
+                    getString(R.string.compose_unsafe_delivery_warning),
+                    ContextCompat.getColor(
+                            this, R.color.compose_unsecure_delivery_warning_background),
+                    ContextCompat.getColor(
+                            this, R.color.compose_unsecure_delivery_warning_text)
+            );
+        }
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        if (unsafeDeliveryWarning != null) {
+            unsafeDeliveryWarning.dismiss();
+        }
     }
 
     private Handler internalMessageHandler = new Handler() {

@@ -103,6 +103,9 @@ public class RecipientPresenter {
     private Rating privacyState = Rating.pEpRatingUnencrypted;
     private boolean dirty;
     private boolean isReplyToEncryptedMessage = false;
+    private final List<Address> toUnsecureAddresses = new ArrayList<>();
+    private final List<Address> ccUnsecureAddresses = new ArrayList<>();
+    private final List<Address> bccUnsecureAddresses = new ArrayList<>();
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
@@ -897,7 +900,6 @@ public class RecipientPresenter {
             ccAdresses = newCcAdresses;
             bccAdresses = newBccAdresses;
             recipientMvpView.messageRatingIsBeingLoaded();
-            pEp = ((K9) context.getApplicationContext()).getpEpProvider();
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
                 public void onLoaded(Rating rating) {

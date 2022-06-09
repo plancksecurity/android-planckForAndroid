@@ -1,25 +1,31 @@
 package com.fsck.k9.activity.compose
 
-import android.R
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
-import com.fsck.k9.activity.compose.RecipientSelectView
+import com.fsck.k9.BuildConfig
+import com.fsck.k9.R
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
 
 class RecipientTokenViewHolder internal constructor(
-        view: View,
-        private val contactPictureLoader: ContactPictureLoader,
-        private val account: Account,
-        private val cryptoProvider: String?) {
+    private val view: View,
+    private val contactPictureLoader: ContactPictureLoader,
+    private val account: Account,
+    private val cryptoProvider: String?
+) {
 
-    private val name: TextView = view.findViewById(R.id.text1)
-    private val contactPhoto: PEpContactBadge = view.findViewById(com.fsck.k9.R.id.contact_photo)
-    private val cryptoStatusRed: View = view.findViewById(com.fsck.k9.R.id.contact_crypto_status_red)
-    private val cryptoStatusOrange: View = view.findViewById(com.fsck.k9.R.id.contact_crypto_status_orange)
-    private val cryptoStatusGreen: View = view.findViewById(com.fsck.k9.R.id.contact_crypto_status_green)
+    private val name: TextView = view.findViewById(android.R.id.text1)
+    private val contactPhoto: PEpContactBadge = view.findViewById(R.id.contact_photo)
+    private val cryptoStatusRed: View =
+        view.findViewById(R.id.contact_crypto_status_red)
+    private val cryptoStatusOrange: View =
+        view.findViewById(R.id.contact_crypto_status_orange)
+    private val cryptoStatusGreen: View =
+        view.findViewById(R.id.contact_crypto_status_green)
     private lateinit var recipient: Recipient
 
     fun bind(recipient: Recipient) {
@@ -29,7 +35,7 @@ class RecipientTokenViewHolder internal constructor(
     }
 
     fun updateRating(rating: Rating) {
-        contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
+        setpEpRating(rating)
         val hasCryptoProvider = cryptoProvider != null
         if (!hasCryptoProvider) {
             cryptoStatusRed.visibility = View.GONE
@@ -60,4 +66,23 @@ class RecipientTokenViewHolder internal constructor(
             }
     }
 
+    private fun setpEpRating(rating: Rating) {
+        when {
+            account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating) -> {
+                view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
+                name.setTextColor(
+                    ContextCompat.getColor(
+                        name.context,
+                        R.color.compose_unsecure_delivery_warning_background
+                    )
+                )
+            }
+            else -> {
+                view.setBackgroundResource(R.drawable.recipient_token_shape)
+            }
+        }
+        if (BuildConfig.SHOW_PEP_STATUS_IN_RECIPIENT) {
+            contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
+        }
+    }
 }
