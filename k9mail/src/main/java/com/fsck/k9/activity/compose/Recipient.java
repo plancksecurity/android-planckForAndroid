@@ -68,7 +68,7 @@ public class Recipient implements Serializable {
         String nameToDisplay = displayName!= null
                 ? displayName
                 : address.getAddress();
-        return displayedNameAllowedSize > 0
+        return displayedNameAllowedSize > 0 && displayedNameAllowedSize <= nameToDisplay.length()
                 ? nameToDisplay.substring(0, displayedNameAllowedSize) + "..."
                 : nameToDisplay;
     }
