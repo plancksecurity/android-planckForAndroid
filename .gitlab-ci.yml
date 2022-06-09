@@ -15,7 +15,7 @@ workflow:
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
-  - echo -e "$(wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter/raw/branch/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d')\n" >> DEPENDENCIES
+  - echo -e "$(wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter/raw/tag/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d')\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpEngine Version = ${pEpEngine}"
