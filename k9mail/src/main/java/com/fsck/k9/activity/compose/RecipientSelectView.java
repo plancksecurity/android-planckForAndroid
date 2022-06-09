@@ -291,16 +291,20 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         List<Recipient> recipients = getObjects();
         String textToDisplay = recipients.get(0).getDisplayNameOrAddress();
         Layout lastLayout = getLayout();
+
+        float maxTextWidth = maxTextWidth();
         float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
         for (Recipient recipient : recipients) {
             removeObject(recipient);
         }
-        while (maxTextWidth() - requiredWidth < 80) {
-            textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
-            requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
-        }
+        if (maxTextWidth - requiredWidth < 60) {
+            do {
+                textToDisplay = textToDisplay.substring(0, textToDisplay.length() - 1);
+                requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+            } while (maxTextWidth() - requiredWidth < 60);
 
-        recipients.get(0).truncateDisplayedName(textToDisplay.length() - 1);
+            recipients.get(0).truncateDisplayedName(textToDisplay.length() - 1);
+        }
         for (Recipient recipient : recipients) {
             addObject(recipient);
         }
