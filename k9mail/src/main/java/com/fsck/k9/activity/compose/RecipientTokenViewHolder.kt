@@ -70,7 +70,12 @@ class RecipientTokenViewHolder internal constructor(
         when {
             account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating) -> {
                 view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
-                name.setTextColor(ContextCompat.getColor(name.context, R.color.pep_red))
+                name.setTextColor(
+                    ContextCompat.getColor(
+                        name.context,
+                        R.color.compose_unsecure_delivery_warning_background
+                    )
+                )
             }
             else -> {
                 view.setBackgroundResource(R.drawable.recipient_token_shape)

@@ -268,7 +268,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private void setCountColor(Editable editable, CountSpan countSpan, int count) {
         boolean unsecure = presenter.hasUnsecureAddresses(getAddresses(), count);
         int countColor = unsecure
-                ? ContextCompat.getColor(context, R.color.pep_red)
+                ? ContextCompat.getColor(
+                        context, R.color.compose_unsecure_delivery_warning_background)
                 : getCurrentTextColor();
 
         CountSpan coloredCountSpan = new CountSpan(
