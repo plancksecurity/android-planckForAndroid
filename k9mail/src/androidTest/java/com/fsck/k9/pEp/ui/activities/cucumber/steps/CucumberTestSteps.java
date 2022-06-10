@@ -91,6 +91,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
@@ -144,6 +145,10 @@ public class CucumberTestSteps {
             IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
+        }
+        while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+            testUtils.pressBack();
+            waitForIdle();
         }
         if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
             testUtils.selectFromMenu(R.string.action_settings);
@@ -371,8 +376,12 @@ public class CucumberTestSteps {
             waitForIdle();
             testUtils.scrollDownToSubject();
             waitForIdle();
-            I_enter_text_in_field(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient, field);
-            I_enter_text_in_field(";", field);
+            onView(withId(R.id.to_label)).perform(click());
+            waitForIdle();
+            onView(withId(R.id.to)).perform(typeText(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient));
+            waitForIdle();
+            //I_enter_text_in_field(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient, field);
+            //I_enter_text_in_field(";", field);
         }
     }
 
@@ -445,7 +454,33 @@ public class CucumberTestSteps {
 
     @When("^I check is unsecure")
     public void I_check_is_unsecure() {
-
+        if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
+            assertFailWithMessage("Is not showing the Alert message");
+        }
+        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsafe_delivery_warning")))) {
+            assertFailWithMessage("The text in the Alert message is not correct");
+        }
+        //onView(withId(R.id.to)).check(matches(withTextColor(R.color.pep_red)));
+        BySelector selector;
+        selector = By.clazz("android.widget.MultiAutoCompleteTextView");
+        waitForIdle();
+        for (UiObject2 multiTextView : device.findObjects(selector)) {
+            int startingPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/3;
+            int endPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/2;
+            int centerY = multiTextView.getVisibleCenter().y;
+            boolean isRed = false;
+            for (int x = startingPointX; x < endPointX; x++) {
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.9 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                    isRed = true;
+                    break;
+                }
+            }
+            if (!isRed) {
+                assertFailWithMessage("Text color in the field TO is not red");
+            }
+        }
     }
 
     @When("^I compare (\\S+) from json file with (\\S+)")
