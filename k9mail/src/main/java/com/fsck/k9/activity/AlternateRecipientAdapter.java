@@ -21,6 +21,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.Recipient;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.ThemeUtils;
@@ -44,6 +45,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private List<Recipient> recipients;
     private Recipient currentRecipient;
     private final PEpProvider pEp;
+    private PePUIArtefactCache uiCache;
 
 
     @Inject
@@ -55,12 +57,11 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         this.context = context;
         this.pEp = pEp;
         this.contactPictureLoader = contactPictureLoader;
+        this.uiCache = PePUIArtefactCache.getInstance(context);
     }
 
-    public void setUp(AlternateRecipientListener listener, Account account) {
+    public void setUp(AlternateRecipientListener listener) {
         this.listener = listener;
-        this.account = account;
-
     }
 
     public void setCurrentRecipient(Recipient currentRecipient) {
@@ -109,6 +110,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         if (view == null) {
             view = newView(parent);
         }
+        account = uiCache.getComposingAccount();
 
         Recipient recipient = getItem(position);
 

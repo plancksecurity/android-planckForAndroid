@@ -95,9 +95,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         getApplicationComponent(context).inject(this);
 
         uiCache = PePUIArtefactCache.getInstance(context);
-        account = uiCache.getComposingAccount();
+
         alternatesPopup = new ListPopupWindow(context);
-        alternatesAdapter.setUp(this, account);
+        alternatesAdapter.setUp(this);
         alternatesPopup.setAdapter(alternatesAdapter);
 
         // don't allow duplicates, based on equality of recipient objects, which is e-mail addresses
@@ -116,7 +116,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Override
     protected View getViewForObject(Recipient recipient) {
-        uiCache = PePUIArtefactCache.getInstance(getContext());
         account = uiCache.getComposingAccount();
 
         View view = inflateLayout();
