@@ -4,4 +4,7 @@
     <dimen name="outer_margin_small">8dp</dimen>
     <dimen name="min_height">52dp</dimen>
     <dimen name="min_label_width">52dp</dimen>
+
+    <dimen name="custom_snackbar_margin">12dp</dimen>
+    <dimen name="custom_snackbar_corner_radius">4dp</dimen>
 </resources>
