@@ -32,6 +32,22 @@ class RecipientTokenViewHolder internal constructor(
         contactPictureLoader.setContactPicture(contactPhoto, recipient.address)
     }
 
+    fun truncateName(newLimit: Int) {
+        if (newLimit > 0 && newLimit <= recipient.displayNameOrAddress.length) {
+            updateName(recipient.displayNameOrAddress.substring(0, newLimit) + "...")
+        }
+    }
+
+    fun restoreNameSize() {
+        updateName(recipient.displayNameOrAddress)
+    }
+
+    private fun updateName(newName: String) {
+        name.text = newName
+        name.width = name.paint.measureText(name.text.toString()).toInt()
+        +name.paddingStart + name.paddingEnd
+    }
+
     fun updateRating(rating: Rating) {
         setpEpRating(rating)
         val hasCryptoProvider = cryptoProvider != null
