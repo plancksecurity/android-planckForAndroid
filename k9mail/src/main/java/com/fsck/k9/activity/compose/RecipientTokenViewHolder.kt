@@ -2,14 +2,18 @@ package com.fsck.k9.activity.compose
 
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.R
+import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.PEpContactBadge
+import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
 
 class RecipientTokenViewHolder internal constructor(
-    view: View,
+    private val view: View,
     private val contactPictureLoader: ContactPictureLoader,
     private val account: Account,
     private val cryptoProvider: String?
@@ -29,7 +33,7 @@ class RecipientTokenViewHolder internal constructor(
     }
 
     fun updateRating(rating: Rating) {
-        contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
+        setpEpRating(rating)
         val hasCryptoProvider = cryptoProvider != null
         if (!hasCryptoProvider) {
             cryptoStatusRed.visibility = View.GONE
@@ -60,4 +64,27 @@ class RecipientTokenViewHolder internal constructor(
             }
     }
 
+    private fun setpEpRating(rating: Rating) {
+        if (K9.ispEpForwardWarningEnabled()) {
+            if (account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)) {
+                view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
+                name.setTextColor(
+                    ContextCompat.getColor(
+                        name.context,
+                        R.color.compose_unsecure_delivery_warning
+                    )
+                )
+            } else {
+                view.setBackgroundResource(R.drawable.recipient_token_shape)
+                name.setTextColor(
+                    ThemeManager.getColorFromAttributeResource(
+                        name.context,
+                        android.R.attr.textColorSecondary
+                    )
+                )
+            }
+        } else {
+            contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
+        }
+    }
 }
