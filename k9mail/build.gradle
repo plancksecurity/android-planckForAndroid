@@ -89,6 +89,7 @@ dependencies {
     implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
     implementation "androidx.security:security-crypto:${versions.crypto}"
+    implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
@@ -114,9 +115,9 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
         exclude module: 'support-annotations'
     }
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.3.0'
-    // androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
+    androidTestImplementation 'androidx.test:rules:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "junit:junit:${versions.junit}"
@@ -183,8 +184,8 @@ android {
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        //testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true

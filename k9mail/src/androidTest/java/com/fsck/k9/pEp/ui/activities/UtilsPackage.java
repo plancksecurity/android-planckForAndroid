@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.webkit.WebView;
 import android.widget.Checkable;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -369,6 +370,28 @@ public class UtilsPackage {
             public void perform(UiController uiController, View view) {
                 TextView tv = (TextView) view; //Save, because of check in getConstraints()
                 stringHolder[0] = tv.getText().toString();
+            }
+        });
+        return stringHolder[0];
+    }
+
+    public static String getTextFromWebView(ViewInteraction interaction) {
+        final String[] stringHolder = {null};
+        interaction.perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(WebView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "getting text from a TextView";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                WebView wv = (WebView) view; //Save, because of check in getConstraints()
+                stringHolder[0] = wv.toString();
             }
         });
         return stringHolder[0];
