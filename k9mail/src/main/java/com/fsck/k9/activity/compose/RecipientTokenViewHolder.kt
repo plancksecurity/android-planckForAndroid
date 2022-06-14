@@ -1,6 +1,7 @@
 package com.fsck.k9.activity.compose
 
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
@@ -11,6 +12,7 @@ import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
+import security.pEp.ui.doOnLayout
 
 class RecipientTokenViewHolder internal constructor(
     private val view: View,
@@ -25,6 +27,14 @@ class RecipientTokenViewHolder internal constructor(
     private val cryptoStatusOrange: View = view.findViewById(R.id.contact_crypto_status_orange)
     private val cryptoStatusGreen: View = view.findViewById(R.id.contact_crypto_status_green)
     private lateinit var recipient: Recipient
+    var removeButtonLocationData: ViewLocationData? = null
+        private set
+
+    private val removeButton = view.findViewById<ImageView>(R.id.remove_button).also {
+        it.doOnLayout {
+            setRemoveButtonLocationData()
+        }
+    }
 
     fun bind(recipient: Recipient) {
         this.recipient = recipient
@@ -46,6 +56,15 @@ class RecipientTokenViewHolder internal constructor(
         name.text = newName
         name.width = name.paint.measureText(name.text.toString()).toInt()
         +name.paddingStart + name.paddingEnd
+    }
+
+    private fun setRemoveButtonLocationData() {
+        removeButtonLocationData = ViewLocationData(
+            removeButton.measuredHeight,
+            removeButton.measuredWidth,
+            removeButton.x,
+            removeButton.y
+        )
     }
 
     fun updateRating(rating: Rating) {
@@ -104,3 +123,10 @@ class RecipientTokenViewHolder internal constructor(
         }
     }
 }
+
+class ViewLocationData(
+    val height: Int,
+    val width: Int,
+    val x: Float,
+    val y: Float,
+)
