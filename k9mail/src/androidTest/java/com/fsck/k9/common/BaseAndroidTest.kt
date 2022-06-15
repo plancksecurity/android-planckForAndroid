@@ -12,7 +12,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 
-abstract class BaseAndroidTest {
+open class BaseAndroidTest {
     protected lateinit var device: UiDevice
     protected lateinit var testUtils: TestUtils
     @JvmField

@@ -38,7 +38,6 @@ public class InboxActionBarChangingColorTest extends BaseAndroidTest {
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
-        testUtils.checkToolbarColor(R.color.pep_green);
         testUtils.pressBack();
         assertToolbarColor();
     }
@@ -54,7 +53,6 @@ public class InboxActionBarChangingColorTest extends BaseAndroidTest {
         testUtils.waitForNewMessage();
         testUtils.clickFirstMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingReliable, true);
-        testUtils.checkToolbarColor(R.color.pep_yellow);
         testUtils.pressBack();
         assertToolbarColor();
     }

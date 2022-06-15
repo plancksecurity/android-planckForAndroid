@@ -3558,19 +3558,13 @@ public class TestUtils {
 
     public void checkToolbarColor(int color) {
         waitForIdle();
-        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
+        while (!exists(onView(withId(R.id.toolbar)))) {
+            doWaitForResource(R.id.toolbar);
             waitForIdle();
         }
-        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
-        while (true) {
-            waitForIdle();
-            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
-                waitForIdle();
-                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
-                //checkUpperToolbar(color);
-                return;
-            }
-        }
+        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        waitForIdle();
+        onView(allOf(withId(R.id.toolbar))).check(matches(withBackgroundColor(color)));
     }
 
     void goBackToMessageListAndPressComposeMessageButton() {
