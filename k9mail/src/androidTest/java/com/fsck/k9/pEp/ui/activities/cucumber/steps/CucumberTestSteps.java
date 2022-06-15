@@ -367,6 +367,30 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I enter (\\d+) unsecure recipients in the (\\S+) field")
+    public void I_fill_recipients(int recipients, String field) {
+        timeRequiredForThisMethod(1);
+        String recipient = "recipients@email.pep";
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1f);
+        String loopText = "firstaccount@this.is";
+        testUtils.clickView(R.id.subject);
+        waitForIdle();
+        onView(withId(R.id.to)).perform(typeText(loopText));
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        loopText = "";
+        for (int loop = 1; loop < recipients; loop++) {
+            waitForIdle();
+            loopText = loopText + loop + "of" + recipients + recipient + "; ";
+        }
+        testUtils.typeTextInField("", R.id.to, "to");
+        waitForIdle();
+        onView(withId(R.id.to)).perform(typeText(loopText));
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        waitForIdle();
+        onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
+    }
+
     @When("^I paste (\\d+) recipients in the (\\S+) field")
     public void I_paste_n_recipients(int recipients, String field) {
         timeRequiredForThisMethod(1);
