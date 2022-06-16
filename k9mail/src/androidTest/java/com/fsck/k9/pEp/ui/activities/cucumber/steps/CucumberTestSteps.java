@@ -13,6 +13,8 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
@@ -458,15 +460,18 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I check is unsecure")
-    public void I_check_is_unsecure() {
+    @When("^I check insecurity warnings are there")
+    public void I_check_insecurity_warnings_are_there() {
         if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
             assertFailWithMessage("Is not showing the Alert message");
         }
         if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsafe_delivery_warning")))) {
             assertFailWithMessage("The text in the Alert message is not correct");
         }
-        //onView(withId(R.id.to)).check(matches(withTextColor(R.color.pep_red)));
+        if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
+            assertFailWithMessage("There is only 1 address or less and should be 2 or more");
+        }
+
         BySelector selector;
         selector = By.clazz("android.widget.MultiAutoCompleteTextView");
         waitForIdle();
@@ -477,6 +482,20 @@ public class CucumberTestSteps {
             boolean isRed = false;
             for (int x = startingPointX; x < endPointX; x++) {
                 if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                    isRed = true;
+                    break;
+                }
+            }
+            if (!isRed) {
+                assertFailWithMessage("Text color in the field TO is not red");
+            }
+            startingPointX = multiTextView.getVisibleBounds().right - 20;
+            endPointX = multiTextView.getVisibleBounds().right - multiTextView.getVisibleBounds().width()/6;
+            isRed = false;
+            for (int x = startingPointX; x > endPointX; x--) {
+                 if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
                         Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
                         Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
                     isRed = true;
