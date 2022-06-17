@@ -369,13 +369,13 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I enter (\\d+) unsecure recipients in the (\\S+) field")
+    @When("^I enter (\\d+) unreliable recipients in the (\\S+) field")
     public void I_fill_recipients(int recipients, String field) {
         timeRequiredForThisMethod(1);
         String recipient = "recipients@email.pep";
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         scroll.swipe(Direction.UP, 1f);
-        String loopText = "firstaccount@this.is";
+        String loopText = "firstaccountinthelist@this.is";
         testUtils.clickView(R.id.subject);
         waitForIdle();
         onView(withId(R.id.to)).perform(typeText(loopText));
@@ -476,34 +476,58 @@ public class CucumberTestSteps {
         selector = By.clazz("android.widget.MultiAutoCompleteTextView");
         waitForIdle();
         for (UiObject2 multiTextView : device.findObjects(selector)) {
-            int startingPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/3;
-            int endPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/2;
+            int startingPointX = multiTextView.getVisibleBounds().left;
+            int endPointX = multiTextView.getVisibleBounds().left + 100;
             int centerY = multiTextView.getVisibleCenter().y;
             boolean isRed = false;
             for (int x = startingPointX; x < endPointX; x++) {
-                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
-                    isRed = true;
-                    break;
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
+                }
+            }
+            if (!isRed) {
+                assertFailWithMessage("Border color in the field TO is not red");
+            }
+            startingPointX = multiTextView.getVisibleBounds().centerX();
+            endPointX = multiTextView.getVisibleBounds().centerX() + 100;
+            centerY = multiTextView.getVisibleCenter().y;
+            isRed = false;
+            for (int x = startingPointX; x < endPointX; x++) {
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
                 }
             }
             if (!isRed) {
                 assertFailWithMessage("Text color in the field TO is not red");
             }
-            startingPointX = multiTextView.getVisibleBounds().right - 20;
-            endPointX = multiTextView.getVisibleBounds().right - multiTextView.getVisibleBounds().width()/6;
+            startingPointX = multiTextView.getVisibleBounds().right;
+            endPointX = multiTextView.getVisibleBounds().left;
             isRed = false;
             for (int x = startingPointX; x > endPointX; x--) {
-                 if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
-                    isRed = true;
-                    break;
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
                 }
             }
             if (!isRed) {
-                assertFailWithMessage("Text color in the field TO is not red");
+                assertFailWithMessage("Text color of the +X in field TO is not red");
             }
         }
     }
