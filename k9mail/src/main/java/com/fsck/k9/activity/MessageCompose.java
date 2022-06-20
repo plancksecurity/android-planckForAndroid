@@ -38,6 +38,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -272,6 +273,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     DisplayHtml displayHtml;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private FeedbackTools.Feedback unsafeDeliveryWarning;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -671,6 +673,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Override
     public void onPause() {
         super.onPause();
+        hideUnsecureDeliveryWarning();
         MessagingController.getInstance(this).removeListener(messagingListener);
 
         boolean isPausingOnConfigurationChange = (getChangingConfigurations() & ActivityInfo.CONFIG_ORIENTATION)
@@ -2025,6 +2028,29 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
         pEpSecurityStatusLayout.setEncrypt(encrypt);
         pEpSecurityStatusLayout.setRating(rating);
+    }
+
+    public void showUnsecureDeliveryWarning() {
+        if (unsafeDeliveryWarning == null) {
+            unsafeDeliveryWarning = FeedbackTools.createIndefiniteFeedback(
+                    getRootView(),
+                    getString(R.string.compose_unsecure_delivery_warning),
+                    ContextCompat.getColor(
+                            this, R.color.compose_unsecure_delivery_warning),
+                    ContextCompat.getColor(
+                            this, R.color.compose_unsecure_delivery_warning_text)
+            );
+        }
+        if (unsafeDeliveryWarning != null && !unsafeDeliveryWarning.isShown()) {
+            unsafeDeliveryWarning.show();
+        }
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        if (unsafeDeliveryWarning != null) {
+            unsafeDeliveryWarning.dismiss();
+            unsafeDeliveryWarning = null;
+        }
     }
 
     private Handler internalMessageHandler = new Handler() {
