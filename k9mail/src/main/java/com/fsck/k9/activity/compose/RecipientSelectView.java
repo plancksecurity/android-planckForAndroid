@@ -188,6 +188,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         if (!hasFocus) {
             truncateFirstDisplayNameIfNeeded();
             super.performCollapse(false);
+            setCountColorIfNeeded();
         } else {
             restoreFirstDisplayNameIfNeeded();
             super.performCollapse(true);
