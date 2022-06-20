@@ -18,6 +18,7 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.BySelector;
@@ -52,13 +53,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.api.junit.Cucumber;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
@@ -95,7 +95,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
-@RunWith(Cucumber.class)
+@RunWith(AndroidJUnit4.class)
 public class CucumberTestSteps {
 
     private static final String HOST = "@sq.pep.security";

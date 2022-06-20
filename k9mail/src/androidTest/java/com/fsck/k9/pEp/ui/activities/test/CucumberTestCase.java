@@ -1,13 +1,10 @@
 package com.fsck.k9.pEp.ui.activities.test;
 
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
+import io.cucumber.android.runner.CucumberAndroidJUnitRunner;
+import io.cucumber.junit.CucumberOptions;
 
-import cucumber.api.CucumberOptions;
-import cucumber.api.android.CucumberAndroidJUnitRunner;
-import cucumber.api.junit.Cucumber;
 
-@RunWith(Cucumber.class)
 /**
  * This class configures the Cucumber test framework and Java glue code
  *
