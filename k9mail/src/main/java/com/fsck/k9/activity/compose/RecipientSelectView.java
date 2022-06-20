@@ -627,6 +627,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             Timber.e("Tried to refresh invalid view token!");
             return;
         }
+        for (Recipient object : getObjects()) {
+            if (object.getAddress().equals(alternateAddress.getAddress())) {
+                Timber.e("Recipient already present!");
+                return;
+            }
+        }
         Recipient currentRecipient = currentRecipients.get(indexOfRecipient);
 
         currentRecipient.setAddress(alternateAddress.getAddress());
