@@ -13,6 +13,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -33,6 +34,7 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
+import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
@@ -173,6 +175,80 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
 
         return super.onTouchEvent(event);
+    }
+
+    private void restoreFirstDisplayNameIfNeeded() {
+        List<Recipient> recipients = getObjects();
+        if (!recipients.isEmpty()) {
+            restoreRecipientDisplayName(recipients.get(0));
+        }
+    }
+
+    private void restoreRecipientDisplayName(Recipient recipient) {
+        View recipientTokenView = getTokenViewForRecipient(recipient);
+        if (recipientTokenView == null) {
+            Timber.e("Tried to refresh invalid view token!");
+            return;
+        }
+        RecipientTokenViewHolder vh = (RecipientTokenViewHolder) recipientTokenView.getTag();
+        vh.restoreNameSize();
+    }
+
+    private void truncateFirstDisplayNameIfNeeded() {
+        if (getTokenCount() >= 2) {
+            Editable text = getText();
+            Layout lastLayout = getLayout();
+            if (text != null && lastLayout != null) {
+                int lastPosition = lastLayout.getLineVisibleEnd(0);
+                TokenImageSpan[] tokens = text.getSpans(0, lastPosition, TokenImageSpan.class);
+                int count = getTokenCount() - tokens.length;
+                if (tokens.length == 1) {
+                    CountSpan[] countSpans = text.getSpans(0, lastPosition, CountSpan.class);
+                    if (count > 0 && countSpans.length == 0) {
+                        truncateFirstDisplayName(lastLayout, count);
+                    }
+                }
+            }
+        }
+    }
+
+    private void truncateFirstDisplayName(Layout lastLayout, int count) {
+        Recipient firstRecipient = findFirstVisibleRecipient();
+        String countText = "+" + count;
+        String textToDisplay = firstRecipient.getDisplayNameOrAddress();
+        float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+        if (maxTextWidth() - requiredWidth < 80) {
+            do {
+                textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
+                requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
+            } while (maxTextWidth() - requiredWidth < 80);
+            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 1);
+        }
+    }
+
+    private Recipient findFirstVisibleRecipient() {
+        Editable text = getText();
+        RecipientTokenSpan[] spans = getText().getSpans(
+                0, getText().length(), RecipientTokenSpan.class);
+        int firstSpanStart = spans.length;
+        Recipient out = spans[0].getToken();
+        for (RecipientTokenSpan span : spans) {
+            if (text.getSpanStart(span) < firstSpanStart) {
+                firstSpanStart = text.getSpanStart(span);
+                out = span.getToken();
+            }
+        }
+        return out;
+    }
+
+    private void truncateRecipientDisplayName(Recipient recipient, int limit) {
+        View recipientTokenView = getTokenViewForRecipient(recipient);
+        if (recipientTokenView == null) {
+            Timber.e("Tried to refresh invalid view token!");
+            return;
+        }
+        RecipientTokenViewHolder vh = (RecipientTokenViewHolder) recipientTokenView.getTag();
+        vh.truncateName(limit);
     }
 
     @Override
