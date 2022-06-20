@@ -177,6 +177,17 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return super.onTouchEvent(event);
     }
 
+    @Override
+    public void performCollapse(boolean hasFocus) {
+        if (!hasFocus) {
+            truncateFirstDisplayNameIfNeeded();
+            super.performCollapse(false);
+        } else {
+            restoreFirstDisplayNameIfNeeded();
+            super.performCollapse(true);
+        }
+    }
+
     private void restoreFirstDisplayNameIfNeeded() {
         List<Recipient> recipients = getObjects();
         if (!recipients.isEmpty()) {
