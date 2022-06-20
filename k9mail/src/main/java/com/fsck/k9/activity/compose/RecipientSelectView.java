@@ -67,7 +67,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private ListPopupWindow alternatesPopup;
     private Recipient alternatesPopupRecipient;
     private TokenListener<Recipient> listener;
-    private PEpProvider pEp;
     private Context context;
     private Account account;
     private PePUIArtefactCache uiCache;
@@ -111,7 +110,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         adapter = new RecipientAdapter(context, contactPictureLoader);
         setAdapter(adapter);
-        pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
         setLongClickable(false);
         unsecureAddressHelper.initialize(this);
