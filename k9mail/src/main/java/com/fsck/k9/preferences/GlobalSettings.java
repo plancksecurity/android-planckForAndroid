@@ -296,7 +296,7 @@ public class GlobalSettings {
                 new V(43, new BooleanSetting(true))
         ));
         s.put("pEpForwardWarningEnabled", Settings.versions(
-                new V(47, new BooleanSetting(false))
+                new V(47, new BooleanSetting(true))
         ));
         s.put("pEpEnableSync", Settings.versions(
                 new V(49, new BooleanSetting(true))
