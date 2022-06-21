@@ -15,6 +15,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
 import security.pEp.ui.doOnLayout
+import security.pEp.ui.doOnNextLayout
 
 class RecipientTokenViewHolder internal constructor(
     private val view: View,
@@ -58,6 +59,9 @@ class RecipientTokenViewHolder internal constructor(
         name.text = newName
         name.width = name.paint.measureText(name.text.toString()).toInt()
         +name.paddingStart + name.paddingEnd
+        removeButton.doOnNextLayout {
+            setRemoveButtonLocationData()
+        }
     }
 
     private fun setRemoveButtonLocationData() {
