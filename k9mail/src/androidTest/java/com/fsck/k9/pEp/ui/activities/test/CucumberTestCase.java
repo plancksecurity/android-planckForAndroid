@@ -1,7 +1,12 @@
 package com.fsck.k9.pEp.ui.activities.test;
 
+import android.os.Bundle;
+
+import com.fsck.k9.BuildConfig;
+
 import org.junit.Ignore;
 import io.cucumber.android.runner.CucumberAndroidJUnitRunner;
+import io.cucumber.junit.CucumberAndroidJUnitArguments;
 import io.cucumber.junit.CucumberOptions;
 
 
@@ -37,4 +42,26 @@ import io.cucumber.junit.CucumberOptions;
 // (this class is in '...cucumber.test' and glue is in '...cucumber.steps')
 @Ignore("Only to be run in Cucumber")
 public class CucumberTestCase extends CucumberAndroidJUnitRunner {
+        private static final String ARG_USE_CUCUMBER = "useCucumber";
+        private static final String ARG_FILTER = "filter";
+        @Override
+        public void onCreate(Bundle bundle) {
+                Bundle args = bundle != null
+                        ? bundle
+                        : new Bundle();
+                boolean useCucumber = Boolean.parseBoolean(
+                        args.getString(ARG_USE_CUCUMBER, "false")
+                ) || BuildConfig.USE_CUCUMBER;
+                args.remove(ARG_USE_CUCUMBER);
+                args.putString(
+                        CucumberAndroidJUnitArguments.Args.USE_DEFAULT_ANDROID_RUNNER,
+                        String.valueOf(!useCucumber)
+                );
+                String filterClassName = useCucumber
+                        ? CucumberTestFilter.class.getName()
+                        : NonCucumberTestFilter.class.getName();
+                args.putString(ARG_FILTER, filterClassName);
+
+                super.onCreate(args);
+        }
 }
