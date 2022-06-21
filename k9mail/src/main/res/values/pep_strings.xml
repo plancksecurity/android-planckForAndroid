@@ -76,8 +76,8 @@
     <string name="pep_suggestion">Suggestion</string>
     <string name="pep_trust_server_description">Store server-side mails in a safe form.</string>
     <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
-    <string name="pep_forward_warning">Unsecure reply warning</string>
-    <string name="pep_forward_warning_description">Show a warning when a message loses security through reply or forward.</string>
+    <string name="pep_forward_warning">Unsecure delivery warning</string>
+    <string name="pep_forward_warning_description">Show a warning when a secure channel cannot be established to deliver a message.</string>
     <string name="key_list_title">Available keys</string>
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
