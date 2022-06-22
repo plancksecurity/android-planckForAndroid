@@ -77,6 +77,12 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private PePUIArtefactCache uiCache;
     private boolean alwaysUnsecure;
 
+    private float removeButtonClickAreaPadding = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        4f,
+        getResources().getDisplayMetrics()
+    );
+
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
     @Inject UnsecureAddressHelper unsecureAddressHelper;
@@ -234,6 +240,82 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
 
         return super.onTouchEvent(event);
+    }
+
+    private boolean isClickToRemoveRecipient(
+        MotionEvent event,
+        TokenImageSpan span
+    ) {
+        Recipient recipient = span.getToken();
+        ViewLocationData viewLocationData = getRemoveButtonLocationDataForRecipient(recipient);
+
+        Layout layout = getLayout();
+        Editable text = getText();
+        if (viewLocationData != null && layout != null && text != null) {
+            float spanX = layout.getPrimaryHorizontal(text.getSpanStart(span));
+            float realX = spanX + viewLocationData.getX();
+            float realY = viewLocationData.getY();
+
+            if (event.getX() + removeButtonClickAreaPadding >= realX
+                    && event.getX() - removeButtonClickAreaPadding - realX
+                    <= viewLocationData.getWidth()
+            ) {
+                int heightOffset = getHeightOffsetForSpan(span);
+                if (heightOffset >= 0) {
+                    float realTop = realY + heightOffset;
+                    return (event.getY() + removeButtonClickAreaPadding >= realTop
+                            && event.getY() - removeButtonClickAreaPadding - realTop
+                            <= viewLocationData.getHeight());
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getHeightOffsetForSpan(TokenImageSpan span) {
+        int lines = getLineCount();
+        int spanStart = getText().getSpanStart(span);
+        int spanEnd = getText().getSpanEnd(span);
+        for (int line = 0; line < lines; line++) {
+            if (getLayout().getLineStart(line) <= spanStart
+                && getLayout().getLineEnd(line) >= spanEnd) {
+                return getLineOffset(getLayout(), line);
+            }
+        }
+        return -1;
+    }
+
+    private int realLineHeight(Layout layout, int line) {
+        return layout.getLineBottom(line) - layout.getLineTop(line);
+    }
+
+    private int getLineOffset(Layout layout, int currentLine) {
+        int realLineHeight = 0;
+        for (int line = 0; line < currentLine; line++) {
+            realLineHeight += realLineHeight(layout, line);
+        }
+        return realLineHeight;
+    }
+
+    /**
+     * Find location data of the "x" remove button placed in the view tied to a given recipient.
+     * This method relies on spans to be of the RecipientTokenSpan class, as created by the
+     * buildSpanForObject method.
+     */
+    private ViewLocationData getRemoveButtonLocationDataForRecipient(Recipient currentRecipient) {
+        Editable text = getText();
+        if (text != null) {
+            RecipientTokenSpan[] spans = text.getSpans(
+                    0,
+                    text.length(), RecipientTokenSpan.class
+            );
+            for (RecipientTokenSpan span : spans) {
+                if (span.getToken() == currentRecipient) {
+                    return span.getRemoveButtonLocationData();
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -794,6 +876,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         public RecipientTokenSpan(View view, Recipient recipient, int token) {
             super(view, recipient, token);
             this.view = view;
+        }
+
+        public ViewLocationData getRemoveButtonLocationData() {
+            RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
+            return holder.getRemoveButtonLocationData();
         }
     }
 
