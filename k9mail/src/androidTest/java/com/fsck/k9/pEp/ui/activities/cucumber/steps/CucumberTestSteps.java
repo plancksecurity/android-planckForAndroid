@@ -339,24 +339,13 @@ public class CucumberTestSteps {
         String recipient = "recipients@email.pep";
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
-            //scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
-            try {
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                Timber.i("Waiting 2 seconds");
-            }
             waitForIdle();
             testUtils.clickView(R.id.subject);
             waitForIdle();
             scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
-            try {
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                Timber.i("Waiting 2 seconds");
-            }
             waitForIdle();
             testUtils.scrollDownToSubject();
             waitForIdle();
@@ -364,8 +353,6 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to)).perform(typeText(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient));
             waitForIdle();
-            //I_enter_text_in_field(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient, field);
-            //I_enter_text_in_field(";", field);
         }
     }
 
