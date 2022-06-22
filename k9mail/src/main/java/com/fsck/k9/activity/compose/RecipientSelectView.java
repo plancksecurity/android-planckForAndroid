@@ -3,6 +3,7 @@ package com.fsck.k9.activity.compose;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -73,6 +74,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Context context;
     private Account account;
     private PePUIArtefactCache uiCache;
+    private boolean alwaysUnsecure;
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
@@ -80,20 +82,27 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public RecipientSelectView(Context context) {
         super(context);
-        initView(context);
+        initView(context, null, 0);
     }
 
     public RecipientSelectView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initView(context);
+        initView(context, attrs, 0);
     }
 
     public RecipientSelectView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initView(context);
+        initView(context, attrs, defStyle);
     }
 
-    private void initView(Context context) {
+    private void initView(Context context, AttributeSet attrs, int defStyle) {
+        if (attrs != null) {
+            TypedArray a = context.obtainStyledAttributes(
+                    attrs, R.styleable.RecipientSelectView, defStyle, 0);
+            alwaysUnsecure = a.getBoolean(
+                    R.styleable.RecipientSelectView_alwaysUnsecure, false);
+            a.recycle();
+        }
         // TODO: validator?
         this.context = context;
         getApplicationComponent(context).inject(this);
@@ -746,6 +755,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public boolean hasRecipient(@NonNull Recipient recipient) {
         return getObjects().contains(recipient);
+    }
+
+    @Override
+    public boolean isAlwaysUnsecure() {
+        return alwaysUnsecure;
     }
 
     public enum RecipientCryptoStatus {
