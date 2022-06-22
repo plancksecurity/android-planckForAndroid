@@ -48,7 +48,7 @@ import timber.log.Timber;
 
 
 public class RecipientSelectView extends TokenCompleteTextView<Recipient> implements LoaderCallbacks<List<Recipient>>,
-        AlternateRecipientListener {
+        AlternateRecipientListener, RecipientSelectViewContract {
 
     private static final int MINIMUM_LENGTH_FOR_FILTERING = 1;
 
@@ -642,6 +642,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     public void notifyDatasetChanged() {
         alternatesAdapter.notifyDataSetChanged();
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean hasRecipient(@NonNull Recipient recipient) {
+        return getObjects().contains(recipient);
     }
 
     public enum RecipientCryptoStatus {
