@@ -1,9 +1,11 @@
 package com.fsck.k9.activity.compose
 
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -103,11 +105,14 @@ class RecipientTokenViewHolder internal constructor(
         if (K9.ispEpForwardWarningEnabled()) {
             if (account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)) {
                 view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
-                name.setTextColor(
-                    ContextCompat.getColor(
-                        name.context,
-                        R.color.compose_unsecure_delivery_warning
-                    )
+                val warningColor = ContextCompat.getColor(
+                    name.context,
+                    R.color.compose_unsecure_delivery_warning
+                )
+                name.setTextColor(warningColor)
+                ImageViewCompat.setImageTintList(
+                    removeButton,
+                    ColorStateList.valueOf(warningColor)
                 )
             } else {
                 view.setBackgroundResource(R.drawable.recipient_token_shape)
@@ -116,6 +121,10 @@ class RecipientTokenViewHolder internal constructor(
                         name.context,
                         android.R.attr.textColorSecondary
                     )
+                )
+                ImageViewCompat.setImageTintList(
+                    removeButton,
+                    null
                 )
             }
         } else {
