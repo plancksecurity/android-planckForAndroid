@@ -127,6 +127,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             return false;
         });
 
+        setSplitChar(new char[]{',', ';', ' '});
+
         setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
             @Override
             public void onTokenAdded(Recipient token) {
