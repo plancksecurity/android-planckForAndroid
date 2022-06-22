@@ -147,6 +147,19 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         });
     }
 
+    public void restoreFirstRecipientTruncation() {
+        post(() -> {
+            if (!hasFocus()) {
+                resetFocus();
+            }
+        });
+    }
+
+    private void resetFocus() {
+        requestFocus();
+        clearFocus();
+    }
+
     @Override
     protected View getViewForObject(Recipient recipient) {
         account = uiCache.getComposingAccount();
@@ -561,8 +574,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 if (getTokenCount() == 1) {
                     requestFocus();
                 } else if (getTokenCount() > 1) {
-                    requestFocus();
-                    clearFocus();
+                    resetFocus();
                 }
             }
         });
