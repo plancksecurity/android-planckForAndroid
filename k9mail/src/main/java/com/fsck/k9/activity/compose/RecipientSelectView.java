@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 import android.text.Editable;
 import android.text.Layout;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -223,6 +225,50 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 }
             }
         }
+    }
+
+    private void setCountColorIfNeeded() {
+        Editable text = getText();
+        if(text != null) {
+            CountSpan[] countSpans = text.getSpans(0, text.length(), CountSpan.class);
+            if (countSpans.length > 0) {
+                CountSpan countSpan = countSpans[0];
+                if(text.getSpanStart(countSpan) >= 0) {
+                    try {
+                        int count = Integer.parseInt(countSpan.text.substring(1));
+                        setCountColor(text, countSpan, count);
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void setCountColor(Editable editable, CountSpan countSpan, int count) {
+        boolean unsecure = unsecureAddressHelper.hasHiddenUnsecureAddressChannel(
+                getAddresses(),
+                count
+        );
+        int countColor = unsecure
+                ? ContextCompat.getColor(
+                        context, R.color.compose_unsecure_delivery_warning)
+                : getCurrentTextColor();
+
+        CountSpan coloredCountSpan = new CountSpan(
+                count,
+                getContext(),
+                countColor,
+                (int) getTextSize(),
+                (int) maxTextWidth()
+        );
+        editable.setSpan(
+                coloredCountSpan,
+                editable.getSpanStart(countSpan),
+                editable.getSpanEnd(countSpan),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        editable.removeSpan(countSpan);
     }
 
     private void truncateFirstDisplayName(Layout lastLayout, int count) {
