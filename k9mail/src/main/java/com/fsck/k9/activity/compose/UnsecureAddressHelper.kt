@@ -56,11 +56,17 @@ class UnsecureAddressHelper @Inject constructor(
         val address = recipient.address
         pEp.getRating(address, object : PEpProvider.ResultCallback<Rating> {
             override fun onLoaded(rating: Rating) {
-                if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(rating)
+                val viewRating =
+                    if (K9.ispEpForwardWarningEnabled() && view.isAlwaysUnsecure) {
+                        Rating.pEpRatingUndefined
+                    } else {
+                        rating
+                    }
+                if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(viewRating)
                     && view.hasRecipient(recipient)) {
                     addUnsecureAddressChannel(address)
                 }
-                callback.onLoaded(rating)
+                callback.onLoaded(viewRating)
             }
 
             override fun onError(throwable: Throwable) {
