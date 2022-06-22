@@ -35,6 +35,7 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -903,9 +904,11 @@ public class RecipientPresenter {
                 public void onLoaded(Rating rating) {
                     if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
                         showDefaultStatus();
+                        recipientMvpView.handleUnsecureDeliveryWarning(false);
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
+                        handleUnsecureDeliveryWarning(rating);
                     }
                     recipientMvpView.messageRatingLoaded();
                 }
@@ -914,10 +917,19 @@ public class RecipientPresenter {
                 public void onError(Throwable throwable) {
                     showDefaultStatus();
                     recipientMvpView.messageRatingLoaded();
+                    handleUnsecureDeliveryWarning(Rating.pEpRatingUndefined);
                 }
             });
         }
         recipientMvpView.messageRatingLoaded();
+    }
+
+    private void handleUnsecureDeliveryWarning(Rating rating) {
+        if (K9.ispEpForwardWarningEnabled()) {
+            recipientMvpView.handleUnsecureDeliveryWarning(
+                    account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)
+            );
+        }
     }
 
     private void showDefaultStatus() {

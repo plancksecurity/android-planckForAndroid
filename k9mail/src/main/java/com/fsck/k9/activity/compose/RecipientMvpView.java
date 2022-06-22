@@ -508,6 +508,14 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
+    public void handleUnsecureDeliveryWarning(boolean unsecure) {
+        if (unsecure) {
+            activity.showUnsecureDeliveryWarning();
+        } else {
+            activity.hideUnsecureDeliveryWarning();
+        }
+    }
+
     public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
