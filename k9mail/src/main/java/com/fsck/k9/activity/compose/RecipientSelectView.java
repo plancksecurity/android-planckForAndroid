@@ -143,7 +143,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         holder.bind(recipient);
 
-        pEp.getRating(recipient.getAddress(), new PEpProvider.ResultCallback<Rating>() {
+        unsecureAddressHelper.getRecipientRating(
+                recipient,
+                account.ispEpPrivacyProtected(),
+                new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 holder.updateRating(rating);
