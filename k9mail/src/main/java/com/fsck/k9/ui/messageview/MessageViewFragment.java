@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.Account;
@@ -245,7 +244,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 getFragmentManager(), messageLoaderCallbacks, messageLoaderDecryptCallbacks,
                 displayHtml);
         displayMessage();
-        pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+        if (K9.isUsingTrustwords()) {
+            pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+        }
     }
 
     @Override
@@ -363,7 +364,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void setToolbar() {
         if (isAdded()) {
-            pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            if (K9.isUsingTrustwords()) {
+                pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            }
             pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setToolbarColor(
                     ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
