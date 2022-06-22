@@ -340,13 +340,26 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         alternatesPopup.setAnchorView(anchorView);
         alternatesPopup.setWidth(getDropDownWidth());
 
-        alternatesAdapter.setCurrentRecipient(alternatesPopupRecipient);
+        alternatesAdapter.setCurrentRecipient(
+                findCurrentRatedRecipient(data, alternatesPopupRecipient));
         alternatesAdapter.setAlternateRecipientInfo(data);
 
         // Clear the checked item.
         alternatesPopup.show();
         ListView listView = alternatesPopup.getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+    }
+
+    private RatedRecipient findCurrentRatedRecipient(
+            List<RatedRecipient> recipients,
+            Recipient currentRecipient
+    ) {
+        for (RatedRecipient recipient : recipients) {
+            if (recipient.getBaseRecipient().equals(currentRecipient)) {
+                return recipient;
+            }
+        }
+        return null;
     }
 
     @Override

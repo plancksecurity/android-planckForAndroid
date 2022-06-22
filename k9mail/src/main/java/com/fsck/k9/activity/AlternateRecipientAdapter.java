@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
@@ -42,8 +43,8 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private final ContactPictureLoader contactPictureLoader;
     private AlternateRecipientListener listener;
     private Account account;
-    private List<Recipient> recipients;
-    private Recipient currentRecipient;
+    private List<RatedRecipient> recipients;
+    private RatedRecipient currentRecipient;
     private final PEpProvider pEp;
     private PePUIArtefactCache uiCache;
 
@@ -64,11 +65,11 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         this.listener = listener;
     }
 
-    public void setCurrentRecipient(Recipient currentRecipient) {
+    public void setCurrentRecipient(RatedRecipient currentRecipient) {
         this.currentRecipient = currentRecipient;
     }
 
-    public void setAlternateRecipientInfo(List<Recipient> recipients) {
+    public void setAlternateRecipientInfo(List<RatedRecipient> recipients) {
         this.recipients = recipients;
         int indexOfCurrentRecipient = recipients.indexOf(currentRecipient);
         if (indexOfCurrentRecipient >= 0) {
@@ -88,7 +89,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     }
 
     @Override
-    public Recipient getItem(int position) {
+    public RatedRecipient getItem(int position) {
         if (position == POSITION_HEADER_VIEW || position == POSITION_CURRENT_ADDRESS) {
             return currentRecipient;
         }
@@ -101,7 +102,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         return position;
     }
 
-    private Recipient getRecipientFromPosition(int position) {
+    private RatedRecipient getRecipientFromPosition(int position) {
         return recipients.get(position - NUMBER_OF_FIXED_LIST_ITEMS);
     }
 
@@ -112,7 +113,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         }
         account = uiCache.getComposingAccount();
 
-        Recipient recipient = getItem(position);
+        RatedRecipient recipient = getItem(position);
 
         if (position == POSITION_HEADER_VIEW) {
             bindHeaderView(view, recipient);
@@ -137,9 +138,10 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         return position != POSITION_HEADER_VIEW;
     }
 
-    public void bindHeaderView(View view, Recipient recipient) {
+    public void bindHeaderView(View view, RatedRecipient ratedRecipient) {
         RecipientTokenHolder holder = (RecipientTokenHolder) view.getTag();
         holder.setShowAsHeader(true);
+        Recipient recipient = ratedRecipient.getBaseRecipient();
 
         holder.headerName.setText(recipient.getNameOrUnknown(context));
         if (!TextUtils.isEmpty(recipient.getAddressLabel())) {
@@ -158,14 +160,15 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         holder.headerRemove.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onRecipientRemove(currentRecipient);
+                listener.onRecipientRemove(currentRecipient.getBaseRecipient());
             }
         });
     }
 
-    public void bindItemView(View view, final Recipient recipient) {
+    public void bindItemView(View view, final RatedRecipient ratedRecipient) {
         RecipientTokenHolder holder = (RecipientTokenHolder) view.getTag();
         holder.setShowAsHeader(false);
+        Recipient recipient = ratedRecipient.getBaseRecipient();
 
         String address = recipient.getAddress().getAddress();
         holder.itemAddress.setText(address);
@@ -176,14 +179,14 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             holder.itemAddressLabel.setVisibility(View.GONE);
         }
 
-        boolean isCurrent = currentRecipient == recipient;
+        boolean isCurrent = currentRecipient == ratedRecipient;
         holder.itemAddress.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.NORMAL);
         holder.itemAddressLabel.setTypeface(null, isCurrent ? Typeface.BOLD : Typeface.NORMAL);
 
         holder.layoutItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onRecipientChange(currentRecipient, recipient);
+                listener.onRecipientChange(currentRecipient.getBaseRecipient(), recipient);
             }
         });
 
