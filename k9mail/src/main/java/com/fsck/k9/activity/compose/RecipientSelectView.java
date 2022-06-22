@@ -322,12 +322,15 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                showAlternatesPopup(data);
+                unsecureAddressHelper.rateRecipients(
+                        data,
+                        recipients -> showAlternatesPopup(recipients)
+                );
             }
         });
     }
 
-    public void showAlternatesPopup(List<Recipient> data) {
+    public void showAlternatesPopup(List<RatedRecipient> data) {
         if (loaderManager == null) {
             return;
         }
