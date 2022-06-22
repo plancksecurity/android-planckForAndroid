@@ -19,6 +19,7 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -331,13 +332,22 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         String countText = "+" + count;
         String textToDisplay = firstRecipient.getDisplayNameOrAddress();
         float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
-        if (maxTextWidth() - requiredWidth < 80) {
+        int maxTextWidth = maxTextWidthWithRemoveButton();
+        if (maxTextWidth - requiredWidth < 100) {
             do {
                 textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
                 requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
-            } while (maxTextWidth() - requiredWidth < 80);
+            } while (maxTextWidth - requiredWidth < 100);
             truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 1);
         }
+    }
+
+    private int maxTextWidthWithRemoveButton() {
+        return (int) (maxTextWidth() - TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                30f, // remove button size plus its padding
+                getResources().getDisplayMetrics()
+        ));
     }
 
     private Recipient findFirstVisibleRecipient() {
