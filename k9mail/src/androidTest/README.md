@@ -1,3 +1,15 @@
+## Running instrumentation tests (excluding screenshots and AppRestrictions ones)
+
+### Running from IDE
+
+* Run Cucumber instrumentation tests: Edit configurations -> Instrumentation Arguments -> Add boolean parameter `useCucumber` under "instrumentation extra params".
+* Run "plain" Espresso instrumentation tests : Nothing needed, just run normally.
+
+### Running from command line
+* Run Cucumber instrumentation tests: `./gradlew cucumberTest`
+* Run "plain" Espresso instrumentation tests : `./gradldew connectedCheck`
+* Run all instrumentation tests (both "plain" Espresso and Cucumber instrumentation tests): `./gradldew connectedCheckAll`
+
 
 ## generate app screenshots 
 
