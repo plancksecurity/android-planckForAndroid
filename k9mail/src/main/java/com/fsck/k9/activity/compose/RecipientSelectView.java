@@ -233,7 +233,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             if (offset != -1) {
                 TokenImageSpan[] links = text.getSpans(offset, offset, RecipientTokenSpan.class);
                 if (links.length > 0) {
-                    showAlternates(links[0].getToken());
+                    TokenImageSpan span = links[0];
+                    Recipient recipient = span.getToken();
+                    if (isClickToRemoveRecipient(event, span)) {
+                        removeRecipient(recipient);
+                    } else {
+                        showAlternates(recipient);
+                    }
                     return true;
                 }
             }
