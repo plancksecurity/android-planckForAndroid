@@ -25,7 +25,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.PEpContactBadge;
@@ -53,18 +52,15 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private Account account;
     private List<RatedRecipient> recipients;
     private RatedRecipient currentRecipient;
-    private final PEpProvider pEp;
-    private PePUIArtefactCache uiCache;
+    private final PePUIArtefactCache uiCache;
 
 
     @Inject
     public AlternateRecipientAdapter(@Named("AppContext") Context context,
-                                     @Named("MainUI") PEpProvider pEp,
                                      ContactPictureLoader contactPictureLoader
     ) {
         super();
         this.context = context;
-        this.pEp = pEp;
         this.contactPictureLoader = contactPictureLoader;
         this.uiCache = PePUIArtefactCache.getInstance(context);
     }
