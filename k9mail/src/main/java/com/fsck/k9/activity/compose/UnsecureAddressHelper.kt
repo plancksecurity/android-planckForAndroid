@@ -3,6 +3,8 @@ package com.fsck.k9.activity.compose
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.PEpUtils
+import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +46,30 @@ class UnsecureAddressHelper @Inject constructor(
                 recipient.toRatedRecipient(pEp.getRating(recipient.address))
             }.also { ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList()) }
         }
+    }
+
+    fun getRecipientRating(
+        recipient: Recipient,
+        isPEpPrivacyProtected: Boolean,
+        callback: PEpProvider.ResultCallback<Rating>
+    ) {
+        val address = recipient.address
+        pEp.getRating(address, object : PEpProvider.ResultCallback<Rating> {
+            override fun onLoaded(rating: Rating) {
+                if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(rating)
+                    && view.hasRecipient(recipient)) {
+                    addUnsecureAddressChannel(address)
+                }
+                callback.onLoaded(rating)
+            }
+
+            override fun onError(throwable: Throwable) {
+                if (isPEpPrivacyProtected && view.hasRecipient(recipient)) {
+                    addUnsecureAddressChannel(address)
+                }
+                callback.onError(throwable)
+            }
+        })
     }
 
     fun removeUnsecureAddressChannel(address: Address) {
