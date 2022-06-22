@@ -338,6 +338,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         // Copy anchor settings from the autocomplete dropdown
         View anchorView = getRootView().findViewById(getDropDownAnchor());
         alternatesPopup.setAnchorView(anchorView);
+        alternatesPopup.setPromptPosition(ListPopupWindow.POSITION_PROMPT_BELOW);
+        if (anchorView != null) {
+            alternatesPopup.setVerticalOffset(getAlternatesPopupOffset(anchorView.getHeight()));
+        }
         alternatesPopup.setWidth(getDropDownWidth());
 
         alternatesAdapter.setCurrentRecipient(
@@ -360,6 +364,20 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             }
         }
         return null;
+    }
+
+    private int getAlternatesPopupOffset(int anchorViewHeight) {
+        View tokenView = getTokenViewForRecipient(alternatesPopupRecipient);
+        if (tokenView != null) {
+            int tokenViewHeight = tokenView.getHeight();
+            if (anchorViewHeight < tokenViewHeight * 2) {
+                return 0;
+            }
+            int size = getTokenCount();
+            int index = getObjects().indexOf(alternatesPopupRecipient) + 1;
+            return (index - size) * tokenViewHeight;
+        }
+        return  0;
     }
 
     @Override
