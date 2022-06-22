@@ -14,6 +14,11 @@ class UnsecureAddressHelper @Inject constructor(
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private lateinit var view: RecipientSelectViewContract
+
+    fun initialize (view: RecipientSelectViewContract) {
+        this.view = view
+    }
 
     fun sortRecipientsByRating(
         recipients: Array<Recipient>,
