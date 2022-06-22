@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
@@ -115,6 +116,16 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         setLongClickable(false);
         unsecureAddressHelper.initialize(this);
+
+        setOnEditorActionListener((v, actionId, event) -> {
+            if ((actionId == EditorInfo.IME_ACTION_NEXT)) {
+                if (hasUncompletedText()) {
+                    performCompletion();
+                    return true;
+                }
+            }
+            return false;
+        });
 
         setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
             @Override
