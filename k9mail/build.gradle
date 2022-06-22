@@ -10,6 +10,8 @@ def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
 def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
 def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
 
+def unsecureRecipientsWarningDefault = true
+
 buildscript {
     repositories {
         mavenCentral()
@@ -203,6 +205,7 @@ android {
 
         def useCucumber = System.getProperty("useCucumber") ?: "false"
         buildConfigField "boolean", "USE_CUCUMBER", useCucumber
+        buildConfigField "boolean", "UNSECURE_RECIPIENTS_WARNING_DEFAULT", "${unsecureRecipientsWarningDefault}"
     }
     flavorDimensions "sync", "store"
 
