@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -33,7 +32,6 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.tokenautocomplete.TokenCompleteTextView;
 
@@ -74,6 +72,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
+    @Inject UnsecureAddressHelper unsecureAddressHelper;
 
     public RecipientSelectView(Context context) {
         super(context);
@@ -270,8 +269,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     public void addRecipients(Recipient... recipients) {
-        for (Recipient recipient : recipients) {
-            addObject(recipient);
+        if (recipients.length == 1) {
+            addObject(recipients[0]);
+        } else {
+            unsecureAddressHelper.sortRecipientsByRating(recipients, sortedRecipients -> {
+                for (Recipient recipient : sortedRecipients) {
+                    addObject(recipient);
+                }
+            });
         }
     }
 
