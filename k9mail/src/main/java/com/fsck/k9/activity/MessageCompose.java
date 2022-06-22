@@ -554,7 +554,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
             pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
-            pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+            if (K9.isUsingTrustwords()) {
+                pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+            }
             pEpSecurityStatusLayout.setOnLongClickListener( view -> {
                 PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                         view, recipientPresenter);
