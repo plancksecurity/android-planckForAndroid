@@ -944,10 +944,11 @@ public class RecipientPresenter {
 
     public void refreshRecipients() {
         dirty = true;
-        toAdresses = getToAddresses();
-        ccAdresses = getCcAddresses();
-        bccAdresses = getBccAddresses();
-        recipientMvpView.notifyAddressesChanged(toAdresses, ccAdresses, bccAdresses);
+        recipientMvpView.notifyRecipientsChanged(
+                recipientMvpView.getToRecipients(),
+                recipientMvpView.getCcRecipients(),
+                recipientMvpView.getBccRecipients()
+        );
     }
     private List<Address> initializeAdresses(List<Address> addresses) {
         if(addresses == null) {
