@@ -115,6 +115,23 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         setLongClickable(false);
         unsecureAddressHelper.initialize(this);
+
+        setTokenListener(new TokenCompleteTextView.TokenListener<Recipient>() {
+            @Override
+            public void onTokenAdded(Recipient token) {
+                if (listener != null) {
+                    listener.onTokenAdded(token);
+                }
+            }
+
+            @Override
+            public void onTokenRemoved(Recipient token) {
+                if (listener != null) {
+                    unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
+                    listener.onTokenRemoved(token);
+                }
+            }
+        });
     }
 
     @Override
@@ -693,7 +710,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
      * adding a callback for onTokenChanged.
      */
     public void setTokenListener(TokenListener<Recipient> listener) {
-        super.setTokenListener(listener);
         this.listener = listener;
     }
 
