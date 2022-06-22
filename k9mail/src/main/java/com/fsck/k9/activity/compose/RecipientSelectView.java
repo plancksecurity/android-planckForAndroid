@@ -149,12 +149,14 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
             }
 
             @Override
             public void onError(Throwable throwable) {
+                setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
             }
