@@ -1,6 +1,5 @@
 package com.fsck.k9.activity.compose
 
-import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +26,23 @@ class UnsecureAddressHelper @Inject constructor(
             }.also { recipientsReadyListener.recipientsReady(it.toMutableList()) }
         }
     }
+
+    fun rateRecipients(
+        recipients: List<Recipient>,
+        ratedRecipientsReadyListener: RatedRecipientsReadyListener
+    ) {
+        coroutineScope.launch {
+            recipients.map { recipient ->
+                recipient.toRatedRecipient(pEp.getRating(recipient.address))
+            }.also { ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList()) }
+        }
+    }
 }
 
 interface RecipientsReadyListener {
     fun recipientsReady(recipients: MutableList<Recipient>)
+}
+
+interface RatedRecipientsReadyListener {
+    fun ratedRecipientsReady(recipients: MutableList<RatedRecipient>)
 }
