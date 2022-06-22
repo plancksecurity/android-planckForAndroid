@@ -639,6 +639,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             return;
         }
 
+        unsecureAddressHelper.removeUnsecureAddressChannel(recipientToReplace.getAddress());
         bindObjectView(currentRecipient, recipientTokenView);
 
         if (listener != null) {
