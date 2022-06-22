@@ -68,7 +68,8 @@ buildscript {
                 'truth'              : '1.1',
                 'espresso'           : '3.4.0',
                 'uiAutomator'        : '2.2.0',
-                'cucumber'           : '4.4.0'
+                'cucumber'           : '4.8.3',
+                'cucumber_pico'      : '4.8.1',
         ]
 
         abiCodes = [

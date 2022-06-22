@@ -1,25 +1,5 @@
 package com.fsck.k9.pEp.ui.activities;
 
-import android.app.Instrumentation;
-
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.UiDevice;
-
-import com.fsck.k9.R;
-import com.fsck.k9.common.BaseAndroidTest;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import foundation.pEp.jniadapter.Rating;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -31,6 +11,17 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.fsck.k9.R;
+import com.fsck.k9.common.BaseAndroidTest;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import foundation.pEp.jniadapter.Rating;
 
 
 @RunWith(AndroidJUnit4.class)

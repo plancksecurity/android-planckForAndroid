@@ -27,6 +27,7 @@ apply from: '../gradle/plugins/utils/screenshots.gradle'
 apply from: '../gradle/plugins/utils/appconfig-test.gradle'
 apply from: '../gradle/plugins/utils/git-version.gradle'
 apply from: '../gradle/plugins/utils/addaccount.gradle'
+apply from: '../gradle/plugins/cucumber.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -161,7 +162,7 @@ dependencies {
     androidTestImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '4.2.3'*/
 
     androidTestImplementation "io.cucumber:cucumber-android:${versions.cucumber}"
-    androidTestImplementation "io.cucumber:cucumber-picocontainer:${versions.cucumber}"
+    androidTestImplementation "io.cucumber:cucumber-picocontainer:${versions.cucumber_pico}"
 
     // Screenshots
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
@@ -199,6 +200,9 @@ android {
         buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
+
+        def useCucumber = System.getProperty("useCucumber") ?: "false"
+        buildConfigField "boolean", "USE_CUCUMBER", useCucumber
     }
     flavorDimensions "sync", "store"
 
