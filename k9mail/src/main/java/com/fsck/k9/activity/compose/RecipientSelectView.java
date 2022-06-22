@@ -114,6 +114,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         pEp = ((K9) context.getApplicationContext()).getpEpProvider();
 
         setLongClickable(false);
+        unsecureAddressHelper.initialize(this);
     }
 
     @Override
