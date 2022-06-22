@@ -44,6 +44,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var attachmentDefaultPathPreference: Preference
 
     private var syncSwitchDialog: AlertDialog? = null
+    private var mdmDialog: AlertDialog? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
@@ -61,12 +62,37 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
         initializeTheme()
+        initializeUseTrustwords()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+    }
+
+    private fun initializeUseTrustwords() {
+        if (K9.getpEpUseTrustwords().locked) {
+            (findPreference(PREFERENCE_PEP_USE_TRUSTWORDS) as? SwitchPreferenceCompat)?.apply {
+                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+                    showMDMDialog(this.title)
+                }
+            }
+        }
+    }
+
+    private fun showMDMDialog(title: CharSequence): Boolean {
+        if (mdmDialog == null) {
+            mdmDialog = AlertDialog.Builder(view?.context,
+                ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
+                .setTitle(title)
+                .setMessage(R.string.mdm_controlled_dialog_explanation)
+                .setCancelable(true)
+                .setPositiveButton(R.string.ok) { _, _ -> }
+                .create()
+        }
+        mdmDialog?.let { dialog -> if (!dialog.isShowing) dialog.show() }
+        return false
     }
 
     private fun initializeTheme() {
@@ -311,6 +337,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         private const val PEP_USE_PASSPHRASE_FOR_NEW_KEYS = "pep_use_passphrase_for_new_keys"
         private const val PREFERENCE_THEME = "theme"
         private const val PREFERENCE_EXPORT_PEP_SUPPORT_DATA = "support_export_pep_data"
+        private const val PREFERENCE_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
 
 
         fun create(rootKey: String? = null) = GeneralSettingsFragment().withArguments(

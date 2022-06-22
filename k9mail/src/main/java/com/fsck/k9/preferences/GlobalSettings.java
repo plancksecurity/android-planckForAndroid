@@ -38,6 +38,9 @@ import java.util.TreeMap;
 
 import static com.fsck.k9.K9.LockScreenNotificationVisibility;
 
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
+
 
 public class GlobalSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;
@@ -313,6 +316,16 @@ public class GlobalSettings {
         ));
         s.put("pEpSyncFolder", Settings.versions(
                 new V(51, new BooleanSetting(true))
+        ));
+        s.put("pEpUseTrustwords", Settings.versions(
+                new V(54, new StringSetting(
+                        ManageableSettingKt.encodeBooleanToString(
+                                new ManageableSetting<>(
+                                        BuildConfig.USE_TRUSTWORDS_DEFAULT,
+                                        true
+                                )
+                        )
+                ))
         ));
         SETTINGS = Collections.unmodifiableMap(s);
 

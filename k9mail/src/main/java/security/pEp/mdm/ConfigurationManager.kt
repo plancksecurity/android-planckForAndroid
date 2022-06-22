@@ -19,6 +19,7 @@ class ConfigurationManager(
     companion object {
         const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
         const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
+        const val RESTRICTION_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
     }
 
     private var listener: RestrictionsListener? = null
@@ -55,6 +56,7 @@ class ConfigurationManager(
             when (entry.key) {
                 RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> savePrivacyProtection(restrictions, entry)
                 RESTRICTION_PEP_EXTRA_KEYS -> saveExtrasKeys(restrictions, entry)
+                RESTRICTION_PEP_USE_TRUSTWORDS -> saveUseTrustwords(restrictions, entry)
             }
         }
     }
@@ -81,6 +83,17 @@ class ConfigurationManager(
                 accounts.forEach { account ->
                     account.setpEpPrivacyProtection(config)
                 }
+            }
+
+        }
+    }
+
+    private fun saveUseTrustwords(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>()?.toManageableSetting()
+            config?.let {
+                K9.setpEpUseTrustwords(config)
             }
 
         }
