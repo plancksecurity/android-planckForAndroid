@@ -452,7 +452,7 @@ public class CucumberTestSteps {
         if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
             assertFailWithMessage("Is not showing the Alert message");
         }
-        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsafe_delivery_warning")))) {
+        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsecure_delivery_warning")))) {
             assertFailWithMessage("The text in the Alert message is not correct");
         }
         if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
