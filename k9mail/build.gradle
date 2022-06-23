@@ -208,21 +208,9 @@ android {
         buildConfigField "boolean", "UNSECURE_RECIPIENTS_WARNING_DEFAULT", "${unsecureRecipientsWarningDefault}"
         buildConfigField "boolean", "USE_TRUSTWORDS_DEFAULT", "${useTrustwordsDefault}"
     }
-    flavorDimensions "sync", "store"
+    flavorDimensions "store"
 
     productFlavors {
-
-
-        withkeysync {
-            buildConfigField "boolean", "WITH_KEY_SYNC", "true"
-            versionName "${gitVersionName}"
-            dimension "sync"
-        }
-        withoutkeysync {
-            buildConfigField "boolean", "WITH_KEY_SYNC", "false"
-            versionName "${gitVersionName}" + ".withoutKeysync"
-            dimension "sync"
-        }
 
         playStore {
             dimension "store"
