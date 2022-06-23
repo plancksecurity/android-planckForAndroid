@@ -13,14 +13,8 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class ConfigurationManager(
-        private val context: Context,
-        private val preferences: Preferences) {
-
-    companion object {
-        const val RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION = "pep_disable_privacy_protection"
-        const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
-        const val RESTRICTION_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
-    }
+    private val context: Context,
+    private val preferences: Preferences) {
 
     private var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
