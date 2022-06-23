@@ -22,8 +22,8 @@ data class AppConfigEntry(
 
 @Serializable
 data class ManageableSettingMdmEntry<TYPE>(
-        @SerialName("locked") val locked: Boolean,
         @SerialName("value") val value: TYPE,
+        @SerialName("locked") val locked: Boolean = true,
 ) {
     fun toManageableSetting(): ManageableSetting<TYPE> =
             ManageableSetting(value = value, locked = locked)
@@ -31,4 +31,3 @@ data class ManageableSettingMdmEntry<TYPE>(
 
 @Serializable
 data class ExtraKey(@SerialName("fpr") val fpr: String)
-
