@@ -5,6 +5,7 @@ import android.os.Environment;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.NotificationHideSubject;
@@ -296,7 +297,12 @@ public class GlobalSettings {
                 new V(43, new BooleanSetting(true))
         ));
         s.put("pEpForwardWarningEnabled", Settings.versions(
-                new V(47, new BooleanSetting(false))
+                new V(
+                        47,
+                        new BooleanSetting(
+                                BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT
+                        )
+                )
         ));
         s.put("pEpEnableSync", Settings.versions(
                 new V(49, new BooleanSetting(true))

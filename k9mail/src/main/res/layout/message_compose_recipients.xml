@@ -397,7 +397,8 @@
             android:dropDownWidth="wrap_content"
             android:imeOptions="actionNext|flagNoExtractUi"
             android:inputType="textEmailAddress|textMultiLine"
-            android:completionThreshold="1"/>
+            android:completionThreshold="1"
+            app:alwaysUnsecure="true"/>
 
     </LinearLayout>
 

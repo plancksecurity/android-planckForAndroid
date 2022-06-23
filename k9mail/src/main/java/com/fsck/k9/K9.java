@@ -343,7 +343,8 @@ public class K9 extends MultiDexApplication {
     //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectProtection = true;
-    private static boolean pEpForwardWarningEnabled = false;
+    private static boolean pEpForwardWarningEnabled =
+            BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT;
     private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -991,7 +992,8 @@ public class K9 extends MultiDexApplication {
         //pEpUseKeyserver = storage.getBoolean("pEpUseKeyserver", false);
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectProtection = getValuePEpSubjectProtection(storage);
-        pEpForwardWarningEnabled = storage.getBoolean("pEpForwardWarningEnabled", false);
+        pEpForwardWarningEnabled = storage.getBoolean(
+                "pEpForwardWarningEnabled", BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);

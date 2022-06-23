@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.TypedArray
 import android.os.Build
-import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.webkit.WebViewFeature
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -120,10 +120,8 @@ object ThemeManager {
     @JvmStatic
     @ColorInt
     fun getColorFromAttributeResource(context: Context, @AttrRes resource: Int): Int {
-        val theme = context.theme
-        val typedValue = TypedValue()
-        theme.resolveAttribute(resource, typedValue, true)
-        return typedValue.data
+        val resourceId = getAttributeResource(context, resource)
+        return ContextCompat.getColor(context, resourceId)
     }
 
     @JvmStatic
