@@ -27,7 +27,6 @@ import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
-import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
@@ -53,6 +52,7 @@ import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
 import security.pEp.ui.about.AboutActivity
+import security.pEp.ui.intro.startOnBoarding
 import security.pEp.ui.intro.startWelcomeMessage
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.ANDROID_FILE_MANAGER_MARKET_URL
 import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
@@ -222,8 +222,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         if (ACTION_IMPORT_SETTINGS == intent.action) {
             onSettingsImport()
         } else if (accounts.size < 1) {
-
-            startWelcomeMessage()
+            startOnBoarding()
             finish()
             return
         }
@@ -273,6 +272,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         setupAddAccountButton()
     }
 
+    fun startOnBoarding() {
+        if (BuildConfig.IS_ENTERPRISE) {
+            startOnBoarding(this)
+        } else {
+            startWelcomeMessage()
+        }
+    }
     private fun initializeSyncEnvironmentOnStartup() {
         if(!k9.ispEpSyncEnvironmentInitialized()) {
             val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
