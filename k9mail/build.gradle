@@ -208,9 +208,21 @@ android {
         buildConfigField "boolean", "UNSECURE_RECIPIENTS_WARNING_DEFAULT", "${unsecureRecipientsWarningDefault}"
         buildConfigField "boolean", "USE_TRUSTWORDS_DEFAULT", "${useTrustwordsDefault}"
     }
-    flavorDimensions "store"
+    flavorDimensions "type", "store"
 
     productFlavors {
+
+        enterprise {
+            buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            versionName "${gitVersionName}" + ".enterprise"
+            dimension "type"
+        }
+
+        endUser {
+            buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            versionName "${gitVersionName}"
+            dimension "type"
+        }
 
         playStore {
             dimension "store"
