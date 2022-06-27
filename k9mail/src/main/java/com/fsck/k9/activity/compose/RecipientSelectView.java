@@ -8,12 +8,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
-import androidx.loader.content.Loader;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.Spanned;
@@ -27,6 +21,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListPopupWindow;
 import android.widget.ListView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.content.Loader;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -42,12 +43,13 @@ import com.tokenautocomplete.CountSpan;
 import com.tokenautocomplete.TokenCompleteTextView;
 
 import org.apache.james.mime4j.util.CharsetUtil;
-import foundation.pEp.jniadapter.Rating;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import foundation.pEp.jniadapter.Rating;
 import timber.log.Timber;
 
 
@@ -75,6 +77,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private Account account;
     private PePUIArtefactCache uiCache;
     private boolean alwaysUnsecure;
+
 
     @Inject ContactPictureLoader contactPictureLoader;
     @Inject AlternateRecipientAdapter alternatesAdapter;
@@ -215,6 +218,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility") //Comes from library
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
         int action = event.getActionMasked();
@@ -226,13 +230,95 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             if (offset != -1) {
                 TokenImageSpan[] links = text.getSpans(offset, offset, RecipientTokenSpan.class);
                 if (links.length > 0) {
-                    showAlternates(links[0].getToken());
+                    TokenImageSpan span = links[0];
+                    Recipient recipient = span.getToken();
+                    if (isRemoveRecipientClicked(event, span)) {
+                        removeRecipient(recipient);
+                    } else {
+                        showAlternates(recipient);
+                    }
                     return true;
                 }
             }
         }
 
         return super.onTouchEvent(event);
+    }
+
+    private boolean isRemoveRecipientClicked(
+        MotionEvent event,
+        TokenImageSpan span
+    ) {
+        float touchAreaExtension = getResources().getDimension(R.dimen.remove_recipient_button_padding);
+
+        Recipient recipient = span.getToken();
+        RecipientTokenViewHolder.ViewLocation viewLocation = getRemoveButtonLocationForRecipient(recipient);
+
+        Layout layout = getLayout();
+        Editable text = getText();
+        if (viewLocation != null && layout != null && text != null) {
+            float spanX = layout.getPrimaryHorizontal(text.getSpanStart(span));
+            float absoluteX = spanX + viewLocation.getX();
+            float absoluteY = viewLocation.getY();
+
+            if (event.getX() + touchAreaExtension >= absoluteX
+                    && event.getX() - touchAreaExtension - absoluteX <= viewLocation.getWidth()
+            ) {
+                int heightOffset = getHeightOffsetForSpan(span);
+                if (heightOffset >= 0) {
+                    float realTop = absoluteY + heightOffset;
+                    return (event.getY() + touchAreaExtension >= realTop
+                            && event.getY() - touchAreaExtension - realTop <= viewLocation.getHeight());
+                }
+            }
+        }
+        return false;
+    }
+
+    private int getHeightOffsetForSpan(TokenImageSpan span) {
+        int lines = getLineCount();
+        int spanStart = getText().getSpanStart(span);
+        int spanEnd = getText().getSpanEnd(span);
+        for (int line = 0; line < lines; line++) {
+            if (getLayout().getLineStart(line) <= spanStart
+                && getLayout().getLineEnd(line) >= spanEnd) {
+                return getLineOffset(getLayout(), line);
+            }
+        }
+        return -1;
+    }
+
+    private int realLineHeight(Layout layout, int line) {
+        return layout.getLineBottom(line) - layout.getLineTop(line);
+    }
+
+    private int getLineOffset(Layout layout, int currentLine) {
+        int realLineHeight = 0;
+        for (int line = 0; line < currentLine; line++) {
+            realLineHeight += realLineHeight(layout, line);
+        }
+        return realLineHeight;
+    }
+
+    /**
+     * Find location data of the "x" remove button placed in the view tied to a given recipient.
+     * This method relies on spans to be of the RecipientTokenSpan class, as created by the
+     * buildSpanForObject method.
+     */
+    private RecipientTokenViewHolder.ViewLocation getRemoveButtonLocationForRecipient(Recipient currentRecipient) {
+        Editable text = getText();
+        if (text != null) {
+            RecipientTokenSpan[] spans = text.getSpans(
+                    0,
+                    text.length(), RecipientTokenSpan.class
+            );
+            for (RecipientTokenSpan span : spans) {
+                if (span.getToken() == currentRecipient) {
+                    return span.getRemoveButtonLocation();
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -331,13 +417,18 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         String countText = "+" + count;
         String textToDisplay = firstRecipient.getDisplayNameOrAddress();
         float requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
-        if (maxTextWidth() - requiredWidth < 80) {
+        int maxTextWidth = availableTextWidthWithRemoveButton();
+        if (maxTextWidth < requiredWidth) {
             do {
                 textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
                 requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
-            } while (maxTextWidth() - requiredWidth < 80);
-            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 1);
+            } while (maxTextWidth < requiredWidth);
+            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 3);
         }
+    }
+
+    private int availableTextWidthWithRemoveButton() {
+        return (int) (maxTextWidth() - getResources().getDimension(R.dimen.remove_button_full_width));
     }
 
     private Recipient findFirstVisibleRecipient() {
@@ -509,15 +600,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public void postShowAlternatesPopup(final List<Recipient> data) {
         // We delay this call so the soft keyboard is gone by the time the popup is layouted
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                unsecureAddressHelper.rateRecipients(
-                        data,
-                        recipients -> showAlternatesPopup(recipients)
-                );
-            }
-        });
+        new Handler().post(() -> unsecureAddressHelper.rateRecipients(
+                data,
+                this::showAlternatesPopup
+        ));
     }
 
     public void showAlternatesPopup(List<RatedRecipient> data) {
@@ -589,6 +675,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         });
     }
 
+    @NotNull
     @Override
     public Loader<List<Recipient>> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -611,7 +698,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Recipient>> loader, List<Recipient> data) {
+    public void onLoadFinished(@NotNull Loader<List<Recipient>> loader, List<Recipient> data) {
         if (loaderManager == null) {
             return;
         }
@@ -784,6 +871,11 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         public RecipientTokenSpan(View view, Recipient recipient, int token) {
             super(view, recipient, token);
             this.view = view;
+        }
+
+        public RecipientTokenViewHolder.ViewLocation getRemoveButtonLocation() {
+            RecipientTokenViewHolder holder = (RecipientTokenViewHolder) view.getTag();
+            return holder.getRemoveButtonLocation();
         }
     }
 

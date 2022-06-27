@@ -1,8 +1,12 @@
 package com.fsck.k9.activity.compose
 
+import android.content.res.ColorStateList
+import android.graphics.PointF
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
@@ -11,6 +15,10 @@ import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
+import security.pEp.ui.doOnLayout
+import security.pEp.ui.doOnNextLayout
+
+const val ELLIPSIS = "…"
 
 class RecipientTokenViewHolder internal constructor(
     private val view: View,
@@ -25,6 +33,14 @@ class RecipientTokenViewHolder internal constructor(
     private val cryptoStatusOrange: View = view.findViewById(R.id.contact_crypto_status_orange)
     private val cryptoStatusGreen: View = view.findViewById(R.id.contact_crypto_status_green)
     private lateinit var recipient: Recipient
+    var removeButtonLocation: ViewLocation? = null
+        private set
+
+    private val removeButton = view.findViewById<ImageView>(R.id.remove_button).also {
+        it.doOnLayout {
+            setRemoveButtonLocationData()
+        }
+    }
 
     fun bind(recipient: Recipient) {
         this.recipient = recipient
@@ -34,7 +50,7 @@ class RecipientTokenViewHolder internal constructor(
 
     fun truncateName(newLimit: Int) {
         if (newLimit > 0 && newLimit <= recipient.displayNameOrAddress.length) {
-            updateName(recipient.displayNameOrAddress.substring(0, newLimit) + "...")
+            updateName(recipient.displayNameOrAddress.substring(0, newLimit) + ELLIPSIS)
         }
     }
 
@@ -46,6 +62,18 @@ class RecipientTokenViewHolder internal constructor(
         name.text = newName
         name.width = name.paint.measureText(name.text.toString()).toInt()
         +name.paddingStart + name.paddingEnd
+        removeButton.doOnNextLayout {
+            setRemoveButtonLocationData()
+        }
+    }
+
+    private fun setRemoveButtonLocationData() {
+        removeButtonLocation = ViewLocation(
+            removeButton.measuredWidth,
+            removeButton.measuredHeight,
+            removeButton.x,
+            removeButton.y
+        )
     }
 
     fun updateRating(rating: Rating) {
@@ -84,11 +112,14 @@ class RecipientTokenViewHolder internal constructor(
         if (K9.ispEpForwardWarningEnabled()) {
             if (account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)) {
                 view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
-                name.setTextColor(
-                    ContextCompat.getColor(
-                        name.context,
-                        R.color.compose_unsecure_delivery_warning
-                    )
+                val warningColor = ContextCompat.getColor(
+                    name.context,
+                    R.color.compose_unsecure_delivery_warning
+                )
+                name.setTextColor(warningColor)
+                ImageViewCompat.setImageTintList(
+                    removeButton,
+                    ColorStateList.valueOf(warningColor)
                 )
             } else {
                 view.setBackgroundResource(R.drawable.recipient_token_shape)
@@ -98,9 +129,19 @@ class RecipientTokenViewHolder internal constructor(
                         android.R.attr.textColorSecondary
                     )
                 )
+                ImageViewCompat.setImageTintList(
+                    removeButton,
+                    null
+                )
             }
         } else {
             contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
         }
     }
+    class ViewLocation(
+        val width: Int,
+        val height: Int,
+        val x: Float,
+        val y: Float,
+    )
 }

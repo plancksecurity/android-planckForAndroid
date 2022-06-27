@@ -116,6 +116,7 @@
         <attr name="iconActionFilter" format="reference"/>
         <attr name="dialogBodyDefaultTextColor" format="reference|color"/>
         <attr name="intenseColorOnBackground" format="reference|color"/>
+        <attr name="removeRecipientButtonColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">
