@@ -18,7 +18,8 @@ open class BaseAndroidTest {
     @JvmField
     protected val accountListSize = IntArray(2)
 
-    @get:Rule
+    @JvmField
+    @Rule
     var splashActivityTestRule = IntentsTestRule(
         SplashActivity::class.java, false, false)
 

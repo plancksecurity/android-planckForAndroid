@@ -42,6 +42,7 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.Root;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
@@ -128,6 +129,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.valuesAreEqual;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewWithTextIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static java.lang.Thread.sleep;
@@ -1924,27 +1926,33 @@ public class TestUtils {
     }
 
     public void skipTutorialAndAllowPermissionsIfNeeded() {
-        if(exists(onView(withId(R.id.skip)))) {
-            skipTutorialAndAllowPermissions();
+        skipTutorial();
+        clickContinueAndAllowPermisions();
+    }
+
+    private void skipTutorial() {
+        try {
+            waitForIdle();
+            if(exists(onView(withId(R.id.skip)))) {
+                onView(withId(R.id.skip)).perform(click());
+            }
+            waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
         }
     }
 
-    public void skipTutorialAndAllowPermissions() {
+    private void clickContinueAndAllowPermisions() {
         try {
             waitForIdle();
-            onView(withId(R.id.skip)).perform(click());
+            if(exists(onView(withId(R.id.action_continue)))) {
+                onView(withId(R.id.action_continue)).perform(click());
+                allowPermissions();
+            }
             waitForIdle();
         } catch (Exception ignoredException) {
             Timber.i("Ignored", "Ignored exception");
         }
-        try {
-            waitForIdle();
-            onView(withId(R.id.action_continue)).perform(click());
-            waitForIdle();
-        } catch (Exception ignoredException) {
-            Timber.i("Ignored", "Ignored exception");
-        }
-        allowPermissions();
     }
 
     public void goBackAndRemoveAccount() {
