@@ -303,7 +303,7 @@ public class GlobalSettings {
                 new V(
                         47,
                         new BooleanSetting(
-                                BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT
+                                BuildConfig.IS_ENTERPRISE
                         )
                 )
         ));
@@ -321,7 +321,7 @@ public class GlobalSettings {
                 new V(54, new StringSetting(
                         ManageableSettingKt.encodeBooleanToString(
                                 new ManageableSetting<>(
-                                        BuildConfig.USE_TRUSTWORDS_DEFAULT,
+                                        !BuildConfig.IS_ENTERPRISE,
                                         true
                                 )
                         )
