@@ -230,6 +230,14 @@ android {
 
     }
 
+    variantFilter { variant ->
+        def names = variant.getFlavors()*.name
+        if (names.contains('enterprise') && names.contains('fDroid')) {
+            println("names: $names")
+            variant.setIgnore(true)
+        }
+    }
+
     signingConfigs {
         release
     }
