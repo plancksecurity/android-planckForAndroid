@@ -17,4 +17,7 @@
     <dimen name="progressbar_padding">16dp</dimen>
     <dimen name="progressbar_size">48dp</dimen>
 
+    <dimen name="remove_recipient_button_padding">4dp</dimen>
+    <dimen name="remove_button_full_width">30dp</dimen>
+
 </resources>

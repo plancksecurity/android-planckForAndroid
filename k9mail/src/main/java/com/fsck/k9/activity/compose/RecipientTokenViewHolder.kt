@@ -1,6 +1,7 @@
 package com.fsck.k9.activity.compose
 
 import android.content.res.ColorStateList
+import android.graphics.PointF
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +18,8 @@ import foundation.pEp.jniadapter.Rating
 import security.pEp.ui.doOnLayout
 import security.pEp.ui.doOnNextLayout
 
+const val ELLIPSIS = "…"
+
 class RecipientTokenViewHolder internal constructor(
     private val view: View,
     private val contactPictureLoader: ContactPictureLoader,
@@ -30,7 +33,7 @@ class RecipientTokenViewHolder internal constructor(
     private val cryptoStatusOrange: View = view.findViewById(R.id.contact_crypto_status_orange)
     private val cryptoStatusGreen: View = view.findViewById(R.id.contact_crypto_status_green)
     private lateinit var recipient: Recipient
-    var removeButtonLocationData: ViewLocationData? = null
+    var removeButtonLocation: ViewLocation? = null
         private set
 
     private val removeButton = view.findViewById<ImageView>(R.id.remove_button).also {
@@ -47,7 +50,7 @@ class RecipientTokenViewHolder internal constructor(
 
     fun truncateName(newLimit: Int) {
         if (newLimit > 0 && newLimit <= recipient.displayNameOrAddress.length) {
-            updateName(recipient.displayNameOrAddress.substring(0, newLimit) + "...")
+            updateName(recipient.displayNameOrAddress.substring(0, newLimit) + ELLIPSIS)
         }
     }
 
@@ -65,9 +68,9 @@ class RecipientTokenViewHolder internal constructor(
     }
 
     private fun setRemoveButtonLocationData() {
-        removeButtonLocationData = ViewLocationData(
-            removeButton.measuredHeight,
+        removeButtonLocation = ViewLocation(
             removeButton.measuredWidth,
+            removeButton.measuredHeight,
             removeButton.x,
             removeButton.y
         )
@@ -135,11 +138,10 @@ class RecipientTokenViewHolder internal constructor(
             contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
         }
     }
+    class ViewLocation(
+        val width: Int,
+        val height: Int,
+        val x: Float,
+        val y: Float,
+    )
 }
-
-class ViewLocationData(
-    val height: Int,
-    val width: Int,
-    val x: Float,
-    val y: Float,
-)
