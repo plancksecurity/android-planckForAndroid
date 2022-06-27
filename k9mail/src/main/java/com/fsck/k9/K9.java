@@ -346,7 +346,7 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectProtection = true;
     private static boolean pEpForwardWarningEnabled =
-            BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT;
+            BuildConfig.IS_ENTERPRISE;
     private static boolean pEpSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -361,7 +361,7 @@ public class K9 extends MultiDexApplication {
 
     private static String pEpNewKeysPassphrase;
     private static ManageableSetting<Boolean> pEpUseTrustwords =
-            new ManageableSetting<>(BuildConfig.USE_TRUSTWORDS_DEFAULT, true);
+            new ManageableSetting<>(!BuildConfig.IS_ENTERPRISE, true);
 
     /**
      * @see #areDatabasesUpToDate()
@@ -1001,7 +1001,7 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectProtection = getValuePEpSubjectProtection(storage);
         pEpForwardWarningEnabled = storage.getBoolean(
-                "pEpForwardWarningEnabled", BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT);
+                "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
@@ -1049,7 +1049,7 @@ public class K9 extends MultiDexApplication {
                         "pEpUseTrustwords",
                         ManageableSettingKt.encodeBooleanToString(
                                 new ManageableSetting<>(
-                                        BuildConfig.USE_TRUSTWORDS_DEFAULT,
+                                        !BuildConfig.IS_ENTERPRISE,
                                         true
                                 )
                         )
