@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.preference.*
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
@@ -71,12 +72,16 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeUseTrustwords() {
-        if (K9.getpEpUseTrustwords().locked) {
-            (findPreference(PREFERENCE_PEP_USE_TRUSTWORDS) as? SwitchPreferenceCompat)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
-                    showMDMDialog(this.title)
+        if (BuildConfig.IS_ENTERPRISE) {
+            if (K9.getpEpUseTrustwords().locked) {
+                (findPreference(PREFERENCE_PEP_USE_TRUSTWORDS) as? SwitchPreferenceCompat)?.apply {
+                    this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
+                        showMDMDialog(this.title)
+                    }
                 }
             }
+        } else {
+            findPreference<Preference>(PREFERENCE_PEP_USE_TRUSTWORDS)?.remove()
         }
     }
 
