@@ -46,7 +46,7 @@
     <color name="attachment_background_light">#F8F8F8</color>
     <color name="attachment_background_dark">#070707</color>
     <color name="recipient_token_background_light">#F6F6F6</color>
-    <color name="recipient_token_background_dark">#090909</color>
+    <color name="recipient_token_background_dark">#303030</color>
 
     <color name="translucent_background">#003E4447</color>
     <color name="pep_selected_item">#E8EAF6</color>
@@ -103,5 +103,8 @@
     <color name="dark_theme_preferences_icons_color">@color/white_transparent_90</color>
     <color name="dark_theme_text_color_primary">@color/white_transparent_90</color>
     <color name="white_transparent_70">#B3FFFFFF</color>
+
+    <color name="compose_unsecure_delivery_warning">#D70000</color>
+    <color name="compose_unsecure_delivery_warning_text">@color/white</color>
 
 </resources>

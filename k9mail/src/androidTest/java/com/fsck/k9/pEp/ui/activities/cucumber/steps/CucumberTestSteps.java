@@ -13,6 +13,8 @@ import android.os.Environment;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
@@ -165,25 +167,7 @@ public class CucumberTestSteps {
                 waitForIdle();
             }
         }
-        waitForIdle();
-        Intents.release();
-        device.pressHome();
-        waitForIdle();
-        try {
-            device.pressRecentApps();
-            waitForIdle();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        UiObject2 clear = device.findObject(By.res("com.sec.android.app.launcher:id/clear_all_button"));
-        {
-            try {
-                clear.click();
-                waitForIdle();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        testUtils.clearAllRecentApps();
     }
 
     @When(value = "^I created an account$")
@@ -355,24 +339,13 @@ public class CucumberTestSteps {
         String recipient = "recipients@email.pep";
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
-            //scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
-            try {
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                Timber.i("Waiting 2 seconds");
-            }
             waitForIdle();
             testUtils.clickView(R.id.subject);
             waitForIdle();
             scroll.swipe(Direction.UP, 1f);
             scroll.swipe(Direction.UP, 1f);
-            try {
-                Thread.sleep(2000);
-            } catch (Exception e) {
-                Timber.i("Waiting 2 seconds");
-            }
             waitForIdle();
             testUtils.scrollDownToSubject();
             waitForIdle();
@@ -380,9 +353,31 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to)).perform(typeText(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient));
             waitForIdle();
-            //I_enter_text_in_field(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient, field);
-            //I_enter_text_in_field(";", field);
         }
+    }
+
+    @When("^I enter (\\d+) unreliable recipients in the (\\S+) field")
+    public void I_fill_recipients(int recipients, String field) {
+        timeRequiredForThisMethod(1);
+        String recipient = "recipients@email.pep";
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
+        scroll.swipe(Direction.UP, 1f);
+        String loopText = "firstaccountinthelist@this.is";
+        testUtils.clickView(R.id.subject);
+        waitForIdle();
+        onView(withId(R.id.to)).perform(typeText(loopText));
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        loopText = "";
+        for (int loop = 1; loop < recipients; loop++) {
+            waitForIdle();
+            loopText = loopText + loop + "of" + recipients + recipient + "; ";
+        }
+        testUtils.typeTextInField("", R.id.to, "to");
+        waitForIdle();
+        onView(withId(R.id.to)).perform(typeText(loopText));
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        waitForIdle();
+        onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
     }
 
     @When("^I paste (\\d+) recipients in the (\\S+) field")
@@ -452,33 +447,74 @@ public class CucumberTestSteps {
         }
     }
 
-    @When("^I check is unsecure")
-    public void I_check_is_unsecure() {
+    @When("^I check insecurity warnings are there")
+    public void I_check_insecurity_warnings_are_there() {
         if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
             assertFailWithMessage("Is not showing the Alert message");
         }
-        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsafe_delivery_warning")))) {
+        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsecure_delivery_warning")))) {
             assertFailWithMessage("The text in the Alert message is not correct");
         }
-        //onView(withId(R.id.to)).check(matches(withTextColor(R.color.pep_red)));
+        if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
+            assertFailWithMessage("There is only 1 address or less and should be 2 or more");
+        }
+
         BySelector selector;
         selector = By.clazz("android.widget.MultiAutoCompleteTextView");
         waitForIdle();
         for (UiObject2 multiTextView : device.findObjects(selector)) {
-            int startingPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/3;
-            int endPointX = multiTextView.getVisibleBounds().left + multiTextView.getVisibleBounds().width()/2;
+            int startingPointX = multiTextView.getVisibleBounds().left;
+            int endPointX = multiTextView.getVisibleBounds().left + 100;
             int centerY = multiTextView.getVisibleCenter().y;
             boolean isRed = false;
             for (int x = startingPointX; x < endPointX; x++) {
-                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.9 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
-                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
-                    isRed = true;
-                    break;
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
+                }
+            }
+            if (!isRed) {
+                assertFailWithMessage("Border color in the field TO is not red");
+            }
+            startingPointX = multiTextView.getVisibleBounds().centerX();
+            endPointX = multiTextView.getVisibleBounds().centerX() + 100;
+            centerY = multiTextView.getVisibleCenter().y;
+            isRed = false;
+            for (int x = startingPointX; x < endPointX; x++) {
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
                 }
             }
             if (!isRed) {
                 assertFailWithMessage("Text color in the field TO is not red");
+            }
+            startingPointX = multiTextView.getVisibleBounds().right;
+            endPointX = multiTextView.getVisibleBounds().left;
+            isRed = false;
+            for (int x = startingPointX; x > endPointX; x--) {
+                if (Color.valueOf(testUtils.getPixelColor(x, centerY)).blue() <= 0.8 &&
+                        Color.valueOf(testUtils.getPixelColor(x, centerY)).green() <= 0.8) {
+                    if (Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).red() >= 0.8 &&
+                            Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).blue() <= 0.3 &&
+                            Color.valueOf(testUtils.getPixelColor(x - 1, centerY)).green() <= 0.3) {
+                        isRed = true;
+                        break;
+                    }
+                }
+            }
+            if (!isRed) {
+                assertFailWithMessage("Text color of the +X in field TO is not red");
             }
         }
     }
@@ -1455,7 +1491,7 @@ public class CucumberTestSteps {
                             testUtils.dragWidget(widgetToDrag, textView.getParent().getChildren().get(0).getVisibleCenter().x, textView.getParent().getChildren().get(0).getVisibleCenter().y);
                             scroll = 30;
                             break;
-                        } else if (textView.getResourceName().equals("com.android.launcher3:id/section") &&
+                        } else if (textView.getResourceName() != null && textView.getResourceName().equals("com.android.launcher3:id/section") &&
                             textView.getVisibleBounds().left == 0){
                             verticalLeftScroll = false;
                         }
@@ -1549,7 +1585,8 @@ public class CucumberTestSteps {
             TestUtils.assertFailWithMessage("Missing a Widget");
         }
         if (!testUtils.textExistsOnScreen("WidTest")) {
-            TestUtils.assertFailWithMessage("Widget error: wrong message subject");
+            Timber.e("Cannot find the message on the screen");
+            testUtils.clearAllRecentApps();
         }
         waitForIdle();
         messagesListWidget.click();

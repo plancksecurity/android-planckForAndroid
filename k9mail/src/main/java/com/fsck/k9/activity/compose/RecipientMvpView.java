@@ -508,6 +508,14 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
+    public void handleUnsecureDeliveryWarning(boolean unsecure) {
+        if (unsecure) {
+            activity.showUnsecureDeliveryWarning();
+        } else {
+            activity.hideUnsecureDeliveryWarning();
+        }
+    }
+
     public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
@@ -539,26 +547,27 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.messageRatingLoaded();
     }
 
-    public void notifyAddressesChanged(List<Address> toAddresses, List<Address> ccAddresses, List<Address> bbcAddresses) {
+    public void notifyRecipientsChanged(
+            List<Recipient> toRecipients,
+            List<Recipient> ccRecipients,
+            List<Recipient> bccRecipients
+    ) {
+        View currentFocus = activity.getCurrentFocus();
+        notifyRecipientsChanged(toView, toRecipients);
+        notifyRecipientsChanged(ccView, ccRecipients);
+        notifyRecipientsChanged(bccView, bccRecipients);
+        bccView.post(currentFocus::requestFocus);
+    }
 
-        for (Address toAddress : toAddresses) {
-            Recipient recipient = new Recipient(toAddress);
-            toView.removeObject(recipient);
-            toView.addRecipients(recipient);
+    private void notifyRecipientsChanged(
+            ActionRecipientSelectView view,
+            List<Recipient> recipients
+    ) {
+        for (Recipient recipient : recipients) {
+            view.removeObject(recipient);
+            view.addRecipients(recipient);
         }
-
-        for (Address ccAddress : ccAddresses) {
-            Recipient recipient = new Recipient(ccAddress);
-            ccView.removeObject(recipient);
-            ccView.addRecipients(recipient);
-        }
-
-        for (Address bccAddress : bbcAddresses) {
-            Recipient recipient = new Recipient(bccAddress);
-            bccView.removeObject(recipient);
-            bccView.addRecipients(recipient);
-        }
-
+        view.restoreFirstRecipientTruncation();
     }
 
     public enum CryptoStatusDisplayType {

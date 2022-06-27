@@ -853,6 +853,28 @@ public class TestUtils {
         compareMessageBodyLongText(cucumberBody);
     }
 
+    public void clearAllRecentApps () {
+        waitForIdle();
+        Intents.release();
+        device.pressHome();
+        waitForIdle();
+        try {
+            device.pressRecentApps();
+            waitForIdle();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        UiObject2 clear = device.findObject(By.res("com.sec.android.app.launcher:id/clear_all_button"));
+        {
+            try {
+                clear.click();
+                waitForIdle();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void assertFailWithMessage(String message) {
         Assume.assumeTrue(message, false);
     }
