@@ -1,5 +1,6 @@
 package com.fsck.k9.activity.compose
 
+import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
@@ -27,6 +28,8 @@ class UnsecureAddressHelperTest {
     fun setup() {
         every { view.hasRecipient(any()) }.returns(true)
         every { view.isAlwaysUnsecure }.returns(false)
+        mockkStatic(K9::class)
+        every { K9.ispEpForwardWarningEnabled() }.returns(true)
         presenter.initialize(view)
     }
 
@@ -296,5 +299,24 @@ class UnsecureAddressHelperTest {
 
 
         assertTrue(presenter.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
+    }
+
+    @Test
+    fun `getRecipientRating does not add unsecure address channel when unsecure forward warning is disabled`() {
+        every { view.hasRecipient(any()) }.returns(true)
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onError(RuntimeException()) }
+        every { K9.ispEpForwardWarningEnabled() }.returns(false)
+
+
+        presenter.getRecipientRating(recipient, true, callback)
+
+
+        assertFalse(presenter.isUnsecureChannel())
     }
 }
