@@ -18,6 +18,7 @@
     <dimen name="progressbar_size">48dp</dimen>
 
     <dimen name="remove_recipient_button_padding">4dp</dimen>
-    <dimen name="remove_button_full_width">30dp</dimen>
+    <!-- FIXME: Find out why this free space is needed in order to work -->
+    <dimen name="first_recipient_token_end_reserved_space">64dp</dimen>
 
 </resources>
