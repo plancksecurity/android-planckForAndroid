@@ -2,6 +2,24 @@ Feature: Test
   Background:
     Given I created an account
 
+  @QTR-
+  Scenario Outline: Cucumber Remove address clicking X
+
+
+    When I select account <account>
+    And I click compose message
+    And I enter 1 unreliable recipients in the messageTo field
+
+#FIXME: Only guaranteed to work with S22
+
+    Then I remove first address clicking X button
+
+    Examples:
+      |account|
+      |  0    |
+      |  1    |
+      |  2    |
+
 
 	#Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
 	# when entering the email address of a new contact bot1.
