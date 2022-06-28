@@ -519,6 +519,41 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I remove first address clicking X button")
+    public void I_remove_first_address_clicking_X() {
+        BySelector selector;
+        selector = By.clazz("android.widget.MultiAutoCompleteTextView");
+        waitForIdle();
+        for (UiObject2 multiTextView : device.findObjects(selector)) {
+            int rightX = multiTextView.getVisibleBounds().right;
+            int centerY = multiTextView.getVisibleCenter().y;
+            while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                    0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                    0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                rightX--;
+            }
+            while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                    0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                    0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                rightX--;
+            }
+            while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                    0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                    0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                rightX--;
+            }
+            while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                    0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                    0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                rightX--;
+            }
+            device.click(rightX,centerY);
+            //if (!isRed) {
+            //    assertFailWithMessage("Text color in the field TO is not red");
+            //}
+        }
+    }
+
     @When("^I compare (\\S+) from json file with (\\S+)")
     public void I_compare_jsonfile_with_string(String name, String stringToCompare) {
         timeRequiredForThisMethod(10);
