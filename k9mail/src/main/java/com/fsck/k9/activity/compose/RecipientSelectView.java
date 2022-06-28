@@ -420,10 +420,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         int maxTextWidth = availableTextWidthWithRemoveButton();
         if (maxTextWidth < requiredWidth) {
             do {
-                textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
+                textToDisplay = textToDisplay.substring(0, textToDisplay.length() - 1);
                 requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
             } while (maxTextWidth < requiredWidth);
-            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() -1);
+            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 1);
         }
     }
 
