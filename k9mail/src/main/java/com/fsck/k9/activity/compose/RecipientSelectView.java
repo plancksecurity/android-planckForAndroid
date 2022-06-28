@@ -423,12 +423,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 textToDisplay = textToDisplay.substring(0, textToDisplay.length()-1);
                 requiredWidth = lastLayout.getPaint().measureText(textToDisplay + countText);
             } while (maxTextWidth < requiredWidth);
-            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() - 3);
+            truncateRecipientDisplayName(firstRecipient, textToDisplay.length() -1);
         }
     }
 
     private int availableTextWidthWithRemoveButton() {
-        return (int) (maxTextWidth() - getResources().getDimension(R.dimen.remove_button_full_width));
+        return (int) (maxTextWidth() - getResources().getDimension(
+                R.dimen.first_recipient_token_end_free_space));
     }
 
     private Recipient findFirstVisibleRecipient() {

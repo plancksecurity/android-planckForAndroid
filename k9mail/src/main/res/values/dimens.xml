@@ -18,6 +18,6 @@
     <dimen name="progressbar_size">48dp</dimen>
 
     <dimen name="remove_recipient_button_padding">4dp</dimen>
-    <dimen name="remove_button_full_width">30dp</dimen>
+    <dimen name="first_recipient_token_end_free_space">58dp</dimen>
 
 </resources>
