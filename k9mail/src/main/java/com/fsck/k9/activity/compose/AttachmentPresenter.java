@@ -1,9 +1,6 @@
 package com.fsck.k9.activity.compose;
 
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
@@ -13,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
@@ -23,6 +21,9 @@ import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.activity.misc.Attachment.LoadingState;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.MessageViewInfo;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import timber.log.Timber;
 
@@ -36,8 +37,8 @@ public class AttachmentPresenter {
     private static final int LOADER_ID_MASK = 1 << 6;
     private static final int MAX_TOTAL_LOADERS = LOADER_ID_MASK - 1;
     private static final int REQUEST_CODE_ATTACHMENT_URI = 1;
-    private static final int ATTACHMENTS_MAX_ALLOWED_SIZE = 25000000;
-    public static final int ATTACHMENTS_MAX_ALLOWED_SIZE_MB = 25;
+    public static final int ATTACHMENTS_MAX_ALLOWED_MB = 25;
+    private static final int ATTACHMENTS_MAX_ALLOWED_SIZE = ATTACHMENTS_MAX_ALLOWED_MB * 1000 * 1000;
 
 
     // injected state
@@ -247,7 +248,7 @@ public class AttachmentPresenter {
                     attachments.put(attachment.uri, attachment);
                     if (areAttachmentsTooBig()) {
                         attachmentMvpView.showAttachmentsTooBigFeedback();
-                        Timber.i("Attempt to attach a bigger than 25 MB file to a message");
+                        Timber.i("Attempt to attach a bigger than %s file to a message", ATTACHMENTS_MAX_ALLOWED_MB);
                         removeAttachment(attachment);
                     } else {
                         initAttachmentContentLoader(attachment);

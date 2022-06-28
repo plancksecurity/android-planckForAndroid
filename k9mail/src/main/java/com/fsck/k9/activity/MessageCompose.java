@@ -1984,7 +1984,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         public void showAttachmentsTooBigFeedback() {
             Toast.makeText(
                     getBaseContext(),
-                    getString(R.string.compose_message_attachments_too_big, AttachmentPresenter.ATTACHMENTS_MAX_ALLOWED_SIZE_MB),
+                    getString(R.string.compose_message_attachments_too_big,
+                            AttachmentPresenter.ATTACHMENTS_MAX_ALLOWED_MB),
                     Toast.LENGTH_LONG)
                     .show();
         }
