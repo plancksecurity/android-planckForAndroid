@@ -429,7 +429,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     private int availableTextWidthWithRemoveButton() {
         return (int) (maxTextWidth() - getResources().getDimension(
-                R.dimen.first_recipient_token_end_free_space));
+                R.dimen.first_recipient_token_end_reserved_space));
     }
 
     private Recipient findFirstVisibleRecipient() {
