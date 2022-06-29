@@ -365,6 +365,8 @@ public class CucumberTestSteps {
         String loopText = "firstaccountinthelist@this.is";
         testUtils.clickView(R.id.subject);
         waitForIdle();
+        testUtils.clickView(R.id.to_label);
+        waitForIdle();
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         loopText = "";
@@ -378,6 +380,7 @@ public class CucumberTestSteps {
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         waitForIdle();
         onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
+        waitForIdle();
     }
 
     @When("^I paste (\\d+) recipients in the (\\S+) field")
