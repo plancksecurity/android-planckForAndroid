@@ -450,6 +450,15 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I check insecurity warnings are not there")
+    public void I_check_insecurity_warnings_are_not_there() {
+        waitForIdle();
+        if (viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
+            assertFailWithMessage("Is showing the Alert message and it shouldn't be there");
+        }
+    }
+
+
     @When("^I check insecurity warnings are there")
     public void I_check_insecurity_warnings_are_there() {
         if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
