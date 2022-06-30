@@ -365,6 +365,8 @@ public class CucumberTestSteps {
         String loopText = "firstaccountinthelist@this.is";
         testUtils.clickView(R.id.subject);
         waitForIdle();
+        testUtils.clickView(R.id.to_label);
+        waitForIdle();
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         loopText = "";
@@ -378,6 +380,7 @@ public class CucumberTestSteps {
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         waitForIdle();
         onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
+        waitForIdle();
     }
 
     @When("^I paste (\\d+) recipients in the (\\S+) field")
@@ -447,6 +450,15 @@ public class CucumberTestSteps {
         }
     }
 
+    @When("^I check insecurity warnings are not there")
+    public void I_check_insecurity_warnings_are_not_there() {
+        waitForIdle();
+        if (viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
+            assertFailWithMessage("Is showing the Alert message and it shouldn't be there");
+        }
+    }
+
+
     @When("^I check insecurity warnings are there")
     public void I_check_insecurity_warnings_are_there() {
         if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
@@ -515,6 +527,52 @@ public class CucumberTestSteps {
             }
             if (!isRed) {
                 assertFailWithMessage("Text color of the +X in field TO is not red");
+            }
+        }
+    }
+
+    @When("^I remove the (\\d+) address clicking X button")
+    public void I_remove_address_clicking_X(int address) {
+        BySelector selector = By.clazz("android.widget.MultiAutoCompleteTextView");
+        waitForIdle();
+        testUtils.clickView(R.id.to_label);
+        waitForIdle();
+        int boxBottom = 0;
+        boolean clicked = false;
+        while (!clicked) {
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                boxBottom = multiTextView.getVisibleBounds().bottom;
+                int rightX = multiTextView.getVisibleBounds().right;
+                int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
+                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                device.click(rightX, centerY);
+            }
+            waitForIdle();
+            testUtils.clickView(R.id.to_label);
+            waitForIdle();
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
+                    clicked = true;
+                }
             }
         }
     }
