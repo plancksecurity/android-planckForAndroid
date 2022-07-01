@@ -105,8 +105,17 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 null
+            BuildConfig.IS_ENTERPRISE
+                    && (
+                    rating == Rating.pEpRatingCannotDecrypt
+                            || rating == Rating.pEpRatingHaveNoKey
+                    ) -> null
             isRatingUnsecure(rating) ->
-                null
+                if (BuildConfig.IS_ENTERPRISE) {
+                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
+                } else {
+                    null
+                }
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
