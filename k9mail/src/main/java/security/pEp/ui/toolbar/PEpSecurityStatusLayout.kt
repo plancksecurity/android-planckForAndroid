@@ -69,6 +69,7 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         var firstLine = context.getString(getRatingTextRes(rating, ispEpEnabled))
         secondLineText?.let { secondTextView ->
             var secondLine = ""
+            secondTextView.text = secondLine
             if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
                 val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
                 if (afterLimit.contains(" ")) {
