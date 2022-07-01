@@ -817,7 +817,7 @@ public class RecipientPresenter {
         recipientMvpView.onPEpPrivacyStatus();
     }
 
-    public void handlepEpState(boolean... withToast) {
+    public void handlepEpState() {
         recipientMvpView.handlepEpState(getAllRecipients().isEmpty());
     }
 
