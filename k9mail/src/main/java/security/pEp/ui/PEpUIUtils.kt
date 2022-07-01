@@ -121,7 +121,7 @@ object PEpUIUtils {
     @JvmStatic
     fun getToolbarRatingVisibility(
         rating: Rating?,
-        encrypt: Boolean = true,
+        pEpEnabled: Boolean = true,
         forceHide: Boolean = false,
     ): Int {
         return when {
@@ -135,7 +135,7 @@ object PEpUIUtils {
             isRatingUnsecure(rating) ->
                 if (BuildConfig.IS_ENTERPRISE) View.VISIBLE
                 else View.GONE
-            !encrypt ->
+            !pEpEnabled ->
                 View.VISIBLE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingReliable.value ->
                 View.VISIBLE
@@ -147,15 +147,15 @@ object PEpUIUtils {
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingColor(context: Context, rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingColor(context: Context, rating: Rating?, pEpEnabled: Boolean = true): Int {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-        return ContextCompat.getColor(context, getRatingColorRes(rating, encrypt))
+        return ContextCompat.getColor(context, getRatingColorRes(rating, pEpEnabled))
     }
 
     @JvmStatic
-    fun getRatingColorRes(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingColorRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
         return when {
-            !encrypt || rating == null ->
+            !pEpEnabled || rating == null ->
                 R.color.pep_no_color
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.color.pep_no_color
@@ -177,7 +177,7 @@ object PEpUIUtils {
     }
 
     @JvmStatic
-    fun getRatingTextRes(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
         return when {
             rating == null ->
                 R.string.pep_rating_none
@@ -189,7 +189,7 @@ object PEpUIUtils {
                 R.string.enterprise_unsecure
             rating == Rating.pEpRatingUndefined ->
                 R.string.pep_rating_none
-            !encrypt ->
+            !pEpEnabled ->
                 R.string.pep_rating_forced_unencrypt
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.string.pep_rating_mistrusted

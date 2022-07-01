@@ -2031,8 +2031,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void setToolbarRating(Rating rating, boolean forceHide) {
-        boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setEncrypt(encrypt);
+        boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
+        pEpSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
         pEpSecurityStatusLayout.setRating(rating, forceHide);
     }
 
