@@ -414,7 +414,7 @@ public class RecipientPresenter {
 
     public void updateCryptoStatus() {
         cachedCryptoStatus = null;
-        handlepEpState();
+        loadPEpStatus();
 
         OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
 
