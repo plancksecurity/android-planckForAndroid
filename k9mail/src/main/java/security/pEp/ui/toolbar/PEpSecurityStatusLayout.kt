@@ -30,8 +30,9 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText = findViewById(R.id.securityStatusSecondLine)
     }
 
-    fun setRating(rating: Rating?) {
-        visibility = getToolbarRatingVisibility(rating, encrypt)
+    @JvmOverloads
+    fun setRating(rating: Rating?, forceHide: Boolean = false) {
+        visibility = getToolbarRatingVisibility(rating, encrypt, forceHide)
 
         securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating))
 

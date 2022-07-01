@@ -119,9 +119,13 @@ object PEpUIUtils {
     }
 
     @JvmStatic
-    fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getToolbarRatingVisibility(
+        rating: Rating?,
+        encrypt: Boolean = true,
+        forceHide: Boolean = false,
+    ): Int {
         return when {
-            rating == null ->
+            forceHide || rating == null ->
                 View.GONE
             BuildConfig.IS_ENTERPRISE
                     && (

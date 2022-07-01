@@ -2030,10 +2030,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         toolBarCustomizer.setStatusBarPepColor(color);
     }
 
-    public void setToolbarRating(Rating rating) {
+    public void setToolbarRating(Rating rating, boolean forceHide) {
         boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
         pEpSecurityStatusLayout.setEncrypt(encrypt);
-        pEpSecurityStatusLayout.setRating(rating);
+        pEpSecurityStatusLayout.setRating(rating, forceHide);
     }
 
     public void showUnsecureDeliveryWarning() {

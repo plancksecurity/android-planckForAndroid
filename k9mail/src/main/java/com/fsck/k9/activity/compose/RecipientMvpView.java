@@ -498,13 +498,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return pEpRating;
     }
 
-    void handlepEpState(boolean... withToast) {
+    void handlepEpState(boolean forceHide) {
         if (mAccount.ispEpPrivacyProtected()) {
-            boolean reallyWithToast = true;
-            if (withToast.length > 0) reallyWithToast = withToast[0];
-            activity.setToolbarRating(pEpRating);
+            activity.setToolbarRating(pEpRating, forceHide);
         } else {
-            activity.setToolbarRating(Rating.pEpRatingUnencrypted);
+            activity.setToolbarRating(Rating.pEpRatingUnencrypted, forceHide);
         }
     }
 

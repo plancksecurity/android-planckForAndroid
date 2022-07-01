@@ -818,7 +818,7 @@ public class RecipientPresenter {
     }
 
     public void handlepEpState(boolean... withToast) {
-        recipientMvpView.handlepEpState(withToast);
+        recipientMvpView.handlepEpState(getAllRecipients().isEmpty());
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
