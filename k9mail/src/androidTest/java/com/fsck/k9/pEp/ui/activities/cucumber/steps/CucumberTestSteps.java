@@ -196,7 +196,7 @@ public class CucumberTestSteps {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
         }
         waitForIdle();
-        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
+        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list))) && !exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))) {
             if (exists(onView(withId(R.id.accounts_list)))) {
@@ -2450,6 +2450,9 @@ public class CucumberTestSteps {
             waitForIdle();
             if (exists(onView(withId(R.id.fab_button_compose_message)))) {
                 testUtils.composeMessageButton();
+            }
+            if (exists(onView(withId(R.id.message_list)))) {
+                testUtils.getListSize();
             }
             waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageTo), false);
