@@ -51,6 +51,7 @@ class GeneralSettingsDataStore(
             "pep_enable_sync" -> K9.ispEpSyncEnabled()
             "pep_sync_folder" -> K9.isUsingpEpSyncFolder()
             "pep_use_passphrase_for_new_keys" -> K9.ispEpUsePassphraseForNewKeys()
+            "pep_use_trustwords" -> K9.isUsingTrustwords()
             else -> defValue
         }
     }
@@ -92,6 +93,7 @@ class GeneralSettingsDataStore(
             "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
             "pep_use_passphrase_for_new_keys" -> K9.setpEpUsePassphraseForNewKeys(value)
+            "pep_use_trustwords" -> K9.setpEpUseTrustwords(value)
             else -> return
         }
 

@@ -336,6 +336,11 @@
                 android:summary="@string/pep_key_reset_all_own_ids_summary"
                 android:title="@string/reset" />
 
+            <SwitchPreferenceCompat
+                android:key="pep_use_trustwords"
+                app:isPreferenceVisible="false"
+                android:title="@string/use_trustwords_setting_title" />
+
             <Preference
                 android:key="pep_extra_keys"
                 android:persistent="false"

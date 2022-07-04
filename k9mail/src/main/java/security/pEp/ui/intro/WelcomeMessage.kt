@@ -1,7 +1,6 @@
 package security.pEp.ui.intro
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
 import androidx.annotation.AttrRes
-import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.fsck.k9.K9
@@ -39,6 +37,14 @@ fun Activity.startTutorialMessage() {
     val intent = Intent(this, WelcomeMessage::class.java)
     intent.putExtra(AUTOMATIC, false)
     startActivity(intent)
+}
+
+fun startOnBoarding(activity: Activity) {
+    if (K9.isShallRequestPermissions()) {
+        PermissionsActivity.actionAskPermissions(activity)
+    } else {
+        AccountSetupBasics.actionNewAccount(activity)
+    }
 }
 
 class WelcomeMessage : AppIntro() {
@@ -95,12 +101,9 @@ class WelcomeMessage : AppIntro() {
     }
 
     private fun nextAction() {
-        if (automatic)
-            if (K9.isShallRequestPermissions()) {
-                PermissionsActivity.actionAskPermissions(this)
-            } else {
-                AccountSetupBasics.actionNewAccount(this)
-            }
+        if (automatic) {
+            startOnBoarding(this)
+        }
         finish()
     }
 

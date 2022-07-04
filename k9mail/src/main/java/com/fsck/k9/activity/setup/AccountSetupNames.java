@@ -121,9 +121,6 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             mDoneButton.setEnabled(false);
         }
 
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            pepSyncAccount.setVisibility(View.GONE);
-        }
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         pePUIArtefactCache.removeCredentialsInPreferences();

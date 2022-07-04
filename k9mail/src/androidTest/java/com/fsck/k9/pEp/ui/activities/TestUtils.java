@@ -57,11 +57,11 @@ import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
-import com.fsck.k9.pEp.ui.activities.cucumber.steps.CucumberTestSteps;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -629,7 +629,9 @@ public class TestUtils {
                 default:
                     break;
             }
-
+            if (BuildConfig.IS_ENTERPRISE) {
+                totalAccounts = 1;
+            }
         }
 
     }
@@ -901,9 +903,14 @@ public class TestUtils {
     private void createNewAccountWithPermissions() {
         testReset = false;
         try {
-            onView(withId(R.id.next)).perform(click());
+            if (exists(onView(withId(R.id.next)))) {
+                onView(withId(R.id.next)).perform(click());
+            }
             waitForIdle();
             try {
+                if (exists(onView(withId(R.id.next)))) {
+                    onView(withId(R.id.next)).perform(click());
+                }
                 waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
                 waitForIdle();
@@ -1828,7 +1835,7 @@ public class TestUtils {
         acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if(!withSync && BuildConfig.WITH_KEY_SYNC) {
+        if(!withSync) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
             waitForIdle();
         }
@@ -1926,27 +1933,33 @@ public class TestUtils {
     }
 
     public void skipTutorialAndAllowPermissionsIfNeeded() {
-        if(exists(onView(withId(R.id.skip)))) {
-            skipTutorialAndAllowPermissions();
+        skipTutorial();
+        clickContinueAndAllowPermisions();
+    }
+
+    private void skipTutorial() {
+        try {
+            waitForIdle();
+            if(exists(onView(withId(R.id.skip)))) {
+                onView(withId(R.id.skip)).perform(click());
+            }
+            waitForIdle();
+        } catch (Exception ignoredException) {
+            Timber.i("Ignored", "Ignored exception");
         }
     }
 
-    public void skipTutorialAndAllowPermissions() {
+    private void clickContinueAndAllowPermisions() {
         try {
             waitForIdle();
-            onView(withId(R.id.skip)).perform(click());
+            if(exists(onView(withId(R.id.action_continue)))) {
+                onView(withId(R.id.action_continue)).perform(click());
+                allowPermissions();
+            }
             waitForIdle();
         } catch (Exception ignoredException) {
             Timber.i("Ignored", "Ignored exception");
         }
-        try {
-            waitForIdle();
-            onView(withId(R.id.action_continue)).perform(click());
-            waitForIdle();
-        } catch (Exception ignoredException) {
-            Timber.i("Ignored", "Ignored exception");
-        }
-        allowPermissions();
     }
 
     public void goBackAndRemoveAccount() {
@@ -2192,7 +2205,7 @@ public class TestUtils {
         }
 
         clickStatus();
-        if(clickableExpected) {
+        if(K9.isUsingTrustwords() && clickableExpected) {
             waitForIdle();
             waitForToolbar();
             checkToolbarColor(getPEpStatusDueColor(status));

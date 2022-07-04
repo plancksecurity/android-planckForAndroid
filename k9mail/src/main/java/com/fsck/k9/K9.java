@@ -51,6 +51,8 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.Theme;
@@ -344,8 +346,8 @@ public class K9 extends MultiDexApplication {
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectProtection = true;
     private static boolean pEpForwardWarningEnabled =
-            BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT;
-    private static boolean pEpSyncEnabled = BuildConfig.WITH_KEY_SYNC;
+            BuildConfig.IS_ENTERPRISE;
+    private static boolean pEpSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
     private static boolean pEpUsePassphraseForNewKeys = false;
@@ -358,6 +360,8 @@ public class K9 extends MultiDexApplication {
     private static int sPgpSignOnlyDialogCounter;
 
     private static String pEpNewKeysPassphrase;
+    private static ManageableSetting<Boolean> pEpUseTrustwords =
+            new ManageableSetting<>(!BuildConfig.IS_ENTERPRISE, true);
 
     /**
      * @see #areDatabasesUpToDate()
@@ -627,6 +631,10 @@ public class K9 extends MultiDexApplication {
         editor.putLong("appVersionCode", appVersionCode);
         editor.putBoolean("pEpUsePassphraseForNewKeys", pEpUsePassphraseForNewKeys);
         editor.putPassphrase(pEpNewKeysPassphrase);
+        editor.putString(
+                "pEpUseTrustwords",
+                ManageableSettingKt.encodeBooleanToString(pEpUseTrustwords)
+        );
 
         fontSizes.save(editor);
     }
@@ -993,8 +1001,8 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectProtection = getValuePEpSubjectProtection(storage);
         pEpForwardWarningEnabled = storage.getBoolean(
-                "pEpForwardWarningEnabled", BuildConfig.UNSECURE_RECIPIENTS_WARNING_DEFAULT);
-        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", BuildConfig.WITH_KEY_SYNC);
+                "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
+        pEpSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
 
@@ -1036,6 +1044,17 @@ public class K9 extends MultiDexApplication {
         ThemeManager.setUseFixedMessageViewTheme(storage.getBoolean("fixedMessageViewTheme", true));
         pEpUsePassphraseForNewKeys = storage.getBoolean("pEpUsePassphraseForNewKeys", false);
         pEpNewKeysPassphrase = storage.getPassphrase();
+        pEpUseTrustwords = ManageableSettingKt.decodeBooleanFromString(
+                storage.getString(
+                        "pEpUseTrustwords",
+                        ManageableSettingKt.encodeBooleanToString(
+                                new ManageableSetting<>(
+                                        !BuildConfig.IS_ENTERPRISE,
+                                        true
+                                )
+                        )
+                )
+        );
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1476,6 +1495,22 @@ public class K9 extends MultiDexApplication {
 
     public static void setpEpNewKeysPassphrase(String passphrase){
         K9.pEpNewKeysPassphrase = passphrase;
+    }
+
+    public static ManageableSetting<Boolean> getpEpUseTrustwords() {
+        return pEpUseTrustwords;
+    }
+
+    public static void setpEpUseTrustwords(ManageableSetting<Boolean> useTrustwords) {
+        pEpUseTrustwords = useTrustwords;
+    }
+
+    public static boolean isUsingTrustwords() {
+        return pEpUseTrustwords.getValue();
+    }
+
+    public static void setpEpUseTrustwords(boolean useTrustwords) {
+        pEpUseTrustwords.setValue(useTrustwords);
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
