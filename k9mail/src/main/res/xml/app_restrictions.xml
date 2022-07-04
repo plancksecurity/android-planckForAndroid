@@ -15,4 +15,32 @@
         android:restrictionType="string"
         android:title="@string/extra_key"/>
 
+    <restriction
+        android:defaultValue="true"
+        android:description="@string/use_trustwords_setting_description"
+        android:key="pep_use_trustwords"
+        android:restrictionType="string"
+        android:title="@string/use_trustwords_setting_title"/>
+
+    <restriction
+        android:defaultValue="true"
+        android:description="@string/pep_forward_warning_description"
+        android:key="pep_forward_warning"
+        android:restrictionType="string"
+        android:title="@string/pep_forward_warning"/>
+
+    <restriction
+        android:defaultValue="true"
+        android:description="@string/pep_sync_folder_description"
+        android:key="pep_sync_folder"
+        android:restrictionType="string"
+        android:title="@string/pep_sync_folder"/>
+
+    <restriction
+        android:defaultValue="false"
+        android:description="@string/debug_enable_debug_logging_summary"
+        android:key="debug_logging"
+        android:restrictionType="string"
+        android:title="@string/debug_enable_debug_logging_title"/>
+
 </restrictions>

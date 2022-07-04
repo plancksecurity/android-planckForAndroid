@@ -19,6 +19,7 @@ class ConfigurationManager(
     private var listener: RestrictionsListener? = null
     private var restrictionsReceiver: RestrictionsReceiver? = null
     private lateinit var accounts: MutableList<Account>
+    private val k9: K9 = context.applicationContext as K9
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
@@ -51,6 +52,39 @@ class ConfigurationManager(
                 RESTRICTION_PEP_DISABLE_PRIVACY_PROTECTION -> savePrivacyProtection(restrictions, entry)
                 RESTRICTION_PEP_EXTRA_KEYS -> saveExtrasKeys(restrictions, entry)
                 RESTRICTION_PEP_USE_TRUSTWORDS -> saveUseTrustwords(restrictions, entry)
+                RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING -> saveUnsecureDeliveryWarning(restrictions, entry)
+                RESTRICTION_PEP_SYNC_FOLDER -> savepEpSyncFolder(restrictions, entry)
+                RESTRICTION_PEP_DEBUG_LOG -> savepEpDebugLog(restrictions, entry)
+            }
+        }
+    }
+
+    private fun saveUnsecureDeliveryWarning(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>()?.toManageableSetting()
+            config?.let {
+                k9.setpEpForwardWarningEnabled(it.value)
+            }
+        }
+    }
+
+    private fun savepEpSyncFolder(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>()?.toManageableSetting()
+            config?.let {
+                K9.setUsingpEpSyncFolder(it.value)
+            }
+        }
+    }
+
+    private fun savepEpDebugLog(restrictions: Bundle, entry: RestrictionEntry) {
+        val value = restrictions.getString(entry.key)
+        value?.let {
+            val config = AppConfigEntry(entry.key, value).getValue<Boolean>()?.toManageableSetting()
+            config?.let {
+                K9.setDebug(it.value)
             }
         }
     }
