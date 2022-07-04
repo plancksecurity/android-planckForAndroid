@@ -29,6 +29,7 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -1451,6 +1452,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
+        if (BuildConfig.IS_ENTERPRISE && status.equals("pEpRatingUndefined")) {
+            status = "pep_no_color";
+        }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
