@@ -29,6 +29,7 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -148,9 +149,11 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
-        while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
-            testUtils.pressBack();
-            waitForIdle();
+        if (exists(onView(withId(R.id.actionbar_title_first)))) {
+            while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+                testUtils.pressBack();
+                waitForIdle();
+            }
         }
         if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
             testUtils.selectFromMenu(R.string.action_settings);
@@ -196,7 +199,7 @@ public class CucumberTestSteps {
             onView(withId(R.id.afirmativeActionButton)).perform(click());
         }
         waitForIdle();
-        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list)))) {
+        if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list))) && !exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount();
         } else if (exists(onView(withId(R.id.add_account_container)))) {
             if (exists(onView(withId(R.id.accounts_list)))) {
@@ -1451,6 +1454,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
+        if (BuildConfig.IS_ENTERPRISE && status.equals("pEpRatingUndefined")) {
+            status = "pep_no_color";
+        }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
         while (!viewIsDisplayed(R.id.toolbar)) {
@@ -2508,6 +2514,9 @@ public class CucumberTestSteps {
             waitForIdle();
             if (exists(onView(withId(R.id.fab_button_compose_message)))) {
                 testUtils.composeMessageButton();
+            }
+            if (exists(onView(withId(R.id.message_list)))) {
+                testUtils.getListSize();
             }
             waitForIdle();
             testUtils.fillMessage(new TestUtils.BasicMessage("", subject, body, messageTo), false);
