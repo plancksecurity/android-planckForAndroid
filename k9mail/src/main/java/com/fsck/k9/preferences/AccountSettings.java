@@ -18,6 +18,7 @@ import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Account.Searchable;
 import com.fsck.k9.Account.ShowPictures;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.StorageManager;
@@ -231,7 +232,9 @@ public class AccountSettings {
         s.put("pEpPrivacyProtected", Settings.versions(
                 new V(45, new BooleanSetting(true)),
                 new V(52, new StringSetting(
-                        ManageableSettingKt.encodeBooleanToString(new ManageableSetting<>(true, false)))
+                        ManageableSettingKt.encodeBooleanToString(
+                                new ManageableSetting<>(true, BuildConfig.IS_ENTERPRISE)
+                        ))
                 )
         ));
         s.put("pEpSync", Settings.versions(
