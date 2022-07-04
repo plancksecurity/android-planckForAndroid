@@ -629,7 +629,9 @@ public class TestUtils {
                 default:
                     break;
             }
-
+            if (BuildConfig.IS_ENTERPRISE) {
+                totalAccounts = 1;
+            }
         }
 
     }
@@ -901,9 +903,14 @@ public class TestUtils {
     private void createNewAccountWithPermissions() {
         testReset = false;
         try {
-            onView(withId(R.id.next)).perform(click());
+            if (exists(onView(withId(R.id.next)))) {
+                onView(withId(R.id.next)).perform(click());
+            }
             waitForIdle();
             try {
+                if (exists(onView(withId(R.id.next)))) {
+                    onView(withId(R.id.next)).perform(click());
+                }
                 waitForIdle();
                 onView(withId(R.id.skip)).perform(click());
                 waitForIdle();

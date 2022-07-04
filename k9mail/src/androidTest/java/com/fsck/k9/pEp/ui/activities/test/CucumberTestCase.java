@@ -20,7 +20,7 @@ import io.cucumber.junit.CucumberOptions;
  * 3- Tag your scenarios in the feature files with new specific tags for each flavor and include them in the flavor's version of this file
  *      i.e. Add tag @flavor-one to a test scenario and modify the flavor's CucumberTestCase.java with tags={"~@manual", "@flavor-one"}
  */
-@CucumberOptions(features = {"features/AATest.feature"}, // Test scenarios
+@CucumberOptions(features = {BuildConfig.IS_ENTERPRISE ? "features/AATestEnterprise.feature" : "features/AATest.feature"}, // Test scenarios
         glue = {"com.fsck.k9.pEp.ui.activities.cucumber.steps"} // Steps definitions
         /*, format = {"pretty", // Cucumber report formats and location to store them in phone/emulator
                  "html:/data/data/security.pEp/files/cucumber-html-report",
