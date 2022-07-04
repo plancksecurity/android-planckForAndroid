@@ -159,9 +159,8 @@ public class SetupDragonAccountWithErrorsTest extends BaseAndroidTest {
         clickNext();
         testUtils.waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if(BuildConfig.WITH_KEY_SYNC) {
-            onView(withId(R.id.pep_enable_sync_account)).perform(click());
-        }
+        onView(withId(R.id.pep_enable_sync_account)).perform(click());
+
         onView(withId(R.id.done)).perform(click());
     }
 }

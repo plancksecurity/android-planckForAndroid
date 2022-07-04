@@ -12,25 +12,27 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.*;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.SortType;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.K9.SplitViewMode;
 import com.fsck.k9.Preferences;
@@ -74,10 +76,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.mdm.RestrictionsListener;
-import security.pEp.ui.PEpUIUtils;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
@@ -1241,6 +1242,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         mMenu = menu;
         mMenuButtonCheckMail = menu.findItem(R.id.check_mail);
         flaggedCheckbox = menu.findItem(R.id.flag);
+
+        menu.findItem(R.id.tutorial).setVisible(
+                !BuildConfig.IS_ENTERPRISE || K9.isUsingTrustwords()
+        );
         return true;
     }
 
@@ -1393,7 +1398,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.send_messages).setVisible(false);
             menu.findItem(R.id.mark_all_as_read).setVisible(false);
             menu.findItem(R.id.show_folder_list).setVisible(false);
-            menu.findItem(R.id.privacyStatus).setVisible(true);
+            menu.findItem(R.id.privacyStatus).setVisible(K9.isUsingTrustwords());
             drawerLayoutView.setDrawerEnabled(false);
         } else {
             menu.findItem(R.id.privacyStatus).setVisible(false);

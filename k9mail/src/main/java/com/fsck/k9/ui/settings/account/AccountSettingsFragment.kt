@@ -234,19 +234,15 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAccountpEpSync(account: Account) {
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            hideKeySyncOptions()
-        } else {
 
-            val app: K9 = context?.applicationContext as K9
-            val preference: Preference? = findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)
+        val app: K9 = context?.applicationContext as K9
+        val preference: Preference? = findPreference(PREFERENCE_PEP_ENABLE_SYNC_ACCOUNT)
 
-            //It is only possible to enable/disable sync if the device is not part of device group
-            // and is not the only/latest account enabled
-            //if grouped sync per Account only can be disabled on setup
-            preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
+        //It is only possible to enable/disable sync if the device is not part of device group
+        // and is not the only/latest account enabled
+        //if grouped sync per Account only can be disabled on setup
+        preference?.isEnabled = !app.isGrouped && canSyncAccountBeModified(account)
 
-        }
     }
 
     private fun canSyncAccountBeModified(account: Account): Boolean {
