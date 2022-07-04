@@ -32,7 +32,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest extends Base
         composeMessage();
         testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false);
         testUtils.selectFromStatusPopupMenu(R.string.pep_force_unprotected);
-        testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false, false);
+        testUtils.assertMessageStatus(Rating.pEpRatingTrustedAndAnonymized, false, false, true);
         TestUtils.waitForIdle();
         testUtils.sendMessage();
         testUtils.waitForNewMessage();

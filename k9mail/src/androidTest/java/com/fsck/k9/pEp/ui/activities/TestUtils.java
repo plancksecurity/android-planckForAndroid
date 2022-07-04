@@ -62,6 +62,8 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
+import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.pEp.ui.activities.cucumber.steps.CucumberTestSteps;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -1458,6 +1460,7 @@ public class TestUtils {
         }
         if (!inputMessage.getTo().equals("")) {
             typeTextInField(inputMessage.getTo(), R.id.to, "to");
+            onView(withId(R.id.subject)).perform(click());
         }
         while (!getTextFromView(onView(withId(R.id.subject))).contains(inputMessage.getSubject())
                 || !getTextFromView(onView(withId(R.id.message_content))).contains(inputMessage.getMessage())) {
@@ -2130,7 +2133,12 @@ public class TestUtils {
     }
 
     void testStatusEmpty() {
-        assertMessageStatus(Rating.pEpRatingUndefined, false);
+        assertMessageStatus(
+                Rating.pEpRatingUndefined,
+                true,
+                false,
+                false
+        );
     }
 
     void testStatusMailAndListMail(BasicMessage inputMessage, BasicIdentity expectedIdentity) {
@@ -2171,10 +2179,15 @@ public class TestUtils {
     }
 
     public void assertMessageStatus(Rating status, boolean clickableExpected){
-        assertMessageStatus(status, true, clickableExpected);
+        assertMessageStatus(status, true, clickableExpected, true);
     }
 
-    public void assertMessageStatus(Rating status, boolean enabledForThisMessage, boolean clickableExpected){
+    public void assertMessageStatus(
+            Rating status,
+            boolean enabledForThisMessage,
+            boolean clickableExpected,
+            boolean visible
+    ){
         int statusColor;
 
         waitForToolbar();
@@ -2191,10 +2204,15 @@ public class TestUtils {
             if (R.drawable.pep_status_green != statusColor
                     && R.drawable.pep_status_red != statusColor
                     && R.drawable.pep_status_yellow != statusColor
+                    && BuildConfig.IS_ENTERPRISE
+                    && R.drawable.enterprise_status_unsecure != statusColor
             ) {
                 assertFailWithMessage("Wrong Status color");
             }
-            waitUntilViewDisplayed(R.id.securityStatusText);
+            if (visible) {
+                waitUntilViewDisplayed(R.id.securityStatusText);
+            }
+
             if(!enabledForThisMessage) {
                 onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
@@ -2204,13 +2222,15 @@ public class TestUtils {
             }
         }
 
-        clickStatus();
-        if(K9.isUsingTrustwords() && clickableExpected) {
-            waitForIdle();
-            waitForToolbar();
-            checkToolbarColor(getPEpStatusDueColor(status));
-            waitForIdle();
-            pressBack();
+        if (visible) {
+            clickStatus();
+            if(K9.isUsingTrustwords() && clickableExpected) {
+                waitForIdle();
+                waitForToolbar();
+                checkToolbarColor(getPEpStatusDueColor(status));
+                waitForIdle();
+                pressBack();
+            }
         }
     }
 
@@ -2231,8 +2251,10 @@ public class TestUtils {
         int color;
         if (rating == null) {
             color = -10;
-        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
-            color = -10;
+        } else if (PEpUtils.isRatingUnsecure(rating)) {
+            color = BuildConfig.IS_ENTERPRISE
+                    ? R.drawable.enterprise_status_unsecure
+                    : -10;
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
             color = R.drawable.pep_status_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
