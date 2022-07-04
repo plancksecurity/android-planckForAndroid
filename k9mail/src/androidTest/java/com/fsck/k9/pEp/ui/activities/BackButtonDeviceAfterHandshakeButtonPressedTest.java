@@ -3,6 +3,7 @@ package com.fsck.k9.pEp.ui.activities;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.common.BaseAndroidTest;
 
@@ -37,7 +38,9 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest extends BaseAndroid
         testUtils.clickFirstMessage();
         testUtils.clickStatus();
         TestUtils.waitForIdle();
-        onView(withId(R.id.confirmHandshake)).perform(click());
+        if (K9.isUsingTrustwords()) {
+            onView(withId(R.id.confirmHandshake)).perform(click());
+        }
         testUtils.pressBack();
     }
 

@@ -163,7 +163,9 @@ public class PEpUtils {
         // Address() parses the address, eventually not setting it, therefore just a little sanity...
         // TODO: pEp check what happens if id.address == null beforehand
         if (adr.getAddress() == null && id.address != null)
-            throw new RuntimeException("Could not convert Identiy.address " + id.address + " to Address.");
+            throw new RuntimeException(
+                    "Could not convert Identiy.address " + id.address + " to Address."
+            );
         return adr;
     }
 
@@ -382,16 +384,15 @@ public class PEpUtils {
         // As global sync cannot be enabled if there is no enabled account, we disable it if we only
         // have one account an disabled sync on it
         // If we add an account with sync enabled, we enable sync globally if it was not already enabled
-        if(BuildConfig.WITH_KEY_SYNC) {
-            if (!account.isPepSyncEnabled()
-                    && Preferences.getPreferences(context).getAccounts().size() == 1) {
-                app.setpEpSyncEnabled(false);
-            } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
-                app.setpEpSyncEnabled(true);
-            } else {
-                app.pEpInitSyncEnvironment();
-            }
+        if (!account.isPepSyncEnabled()
+                && Preferences.getPreferences(context).getAccounts().size() == 1) {
+            app.setpEpSyncEnabled(false);
+        } else if (account.isPepSyncEnabled() && !K9.ispEpSyncEnabled()) {
+            app.setpEpSyncEnabled(true);
+        } else {
+            app.pEpInitSyncEnvironment();
         }
+
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
@@ -406,12 +407,7 @@ public class PEpUtils {
     public static ArrayList<Identity> filterRecipients(Account account, ArrayList<Identity> recipients) {
         ArrayList<Identity> identities = new ArrayList<>();
 
-        Collections.sort(recipients, new Comparator<Identity>() {
-            @Override
-            public int compare(Identity left, Identity right) {
-                return left.address.compareTo(right.address);
-            }
-        });
+        Collections.sort(recipients, (left, right) -> left.address.compareTo(right.address));
 
         for (int i = 0; i < recipients.size(); i++) {
             Identity identity = recipients.get(i);
@@ -430,11 +426,11 @@ public class PEpUtils {
     }
 
     public static String clobberVector(Vector<String> sv) {   // FIXME: how do revs come out of array? "<...>" or "...."?
-        String rt = "";
+        StringBuilder rt = new StringBuilder();
         if (sv != null)
             for (String cur : sv)
-                rt += cur + "; ";
-        return rt;
+                rt.append(cur).append("; ");
+        return rt.toString();
     }
 
     public static String getReplyTo(Address[] replyTo) {
@@ -446,23 +442,23 @@ public class PEpUtils {
     }
 
     private static String clobberVector(List<String> sv) {
-        String rt = "";
+        StringBuilder rt = new StringBuilder();
         if (sv != null)
             for (String cur : sv)
-                rt += cur + "; ";
-        return rt;
+                rt.append(cur).append("; ");
+        return rt.toString();
     }
 
     public static String addressesToString(Address[] addresses) {
-        String addressesText = "";
+        StringBuilder addressesText = new StringBuilder();
         for (int i = 0; i < addresses.length; i++) {
             if (i < addresses.length - 1) {
-                addressesText += addresses[i].getAddress() + ", ";
+                addressesText.append(addresses[i].getAddress()).append(", ");
             } else {
-                addressesText += addresses[i].getAddress();
+                addressesText.append(addresses[i].getAddress());
             }
         }
-        return addressesText;
+        return addressesText.toString();
     }
 
     public static Boolean isPEpUser(Identity identity) {
@@ -478,7 +474,9 @@ public class PEpUtils {
         List<CharSequence> languagesToShow = new ArrayList<>();
         for (String pEpLocale : pEpLocales) {
             PEpLanguage language = languages.get(String.valueOf(pEpLocale));
-            languagesToShow.add(language.getLanguage());
+            if (language != null) {
+                languagesToShow.add(language.getLanguage());
+            }
         }
         CharSequence[] localesToReturn = new CharSequence[pEpLocales.size()];
         CharSequence[] languagesToReturn = new CharSequence[languagesToShow.size()];
@@ -544,8 +542,9 @@ public class PEpUtils {
     public static List<String> getKeyListWithoutDuplicates(String[] keyListHeaders) {
         if (keyListHeaders.length == 0) return Collections.emptyList();
         else {
-            Set<String> keys = new HashSet<>();
-            keys.addAll(Arrays.asList(keyListHeaders[0].split(PEpProvider.PEP_KEY_LIST_SEPARATOR)));
+            Set<String> keys = new HashSet<>(
+                    Arrays.asList(keyListHeaders[0].split(PEpProvider.PEP_KEY_LIST_SEPARATOR))
+            );
             return new ArrayList<>(keys);
         }
     }

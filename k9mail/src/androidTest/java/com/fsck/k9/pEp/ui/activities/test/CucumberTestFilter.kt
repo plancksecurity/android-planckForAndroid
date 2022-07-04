@@ -19,6 +19,7 @@ class NonCucumberTestFilter : ParentFilter() {
     }
 
     override fun evaluateTest(description: Description?): Boolean {
-        return description?.testClass?.`package`?.name?.isNotBlank() ?: false
+        val packageName = description?.testClass?.`package`?.name
+        return !packageName.isNullOrBlank() && !packageName.contains("cucumber")
     }
 }

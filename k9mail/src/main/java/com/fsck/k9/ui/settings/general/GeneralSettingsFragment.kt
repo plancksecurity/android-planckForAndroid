@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.preference.*
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
@@ -174,16 +173,14 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeGlobalpEpSync() {
-        if (!BuildConfig.WITH_KEY_SYNC) {
-            findPreference<Preference>(PREFERENCE_PEP_ENABLE_SYNC)?.remove()
-            findPreference<Preference>(PREFERENCE_PEP_SYNC_FOLDER)?.remove()
-        } else {
-            (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
-                this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+
+        (findPreference(PREFERENCE_PEP_ENABLE_SYNC) as SwitchPreferenceCompat?)?.apply {
+            this.onPreferenceChangeListener =
+                Preference.OnPreferenceChangeListener { preference, newValue ->
                     processKeySyncSwitchClick(preference, newValue)
                 }
-            }
         }
+
     }
 
     private fun initializeExportPEpSupportDataPreference() {

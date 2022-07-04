@@ -69,9 +69,10 @@ open class SetupDevTestAccounts {
 
         testUtils.waitUntilViewDisplayed(R.id.account_name)
         onView(withId(R.id.account_name)).perform(replaceText(accountName))
-        if(BuildConfig.WITH_KEY_SYNC) {
-            onView(withId(R.id.pep_enable_sync_account)).check(matches(isChecked())).perform(scrollTo(), click())
-        }
+        onView(withId(R.id.pep_enable_sync_account))
+            .check(matches(isChecked()))
+            .perform(scrollTo(), click())
+
         onView(withId(R.id.done)).check(matches(isDisplayed())).perform(click())
         TestUtils.waitForIdle()
     }

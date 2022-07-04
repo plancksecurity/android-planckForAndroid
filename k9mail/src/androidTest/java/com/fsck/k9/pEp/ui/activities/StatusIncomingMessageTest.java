@@ -10,6 +10,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 import com.fsck.k9.BuildConfig;
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.common.BaseAndroidTest;
 
@@ -34,7 +35,14 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void pEpStatusIncomingTrustedMessageShouldBeGreen() {
-        acceptHandshakeWithPartner();
+        testUtils.getMessageListSize();
+        sendMessageToBot();
+        testUtils.waitForNewMessage();
+        testUtils.clickFirstMessage();
+        if (K9.isUsingTrustwords()) {
+            acceptHandshakeWithPartner();
+        }
+        testUtils.pressBack();
         assertPartnerIsGreenAndSendMessage();
         assertIncomingTrustedPartnerMessageIsGreen();
     }
@@ -60,11 +68,6 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
     }
 
     private void acceptHandshakeWithPartner() {
-        testUtils.getMessageListSize();
-        sendMessageToBot();
-        testUtils.waitForNewMessage();
-        testUtils.clickFirstMessage();
-
         testUtils.assertSecurityStatusText(Rating.pEpRatingReliable);
 
         testUtils.clickMessageStatus();
@@ -78,7 +81,6 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         testUtils.clickView(R.id.confirmHandshake);
         TestUtils.waitForIdle();
         testUtils.pressBack();
-        testUtils.pressBack();
     }
 
     private void assertPartnerIsGreenAndSendMessage() {
@@ -87,7 +89,11 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         testUtils.composeMessageButton();
         TestUtils.waitForIdle();
         fillMessage();
-        testUtils.assertSecurityStatusText(Rating.pEpRatingTrustedAndAnonymized);
+        testUtils.assertSecurityStatusText(
+                K9.isUsingTrustwords()
+                        ? Rating.pEpRatingTrustedAndAnonymized
+                        : Rating.pEpRatingReliable
+        );
 
         testUtils.sendMessage();
     }
@@ -97,11 +103,13 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
         testUtils.clickFirstMessage();
 
         testUtils.clickStatus();
-        checkToolbarColor(R.color.pep_green);
-        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
-                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
-        testUtils.pressBack();
+        if (K9.isUsingTrustwords()) {
+            checkToolbarColor(R.color.pep_green);
+            onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
+            onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
+                    .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));
+            testUtils.pressBack();
+        }
     }
 
     private void fillMessage() {

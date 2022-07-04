@@ -14,6 +14,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.common.BaseAndroidTest;
 
@@ -71,17 +72,30 @@ public class YellowStatusEmailFromBotTest extends BaseAndroidTest {
 
         fillComposeFields(botMail + "\n" + UNKNOWN_ADDRESS + "\n" + ownAddress);
         TestUtils.waitForIdle();
+        if (K9.isUsingTrustwords()) {
+            selectPrivacyStatusFromMenu();
+            TestUtils.waitForIdle();
 
-        selectPrivacyStatusFromMenu();
-        TestUtils.waitForIdle();
+            checkToolbarColor(R.color.pep_no_color);
+            onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
 
-        checkToolbarColor(R.color.pep_no_color);
-        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
-
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
-                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(1, R.id.tvRatingStatus))
-                .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingCannotDecrypt.value))));
+            onView(
+                    withRecyclerView(R.id.my_recycler_view)
+                            .atPositionOnView(0, R.id.tvRatingStatus)
+            ).check(matches(withText(
+                    testUtils.getResourceString(
+                            R.array.pep_title, Rating.pEpRatingReliable.value
+                    )
+            )));
+            onView(
+                    withRecyclerView(R.id.my_recycler_view)
+                            .atPositionOnView(1, R.id.tvRatingStatus)
+            ).check(matches(withText(
+                    testUtils.getResourceString(
+                            R.array.pep_title, Rating.pEpRatingCannotDecrypt.value
+                    )
+            )));
+        }
     }
 
     private void sendMessage(String messageTo) {
