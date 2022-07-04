@@ -33,10 +33,8 @@ Feature: Test
     And I click the first message
     Then I compare messageBody with bodyMailToNewContact2
     Examples:
-      |account|
-      |  0    |
-      
-      
+      | account |
+      | 0       |
 
 
 
@@ -57,10 +55,8 @@ Feature: Test
     And I click the first message
     Then I compare messageBody with longText
     Examples:
-      |account|
-      |  0    |
-      
-      
+      | account |
+      | 0       |
 
 
 
@@ -85,10 +81,8 @@ Feature: Test
     And I click the first message
     Then I compare messageBody with longText
     Examples:
-      |account|
-      |  0    |
-      
-      
+      | account |
+      | 0       |
 
 
 	#[^long.txt]
@@ -112,45 +106,10 @@ Feature: Test
     And I go back to the Inbox
 
     Examples:
-      |account|
-      |  0    |
-      
-      
+      | account |
+      | 0       |
 
 
-  @QTR-1973 @QTR-1
-  Scenario Outline: Cucumber Send Unencrypted email with long words
-
-
-    When I select account <account>
-    And I click compose message
-    And I check if the privacy status is pEpRatingUndefined
-    And I enter myself in the messageTo field
-    And I disable protection from privacy status menu
-    And I enter LongWordsToMyself in the messageSubject field
-    And I enter longWord in the messageBody field
-    And I click the send message button
-    And I wait for the new message
-    And I click the first message
-    Then I compare messageBody with longWord
-    When I go to the sent folder
-    And I click the first message
-    Then I compare messageBody with longText
-    When I go back to the Inbox
-    And I click compose message
-    And I check if the privacy status is pEpRatingUndefined
-    And I enter bot3 in the messageTo field
-    And I disable protection from privacy status menu
-    And I enter LongWordsToBOT in the messageSubject field
-    And I enter longWord in the messageBody field
-    And I click the send message button
-    And I wait for the message and click it
-    Then I compare messageBody with longWord
-    Examples:
-      |account|
-      |  0    |
-      
-      
 
   @QTR-1976 @QTR-1
   Scenario Outline: Cucumber Send Encrypted email with long word
@@ -369,36 +328,6 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
-
-
-
-	#Description: Send a message with disabled protection to a contact you have the public key (user1)
-	#Assumption: You have public keys of (at least) 1 communication partner
-	#Expectation: The message is sent unencrypted with no public key attached
-	#
-  @QTR-13 @QTR-1
-  Scenario Outline: Cucumber Disable Protection
-
-
-    When I select account <account>
-    When I click compose message
-    And I enter bot1 in the messageTo field
-    And I disable protection from privacy status menu
-    And I enter TM-13 in the messageSubject field
-    And I enter TM-13 in the messageBody field
-    Then I check if the privacy status is pep_no_color
-    When I click the send message button
-    And I wait for the new message
-    And I go to the sent folder
-    And I click the last message received
-    Then I check if the privacy status is pep_no_color
-    Examples:
-      |account|
-      |  0    |
-      
-      
 
 
   @QTR-2054 @QTR-1
