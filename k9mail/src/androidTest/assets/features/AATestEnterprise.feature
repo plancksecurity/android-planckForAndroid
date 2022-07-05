@@ -678,8 +678,18 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
+
+  @QTR-2321
+  Scenario Outline: Cucumber check number of Global and Account settings
+
+    When I select account <account>
+    When I check there are 2 global settings and 1 account settings
+    Examples:
+      | account |
+      | 0       |
+
 
 
   @QTR-1979
