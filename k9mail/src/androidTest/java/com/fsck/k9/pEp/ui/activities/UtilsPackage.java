@@ -417,6 +417,26 @@ public class UtilsPackage {
         };
     }
 
+    public static ViewAction getElementsInRecycler(int size[], int position) {
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return allOf(isDisplayed(), isAssignableFrom(RecyclerView.class));
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                size[position] = ((RecyclerView) view).getChildCount();
+            }
+
+            @Override
+            public String getDescription() {
+                return "Elements in Recycler";
+            }
+        };
+    }
+
     public static void waitUntilIdle() {
         new ViewAction() {
             @Override
