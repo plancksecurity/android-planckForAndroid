@@ -273,10 +273,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     fun startOnBoarding() {
-        if (BuildConfig.IS_ENTERPRISE) {
-            startOnBoarding(this)
-        } else {
+        if (K9.isUsingTrustwords()) {
             startWelcomeMessage()
+        } else {
+            startOnBoarding(this)
         }
     }
     private fun initializeSyncEnvironmentOnStartup() {
