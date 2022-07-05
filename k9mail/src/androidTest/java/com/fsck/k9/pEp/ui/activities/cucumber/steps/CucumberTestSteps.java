@@ -1988,6 +1988,21 @@ public class CucumberTestSteps {
         startTest(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), 0);
     }
 
+    @When("^I check there are (\\d+) global settings and (\\d+) account settings")
+    public void I_check_there_are_less_settings(int totalGlobalSettings, int totalAccountSettings) {
+        int size;
+        testUtils.selectFromMenu(R.string.action_settings);
+        size = testUtils.getSettingsSize();
+        if (size != totalGlobalSettings) {
+            assertFailWithMessage("There are " + size + " elements in global settings and should be " + totalGlobalSettings);
+        }
+        testUtils.selectAccountSettingsFromList(0);
+        size = testUtils.getSettingsSize();
+        if (size != totalAccountSettings) {
+            assertFailWithMessage("There are " + size + " elements in account settings and should be " + totalAccountSettings);
+        }
+    }
+
     @When("^I test Unified Inbox (\\d+) times")
     public void I_test_unified_inbox(int times) {
         I_send_message_to_address(4, "bot1", "Message for Testing Unified Inbox", "Body of the message");
