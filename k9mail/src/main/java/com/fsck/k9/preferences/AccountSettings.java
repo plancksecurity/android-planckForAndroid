@@ -88,7 +88,9 @@ public class AccountSettings {
                         R.array.expunge_policy_values))
         ));
         s.put("folderDisplayMode", Settings.versions(
-                new V(1, new EnumSetting<>(FolderMode.class, FolderMode.NOT_SECOND_CLASS))
+                new V(1, new EnumSetting<>(
+                        FolderMode.class, Account.getDefaultFolderDisplayMode()
+                ))
         ));
         s.put("folderPushMode", Settings.versions(
                 new V(1, new EnumSetting<>(FolderMode.class, FolderMode.FIRST_CLASS))
@@ -97,7 +99,9 @@ public class AccountSettings {
                 new V(1, new EnumSetting<>(FolderMode.class, FolderMode.FIRST_CLASS))
         ));
         s.put("folderTargetMode", Settings.versions(
-                new V(1, new EnumSetting<>(FolderMode.class, FolderMode.NOT_SECOND_CLASS))
+                new V(1, new EnumSetting<>(
+                        FolderMode.class, Account.getDefaultFolderDisplayMode()
+                ))
         ));
         s.put("goToUnreadMessageSearch", Settings.versions(
                 new V(1, new BooleanSetting(false))
