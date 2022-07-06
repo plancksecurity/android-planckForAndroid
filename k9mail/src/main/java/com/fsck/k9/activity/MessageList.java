@@ -1410,7 +1410,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
 
             menu.findItem(R.id.send_messages).setVisible(mMessageListFragment.isOutbox());
-            menu.findItem(R.id.show_folder_list).setVisible(true);
+            menu.findItem(R.id.show_folder_list).setVisible(!BuildConfig.IS_ENTERPRISE);
 
             drawerLayoutView.setDrawerEnabled(!isThreadDisplayed);
 

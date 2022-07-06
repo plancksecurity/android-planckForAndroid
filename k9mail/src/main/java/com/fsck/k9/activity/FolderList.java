@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils.TruncateAt;
 import android.text.TextWatcher;
 import android.text.format.DateUtils;
@@ -42,6 +41,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Account.FolderMode;
 import com.fsck.k9.AccountStats;
 import com.fsck.k9.BaseAccount;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -284,7 +284,9 @@ public class FolderList extends K9ListActivity {
                 onOpenFolder(((FolderInfoHolder)mAdapter.getItem(position)).name);
             }
         });
-        registerForContextMenu(mListView);
+        if (!BuildConfig.IS_ENTERPRISE) {
+            registerForContextMenu(mListView);
+        }
 
         mListView.setSaveEnabled(true);
 
