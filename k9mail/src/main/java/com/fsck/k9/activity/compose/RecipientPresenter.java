@@ -927,11 +927,11 @@ public class RecipientPresenter {
     }
 
     private void handleUnsecureDeliveryWarning(Rating rating) {
-        if (K9.ispEpForwardWarningEnabled()) {
-            recipientMvpView.handleUnsecureDeliveryWarning(
-                    account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)
-            );
-        }
+        recipientMvpView.handleUnsecureDeliveryWarning(
+                K9.ispEpForwardWarningEnabled()
+                        && account.ispEpPrivacyProtected()
+                        && PEpUtils.isRatingUnsecure(rating)
+        );
     }
 
     private void showDefaultStatus() {
