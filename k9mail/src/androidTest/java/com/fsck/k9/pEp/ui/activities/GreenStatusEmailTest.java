@@ -37,8 +37,10 @@ public class GreenStatusEmailTest extends BaseAndroidTest {
                 new TestUtils.BasicIdentity(Rating.pEpRatingTrustedAndAnonymized, messageFrom));
 
         prepareMessageCompose();
-        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage("","","", ""),
-                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
+        testUtils.testStatusMailAndListMail(
+                new TestUtils.BasicMessage("","","", "hello@hello.ch"),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, "")
+        );
 
         prepareMessageCompose();
         messageFrom = testUtils.getTextFromTextViewThatContainsText("@");

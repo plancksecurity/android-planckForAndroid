@@ -1141,15 +1141,15 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
 
-    private void handlePEpState(boolean... withToast) {
-        recipientPresenter.handlepEpState(withToast);
+    private void handlePEpState() {
+        recipientPresenter.handlepEpState();
     }
 
     private void onPEpPrivacyStatus(boolean force) {
         recipientMvpView.refreshRecipients();
         if (force || recipientMvpView.isPepStatusClickable()) {
             recipientMvpView.setMessageReference(relatedMessageReference);
-            handlePEpState(false);
+            handlePEpState();
             recipientPresenter.onPEpPrivacyStatus();
         }
     }
@@ -1191,7 +1191,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         // grab our icon and set it to the wanted color.
         //    recipientPresenter.setpEpIndicator(menu.findItem(R.id.pEp_indicator));
         //  TODO> Review after rebase
-        handlePEpState(false);       // fire once to get everything set up.
+        handlePEpState();       // fire once to get everything set up.
 
         return true;
     }
@@ -2030,10 +2030,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         toolBarCustomizer.setStatusBarPepColor(color);
     }
 
-    public void setToolbarRating(Rating rating) {
-        boolean encrypt = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setEncrypt(encrypt);
-        pEpSecurityStatusLayout.setRating(rating);
+    public void setToolbarRating(Rating rating, boolean forceHide) {
+        boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
+        pEpSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
+        pEpSecurityStatusLayout.setRating(rating, forceHide);
     }
 
     public void showUnsecureDeliveryWarning() {

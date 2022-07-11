@@ -10,6 +10,7 @@ import android.view.View
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.pEp.PEpUtils.isRatingUnsecure
@@ -83,7 +84,11 @@ object PEpUIUtils {
             rating == null ->
                 ColorDrawable(Color.TRANSPARENT)
             isRatingUnsecure(rating) ->
-                ColorDrawable(Color.TRANSPARENT)
+                if (BuildConfig.IS_ENTERPRISE) {
+                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
+                } else {
+                    ColorDrawable(Color.TRANSPARENT)
+                }
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
@@ -100,8 +105,17 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 null
+            BuildConfig.IS_ENTERPRISE
+                    && (
+                    rating == Rating.pEpRatingCannotDecrypt
+                            || rating == Rating.pEpRatingHaveNoKey
+                    ) -> null
             isRatingUnsecure(rating) ->
-                null
+                if (BuildConfig.IS_ENTERPRISE) {
+                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
+                } else {
+                    null
+                }
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
@@ -114,12 +128,23 @@ object PEpUIUtils {
     }
 
     @JvmStatic
-    fun getToolbarRatingVisibility(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getToolbarRatingVisibility(
+        rating: Rating?,
+        pEpEnabled: Boolean = true,
+        forceHide: Boolean = false,
+    ): Int {
         return when {
-            rating == null ||
-                    isRatingUnsecure(rating) ->
+            forceHide || rating == null ->
                 View.GONE
-            !encrypt ->
+            BuildConfig.IS_ENTERPRISE
+                    && (
+                        rating == Rating.pEpRatingCannotDecrypt
+                                || rating == Rating.pEpRatingHaveNoKey
+                    ) -> View.GONE
+            isRatingUnsecure(rating) ->
+                if (BuildConfig.IS_ENTERPRISE) View.VISIBLE
+                else View.GONE
+            !pEpEnabled ->
                 View.VISIBLE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingReliable.value ->
                 View.VISIBLE
@@ -131,16 +156,22 @@ object PEpUIUtils {
 
     @JvmStatic
     @JvmOverloads
-    fun getRatingColor(context: Context, rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingColor(context: Context, rating: Rating?, pEpEnabled: Boolean = true): Int {
         // TODO: 02/09/16 PEP_color color_from_rating(PEP_rating rating) from pEpEngine;
-        return ContextCompat.getColor(context, getRatingColorRes(rating, encrypt))
+        return ContextCompat.getColor(context, getRatingColorRes(rating, pEpEnabled))
     }
 
     @JvmStatic
-    fun getRatingColorRes(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingColorRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
         return when {
-            !encrypt || rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
+            !pEpEnabled || rating == null ->
                 R.color.pep_no_color
+            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
+                R.color.pep_no_color
+            BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
+                R.color.pep_no_color
+            BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
+                R.color.compose_unsecure_delivery_warning
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
             rating.value < Rating.pEpRatingReliable.value ->
@@ -155,11 +186,19 @@ object PEpUIUtils {
     }
 
     @JvmStatic
-    fun getRatingTextRes(rating: Rating?, encrypt: Boolean = true): Int {
+    fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
         return when {
-            rating == null || rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey || rating == Rating.pEpRatingUndefined ->
+            rating == null ->
                 R.string.pep_rating_none
-            !encrypt ->
+            rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
+                R.string.pep_rating_none
+            BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
+                R.color.pep_no_color
+            BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
+                R.string.enterprise_unsecure
+            rating == Rating.pEpRatingUndefined ->
+                R.string.pep_rating_none
+            !pEpEnabled ->
                 R.string.pep_rating_forced_unencrypt
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.string.pep_rating_mistrusted

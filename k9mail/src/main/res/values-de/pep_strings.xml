@@ -279,4 +279,5 @@
 
 
     <string name="compose_unsecure_delivery_warning">Sichere Nachrichtenübertragung unmöglich. Bitte erwägen Sie, markierte Empfänger zu entfernen, um eine sichere Emailübertragung zu gewährleisten.</string>
+    <string name="enterprise_unsecure">Nicht sicher</string>
 </resources>

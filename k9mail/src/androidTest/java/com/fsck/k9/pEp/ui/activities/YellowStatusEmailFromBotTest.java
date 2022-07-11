@@ -15,6 +15,7 @@ import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.K9;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.common.BaseAndroidTest;
 
@@ -76,8 +77,12 @@ public class YellowStatusEmailFromBotTest extends BaseAndroidTest {
             selectPrivacyStatusFromMenu();
             TestUtils.waitForIdle();
 
-            checkToolbarColor(R.color.pep_no_color);
-            onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
+        checkToolbarColor(
+                BuildConfig.IS_ENTERPRISE
+                        ? R.color.compose_unsecure_delivery_warning
+                        : R.color.pep_no_color
+        );
+        onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
 
             onView(
                     withRecyclerView(R.id.my_recycler_view)

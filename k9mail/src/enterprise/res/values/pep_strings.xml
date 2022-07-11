@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pep_title">
+        <item>Unsecure<!--pEpRatingUndefined--></item>
+        <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
+        <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
+        <item>Unsecure<!--pEpRatingUnencrypted--></item>
+        <item>Unsecure<!--pEpRatingUnencryptedForSome--></item>
+        <item>Unsecure<!--pEpRatingUnreliable--></item>
+        <item>Secure<!--pEpRatingReliable--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>Secure &amp; Trusted<!--pEpRatingFullyAnonymous--></item>
+        <item>Mistrusted<!--pEpRatingMissTrust--></item>
+        <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
+        <item>Under Attack<!--pEpRatingUnderAttack--></item>
+    </string-array>
+</resources>

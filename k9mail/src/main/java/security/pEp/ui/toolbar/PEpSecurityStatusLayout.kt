@@ -21,7 +21,7 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     private var securityStatusIcon: AppCompatImageView? = null
     private var securityStatusText: AppCompatTextView? = null
     private var secondLineText: AppCompatTextView? = null
-    var encrypt = true
+    var ispEpEnabled = true
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
@@ -30,8 +30,9 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText = findViewById(R.id.securityStatusSecondLine)
     }
 
-    fun setRating(rating: Rating?) {
-        visibility = getToolbarRatingVisibility(rating, encrypt)
+    @JvmOverloads
+    fun setRating(rating: Rating?, forceHide: Boolean = false) {
+        visibility = getToolbarRatingVisibility(rating, ispEpEnabled, forceHide)
 
         securityStatusIcon?.setImageDrawable(getDrawableForToolbarRating(context, rating))
 
@@ -40,9 +41,9 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     private fun setSecurityStatusColors(rating: Rating?) {
-        if (!encrypt)
+        if (!ispEpEnabled)
             securityStatusIcon?.setColorFilter(
-                PEpUIUtils.getRatingColor(context, rating, encrypt),
+                PEpUIUtils.getRatingColor(context, rating, ispEpEnabled),
                 PorterDuff.Mode.SRC_IN
             )
         else
@@ -52,22 +53,23 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
             PEpUIUtils.getRatingColor(
                 context,
                 rating,
-                encrypt
+                ispEpEnabled
             )
         )
         secondLineText?.setTextColor(
             PEpUIUtils.getRatingColor(
                 context,
                 rating,
-                encrypt
+                ispEpEnabled
             )
         )
     }
 
     private fun setSecurityStatusText(rating: Rating?) {
-        var firstLine = context.getString(getRatingTextRes(rating, encrypt))
+        var firstLine = context.getString(getRatingTextRes(rating, ispEpEnabled))
         secondLineText?.let { secondTextView ->
             var secondLine = ""
+            secondTextView.text = secondLine
             if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
                 val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
                 if (afterLimit.contains(" ")) {

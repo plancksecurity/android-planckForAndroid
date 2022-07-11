@@ -414,7 +414,7 @@ public class RecipientPresenter {
 
     public void updateCryptoStatus() {
         cachedCryptoStatus = null;
-        handlepEpState();
+        loadPEpStatus();
 
         OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
 
@@ -817,8 +817,8 @@ public class RecipientPresenter {
         recipientMvpView.onPEpPrivacyStatus();
     }
 
-    public void handlepEpState(boolean... withToast) {
-        recipientMvpView.handlepEpState(withToast);
+    public void handlepEpState() {
+        recipientMvpView.handlepEpState(getAllRecipients().isEmpty());
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {

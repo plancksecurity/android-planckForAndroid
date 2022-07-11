@@ -36,6 +36,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -139,7 +140,7 @@ public class RecipientPresenterTest {
         assertNull(status.getAttachErrorStateOrNull());
         assertFalse(status.isProviderStateOk());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(2)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -153,7 +154,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(3)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -168,7 +169,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isEncryptionOpportunistic());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -182,7 +183,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isCryptoDisabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -196,7 +197,7 @@ public class RecipientPresenterTest {
         assertFalse(status.isProviderStateOk());
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -211,7 +212,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpSignOnlyDialog(true);
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test
@@ -227,7 +228,7 @@ public class RecipientPresenterTest {
         assertTrue(status.isSigningEnabled());
         assertFalse(status.shouldUsePgpMessageBuilder());
         verify(recipientMvpView).showOpenPgpInlineDialog(true);
-        verify(recipientMvpView, times(4)).handlepEpState(any());
+        verify(recipientMvpView, times(1)).handlepEpState(anyBoolean());
     }
 
     @Test

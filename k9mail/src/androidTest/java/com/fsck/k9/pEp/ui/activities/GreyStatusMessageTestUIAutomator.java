@@ -23,16 +23,22 @@ public class GreyStatusMessageTestUIAutomator extends BaseAndroidTest {
     @Test(timeout = TestUtils.TIMEOUT_TEST)
     public void greyStatusMessageTest() {
         prepareMessageCompose();
-        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
-                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
+        testUtils.testStatusMailAndListMail(
+                new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, "")
+        );
 
         prepareMessageCompose();
-        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage("","","", ""),
-                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, ""));
+        testUtils.testStatusMailAndListMail(
+                new TestUtils.BasicMessage("","","", EMAIL),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUndefined, "")
+        );
 
         prepareMessageCompose();
-        testUtils.testStatusMailAndListMail(new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
-                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, ""));
+        testUtils.testStatusMailAndListMail(
+                new TestUtils.BasicMessage("", "Subject", "Message", EMAIL),
+                new TestUtils.BasicIdentity(Rating.pEpRatingUnencrypted, "")
+        );
     }
 
     private void prepareMessageCompose() {
