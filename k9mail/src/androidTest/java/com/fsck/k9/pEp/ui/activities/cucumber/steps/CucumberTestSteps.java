@@ -1462,17 +1462,15 @@ public class CucumberTestSteps {
                         assertFailWithMessage("Showing a rating that is not " + status);
                     }
                     return;
-                case "pep_red":
+                case "pEpRatingUnencrypted":
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
                         assertFailWithMessage("Showing a rating that is not " + status);
                     }
                     if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("enterprise_unsecure")))) {
                         assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("enterprise_unsecure")));
                     }
-                    //status = "pEpRatingUnsecure";
-                    break;
-                    //int color = getViewColorHSV(onView(withId(R.id.securityStatusText)));
-                    //return;
+                    I_check_toolBar_color_is("pep_red");
+                    return;
             }
         }
         Rating[] statusRating = new Rating[1];
