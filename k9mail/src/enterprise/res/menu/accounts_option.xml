@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/about"
+        android:icon="?attr/iconActionAbout"
+        android:title="@string/about_action"/>
+    <item
+        android:id="@+id/import_export"
+        android:icon="?attr/iconActionImportExport"
+        android:title="@string/import_export_action"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@+id/export_all"
+                android:title="@string/settings_export_all"/>
+            <item
+                android:id="@+id/import_settings"
+                android:title="@string/settings_import"/>
+        </menu>
+    </item>
+
+</menu>

@@ -253,7 +253,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
         }
 
-        registerForContextMenu(accountsList)
+        if (!BuildConfig.IS_ENTERPRISE) {
+            registerForContextMenu(accountsList)
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             val accountUuid = savedInstanceState.getString("selectedContextAccount")

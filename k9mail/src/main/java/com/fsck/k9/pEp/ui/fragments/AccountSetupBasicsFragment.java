@@ -29,6 +29,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.ContentLoadingProgressBar;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.EmailAddressValidator;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -167,7 +168,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mEmailView.setText(email);
             mPasswordView.setText(password);
         }
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
     }
 
