@@ -6,6 +6,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import timber.log.Timber
+import java.util.*
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
@@ -76,8 +77,13 @@ class ConfiguredSettingsUpdater(
         kotlin.runCatching {
             val parcelableArray = restrictions.getParcelableArray(key)
             parcelableArray?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
-                ?.filter { it.isNotBlank() }?.toSet()?.also {
-                    K9.setMasterKeys(it)
+                ?.toSet()?.also { newExtraKeys ->
+                    if (newExtraKeys.isEmpty() || newExtraKeys.all { it.isBlank() }) {
+                        K9.setMasterKeys(Collections.emptySet())
+                    } else {
+                        newExtraKeys.filter { it.isNotBlank() }
+                            .also { K9.setMasterKeys(it.toSet()) }
+                    }
                 }
         }
     }
