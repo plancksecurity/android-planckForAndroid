@@ -63,10 +63,10 @@ import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
 import com.fsck.k9.pEp.PEpColorUtils;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.activities.cucumber.steps.CucumberTestSteps;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -143,6 +143,9 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import junit.framework.AssertionFailedError;
 
 
 public class TestUtils {
@@ -3118,37 +3121,73 @@ public class TestUtils {
         }
     }
 
+    public void goToInboxFolder() {
+        goToFolder(resources.getString(R.string.special_mailbox_name_inbox));
+    }
+
+    public void goToSentFolder() {
+        goToFolder(resources.getString(R.string.special_mailbox_name_sent_fmt, ""));
+    }
+
+    public void goToDraftsFolder() {
+        goToFolder(resources.getString(R.string.special_mailbox_name_drafts_fmt, ""));
+    }
+
     public void goToFolder(String folder) {
-        int hashCode = 0;
-        BySelector textViewSelector;
-        textViewSelector = By.clazz("android.widget.TextView");
-        selectFromMenu(R.string.folders_title);
+        openHamburgerMenu();
         waitForIdle();
-        while (true) {
-            for (UiObject2 textView : device.findObjects(textViewSelector)) {
-                try {
-                    if (textView.findObject(textViewSelector).getText() != null && textView.findObject(textViewSelector).getText().contains(folder)) {
-                        textView.findObject(textViewSelector).longClick();
-                        waitForIdle();
-                        waitForToolbar();
-                        if (hashCode == 0) {
-                            hashCode = textView.findObject(textViewSelector).hashCode();
-                        } else {
-                            return;
-                        }
-                    }
-                    waitForIdle();
-                } catch (Exception e) {
-                    Timber.i("View is not sent folder");
-                    try {
-                        if (getTextFromView(onView(withId(R.id.actionbar_title_first))).contains(folder)) {
-                            return;
-                        }
-                    } catch (Exception noTitle) {
-                        Timber.i("Title bar doesn't exist");
-                    }
-                }
+
+        ViewInteraction folderInteraction = checkFolderInDrawerToFindName(
+                folder,
+                allOf(
+                        withId(R.id.unified_inbox_text),
+                        withParent(withId(R.id.unified_inbox))
+                )
+        );
+        if (folderInteraction == null) {
+            folderInteraction = checkFolderInDrawerToFindName(
+                    folder,
+                    allOf(
+                            withId(R.id.all_messages_text),
+                            withParent(withId(R.id.all_messages_container))
+                    )
+            );
+        }
+
+        int folders = getListSize(R.id.navigation_folders);
+        int index = 0;
+        while (folderInteraction == null && index < folders) {
+            folderInteraction = checkFolderInDrawerToFindName(
+                    folder,
+                    withRecyclerView(R.id.navigation_folders)
+                            .atPositionOnView(index, R.id.folder_name)
+            );
+            ViewInteraction clickerInteraction = onView(withRecyclerView(R.id.navigation_folders)
+                    .atPositionOnView(index, R.id.showchildrenclicker));
+            if (viewIsDisplayed(clickerInteraction)) {
+                clickerInteraction.perform(click());
+                waitForIdle();
+                folders = getListSize(R.id.navigation_folders);
             }
+            index ++;
+        }
+
+        if (folderInteraction != null) {
+            folderInteraction.perform(click());
+        } else {
+            fail("Folder " + folder +  " not found in navigation drawer");
+        }
+    }
+
+    private ViewInteraction checkFolderInDrawerToFindName(
+            String folder,
+            Matcher<View> viewMatcher)
+    {
+        try {
+            return onView(viewMatcher)
+                    .check(matches(withText(CoreMatchers.endsWith(folder))));
+        } catch (AssertionFailedError e) {
+            return null;
         }
     }
 

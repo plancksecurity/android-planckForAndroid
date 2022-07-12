@@ -2612,14 +2612,14 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(25);
         waitForIdle();
         testUtils.goBackToMessageList();
-        testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_sent));
+        testUtils.goToSentFolder();
     }
 
     @And("^I select the inbox$")
     public void I_select_the_inbox() {
         timeRequiredForThisMethod(25);
         waitForIdle();
-        testUtils.goToFolder(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")));
+        testUtils.goToInboxFolder();
     }
 
     @And("^I enable passive mode$")
@@ -2661,7 +2661,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(25);
         waitForIdle();
         testUtils.goBackToMessageList();
-        testUtils.goToFolder(resources.getString(R.string.special_mailbox_name_drafts));
+        testUtils.goToDraftsFolder();
     }
 
     @And("^I click the first message$")
