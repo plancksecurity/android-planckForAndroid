@@ -24,8 +24,27 @@ class ConfiguredSettingsUpdater(
                 savepEpSyncFolder(restrictions, entry.key)
             RESTRICTION_PEP_DEBUG_LOG ->
                 savepEpDebugLog(restrictions, entry.key)
+
             RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, key)
+            RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
+                saveAccountLocalFolderSize(restrictions, key)
+            RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
+                saveAccountMaxPushFolders(restrictions, key)
+            RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
+                saveAccountCompositionDefaults(restrictions, key)
+            RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
+                saveAccountQuoteMessagesWhenReply(restrictions, key)
+            RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
+                saveAccountDefaultFolders(restrictions, key)
+            RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
+                saveAccountEnableServerSearch(restrictions, key)
+            RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
+                saveAccountSeverSearchLimit(restrictions, key)
+            RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
+                saveAccountSaveMessagesSecurely(restrictions, key)
+            RESTRICTION_ACCOUNT_ENABLE_SYNC ->
+                saveAccountEnableSync(restrictions, key)
         }
     }
 
@@ -69,6 +88,168 @@ class ConfiguredSettingsUpdater(
             key
         ) { account, newValue ->
             account.setpEpPrivacyProtection(newValue)
+        }
+    }
+
+    private fun saveAccountLocalFolderSize(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key
+        ) { account, newValue ->
+            account.displayCount = newValue.toInt()
+        }
+    }
+
+    private fun saveAccountMaxPushFolders(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key
+        ) { account, newValue ->
+            account.maxPushFolders = newValue.toInt()
+        }
+    }
+
+    private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, key: String) {
+        updateAccountBoolean(
+            restrictions,
+            key
+        ) { account, newValue ->
+            account.isDefaultQuotedTextShown = newValue
+        }
+    }
+
+    private fun saveAccountCompositionDefaults(restrictions: Bundle, key: String) {
+        val bundle = restrictions.getBundle(key)
+        bundle?.let {
+            bundle.keySet().forEach { key ->
+                when (key) {
+                    RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
+                        saveAccountUseSignature(bundle, key)
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
+                        saveAccountSignature(bundle, key)
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
+                        saveAccountSignatureBeforeQuotedMessage(bundle, key)
+                }
+            }
+        }
+    }
+
+    private fun saveAccountSignatureBeforeQuotedMessage(bundle: Bundle, key: String) {
+        updateAccountBoolean(bundle, key) { account, newValue ->
+            account.isSignatureBeforeQuotedText = newValue
+        }
+    }
+
+    private fun saveAccountSignature(bundle: Bundle, key: String) {
+        updateAccountString(bundle, key) { account, newValue ->
+            account.signature = newValue
+        }
+    }
+
+    private fun saveAccountUseSignature(bundle: Bundle, key: String) {
+        updateAccountBoolean(bundle, key) { account, newValue ->
+            account.signatureUse = newValue
+        }
+    }
+
+    private fun saveAccountDefaultFolders(restrictions: Bundle, key: String) {
+        val bundle = restrictions.getBundle(key)
+        bundle?.let {
+            bundle.keySet().forEach { key ->
+                when (key) {
+                    RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
+                        saveAccountArchiveFolder(bundle, key)
+                    RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
+                        saveAccountDraftsFolder(bundle, key)
+                    RESTRICTION_ACCOUNT_SENT_FOLDER ->
+                        saveAccountSentFolder(bundle, key)
+                    RESTRICTION_ACCOUNT_SPAM_FOLDER ->
+                        saveAccountSpamFolder(bundle, key)
+                    RESTRICTION_ACCOUNT_TRASH_FOLDER ->
+                        saveAccountTrashFolder(bundle, key)
+                }
+            }
+        }
+    }
+
+    private fun saveAccountArchiveFolder(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.archiveFolderName = newValue
+        }
+    }
+
+    private fun saveAccountDraftsFolder(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key
+        ) { account, newValue ->
+            account.draftsFolderName = newValue
+        }
+    }
+
+    private fun saveAccountSentFolder(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.sentFolderName = newValue
+        }
+    }
+
+    private fun saveAccountSpamFolder(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.spamFolderName = newValue
+        }
+    }
+
+    private fun saveAccountTrashFolder(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.trashFolderName = newValue
+        }
+    }
+
+    private fun saveAccountEnableServerSearch(restrictions: Bundle, key: String) {
+        updateAccountBoolean(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.setAllowRemoteSearch(newValue)
+        }
+    }
+
+    private fun saveAccountSeverSearchLimit(restrictions: Bundle, key: String) {
+        updateAccountString(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.remoteSearchNumResults = newValue.toInt()
+        }
+    }
+
+    private fun saveAccountSaveMessagesSecurely(restrictions: Bundle, key: String) {
+        updateAccountBoolean(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.setPEpStoreEncryptedOnServer(newValue)
+        }
+    }
+
+    private fun saveAccountEnableSync(restrictions: Bundle, key: String) {
+        updateAccountBoolean(
+            restrictions,
+            key,
+        ) { account, newValue ->
+            account.isDefaultQuotedTextShown = newValue
         }
     }
 

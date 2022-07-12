@@ -56,4 +56,116 @@
         android:restrictionType="bool"
         android:title="@string/debug_enable_debug_logging_title"/>
 
+    <restriction
+        android:defaultValue="@string/default_account_display_count"
+        android:description="@string/account_display_count_description"
+        android:key="account_display_count"
+        android:restrictionType="choice"
+        android:entries="@array/display_count_entries"
+        android:entryValues="@array/display_count_values"
+        android:title="@string/account_settings_mail_display_count_label"/>
+
+    <restriction
+        android:defaultValue="@string/default_max_push_folders"
+        android:description="@string/account_setup_push_limit_label"
+        android:key="max_push_folders"
+        android:restrictionType="choice"
+        android:entries="@array/push_limit_entries"
+        android:entryValues="@array/push_limit_values"
+        android:title="@string/account_setup_push_limit_label"/>
+
+    <restriction
+        android:description="@string/composition_description"
+        android:key="composition_signature_settings"
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_composition_label">
+        <restriction
+            android:defaultValue="@bool/default_use_signature"
+            android:key="composition_use_signature"
+            android:restrictionType="bool"
+            android:title="@string/account_settings_signature_use_label"/>
+        <restriction
+            android:defaultValue=""
+            android:key="composition_signature"
+            android:restrictionType="string"
+            android:title="@string/account_settings_signature_label"/>
+        <restriction
+            android:defaultValue="@bool/default_signature_before_quoted_message"
+            android:key="composition_signature_before_quoted_message"
+            android:restrictionType="bool"
+            android:title="@string/account_settings_signature__location_before_quoted_text"/>
+    </restriction>
+
+    <restriction
+        android:defaultValue="@bool/default_quoted_text_shown"
+        android:description="@string/default_quoted_text_shown_description"
+        android:key="default_quoted_text_shown"
+        android:restrictionType="bool"
+        android:title="@string/account_settings_default_quoted_text_shown_label"/>
+
+    <restriction
+        android:key="account_default_folders"
+        android:restrictionType="bundle"
+        android:title="@string/account_settings_folders">
+        <restriction
+            android:defaultValue=""
+            android:key="archive_folder"
+            android:restrictionType="string"
+            android:title="@string/archive_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="drafts_folder"
+            android:restrictionType="string"
+            android:title="@string/drafts_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="sent_folder"
+            android:restrictionType="string"
+            android:title="@string/sent_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="spam_folder"
+            android:restrictionType="string"
+            android:title="@string/spam_folder_label"/>
+
+        <restriction
+            android:defaultValue=""
+            android:key="trash_folder"
+            android:restrictionType="string"
+            android:title="@string/trash_folder_label"/>
+    </restriction>
+
+    <restriction
+        android:defaultValue="@bool/default_remote_search_enabled"
+        android:description="@string/remote_search_enabled_description"
+        android:key="remote_search_enabled"
+        android:restrictionType="bool"
+        android:title="@string/account_settings_remote_search_enabled"/>
+
+    <restriction
+        android:defaultValue="@string/default_account_remote_search_num_results"
+        android:description="@string/account_remote_search_num_results_description"
+        android:key="account_remote_search_num_results"
+        android:restrictionType="choice"
+        android:entries="@array/remote_search_num_results_entries"
+        android:entryValues="@array/remote_search_num_results_values"
+        android:title="@string/account_settings_remote_search_num_label"/>
+
+    <restriction
+        android:defaultValue="@bool/default_pep_save_encrypted"
+        android:description="@string/account_settings_save_encrypted_summary_enabled"
+        android:key="pep_save_encrypted_on_server"
+        android:restrictionType="bool"
+        android:title="@string/pep_mistrust_server_and_store_mails_encrypted"/>
+
+    <restriction
+        android:defaultValue="@bool/default_pep_enable_sync_account"
+        android:description="@string/pep_sync_enable_account"
+        android:key="pep_enable_sync_account"
+        android:restrictionType="bool"
+        android:title="@string/pep_sync_enable_account"/>
+
 </restrictions>
