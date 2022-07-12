@@ -1838,7 +1838,7 @@ public class TestUtils {
         acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
-        if(!withSync) {
+        if(!withSync && viewIsDisplayed(R.id.pep_enable_sync_account)) {
             onView(withId(R.id.pep_enable_sync_account)).perform(click());
             waitForIdle();
         }
