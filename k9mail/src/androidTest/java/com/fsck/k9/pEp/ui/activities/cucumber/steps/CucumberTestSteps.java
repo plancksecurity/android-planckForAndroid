@@ -1457,11 +1457,6 @@ public class CucumberTestSteps {
     private void checkPrivacyStatus(String status) {
         if (BuildConfig.IS_ENTERPRISE) {
             switch (status) {
-                case "pEpRatingUndefined":
-                    if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                        assertFailWithMessage("Showing a rating that is not " + status);
-                    }
-                    return;
                 case "pEpRatingUnencrypted":
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
                         assertFailWithMessage("Showing a rating that is not " + status);
@@ -1472,6 +1467,12 @@ public class CucumberTestSteps {
                     I_check_toolBar_color_is("pep_red");
                     return;
             }
+        }
+        if (status.equals("pEpRatingUndefined")) {
+            if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                assertFailWithMessage("Showing a rating and it should be " + status);
+            }
+            return;
         }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
