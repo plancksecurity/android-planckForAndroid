@@ -10,11 +10,13 @@ import java.util.*
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
-    private val preferences: Preferences,
+    private val preferences: Preferences? = null
 ) {
 
     fun update(restrictions: Bundle, entry: RestrictionEntry) {
         when (val key = entry.key) {
+            RESTRICTION_PROVISIONING_URL ->
+                saveProvisioningUrl(restrictions, key)
             RESTRICTION_PEP_EXTRA_KEYS ->
                 saveExtrasKeys(restrictions, key)
             RESTRICTION_PEP_USE_TRUSTWORDS ->
@@ -46,6 +48,12 @@ class ConfiguredSettingsUpdater(
                 saveAccountSaveMessagesSecurely(restrictions, key)
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 saveAccountEnableSync(restrictions, key)
+        }
+    }
+
+    private fun saveProvisioningUrl(restrictions: Bundle, key: String) {
+        updateString(restrictions, key) {
+            k9.provisioningUrl = it
         }
     }
 
@@ -270,6 +278,19 @@ class ConfiguredSettingsUpdater(
         }.onFailure { Timber.e(it) }
     }
 
+    private inline fun updateString(
+        restrictions: Bundle,
+        key: String,
+        crossinline block: (newValue: String) -> Unit
+    ) {
+        kotlin.runCatching {
+            val newValue = restrictions.getString(key)
+            if (!newValue.isNullOrBlank()) {
+                block(newValue)
+            }
+        }.onFailure { Timber.e(it) }
+    }
+
     private inline fun updateAccountString(
         restrictions: Bundle,
         key: String,
@@ -278,7 +299,7 @@ class ConfiguredSettingsUpdater(
         kotlin.runCatching {
             val newValue = restrictions.getString(key)
             if (!newValue.isNullOrBlank()) {
-                preferences.accounts.forEach { account ->
+                preferences?.accounts?.forEach { account ->
                     block(account, newValue)
                 }
             }
@@ -292,7 +313,7 @@ class ConfiguredSettingsUpdater(
     ) {
         kotlin.runCatching {
             val newValue = restrictions.getBoolean(key)
-            preferences.accounts.forEach { account ->
+            preferences?.accounts?.forEach { account ->
                 block(account, newValue)
             }
         }.onFailure { Timber.e(it) }

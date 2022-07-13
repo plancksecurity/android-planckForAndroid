@@ -51,6 +51,8 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
+import security.pEp.enterprise.provisioning.ProvisioningManager;
+import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.network.ConnectionMonitor;
@@ -109,6 +111,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
+    private String provisioningUrl;
 
     public static K9JobManager jobManager;
 
@@ -639,9 +642,20 @@ public class K9 extends MultiDexApplication {
         fontSizes.save(editor);
     }
 
+    private ProvisioningManager provisioningManager;
+
+    public ProvisioningManager getProvisioningManager() {
+        return provisioningManager;
+    }
+
+    public String getProvisioningUrl() {
+        return provisioningUrl;
+    }
+
     @Override
     public void onCreate() {
         AndroidHelper.setup(this);
+        new ConfigurationManager(this, null).loadConfigurationsBlocking();
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -652,6 +666,11 @@ public class K9 extends MultiDexApplication {
         initializeInjector();
 
         ACRA.init(this);
+
+        provisioningManager = new ProvisioningManager(this);
+    }
+
+    public void finalizeSetup() {
         pEpSetupUiEngineSession();
         app = this;
         DI.start(this);
@@ -1116,6 +1135,10 @@ public class K9 extends MultiDexApplication {
                 observers.add(component);
             }
         }
+    }
+
+    public void setProvisioningUrl(String provisioningUrl) {
+        this.provisioningUrl = provisioningUrl;
     }
 
     public static String getK9Language() {
@@ -1832,7 +1855,7 @@ public class K9 extends MultiDexApplication {
 
     private void setupFastPoller() {
         if (poller == null) {
-            poller = new Poller(new Handler());
+            poller = new Poller(new Handler(Looper.getMainLooper()));
             poller.init(POLLING_INTERVAL, this::polling);
         } else {
             poller.stopPolling();

@@ -1365,6 +1365,15 @@ class PEpProviderImplKotlin @Inject constructor(
             }
             return null
         }
+
+        suspend fun provision(provisionUrl: String): Result<Unit> {
+            return withContext(Dispatchers.IO) {
+                kotlin.runCatching {
+                    //Engine.provision(provisionUrl)
+                    delay(3000L + Random().nextInt(5)*1000)
+                }
+            }
+        }
     }
 
 }

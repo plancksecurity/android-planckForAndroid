@@ -5,15 +5,12 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 class ConfigurationManager(
     private val context: Context,
-    private val preferences: Preferences
+    private val preferences: Preferences?
 ) {
 
     private var listener: RestrictionsListener? = null
@@ -23,15 +20,25 @@ class ConfigurationManager(
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
-            loadConfigurationsSuspend()
-                .onSuccess { sendRemoteConfig() }
-                .onFailure {
-                    Timber.e(
-                        it,
-                        "Could not load configurations after registering the receiver"
-                    )
-                }
+            loadConfigurationsInternal()
         }
+    }
+
+    fun loadConfigurationsBlocking() {
+        runBlocking(Dispatchers.IO) {
+            loadConfigurationsInternal()
+        }
+    }
+
+    private suspend fun loadConfigurationsInternal() {
+        loadConfigurationsSuspend()
+            .onSuccess { sendRemoteConfig() }
+            .onFailure {
+                Timber.e(
+                    it,
+                    "Could not load configurations after registering the receiver"
+                )
+            }
     }
 
     private suspend fun loadConfigurationsSuspend(): Result<Unit> = withContext(Dispatchers.IO) {
@@ -56,14 +63,18 @@ class ConfigurationManager(
     }
 
     private fun saveAppSettings() {
-        val editor = preferences.storage.edit()
-        K9.save(editor)
-        editor.commit()
+        preferences?.let {
+            val editor = preferences.storage.edit()
+            K9.save(editor)
+            editor.commit()
+        }
     }
 
     private fun saveAccounts() {
-        preferences.accounts.forEach { account ->
-            account.save(preferences)
+        preferences?.let {
+            preferences.accounts.forEach { account ->
+                account.save(preferences)
+            }
         }
     }
 
