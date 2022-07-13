@@ -2000,10 +2000,10 @@ public class CucumberTestSteps {
         }
         testUtils.selectAccountSettingsFromList(0);
         size = testUtils.getSettingsSize();
+        testUtils.pressBack();
         if (size != totalAccountSettings) {
             assertFailWithMessage("There are " + size + " elements in account settings and should be " + totalAccountSettings);
         }
-        testUtils.pressBack();
     }
 
     @When("^I test Unified Inbox (\\d+) times")
