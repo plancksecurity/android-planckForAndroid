@@ -2001,6 +2001,7 @@ public class CucumberTestSteps {
         if (size != totalAccountSettings) {
             assertFailWithMessage("There are " + size + " elements in account settings and should be " + totalAccountSettings);
         }
+        testUtils.pressBack();
     }
 
     @When("^I test Unified Inbox (\\d+) times")
@@ -2194,7 +2195,9 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        testUtils.selectAccount(folder, accountToStart);
+        if (!BuildConfig.IS_ENTERPRISE) {
+            testUtils.selectAccount(folder, accountToStart);
+        }
     }
 
     private void getBotsList(){
