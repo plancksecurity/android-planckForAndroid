@@ -51,7 +51,6 @@ import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
-import security.pEp.enterprise.provisioning.ProvisioningManager;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
@@ -642,12 +641,6 @@ public class K9 extends MultiDexApplication {
         fontSizes.save(editor);
     }
 
-    private ProvisioningManager provisioningManager;
-
-    public ProvisioningManager getProvisioningManager() {
-        return provisioningManager;
-    }
-
     public String getProvisioningUrl() {
         return provisioningUrl;
     }
@@ -666,8 +659,6 @@ public class K9 extends MultiDexApplication {
         initializeInjector();
 
         ACRA.init(this);
-
-        provisioningManager = new ProvisioningManager(this);
     }
 
     public void finalizeSetup() {

@@ -9,17 +9,19 @@ import androidx.core.content.ContextCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
+import javax.inject.Inject
 
 class ProvisioningActivity : AppCompatActivity(), ProvisioningView {
-    private lateinit var presenter: ProvisioningPresenter
+    @Inject
+    lateinit var presenter: ProvisioningPresenter
 
     private lateinit var waitingForProvisioningText: TextView
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        initializeInjector()
         super.onCreate(savedInstanceState)
         setupViews()
-        presenter = ProvisioningPresenter((application as K9).provisioningManager)
     }
 
     private fun setupViews() {
@@ -77,5 +79,9 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView {
 
     override fun displayUnknownError(trace: String) {
         waitingForProvisioningText.text = trace
+    }
+
+    private fun initializeInjector() {
+        (application as K9).component.inject(this)
     }
 }

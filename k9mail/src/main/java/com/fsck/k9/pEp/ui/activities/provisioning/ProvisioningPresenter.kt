@@ -2,8 +2,9 @@ package com.fsck.k9.pEp.ui.activities.provisioning
 
 import security.pEp.enterprise.provisioning.ProvisionState
 import security.pEp.enterprise.provisioning.ProvisioningManager
+import javax.inject.Inject
 
-class ProvisioningPresenter(
+class ProvisioningPresenter @Inject constructor(
     private val provisioningManager: ProvisioningManager
 ) : ProvisioningManager.ProvisioningStateListener {
     private var view: ProvisioningView? = null

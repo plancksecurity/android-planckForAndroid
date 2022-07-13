@@ -9,6 +9,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
+import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningActivity;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 import com.fsck.k9.view.MessageHeader;
@@ -49,4 +50,6 @@ public interface ApplicationComponent {
     void inject(RecipientSelectView recipientSelectView);
 
     void inject(AlternateRecipientAdapter alternateRecipientAdapter);
+
+    void inject(ProvisioningActivity activity);
 }

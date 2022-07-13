@@ -10,9 +10,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Singleton
 
-class ProvisioningManager(
-    context: Context
+@Singleton
+class ProvisioningManager @Inject constructor(
+    @Named("AppContext") context: Context
 ) {
     private val k9 = context as K9
     var provisionState: ProvisionState =
