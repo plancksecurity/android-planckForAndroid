@@ -659,6 +659,7 @@ public class K9 extends MultiDexApplication {
         initializeInjector();
 
         ACRA.init(this);
+        component.provisioningManager().startProvisioning();
     }
 
     public void finalizeSetup() {

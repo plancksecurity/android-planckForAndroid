@@ -12,7 +12,6 @@ class ProvisioningPresenter @Inject constructor(
     fun attach(view: ProvisioningView) {
         this.view = view
         provisioningManager.addListener(this)
-        provisioningManager.startProvisioning()
     }
 
     fun detach() {

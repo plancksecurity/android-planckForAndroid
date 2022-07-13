@@ -21,6 +21,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import security.pEp.enterprise.provisioning.ProvisioningManager;
 
 @Singleton
 @Component(modules = ApplicationModule.class)
@@ -40,6 +41,8 @@ public interface ApplicationComponent {
     AccountSetupNavigator accountSetupNavigator();
 
     DispatcherProvider dispatcherProvider();
+
+    ProvisioningManager provisioningManager();
 
     @Named("AppContext")
     Context getContext();
