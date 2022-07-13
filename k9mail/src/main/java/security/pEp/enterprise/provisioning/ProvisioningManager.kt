@@ -15,7 +15,9 @@ class ProvisioningManager(
     context: Context
 ) {
     private val k9 = context as K9
-    var provisionState: ProvisionState = ProvisionState.WaitingForProvisioning
+    var provisionState: ProvisionState =
+        if (BuildConfig.IS_ENTERPRISE) ProvisionState.WaitingForProvisioning
+        else ProvisionState.Initializing()
         private set
 
     private val listeners = mutableListOf<ProvisioningStateListener>()

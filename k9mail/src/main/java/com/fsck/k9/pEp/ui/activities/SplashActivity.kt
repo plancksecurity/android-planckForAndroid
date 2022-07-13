@@ -11,11 +11,7 @@ import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningActivity
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildConfig.IS_ENTERPRISE) {
-            startActivity(Intent(this, ProvisioningActivity::class.java))
-        } else {
-            SettingsActivity.actionBasicStart(this)
-        }
+        startActivity(Intent(this, ProvisioningActivity::class.java))
         finish()
     }
 }
