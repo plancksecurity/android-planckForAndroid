@@ -167,7 +167,9 @@ public class CucumberTestSteps {
                     waitForIdle();
                     onView(withText(R.string.discard_action)).perform(click());
                 }
-                testUtils.pressBack();
+                if (!BuildConfig.IS_ENTERPRISE) {
+                    testUtils.pressBack();
+                }
                 waitForIdle();
             }
         }
