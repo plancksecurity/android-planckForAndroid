@@ -40,7 +40,7 @@ class ProvisioningManager(
             } else {
                 val homeDir: File = k9.getDir("home", Context.MODE_PRIVATE)
                 val keysDb = File(homeDir, ".pEp" + File.separator + "keys.db")
-                if (provisioningUrl != null && !keysDb.exists()) {
+                if (!provisioningUrl.isNullOrBlank() && !keysDb.exists()) {
                     setProvisionState(ProvisionState.InProvisioning)
                     PEpProviderImplKotlin.provision(provisioningUrl).fold(
                         onSuccess = {
