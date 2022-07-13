@@ -32,7 +32,10 @@ class ProvisioningManager(
     }
 
     fun startProvisioning() {
-        if (provisionState != ProvisionState.WaitingForProvisioning) return
+        if (BuildConfig.IS_ENTERPRISE
+            && provisionState != ProvisionState.WaitingForProvisioning) {
+                return
+        }
         val provisioningUrl = k9.provisioningUrl
         CoroutineScope(Dispatchers.Main).launch {
             if (!BuildConfig.IS_ENTERPRISE) {
