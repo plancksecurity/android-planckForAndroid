@@ -9,9 +9,10 @@ import androidx.core.content.ContextCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.pEp.ui.activities.SplashScreen
 import javax.inject.Inject
 
-class ProvisioningActivity : AppCompatActivity(), ProvisioningView {
+class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen {
     @Inject
     lateinit var presenter: ProvisioningPresenter
 

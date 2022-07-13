@@ -55,6 +55,7 @@ import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.network.ConnectionMonitor;
+import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -1728,12 +1729,14 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void onActivityCreated(@NotNull Activity activity, Bundle savedInstanceState) {
-            if (activityCount == 0) {
+            if (!(activity instanceof SplashScreen)) {
+                if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
-                pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                //pEpInitSyncEnvironment();
+                    pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+                    //pEpInitSyncEnvironment();
+                }
+                ++activityCount;
             }
-            ++activityCount;
         }
 
         @Override
@@ -1763,15 +1766,17 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void onActivityDestroyed(@NotNull Activity activity) {
-            --activityCount;
-            if (activityCount == 0) {
-                PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
-                KeySyncCleaner.queueAutoConsumeMessages();
-                if (provider.isSyncRunning()) provider.stopSync();
-                provider.close();
-                pEpProvider.close();
-                provider = null;
-                pEpProvider = null;
+            if (!(activity instanceof SplashScreen)) {
+                --activityCount;
+                if (activityCount == 0) {
+                    PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
+                    KeySyncCleaner.queueAutoConsumeMessages();
+                    if (provider.isSyncRunning()) provider.stopSync();
+                    provider.close();
+                    pEpProvider.close();
+                    provider = null;
+                    pEpProvider = null;
+                }
             }
         }
     };
