@@ -89,6 +89,7 @@ import static com.fsck.k9.pEp.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getViewColorHSV;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
@@ -1454,8 +1455,24 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
-        if (BuildConfig.IS_ENTERPRISE && status.equals("pEpRatingUndefined")) {
-            status = "pep_no_color";
+        if (BuildConfig.IS_ENTERPRISE) {
+            switch (status) {
+                case "pEpRatingUnencrypted":
+                    if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                        assertFailWithMessage("Showing a rating that is not " + status);
+                    }
+                    if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("enterprise_unsecure")))) {
+                        assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("enterprise_unsecure")));
+                    }
+                    I_check_toolBar_color_is("pep_red");
+                    return;
+            }
+        }
+        if (status.equals("pEpRatingUndefined") && (getTextFromView(onView(withId(R.id.to))).equals(""))) {
+            if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                assertFailWithMessage("Showing a rating when there is no recipient");
+            }
+            return;
         }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");

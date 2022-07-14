@@ -143,6 +143,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static foundation.pEp.jniadapter.Rating.pEpRatingMistrust;
 
 
 public class TestUtils {
@@ -2271,9 +2272,9 @@ public class TestUtils {
         int color;
         if (rating == null) {
             color = -10;
-        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+        } else if (rating.value != pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
             color = R.color.pep_no_color;
-        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+        } else if (rating.value == pEpRatingMistrust.value) {
             color = R.color.pep_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
             color = R.color.pep_green;
@@ -2289,9 +2290,9 @@ public class TestUtils {
         int color;
         if (rating == null) {
             color = -10;
-        } else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+        } else if (rating.value != pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
             color = -10;
-        } else if (rating.value == Rating.pEpRatingMistrust.value) {
+        } else if (rating.value == pEpRatingMistrust.value) {
             color = R.color.pep_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
             color = R.color.pep_green;
