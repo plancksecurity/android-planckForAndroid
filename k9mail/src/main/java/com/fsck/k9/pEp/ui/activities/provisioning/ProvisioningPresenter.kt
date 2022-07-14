@@ -19,8 +19,8 @@ class ProvisioningPresenter @Inject constructor(
         provisioningManager.removeListener(this)
     }
 
-    private fun displayProvisionState() {
-        when(val state = provisioningManager.provisionState) {
+    private fun displayProvisionState(state: ProvisionState) {
+        when(state) {
             is ProvisionState.WaitingForProvisioning ->
                 view?.waitingForProvisioning()
             is ProvisionState.InProvisioning ->
@@ -33,12 +33,18 @@ class ProvisioningPresenter @Inject constructor(
                 }
             is ProvisionState.Initialized ->
                 view?.initialized()
-            is ProvisionState.Error ->
-                view?.displayError(state.throwable.message ?: state.throwable.stackTraceToString())
+            is ProvisionState.Error -> {
+                val throwableMessage = state.throwable.message
+                val message =
+                    if (throwableMessage.isNullOrBlank())
+                        state.throwable.stackTraceToString()
+                    else throwableMessage
+                view?.displayError(message)
+            }
         }
     }
 
     override fun provisionStateChanged(state: ProvisionState) {
-        displayProvisionState()
+        displayProvisionState(state)
     }
 }
