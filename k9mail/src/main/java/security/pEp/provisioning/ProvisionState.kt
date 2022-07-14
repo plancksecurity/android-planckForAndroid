@@ -1,4 +1,4 @@
-package security.pEp.enterprise.provisioning
+package security.pEp.provisioning
 
 sealed class ProvisionState {
     object WaitingForProvisioning: ProvisionState()

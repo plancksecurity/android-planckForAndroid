@@ -1,7 +1,7 @@
 package com.fsck.k9.pEp.ui.activities.provisioning
 
-import security.pEp.enterprise.provisioning.ProvisionState
-import security.pEp.enterprise.provisioning.ProvisioningManager
+import security.pEp.provisioning.ProvisionState
+import security.pEp.provisioning.ProvisioningManager
 import javax.inject.Inject
 
 class ProvisioningPresenter @Inject constructor(
