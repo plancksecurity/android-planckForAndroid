@@ -1,6 +1,8 @@
 package com.fsck.k9.pEp.ui.activities.provisioning
 
+import security.pEp.provisioning.InitializationFailedException
 import security.pEp.provisioning.ProvisionState
+import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.provisioning.ProvisioningManager
 import javax.inject.Inject
 
@@ -39,7 +41,11 @@ class ProvisioningPresenter @Inject constructor(
                     if (throwableMessage.isNullOrBlank())
                         state.throwable.stackTraceToString()
                     else throwableMessage
-                view?.displayError(message)
+                if (state.throwable is ProvisioningFailedException) {
+                    view?.displayProvisioningError(message)
+                } else {
+                    view?.displayInitializationError(message)
+                }
             }
         }
     }

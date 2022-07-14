@@ -345,5 +345,6 @@
     <string name="provisioning_successful_initializing_application">Successfully provisioned, initializing application</string>
     <string name="initialization_complete">Initialization complete</string>
     <string name="provisioning_error_template">Provisioning error:\n%s\nPlease contact your IT department.</string>
+    <string name="initialization_error_template">Initialization error:\n%s\nPlease contact your IT department.</string>
 
 </resources>

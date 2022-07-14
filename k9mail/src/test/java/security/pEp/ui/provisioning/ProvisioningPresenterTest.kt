@@ -5,7 +5,9 @@ import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningView
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
+import security.pEp.provisioning.InitializationFailedException
 import security.pEp.provisioning.ProvisionState
+import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.provisioning.ProvisioningManager
 
 class ProvisioningPresenterTest {
@@ -83,13 +85,28 @@ class ProvisioningPresenterTest {
     }
 
     @Test
-    fun `view handles Error state`() {
+    fun `view handles provisioning Error state`() {
         presenter.attach(view)
 
 
-        presenter.provisionStateChanged(ProvisionState.Error(RuntimeException("error")))
+        presenter.provisionStateChanged(
+            ProvisionState.Error(ProvisioningFailedException("test error", RuntimeException()))
+        )
 
 
-        verify { view.displayError(any()) }
+        verify { view.displayProvisioningError("test error") }
+    }
+
+    @Test
+    fun `view handles initialization Error state`() {
+        presenter.attach(view)
+
+
+        presenter.provisionStateChanged(
+            ProvisionState.Error(InitializationFailedException("test error", RuntimeException()))
+        )
+
+
+        verify { view.displayInitializationError("test error") }
     }
 }

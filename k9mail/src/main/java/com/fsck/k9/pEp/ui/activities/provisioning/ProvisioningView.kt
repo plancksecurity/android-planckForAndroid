@@ -6,6 +6,7 @@ interface ProvisioningView {
     fun initializing()
     fun initializingAfterSuccessfulProvision()
     fun initialized()
-    fun displayError(message: String)
+    fun displayProvisioningError(message: String)
+    fun displayInitializationError(message: String)
     fun displayUnknownError(trace: String)
 }
