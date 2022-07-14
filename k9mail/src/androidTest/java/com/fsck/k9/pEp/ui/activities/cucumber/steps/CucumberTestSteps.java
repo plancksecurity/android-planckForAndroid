@@ -1994,12 +1994,12 @@ public class CucumberTestSteps {
     public void I_check_there_are_less_settings(int totalGlobalSettings, int totalAccountSettings) {
         int size;
         testUtils.selectFromMenu(R.string.action_settings);
-        size = testUtils.getSettingsSize();
+        size = testUtils.getListSize(R.id.recycler_view);
         if (size != totalGlobalSettings) {
             assertFailWithMessage("There are " + size + " elements in global settings and should be " + totalGlobalSettings);
         }
         testUtils.selectAccountSettingsFromList(0);
-        size = testUtils.getSettingsSize();
+        size = testUtils.getListSize(R.id.recycler_view);
         testUtils.pressBack();
         if (size != totalAccountSettings) {
             assertFailWithMessage("There are " + size + " elements in account settings and should be " + totalAccountSettings);

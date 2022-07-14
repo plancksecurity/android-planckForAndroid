@@ -3587,12 +3587,6 @@ public class TestUtils {
         return messageListSize[0];
     }
 
-    public int getSettingsSize() {
-        int settingsSize[] = new int[1];
-        onView(withId(R.id.recycler_view)).perform(getElementsInRecycler(settingsSize, 0));
-        return settingsSize[0];
-    }
-
     public void swipeDownMessageList() {
         while (true) {
             try {
