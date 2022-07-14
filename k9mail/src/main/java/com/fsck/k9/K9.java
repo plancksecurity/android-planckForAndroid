@@ -693,7 +693,9 @@ public class K9 extends MultiDexApplication {
         BinaryTempFileBody.setTempDirectory(getCacheDir());
         clearBodyCacheIfAppUpgrade();
 
-        LocalKeyStore.setKeyStoreLocation(getDir("KeyStore", MODE_PRIVATE).toString());
+        LocalKeyStore.setKeyStoreLocation(
+                component.pEpSystemFileLocator().getKeyStoreFolder().toString()
+        );
 
         initJobManager(prefs);
 

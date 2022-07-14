@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
@@ -18,6 +19,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import security.pEp.file.PEpSystemFileLocator
 import java.io.File
 
 @ExperimentalCoroutinesApi
@@ -26,7 +28,8 @@ class ExportpEpSupportDataTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
     private val context: Context = mockk()
-    private val exportpEpSupportData = ExportpEpSupportData(context)
+    private val systemFileLocator: PEpSystemFileLocator = mockk()
+    private val exportpEpSupportData = ExportpEpSupportData(context, systemFileLocator)
     private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
     private val pEpFolder = File(homeFolder, ".pEp")
     private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
@@ -37,8 +40,9 @@ class ExportpEpSupportDataTest {
 
     @Before
     fun setUp() {
-        every { context.getDir("home", Context.MODE_PRIVATE) }.returns(homeFolder)
-        every { context.getDir("trustwords", Context.MODE_PRIVATE) }.returns(trustwordsFolder)
+        //every { systemFileLocator.homeFolder }.returns(homeFolder)
+        coEvery { systemFileLocator.trustwordsFolder }.returns(trustwordsFolder)
+        coEvery { systemFileLocator.pEpFolder }.returns(pEpFolder)
         cleanupFiles()
         fromFolders.forEach { it.mkdirs() }
     }
@@ -84,7 +88,7 @@ class ExportpEpSupportDataTest {
     @Test
     fun `export() returns false if an exception is thrown`() {
         runBlocking {
-            every { context.getDir("home", Context.MODE_PRIVATE) }.throws(RuntimeException())
+            every { systemFileLocator.pEpFolder }.throws(RuntimeException())
 
             File(pEpFolder, "management.db").writeText("test")
             File(pEpFolder, "keys.db").writeText("test")
