@@ -43,12 +43,23 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private lateinit var attachmentDefaultPathPreference: Preference
 
     private var syncSwitchDialog: AlertDialog? = null
+    private var rootkey:String? = null
 
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = dataStore
+        this.rootkey = rootKey
 
         setPreferencesFromResource(R.xml.general_settings, rootKey)
 
+        initializePreferences()
+    }
+
+    fun refreshPreferences() {
+        setPreferencesFromResource(R.xml.general_settings, rootkey)
+        initializePreferences()
+    }
+
+    private fun initializePreferences() {
         initializeAttachmentDefaultPathPreference()
         initializeConfirmActions()
         initializeLockScreenNotificationVisibility()

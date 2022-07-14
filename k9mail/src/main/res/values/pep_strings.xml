@@ -286,6 +286,7 @@
     <string name="pep_sync_folder">p≡p sync folder</string>
     <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
     <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
+    <string name="pep_sync_folder_description">Use a dedicate pEp folder for pEp key sync messages</string>
 
     <string name="about_documentation">Documentation:</string>
 
@@ -336,5 +337,7 @@
 
     <string name="compose_unsecure_delivery_warning">Unable to establish secure message delivery. Please consider removing highlighted recipients to guarantee a safe transmission of this email.</string>
     <string name="enterprise_unsecure">Unsecure</string>
+    <string name="use_trustwords_setting_title">Use trustwords</string>
+    <string name="use_trustwords_setting_description">Use trustwords to stablish trust with a partner</string>
 
 </resources>
