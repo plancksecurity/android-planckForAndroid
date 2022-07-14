@@ -280,4 +280,12 @@
 
     <string name="compose_unsecure_delivery_warning">Sichere Nachrichtenübertragung unmöglich. Bitte erwägen Sie, markierte Empfänger zu entfernen, um eine sichere Emailübertragung zu gewährleisten.</string>
     <string name="enterprise_unsecure">Nicht sicher</string>
+    <string name="waiting_for_provisioning">Warten auf die Bereitstellung</string>
+    <string name="provisioning_in_progress">Bereitstellung in Bearbeitung</string>
+    <string name="initializing_application">Initialisieren der Anwendung</string>
+    <string name="provisioning_successful_initializing_application">Erfolgreiche Bereitstellung, Initialisierung der Anwendung</string>
+    <string name="initialization_complete">Initialisierung abgeschlossen</string>
+    <string name="provisioning_error_template">Bereitstellung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
+    <string name="initialization_error_template">Initialisierung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
+
 </resources>
