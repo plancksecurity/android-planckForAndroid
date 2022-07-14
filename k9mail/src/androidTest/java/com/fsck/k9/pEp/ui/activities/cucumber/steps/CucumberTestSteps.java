@@ -1468,9 +1468,9 @@ public class CucumberTestSteps {
                     return;
             }
         }
-        if (status.equals("pEpRatingUndefined")) {
+        if (status.equals("pEpRatingUndefined") && (getTextFromView(onView(withId(R.id.to))).equals(""))) {
             if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                assertFailWithMessage("Showing a rating and it should be " + status);
+                assertFailWithMessage("Showing a rating when there is no recipient");
             }
             return;
         }
