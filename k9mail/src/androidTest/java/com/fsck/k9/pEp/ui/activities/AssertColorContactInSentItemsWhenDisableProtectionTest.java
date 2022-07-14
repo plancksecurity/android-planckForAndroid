@@ -48,8 +48,7 @@ public class AssertColorContactInSentItemsWhenDisableProtectionTest extends Base
     }
 
     private void clickFirstMessageFromSentFolder() {
-        String folderName = resources.getString(R.string.special_mailbox_name_sent);
-        testUtils.goToFolder(folderName);
+        testUtils.goToSentFolder();
         testUtils.clickFirstMessage();
     }
 }

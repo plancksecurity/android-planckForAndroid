@@ -1,24 +1,16 @@
 package com.fsck.k9.pEp.ui.activities
 
 import android.Manifest
-import android.content.Intent
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import androidx.test.uiautomator.UiDevice
-import com.fsck.k9.Preferences
 import com.fsck.k9.R
-import com.fsck.k9.pEp.EspressoTestingIdlingResource
+import com.fsck.k9.common.BaseAndroidTest
 import com.fsck.k9.pEp.ui.activities.TestUtils.BasicMessage
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,17 +20,7 @@ private const val MESSAGE_SUBJECT = "subject"
 private const val MESSAGE_BODY = "body"
 
 @RunWith(AndroidJUnit4::class)
-class RemoveMessageThreadTest {
-    private lateinit var testUtils: TestUtils
-    private lateinit var device: UiDevice
-    private lateinit var email: String
-
-    @get:Rule
-    var splashActivityTestRule = IntentsTestRule(
-        SplashActivity::class.java, false, false
-    )
-
-
+class RemoveMessageThreadTest : BaseAndroidTest() {
     @get:Rule
     var permissionRule: GrantPermissionRule =
         GrantPermissionRule.grant(
@@ -50,25 +32,8 @@ class RemoveMessageThreadTest {
 
     @Before
     fun startpEpApp() {
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-        testUtils = TestUtils(device, InstrumentationRegistry.getInstrumentation())
-        EspressoTestingIdlingResource()
-        IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource())
-        splashActivityTestRule.launchActivity(Intent())
-        testUtils.skipTutorialAndAllowPermissionsIfNeeded()
-        val preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext())
-        if (preferences.defaultAccount?.email.isNullOrBlank()) {
-            testUtils.goToSettingsAndRemoveAllAccountsIfNeeded()
-        }
         testUtils.setupAccountIfNeeded()
-        email = preferences.defaultAccount?.email.orEmpty()
         testUtils.doWaitForResource(R.id.message_list)
-    }
-
-    @After
-    fun tearDown() {
-        splashActivityTestRule.finishActivity()
-        IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource())
     }
 
     @Test
@@ -123,6 +88,7 @@ class RemoveMessageThreadTest {
     }
 
     private fun fillMessage() {
+        val email = testUtils.getTextFromTextViewThatContainsText("@")
         testUtils.fillMessage(
             BasicMessage(
                 email,

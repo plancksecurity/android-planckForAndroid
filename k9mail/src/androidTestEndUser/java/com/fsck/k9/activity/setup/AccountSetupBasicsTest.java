@@ -1,5 +1,21 @@
 package com.fsck.k9.activity.setup;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
+
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
@@ -20,21 +36,6 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withListSize;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
-import static org.hamcrest.Matchers.allOf;
-import static org.junit.Assert.assertEquals;
-
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class AccountSetupBasicsTest extends BaseAndroidTest {
@@ -44,6 +45,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
 
     @Before
     public void setUp() throws Exception {
+        assumeFalse(BuildConfig.IS_ENTERPRISE);
         preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }

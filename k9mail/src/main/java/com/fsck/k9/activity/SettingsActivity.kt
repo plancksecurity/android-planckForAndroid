@@ -253,7 +253,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
         }
 
-        registerForContextMenu(accountsList)
+        if (!BuildConfig.IS_ENTERPRISE) {
+            registerForContextMenu(accountsList)
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
             val accountUuid = savedInstanceState.getString("selectedContextAccount")
@@ -973,7 +975,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (account is SearchAccount) {
+            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
                 holder.folders!!.visibility = View.GONE
             } else {
                 holder.folders?.let {

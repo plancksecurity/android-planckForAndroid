@@ -303,8 +303,8 @@ public class K9 extends MultiDexApplication {
     private static int mMessageListPreviewLines = 2;
 
     private static boolean mShowCorrespondentNames = true;
-    private static boolean mMessageListSenderAboveSubject = false;
-    private static boolean mShowContactName = false;
+    private static boolean mMessageListSenderAboveSubject = BuildConfig.IS_ENTERPRISE;
+    private static boolean mShowContactName = BuildConfig.IS_ENTERPRISE;
     private static boolean mChangeContactNameColor = false;
     private static int mContactNameColor = DEFAULT_CONTACT_NAME_COLOR;
     private static boolean sShowContactPicture = true;
@@ -316,7 +316,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mUseVolumeKeysForNavigation = false;
     private static boolean mUseVolumeKeysForListNavigation = false;
     private static boolean mStartIntegratedInbox = false;
-    private static boolean mMeasureAccounts = true;
+    private static boolean mMeasureAccounts = false;
     private static boolean mCountSearchMessages = true;
     private static boolean mAutofitWidth = false;
     private static boolean mQuietTimeEnabled = false;
@@ -384,7 +384,7 @@ public class K9 extends MultiDexApplication {
      * on each new folder and can be incremented with "Load more messages..." by the
      * VISIBLE_LIMIT_INCREMENT
      */
-    public static final int DEFAULT_VISIBLE_LIMIT = 100;
+    public static final int DEFAULT_VISIBLE_LIMIT = BuildConfig.IS_ENTERPRISE ? 250 : 100;
 
     /**
      * The maximum size of an attachment we're willing to download (either View or Save)
@@ -928,9 +928,12 @@ public class K9 extends MultiDexApplication {
         mUseVolumeKeysForNavigation = storage.getBoolean("useVolumeKeysForNavigation", false);
         mUseVolumeKeysForListNavigation = storage.getBoolean("useVolumeKeysForListNavigation", false);
         mStartIntegratedInbox = storage.getBoolean("startIntegratedInbox", false);
-        mMeasureAccounts = storage.getBoolean("measureAccounts", true);
+        mMeasureAccounts = storage.getBoolean("measureAccounts", false);
         mCountSearchMessages = storage.getBoolean("countSearchMessages", true);
-        mMessageListSenderAboveSubject = storage.getBoolean("messageListSenderAboveSubject", false);
+        mMessageListSenderAboveSubject = storage.getBoolean(
+                "messageListSenderAboveSubject",
+                BuildConfig.IS_ENTERPRISE
+        );
         mMessageListCheckboxes = storage.getBoolean("messageListCheckboxes", false);
         mMessageListStars = storage.getBoolean("messageListStars", true);
         mMessageListPreviewLines = storage.getInt("messageListPreviewLines", 2);
@@ -943,7 +946,7 @@ public class K9 extends MultiDexApplication {
         mQuietTimeEnds = storage.getString("quietTimeEnds", "7:00");
 
         mShowCorrespondentNames = storage.getBoolean("showCorrespondentNames", true);
-        mShowContactName = storage.getBoolean("showContactName", false);
+        mShowContactName = storage.getBoolean("showContactName", BuildConfig.IS_ENTERPRISE);
         sShowContactPicture = storage.getBoolean("showContactPicture", true);
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
         mContactNameColor = storage.getInt("registeredNameColor", DEFAULT_CONTACT_NAME_COLOR);

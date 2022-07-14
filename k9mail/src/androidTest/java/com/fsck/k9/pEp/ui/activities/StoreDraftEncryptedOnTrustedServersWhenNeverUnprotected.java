@@ -79,8 +79,7 @@ public class StoreDraftEncryptedOnTrustedServersWhenNeverUnprotected extends Bas
     }
 
     private void clickFirstMessageFromDraft() {
-        String folderName = resources.getString(R.string.special_mailbox_name_drafts);
-        testUtils.goToFolder(folderName);
+        testUtils.goToDraftsFolder();
         testUtils.clickFirstMessage();
     }
 

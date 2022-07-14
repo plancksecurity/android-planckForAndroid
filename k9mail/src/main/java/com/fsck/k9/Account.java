@@ -10,6 +10,8 @@ import android.net.Uri;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import timber.log.Timber;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -91,6 +93,13 @@ public class Account implements BaseAccount, StoreConfig {
         this.pEpSyncEnabled = pEpSyncEnabled;
     }
 
+    @NonNull
+    public static FolderMode getDefaultFolderDisplayMode() {
+        return BuildConfig.IS_ENTERPRISE
+                ? FolderMode.ALL
+                : FolderMode.NOT_SECOND_CLASS;
+    }
+
     public enum Expunge {
         EXPUNGE_IMMEDIATELY,
         EXPUNGE_MANUALLY,
@@ -139,12 +148,13 @@ public class Account implements BaseAccount, StoreConfig {
 
     public static final MessageFormat DEFAULT_MESSAGE_FORMAT = MessageFormat.HTML;
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
-    public static final QuoteStyle DEFAULT_QUOTE_STYLE = QuoteStyle.PREFIX;
+    public static final QuoteStyle DEFAULT_QUOTE_STYLE =
+            BuildConfig.IS_ENTERPRISE ? QuoteStyle.HEADER : QuoteStyle.PREFIX;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
     public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
     public static final boolean DEFAULT_REPLY_AFTER_QUOTE = false;
     public static final boolean DEFAULT_STRIP_SIGNATURE = true;
-    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = 25;
+    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = BuildConfig.IS_ENTERPRISE? 50 : 25;
 
     public static final String ACCOUNT_DESCRIPTION_KEY = "description";
     public static final String STORE_URI_KEY = "storeUri";
@@ -334,10 +344,10 @@ public class Account implements BaseAccount, StoreConfig {
         notifySync = true;
         notifySelfNewMail = true;
         notifyContactsMailOnly = false;
-        folderDisplayMode = FolderMode.NOT_SECOND_CLASS;
+        folderDisplayMode = getDefaultFolderDisplayMode();
         folderSyncMode = FolderMode.FIRST_CLASS;
         folderPushMode = FolderMode.FIRST_CLASS;
-        folderTargetMode = FolderMode.NOT_SECOND_CLASS;
+        folderTargetMode = getDefaultFolderDisplayMode();
         sortType = DEFAULT_SORT_TYPE;
         sortAscending.put(DEFAULT_SORT_TYPE, DEFAULT_SORT_ASCENDING);
         showPictures = ShowPictures.NEVER;
@@ -386,7 +396,10 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLedColor(chipColor);
 
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtected = new ManageableSetting<>(DEFAULT_PEP_PRIVACY_PROTECTED, false);
+        pEpPrivacyProtected = new ManageableSetting<>(
+                DEFAULT_PEP_PRIVACY_PROTECTED,
+                BuildConfig.IS_ENTERPRISE
+        );
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
@@ -498,13 +511,13 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setLed(storage.getBoolean(accountUuid + ".led", true));
         notificationSetting.setLedColor(storage.getInt(accountUuid + ".ledColor", chipColor));
 
-        folderDisplayMode = getEnumStringPref(storage, accountUuid + ".folderDisplayMode", FolderMode.NOT_SECOND_CLASS);
+        folderDisplayMode = getEnumStringPref(storage, accountUuid + ".folderDisplayMode", getDefaultFolderDisplayMode());
 
         folderSyncMode = getEnumStringPref(storage, accountUuid + ".folderSyncMode", FolderMode.FIRST_CLASS);
 
         folderPushMode = getEnumStringPref(storage, accountUuid + ".folderPushMode", FolderMode.FIRST_CLASS);
 
-        folderTargetMode = getEnumStringPref(storage, accountUuid + ".folderTargetMode", FolderMode.NOT_SECOND_CLASS);
+        folderTargetMode = getEnumStringPref(storage, accountUuid + ".folderTargetMode", getDefaultFolderDisplayMode());
 
         searchableFolders = getEnumStringPref(storage, accountUuid + ".searchableFolders", Searchable.ALL);
 

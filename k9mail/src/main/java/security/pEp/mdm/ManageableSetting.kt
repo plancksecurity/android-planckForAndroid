@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 
 
 @Serializable
+@Deprecated("Only left in case we need to lock managed settings visible in UI")
 data class ManageableSetting<SETTING_TYPE>(
         @SerialName("value") var value: SETTING_TYPE,
         @SerialName("locked") val locked: Boolean,
