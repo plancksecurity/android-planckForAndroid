@@ -1,17 +1,16 @@
 package security.pEp.provisioning
 
 import com.fsck.k9.K9
+import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import security.pEp.file.PEpSystemFileLocator
+import security.pEp.network.UrlChecker
 import java.io.File
 
 private const val TEST_PROVISIONING_URL = "https://test/url"
@@ -37,11 +36,15 @@ class ProvisioningManagerTest {
     fun setUp() {
         coEvery { k9.provisioningUrl }.returns(TEST_PROVISIONING_URL)
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
+        coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
             .returns(Result.success(Unit))
+
+        mockkStatic(Utility::class)
+        coEvery { Utility.hasConnectivity(any()) }.returns(true)
 
         manager.addListener(listener)
         verify { listener.provisionStateChanged(any()) }
@@ -51,6 +54,7 @@ class ProvisioningManagerTest {
     @After
     fun tearDown() {
         unmockkObject(PEpProviderImplKotlin)
+        unmockkStatic(Utility::class)
     }
 
     @Test
@@ -61,6 +65,39 @@ class ProvisioningManagerTest {
         coVerify { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
         coVerify { k9.finalizeSetup() }
         coVerify { listener.provisionStateChanged(ProvisionState.Initialized) }
+    }
+
+    @Test
+    fun `when device has no network connectivity, resulting state is error`() {
+        coEvery { Utility.hasConnectivity(any()) }.returns(false)
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(throwable.message!!.contains("Device is offline"))
+        }
+    }
+
+    @Test
+    @Ignore("remove ignore when we know the url for provisioning")
+    fun `when provisioning url is not reachable, resulting state is error`() {
+        coEvery { urlChecker.isUrlReachable(any()) }.returns(false)
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(throwable.message!!.contains("is not reachable"))
+        }
     }
 
     @Test

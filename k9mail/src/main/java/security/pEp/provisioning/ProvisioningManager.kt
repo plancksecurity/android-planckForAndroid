@@ -1,8 +1,8 @@
 package security.pEp.provisioning
 
-import android.webkit.URLUtil
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
+import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.file.PEpSystemFileLocator
+import security.pEp.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,25 +38,13 @@ class ProvisioningManager @Inject constructor(
     }
 
     fun startProvisioning() {
-        CoroutineScope(dispatcherProvider.main()).launch {
+        CoroutineScope(dispatcherProvider.io()).launch {
             if (!BuildConfig.IS_ENTERPRISE) {
                 finalizeSetup()
             } else {
                 val provisioningUrl = k9.provisioningUrl
                 if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
-                    if (!urlChecker.isValidUrl(provisioningUrl)) {
-                        Result.failure(
-                            IllegalStateException("Url has bad format: $provisioningUrl")
-                        )
-                    } else {
-                        setProvisionState(ProvisionState.InProvisioning)
-                        PEpProviderImplKotlin.provision(
-                            dispatcherProvider.io(),
-                            provisioningUrl
-                        ).flatMapSuspend {
-                            finalizeSetup(true)
-                        }
-                    }
+                    performProvisioningAfterChecks(provisioningUrl)
                 } else {
                     finalizeSetup()
                 }
@@ -65,21 +54,52 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
+    private suspend fun performProvisioningAfterChecks(provisioningUrl: String): Result<Unit> =
+        when {
+            !isDeviceOnline() -> {
+                Result.failure(ProvisioningFailedException("Device is offline"))
+            }
+            !urlChecker.isUrlReachable(provisioningUrl) -> {
+                Result.failure(
+                    ProvisioningFailedException(
+                        "Provisioning url $provisioningUrl is not reachable"
+                    )
+                )
+            }
+            !urlChecker.isValidUrl(provisioningUrl) -> {
+                Result.failure(
+                    IllegalStateException("Url has bad format: $provisioningUrl")
+                )
+            }
+            else -> {
+                setProvisionState(ProvisionState.InProvisioning)
+                PEpProviderImplKotlin.provision(
+                    dispatcherProvider.io(),
+                    provisioningUrl
+                ).flatMapSuspend {
+                    finalizeSetup(true)
+                }
+            }
+        }
+
+    private fun isDeviceOnline(): Boolean =
+        kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
+
     private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
         setProvisionState(ProvisionState.Initializing(provisionDone))
-        val result: Result<Unit> = withContext(dispatcherProvider.io()) {
-            kotlin.runCatching {
-                k9.finalizeSetup()
-            }.mapError {
-                InitializationFailedException(it.message, it)
-            }
+        val result: Result<Unit> = kotlin.runCatching {
+            k9.finalizeSetup()
+        }.mapError {
+            InitializationFailedException(it.message, it)
         }
         return result
     }
 
-    private fun setProvisionState(newState: ProvisionState) {
+    private suspend fun setProvisionState(newState: ProvisionState) {
         provisionState = newState
-        listeners.forEach { it.provisionStateChanged(newState) }
+        withContext(dispatcherProvider.main()) {
+            listeners.forEach { it.provisionStateChanged(newState) }
+        }
     }
 
     interface ProvisioningStateListener {
@@ -87,6 +107,3 @@ class ProvisioningManager @Inject constructor(
     }
 }
 
-class UrlChecker @Inject constructor() {
-    fun isValidUrl(url: String?): Boolean = URLUtil.isValidUrl(url)
-}
