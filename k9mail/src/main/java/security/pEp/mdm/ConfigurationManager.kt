@@ -7,6 +7,7 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.*
 import timber.log.Timber
+import javax.inject.Inject
 
 class ConfigurationManager(
     private val context: Context,
@@ -20,17 +21,11 @@ class ConfigurationManager(
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
-            loadConfigurationsInternal()
+            loadConfigurationsInBackground()
         }
     }
 
-    fun loadConfigurationsBlocking() {
-        runBlocking(Dispatchers.IO) {
-            loadConfigurationsInternal()
-        }
-    }
-
-    private suspend fun loadConfigurationsInternal() {
+    suspend fun loadConfigurationsInBackground() {
         loadConfigurationsSuspend()
             .onSuccess { sendRemoteConfig() }
             .onFailure {
@@ -101,5 +96,12 @@ class ConfigurationManager(
 
     fun setListener(listener: RestrictionsListener) {
         this.listener = listener
+    }
+
+    class Factory @Inject constructor() {
+        fun getInstance(
+            context: Context,
+            preferences: Preferences? = null
+        ): ConfigurationManager = ConfigurationManager(context, preferences)
     }
 }
