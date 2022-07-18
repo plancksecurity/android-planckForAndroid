@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import security.pEp.provisioning.ProvisioningManager;
 import security.pEp.file.PEpSystemFileLocator;
+import security.pEp.provisioning.ProvisioningSettings;
 
 @Singleton
 @Component(modules = ApplicationModule.class)
@@ -44,6 +45,8 @@ public interface ApplicationComponent {
     DispatcherProvider dispatcherProvider();
 
     ProvisioningManager provisioningManager();
+
+    ProvisioningSettings provisioningSettings();
 
     PEpSystemFileLocator pEpSystemFileLocator();
 

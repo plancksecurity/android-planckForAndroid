@@ -111,7 +111,6 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private String provisioningUrl;
 
     public static K9JobManager jobManager;
 
@@ -642,14 +641,9 @@ public class K9 extends MultiDexApplication {
         fontSizes.save(editor);
     }
 
-    public String getProvisioningUrl() {
-        return provisioningUrl;
-    }
-
     @Override
     public void onCreate() {
         AndroidHelper.setup(this);
-        new ConfigurationManager(this, null).loadConfigurationsBlocking();
 
         if (K9.DEVELOPER_MODE) {
             StrictMode.enableDefaults();
@@ -1130,10 +1124,6 @@ public class K9 extends MultiDexApplication {
                 observers.add(component);
             }
         }
-    }
-
-    public void setProvisioningUrl(String provisioningUrl) {
-        this.provisioningUrl = provisioningUrl;
     }
 
     public static String getK9Language() {

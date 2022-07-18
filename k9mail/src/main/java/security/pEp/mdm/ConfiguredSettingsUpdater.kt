@@ -5,12 +5,14 @@ import android.os.Bundle
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import security.pEp.provisioning.ProvisioningSettings
 import timber.log.Timber
 import java.util.*
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
-    private val preferences: Preferences? = null
+    private val preferences: Preferences? = null,
+    private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
 
     fun update(restrictions: Bundle, entry: RestrictionEntry) {
@@ -53,7 +55,7 @@ class ConfiguredSettingsUpdater(
 
     private fun saveProvisioningUrl(restrictions: Bundle, key: String) {
         updateString(restrictions, key) {
-            k9.provisioningUrl = it
+            provisioningSettings.provisioningUrl = it
         }
     }
 
