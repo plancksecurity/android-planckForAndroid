@@ -2588,8 +2588,10 @@ public class CucumberTestSteps {
     @Then("^I remove all messages$")
     public void I_remove_all_messages() {
         testUtils.getMessageListSize();
-        if (testUtils.getListSize() > 0) {
+        if (testUtils.getListSize() > 1) {
             testUtils.clickLastMessage();
+        } else {
+            return;
         }
         while (!viewIsDisplayed(R.id.fab_button_compose_message)) {
             try {
