@@ -318,12 +318,14 @@ Feature: Test
     And I enter bot2 in the messageTo field
     Then I check if the privacy status is pep_yellow
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is pep_red
+    #This is unsecure, color resource for enterprise should be created, in the meantime we will use pep_red (this is not mistrusted color)
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is pep_red
+    #This is unsecure, color resource for enterprise should be created, in the meantime we will use pep_red (this is not mistrusted color)
     And I compare messageBody with TM-12B
     Examples:
       |account|
@@ -353,28 +355,6 @@ Feature: Test
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with specialCharacters
-
-    Examples:
-      |account|
-      |  0    |
-      
-      
-
-
-#Move to folder
-  @QTR-1825
-  Scenario Outline: Cucumber Move to folder
-
-    When I select account <account>
-    And I send 1 message to bot1 with subject moveThisMessage and body ThisMessageWillMoveToAnotherFolder
-    And I click the last message received
-    And I select from message menu refile_action
-    And I select from message menu move_action
-    And I select from screen notification_action_spam
-    And I go back to accounts list
-    When I select Spam folder of account <account>
-    And I click the first message
-    And I compare messageBody from json file with ThisMessageWillMoveToAnotherFolder
 
     Examples:
       |account|
