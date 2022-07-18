@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.file.PEpSystemFileLocator
+import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,6 +21,8 @@ class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val systemFileLocator: PEpSystemFileLocator,
     private val urlChecker: UrlChecker,
+    private val configurationManagerFactory: ConfigurationManager.Factory,
+    private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
 ) {
     private var provisionState: ProvisionState =
@@ -39,60 +42,69 @@ class ProvisioningManager @Inject constructor(
 
     fun startProvisioning() {
         CoroutineScope(dispatcherProvider.io()).launch {
-            if (!BuildConfig.IS_ENTERPRISE) {
-                finalizeSetup()
-            } else {
-                val provisioningUrl = k9.provisioningUrl
-                if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
-                    performProvisioningAfterChecks(provisioningUrl)
-                } else {
-                    finalizeSetup()
-                }
-            }.onFailure {
-                setProvisionState(ProvisionState.Error(it))
-            }.onSuccess { setProvisionState(ProvisionState.Initialized) }
+            performProvisioningIfNeeded()
+                .onFailure { setProvisionState(ProvisionState.Error(it)) }
+                .onSuccess { setProvisionState(ProvisionState.Initialized) }
         }
     }
 
-    private suspend fun performProvisioningAfterChecks(provisioningUrl: String): Result<Unit> =
-        when {
-            !isDeviceOnline() -> {
-                Result.failure(ProvisioningFailedException("Device is offline"))
-            }
-            !urlChecker.isUrlReachable(provisioningUrl) -> {
-                Result.failure(
-                    ProvisioningFailedException(
-                        "Provisioning url $provisioningUrl is not reachable"
-                    )
-                )
-            }
-            !urlChecker.isValidUrl(provisioningUrl) -> {
-                Result.failure(
-                    IllegalStateException("Url has bad format: $provisioningUrl")
-                )
-            }
-            else -> {
-                setProvisionState(ProvisionState.InProvisioning)
-                PEpProviderImplKotlin.provision(
-                    dispatcherProvider.io(),
-                    provisioningUrl
-                ).flatMapSuspend {
-                    finalizeSetup(true)
-                }
+    private suspend fun performProvisioningIfNeeded(): Result<Unit> {
+        return if (!BuildConfig.IS_ENTERPRISE) {
+            finalizeSetup()
+        } else {
+            configurationManagerFactory.getInstance(k9).loadConfigurationsInBackground()
+            val provisioningUrl = provisioningSettings.provisioningUrl
+            if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
+                performProvisioningAfterChecks(provisioningUrl)
+            } else {
+                finalizeSetup()
             }
         }
+    }
+
+    private suspend fun performProvisioningAfterChecks(provisioningUrl: String): Result<Unit> {
+        return performChecks(
+            provisioningUrl
+        ).flatMapSuspend {
+            setProvisionState(ProvisionState.InProvisioning)
+            PEpProviderImplKotlin.provision(
+                dispatcherProvider.io(),
+                provisioningUrl
+            )
+        }.flatMapSuspend {
+            finalizeSetup(true)
+        }
+    }
+
+    private fun performChecks(provisioningUrl: String): Result<Unit> = when {
+        !isDeviceOnline() -> {
+            Result.failure(ProvisioningFailedException("Device is offline"))
+        }
+        !urlChecker.isUrlReachable(provisioningUrl) -> {
+            Result.failure(
+                ProvisioningFailedException(
+                    "Provisioning url $provisioningUrl is not reachable"
+                )
+            )
+        }
+        !urlChecker.isValidUrl(provisioningUrl) -> {
+            Result.failure(
+                ProvisioningFailedException("Url has bad format: $provisioningUrl")
+            )
+        }
+        else -> Result.success(Unit)
+    }
 
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
     private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
         setProvisionState(ProvisionState.Initializing(provisionDone))
-        val result: Result<Unit> = kotlin.runCatching {
+        return kotlin.runCatching {
             k9.finalizeSetup()
         }.mapError {
             InitializationFailedException(it.message, it)
         }
-        return result
     }
 
     private suspend fun setProvisionState(newState: ProvisionState) {
@@ -106,4 +118,3 @@ class ProvisioningManager @Inject constructor(
         fun provisionStateChanged(state: ProvisionState)
     }
 }
-

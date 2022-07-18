@@ -12,6 +12,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import security.pEp.file.PEpSystemFileLocator
+import security.pEp.mdm.ConfigurationManager
+import security.pEp.network.UrlChecker
 
 @ExperimentalCoroutinesApi
 class ProvisioningManagerTestEndUser {
@@ -22,16 +24,24 @@ class ProvisioningManagerTestEndUser {
     private val systemFileLocator: PEpSystemFileLocator = mockk()
     private val urlChecker: UrlChecker = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
+    private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
+    private val provisioningSettings: ProvisioningSettings = mockk()
     private val manager = ProvisioningManager(
         k9,
         systemFileLocator,
         urlChecker,
-        coroutinesTestRule.testDispatcherProvider
+        configurationManagerFactory,
+        provisioningSettings,
+        coroutinesTestRule.testDispatcherProvider,
     )
 
     @Before
     fun setUp() {
         mockkObject(PEpProviderImplKotlin)
+
+        manager.addListener(listener)
+        verify { listener.provisionStateChanged(any()) }
+        clearMocks(listener)
     }
 
     @After
@@ -46,7 +56,9 @@ class ProvisioningManagerTestEndUser {
 
         coVerify { PEpProviderImplKotlin.wasNot(called) }
         coVerify { k9.finalizeSetup() }
-        assertEquals(ProvisionState.Initialized, manager.provisionState)
+        assertListenerProvisionChangedWithState { state ->
+            assertEquals(ProvisionState.Initialized, state)
+        }
     }
 
     @Test
@@ -58,12 +70,16 @@ class ProvisioningManagerTestEndUser {
 
 
         coVerify { k9.finalizeSetup() }
+        assertListenerProvisionChangedWithState { state ->
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is InitializationFailedException)
+        }
+    }
 
-        val slot = slot<ProvisionState>()
+    private fun assertListenerProvisionChangedWithState(block: (state: ProvisionState) -> Unit) {
+        val slot = mutableListOf<ProvisionState>()
         coVerify { listener.provisionStateChanged(capture(slot)) }
-        val state = slot.captured
-        assertTrue(state is ProvisionState.Error)
-        val throwable = (state as ProvisionState.Error).throwable
-        assertTrue(throwable is InitializationFailedException)
+        block(slot.last())
     }
 }

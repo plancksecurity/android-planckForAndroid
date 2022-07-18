@@ -10,6 +10,7 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.*
 import security.pEp.file.PEpSystemFileLocator
+import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 import java.io.File
 
@@ -25,20 +26,26 @@ class ProvisioningManagerTest {
     private val urlChecker: UrlChecker = mockk()
     private val keysDbFile: File = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
+    private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
+    private val configurationManager: ConfigurationManager = mockk(relaxed = true)
+    private val provisioningSettings: ProvisioningSettings = mockk()
     private val manager = ProvisioningManager(
         k9,
         systemFileLocator,
         urlChecker,
-        coroutinesTestRule.testDispatcherProvider
+        configurationManagerFactory,
+        provisioningSettings,
+        coroutinesTestRule.testDispatcherProvider,
     )
 
     @Before
     fun setUp() {
-        coEvery { k9.provisioningUrl }.returns(TEST_PROVISIONING_URL)
+        coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
+        coEvery { configurationManagerFactory.getInstance(k9) }.returns(configurationManager)
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
             .returns(Result.success(Unit))
@@ -111,7 +118,7 @@ class ProvisioningManagerTest {
         assertListenerProvisionChangedWithState { state ->
             assertTrue(state is ProvisionState.Error)
             val throwable = (state as ProvisionState.Error).throwable
-            assertTrue(throwable is IllegalStateException)
+            assertTrue(throwable is ProvisioningFailedException)
             assertTrue(throwable.message!!.contains("Url has bad format"))
         }
     }
@@ -152,7 +159,7 @@ class ProvisioningManagerTest {
 
     @Test
     fun `if provisioning url was not provided, provisioning does not happen`() {
-        coEvery { k9.provisioningUrl }.returns(null)
+        coEvery { provisioningSettings.provisioningUrl }.returns(null)
 
 
         manager.startProvisioning()
