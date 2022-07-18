@@ -5,10 +5,11 @@ import android.os.Bundle
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import security.pEp.provisioning.ProvisioningSettings
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
+import security.pEp.provisioning.ProvisioningSettings
+import security.pEp.provisioning.SimpleMailSettings
 import timber.log.Timber
 import java.util.*
 
@@ -54,20 +55,65 @@ class ConfiguredSettingsUpdater(
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 saveAccountEnableSync(restrictions, key)
 
-            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS ->
-                saveAccountIncomingMailSettings(restrictions, key)
-            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS ->
-                saveAccountOutgoingMailSettings(restrictions, key)
+            RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
+                saveAccountMailSettings(restrictions, key)
         }
     }
 
-    private fun saveAccountOutgoingMailSettings(restrictions: Bundle, key: String) {
+    private fun saveAccountMailSettings(restrictions: Bundle, key: String) {
         val bundle = restrictions.getBundle(key)
         bundle?.let {
-            var port = -1
-            var userName: String? = null
-            var server: String? = null
-            var connectionSecurity: ConnectionSecurity? = null
+            bundle.keySet().forEach { key ->
+                when (key) {
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
+                        val incoming = getAccountIncomingMailSettings(restrictions, key)
+                        saveAccountIncomingSettings(incoming)
+                    }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
+                        val outgoing = getAccountOutgoingMailSettings(restrictions, key)
+                        saveAccountOutgoingSettings(outgoing)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun saveAccountIncomingSettings(incoming: SimpleMailSettings) {
+        preferences?.accounts?.forEach { account ->
+            val currentSettings = RemoteStore.decodeStoreUri(account.storeUri)
+            val newSettings = currentSettings.newFromProvisionValues(
+                incoming.server,
+                incoming.connectionSecurity,
+                incoming.port,
+                incoming.userName
+            )
+            account.storeUri = RemoteStore.createStoreUri(newSettings)
+        }
+    }
+
+    private fun saveAccountOutgoingSettings(outgoing: SimpleMailSettings) {
+        preferences?.accounts?.forEach { account ->
+            val currentSettings = Transport.decodeTransportUri(account.transportUri)
+            val newSettings = currentSettings.newFromProvisionValues(
+                outgoing.server,
+                outgoing.connectionSecurity,
+                outgoing.port,
+                outgoing.userName
+            )
+            account.transportUri = Transport.createTransportUri(newSettings)
+        }
+    }
+
+    private fun getAccountOutgoingMailSettings(
+        restrictions: Bundle,
+        key: String
+    ): SimpleMailSettings {
+        val bundle = restrictions.getBundle(key)
+        var port = -1
+        var server: String? = null
+        var connectionSecurity: ConnectionSecurity? = null
+        var userName: String? = null
+        bundle?.let {
             bundle.keySet().forEach { key ->
                 when (key) {
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
@@ -91,32 +137,24 @@ class ConfiguredSettingsUpdater(
                         }
                 }
             }
-            preferences?.accounts?.forEach { account ->
-                val currentSettings = Transport.decodeTransportUri(account.transportUri)
-                val newSettings = currentSettings.newFromProvisionValues(
-                    server,
-                    connectionSecurity,
-                    port,
-                    userName
-                )
-                account.transportUri = Transport.createTransportUri(newSettings)
-            }
         }
+        return SimpleMailSettings(port, server, connectionSecurity, userName)
     }
 
-    private fun saveAccountIncomingMailSettings(restrictions: Bundle, key: String) {
+    private fun getAccountIncomingMailSettings(
+        restrictions: Bundle,
+        key: String
+    ): SimpleMailSettings {
         val bundle = restrictions.getBundle(key)
+        var port = -1
+        var server: String? = null
+        var connectionSecurity: ConnectionSecurity? = null
+        var userName: String? = null
         bundle?.let {
-            var port = -1
-            var userName: String? = null
-            var server: String? = null
-            var connectionSecurity: ConnectionSecurity? = null
             bundle.keySet().forEach { key ->
                 when (key) {
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
-                        updateString(bundle, key) {
-                            server = it
-                        }
+                        updateString(bundle, key) { server = it }
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
                         updateString(bundle, key) { newValue ->
                             connectionSecurity = newValue.toConnectionSecurity()
@@ -134,17 +172,8 @@ class ConfiguredSettingsUpdater(
                         }
                 }
             }
-            preferences?.accounts?.forEach { account ->
-                val currentSettings = RemoteStore.decodeStoreUri(account.storeUri)
-                val newSettings = currentSettings.newFromProvisionValues(
-                    server,
-                    connectionSecurity,
-                    port,
-                    userName
-                )
-                account.storeUri = RemoteStore.createStoreUri(newSettings)
-            }
         }
+        return SimpleMailSettings(port, server, connectionSecurity, userName)
     }
 
     private fun String.toConnectionSecurity(): ConnectionSecurity? = when {

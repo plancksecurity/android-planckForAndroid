@@ -33,6 +33,8 @@
     <string name="trash_folder_description">Set folder to be used as Trash folder</string>
     <string name="provisioning_url_title">Provisioning URL</string>
     <string name="provisioning_url_description">URL to provision pEp for Android</string>
+    <string name="mail_settings_title">Mail settings</string>
+    <string name="mail_settings_description">Configure server port, host, security, user name for incoming and outgoing mail servers. This is required for provisioning.</string>
 
     <!-- Choice restriction -->
     <string name="default_max_push_folders" translatable="false">25</string>
