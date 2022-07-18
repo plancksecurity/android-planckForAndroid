@@ -28,6 +28,7 @@ const val RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY = "pep_save_encrypted_on_s
 const val RESTRICTION_ACCOUNT_ENABLE_SYNC = "pep_enable_sync_account"
 
 const val RESTRICTION_ACCOUNT_MAIL_SETTINGS = "pep_mail_settings"
+const val RESTRICTION_ACCOUNT_EMAIL_ADDRESS = "account_email_address"
 const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS = "incoming_mail_settings"
 const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER = "incoming_mail_settings_server"
 const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE =

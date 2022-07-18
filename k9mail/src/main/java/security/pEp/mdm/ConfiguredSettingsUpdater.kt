@@ -65,6 +65,8 @@ class ConfiguredSettingsUpdater(
         bundle?.let {
             bundle.keySet().forEach { key ->
                 when (key) {
+                    RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
+                        saveAccountEmailAddress(restrictions, key)
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                         val incoming = getAccountIncomingMailSettings(restrictions, key)
                         saveAccountIncomingSettings(incoming)
@@ -75,6 +77,12 @@ class ConfiguredSettingsUpdater(
                     }
                 }
             }
+        }
+    }
+
+    private fun saveAccountEmailAddress(restrictions: Bundle, key: String) {
+        updateAccountString(restrictions, key) { account, newValue ->
+            account.email = newValue
         }
     }
 
