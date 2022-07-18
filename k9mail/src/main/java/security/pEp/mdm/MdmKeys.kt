@@ -26,3 +26,18 @@ const val RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH = "remote_search_enabled"
 const val RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT = "account_remote_search_num_results"
 const val RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY = "pep_save_encrypted_on_server"
 const val RESTRICTION_ACCOUNT_ENABLE_SYNC = "pep_enable_sync_account"
+
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS = "incoming_mail_settings"
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER = "incoming_mail_settings_server"
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE =
+    "incoming_mail_settings_security_type"
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT = "incoming_mail_settings_port"
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME = "incoming_mail_settings_user_name"
+
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS = "outgoing_mail_settings"
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER = "outgoing_mail_settings_server"
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE =
+    "outgoing_mail_settings_security_type"
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT = "outgoing_mail_settings_port"
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME = "outgoing_mail_settings_user_name"
+

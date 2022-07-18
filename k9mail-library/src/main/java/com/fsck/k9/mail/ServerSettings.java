@@ -220,4 +220,26 @@ public class ServerSettings {
         return new ServerSettings(type, host, port, connectionSecurity, AuthType.EXTERNAL,
                 username, password, newAlias);
     }
+
+    public ServerSettings newFromProvisionValues(
+            String server,
+            ConnectionSecurity connectionSecurity,
+            int port,
+            String userName
+    ) {
+        int newPort = port > 0
+                ? port
+                : this.port;
+        String newServer = server != null
+                ? server
+                : this.host;
+        ConnectionSecurity newConnectionSecurity = connectionSecurity != null
+                ? connectionSecurity
+                : this.connectionSecurity;
+        String newUserName = userName != null
+                ? userName
+                : this.username;
+        return new ServerSettings(type, newServer, newPort, newConnectionSecurity,
+                authenticationType, newUserName, password, clientCertificateAlias);
+    }
 }

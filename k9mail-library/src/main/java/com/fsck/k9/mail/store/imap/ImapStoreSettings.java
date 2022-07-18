@@ -49,4 +49,26 @@ public class ImapStoreSettings extends ServerSettings {
         return new ImapStoreSettings(host, port, connectionSecurity, authenticationType,
                 username, newPassword, clientCertificateAlias, autoDetectNamespace, pathPrefix);
     }
+
+    public ServerSettings newFromProvisionValues(
+            String server,
+            ConnectionSecurity connectionSecurity,
+            int port,
+            String userName
+    ) {
+        int newPort = port > 0
+                ? port
+                : this.port;
+        String newServer = server != null
+                ? server
+                : this.host;
+        ConnectionSecurity newConnectionSecurity = connectionSecurity != null
+                ? connectionSecurity
+                : this.connectionSecurity;
+        String newUserName = userName != null
+                ? userName
+                : this.username;
+        return new ImapStoreSettings(newServer, newPort, newConnectionSecurity, authenticationType,
+                newUserName, password, clientCertificateAlias, autoDetectNamespace, pathPrefix);
+    }
 }

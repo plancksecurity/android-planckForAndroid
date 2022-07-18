@@ -6,6 +6,9 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import security.pEp.provisioning.ProvisioningSettings
+import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mail.Transport
+import com.fsck.k9.mail.store.RemoteStore
 import timber.log.Timber
 import java.util.*
 
@@ -50,7 +53,108 @@ class ConfiguredSettingsUpdater(
                 saveAccountSaveMessagesSecurely(restrictions, key)
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
                 saveAccountEnableSync(restrictions, key)
+
+            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS ->
+                saveAccountIncomingMailSettings(restrictions, key)
+            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS ->
+                saveAccountOutgoingMailSettings(restrictions, key)
         }
+    }
+
+    private fun saveAccountOutgoingMailSettings(restrictions: Bundle, key: String) {
+        val bundle = restrictions.getBundle(key)
+        bundle?.let {
+            var port = -1
+            var userName: String? = null
+            var server: String? = null
+            var connectionSecurity: ConnectionSecurity? = null
+            bundle.keySet().forEach { key ->
+                when (key) {
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
+                        updateString(bundle, key) {
+                            server = it
+                        }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
+                        updateString(bundle, key) { newValue ->
+                            connectionSecurity = newValue.toConnectionSecurity()
+                        }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
+                        updateString(bundle, key) { newValue ->
+                            try {
+                                port = newValue.toInt()
+                            } catch (ignored: NumberFormatException) {
+                            }
+                        }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
+                        updateString(bundle, key) { newValue ->
+                            userName = newValue
+                        }
+                }
+            }
+            preferences?.accounts?.forEach { account ->
+                val currentSettings = Transport.decodeTransportUri(account.transportUri)
+                val newSettings = currentSettings.newFromProvisionValues(
+                    server,
+                    connectionSecurity,
+                    port,
+                    userName
+                )
+                account.transportUri = Transport.createTransportUri(newSettings)
+            }
+        }
+    }
+
+    private fun saveAccountIncomingMailSettings(restrictions: Bundle, key: String) {
+        val bundle = restrictions.getBundle(key)
+        bundle?.let {
+            var port = -1
+            var userName: String? = null
+            var server: String? = null
+            var connectionSecurity: ConnectionSecurity? = null
+            bundle.keySet().forEach { key ->
+                when (key) {
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
+                        updateString(bundle, key) {
+                            server = it
+                        }
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
+                        updateString(bundle, key) { newValue ->
+                            connectionSecurity = newValue.toConnectionSecurity()
+                        }
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
+                        updateString(bundle, key) { newValue ->
+                            try {
+                                port = newValue.toInt()
+                            } catch (ignored: NumberFormatException) {
+                            }
+                        }
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
+                        updateString(bundle, key) { newValue ->
+                            userName = newValue
+                        }
+                }
+            }
+            preferences?.accounts?.forEach { account ->
+                val currentSettings = RemoteStore.decodeStoreUri(account.storeUri)
+                val newSettings = currentSettings.newFromProvisionValues(
+                    server,
+                    connectionSecurity,
+                    port,
+                    userName
+                )
+                account.storeUri = RemoteStore.createStoreUri(newSettings)
+            }
+        }
+    }
+
+    private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
+        this.equals(CONNECTION_SECURITY_NONE, true) ->
+            ConnectionSecurity.NONE
+        this.equals(CONNECTION_SECURITY_STARTTLS, true) ->
+            ConnectionSecurity.STARTTLS_REQUIRED
+        this.equals(CONNECTION_SECURITY_SSL_TLS, true) ->
+            ConnectionSecurity.SSL_TLS_REQUIRED
+        else -> null
     }
 
     private fun saveProvisioningUrl(restrictions: Bundle, key: String) {
@@ -265,7 +369,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             key,
         ) { account, newValue ->
-            account.isDefaultQuotedTextShown = newValue
+            account.setPEpSyncAccount(newValue)
         }
     }
 
@@ -319,5 +423,11 @@ class ConfiguredSettingsUpdater(
                 block(account, newValue)
             }
         }.onFailure { Timber.e(it) }
+    }
+
+    companion object {
+        private const val CONNECTION_SECURITY_NONE = "NONE"
+        private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
+        private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
     }
 }
