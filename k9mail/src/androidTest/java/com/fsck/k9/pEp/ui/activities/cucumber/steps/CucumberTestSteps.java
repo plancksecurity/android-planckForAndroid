@@ -2599,9 +2599,13 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        while (!exists(onView(withId(R.id.available_accounts_title)))) {
-            testUtils.pressBack();
-            waitForIdle();
+        if (!BuildConfig.IS_ENTERPRISE) {
+            while (!exists(onView(withId(R.id.available_accounts_title)))) {
+                testUtils.pressBack();
+                waitForIdle();
+            }
+        } else {
+            testUtils.getMessageListSize();
         }
     }
 
