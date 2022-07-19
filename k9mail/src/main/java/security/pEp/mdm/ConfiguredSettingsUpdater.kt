@@ -34,6 +34,8 @@ class ConfiguredSettingsUpdater(
             RESTRICTION_PEP_DEBUG_LOG ->
                 savepEpDebugLog(restrictions, entry.key)
 
+            RESTRICTION_ACCOUNT_DESCRIPTION ->
+                saveAccountDescription(restrictions, key)
             RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, key)
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
@@ -57,6 +59,12 @@ class ConfiguredSettingsUpdater(
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
                 saveAccountMailSettings(restrictions, key)
+        }
+    }
+
+    private fun saveAccountDescription(restrictions: Bundle, key: String) {
+        updateAccountString(restrictions, key) { account, newValue ->
+            account.description = newValue
         }
     }
 
@@ -280,6 +288,8 @@ class ConfiguredSettingsUpdater(
         bundle?.let {
             bundle.keySet().forEach { key ->
                 when (key) {
+                    RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
+                        saveAccountSenderName(bundle, key)
                     RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
                         saveAccountUseSignature(bundle, key)
                     RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
@@ -288,6 +298,12 @@ class ConfiguredSettingsUpdater(
                         saveAccountSignatureBeforeQuotedMessage(bundle, key)
                 }
             }
+        }
+    }
+
+    private fun saveAccountSenderName(bundle: Bundle, key: String) {
+        updateAccountString(bundle, key) { account, newValue ->
+            account.name = newValue
         }
     }
 

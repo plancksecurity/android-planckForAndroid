@@ -75,10 +75,22 @@
         android:title="@string/account_setup_push_limit_label"/>
 
     <restriction
+        android:defaultValue=""
+        android:description="@string/account_description_description"
+        android:key="account_description"
+        android:restrictionType="string"
+        android:title="@string/account_settings_description_label"/>
+
+    <restriction
         android:description="@string/composition_description"
-        android:key="composition_signature_settings"
+        android:key="composition_settings"
         android:restrictionType="bundle"
         android:title="@string/account_settings_composition_label">
+        <restriction
+            android:defaultValue=""
+            android:key="composition_sender_name"
+            android:restrictionType="string"
+            android:title="@string/composition_sender_name_title"/>
         <restriction
             android:defaultValue="@bool/default_use_signature"
             android:key="composition_use_signature"

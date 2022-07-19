@@ -24,8 +24,10 @@
 
     <string name="extra_keys_title">Extra keys</string>
     <string name="extra_keys_description">Set extra keys</string>
-    <string name="composition_title">Composition signature settings for account</string>
-    <string name="composition_description">Set signature use, text, position</string>
+    <string name="account_description_description">Name displayed for account in the app.</string>
+    <string name="composition_title">Composition settings for account</string>
+    <string name="composition_description">Set sender name, signature, signature position</string>
+    <string name="composition_sender_name_title">Sender name</string>
     <string name="archive_folder_description">Set folder to be used as Archive folder</string>
     <string name="drafts_folder_description">Set folder to be used as Drafts folder</string>
     <string name="sent_folder_description">Set folder to be used as Sent folder</string>
