@@ -92,7 +92,20 @@ class ProvisioningManager @Inject constructor(
                 ProvisioningFailedException("Url has bad format: $provisioningUrl")
             )
         }
+        areProvisionedMailSettingsInvalid() -> {
+            Result.failure(
+                ProvisioningFailedException(
+                    "Provisioned mail settings are not valid:\n " +
+                            "${provisioningSettings.provisionedMailSettings}"
+                )
+            )
+        }
         else -> Result.success(Unit)
+    }
+
+    private fun areProvisionedMailSettingsInvalid(): Boolean {
+        val provisionedEmailSettings = provisioningSettings.provisionedMailSettings
+        return provisionedEmailSettings != null && !provisionedEmailSettings.isValidForProvision()
     }
 
     private fun isDeviceOnline(): Boolean =

@@ -8,6 +8,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
+import security.pEp.provisioning.AccountMailSettingsProvision
 import security.pEp.provisioning.ProvisioningSettings
 import security.pEp.provisioning.SimpleMailSettings
 import timber.log.Timber
@@ -65,25 +66,33 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountDescription(restrictions: Bundle, key: String) {
         updateAccountString(restrictions, key) { account, newValue ->
             account.description = newValue
+            provisioningSettings.accountDescription = newValue
         }
     }
 
     private fun saveAccountMailSettings(restrictions: Bundle, key: String) {
         val bundle = restrictions.getBundle(key)
         bundle?.let {
+            var incoming = SimpleMailSettings()
+            var outgoing = SimpleMailSettings()
             bundle.keySet().forEach { key ->
                 when (key) {
                     RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
                         saveAccountEmailAddress(restrictions, key)
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
-                        val incoming = getAccountIncomingMailSettings(restrictions, key)
+                        incoming = getAccountIncomingMailSettings(restrictions, key)
                         saveAccountIncomingSettings(incoming)
                     }
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
-                        val outgoing = getAccountOutgoingMailSettings(restrictions, key)
+                        outgoing = getAccountOutgoingMailSettings(restrictions, key)
                         saveAccountOutgoingSettings(outgoing)
                     }
                 }
+            }
+            if (preferences == null) { // provisioning use case
+                provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
+                    incoming, outgoing
+                )
             }
         }
     }
@@ -91,6 +100,7 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountEmailAddress(restrictions: Bundle, key: String) {
         updateAccountString(restrictions, key) { account, newValue ->
             account.email = newValue
+            provisioningSettings.email = newValue
         }
     }
 
@@ -304,6 +314,7 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountSenderName(bundle: Bundle, key: String) {
         updateAccountString(bundle, key) { account, newValue ->
             account.name = newValue
+            provisioningSettings.senderName = newValue
         }
     }
 
