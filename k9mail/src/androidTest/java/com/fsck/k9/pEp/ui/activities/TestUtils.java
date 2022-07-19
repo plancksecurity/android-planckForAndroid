@@ -2415,6 +2415,11 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
+            if (BuildConfig.IS_ENTERPRISE) {
+                if (!(exists(onView(withId(R.id.securityStatusText))))) {
+                    assertFailWithMessage("Status is not shown");
+                }
+            }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
