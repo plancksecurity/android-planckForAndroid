@@ -9,6 +9,7 @@ import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
+import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningActivity;
 import com.fsck.k9.pEp.ui.fragments.PEpFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 import com.fsck.k9.view.MessageHeader;
@@ -20,6 +21,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import security.pEp.provisioning.ProvisioningManager;
+import security.pEp.file.PEpSystemFileLocator;
+import security.pEp.provisioning.ProvisioningSettings;
 
 @Singleton
 @Component(modules = ApplicationModule.class)
@@ -40,6 +44,12 @@ public interface ApplicationComponent {
 
     DispatcherProvider dispatcherProvider();
 
+    ProvisioningManager provisioningManager();
+
+    ProvisioningSettings provisioningSettings();
+
+    PEpSystemFileLocator pEpSystemFileLocator();
+
     @Named("AppContext")
     Context getContext();
 
@@ -49,4 +59,6 @@ public interface ApplicationComponent {
     void inject(RecipientSelectView recipientSelectView);
 
     void inject(AlternateRecipientAdapter alternateRecipientAdapter);
+
+    void inject(ProvisioningActivity activity);
 }

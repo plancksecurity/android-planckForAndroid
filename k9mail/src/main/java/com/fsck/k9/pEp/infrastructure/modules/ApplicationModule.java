@@ -79,4 +79,8 @@ public class ApplicationModule {
     @Singleton
     public DispatcherProvider provideDispatcherProvider() { return new DefaultDispatcherProvider(); }
 
+    @Provides
+    @Singleton
+    public K9 provideK9() { return (K9) application; }
+
 }

@@ -109,4 +109,7 @@
     <color name="compose_unsecure_delivery_warning">#D70000</color>
     <color name="compose_unsecure_delivery_warning_text">@color/white</color>
 
+    <color name="provisioning_gradient_start">#4CAF50</color>
+    <color name="provisioning_gradient_end">#0F7F23</color>
+
 </resources>

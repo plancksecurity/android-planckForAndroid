@@ -9,6 +9,7 @@ import com.fsck.k9.pEp.saveToDocuments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
+import security.pEp.file.PEpSystemFileLocator
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -16,16 +17,17 @@ import javax.inject.Named
 
 class ExportpEpSupportData @Inject constructor(
     @Named("AppContext") private val context: Context,
+    private val systemFileLocator: PEpSystemFileLocator,
 ) {
     suspend operator fun invoke(
         baseFolder: File,
         subFolder: String,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val homeDir = context.getDir("home", Context.MODE_PRIVATE)
-            val pEpFolder = File(homeDir, ".pEp")
-            val trustwordsFolder = context.getDir("trustwords", Context.MODE_PRIVATE)
-            val fromFolders = listOf(pEpFolder, trustwordsFolder)
+            val fromFolders = listOf(
+                systemFileLocator.pEpFolder,
+                systemFileLocator.trustwordsFolder
+            )
             val toFolder = File(baseFolder, subFolder)
 
             if (toFolder.exists() || toFolder.mkdirs()) {
