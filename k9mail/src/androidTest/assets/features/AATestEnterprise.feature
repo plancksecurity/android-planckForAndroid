@@ -654,6 +654,7 @@ Feature: Test
 #FIXME: Only guaranteed to work with S22
 
     Then I check insecurity warnings are there
+    And I discard the message
 
     Examples:
       |account|
