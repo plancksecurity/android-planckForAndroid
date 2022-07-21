@@ -64,7 +64,7 @@ class ConfigurationManager(
         restrictions: Bundle,
     ) {
         entries.forEach { entry ->
-            settingsUpdater.update(restrictions, entry)
+            settingsUpdater.update(restrictions, entry.key)
         }
     }
 

@@ -20,8 +20,8 @@ class ConfiguredSettingsUpdater(
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
 
-    fun update(restrictions: Bundle, entry: RestrictionEntry) {
-        when (val key = entry.key) {
+    fun update(restrictions: Bundle, key: String) {
+        when (key) {
             RESTRICTION_PROVISIONING_URL ->
                 saveProvisioningUrl(restrictions, key)
             RESTRICTION_PEP_EXTRA_KEYS ->
@@ -31,9 +31,9 @@ class ConfiguredSettingsUpdater(
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
                 saveUnsecureDeliveryWarning(restrictions, key)
             RESTRICTION_PEP_SYNC_FOLDER ->
-                savepEpSyncFolder(restrictions, entry.key)
+                savepEpSyncFolder(restrictions, key)
             RESTRICTION_PEP_DEBUG_LOG ->
-                savepEpDebugLog(restrictions, entry.key)
+                savepEpDebugLog(restrictions, key)
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, key)
