@@ -161,7 +161,8 @@ class ConfiguredSettingsUpdater(
                         updateString(bundle, key) { newValue ->
                             try {
                                 port = newValue.toInt()
-                            } catch (ignored: NumberFormatException) {
+                            } catch (nfe: NumberFormatException) {
+                                Timber.e(nfe)
                             }
                         }
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
@@ -196,7 +197,8 @@ class ConfiguredSettingsUpdater(
                         updateString(bundle, key) { newValue ->
                             try {
                                 port = newValue.toInt()
-                            } catch (ignored: NumberFormatException) {
+                            } catch (nfe: NumberFormatException) {
+                                Timber.e(nfe)
                             }
                         }
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
