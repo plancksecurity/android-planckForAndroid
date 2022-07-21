@@ -18,6 +18,7 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase
+import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
 import com.fsck.k9.pEp.ui.HandshakeData
@@ -26,10 +27,12 @@ import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
+import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class PEpProviderImplKotlin @Inject constructor(
         private val threadExecutor: ThreadExecutor,
@@ -1364,6 +1367,18 @@ class PEpProviderImplKotlin @Inject constructor(
                 Timber.e(e, "%s %s", TAG, "getMimeMessage: ")
             }
             return null
+        }
+
+        suspend fun provision(
+            coroutineContext: CoroutineContext,
+            provisionUrl: String
+        ): Result<Unit> {
+            return withContext(coroutineContext) {
+                kotlin.runCatching {
+                    //Engine.provision(provisionUrl)
+                    delay(3000L + Random().nextInt(5)*1000)
+                }.mapError { ProvisioningFailedException(it.message, it) }
+            }
         }
     }
 

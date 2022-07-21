@@ -535,6 +535,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".pEp.ui.activities.provisioning.ProvisioningActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/SplashTheme"/>
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
         <activity android:name="security.pEp.ui.about.AboutActivity"
             android:label="@string/about_action"/>

@@ -168,4 +168,11 @@
         android:restrictionType="bool"
         android:title="@string/pep_sync_enable_account"/>
 
+    <restriction
+        android:defaultValue=""
+        android:description="@string/provisioning_url_description"
+        android:key="pep_user_provisioning_url"
+        android:restrictionType="string"
+        android:title="@string/provisioning_url_title"/>
+
 </restrictions>
