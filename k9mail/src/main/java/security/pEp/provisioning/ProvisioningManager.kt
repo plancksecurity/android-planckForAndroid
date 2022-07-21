@@ -52,12 +52,15 @@ class ProvisioningManager @Inject constructor(
         return if (!BuildConfig.IS_ENTERPRISE) {
             finalizeSetup()
         } else {
-            configurationManagerFactory.getInstance(k9).loadConfigurationsInBackground()
-            val provisioningUrl = provisioningSettings.provisioningUrl
-            if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
-                performProvisioningAfterChecks(provisioningUrl)
-            } else {
-                finalizeSetup()
+            configurationManagerFactory.getInstance(k9).loadConfigurationsSuspend(
+                true
+            ).flatMapSuspend {
+                val provisioningUrl = provisioningSettings.provisioningUrl
+                if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
+                    performProvisioningAfterChecks(provisioningUrl)
+                } else {
+                    finalizeSetup()
+                }
             }
         }
     }
@@ -95,8 +98,7 @@ class ProvisioningManager @Inject constructor(
         areProvisionedMailSettingsInvalid() -> {
             Result.failure(
                 ProvisioningFailedException(
-                    "Provisioned mail settings are not valid:\n " +
-                            "${provisioningSettings.provisionedMailSettings}"
+                    "Provisioned mail settings are not valid"
                 )
             )
         }
@@ -104,8 +106,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun areProvisionedMailSettingsInvalid(): Boolean {
-        val provisionedEmailSettings = provisioningSettings.provisionedMailSettings
-        return provisionedEmailSettings != null && !provisionedEmailSettings.isValidForProvision()
+        return !provisioningSettings.provisionedMailSettings.isValidForProvision()
     }
 
     private fun isDeviceOnline(): Boolean =

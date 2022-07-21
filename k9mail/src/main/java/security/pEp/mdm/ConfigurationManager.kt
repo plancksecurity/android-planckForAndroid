@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.*
+import security.pEp.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,31 +22,41 @@ class ConfigurationManager(
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
-            loadConfigurationsInBackground()
+            loadConfigurationsSuspend()
+                .onSuccess { sendRemoteConfig() }
+                .onFailure {
+                    Timber.e(
+                        it,
+                        "Could not load configurations after registering the receiver"
+                    )
+                }
         }
     }
 
-    suspend fun loadConfigurationsInBackground() {
-        loadConfigurationsSuspend()
-            .onSuccess { sendRemoteConfig() }
-            .onFailure {
-                Timber.e(
-                    it,
-                    "Could not load configurations after registering the receiver"
-                )
-            }
-    }
-
-    private suspend fun loadConfigurationsSuspend(): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun loadConfigurationsSuspend(
+        startup: Boolean = false
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE)
                     as RestrictionsManager
             val restrictions = manager.applicationRestrictions
+            if (startup && !isProvisionAvailable(restrictions)) {
+                throw ProvisioningFailedException("Provisioning data is missing")
+            }
             val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()
         }
+    }
+
+    private fun isProvisionAvailable(restrictions: Bundle): Boolean {
+        return restrictions.keySet().containsAll(
+            setOf(
+                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                RESTRICTION_PROVISIONING_URL
+            )
+        )
     }
 
     private fun mapRestrictions(
