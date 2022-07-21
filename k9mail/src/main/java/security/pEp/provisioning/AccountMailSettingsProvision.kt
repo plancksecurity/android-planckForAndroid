@@ -5,10 +5,10 @@ import com.fsck.k9.mail.ConnectionSecurity
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
-) {
-    fun isValidForProvision(): Boolean =
-        incoming.isValidForProvision() && outgoing.isValidForProvision()
-}
+)
+
+fun AccountMailSettingsProvision?.isValidForProvision(): Boolean =
+    this != null && incoming.isValidForProvision() && outgoing.isValidForProvision()
 
 data class SimpleMailSettings(
     val port: Int = -1,
@@ -23,6 +23,9 @@ data class SimpleMailSettings(
     }
 
     fun isValidForProvision(): Boolean =
-        port > 0 && server != null && connectionSecurity != null
+        port > 0
+                && !server.isNullOrBlank()
+                && connectionSecurity != null
+                && !userName.isNullOrBlank()
 }
 
