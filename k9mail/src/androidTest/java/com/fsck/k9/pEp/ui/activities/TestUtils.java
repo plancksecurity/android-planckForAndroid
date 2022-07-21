@@ -2416,7 +2416,7 @@ public class TestUtils {
         while (true) {
             waitForIdle();
             if (BuildConfig.IS_ENTERPRISE) {
-                if (!(exists(onView(withId(R.id.securityStatusText))))) {
+                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     assertFailWithMessage("Status is not shown");
                 }
             }
