@@ -2,6 +2,7 @@ package security.pEp.provisioning
 
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
+import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
@@ -41,11 +42,29 @@ class ProvisioningManagerTest {
     @Before
     fun setUp() {
         coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    900,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
         coEvery { configurationManagerFactory.getInstance(k9) }.returns(configurationManager)
+        coEvery { configurationManager.loadConfigurationsSuspend(true) }
+            .returns(Result.success(Unit))
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
             .returns(Result.success(Unit))
@@ -183,6 +202,58 @@ class ProvisioningManagerTest {
         coVerify(exactly = 0) { PEpProviderImplKotlin.provision(any(), any()) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
+        }
+    }
+
+    @Test
+    fun `if ConfigurationManager_loadConfigurationSuspend fails, resulting state is error`() {
+        coEvery { configurationManager.loadConfigurationsSuspend(any()) }
+            .returns(Result.failure(RuntimeException("fail")))
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is RuntimeException)
+            assertTrue(throwable.message!!.contains("fail"))
+        }
+    }
+
+    @Test
+    fun `if mail settings are not valid, resulting state is error`() {
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    0,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(
+                throwable.message!!.contains("Provisioned mail settings are not valid")
+            )
         }
     }
 
