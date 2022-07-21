@@ -1,6 +1,5 @@
 package security.pEp.mdm
 
-import android.content.RestrictionEntry
 import android.os.Bundle
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -82,13 +81,13 @@ class ConfiguredSettingsUpdater(
             bundle.keySet().forEach { key ->
                 when (key) {
                     RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
-                        saveAccountEmailAddress(restrictions, key)
+                        saveAccountEmailAddress(bundle, key)
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
-                        incoming = getAccountIncomingMailSettings(restrictions, key)
+                        incoming = getAccountIncomingMailSettings(bundle, key)
                         saveAccountIncomingSettings(incoming)
                     }
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
-                        outgoing = getAccountOutgoingMailSettings(restrictions, key)
+                        outgoing = getAccountOutgoingMailSettings(bundle, key)
                         saveAccountOutgoingSettings(outgoing)
                     }
                 }
