@@ -286,7 +286,6 @@
     <string name="pep_sync_folder">p≡p sync folder</string>
     <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
     <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
-    <string name="pep_sync_folder_description">Use a dedicate pEp folder for pEp key sync messages</string>
 
     <string name="about_documentation">Documentation:</string>
 
