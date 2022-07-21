@@ -75,7 +75,7 @@
         android:title="@string/account_setup_push_limit_label"/>
 
     <restriction
-        android:defaultValue=""
+        android:defaultValue="{{username}}"
         android:description="@string/account_description_description"
         android:key="account_description"
         android:restrictionType="string"
@@ -87,7 +87,7 @@
         android:restrictionType="bundle"
         android:title="@string/account_settings_composition_label">
         <restriction
-            android:defaultValue=""
+            android:defaultValue="{{username}}"
             android:key="composition_sender_name"
             android:restrictionType="string"
             android:title="@string/composition_sender_name_title"/>
@@ -181,7 +181,7 @@
         android:title="@string/pep_sync_enable_account"/>
 
     <restriction
-        android:defaultValue=""
+        android:defaultValue="https://provisioning.pep.security/{{partialupn}}/pEp.ppk"
         android:description="@string/provisioning_url_description"
         android:key="pep_user_provisioning_url"
         android:restrictionType="string"
@@ -194,7 +194,7 @@
         android:title="@string/mail_settings_title">
 
         <restriction
-            android:defaultValue=""
+            android:defaultValue="{{mail}"
             android:description="@string/account_email_address_description"
             android:key="account_email_address"
             android:restrictionType="string"
