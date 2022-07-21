@@ -44,6 +44,7 @@ class ConfigurationManager(
                 throw ProvisioningFailedException("Provisioning data is missing")
             }
             val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
+                .filter { restrictions.containsKey(it.key) }
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()
