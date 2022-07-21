@@ -64,9 +64,13 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountDescription(restrictions: Bundle, key: String) {
+        if (preferences == null) {
+            updateString(restrictions, key) {
+                provisioningSettings.accountDescription = it
+            }
+        }
         updateAccountString(restrictions, key) { account, newValue ->
             account.description = newValue
-            provisioningSettings.accountDescription = newValue
         }
     }
 
@@ -98,9 +102,13 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountEmailAddress(restrictions: Bundle, key: String) {
+        if (preferences == null) {
+            updateString(restrictions, key) {
+                provisioningSettings.email = it
+            }
+        }
         updateAccountString(restrictions, key) { account, newValue ->
             account.email = newValue
-            provisioningSettings.email = newValue
         }
     }
 
@@ -312,9 +320,16 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountSenderName(bundle: Bundle, key: String) {
-        updateAccountString(bundle, key) { account, newValue ->
+        if (preferences == null) {
+            updateString(bundle, key) {
+                provisioningSettings.senderName = it
+            }
+        }
+        updateAccountString(
+            bundle,
+            key
+        ) { account, newValue ->
             account.name = newValue
-            provisioningSettings.senderName = newValue
         }
     }
 
