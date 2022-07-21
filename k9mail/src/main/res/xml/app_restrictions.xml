@@ -217,9 +217,9 @@
                 android:restrictionType="string"
                 android:title="@string/account_setup_incoming_security_label"/>
             <restriction
-                android:defaultValue="993"
+                android:defaultValue="@integer/mail_settings_incoming_port_default"
                 android:key="incoming_mail_settings_port"
-                android:restrictionType="string"
+                android:restrictionType="integer"
                 android:title="@string/account_setup_incoming_port_label"/>
             <restriction
                 android:defaultValue="{{mail}}"
@@ -245,9 +245,9 @@
                 android:restrictionType="string"
                 android:title="@string/account_setup_outgoing_security_label"/>
             <restriction
-                android:defaultValue="587"
+                android:defaultValue="@integer/mail_settings_outgoing_port_default"
                 android:key="outgoing_mail_settings_port"
-                android:restrictionType="string"
+                android:restrictionType="integer"
                 android:title="@string/account_setup_outgoing_port_label"/>
             <restriction
                 android:defaultValue="{{mail}}"

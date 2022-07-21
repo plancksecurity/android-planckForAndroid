@@ -142,37 +142,15 @@ class ConfiguredSettingsUpdater(
         key: String
     ): SimpleMailSettings {
         val bundle = restrictions.getBundle(key)
-        var port = -1
-        var server: String? = null
-        var connectionSecurity: ConnectionSecurity? = null
-        var userName: String? = null
-        bundle?.let {
-            bundle.keySet().forEach { key ->
-                when (key) {
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
-                        updateString(bundle, key) {
-                            server = it
-                        }
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
-                        updateString(bundle, key) { newValue ->
-                            connectionSecurity = newValue.toConnectionSecurity()
-                        }
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
-                        updateString(bundle, key) { newValue ->
-                            try {
-                                port = newValue.toInt()
-                            } catch (nfe: NumberFormatException) {
-                                Timber.e(nfe)
-                            }
-                        }
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
-                        updateString(bundle, key) { newValue ->
-                            userName = newValue
-                        }
-                }
-            }
-        }
-        return SimpleMailSettings(port, server, connectionSecurity, userName)
+        return bundle?.let {
+            SimpleMailSettings(
+                bundle.getInt(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT, -1),
+                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER),
+                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE)
+                    ?.toConnectionSecurity(),
+                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME)
+            )
+        } ?: SimpleMailSettings()
     }
 
     private fun getAccountIncomingMailSettings(
@@ -180,35 +158,15 @@ class ConfiguredSettingsUpdater(
         key: String
     ): SimpleMailSettings {
         val bundle = restrictions.getBundle(key)
-        var port = -1
-        var server: String? = null
-        var connectionSecurity: ConnectionSecurity? = null
-        var userName: String? = null
-        bundle?.let {
-            bundle.keySet().forEach { key ->
-                when (key) {
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
-                        updateString(bundle, key) { server = it }
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
-                        updateString(bundle, key) { newValue ->
-                            connectionSecurity = newValue.toConnectionSecurity()
-                        }
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
-                        updateString(bundle, key) { newValue ->
-                            try {
-                                port = newValue.toInt()
-                            } catch (nfe: NumberFormatException) {
-                                Timber.e(nfe)
-                            }
-                        }
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
-                        updateString(bundle, key) { newValue ->
-                            userName = newValue
-                        }
-                }
-            }
-        }
-        return SimpleMailSettings(port, server, connectionSecurity, userName)
+        return bundle?.let {
+            SimpleMailSettings(
+                bundle.getInt(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT, -1),
+                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER),
+                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE)
+                    ?.toConnectionSecurity(),
+                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME)
+            )
+        } ?: SimpleMailSettings()
     }
 
     private fun String.toConnectionSecurity(): ConnectionSecurity? = when {

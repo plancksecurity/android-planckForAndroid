@@ -230,16 +230,20 @@ public class ServerSettings {
         int newPort = port > 0
                 ? port
                 : this.port;
-        String newServer = server != null
+        String newServer = isNotNullNorBlank(server)
                 ? server
                 : this.host;
         ConnectionSecurity newConnectionSecurity = connectionSecurity != null
                 ? connectionSecurity
                 : this.connectionSecurity;
-        String newUserName = userName != null
+        String newUserName = isNotNullNorBlank(userName)
                 ? userName
                 : this.username;
         return new ServerSettings(type, newServer, newPort, newConnectionSecurity,
                 authenticationType, newUserName, password, clientCertificateAlias);
+    }
+
+    protected boolean isNotNullNorBlank(String string) {
+        return string != null && !string.trim().isEmpty();
     }
 }
