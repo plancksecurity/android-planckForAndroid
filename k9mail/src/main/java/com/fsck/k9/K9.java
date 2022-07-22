@@ -300,7 +300,7 @@ public class K9 extends MultiDexApplication {
         WHEN_IN_LANDSCAPE
     }
 
-    private static boolean mMessageListCheckboxes = true;
+    private static boolean mMessageListCheckboxes = false;
     private static boolean mMessageListStars = true;
     private static int mMessageListPreviewLines = 2;
 
@@ -323,8 +323,8 @@ public class K9 extends MultiDexApplication {
     private static boolean mAutofitWidth = false;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
-    private static String mQuietTimeStarts = null;
-    private static String mQuietTimeEnds = null;
+    private static String mQuietTimeStarts = "21:00";
+    private static String mQuietTimeEnds = "7:00";
     private static String mAttachmentDefaultPath = "";
     private static boolean mWrapFolderNames = false;
     private static boolean mHideUserAgent = true;
