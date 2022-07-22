@@ -1,6 +1,9 @@
 package security.pEp.mdm
 
+import android.content.RestrictionEntry
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -11,7 +14,6 @@ import security.pEp.provisioning.AccountMailSettingsProvision
 import security.pEp.provisioning.ProvisioningSettings
 import security.pEp.provisioning.SimpleMailSettings
 import timber.log.Timber
-import java.util.*
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
@@ -19,88 +21,104 @@ class ConfiguredSettingsUpdater(
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
 
-    fun update(restrictions: Bundle, key: String) {
-        when (key) {
+    fun update(
+        restrictions: Bundle,
+        entry: RestrictionEntry,
+    ) {
+        when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
-                saveProvisioningUrl(restrictions, key)
+                updateString(restrictions, entry) {
+                    provisioningSettings.provisioningUrl = it
+                }
             RESTRICTION_PEP_EXTRA_KEYS ->
-                saveExtrasKeys(restrictions, key)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveExtrasKeys(restrictions, entry)
+                }
             RESTRICTION_PEP_USE_TRUSTWORDS ->
-                saveUseTrustwords(restrictions, key)
+                K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
-                saveUnsecureDeliveryWarning(restrictions, key)
+                k9.setpEpForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_SYNC_FOLDER ->
-                savepEpSyncFolder(restrictions, key)
+                K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_DEBUG_LOG ->
-                savepEpDebugLog(restrictions, key)
+                K9.setDebug(getBooleanOrDefault(restrictions, entry))
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
-                saveAccountDescription(restrictions, key)
+                saveAccountDescription(restrictions, entry)
             RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION ->
-                savePrivacyProtection(restrictions, key)
+                savePrivacyProtection(restrictions, entry)
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
-                saveAccountLocalFolderSize(restrictions, key)
+                saveAccountLocalFolderSize(restrictions, entry)
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
-                saveAccountMaxPushFolders(restrictions, key)
+                saveAccountMaxPushFolders(restrictions, entry)
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
-                saveAccountCompositionDefaults(restrictions, key)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveAccountCompositionDefaults(restrictions, entry)
+                }
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
-                saveAccountQuoteMessagesWhenReply(restrictions, key)
+                saveAccountQuoteMessagesWhenReply(restrictions, entry)
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
-                saveAccountDefaultFolders(restrictions, key)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveAccountDefaultFolders(restrictions, entry)
+                }
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
-                saveAccountEnableServerSearch(restrictions, key)
+                saveAccountEnableServerSearch(restrictions, entry)
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
-                saveAccountSeverSearchLimit(restrictions, key)
+                saveAccountSeverSearchLimit(restrictions, entry)
             RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY ->
-                saveAccountSaveMessagesSecurely(restrictions, key)
+                saveAccountSaveMessagesSecurely(restrictions, entry)
             RESTRICTION_ACCOUNT_ENABLE_SYNC ->
-                saveAccountEnableSync(restrictions, key)
+                saveAccountEnableSync(restrictions, entry)
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
-                saveAccountMailSettings(restrictions, key)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveAccountMailSettings(restrictions, entry)
+                }
         }
     }
 
-    private fun saveAccountDescription(restrictions: Bundle, key: String) {
-        updateString(restrictions, key) {
+    private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
+        updateString(restrictions, entry) {
             provisioningSettings.accountDescription = it
         }
-        updateAccountString(restrictions, key) { account, newValue ->
+        updateAccountString(restrictions, entry) { account, newValue ->
             account.description = newValue
         }
     }
 
-    private fun saveAccountMailSettings(restrictions: Bundle, key: String) {
-        val bundle = restrictions.getBundle(key)
-        bundle?.let {
-            var incoming = SimpleMailSettings()
-            var outgoing = SimpleMailSettings()
-            bundle.keySet().forEach { key ->
-                when (key) {
-                    RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
-                        saveAccountEmailAddress(bundle, key)
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
-                        incoming = getAccountIncomingMailSettings(bundle, key)
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveAccountMailSettings(restrictions: Bundle, entry: RestrictionEntry) {
+        val bundle = restrictions.getBundle(entry.key)
+        var incoming = SimpleMailSettings()
+        var outgoing = SimpleMailSettings()
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
+                    saveAccountEmailAddress(bundle, restriction)
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
+                    incoming = getAccountIncomingMailSettings(bundle, restriction)
+                    if (incoming.isValid()) { // TODO: 22/7/22 give feedback of invalid settings for operations
                         saveAccountIncomingSettings(incoming)
                     }
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
-                        outgoing = getAccountOutgoingMailSettings(bundle, key)
+                }
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
+                    outgoing = getAccountOutgoingMailSettings(bundle, restriction)
+                    if (outgoing.isValid()) { // TODO: 22/7/22 give feedback of invalid settings for operations
                         saveAccountOutgoingSettings(outgoing)
                     }
                 }
             }
-            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                incoming, outgoing
-            )
         }
+        provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
+            incoming, outgoing
+        )
     }
 
-    private fun saveAccountEmailAddress(restrictions: Bundle, key: String) {
-        updateString(restrictions, key) {
+    private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
+        updateString(restrictions, entry) {
             provisioningSettings.email = it
         }
-        updateAccountString(restrictions, key) { account, newValue ->
+        updateAccountString(restrictions, entry) { account, newValue ->
             account.email = newValue
         }
     }
@@ -131,36 +149,66 @@ class ConfiguredSettingsUpdater(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun getAccountOutgoingMailSettings(
-        restrictions: Bundle,
-        key: String
+        restrictions: Bundle?,
+        entry: RestrictionEntry
     ): SimpleMailSettings {
-        val bundle = restrictions.getBundle(key)
-        return bundle?.let {
-            SimpleMailSettings(
-                bundle.getInt(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT, -1),
-                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER),
-                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE)
-                    ?.toConnectionSecurity(),
-                bundle.getString(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME)
-            )
-        } ?: SimpleMailSettings()
+        val bundle = restrictions?.getBundle(entry.key)
+        var port = -1
+        var server = ""
+        var security = ""
+        var username = ""
+        entry.restrictions.forEach { restriction ->
+            when(restriction.key) {
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
+                    port = getIntOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
+                    server = getStringOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
+                    security = getStringOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
+                    username = getStringOrDefault(bundle, restriction)
+
+            }
+        }
+        return SimpleMailSettings(
+            port,
+            server,
+            security.toConnectionSecurity(),
+            username
+        )
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun getAccountIncomingMailSettings(
-        restrictions: Bundle,
-        key: String
+        restrictions: Bundle?,
+        entry: RestrictionEntry
     ): SimpleMailSettings {
-        val bundle = restrictions.getBundle(key)
-        return bundle?.let {
-            SimpleMailSettings(
-                bundle.getInt(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT, -1),
-                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER),
-                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE)
-                    ?.toConnectionSecurity(),
-                bundle.getString(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME)
-            )
-        } ?: SimpleMailSettings()
+        val bundle = restrictions?.getBundle(entry.key)
+        var port = -1
+        var server = ""
+        var security = ""
+        var username = ""
+        entry.restrictions.forEach { restriction ->
+            when(restriction.key) {
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
+                    port = getIntOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
+                    server = getStringOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
+                    security = getStringOrDefault(bundle, restriction)
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
+                    username = getStringOrDefault(bundle, restriction)
+                
+            }
+        }
+        return SimpleMailSettings(
+            port,
+            server,
+            security.toConnectionSecurity(),
+            username
+        )
     }
 
     private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
@@ -173,268 +221,234 @@ class ConfiguredSettingsUpdater(
         else -> null
     }
 
-    private fun saveProvisioningUrl(restrictions: Bundle, key: String) {
-        updateString(restrictions, key) {
-            provisioningSettings.provisioningUrl = it
-        }
-    }
-
-    private fun saveUseTrustwords(restrictions: Bundle, key: String) {
-        updateBoolean(restrictions, key) {
-            K9.setpEpUseTrustwords(it)
-        }
-    }
-
-    private fun saveUnsecureDeliveryWarning(restrictions: Bundle, key: String) {
-        updateBoolean(restrictions, key) {
-            k9.setpEpForwardWarningEnabled(it)
-        }
-    }
-
-    private fun savepEpSyncFolder(restrictions: Bundle, key: String) {
-        updateBoolean(restrictions, key) {
-            K9.setUsingpEpSyncFolder(it)
-        }
-    }
-
-    private fun savepEpDebugLog(restrictions: Bundle, key: String) {
-        updateBoolean(restrictions, key) {
-            K9.setDebug(it)
-        }
-    }
-
-    private fun saveExtrasKeys(restrictions: Bundle, key: String) {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
-            val parcelableArray = restrictions.getParcelableArray(key)
-            parcelableArray?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
-                ?.toSet()?.also { newExtraKeys ->
-                    if (newExtraKeys.isEmpty() || newExtraKeys.all { it.isBlank() }) {
-                        K9.setMasterKeys(Collections.emptySet())
-                    } else {
-                        newExtraKeys.filter { it.isNotBlank() }
-                            .also { K9.setMasterKeys(it.toSet()) }
-                    }
+            val newExtraKeys = restrictions.getParcelableArray(entry.key)
+            ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
+                ?: entry.restrictions.map { bundleRestriction ->
+                    bundleRestriction.restrictions.first()
+                }.map {
+                    it.selectedString
                 }
+
+            newExtraKeys.filter {
+                it.isNotBlank()
+            }.toSet().also { newKeys ->
+                if (newKeys.isEmpty()) {
+                    K9.setMasterKeys(emptySet())
+                } else {
+                    newKeys.filter { it.isNotBlank() }
+                        .also { K9.setMasterKeys(it.toSet()) }
+                }
+            }
         }
     }
 
-    private fun savePrivacyProtection(restrictions: Bundle, key: String) {
+    private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
             restrictions,
-            key
+            entry
         ) { account, newValue ->
             account.setpEpPrivacyProtection(newValue)
         }
     }
 
-    private fun saveAccountLocalFolderSize(restrictions: Bundle, key: String) {
+    private fun saveAccountLocalFolderSize(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key
+            entry
         ) { account, newValue ->
             account.displayCount = newValue.toInt()
         }
     }
 
-    private fun saveAccountMaxPushFolders(restrictions: Bundle, key: String) {
+    private fun saveAccountMaxPushFolders(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key
+            entry
         ) { account, newValue ->
             account.maxPushFolders = newValue.toInt()
         }
     }
 
-    private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, key: String) {
+    private fun saveAccountQuoteMessagesWhenReply(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
             restrictions,
-            key
+            entry
         ) { account, newValue ->
             account.isDefaultQuotedTextShown = newValue
         }
     }
 
-    private fun saveAccountCompositionDefaults(restrictions: Bundle, key: String) {
-        val bundle = restrictions.getBundle(key)
-        bundle?.let {
-            bundle.keySet().forEach { key ->
-                when (key) {
-                    RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
-                        saveAccountSenderName(bundle, key)
-                    RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
-                        saveAccountUseSignature(bundle, key)
-                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
-                        saveAccountSignature(bundle, key)
-                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
-                        saveAccountSignatureBeforeQuotedMessage(bundle, key)
-                }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveAccountCompositionDefaults(restrictions: Bundle, entry: RestrictionEntry) {
+        val bundle = restrictions.getBundle(entry.key)
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME ->
+                    saveAccountSenderName(bundle, restriction)
+                RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE ->
+                    saveAccountUseSignature(bundle, restriction)
+                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE ->
+                    saveAccountSignature(bundle, restriction)
+                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE ->
+                    saveAccountSignatureBeforeQuotedMessage(bundle, restriction)
             }
         }
     }
 
-    private fun saveAccountSenderName(bundle: Bundle, key: String) {
-        updateString(bundle, key) {
+    private fun saveAccountSenderName(bundle: Bundle?, entry: RestrictionEntry) {
+        updateString(bundle, entry) {
             provisioningSettings.senderName = it
         }
         updateAccountString(
             bundle,
-            key
+            entry
         ) { account, newValue ->
             account.name = newValue
         }
     }
 
-    private fun saveAccountSignatureBeforeQuotedMessage(bundle: Bundle, key: String) {
-        updateAccountBoolean(bundle, key) { account, newValue ->
+    private fun saveAccountSignatureBeforeQuotedMessage(bundle: Bundle?, entry: RestrictionEntry) {
+        updateAccountBoolean(bundle, entry) { account, newValue ->
             account.isSignatureBeforeQuotedText = newValue
         }
     }
 
-    private fun saveAccountSignature(bundle: Bundle, key: String) {
-        updateAccountString(bundle, key) { account, newValue ->
+    private fun saveAccountSignature(bundle: Bundle?, entry: RestrictionEntry) {
+        updateAccountString(bundle, entry) { account, newValue ->
             account.signature = newValue
         }
     }
 
-    private fun saveAccountUseSignature(bundle: Bundle, key: String) {
-        updateAccountBoolean(bundle, key) { account, newValue ->
+    private fun saveAccountUseSignature(bundle: Bundle?, entry: RestrictionEntry) {
+        updateAccountBoolean(bundle, entry) { account, newValue ->
             account.signatureUse = newValue
         }
     }
 
-    private fun saveAccountDefaultFolders(restrictions: Bundle, key: String) {
-        val bundle = restrictions.getBundle(key)
-        bundle?.let {
-            bundle.keySet().forEach { key ->
-                when (key) {
-                    RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
-                        saveAccountArchiveFolder(bundle, key)
-                    RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
-                        saveAccountDraftsFolder(bundle, key)
-                    RESTRICTION_ACCOUNT_SENT_FOLDER ->
-                        saveAccountSentFolder(bundle, key)
-                    RESTRICTION_ACCOUNT_SPAM_FOLDER ->
-                        saveAccountSpamFolder(bundle, key)
-                    RESTRICTION_ACCOUNT_TRASH_FOLDER ->
-                        saveAccountTrashFolder(bundle, key)
-                }
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveAccountDefaultFolders(restrictions: Bundle, entry: RestrictionEntry) {
+        val bundle = restrictions.getBundle(entry.key)
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
+                    saveAccountArchiveFolder(bundle, restriction)
+                RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
+                    saveAccountDraftsFolder(bundle, restriction)
+                RESTRICTION_ACCOUNT_SENT_FOLDER ->
+                    saveAccountSentFolder(bundle, restriction)
+                RESTRICTION_ACCOUNT_SPAM_FOLDER ->
+                    saveAccountSpamFolder(bundle, restriction)
+                RESTRICTION_ACCOUNT_TRASH_FOLDER ->
+                    saveAccountTrashFolder(bundle, restriction)
             }
         }
     }
 
-    private fun saveAccountArchiveFolder(restrictions: Bundle, key: String) {
+    private fun saveAccountArchiveFolder(restrictions: Bundle?, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.archiveFolderName = newValue
         }
     }
 
-    private fun saveAccountDraftsFolder(restrictions: Bundle, key: String) {
+    private fun saveAccountDraftsFolder(restrictions: Bundle?, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key
+            entry
         ) { account, newValue ->
             account.draftsFolderName = newValue
         }
     }
 
-    private fun saveAccountSentFolder(restrictions: Bundle, key: String) {
+    private fun saveAccountSentFolder(restrictions: Bundle?, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.sentFolderName = newValue
         }
     }
 
-    private fun saveAccountSpamFolder(restrictions: Bundle, key: String) {
+    private fun saveAccountSpamFolder(restrictions: Bundle?, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.spamFolderName = newValue
         }
     }
 
-    private fun saveAccountTrashFolder(restrictions: Bundle, key: String) {
+    private fun saveAccountTrashFolder(restrictions: Bundle?, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.trashFolderName = newValue
         }
     }
 
-    private fun saveAccountEnableServerSearch(restrictions: Bundle, key: String) {
+    private fun saveAccountEnableServerSearch(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.setAllowRemoteSearch(newValue)
         }
     }
 
-    private fun saveAccountSeverSearchLimit(restrictions: Bundle, key: String) {
+    private fun saveAccountSeverSearchLimit(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.remoteSearchNumResults = newValue.toInt()
         }
     }
 
-    private fun saveAccountSaveMessagesSecurely(restrictions: Bundle, key: String) {
+    private fun saveAccountSaveMessagesSecurely(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.setPEpStoreEncryptedOnServer(newValue)
         }
     }
 
-    private fun saveAccountEnableSync(restrictions: Bundle, key: String) {
+    private fun saveAccountEnableSync(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
             restrictions,
-            key,
+            entry,
         ) { account, newValue ->
             account.setPEpSyncAccount(newValue)
         }
     }
 
-    private inline fun updateBoolean(
-        restrictions: Bundle,
-        key: String,
-        crossinline block: (newValue: Boolean) -> Unit
-    ) {
-        kotlin.runCatching {
-            val newValue = restrictions.getBoolean(key)
-            block(newValue)
-        }.onFailure { Timber.e(it) }
-    }
-
     private inline fun updateString(
-        restrictions: Bundle,
-        key: String,
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
         crossinline block: (newValue: String) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = restrictions.getString(key)
-            if (!newValue.isNullOrBlank()) {
+            val newValue = getStringOrDefault(restrictions, entry)
+            if (newValue.isNotBlank()) {
                 block(newValue)
             }
         }.onFailure { Timber.e(it) }
     }
 
     private inline fun updateAccountString(
-        restrictions: Bundle,
-        key: String,
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
         crossinline block: (account: Account, newValue: String) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = restrictions.getString(key)
-            if (!newValue.isNullOrBlank()) {
+            val newValue = getStringOrDefault(restrictions, entry)
+            if (newValue.isNotBlank()) {
                 preferences.accounts?.forEach { account ->
                     block(account, newValue)
                 }
@@ -443,16 +457,39 @@ class ConfiguredSettingsUpdater(
     }
 
     private inline fun updateAccountBoolean(
-        restrictions: Bundle,
-        key: String,
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
         crossinline block: (account: Account, newValue: Boolean) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = restrictions.getBoolean(key)
+            val newValue = restrictions?.getBoolean(entry.key, entry.selectedState)
+                ?: entry.selectedState
             preferences.accounts?.forEach { account ->
                 block(account, newValue)
             }
         }.onFailure { Timber.e(it) }
+    }
+
+    private fun getBooleanOrDefault(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+    ): Boolean {
+        return restrictions?.getBoolean(entry.key, entry.selectedState) ?: entry.selectedState
+    }
+
+    private fun getIntOrDefault(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+    ): Int {
+        return restrictions?.getInt(entry.key, entry.intValue) ?: entry.intValue
+    }
+
+    private fun getStringOrDefault(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+    ): String {
+        val provided = restrictions?.getString(entry.key)
+        return if (!provided.isNullOrBlank()) provided else entry.selectedString
     }
 
     companion object {

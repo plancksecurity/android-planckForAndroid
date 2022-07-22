@@ -97,7 +97,7 @@
             android:restrictionType="bool"
             android:title="@string/account_settings_signature_use_label"/>
         <restriction
-            android:defaultValue=""
+            android:defaultValue="@string/default_signature"
             android:key="composition_signature"
             android:restrictionType="string"
             android:title="@string/account_settings_signature_label"/>

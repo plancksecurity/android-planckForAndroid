@@ -171,7 +171,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
-        } else if (provisioningSettings.getEmail() != null) {
+        } else if (BuildConfig.IS_ENTERPRISE) {
             mEmailView.setText(provisioningSettings.getEmail());
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
@@ -476,7 +476,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             }
             if (BuildConfig.IS_ENTERPRISE) {
                 mAccount.setDescription(
-                        provisioningSettings.getAccountDescription() != null
+                        !Utility.isNullOrBlank(provisioningSettings.getAccountDescription())
                             ? provisioningSettings.getAccountDescription()
                             : mAccount.getEmail()
                 );

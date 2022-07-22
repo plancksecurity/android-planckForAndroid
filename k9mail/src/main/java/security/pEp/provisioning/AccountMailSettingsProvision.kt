@@ -8,7 +8,7 @@ data class AccountMailSettingsProvision(
 )
 
 fun AccountMailSettingsProvision?.isValidForProvision(): Boolean =
-    this != null && incoming.isValidForProvision() && outgoing.isValidForProvision()
+    this != null && incoming.isValid() && outgoing.isValid()
 
 data class SimpleMailSettings(
     val port: Int = -1,
@@ -22,7 +22,7 @@ data class SimpleMailSettings(
         ConnectionSecurity.STARTTLS_REQUIRED -> "tls"
     }
 
-    fun isValidForProvision(): Boolean =
+    fun isValid(): Boolean =
         port > 0
                 && !server.isNullOrBlank()
                 && connectionSecurity != null
