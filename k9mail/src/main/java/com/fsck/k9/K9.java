@@ -655,6 +655,7 @@ public class K9 extends MultiDexApplication {
         }
 
         super.onCreate();
+        app = this;
 
         initializeInjector();
 
@@ -664,7 +665,6 @@ public class K9 extends MultiDexApplication {
 
     public void finalizeSetup() {
         pEpSetupUiEngineSession();
-        app = this;
         DI.start(this);
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
