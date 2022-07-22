@@ -36,9 +36,9 @@
         android:title="@string/use_trustwords_setting_title"/>
 
     <restriction
-        android:defaultValue="@bool/default_forward_warning"
+        android:defaultValue="@bool/default_unsecure_delivery_warning"
         android:description="@string/pep_forward_warning_description"
-        android:key="pep_forward_warning"
+        android:key="unsecure_delivery_warning"
         android:restrictionType="bool"
         android:title="@string/pep_forward_warning"/>
 
