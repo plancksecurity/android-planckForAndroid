@@ -194,7 +194,7 @@
         android:title="@string/mail_settings_title">
 
         <restriction
-            android:defaultValue="{{mail}"
+            android:defaultValue="{{mail}}"
             android:description="@string/account_email_address_description"
             android:key="account_email_address"
             android:restrictionType="string"
