@@ -227,23 +227,11 @@ public class ServerSettings {
             int port,
             String userName
     ) {
-        int newPort = port > 0
-                ? port
-                : this.port;
-        String newServer = isNotNullNorBlank(server)
-                ? server
-                : this.host;
-        ConnectionSecurity newConnectionSecurity = connectionSecurity != null
-                ? connectionSecurity
-                : this.connectionSecurity;
-        String newUserName = isNotNullNorBlank(userName)
-                ? userName
-                : this.username;
-        return new ServerSettings(type, newServer, newPort, newConnectionSecurity,
-                authenticationType, newUserName, password, clientCertificateAlias);
+        return new ServerSettings(type, server, port, connectionSecurity,
+                authenticationType, username, password, clientCertificateAlias);
     }
 
     protected boolean isNotNullNorBlank(String string) {
-        return string != null && !string.trim().isEmpty();
+        return true;//string != null;// && !string.trim().isEmpty();
     }
 }

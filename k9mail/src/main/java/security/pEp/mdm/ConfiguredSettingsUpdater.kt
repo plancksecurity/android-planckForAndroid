@@ -97,15 +97,11 @@ class ConfiguredSettingsUpdater(
                     saveAccountEmailAddress(bundle, restriction)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = getAccountIncomingMailSettings(bundle, restriction)
-                    if (incoming.isValid()) { // TODO: 22/7/22 give feedback of invalid settings for operations
-                        saveAccountIncomingSettings(incoming)
-                    }
+                    saveAccountIncomingSettings(incoming) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = getAccountOutgoingMailSettings(bundle, restriction)
-                    if (outgoing.isValid()) { // TODO: 22/7/22 give feedback of invalid settings for operations
-                        saveAccountOutgoingSettings(outgoing)
-                    }
+                    saveAccountOutgoingSettings(outgoing) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
             }
         }
