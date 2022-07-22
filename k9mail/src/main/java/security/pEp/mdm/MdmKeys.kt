@@ -3,6 +3,7 @@ package security.pEp.mdm
 const val RESTRICTION_PROVISIONING_URL = "pep_user_provisioning_url"
 const val RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION = "pep_enable_privacy_protection"
 const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
+const val RESTRICTION_PEP_EXTRA_KEY = "pep_extra_key"
 const val RESTRICTION_PEP_FINGERPRINT = "fingerprint"
 const val RESTRICTION_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
 const val RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
