@@ -1,5 +1,6 @@
 package security.pEp.provisioning
 
+import android.util.Log
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
@@ -43,7 +44,10 @@ class ProvisioningManager @Inject constructor(
     fun startProvisioning() {
         CoroutineScope(dispatcherProvider.io()).launch {
             performProvisioningIfNeeded()
-                .onFailure { setProvisionState(ProvisionState.Error(it)) }
+                .onFailure {
+                    Log.e("Provisioning Manager", "Error", it)
+                    setProvisionState(ProvisionState.Error(it))
+                }
                 .onSuccess { setProvisionState(ProvisionState.Initialized) }
         }
     }
