@@ -330,7 +330,7 @@ public class K9 extends MultiDexApplication {
     private static boolean mHideUserAgent = true;
     private static boolean mHideTimeZone = false;
 
-    private static SortType mSortType;
+    private static SortType mSortType = Account.DEFAULT_SORT_TYPE;
     private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
     private static boolean sUseBackgroundAsUnreadIndicator = false;
@@ -600,7 +600,12 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
-        editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
+        editor.putBoolean(
+                "sortAscending",
+                mSortAscending.containsKey(mSortType)
+                        ? mSortAscending.get(mSortType)
+                        : mSortType.isDefaultAscending()
+        );
 
         editor.putString("notificationHideSubject", sNotificationHideSubject.toString());
         editor.putString("notificationQuickDelete", sNotificationQuickDelete.toString());
@@ -677,7 +682,7 @@ public class K9 extends MultiDexApplication {
 
         checkCachedDatabaseVersion();
 
-        Preferences prefs = Preferences.getPreferences(this);
+        Preferences prefs = component.preferences();
         loadPrefs(prefs);
 
         /*

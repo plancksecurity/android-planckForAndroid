@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class ConfigurationManager(
     private val context: Context,
-    private val preferences: Preferences?
+    private val preferences: Preferences
 ) {
 
     private var listener: RestrictionsListener? = null
@@ -70,18 +70,14 @@ class ConfigurationManager(
     }
 
     private fun saveAppSettings() {
-        preferences?.let {
-            val editor = preferences.storage.edit()
-            K9.save(editor)
-            editor.commit()
-        }
+        val editor = preferences.storage.edit()
+        K9.save(editor)
+        editor.commit()
     }
 
     private fun saveAccounts() {
-        preferences?.let {
-            preferences.accounts.forEach { account ->
-                account.save(preferences)
-            }
+        preferences.accounts.forEach { account ->
+            account.save(preferences)
         }
     }
 
@@ -110,10 +106,11 @@ class ConfigurationManager(
         this.listener = listener
     }
 
-    class Factory @Inject constructor() {
+    class Factory @Inject constructor(
+        private val preferences: Preferences,
+    ) {
         fun getInstance(
             context: Context,
-            preferences: Preferences? = null
         ): ConfigurationManager = ConfigurationManager(context, preferences)
     }
 }

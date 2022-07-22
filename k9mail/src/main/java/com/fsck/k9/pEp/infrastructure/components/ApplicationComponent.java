@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.infrastructure.components;
 
 import android.content.Context;
 
+import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.DispatcherProvider;
@@ -49,6 +50,7 @@ public interface ApplicationComponent {
     ProvisioningSettings provisioningSettings();
 
     PEpSystemFileLocator pEpSystemFileLocator();
+    Preferences preferences();
 
     @Named("AppContext")
     Context getContext();

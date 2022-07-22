@@ -64,10 +64,4 @@ public class PEpModule {
     public MessagingController provideMessagingController() {
         return MessagingController.getInstance(context);
     }
-
-    @Provides
-    public Preferences providePreferences() {
-        return Preferences.getPreferences(context);
-    }
-
 }

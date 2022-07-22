@@ -15,7 +15,7 @@ import java.util.*
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
-    private val preferences: Preferences? = null,
+    private val preferences: Preferences,
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
 
@@ -63,10 +63,8 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountDescription(restrictions: Bundle, key: String) {
-        if (preferences == null) {
-            updateString(restrictions, key) {
-                provisioningSettings.accountDescription = it
-            }
+        updateString(restrictions, key) {
+            provisioningSettings.accountDescription = it
         }
         updateAccountString(restrictions, key) { account, newValue ->
             account.description = newValue
@@ -92,19 +90,15 @@ class ConfiguredSettingsUpdater(
                     }
                 }
             }
-            if (preferences == null) { // provisioning use case
-                provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                    incoming, outgoing
-                )
-            }
+            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
+                incoming, outgoing
+            )
         }
     }
 
     private fun saveAccountEmailAddress(restrictions: Bundle, key: String) {
-        if (preferences == null) {
-            updateString(restrictions, key) {
-                provisioningSettings.email = it
-            }
+        updateString(restrictions, key) {
+            provisioningSettings.email = it
         }
         updateAccountString(restrictions, key) { account, newValue ->
             account.email = newValue
@@ -112,7 +106,7 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountIncomingSettings(incoming: SimpleMailSettings) {
-        preferences?.accounts?.forEach { account ->
+        preferences.accounts?.forEach { account ->
             val currentSettings = RemoteStore.decodeStoreUri(account.storeUri)
             val newSettings = currentSettings.newFromProvisionValues(
                 incoming.server,
@@ -125,7 +119,7 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountOutgoingSettings(outgoing: SimpleMailSettings) {
-        preferences?.accounts?.forEach { account ->
+        preferences.accounts?.forEach { account ->
             val currentSettings = Transport.decodeTransportUri(account.transportUri)
             val newSettings = currentSettings.newFromProvisionValues(
                 outgoing.server,
@@ -279,10 +273,8 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountSenderName(bundle: Bundle, key: String) {
-        if (preferences == null) {
-            updateString(bundle, key) {
-                provisioningSettings.senderName = it
-            }
+        updateString(bundle, key) {
+            provisioningSettings.senderName = it
         }
         updateAccountString(
             bundle,
@@ -443,7 +435,7 @@ class ConfiguredSettingsUpdater(
         kotlin.runCatching {
             val newValue = restrictions.getString(key)
             if (!newValue.isNullOrBlank()) {
-                preferences?.accounts?.forEach { account ->
+                preferences.accounts?.forEach { account ->
                     block(account, newValue)
                 }
             }
@@ -457,7 +449,7 @@ class ConfiguredSettingsUpdater(
     ) {
         kotlin.runCatching {
             val newValue = restrictions.getBoolean(key)
-            preferences?.accounts?.forEach { account ->
+            preferences.accounts?.forEach { account ->
                 block(account, newValue)
             }
         }.onFailure { Timber.e(it) }
