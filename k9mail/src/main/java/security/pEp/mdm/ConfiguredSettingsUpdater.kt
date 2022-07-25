@@ -255,7 +255,11 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry
         ) { account, newValue ->
-            account.displayCount = newValue.toInt()
+            account.displayCount = try {
+                newValue.toInt()
+            } catch (nfe: NumberFormatException) {
+                entry.selectedString.toInt()
+            }
         }
     }
 
@@ -264,7 +268,11 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry
         ) { account, newValue ->
-            account.maxPushFolders = newValue.toInt()
+            account.maxPushFolders = try {
+                newValue.toInt()
+            } catch (nfe: NumberFormatException) {
+                entry.selectedString.toInt()
+            }
         }
     }
 
@@ -402,7 +410,11 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
         ) { account, newValue ->
-            account.remoteSearchNumResults = newValue.toInt()
+            account.remoteSearchNumResults = try {
+                newValue.toInt()
+            } catch (nfe: NumberFormatException) {
+                entry.selectedString.toInt()
+            }
         }
     }
 
