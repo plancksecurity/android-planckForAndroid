@@ -54,8 +54,11 @@ public class K9ActivityCommon {
      * @return The {@link K9ActivityCommon} instance that will provide the base functionality of the
      *         "K9" activities.
      */
-    public static K9ActivityCommon newInstance(Activity activity) {
-        return new K9ActivityCommon(activity);
+    public static K9ActivityCommon newInstance(
+            Activity activity,
+            ConfigurationManager.Factory configurationManagerFactory
+    ) {
+        return new K9ActivityCommon(activity, configurationManagerFactory);
     }
 
     public static void setLanguage(Context context, String language) {
@@ -111,18 +114,20 @@ public class K9ActivityCommon {
     private SwipeGestureDetector swipeGestureDetector;
 
 
-    private K9ActivityCommon(Activity activity) {
+    private K9ActivityCommon(
+            Activity activity,
+            ConfigurationManager.Factory configurationManagerFactory
+    ) {
         mActivity = activity;
         setLanguage(mActivity, K9.getK9Language());
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
-        initConfigurationManager();
+        initConfigurationManager(configurationManagerFactory);
         configureNavigationBar(activity);
     }
 
-    private void initConfigurationManager() {
-        Preferences preferences = Preferences.getPreferences(mActivity);
-        configurationManager = new ConfigurationManager(mActivity, preferences);
+    private void initConfigurationManager(ConfigurationManager.Factory configurationManagerFactory) {
+        configurationManager = configurationManagerFactory.getInstance(mActivity);
     }
 
     public static void configureNavigationBar(Activity activity) {

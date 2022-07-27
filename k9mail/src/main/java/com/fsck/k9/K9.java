@@ -111,6 +111,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
+    public static boolean test;
 
     public static K9JobManager jobManager;
 

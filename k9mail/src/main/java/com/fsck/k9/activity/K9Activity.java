@@ -17,6 +17,7 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
@@ -29,6 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
+import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,8 +59,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                             | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
             );
         }
-
-        mBase = K9ActivityCommon.newInstance(this);
+        ConfigurationManager.Factory configurationManagerFactory =
+                ((K9) getApplication()).getComponent().configurationManagerFactory();
+        mBase = K9ActivityCommon.newInstance(this, configurationManagerFactory);
         super.onCreate(savedInstanceState);
 //        ((K9) getApplication()).pEpSyncProvider.setSyncHandshakeCallback(this);
         if(savedInstanceState != null) {

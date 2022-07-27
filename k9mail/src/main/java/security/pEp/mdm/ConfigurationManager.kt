@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 class ConfigurationManager(
     private val context: Context,
-    private val preferences: Preferences
+    private val preferences: Preferences,
+    private val restrictionsManager: RestrictionsManagerContract
 ) {
 
     private var listener: RestrictionsListener? = null
@@ -37,13 +38,11 @@ class ConfigurationManager(
         startup: Boolean = false
     ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
-            val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE)
-                    as RestrictionsManager
-            val restrictions = manager.applicationRestrictions
+            val restrictions = restrictionsManager.applicationRestrictions
             if (startup && !isProvisionAvailable(restrictions)) {
                 throw ProvisioningFailedException("Provisioning data is missing")
             }
-            val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
+            val entries = restrictionsManager.manifestRestrictions
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()
@@ -107,9 +106,10 @@ class ConfigurationManager(
 
     class Factory @Inject constructor(
         private val preferences: Preferences,
+        private val restrictionsManager: RestrictionsManagerContract,
     ) {
         fun getInstance(
             context: Context,
-        ): ConfigurationManager = ConfigurationManager(context, preferences)
+        ): ConfigurationManager = ConfigurationManager(context, preferences, restrictionsManager)
     }
 }
