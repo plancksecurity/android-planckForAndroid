@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import security.pEp.mdm.ConfigurationManager;
+import security.pEp.mdm.RestrictionsManagerContract;
 import security.pEp.provisioning.ProvisioningManager;
 import security.pEp.file.PEpSystemFileLocator;
 import security.pEp.provisioning.ProvisioningSettings;
@@ -53,6 +54,7 @@ public interface ApplicationComponent {
     PEpSystemFileLocator pEpSystemFileLocator();
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
+    RestrictionsManagerContract restrictionsManagerContract();
 
     @Named("AppContext")
     Context getContext();
