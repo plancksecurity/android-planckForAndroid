@@ -180,12 +180,12 @@
         android:restrictionType="bool"
         android:title="@string/pep_sync_enable_account"/>
 
-    <restriction
+    <!--restriction
         android:defaultValue="https://provisioning.pep.security/{{partialupn}}/pEp.ppk"
         android:description="@string/provisioning_url_description"
         android:key="pep_user_provisioning_url"
         android:restrictionType="string"
-        android:title="@string/provisioning_url_title"/>
+        android:title="@string/provisioning_url_title"/-->
 
     <restriction
         android:description="@string/mail_settings_description"

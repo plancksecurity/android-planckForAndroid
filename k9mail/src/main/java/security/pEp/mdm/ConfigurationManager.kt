@@ -53,7 +53,6 @@ class ConfigurationManager(
         return restrictions.keySet().containsAll(
             setOf(
                 RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-                RESTRICTION_PROVISIONING_URL
             )
         )
     }

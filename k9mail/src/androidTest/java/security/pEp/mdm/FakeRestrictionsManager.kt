@@ -327,7 +327,6 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
     companion object {
         fun getProvisioningRestrictions(): Bundle {
             return Bundle().apply {
-                putString(RESTRICTION_PROVISIONING_URL, "https://provisioningtest")
                 putBundle(
                     RESTRICTION_ACCOUNT_MAIL_SETTINGS,
                     getMailSettingsBundle()
@@ -338,10 +337,6 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
         fun getDefaultManifestRestrictions(): List<RestrictionEntry> {
             return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 listOf(
-                    RestrictionEntry(
-                        RESTRICTION_PROVISIONING_URL,
-                        DEFAULT_PROVISIONING_URL
-                    ),
                     RestrictionEntry(
                         RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
                         DEFAULT_PRIVACY_PROTECTION

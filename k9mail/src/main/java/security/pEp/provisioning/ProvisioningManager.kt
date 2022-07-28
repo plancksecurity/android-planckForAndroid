@@ -59,9 +59,8 @@ class ProvisioningManager @Inject constructor(
             configurationManagerFactory.getInstance(k9).loadConfigurationsSuspend(
                 true
             ).flatMapSuspend {
-                val provisioningUrl = provisioningSettings.provisioningUrl
-                if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
-                    performProvisioningAfterChecks(provisioningUrl)
+                if (!systemFileLocator.keysDbFile.exists()) {
+                    performProvisioningAfterChecks()
                 } else {
                     finalizeSetup()
                 }
@@ -69,35 +68,15 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
-    private suspend fun performProvisioningAfterChecks(provisioningUrl: String): Result<Unit> {
-        return performChecks(
-            provisioningUrl
-        ).flatMapSuspend {
-            setProvisionState(ProvisionState.InProvisioning)
-            PEpProviderImplKotlin.provision(
-                dispatcherProvider.io(),
-                provisioningUrl
-            )
-        }.flatMapSuspend {
+    private suspend fun performProvisioningAfterChecks(): Result<Unit> {
+        return performChecks().flatMapSuspend {
             finalizeSetup(true)
         }
     }
 
-    private fun performChecks(provisioningUrl: String): Result<Unit> = when {
+    private fun performChecks(): Result<Unit> = when {
         !isDeviceOnline() -> {
             Result.failure(ProvisioningFailedException("Device is offline"))
-        }
-        !urlChecker.isUrlReachable(provisioningUrl) -> {
-            Result.failure(
-                ProvisioningFailedException(
-                    "Provisioning url $provisioningUrl is not reachable"
-                )
-            )
-        }
-        !urlChecker.isValidUrl(provisioningUrl) -> {
-            Result.failure(
-                ProvisioningFailedException("Url has bad format: $provisioningUrl")
-            )
         }
         areProvisionedMailSettingsInvalid() -> {
             Result.failure(
