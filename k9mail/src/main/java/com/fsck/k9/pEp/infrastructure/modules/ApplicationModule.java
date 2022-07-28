@@ -1,10 +1,8 @@
 package com.fsck.k9.pEp.infrastructure.modules;
 
 
-import android.app.Application;
 import android.content.Context;
 import android.content.RestrictionsManager;
-import android.util.Log;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -21,7 +19,6 @@ import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import security.pEp.mdm.FakeRestrictionsManager;
