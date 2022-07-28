@@ -6,9 +6,7 @@ import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import com.fsck.k9.BuildConfig
-import javax.inject.Singleton
 
-@Singleton
 class FakeRestrictionsManager: RestrictionsManagerContract {
     override val applicationRestrictions: Bundle = getProvisioningRestrictions()
     override val manifestRestrictions: List<RestrictionEntry> = getDefaultManifestRestrictions()
