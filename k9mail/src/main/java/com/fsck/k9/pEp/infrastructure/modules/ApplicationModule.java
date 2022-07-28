@@ -2,7 +2,6 @@ package com.fsck.k9.pEp.infrastructure.modules;
 
 
 import android.content.Context;
-import android.content.RestrictionsManager;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -21,9 +20,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.mdm.FakeRestrictionsManager;
-import security.pEp.mdm.PEpRestrictionsManager;
-import security.pEp.mdm.RestrictionsManagerContract;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.ui.permissions.PEpPermissionChecker;
 
@@ -69,16 +65,6 @@ public class ApplicationModule {
     @Provides
     public Preferences providePreferences() {
         return Preferences.getPreferences(application);
-    }
-
-    @Provides
-    public RestrictionsManagerContract provideRestrictionsManager() {
-        return K9.test
-                ? new FakeRestrictionsManager()
-                : new PEpRestrictionsManager(
-                (RestrictionsManager) application.getSystemService(Context.RESTRICTIONS_SERVICE),
-                application.getPackageName()
-        );
     }
 
     @Provides

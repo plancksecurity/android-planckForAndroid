@@ -49,6 +49,7 @@ import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
+import com.fsck.k9.pEp.infrastructure.modules.RestrictionsManagerModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
 import security.pEp.mdm.ConfigurationManager;
@@ -111,7 +112,6 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    public static boolean test;
 
     public static K9JobManager jobManager;
 
@@ -1839,8 +1839,13 @@ public class K9 extends MultiDexApplication {
     }
 
     private void initializeInjector() {
-        component = DaggerApplicationComponent.builder()
+        component = createApplicationComponent();
+    }
+
+    protected ApplicationComponent createApplicationComponent() {
+        return DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
+                .restrictionsManagerModule(new RestrictionsManagerModule(this))
                 .build();
     }
 
