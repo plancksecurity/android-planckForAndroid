@@ -39,6 +39,10 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
         applicationRestrictions.remove(key)
     }
 
+    fun clearSettings() {
+        applicationRestrictions.clear()
+    }
+
     fun getManifestExtraKeys(): Set<String> {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             manifestRestrictions.first {
