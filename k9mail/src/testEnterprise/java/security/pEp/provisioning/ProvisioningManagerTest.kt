@@ -1,5 +1,6 @@
 package security.pEp.provisioning
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
@@ -10,6 +11,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.*
+import org.junit.runner.RunWith
 import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
@@ -18,6 +20,7 @@ import java.io.File
 private const val TEST_PROVISIONING_URL = "https://test/url"
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class ProvisioningManagerTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
@@ -84,6 +87,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `startProvisioning() provisions app using PEpProviderImplKotlin`() {
         manager.startProvisioning()
 
@@ -127,6 +131,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `when url has bad format, resulting state is error`() {
         coEvery { urlChecker.isValidUrl(any()) }.returns(false)
 
@@ -143,6 +148,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `when provisioning fails, resulting state is error`() {
         coEvery { PEpProviderImplKotlin.provision(any(), any()) }
             .returns(Result.failure(ProvisioningFailedException("fail", RuntimeException())))
