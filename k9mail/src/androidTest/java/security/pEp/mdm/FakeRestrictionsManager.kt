@@ -1,15 +1,53 @@
 package security.pEp.mdm
 
+import android.app.Activity
 import android.content.RestrictionEntry
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
+import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import com.fsck.k9.BuildConfig
+import com.fsck.k9.activity.K9Activity
+import com.fsck.k9.activity.K9ActivityCommon
+import com.fsck.k9.activity.K9ListActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.lang.reflect.Field
 
-class FakeRestrictionsManager: RestrictionsManagerContract {
+class FakeRestrictionsManager : RestrictionsManagerContract {
     override val applicationRestrictions: Bundle = getProvisioningRestrictions()
     override val manifestRestrictions: List<RestrictionEntry> = getDefaultManifestRestrictions()
+
+    fun updateTestRestrictions(activity: Activity) {
+        val activityClass: Class<*>? =
+            when (activity) {
+                is K9Activity -> K9Activity::class.java
+                is K9ListActivity -> K9ListActivity::class.java
+                else -> null
+            }
+        if (activityClass != null) {
+            val commonField: Field = activityClass.getDeclaredField("mBase")
+            commonField.isAccessible = true
+            val common = commonField.get(activity) as K9ActivityCommon
+            val configurationManagerField: Field =
+                K9ActivityCommon::class.java.getDeclaredField("configurationManager")
+            configurationManagerField.isAccessible = true
+            val configurationManager = configurationManagerField.get(common) as ConfigurationManager
+            runBlocking {
+                configurationManager.loadConfigurationsSuspend().onSuccess {
+                    if (activity is RestrictionsListener) {
+                        withContext(Dispatchers.Main) {
+                            activity.updatedRestrictions()
+                        }
+                    }
+                }
+            }.onFailure { throw it }
+        }
+    }
 
     fun getManifestBoolean(key: String) = manifestRestrictions.first { it.key == key }.selectedState
 
@@ -44,7 +82,7 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
     }
 
     fun getManifestExtraKeys(): Set<String> {
-        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             manifestRestrictions.first {
                 it.key == RESTRICTION_PEP_EXTRA_KEYS
             }.restrictions.map { bundleRestriction ->
@@ -103,11 +141,14 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
                         RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
                         Bundle().apply {
                             putStringOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, senderName)
+                                RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, senderName
+                            )
                             putStringOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, signature)
+                                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, signature
+                            )
                             putBooleanOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, useSignature)
+                                RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, useSignature
+                            )
                             putBooleanOrRemove(
                                 RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
                                 signatureBefore
@@ -335,7 +376,7 @@ class FakeRestrictionsManager: RestrictionsManagerContract {
         }
 
         fun getDefaultManifestRestrictions(): List<RestrictionEntry> {
-            return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 listOf(
                     RestrictionEntry(
                         RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
