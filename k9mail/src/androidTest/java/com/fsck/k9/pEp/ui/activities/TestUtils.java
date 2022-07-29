@@ -2328,30 +2328,25 @@ public class TestUtils {
     }
 
     private void goBack (boolean saveAsDraft) {
-        Activity currentActivity = getCurrentActivity();
-        while (currentActivity == getCurrentActivity()) {
-            try {
+        try {
+            waitForIdle();
+            if (!viewIsDisplayed(R.id.message_content)) {
+                onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
                 waitForIdle();
-                if (!viewIsDisplayed(R.id.message_content)) {
-                    onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
-                    waitForIdle();
-                }
-            } catch (Exception ex) {
-                Timber.i("Ignored exception: " + ex);
             }
-            waitForIdle();
-            pressBack();
-            waitForIdle();
-            if (saveAsDraft) {
-                onView(withText(R.string.save_draft_action)).perform(click());
-            }
-            if (currentActivity == getCurrentActivity()) {
-                try {
-                    onView(withText(R.string.discard_action)).perform(click());
-                } catch (Exception noDiscard) {
-                    Timber.i("Cannot discard the message");
-                }
-            }
+        } catch (Exception ex) {
+            Timber.i("Ignored exception: " + ex);
+        }
+        waitForIdle();
+        pressBack();
+        waitForIdle();
+        if (saveAsDraft) {
+            onView(withText(R.string.save_draft_action)).perform(click());
+        }
+        try {
+            onView(withText(R.string.discard_action)).perform(click());
+        } catch (Exception noDiscard) {
+            Timber.i("Cannot discard the message");
         }
         waitForIdle();
     }
@@ -2420,6 +2415,11 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
+            if (BuildConfig.IS_ENTERPRISE) {
+                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
+                    assertFailWithMessage("Status is not shown");
+                }
+            }
             if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
                 waitForIdle();
                 onView(withId(R.id.securityStatusText)).check(matches(withTextColor(color)));
