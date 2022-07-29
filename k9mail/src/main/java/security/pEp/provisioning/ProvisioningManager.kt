@@ -21,7 +21,6 @@ import javax.inject.Singleton
 class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val systemFileLocator: PEpSystemFileLocator,
-    private val urlChecker: UrlChecker,
     private val configurationManagerFactory: ConfigurationManager.Factory,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
