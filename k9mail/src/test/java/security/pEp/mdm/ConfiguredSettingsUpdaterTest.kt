@@ -1,12 +1,16 @@
 package security.pEp.mdm
 
+import android.content.Context
 import android.content.RestrictionEntry
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.R
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
@@ -546,9 +550,11 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     private fun getMailSettingsBundle(
-        email: String = "email@mail.ch",
-        server: String = "mail.server.host",
-        username: String = "username"
+        email: String? = "email@mail.ch",
+        server: String? = "mail.server.host",
+        username: String? = "username",
+        security: String? = "SSL/TLS",
+        port: Int = 999,
     ): Bundle = Bundle().apply {
         putBundle(
             RESTRICTION_ACCOUNT_MAIL_SETTINGS,
@@ -558,8 +564,8 @@ class ConfiguredSettingsUpdaterTest {
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                     bundleOf(
                         RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to 999,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
                         RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username
                     )
                 )
@@ -567,8 +573,8 @@ class ConfiguredSettingsUpdaterTest {
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
                     bundleOf(
                         RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to 999,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
                         RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username
                     )
                 )
@@ -726,7 +732,9 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = getMailSettingsBundle(
             email = "malformedEmail",
             server = "",
-            username = "{{}}"
+            username = "{{}}",
+            security = "wrong security",
+            port = -4
         )
         val entry = getMailRestrictionEntry()
 
@@ -739,15 +747,15 @@ class ConfiguredSettingsUpdaterTest {
                 "malformedEmail" // this is acceptable for now, user will edit the email address in account setup screen
             provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
                 incoming = SimpleMailSettings(
-                    999,
+                    333,
                     "oldServer",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    ConnectionSecurity.NONE,
                     "oldUsername"
                 ),
                 outgoing = SimpleMailSettings(
-                    999,
+                    333,
                     "oldServer",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    ConnectionSecurity.NONE,
                     "oldUsername"
                 )
             )
@@ -774,15 +782,15 @@ class ConfiguredSettingsUpdaterTest {
         val newIncoming = incomingSettingsSlot.captured
 
         assertEquals("oldServer", newIncoming.host)
-        assertEquals(999, newIncoming.port)
-        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newIncoming.connectionSecurity)
+        assertEquals(333, newIncoming.port)
+        assertEquals(ConnectionSecurity.NONE, newIncoming.connectionSecurity)
         assertEquals("oldUsername", newIncoming.username)
 
         val newOutgoing = outgoingSettingsSlot.captured
 
         assertEquals("oldServer", newOutgoing.host)
-        assertEquals(999, newOutgoing.port)
-        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newOutgoing.connectionSecurity)
+        assertEquals(333, newOutgoing.port)
+        assertEquals(ConnectionSecurity.NONE, newOutgoing.connectionSecurity)
         assertEquals("oldUsername", newOutgoing.username)
     }
 
@@ -834,5 +842,57 @@ class ConfiguredSettingsUpdaterTest {
 
         val newOutgoing = outgoingSettingsSlot.captured
         assertEquals("oldServer", newOutgoing.host)
+    }
+
+    @Test
+    fun `update() takes the value for local folder size from the provided restrictions`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.display_count_values) }
+            .returns(arrayOf("10", "250"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle().apply {
+            putString(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "10")
+        }
+        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { account.displayCount = 10 }
+    }
+
+    @Test
+    fun `update() takes the value for local folder size from the restrictions entry if not provided in restrictions`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.display_count_values) }
+            .returns(arrayOf("10", "250"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle()
+        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { account.displayCount = 250 }
+    }
+
+    @Test
+    fun `update() keeps last value if provided value is not valid`() {
+        val resources: Resources = mockk()
+        every { resources.getStringArray(R.array.display_count_values) }
+            .returns(arrayOf("10", "250"))
+        every { k9.resources }.returns(resources)
+        val restrictions = Bundle().apply {
+            putString(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "hello")
+        }
+        val entry = RestrictionEntry(RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE, "250")
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { account.wasNot(called) }
     }
 }
