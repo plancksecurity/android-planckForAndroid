@@ -1,14 +1,15 @@
 package security.pEp.provisioning
 
 import com.fsck.k9.mail.ConnectionSecurity
+import security.pEp.network.UrlChecker
 
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
 )
 
-fun AccountMailSettingsProvision?.isValidForProvision(): Boolean =
-    this != null && incoming.isValid() && outgoing.isValid()
+fun AccountMailSettingsProvision?.isValidForProvision(urlChecker: UrlChecker): Boolean =
+    this != null && incoming.isValid(urlChecker) && outgoing.isValid(urlChecker)
 
 data class SimpleMailSettings(
     val port: Int = -1,
@@ -22,9 +23,9 @@ data class SimpleMailSettings(
         ConnectionSecurity.STARTTLS_REQUIRED -> "tls"
     }
 
-    fun isValid(): Boolean =
+    fun isValid(urlChecker: UrlChecker): Boolean =
         port > 0
-                && !server.isNullOrBlank()
+                && !server.isNullOrBlank() && urlChecker.isValidUrl(server)
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
 }

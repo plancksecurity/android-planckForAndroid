@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
+import security.pEp.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,6 +20,7 @@ import javax.inject.Singleton
 class ProvisioningManager @Inject constructor(
     private val k9: K9,
     private val systemFileLocator: PEpSystemFileLocator,
+    private val urlChecker: UrlChecker,
     private val configurationManagerFactory: ConfigurationManager.Factory,
     private val provisioningSettings: ProvisioningSettings,
     private val dispatcherProvider: DispatcherProvider,
@@ -85,7 +87,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun areProvisionedMailSettingsInvalid(): Boolean {
-        return !provisioningSettings.provisionedMailSettings.isValidForProvision()
+        return !provisioningSettings.provisionedMailSettings.isValidForProvision(urlChecker)
     }
 
     private fun isDeviceOnline(): Boolean =
