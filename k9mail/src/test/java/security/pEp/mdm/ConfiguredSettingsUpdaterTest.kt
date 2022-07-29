@@ -12,12 +12,17 @@ import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
+import com.fsck.k9.mailstore.Folder
+import com.fsck.k9.mailstore.FolderRepository
+import com.fsck.k9.mailstore.FolderRepositoryManager
+import com.fsck.k9.mailstore.FolderType
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import security.pEp.network.UrlChecker
 import security.pEp.provisioning.AccountMailSettingsProvision
 import security.pEp.provisioning.ProvisioningSettings
 import security.pEp.provisioning.SimpleMailSettings
@@ -28,11 +33,31 @@ class ConfiguredSettingsUpdaterTest {
     private val preferences: Preferences = mockk()
     private val account: Account = mockk(relaxed = true)
     private val provisioningSettings: ProvisioningSettings = mockk(relaxed = true)
-    private var updater = ConfiguredSettingsUpdater(k9, preferences, provisioningSettings)
+    private val folderRepositoryManager: FolderRepositoryManager = mockk()
+    private val folderRepository: FolderRepository = mockk()
+    private val urlChecker: UrlChecker = mockk()
+    private var updater = ConfiguredSettingsUpdater(
+        k9,
+        preferences,
+        urlChecker,
+        folderRepositoryManager,
+        provisioningSettings
+    )
 
     @Before
     fun setUp() {
         every { preferences.accounts }.returns(listOf(account))
+        every { urlChecker.isValidUrl(any()) }.returns(true)
+        every { folderRepositoryManager.getFolderRepository(account) }.returns(folderRepository)
+        every { folderRepository.getRemoteFolders() }.returns(
+            listOf(
+                Folder(0, "", "archive", FolderType.ARCHIVE),
+                Folder(0, "", "drafts", FolderType.DRAFTS),
+                Folder(0, "", "sent", FolderType.SENT),
+                Folder(0, "", "spam", FolderType.SPAM),
+                Folder(0, "", "trash", FolderType.TRASH),
+            )
+        )
         mockkStatic(K9::class)
         mockkStatic(RemoteStore::class)
         mockkStatic(Transport::class)
@@ -72,7 +97,7 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for provisioning url from the restrictions entry if provided value is blank`() {
+    fun `update() does not set provisioning url if provided value is blank`() {
 
         val restrictions = Bundle().apply { putString(RESTRICTION_PROVISIONING_URL, "     ") }
         val entry = RestrictionEntry(RESTRICTION_PROVISIONING_URL, "defaultUrl")
@@ -81,7 +106,7 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify { provisioningSettings.provisioningUrl = "defaultUrl" }
+        verify(exactly = 0) { provisioningSettings.provisioningUrl = any() }
     }
 
     @Test
@@ -258,8 +283,8 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for composition defaults from the restriction entry if not provided in bundle`() {
-
+    fun `update() takes the value for composition defaults from the restriction entry if not provided in bundle, and sender name defaults to email`() {
+        every { account.email }.returns("email")
         val restrictions = Bundle()
         val entry = RestrictionEntry.createBundleEntry(
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
@@ -288,16 +313,70 @@ class ConfiguredSettingsUpdaterTest {
 
 
         verify {
-            account.name = "default sender name"
+            account.name = "email"
             account.signatureUse = true
             account.signature = "default signature"
             account.isSignatureBeforeQuotedText = false
+            provisioningSettings.senderName = null
+        }
+    }
+
+    @Test
+    fun `update() keeps previous composition settings values that are not valid`() {
+        every { account.email }.returns("email")
+        val restrictions = Bundle().apply {
+            putBundle(
+                RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
+                Bundle().apply {
+                    putString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, "")
+                    putBoolean(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, false)
+                    putString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, "    ")
+                    putBoolean(
+                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
+                        true
+                    )
+                }
+            )
+        }
+        val entry = RestrictionEntry.createBundleEntry(
+            RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
+            arrayOf(
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME,
+                    "default sender name"
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE,
+                    true
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE,
+                    "default signature"
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
+                    false
+                ),
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            account.signatureUse = false
+            account.isSignatureBeforeQuotedText = true
+        }
+
+        verify(exactly = 0) {
+            account.name = any()
+            account.signature = any()
         }
     }
 
     @Test
     fun `update() takes the value for default folders from the provided restrictions`() {
-
         val restrictions = Bundle().apply {
             putBundle(
                 RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
@@ -335,7 +414,7 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for default folders from the restriction entry if not provided in bundle`() {
+    fun `update() does not change default folders from the restriction entry if not provided in bundle`() {
 
         val restrictions = Bundle()
         val entry = RestrictionEntry.createBundleEntry(
@@ -383,109 +462,38 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for mail settings from the provided restrictions`() {
-        val incomingSettings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "oldServer",
-            333,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "oldUsername",
-            "oldPassword",
-            "cert"
-        )
-        val outgoingSettings = ServerSettings(
-            ServerSettings.Type.SMTP,
-            "oldServer",
-            333,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "oldUsername",
-            "oldPassword",
-            "cert"
-        )
-
-        every { RemoteStore.decodeStoreUri(any()) }.returns(incomingSettings)
-        every { RemoteStore.createStoreUri(any()) }.returns("incomingUri")
-        every { Transport.decodeTransportUri(any()) }.returns(outgoingSettings)
-        every { Transport.createTransportUri(any()) }.returns("outgoingUri")
-        every { account.storeUri }.returns("storeUri")
-        every { account.transportUri }.returns("transportUri")
+    fun `update() keeps previous folder name if folder does not exist in server`() {
 
         val restrictions = Bundle().apply {
             putBundle(
-                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
                 Bundle().apply {
-                    putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "email")
-                    putBundle(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                        bundleOf(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to "server",
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to 999,
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to "username"
-                        )
-                    )
-                    putBundle(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                        bundleOf(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to "server",
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to 999,
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to "username"
-                        )
-                    )
+                    putString(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER, "unknown folder")
                 }
             )
         }
         val entry = RestrictionEntry.createBundleEntry(
-            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+            RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
             arrayOf(
-                RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "emailDefault"),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                            "serverDefault"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                            888
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                            "STARTTLS"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
-                            "usernameDefault"
-                        ),
-                    )
-                ),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
-                            "serverDefault"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-                            888
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
-                            "STARTTLS"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
-                            "usernameDefault"
-                        ),
-                    )
-                ),
+                RestrictionEntry(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER, "   "),
             )
         )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            account.wasNot(called)
+        }
+    }
+
+    @Test
+    fun `update() takes the value for mail settings from the provided restrictions`() {
+        stubInitialServerSettings()
+
+        val restrictions = getMailSettingsBundle()
+        val entry = getMailRestrictionEntry()
 
 
         updater.update(restrictions, entry)
@@ -502,18 +510,18 @@ class ConfiguredSettingsUpdaterTest {
             Transport.createTransportUri(
                 capture(outgoingSettingsSlot)
             )
-            provisioningSettings.email = "email"
-            account.email = "email"
+            provisioningSettings.email = "email@mail.ch"
+            account.email = "email@mail.ch"
             provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
                 incoming = SimpleMailSettings(
                     999,
-                    "server",
+                    "mail.server.host",
                     ConnectionSecurity.SSL_TLS_REQUIRED,
                     "username"
                 ),
                 outgoing = SimpleMailSettings(
                     999,
-                    "server",
+                    "mail.server.host",
                     ConnectionSecurity.SSL_TLS_REQUIRED,
                     "username"
                 )
@@ -524,98 +532,130 @@ class ConfiguredSettingsUpdaterTest {
 
         val newIncoming = incomingSettingsSlot.captured
 
-        assertEquals("server", newIncoming.host)
+        assertEquals("mail.server.host", newIncoming.host)
         assertEquals(999, newIncoming.port)
         assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newIncoming.connectionSecurity)
         assertEquals("username", newIncoming.username)
 
         val newOutgoing = outgoingSettingsSlot.captured
 
-        assertEquals("server", newOutgoing.host)
+        assertEquals("mail.server.host", newOutgoing.host)
         assertEquals(999, newOutgoing.port)
         assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newOutgoing.connectionSecurity)
         assertEquals("username", newOutgoing.username)
     }
 
+    private fun getMailSettingsBundle(
+        email: String = "email@mail.ch",
+        server: String = "mail.server.host",
+        username: String = "username"
+    ): Bundle = Bundle().apply {
+        putBundle(
+            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+            Bundle().apply {
+                putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
+                putBundle(
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to 999,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username
+                    )
+                )
+                putBundle(
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to 999,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username
+                    )
+                )
+            }
+        )
+    }
+
+    private fun getMailRestrictionEntry(
+        server: String = "serverDefault",
+        username: String = "usernameDefault"
+    ): RestrictionEntry = RestrictionEntry.createBundleEntry(
+        RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+        arrayOf(
+            RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "email@default.ch"),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
+                        server
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                        888
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
+                        "STARTTLS"
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
+                        username
+                    ),
+                )
+            ),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
+                        server
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
+                        888
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
+                        "STARTTLS"
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
+                        username
+                    ),
+                )
+            ),
+        )
+    )
+
+    private fun getInitialIncomingSettings(): ServerSettings = ServerSettings(
+        ServerSettings.Type.IMAP,
+        "oldServer",
+        333,
+        ConnectionSecurity.NONE,
+        AuthType.PLAIN,
+        "oldUsername",
+        "oldPassword",
+        "cert"
+    )
+
+    private fun getInitialOutgoingSettings(): ServerSettings = ServerSettings(
+        ServerSettings.Type.SMTP,
+        "oldServer",
+        333,
+        ConnectionSecurity.NONE,
+        AuthType.PLAIN,
+        "oldUsername",
+        "oldPassword",
+        "cert"
+    )
+
     @Test
     fun `update() takes the value for mail settings from the restriction entry if not provided in bundle`() {
-        val incomingSettings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "oldServer",
-            333,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "oldUsername",
-            "oldPassword",
-            "cert"
-        )
-        val outgoingSettings = ServerSettings(
-            ServerSettings.Type.SMTP,
-            "oldServer",
-            333,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "oldUsername",
-            "oldPassword",
-            "cert"
-        )
-
-        every { RemoteStore.decodeStoreUri(any()) }.returns(incomingSettings)
-        every { RemoteStore.createStoreUri(any()) }.returns("incomingUri")
-        every { Transport.decodeTransportUri(any()) }.returns(outgoingSettings)
-        every { Transport.createTransportUri(any()) }.returns("outgoingUri")
-        every { account.storeUri }.returns("storeUri")
-        every { account.transportUri }.returns("transportUri")
+        stubInitialServerSettings()
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry.createBundleEntry(
-            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-            arrayOf(
-                RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "emailDefault"),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                            "serverDefault"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                            888
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                            "STARTTLS"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
-                            "usernameDefault"
-                        ),
-                    )
-                ),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
-                            "serverDefault"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-                            888
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
-                            "STARTTLS"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
-                            "usernameDefault"
-                        ),
-                    )
-                ),
-            )
-        )
+        val entry = getMailRestrictionEntry()
 
 
         updater.update(restrictions, entry)
@@ -632,8 +672,8 @@ class ConfiguredSettingsUpdaterTest {
             Transport.createTransportUri(
                 capture(outgoingSettingsSlot)
             )
-            provisioningSettings.email = "emailDefault"
-            account.email = "emailDefault"
+            provisioningSettings.email = null
+            account.email = "email@default.ch"
             provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
                 incoming = SimpleMailSettings(
                     888,
@@ -667,72 +707,132 @@ class ConfiguredSettingsUpdaterTest {
         assertEquals("usernameDefault", newOutgoing.username)
     }
 
-    @Test
-    fun `update() does not assign the new settings if they are not valid`() {
-        val incomingSettings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "oldServer",
-            333,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "oldUsername",
-            "oldPassword",
-            "cert"
-        )
+    private fun stubInitialServerSettings() {
+        val incomingSettings = getInitialIncomingSettings()
+        val outgoingSettings = getInitialOutgoingSettings()
 
         every { RemoteStore.decodeStoreUri(any()) }.returns(incomingSettings)
         every { RemoteStore.createStoreUri(any()) }.returns("incomingUri")
+        every { Transport.decodeTransportUri(any()) }.returns(outgoingSettings)
+        every { Transport.createTransportUri(any()) }.returns("outgoingUri")
         every { account.storeUri }.returns("storeUri")
+        every { account.transportUri }.returns("transportUri")
+    }
 
-        val restrictions = Bundle()
-        val entry = RestrictionEntry.createBundleEntry(
-            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-            arrayOf(
-                RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "emailDefault"),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                            ""
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                            888
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                            "STARTTLS"
-                        ),
-                    )
-                ),
-            )
+    @Test
+    fun `update() keeps the old mail settings for the new settings that are not valid`() {
+        stubInitialServerSettings()
+
+        val restrictions = getMailSettingsBundle(
+            email = "malformedEmail",
+            server = "",
+            username = "{{}}"
         )
+        val entry = getMailRestrictionEntry()
 
 
         updater.update(restrictions, entry)
 
 
         verify {
-            provisioningSettings.email = "emailDefault"
-            account.email = "emailDefault"
+            provisioningSettings.email =
+                "malformedEmail" // this is acceptable for now, user will edit the email address in account setup screen
             provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
                 incoming = SimpleMailSettings(
-                    888,
-                    "",
-                    ConnectionSecurity.STARTTLS_REQUIRED,
-                    ""
+                    999,
+                    "oldServer",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "oldUsername"
                 ),
-                outgoing = SimpleMailSettings()
+                outgoing = SimpleMailSettings(
+                    999,
+                    "oldServer",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "oldUsername"
+                )
             )
         }
         verify(exactly = 0) {
-            account.storeUri = any()
-            account.transportUri = any()
-            RemoteStore.decodeStoreUri(any())
-            RemoteStore.createStoreUri(any())
-            Transport.decodeTransportUri(any())
-            Transport.createTransportUri(any())
+            account.email = any()
         }
+
+        val incomingSettingsSlot = slot<ServerSettings>()
+        val outgoingSettingsSlot = slot<ServerSettings>()
+        verify {
+            RemoteStore.decodeStoreUri("storeUri")
+            RemoteStore.createStoreUri(
+                capture(incomingSettingsSlot)
+            )
+            Transport.decodeTransportUri("transportUri")
+            Transport.createTransportUri(
+                capture(outgoingSettingsSlot)
+            )
+            account.storeUri = "incomingUri"
+            account.transportUri = "outgoingUri"
+        }
+
+        val newIncoming = incomingSettingsSlot.captured
+
+        assertEquals("oldServer", newIncoming.host)
+        assertEquals(999, newIncoming.port)
+        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newIncoming.connectionSecurity)
+        assertEquals("oldUsername", newIncoming.username)
+
+        val newOutgoing = outgoingSettingsSlot.captured
+
+        assertEquals("oldServer", newOutgoing.host)
+        assertEquals(999, newOutgoing.port)
+        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newOutgoing.connectionSecurity)
+        assertEquals("oldUsername", newOutgoing.username)
+    }
+
+    @Test
+    fun `update() keeps the old mail settings server if UrlChecker fails to check it`() {
+        stubInitialServerSettings()
+        every { urlChecker.isValidUrl(any()) }.returns(false)
+
+        val restrictions = getMailSettingsBundle()
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        val incomingSettingsSlot = slot<ServerSettings>()
+        val outgoingSettingsSlot = slot<ServerSettings>()
+        verify {
+            RemoteStore.decodeStoreUri("storeUri")
+            RemoteStore.createStoreUri(
+                capture(incomingSettingsSlot)
+            )
+            Transport.decodeTransportUri("transportUri")
+            Transport.createTransportUri(
+                capture(outgoingSettingsSlot)
+            )
+            provisioningSettings.email = "email@mail.ch"
+            account.email = "email@mail.ch"
+            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    999,
+                    "oldServer",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    999,
+                    "oldServer",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                )
+            )
+            account.storeUri = "incomingUri"
+            account.transportUri = "outgoingUri"
+        }
+
+        val newIncoming = incomingSettingsSlot.captured
+        assertEquals("oldServer", newIncoming.host)
+
+        val newOutgoing = outgoingSettingsSlot.captured
+        assertEquals("oldServer", newOutgoing.host)
     }
 }
