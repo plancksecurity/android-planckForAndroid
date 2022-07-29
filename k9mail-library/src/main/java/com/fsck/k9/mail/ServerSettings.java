@@ -228,7 +228,7 @@ public class ServerSettings {
             String userName
     ) {
         return new ServerSettings(type, server, port, connectionSecurity,
-                authenticationType, username, password, clientCertificateAlias);
+                authenticationType, userName, password, clientCertificateAlias);
     }
 
     protected boolean isNotNullNorBlank(String string) {
