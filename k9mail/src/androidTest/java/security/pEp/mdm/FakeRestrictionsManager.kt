@@ -6,9 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
-import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.K9ActivityCommon

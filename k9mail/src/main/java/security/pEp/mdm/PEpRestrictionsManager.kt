@@ -1,11 +1,15 @@
 package security.pEp.mdm
 
+import android.content.RestrictionEntry
 import android.content.RestrictionsManager
+import android.os.Bundle
 
 class PEpRestrictionsManager(
-    restrictionsManager: RestrictionsManager,
-    packageName: String,
+    private val restrictionsManager: RestrictionsManager,
+    private val packageName: String,
 ): RestrictionsManagerContract {
-    override val applicationRestrictions = restrictionsManager.applicationRestrictions
-    override val manifestRestrictions = restrictionsManager.getManifestRestrictions(packageName)
+    override val applicationRestrictions: Bundle
+        get() = restrictionsManager.applicationRestrictions
+    override val manifestRestrictions: List<RestrictionEntry>
+        get() = restrictionsManager.getManifestRestrictions(packageName)
 }
