@@ -264,6 +264,41 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    fun `if url fails mail settings server url check, resulting state is error`() {
+        coEvery { urlChecker.isValidUrl(any()) }.returns(false)
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(
+                throwable.message!!.contains("Provisioned mail settings are not valid")
+            )
+        }
+    }
+
+    @Test
     fun `manager calls provisionStateChanged() on added listener`() {
         manager.addListener(listener)
 
