@@ -3,13 +3,18 @@ package security.pEp.mdm
 import android.content.RestrictionEntry
 import android.os.Build
 import android.os.Bundle
+import android.util.Patterns
 import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.R
 import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
+import com.fsck.k9.mailstore.FolderRepositoryManager
+import security.pEp.network.UrlChecker
 import security.pEp.provisioning.AccountMailSettingsProvision
 import security.pEp.provisioning.ProvisioningSettings
 import security.pEp.provisioning.SimpleMailSettings
@@ -18,6 +23,8 @@ import timber.log.Timber
 class ConfiguredSettingsUpdater(
     private val k9: K9,
     private val preferences: Preferences,
+    private val urlChecker: UrlChecker = UrlChecker(),
+    private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
 
@@ -27,7 +34,7 @@ class ConfiguredSettingsUpdater(
     ) {
         when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
-                updateString(restrictions, entry) {
+                updateString(restrictions, entry, accepted = { !it.isNullOrBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
             RESTRICTION_PEP_EXTRA_KEYS ->
@@ -78,10 +85,18 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
-        updateString(restrictions, entry) {
+        updateString(
+            restrictions,
+            entry,
+            default = { null }
+        ) {
             provisioningSettings.accountDescription = it
         }
-        updateAccountString(restrictions, entry) { account, newValue ->
+        updateAccountString(
+            restrictions,
+            entry,
+            default = { it.email }
+        ) { account, newValue ->
             account.description = newValue
         }
     }
@@ -96,12 +111,16 @@ class ConfiguredSettingsUpdater(
                 RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
                     saveAccountEmailAddress(bundle, restriction)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
-                    incoming = getAccountIncomingMailSettings(bundle, restriction)
-                    saveAccountIncomingSettings(incoming) // TODO: 22/7/22 give feedback of invalid settings for operations
+                    incoming = saveAccountIncomingSettings(
+                        bundle,
+                        restriction
+                    ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
-                    outgoing = getAccountOutgoingMailSettings(bundle, restriction)
-                    saveAccountOutgoingSettings(outgoing) // TODO: 22/7/22 give feedback of invalid settings for operations
+                    outgoing = saveAccountOutgoingSettings(
+                        bundle,
+                        restriction
+                    ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
             }
         }
@@ -111,100 +130,180 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateString(restrictions, entry) {
+        updateString(
+            restrictions,
+            entry,
+            default = { null }
+        ) {
             provisioningSettings.email = it
         }
-        updateAccountString(restrictions, entry) { account, newValue ->
+        updateAccountString(
+            restrictions,
+            entry,
+            accepted = { newValue ->
+                !newValue.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(newValue).matches()
+            }
+        ) { account, newValue ->
             account.email = newValue
         }
     }
 
-    private fun saveAccountIncomingSettings(incoming: SimpleMailSettings) {
-        preferences.accounts?.forEach { account ->
-            val currentSettings = RemoteStore.decodeStoreUri(account.storeUri)
-            val newSettings = currentSettings.newFromProvisionValues(
-                incoming.server,
-                incoming.connectionSecurity,
-                incoming.port,
-                incoming.userName
-            )
-            account.storeUri = RemoteStore.createStoreUri(newSettings)
-        }
-    }
-
-    private fun saveAccountOutgoingSettings(outgoing: SimpleMailSettings) {
-        preferences.accounts?.forEach { account ->
-            val currentSettings = Transport.decodeTransportUri(account.transportUri)
-            val newSettings = currentSettings.newFromProvisionValues(
-                outgoing.server,
-                outgoing.connectionSecurity,
-                outgoing.port,
-                outgoing.userName
-            )
-            account.transportUri = Transport.createTransportUri(newSettings)
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getAccountOutgoingMailSettings(
+    private fun saveAccountIncomingSettings(
         restrictions: Bundle?,
         entry: RestrictionEntry
     ): SimpleMailSettings {
-        val bundle = restrictions?.getBundle(entry.key)
-        var port = -1
-        var server = ""
-        var security = ""
-        var username = ""
-        entry.restrictions.forEach { restriction ->
-            when(restriction.key) {
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
-                    port = getIntOrDefault(bundle, restriction)
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
-                    server = getStringOrDefault(bundle, restriction)
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    security = getStringOrDefault(bundle, restriction)
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
-                    username = getStringOrDefault(bundle, restriction)
-
-            }
+        var simpleSettings = SimpleMailSettings()
+        var currentSettings: ServerSettings? = null
+        val firstAccount = preferences.accounts.firstOrNull()
+        if (firstAccount != null) {
+            currentSettings = RemoteStore.decodeStoreUri(firstAccount.storeUri)
+            simpleSettings = simpleSettings.copy(
+                port = currentSettings.port,
+                server = currentSettings.host,
+                connectionSecurity = currentSettings.connectionSecurity,
+                userName = currentSettings.username
+            )
         }
-        return SimpleMailSettings(
-            port,
-            server,
-            security.toConnectionSecurity(),
-            username
-        )
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun getAccountIncomingMailSettings(
-        restrictions: Bundle?,
-        entry: RestrictionEntry
-    ): SimpleMailSettings {
         val bundle = restrictions?.getBundle(entry.key)
-        var port = -1
-        var server = ""
-        var security = ""
-        var username = ""
         entry.restrictions.forEach { restriction ->
-            when(restriction.key) {
+            when (restriction.key) {
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
-                    port = getIntOrDefault(bundle, restriction)
+                    updateInt(
+                        bundle,
+                        restriction,
+                        accepted = { it > 0 }
+                    ) {
+                        simpleSettings = simpleSettings.copy(port = it)
+                    }
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
-                    server = getStringOrDefault(bundle, restriction)
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { server ->
+                            !server.isNullOrBlank() && urlChecker.isValidUrl(server)
+                        }
+                    ) {
+                        simpleSettings = simpleSettings.copy(server = it)
+                    }
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    security = getStringOrDefault(bundle, restriction)
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            newValue?.toConnectionSecurity() != null
+                        }
+                    ) {
+                        simpleSettings = simpleSettings.copy(
+                            connectionSecurity = it?.toConnectionSecurity()
+                        )
+                    }
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
-                    username = getStringOrDefault(bundle, restriction)
-                
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { !it.isNullOrBlank() && !it.contains("{{") }
+                    ) {
+                        simpleSettings = simpleSettings.copy(userName = it)
+                    }
             }
         }
-        return SimpleMailSettings(
-            port,
-            server,
-            security.toConnectionSecurity(),
-            username
-        )
+
+        preferences.accounts.forEach { account ->
+            val currentStoreUri = account.storeUri
+            val settings = currentSettings ?: RemoteStore.decodeStoreUri(currentStoreUri)
+            val newSettings = settings.newFromProvisionValues(
+                simpleSettings.server,
+                simpleSettings.connectionSecurity,
+                simpleSettings.port,
+                simpleSettings.userName
+            )
+            account.storeUri = try {
+                RemoteStore.createStoreUri(newSettings)
+            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible 
+                currentStoreUri
+            }
+        }
+        return simpleSettings
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveAccountOutgoingSettings(
+        restrictions: Bundle?,
+        entry: RestrictionEntry
+    ): SimpleMailSettings {
+        var simpleSettings = SimpleMailSettings()
+        var currentSettings: ServerSettings? = null
+        val firstAccount = preferences.accounts.firstOrNull()
+        if (firstAccount != null) {
+            currentSettings = Transport.decodeTransportUri(firstAccount.transportUri)
+            simpleSettings = simpleSettings.copy(
+                port = currentSettings.port,
+                server = currentSettings.host,
+                connectionSecurity = currentSettings.connectionSecurity,
+                userName = currentSettings.username
+            )
+        }
+        val bundle = restrictions?.getBundle(entry.key)
+        entry.restrictions.forEach { restriction ->
+            when (restriction.key) {
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
+                    updateInt(
+                        bundle,
+                        restriction,
+                        accepted = { it > 0 }
+                    ) {
+                        simpleSettings = simpleSettings.copy(port = it)
+                    }
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { server ->
+                            !server.isNullOrBlank() && urlChecker.isValidUrl(server)
+                        }
+                    ) {
+                        simpleSettings = simpleSettings.copy(server = it)
+                    }
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { newValue ->
+                            newValue?.toConnectionSecurity() != null
+                        }
+                    ) {
+                        simpleSettings = simpleSettings.copy(
+                            connectionSecurity = it?.toConnectionSecurity()
+                        )
+                    }
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
+                    updateString(
+                        bundle,
+                        restriction,
+                        accepted = { !it.isNullOrBlank() && !it.contains("{{") }
+                    ) {
+                        simpleSettings = simpleSettings.copy(userName = it)
+                    }
+            }
+        }
+
+        preferences.accounts.forEach { account ->
+            val currentTransportUri = account.transportUri
+            val settings = currentSettings ?: Transport.decodeTransportUri(currentTransportUri)
+            val newSettings = settings.newFromProvisionValues(
+                simpleSettings.server,
+                simpleSettings.connectionSecurity,
+                simpleSettings.port,
+                simpleSettings.userName
+            )
+            account.transportUri = try {
+                Transport.createTransportUri(newSettings)
+            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM outgoing server settings could not be applied, if possible
+                currentTransportUri
+            }
+        }
+        return simpleSettings
     }
 
     private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
@@ -221,7 +320,7 @@ class ConfiguredSettingsUpdater(
     private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
             val newExtraKeys = restrictions.getParcelableArray(entry.key)
-            ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
+                ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
                 ?: entry.restrictions.map { bundleRestriction ->
                     bundleRestriction.restrictions.first()
                 }.map {
@@ -253,12 +352,16 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountLocalFolderSize(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            entry
+            entry,
+            accepted = { newValue ->
+                val acceptedValues = k9.resources.getStringArray(R.array.display_count_values)
+                acceptedValues.contains(newValue)
+            }
         ) { account, newValue ->
-            account.displayCount = try {
-                newValue.toInt()
+            try {
+                newValue?.let { account.displayCount = newValue.toInt() }
             } catch (nfe: NumberFormatException) {
-                entry.selectedString.toInt()
+                Timber.e(nfe)
             }
         }
     }
@@ -266,12 +369,16 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountMaxPushFolders(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountString(
             restrictions,
-            entry
+            entry,
+            accepted = { newValue ->
+                val acceptedValues = k9.resources.getStringArray(R.array.push_limit_values)
+                acceptedValues.contains(newValue)
+            }
         ) { account, newValue ->
-            account.maxPushFolders = try {
-                newValue.toInt()
+            try {
+                newValue?.let { account.maxPushFolders = newValue.toInt() }
             } catch (nfe: NumberFormatException) {
-                entry.selectedString.toInt()
+                Timber.e(nfe)
             }
         }
     }
@@ -303,12 +410,18 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountSenderName(bundle: Bundle?, entry: RestrictionEntry) {
-        updateString(bundle, entry) {
+        updateString(
+            bundle,
+            entry,
+            default = { null }
+        ) {
             provisioningSettings.senderName = it
         }
         updateAccountString(
             bundle,
-            entry
+            entry,
+            default = { it.email },
+            accepted = { !it.isNullOrBlank() }
         ) { account, newValue ->
             account.name = newValue
         }
@@ -321,7 +434,11 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountSignature(bundle: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(bundle, entry) { account, newValue ->
+        updateAccountString(
+            bundle,
+            entry,
+            accepted = { !it.isNullOrBlank() }
+        ) { account, newValue ->
             account.signature = newValue
         }
     }
@@ -334,65 +451,51 @@ class ConfiguredSettingsUpdater(
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountDefaultFolders(restrictions: Bundle, entry: RestrictionEntry) {
-        val bundle = restrictions.getBundle(entry.key)
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
-                    saveAccountArchiveFolder(bundle, restriction)
-                RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
-                    saveAccountDraftsFolder(bundle, restriction)
-                RESTRICTION_ACCOUNT_SENT_FOLDER ->
-                    saveAccountSentFolder(bundle, restriction)
-                RESTRICTION_ACCOUNT_SPAM_FOLDER ->
-                    saveAccountSpamFolder(bundle, restriction)
-                RESTRICTION_ACCOUNT_TRASH_FOLDER ->
-                    saveAccountTrashFolder(bundle, restriction)
-            }
-        }
-    }
+        val firstAccount = preferences.accounts.firstOrNull()
+        if (firstAccount != null) {
+            kotlin.runCatching {
+                val currentFolders: List<String>
+                val acceptable: (String?) -> Boolean
+                val bundle = restrictions.getBundle(entry.key)
+                if (bundle == null
+                    || bundle.keySet().map { bundle.getString(it) }.all { it.isNullOrBlank() }
+                ) {
+                    currentFolders = emptyList()
+                    acceptable = { !it.isNullOrBlank() }
+                } else {
+                    currentFolders = listOf(K9.FOLDER_NONE) +
+                            folderRepositoryManager.getFolderRepository(firstAccount)
+                                .getRemoteFolders().map { it.name }
+                    acceptable = { currentFolders.contains(it) }
+                }
 
-    private fun saveAccountArchiveFolder(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.archiveFolderName = newValue
-        }
-    }
+                entry.restrictions.forEach { restriction ->
 
-    private fun saveAccountDraftsFolder(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry
-        ) { account, newValue ->
-            account.draftsFolderName = newValue
-        }
-    }
+                    fun saveFolder(
+                        block: (Account, String?) -> Unit
+                    ) {
+                        updateAccountString(
+                            bundle,
+                            restriction,
+                            accepted = acceptable,
+                            block = block
+                        )
+                    }
 
-    private fun saveAccountSentFolder(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.sentFolderName = newValue
-        }
-    }
-
-    private fun saveAccountSpamFolder(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.spamFolderName = newValue
-        }
-    }
-
-    private fun saveAccountTrashFolder(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateAccountString(
-            restrictions,
-            entry,
-        ) { account, newValue ->
-            account.trashFolderName = newValue
+                    when (restriction.key) {
+                        RESTRICTION_ACCOUNT_ARCHIVE_FOLDER ->
+                            saveFolder { account, newValue -> account.archiveFolderName = newValue }
+                        RESTRICTION_ACCOUNT_DRAFTS_FOLDER ->
+                            saveFolder { account, newValue -> account.draftsFolderName = newValue }
+                        RESTRICTION_ACCOUNT_SENT_FOLDER ->
+                            saveFolder { account, newValue -> account.sentFolderName = newValue }
+                        RESTRICTION_ACCOUNT_SPAM_FOLDER ->
+                            saveFolder { account, newValue -> account.spamFolderName = newValue }
+                        RESTRICTION_ACCOUNT_TRASH_FOLDER ->
+                            saveFolder { account, newValue -> account.trashFolderName = newValue }
+                    }
+                }
+            }.onFailure { Timber.e(it) }
         }
     }
 
@@ -409,11 +512,17 @@ class ConfiguredSettingsUpdater(
         updateAccountString(
             restrictions,
             entry,
+            accepted = { newValue ->
+                val acceptedValues = k9.resources.getStringArray(
+                    R.array.remote_search_num_results_values
+                )
+                acceptedValues.contains(newValue)
+            }
         ) { account, newValue ->
-            account.remoteSearchNumResults = try {
-                newValue.toInt()
+            try {
+                newValue?.let { account.remoteSearchNumResults = newValue.toInt() }
             } catch (nfe: NumberFormatException) {
-                entry.selectedString.toInt()
+                Timber.e(nfe)
             }
         }
     }
@@ -439,11 +548,27 @@ class ConfiguredSettingsUpdater(
     private inline fun updateString(
         restrictions: Bundle?,
         entry: RestrictionEntry,
-        crossinline block: (newValue: String) -> Unit
+        crossinline default: () -> String? = { entry.selectedString },
+        crossinline accepted: (String?) -> Boolean = { true },
+        crossinline block: (newValue: String?) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = getStringOrDefault(restrictions, entry)
-            if (newValue.isNotBlank()) {
+            val newValue = restrictions?.getString(entry.key) ?: default()
+            if (accepted(newValue)) {
+                block(newValue)
+            }
+        }.onFailure { Timber.e(it) }
+    }
+
+    private inline fun updateInt(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+        crossinline accepted: (Int) -> Boolean = { true },
+        crossinline block: (newValue: Int) -> Unit
+    ) {
+        kotlin.runCatching {
+            val newValue = getIntOrDefault(restrictions, entry)
+            if (accepted(newValue)) {
                 block(newValue)
             }
         }.onFailure { Timber.e(it) }
@@ -452,12 +577,14 @@ class ConfiguredSettingsUpdater(
     private inline fun updateAccountString(
         restrictions: Bundle?,
         entry: RestrictionEntry,
-        crossinline block: (account: Account, newValue: String) -> Unit
+        crossinline default: (Account) -> String? = { entry.selectedString },
+        crossinline accepted: (String?) -> Boolean = { true },
+        crossinline block: (account: Account, newValue: String?) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = getStringOrDefault(restrictions, entry)
-            if (newValue.isNotBlank()) {
-                preferences.accounts?.forEach { account ->
+            preferences.accounts.forEach { account ->
+                val newValue = restrictions?.getString(entry.key) ?: default(account)
+                if (accepted(newValue)) {
                     block(account, newValue)
                 }
             }
@@ -470,9 +597,8 @@ class ConfiguredSettingsUpdater(
         crossinline block: (account: Account, newValue: Boolean) -> Unit
     ) {
         kotlin.runCatching {
-            val newValue = restrictions?.getBoolean(entry.key, entry.selectedState)
-                ?: entry.selectedState
-            preferences.accounts?.forEach { account ->
+            val newValue = getBooleanOrDefault(restrictions, entry)
+            preferences.accounts.forEach { account ->
                 block(account, newValue)
             }
         }.onFailure { Timber.e(it) }
@@ -490,14 +616,6 @@ class ConfiguredSettingsUpdater(
         entry: RestrictionEntry,
     ): Int {
         return restrictions?.getInt(entry.key, entry.intValue) ?: entry.intValue
-    }
-
-    private fun getStringOrDefault(
-        restrictions: Bundle?,
-        entry: RestrictionEntry,
-    ): String {
-        val provided = restrictions?.getString(entry.key)
-        return if (!provided.isNullOrBlank()) provided else entry.selectedString
     }
 
     companion object {
