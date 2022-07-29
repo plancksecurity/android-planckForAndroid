@@ -5,7 +5,6 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.DispatcherProvider
-import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +12,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
-import security.pEp.network.UrlChecker
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -52,16 +50,18 @@ class ProvisioningManager @Inject constructor(
     }
 
     private suspend fun performProvisioningIfNeeded(): Result<Unit> {
-        return if (!BuildConfig.IS_ENTERPRISE) {
-            finalizeSetup()
-        } else {
-            configurationManagerFactory.getInstance(k9).loadConfigurationsSuspend(
-                true
-            ).flatMapSuspend {
-                if (!systemFileLocator.keysDbFile.exists()) {
+        return when {
+            !BuildConfig.IS_ENTERPRISE || systemFileLocator.keysDbFile.exists() -> {
+                finalizeSetup()
+            }
+            !isDeviceOnline() -> {
+                Result.failure(ProvisioningFailedException("Device is offline"))
+            }
+            else -> {
+                configurationManagerFactory.getInstance(k9).loadConfigurationsSuspend(
+                    true
+                ).flatMapSuspend {
                     performProvisioningAfterChecks()
-                } else {
-                    finalizeSetup()
                 }
             }
         }
@@ -74,9 +74,6 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun performChecks(): Result<Unit> = when {
-        !isDeviceOnline() -> {
-            Result.failure(ProvisioningFailedException("Device is offline"))
-        }
         areProvisionedMailSettingsInvalid() -> {
             Result.failure(
                 ProvisioningFailedException(
