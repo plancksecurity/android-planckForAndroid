@@ -531,8 +531,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsManagerContrac
                 bundleOf(
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to
                             BuildConfig.PEP_TEST_EMAIL_SERVER,
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to 993,
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to "SSL/TLS",
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to
+                            DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to
+                            DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to
                             BuildConfig.PEP_TEST_EMAIL_ADDRESS
                 )
@@ -542,8 +544,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsManagerContrac
                 bundleOf(
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to
                             BuildConfig.PEP_TEST_EMAIL_SERVER,
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to 587,
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to "STARTTLS",
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to
+                            DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to
+                            DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to
                             BuildConfig.PEP_TEST_EMAIL_ADDRESS
                 )
