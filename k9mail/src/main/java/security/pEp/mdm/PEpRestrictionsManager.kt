@@ -3,8 +3,9 @@ package security.pEp.mdm
 import android.content.RestrictionEntry
 import android.content.RestrictionsManager
 import android.os.Bundle
+import javax.inject.Inject
 
-class PEpRestrictionsManager(
+class PEpRestrictionsManager @Inject constructor(
     private val restrictionsManager: RestrictionsManager,
     private val packageName: String,
 ): RestrictionsManagerContract {

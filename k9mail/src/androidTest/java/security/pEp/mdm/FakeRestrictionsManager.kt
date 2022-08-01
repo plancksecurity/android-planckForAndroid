@@ -14,8 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Field
+import javax.inject.Inject
 
-class FakeRestrictionsManager : RestrictionsManagerContract {
+class FakeRestrictionsManager @Inject constructor() : RestrictionsManagerContract {
     override val applicationRestrictions: Bundle = getProvisioningRestrictions()
     override val manifestRestrictions: List<RestrictionEntry> = getDefaultManifestRestrictions()
 
