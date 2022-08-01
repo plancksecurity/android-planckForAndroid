@@ -49,10 +49,8 @@ import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.infrastructure.modules.RestrictionsManagerModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
-import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.network.ConnectionMonitor;
@@ -1845,7 +1843,6 @@ public class K9 extends MultiDexApplication {
     protected ApplicationComponent createApplicationComponent() {
         return DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
-                .restrictionsManagerModule(new RestrictionsManagerModule(this))
                 .build();
     }
 

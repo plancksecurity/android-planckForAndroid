@@ -2,21 +2,38 @@ package com.fsck.k9.pEp.infrastructure.modules
 
 import android.content.Context
 import android.content.RestrictionsManager
-import com.fsck.k9.K9
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import security.pEp.mdm.PEpRestrictionsManager
 import security.pEp.mdm.RestrictionsManagerContract
+import javax.inject.Named
 
-
+@Suppress("unused")
 @Module
-class RestrictionsManagerModule(private val application: K9) {
+interface RestrictionsManagerModule {
 
-    @Provides
-    fun provideRestrictionsManager(): RestrictionsManagerContract {
-        return PEpRestrictionsManager(
-            application.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager,
-            application.packageName
-        )
+    @Binds
+    fun bindsRestrictionsManager(
+        pEpRestrictionsManager: PEpRestrictionsManager
+    ): RestrictionsManagerContract
+
+    @Module
+    companion object {
+        @Provides
+        @JvmStatic
+        fun provideSystemRestrictionsManager(
+            @Named("AppContext") application: Context
+        ): RestrictionsManager {
+            return application.getSystemService(Context.RESTRICTIONS_SERVICE) as RestrictionsManager
+        }
+
+        @Provides
+        @JvmStatic
+        fun providePackageName(
+            @Named("AppContext") application: Context
+        ): String {
+            return application.packageName
+        }
     }
 }

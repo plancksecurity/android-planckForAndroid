@@ -1,17 +1,18 @@
 package com.fsck.k9.pEp.infrastructure.modules
 
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import security.pEp.mdm.FakeRestrictionsManager
 import security.pEp.mdm.RestrictionsManagerContract
 import javax.inject.Singleton
 
+@Suppress("unused")
 @Module
-class TestRestrictionsManagerModule {
+interface TestRestrictionsManagerModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRestrictionsManager(): RestrictionsManagerContract {
-        return FakeRestrictionsManager()
-    }
+    fun bindsRestrictionsManager(
+        fakeRestrictionsManager: FakeRestrictionsManager
+    ): RestrictionsManagerContract
 }
