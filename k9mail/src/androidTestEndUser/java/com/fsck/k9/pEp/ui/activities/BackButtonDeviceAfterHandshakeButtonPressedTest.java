@@ -38,9 +38,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest extends BaseAndroid
         testUtils.clickFirstMessage();
         testUtils.clickStatus();
         TestUtils.waitForIdle();
-        if (K9.isUsingTrustwords()) {
-            onView(withId(R.id.confirmHandshake)).perform(click());
-        }
+        onView(withId(R.id.confirmHandshake)).perform(click());
         testUtils.pressBack();
     }
 
