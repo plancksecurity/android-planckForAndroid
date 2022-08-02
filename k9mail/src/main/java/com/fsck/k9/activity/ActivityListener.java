@@ -53,28 +53,6 @@ public class ActivityListener extends SimpleMessagingListener {
                 context.getString(R.string.folder_progress, mFolderCompleted, mFolderTotal) : "");
 
         if (mLoadingFolderName != null || mLoadingHeaderFolderName != null) {
-            String displayName = null;
-            if (mLoadingHeaderFolderName != null) {
-                displayName = mLoadingHeaderFolderName;
-            } else if (mLoadingFolderName != null) {
-                displayName = mLoadingFolderName;
-            }
-            if ((mAccount != null) && (mAccount.getInboxFolderName() != null)
-                    && mAccount.getInboxFolderName().equalsIgnoreCase(displayName)) {
-                displayName = context.getString(R.string.special_mailbox_name_inbox);
-            } else if ((mAccount != null) && (mAccount.getOutboxFolderName() != null)
-                    && mAccount.getOutboxFolderName().equals(displayName)) {
-                displayName = context.getString(R.string.special_mailbox_name_outbox);
-            }
-
-            /* P4A-695 Test if is good enough or we need another approach.
-            if (mLoadingHeaderFolderName != null) {
-                return context.getString(R.string.status_loading_account_folder_headers,
-                        mLoadingAccountDescription, displayName, progress);
-            } else {
-                return context.getString(R.string.status_loading_account_folder,
-                        mLoadingAccountDescription, displayName, progress);
-            } */
             return context.getString(R.string.status_syncing);
         }
 
