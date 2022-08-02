@@ -626,8 +626,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
             provider.outgoingUsernameTemplate = provisionSettings.getOutgoing().getUserName();
             return provider;
         } catch (Exception ex) {
-            // block everything! -> Display the error dialog.
-            Log.e(K9.LOG_TAG, "Error while trying to parse provisioned provider.", ex);
+            Timber.e(
+                    ex,
+                    "%s: Error while trying to parse provisioned provider.",
+                    K9.LOG_TAG
+            );
         }
         return null;
     }
