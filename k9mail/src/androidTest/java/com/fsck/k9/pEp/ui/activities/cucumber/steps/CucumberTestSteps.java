@@ -128,18 +128,25 @@ public class CucumberTestSteps {
     @Before
     public void setup() {
         scenario = ActivityScenario.launch(SplashActivity.class);
-        Intents.init();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!BuildConfig.IS_ENTERPRISE) {
+            Intents.init();
+        }
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
             testUtils = new TestUtils(device, instrumentation);
-            testUtils.increaseTimeoutWait();
+            //testUtils.increaseTimeoutWait();
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[9];
             resources = getApplicationContext().getResources();
             //startTimer(2000);
-            testUtils.testReset = true;
+            //testUtils.testReset = true;
         }
     }
 
@@ -150,30 +157,44 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
-        if (exists(onView(withId(R.id.actionbar_title_first)))) {
-            while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
-                testUtils.pressBack();
-                waitForIdle();
-            }
-        }
-        if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
-            testUtils.selectFromMenu(R.string.action_settings);
-            waitForIdle();
-        }
-        if (!exists(onView(withId(R.id.account_email)))) {
-            while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                waitForIdle();
-                if (exists(onView(withText(R.string.discard_action)))) {
-                    waitForIdle();
-                    onView(withText(R.string.discard_action)).perform(click());
-                }
-                if (!BuildConfig.IS_ENTERPRISE) {
+        try {
+            if (exists(onView(withId(R.id.actionbar_title_first)))) {
+                while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
                     testUtils.pressBack();
+                    waitForIdle();
                 }
+            }
+        } catch (Exception exception) {
+            Timber.i("Action bar doesn't exist");
+        }
+        try {
+            if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
+                testUtils.selectFromMenu(R.string.action_settings);
                 waitForIdle();
             }
+        } catch (Exception exception) {
+            Timber.i("App could be closed");
         }
-        testUtils.clearAllRecentApps();
+        try {
+            if (!exists(onView(withId(R.id.account_email)))) {
+                while (!exists(onView(withId(R.id.available_accounts_title)))) {
+                    waitForIdle();
+                    if (exists(onView(withText(R.string.discard_action)))) {
+                        waitForIdle();
+                        onView(withText(R.string.discard_action)).perform(click());
+                    }
+                    if (!BuildConfig.IS_ENTERPRISE) {
+                        testUtils.pressBack();
+                    }
+                    waitForIdle();
+                }
+            }
+        } catch (Exception exception) {
+            Timber.i("App could be closed");
+        }
+        if (!BuildConfig.IS_ENTERPRISE) {
+            testUtils.clearAllRecentApps();
+        }
     }
 
     @When(value = "^I created an account$")
@@ -204,7 +225,7 @@ public class CucumberTestSteps {
         waitForIdle();
         if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list))) && !exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount();
-        } else if (exists(onView(withId(R.id.add_account_container)))) {
+        } else if (viewIsDisplayed(onView(withId(R.id.add_account_container)))) {
             if (exists(onView(withId(R.id.accounts_list)))) {
                 int[] accounts = new int[1];
                 try {
@@ -241,7 +262,7 @@ public class CucumberTestSteps {
     }
 
         @When("^I enter (\\S+) in the (\\S+) field")
-        public void I_enter_text_in_field(String account, String field) {
+        public void I_enter_text_in_field(String text, String field) {
         waitForIdle();
         int viewID = 0;
         String resourceID = "";
@@ -259,15 +280,15 @@ public class CucumberTestSteps {
                 resourceID = "to";
                 break;
             case "messageSubject":
-                I_fill_subject_field(account);
+                I_fill_subject_field(text);
                 return;
             case "messageBody":
-                I_fill_body_field(account);
+                I_fill_body_field(text);
                 return;
             default:
                 break;
         }
-        account = accountAddress(account);
+        text = accountAddress(text);
         if (viewIsDisplayed(R.id.recipient_expander)) {
             onView(withId(R.id.recipient_expander)).perform(click());
         }
@@ -279,32 +300,10 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        waitForIdle();
-        if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
-            try {
-                testUtils.typeTextInField(account, viewID, resourceID);
-            } catch (Exception ex) {
-                Timber.i("Couldn't fill " + resourceID + ": " + ex.getMessage());
-            }
-        } else {
-            boolean filled = false;
-            while (!filled) {
-                try {
-                    waitForIdle();
-                    onView(withId(viewID)).check(matches(isDisplayed()));
-                    onView(withId(viewID)).perform(closeSoftKeyboard());
-                    waitForIdle();
-                    testUtils.typeTextInField(account, viewID, resourceID);
-                    onView(withId(viewID)).perform(closeSoftKeyboard());
-                    filled = true;
-                } catch (Exception ex) {
-                    Timber.i("Couldn't find view: " + ex.getMessage());
-                }
-            }
-        }
+        testUtils.typeTextInField(text, viewID, resourceID);
         testUtils.scrollDownToSubject();
-            testUtils.typeTextToForceRatingCalculation(R.id.subject);
-            onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         if (field.equals("BCC")) {
             try {
                 BySelector selector;
@@ -3029,7 +3028,7 @@ public class CucumberTestSteps {
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
-                testUtils.removeTextFromTextView("to");
+                I_remove_address_clicking_X(1);
                 break;
             case "myself":
                 cucumberMessageTo = testUtils.getAccountAddress(accountSelected);
