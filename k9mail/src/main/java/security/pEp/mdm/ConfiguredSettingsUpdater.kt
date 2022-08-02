@@ -20,6 +20,10 @@ import security.pEp.provisioning.ProvisioningSettings
 import security.pEp.provisioning.SimpleMailSettings
 import timber.log.Timber
 
+private const val CONNECTION_SECURITY_NONE = "NONE"
+private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
+private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
+
 class ConfiguredSettingsUpdater(
     private val k9: K9,
     private val preferences: Preferences,
@@ -616,11 +620,5 @@ class ConfiguredSettingsUpdater(
         entry: RestrictionEntry,
     ): Int {
         return restrictions?.getInt(entry.key, entry.intValue) ?: entry.intValue
-    }
-
-    companion object {
-        private const val CONNECTION_SECURITY_NONE = "NONE"
-        private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
-        private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
     }
 }
