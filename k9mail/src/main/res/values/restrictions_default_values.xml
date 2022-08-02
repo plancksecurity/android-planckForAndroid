@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bool restriction -->
+    <bool name="default_enable_privacy_protection">true</bool>
+    <bool name="default_use_trustwords">false</bool>
+    <bool name="default_unsecure_delivery_warning">true</bool>
+    <bool name="default_use_pep_sync_folder">true</bool>
+    <bool name="default_quoted_text_shown">true</bool>
+    <bool name="default_debug_logging">false</bool>
+    <bool name="default_remote_search_enabled">true</bool>
+    <bool name="default_pep_save_encrypted">true</bool>
+    <bool name="default_pep_enable_sync_account">true</bool>
+    <bool name="default_use_signature">true</bool>
+    <bool name="default_signature_before_quoted_message">false</bool>
+
+    <!-- Integer restriction -->
+    <integer name="mail_settings_incoming_port_default">993</integer>
+    <integer name="mail_settings_outgoing_port_default">587</integer>
+
+    <!-- Choice restriction -->
+    <string name="default_max_push_folders" translatable="false">25</string>
+    <string name="default_account_display_count" translatable="false">250</string>
+    <string name="default_account_remote_search_num_results" translatable="false">50</string>
+</resources>

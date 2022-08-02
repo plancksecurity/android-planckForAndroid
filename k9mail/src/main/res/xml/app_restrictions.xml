@@ -23,7 +23,7 @@
                 android:defaultValue=""
                 android:key="fingerprint"
                 android:restrictionType="string"
-                android:title="@string/fingerprint"/>
+                android:title="@string/fingerprint_title"/>
 
         </restriction>
     </restriction>
