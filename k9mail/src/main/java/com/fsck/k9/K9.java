@@ -1938,12 +1938,16 @@ public class K9 extends MultiDexApplication {
                     if (allowpEpSyncNewDevices) {
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                         needsFastPoll = true;
+                    } else {
+                        pEpSyncProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyInitFormGroup:
                     if (allowpEpSyncNewDevices) {
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                         needsFastPoll = true;
+                    } else {
+                        pEpSyncProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyTimeout:
