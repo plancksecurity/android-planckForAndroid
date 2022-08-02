@@ -266,6 +266,9 @@ public class TestUtils {
     }
 
     private void fillAccountAddress(String accountAddress) {
+        if (!getTextFromView(onView(withId(R.id.account_email))).equals(accountAddress)) {
+            removeTextFromTextView(R.id.account_email);
+        }
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 waitForIdle();
