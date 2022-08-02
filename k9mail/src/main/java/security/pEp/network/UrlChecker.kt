@@ -13,7 +13,7 @@ class UrlChecker @Inject constructor() {
         return kotlin.runCatching {
             val url = URL(urlString)
             val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-            connection.responseCode == 200
+            connection.responseCode == HttpURLConnection.HTTP_OK
         }.getOrDefault(false)
     }
 }
