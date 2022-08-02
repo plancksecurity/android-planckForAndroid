@@ -20,89 +20,72 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
     override val applicationRestrictions: Bundle = getProvisioningRestrictions()
     override val manifestRestrictions: List<RestrictionEntry> = getDefaultManifestRestrictions()
 
-    fun updateTestRestrictions(activity: Activity) {
-        val activityClass: Class<*>? =
-            when (activity) {
-                is K9Activity -> K9Activity::class.java
-                is K9ListActivity -> K9ListActivity::class.java
-                else -> null
-            }
-        if (activityClass != null) {
-            val commonField: Field = activityClass.getDeclaredField("mBase")
-            commonField.isAccessible = true
-            val common = commonField.get(activity) as K9ActivityCommon
-            val configurationManagerField: Field =
-                K9ActivityCommon::class.java.getDeclaredField("configurationManager")
-            configurationManagerField.isAccessible = true
-            val configurationManager = configurationManagerField.get(common) as ConfigurationManager
-            runBlocking {
-                configurationManager.loadConfigurationsSuspend().onSuccess {
-                    if (activity is RestrictionsListener) {
-                        withContext(Dispatchers.Main) {
-                            activity.updatedRestrictions()
-                        }
+    fun updateTestRestrictions(activity: Activity) = when (activity) {
+        is K9Activity -> K9Activity::class.java
+        is K9ListActivity -> K9ListActivity::class.java
+        else -> null
+    }?.let { activityClass ->
+        val commonField: Field = activityClass.getDeclaredField("mBase")
+        commonField.isAccessible = true
+        val common = commonField.get(activity) as K9ActivityCommon
+        val configurationManagerField: Field =
+            K9ActivityCommon::class.java.getDeclaredField("configurationManager")
+        configurationManagerField.isAccessible = true
+        val configurationManager = configurationManagerField.get(common) as ConfigurationManager
+        runBlocking {
+            configurationManager.loadConfigurationsSuspend().onSuccess {
+                if (activity is RestrictionsListener) {
+                    withContext(Dispatchers.Main) {
+                        activity.updatedRestrictions()
                     }
                 }
-            }.onFailure { throw it }
-        }
+            }
+        }.onFailure { throw it }
     }
 
     fun getManifestBoolean(key: String) = manifestRestrictions.first { it.key == key }.selectedState
 
     fun getBoolean(key: String): Boolean? = applicationRestrictions.getBooleanOrNull(key)
 
-    fun setBoolean(key: String, value: Boolean) {
-        applicationRestrictions.putBoolean(key, value)
-    }
+    fun setBoolean(key: String, value: Boolean) = applicationRestrictions.putBoolean(key, value)
 
     fun getManifestString(key: String) = manifestRestrictions.first { it.key == key }.selectedString
 
     fun getString(key: String): String? = applicationRestrictions.getString(key)
 
-    fun setString(key: String, value: String?) {
-        applicationRestrictions.putString(key, value)
-    }
+    fun setString(key: String, value: String?) = applicationRestrictions.putString(key, value)
 
     fun getBundle(key: String): Bundle? = applicationRestrictions.getBundle(key)
 
-    fun setBundle(key: String, value: Bundle?) {
-        applicationRestrictions.putBundle(key, value)
-    }
+    fun setBundle(key: String, value: Bundle?) = applicationRestrictions.putBundle(key, value)
 
     fun containsSetting(key: String): Boolean = applicationRestrictions.containsKey(key)
 
-    fun removeSetting(key: String) {
-        applicationRestrictions.remove(key)
-    }
+    fun removeSetting(key: String) = applicationRestrictions.remove(key)
 
-    fun clearSettings() {
-        applicationRestrictions.clear()
-    }
+    fun clearSettings() = applicationRestrictions.clear()
 
-    fun getManifestExtraKeys(): Set<String> {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    fun getManifestExtraKeys(): Set<String> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             manifestRestrictions.first {
                 it.key == RESTRICTION_PEP_EXTRA_KEYS
             }.restrictions.map { bundleRestriction ->
                 bundleRestriction.restrictions.first().selectedString
             }.toSet()
         } else emptySet()
-    }
 
-    fun getExtraKeys(): Set<String?>? {
-        return applicationRestrictions.getParcelableArray(RESTRICTION_PEP_EXTRA_KEYS)?.map {
-            (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT)
-        }?.toSet()
-    }
+    fun getExtraKeys(): Set<String?>? = applicationRestrictions.getParcelableArray(
+        RESTRICTION_PEP_EXTRA_KEYS
+    )?.map {
+        (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT)
+    }?.toSet()
 
-    fun setExtraKeys(keys: Set<String>) {
-        applicationRestrictions.putParcelableArray(
-            RESTRICTION_PEP_EXTRA_KEYS,
-            keys.map {
-                Bundle().apply { putString(RESTRICTION_PEP_FINGERPRINT, it) }
-            }.toTypedArray()
-        )
-    }
+    fun setExtraKeys(keys: Set<String>) = applicationRestrictions.putParcelableArray(
+        RESTRICTION_PEP_EXTRA_KEYS,
+        keys.map {
+            Bundle().apply { putString(RESTRICTION_PEP_FINGERPRINT, it) }
+        }.toTypedArray()
+    )
 
     fun getManifestCompositionSettings(): CompositionSettings = CompositionSettings(
         senderName = DEFAULT_ACCOUNT_COMPOSITION_SENDER_NAME,
@@ -111,49 +94,46 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         signatureBefore = DEFAULT_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
     )
 
-    fun getCompositionSettings(): CompositionSettings? {
-        val compositionBundle = applicationRestrictions.getBundle(
-            RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS
-        )
-        return compositionBundle?.let { bundle ->
-            with(bundle) {
-                CompositionSettings(
-                    senderName = getString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME),
-                    signature = getString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE),
-                    useSignature = getBooleanOrNull(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE),
-                    signatureBefore = getBooleanOrNull(
-                        RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE
-                    )
+    fun getCompositionSettings(): CompositionSettings? = applicationRestrictions.getBundle(
+        RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS
+    )?.let { bundle ->
+        with(bundle) {
+            CompositionSettings(
+                senderName = getString(RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME),
+                signature = getString(RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE),
+                useSignature = getBooleanOrNull(RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE),
+                signatureBefore = getBooleanOrNull(
+                    RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE
                 )
-            }
+            )
         }
     }
 
-    fun setCompositionSettings(compositionSettings: CompositionSettings?) {
-        with(applicationRestrictions) {
-            if (compositionSettings == null) {
-                remove(RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS)
-            } else {
-                with(compositionSettings) {
-                    putBundle(
-                        RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
-                        Bundle().apply {
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, senderName
-                            )
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, signature
-                            )
-                            putBooleanOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, useSignature
-                            )
-                            putBooleanOrRemove(
-                                RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
-                                signatureBefore
-                            )
-                        }
-                    )
-                }
+    fun setCompositionSettings(compositionSettings: CompositionSettings?) = with(
+        applicationRestrictions
+    ) {
+        if (compositionSettings == null) {
+            remove(RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS)
+        } else {
+            with(compositionSettings) {
+                putBundle(
+                    RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
+                    Bundle().apply {
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME, senderName
+                        )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE, signature
+                        )
+                        putBooleanOrRemove(
+                            RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE, useSignature
+                        )
+                        putBooleanOrRemove(
+                            RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE,
+                            signatureBefore
+                        )
+                    }
+                )
             }
         }
     }
@@ -166,38 +146,35 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         trashFolder = DEFAULT_FOLDER,
     )
 
-    fun getDefaultFolders(): FolderSettings? {
-        val foldersBundle = applicationRestrictions.getBundle(RESTRICTION_ACCOUNT_DEFAULT_FOLDERS)
-        return foldersBundle?.let { bundle ->
-            with(bundle) {
-                FolderSettings(
-                    archiveFolder = getString(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER),
-                    draftsFolder = getString(RESTRICTION_ACCOUNT_DRAFTS_FOLDER),
-                    sentFolder = getString(RESTRICTION_ACCOUNT_SENT_FOLDER),
-                    spamFolder = getString(RESTRICTION_ACCOUNT_SPAM_FOLDER),
-                    trashFolder = getString(RESTRICTION_ACCOUNT_TRASH_FOLDER),
-                )
-            }
+    fun getDefaultFolders(): FolderSettings? = applicationRestrictions.getBundle(
+        RESTRICTION_ACCOUNT_DEFAULT_FOLDERS
+    )?.let { bundle ->
+        with(bundle) {
+            FolderSettings(
+                archiveFolder = getString(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER),
+                draftsFolder = getString(RESTRICTION_ACCOUNT_DRAFTS_FOLDER),
+                sentFolder = getString(RESTRICTION_ACCOUNT_SENT_FOLDER),
+                spamFolder = getString(RESTRICTION_ACCOUNT_SPAM_FOLDER),
+                trashFolder = getString(RESTRICTION_ACCOUNT_TRASH_FOLDER),
+            )
         }
     }
 
-    fun setDefaultFolders(folderSettings: FolderSettings?) {
-        with(applicationRestrictions) {
-            if (folderSettings == null) {
-                remove(RESTRICTION_ACCOUNT_DEFAULT_FOLDERS)
-            } else {
-                with(folderSettings) {
-                    putBundle(
-                        RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
-                        Bundle().apply {
-                            putStringOrRemove(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER, archiveFolder)
-                            putStringOrRemove(RESTRICTION_ACCOUNT_DRAFTS_FOLDER, draftsFolder)
-                            putStringOrRemove(RESTRICTION_ACCOUNT_SENT_FOLDER, sentFolder)
-                            putStringOrRemove(RESTRICTION_ACCOUNT_SPAM_FOLDER, spamFolder)
-                            putStringOrRemove(RESTRICTION_ACCOUNT_TRASH_FOLDER, trashFolder)
-                        }
-                    )
-                }
+    fun setDefaultFolders(folderSettings: FolderSettings?) = with(applicationRestrictions) {
+        if (folderSettings == null) {
+            remove(RESTRICTION_ACCOUNT_DEFAULT_FOLDERS)
+        } else {
+            with(folderSettings) {
+                putBundle(
+                    RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
+                    Bundle().apply {
+                        putStringOrRemove(RESTRICTION_ACCOUNT_ARCHIVE_FOLDER, archiveFolder)
+                        putStringOrRemove(RESTRICTION_ACCOUNT_DRAFTS_FOLDER, draftsFolder)
+                        putStringOrRemove(RESTRICTION_ACCOUNT_SENT_FOLDER, sentFolder)
+                        putStringOrRemove(RESTRICTION_ACCOUNT_SPAM_FOLDER, spamFolder)
+                        putStringOrRemove(RESTRICTION_ACCOUNT_TRASH_FOLDER, trashFolder)
+                    }
+                )
             }
         }
     }
@@ -218,163 +195,154 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         )
     )
 
-    fun getMailSettings(): MailSettings? {
-        val mailBundle = applicationRestrictions.getBundle(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-        return mailBundle?.let { bundle ->
-            val incoming = mailBundle.getBundle(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS)
-            val outgoing = mailBundle.getBundle(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS)
-            with(bundle) {
-                MailSettings(
-                    email = getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS),
-                    incoming = incoming?.let {
-                        with(incoming) {
-                            MailIncomingOutgoingSettings(
-                                server = getString(
-                                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER
-                                ),
-                                securityType = getString(
-                                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE
-                                ),
-                                port = getIntOrNull(
-                                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT
-                                ),
-                                userName = getString(
-                                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME
-                                )
+    fun getMailSettings(): MailSettings? = applicationRestrictions.getBundle(
+        RESTRICTION_ACCOUNT_MAIL_SETTINGS
+    )?.let { bundle ->
+        with(bundle) {
+            val incoming = getBundle(RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS)
+            val outgoing = getBundle(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS)
+            MailSettings(
+                email = getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS),
+                incoming = incoming?.let {
+                    with(incoming) {
+                        MailIncomingOutgoingSettings(
+                            server = getString(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER
+                            ),
+                            securityType = getString(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE
+                            ),
+                            port = getIntOrNull(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT
+                            ),
+                            userName = getString(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME
                             )
-                        }
-                    },
-                    outgoing = outgoing?.let {
-                        with(outgoing) {
-                            MailIncomingOutgoingSettings(
-                                server = getString(
-                                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER
-                                ),
-                                securityType = getString(
-                                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE
-                                ),
-                                port = getIntOrNull(
-                                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT
-                                ),
-                                userName = getString(
-                                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME
-                                )
-                            )
-                        }
+                        )
                     }
-                )
-            }
+                },
+                outgoing = outgoing?.let {
+                    with(outgoing) {
+                        MailIncomingOutgoingSettings(
+                            server = getString(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER
+                            ),
+                            securityType = getString(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE
+                            ),
+                            port = getIntOrNull(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT
+                            ),
+                            userName = getString(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME
+                            )
+                        )
+                    }
+                }
+            )
         }
     }
 
-    fun setMailSettings(mailSettings: MailSettings?) {
-        with(applicationRestrictions) {
-            if (mailSettings == null) {
-                remove(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
-            } else {
-                val incomingBundle = mailSettings.incoming?.let {
-                    Bundle().apply {
-                        with(mailSettings.incoming) {
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                                server
-                            )
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                                securityType
-                            )
-                            putIntOrRemove(
-                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                                port
-                            )
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
-                                userName
-                            )
-                        }
+    fun setMailSettings(mailSettings: MailSettings?) = with(applicationRestrictions) {
+        if (mailSettings == null) {
+            remove(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
+        } else {
+            val incomingBundle = mailSettings.incoming?.let {
+                Bundle().apply {
+                    with(mailSettings.incoming) {
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
+                            server
+                        )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
+                            securityType
+                        )
+                        putIntOrRemove(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                            port
+                        )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
+                            userName
+                        )
                     }
                 }
-                val outgoingBundle = mailSettings.outgoing?.let {
-                    Bundle().apply {
-                        with(mailSettings.outgoing) {
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
-                                server
-                            )
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
-                                securityType
-                            )
-                            putIntOrRemove(
-                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-                                port
-                            )
-                            putStringOrRemove(
-                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
-                                userName
-                            )
-                        }
-                    }
-                }
-                putBundle(
-                    RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-                    Bundle().apply {
-                        incomingBundle?.let {
-                            putBundle(
-                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                                it
-                            )
-                        }
-                        outgoingBundle?.let {
-                            putBundle(
-                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                                it
-                            )
-                        }
-                    }
-                )
             }
+            val outgoingBundle = mailSettings.outgoing?.let {
+                Bundle().apply {
+                    with(mailSettings.outgoing) {
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
+                            server
+                        )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
+                            securityType
+                        )
+                        putIntOrRemove(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
+                            port
+                        )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
+                            userName
+                        )
+                    }
+                }
+            }
+            putBundle(
+                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                Bundle().apply {
+                    incomingBundle?.let {
+                        putBundle(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                            it
+                        )
+                    }
+                    outgoingBundle?.let {
+                        putBundle(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                            it
+                        )
+                    }
+                }
+            )
         }
     }
 
     private fun Bundle.getIntOrNull(key: String): Int? = get(key) as? Int
     private fun Bundle.getBooleanOrNull(key: String): Boolean? = get(key) as? Boolean
-    private fun Bundle.putBooleanOrRemove(key: String, value: Boolean?) {
-        if (value == null) {
-            remove(key)
-        } else {
-            putBoolean(key, value)
-        }
+    private fun Bundle.putBooleanOrRemove(key: String, value: Boolean?) = if (value == null) {
+        remove(key)
+    } else {
+        putBoolean(key, value)
     }
 
-    private fun Bundle.putIntOrRemove(key: String, value: Int?) {
+    private fun Bundle.putIntOrRemove(key: String, value: Int?) =
         if (value == null) {
             remove(key)
         } else {
             putInt(key, value)
         }
-    }
 
-    private fun Bundle.putStringOrRemove(key: String, value: String?) {
+    private fun Bundle.putStringOrRemove(key: String, value: String?) =
         if (value == null) {
             remove(key)
         } else {
             putString(key, value)
         }
-    }
 
     companion object {
-        fun getProvisioningRestrictions(): Bundle {
-            return Bundle().apply {
+        fun getProvisioningRestrictions(): Bundle = Bundle().apply {
                 putBundle(
                     RESTRICTION_ACCOUNT_MAIL_SETTINGS,
                     getMailSettingsBundle()
                 )
             }
-        }
 
-        fun getDefaultManifestRestrictions(): List<RestrictionEntry> {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        fun getDefaultManifestRestrictions(): List<RestrictionEntry> =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 listOf(
                     RestrictionEntry(
                         RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
@@ -419,7 +387,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     getMailSettingsRestrictionEntry()
                 )
             } else emptyList()
-        }
 
         @RequiresApi(Build.VERSION_CODES.M)
         private fun getFoldersRestrictionEntry(): RestrictionEntry =
