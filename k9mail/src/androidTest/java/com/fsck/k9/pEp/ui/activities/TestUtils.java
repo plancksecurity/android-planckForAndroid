@@ -1514,7 +1514,58 @@ public class TestUtils {
         waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
         waitForIdle();
-        onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
+        if (text.equals("empty") && resourceID.equals("R.id.to")) {
+            while (!getTextFromView(onView(withId(field))).equals("")) {
+                removeAddressClickingX(1);
+            }
+        } else {
+            onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
+        }
+    }
+
+    public void removeAddressClickingX (int address) {
+        BySelector selector = By.clazz("android.widget.MultiAutoCompleteTextView");
+        waitForIdle();
+        clickView(R.id.to_label);
+        waitForIdle();
+        int boxBottom = 0;
+        boolean clicked = false;
+        while (!clicked) {
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                boxBottom = multiTextView.getVisibleBounds().bottom;
+                int rightX = multiTextView.getVisibleBounds().right;
+                int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                device.click(rightX, centerY);
+            }
+            waitForIdle();
+            clickView(R.id.to_label);
+            waitForIdle();
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
+                    clicked = true;
+                }
+            }
+        }
     }
 
     public void checkOwnKey(String mainKeyID, boolean isTheSame) {

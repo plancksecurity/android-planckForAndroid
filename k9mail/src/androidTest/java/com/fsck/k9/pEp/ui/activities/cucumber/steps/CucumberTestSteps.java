@@ -538,48 +538,7 @@ public class CucumberTestSteps {
 
     @When("^I remove the (\\d+) address clicking X button")
     public void I_remove_address_clicking_X(int address) {
-        BySelector selector = By.clazz("android.widget.MultiAutoCompleteTextView");
-        waitForIdle();
-        testUtils.clickView(R.id.to_label);
-        waitForIdle();
-        int boxBottom = 0;
-        boolean clicked = false;
-        while (!clicked) {
-            for (UiObject2 multiTextView : device.findObjects(selector)) {
-                boxBottom = multiTextView.getVisibleBounds().bottom;
-                int rightX = multiTextView.getVisibleBounds().right;
-                int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
-                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                device.click(rightX, centerY);
-            }
-            waitForIdle();
-            testUtils.clickView(R.id.to_label);
-            waitForIdle();
-            for (UiObject2 multiTextView : device.findObjects(selector)) {
-                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
-                    clicked = true;
-                }
-            }
-        }
+        testUtils.removeAddressClickingX(address);
     }
 
     @When("^I compare (\\S+) from json file with (\\S+)")
