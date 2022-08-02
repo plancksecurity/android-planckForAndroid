@@ -7,7 +7,7 @@ import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.DispatcherProvider;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
-import com.fsck.k9.pEp.infrastructure.modules.RestrictionsManagerModule;
+import com.fsck.k9.pEp.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
@@ -24,13 +24,13 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import security.pEp.mdm.ConfigurationManager;
-import security.pEp.mdm.RestrictionsManagerContract;
+import security.pEp.mdm.RestrictionsProvider;
 import security.pEp.provisioning.ProvisioningManager;
 import security.pEp.file.PEpSystemFileLocator;
 import security.pEp.provisioning.ProvisioningSettings;
 
 @Singleton
-@Component(modules = {ApplicationModule.class, RestrictionsManagerModule.class})
+@Component(modules = {ApplicationModule.class, RestrictionsProviderModule.class})
 public interface ApplicationComponent {
 
     void inject(K9Activity k9Activity);
@@ -55,7 +55,7 @@ public interface ApplicationComponent {
     PEpSystemFileLocator pEpSystemFileLocator();
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
-    RestrictionsManagerContract restrictionsManagerContract();
+    RestrictionsProvider restrictionsProvider();
 
     @Named("AppContext")
     Context getContext();

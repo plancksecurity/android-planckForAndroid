@@ -5,10 +5,10 @@ import android.content.RestrictionsManager
 import android.os.Bundle
 import javax.inject.Inject
 
-class PEpRestrictionsManager @Inject constructor(
+class PEpRestrictions @Inject constructor(
     private val restrictionsManager: RestrictionsManager,
     private val packageName: String,
-): RestrictionsManagerContract {
+): RestrictionsProvider {
     override val applicationRestrictions: Bundle
         get() = restrictionsManager.applicationRestrictions
     override val manifestRestrictions: List<RestrictionEntry>

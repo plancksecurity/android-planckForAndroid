@@ -13,7 +13,7 @@ import javax.inject.Inject
 class ConfigurationManager(
     private val context: Context,
     private val preferences: Preferences,
-    private val restrictionsManager: RestrictionsManagerContract
+    private val restrictionsManager: RestrictionsProvider
 ) {
 
     private var listener: RestrictionsListener? = null
@@ -105,7 +105,7 @@ class ConfigurationManager(
 
     class Factory @Inject constructor(
         private val preferences: Preferences,
-        private val restrictionsManager: RestrictionsManagerContract,
+        private val restrictionsManager: RestrictionsProvider,
     ) {
         fun create(
             context: Context,

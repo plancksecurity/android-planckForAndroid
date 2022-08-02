@@ -5,18 +5,18 @@ import android.content.RestrictionsManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import security.pEp.mdm.PEpRestrictionsManager
-import security.pEp.mdm.RestrictionsManagerContract
+import security.pEp.mdm.PEpRestrictions
+import security.pEp.mdm.RestrictionsProvider
 import javax.inject.Named
 
 @Suppress("unused")
 @Module
-interface RestrictionsManagerModule {
+interface RestrictionsProviderModule {
 
     @Binds
-    fun bindsRestrictionsManager(
-        pEpRestrictionsManager: PEpRestrictionsManager
-    ): RestrictionsManagerContract
+    fun bindsRestrictionsProvider(
+        pEpRestrictions: PEpRestrictions
+    ): RestrictionsProvider
 
     @Module
     companion object {
