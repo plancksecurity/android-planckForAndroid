@@ -640,7 +640,6 @@ public class TestUtils {
                 totalAccounts = 1;
             }
         }
-
     }
 
     public void syncDevices() {
@@ -1327,7 +1326,7 @@ public class TestUtils {
             try {
                 waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
-                    removeTextFromTextView("account_server");
+                    removeTextFromTextView(R.id.account_server);
                 }
                 waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
@@ -1363,7 +1362,7 @@ public class TestUtils {
     private void setupPort(String port) {
         if (port != null && !getTextFromView(onView(withId(R.id.account_port))).equals(port)) {
             waitForIdle();
-            removeTextFromTextView("account_port");
+            removeTextFromTextView(R.id.account_port);
             waitForIdle();
             onView(withId(R.id.account_port)).perform(click());
             onView(withId(R.id.account_port)).perform(typeText(port), closeSoftKeyboard());
@@ -1381,7 +1380,7 @@ public class TestUtils {
             waitForIdle();
         }
         while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
-            removeTextFromTextView("account_server");
+            removeTextFromTextView(R.id.account_server);
         }
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
@@ -2087,12 +2086,17 @@ public class TestUtils {
     public void removeTextFromTextView(String viewId) {
         waitForIdle();
         int view = intToID(viewId);
+        removeTextFromTextView(view);
+    }
+
+    public void removeTextFromTextView(int view) {
+        waitForIdle();
         while (!exists(onView(withId(view)))) {
             waitForIdle();
         }
         onView(withId(view)).perform(closeSoftKeyboard());
         onView(withId(view)).perform(click());
-        clickTextView(viewId);
+        //clickTextView(viewId);
         while (!(hasValueEqualTo(onView(withId(view)), " ")
                 || hasValueEqualTo(onView(withId(view)), ""))) {
             try {
@@ -2103,7 +2107,7 @@ public class TestUtils {
                 onView(withId(view)).perform(click());
             } catch (Exception ex) {
                 pressBack();
-                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+                Timber.i("Cannot remove text from field " + view + ": " + ex.getMessage());
             }
         }
     }
@@ -2123,7 +2127,7 @@ public class TestUtils {
         }
     }
 
-    private void clickTextView (String viewId) {
+    public void clickTextView(String viewId) {
         while (true) {
             try {
                 UiObject2 list = device.findObject(By.res(APP_ID, viewId));
