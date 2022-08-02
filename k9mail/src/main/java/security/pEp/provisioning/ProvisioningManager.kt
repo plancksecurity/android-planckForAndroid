@@ -60,7 +60,7 @@ class ProvisioningManager @Inject constructor(
                 Result.failure(ProvisioningFailedException("Device is offline"))
             }
             else -> {
-                configurationManagerFactory.getInstance(k9).loadConfigurationsSuspend(
+                configurationManagerFactory.create(k9).loadConfigurationsSuspend(
                     true
                 ).flatMapSuspend {
                     performProvisioningAfterChecks()

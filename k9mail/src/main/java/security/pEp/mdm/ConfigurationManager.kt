@@ -107,7 +107,7 @@ class ConfigurationManager(
         private val preferences: Preferences,
         private val restrictionsManager: RestrictionsManagerContract,
     ) {
-        fun getInstance(
+        fun create(
             context: Context,
         ): ConfigurationManager = ConfigurationManager(context, preferences, restrictionsManager)
     }

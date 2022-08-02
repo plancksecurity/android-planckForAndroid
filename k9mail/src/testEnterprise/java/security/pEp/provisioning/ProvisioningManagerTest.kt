@@ -65,7 +65,7 @@ class ProvisioningManagerTest {
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
-        coEvery { configurationManagerFactory.getInstance(k9) }.returns(configurationManager)
+        coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
         coEvery { configurationManager.loadConfigurationsSuspend(true) }
             .returns(Result.success(Unit))
         mockkObject(PEpProviderImplKotlin)
