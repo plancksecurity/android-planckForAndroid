@@ -4,7 +4,6 @@ buildscript {
                 'compileSdk'           : 30,
                 'targetSdk'            : 30,
                 'minSdk'               : 21,
-                'foldersRevision'      : 'v0.2.1'
         ]
 
         versions = [
