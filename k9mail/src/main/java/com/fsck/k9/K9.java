@@ -110,6 +110,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
+    private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
 
     public static K9JobManager jobManager;
 
@@ -641,6 +642,7 @@ public class K9 extends MultiDexApplication {
                 "pEpUseTrustwords",
                 ManageableSettingKt.encodeBooleanToString(pEpUseTrustwords)
         );
+        editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
 
         fontSizes.save(editor);
     }
@@ -1070,6 +1072,7 @@ public class K9 extends MultiDexApplication {
                         )
                 )
         );
+        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1528,6 +1531,10 @@ public class K9 extends MultiDexApplication {
         pEpUseTrustwords.setValue(useTrustwords);
     }
 
+    public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
+        K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
+    }
+
     public static boolean ispEpUsingPassphraseForNewKey() {
         return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
     }
@@ -1928,12 +1935,16 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                        needsFastPoll = true;
+                    }
                     break;
                 case SyncNotifyInitFormGroup:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                        needsFastPoll = true;
+                    }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake

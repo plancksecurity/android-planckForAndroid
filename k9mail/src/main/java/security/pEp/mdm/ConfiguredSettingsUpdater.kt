@@ -53,6 +53,8 @@ class ConfiguredSettingsUpdater(
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_DEBUG_LOG ->
                 K9.setDebug(getBooleanOrDefault(restrictions, entry))
+            RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES ->
+                k9.setAllowpEpSyncNewDevices(getBooleanOrDefault(restrictions, entry))
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, entry)
