@@ -658,10 +658,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
         String[] emailParts = splitEmail(email);
         String domain = emailParts[1];
-        mProvider = getProvisionedProvider(domain);
-        if (mProvider == null) {
-            mProvider = findProviderForDomain(domain);
-        }
+        mProvider = findProviderForDomain(domain);
         if (mProvider == null) {
             /*
              * We don't have default settings for this account, start the manual
@@ -873,10 +870,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private AccountSetupBasicsFragment.Provider findProviderForDomain(String domain) {
+        AccountSetupBasicsFragment.Provider provider = getProvisionedProvider(domain);
+        if (provider != null) {
+            return provider;
+        }
         try {
             XmlResourceParser xml = getResources().getXml(R.xml.providers);
             int xmlEventType;
-            AccountSetupBasicsFragment.Provider provider = null;
+            provider = null;
             while ((xmlEventType = xml.next()) != XmlResourceParser.END_DOCUMENT) {
                 if (xmlEventType == XmlResourceParser.START_TAG
                         && "provider".equals(xml.getName())
