@@ -68,6 +68,15 @@ public class Account implements BaseAccount, StoreConfig {
     public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
+    private String oAuthState;
+
+    public synchronized String getOAuthState() {
+        return oAuthState;
+    }
+
+    public synchronized void setOAuthState(String oAuthState) {
+        this.oAuthState = oAuthState;
+    }
 
     public boolean ispEpPrivacyProtected() {
         return pEpPrivacyProtected.getValue();

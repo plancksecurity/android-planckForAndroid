@@ -49,6 +49,7 @@ public abstract class RemoteStore extends Store {
         }
 
         Store store = sStores.get(uri);
+        ServerSettings settings = RemoteStore.decodeStoreUri(uri);
         if (store == null) {
             if (uri.startsWith("imap")) {
 //                OAuth2TokenProvider oAuth2TokenProvider = null;

@@ -55,6 +55,7 @@ dependencies {
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
     implementation project(':foldableFolders')
 
+    implementation 'net.openid:appauth:0.11.1'
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.legacySupport}"
