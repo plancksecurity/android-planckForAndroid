@@ -12,6 +12,7 @@ import com.fsck.k9.mailstore.BinaryMemoryBody
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -68,7 +69,7 @@ class CalendarInvitePresenterTest {
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
         println("$startDate - $endDate")
-        verify { view.setStartAndEndTime("$startDate - $endDate") }
+        coVerify { view.setStartAndEndTime("$startDate - $endDate") }
     }
 
     @Test
