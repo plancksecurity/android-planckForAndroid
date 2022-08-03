@@ -68,7 +68,7 @@ class CalendarInvitePresenterTest {
             )
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
-        println("$startDate - $endDate")
+        println("==== expected dates: $startDate - $endDate")
         coVerify { view.setStartAndEndTime("$startDate - $endDate") }
     }
 

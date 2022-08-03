@@ -125,7 +125,7 @@ test:
       do rm -f ../$i &&
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
-    - ./gradlew --build-cache check
+    - ./gradlew --build-cache testEnterprisePlayStoreDebugUnitTest --tests security.pEp.ui.calendar.CalendarInvitePresenterTest --info
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull-push
