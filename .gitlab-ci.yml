@@ -29,6 +29,7 @@ stages:
   - toolchain
   - base
   - build
+  - test
 
 # Jobs:
 toolchain image:
@@ -113,6 +114,25 @@ build:
   artifacts:
     paths:
       - packages
+
+test:
+  image: ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+  stage: test
+  script:
+    - pwd
+    - echo ${HOME}
+    - for i in "pEpEngine" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+      do rm -f ../$i && 
+      ln -s ${HOME}/code/$i ../$i ; done
+    - ls -la ..
+    - ./gradlew --build-cache check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull-push
+    paths:
+      - build
+      - .gradle
+
 
 .docker_in_docker:
   services:
