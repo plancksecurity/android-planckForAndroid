@@ -21,7 +21,7 @@ buildscript {
                 'preference'         : '1.1.1',
                 'constraintLayout'   : '2.0.4',
                 'lifecycleExtensions': '2.2.0',
-                'okio'               : '1.14.0',
+                'okio'               : '3.0.0',
                 'timber'             : '4.5.1',
                 'koin'               : '0.9.1',
                 'commonsIo'          : '2.4',

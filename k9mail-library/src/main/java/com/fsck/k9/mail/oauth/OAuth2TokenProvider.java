@@ -48,6 +48,22 @@ public interface OAuth2TokenProvider {
      */
     void invalidateToken(String username);
 
+    /**
+     * Fetch a token. No guarantees are provided for validity.
+     */
+    String getToken(long timeoutMillis) throws AuthenticationFailedException;
+
+    /**
+     * Invalidate the token for this username.
+     *
+     * <p>
+     * Note that the token should always be invalidated on credential failure. However invalidating a token every
+     * single time is not recommended.
+     * <p>
+     * Invalidating a token and then failure with a new token should be treated as a permanent failure.
+     */
+    void invalidateToken();
+
 
     /**
      * Provides an asynchronous response to an
