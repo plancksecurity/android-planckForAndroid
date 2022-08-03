@@ -50,7 +50,7 @@ class CalendarInvitePresenterTest {
 
     @Test
     fun `when presenter is initialized with a calendar from MacOS, populates view with calendar invite fields`() {
-        val timeZone = TimeZone.getTimeZone("Romance Standard Time")
+        val timeZone = TimeZone.getTimeZone("CET")
         println("timezone is : ${timeZone.rawOffset}")
         val calendar = Calendar.getInstance(timeZone)
         val startDate = Date(calendar.time.time + ONE_HOUR)
