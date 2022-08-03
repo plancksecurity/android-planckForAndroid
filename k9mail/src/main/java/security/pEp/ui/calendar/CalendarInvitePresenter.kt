@@ -143,6 +143,8 @@ class CalendarInvitePresenter @Inject constructor(
     private fun showOrHideDates(event: VEvent) {
         val startTime = event.dateStart?.value?.let { Date(it.time) }
         val endTime = event.dateEnd?.value?.let { Date(it.time) }
+        println("==== starttime value: " + event.dateStart?.value?.time)
+        println("==== endtime value: " + event.dateEnd?.value?.time)
         val timeText =
             if (startTime != null && endTime != null) {
                 "$startTime - $endTime"
