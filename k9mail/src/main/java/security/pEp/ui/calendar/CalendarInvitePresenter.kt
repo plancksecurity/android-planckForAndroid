@@ -149,6 +149,7 @@ class CalendarInvitePresenter @Inject constructor(
             } else {
                 null
             }
+        println("==== setting dates to $startTime - $endTime")
         showText(
             timeText,
             view::setStartAndEndTime,
