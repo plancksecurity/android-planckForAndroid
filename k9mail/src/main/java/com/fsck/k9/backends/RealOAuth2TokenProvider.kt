@@ -16,7 +16,7 @@ import net.openid.appauth.AuthorizationService
 
 class RealOAuth2TokenProvider(
     context: Context,
-    private val accountManager: Preferences,
+    private val preferences: Preferences,
     private val account: Account
 ) : OAuth2TokenProvider {
     private val authService = AuthorizationService(context)
@@ -54,7 +54,7 @@ class RealOAuth2TokenProvider(
             throw IOException("Error while fetching an access token", authException)
         } else if (authException != null) {
             account.oAuthState = null
-            account.save(accountManager)
+            account.save(preferences)
 
             throw AuthenticationFailedException(
                 message = "Failed to fetch an access token",
@@ -64,7 +64,7 @@ class RealOAuth2TokenProvider(
         } else if (token != oldAccessToken) {
             requestFreshToken = false
             account.oAuthState = authState.jsonSerializeString()
-            account.save(accountManager)
+            account.save(preferences)
         }
 
         return token ?: throw AuthenticationFailedException("Failed to fetch an access token")
@@ -73,4 +73,6 @@ class RealOAuth2TokenProvider(
     override fun invalidateToken() {
         requestFreshToken = true
     }
+
+
 }

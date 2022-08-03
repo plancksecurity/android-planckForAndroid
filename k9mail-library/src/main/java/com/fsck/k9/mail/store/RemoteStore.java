@@ -7,6 +7,7 @@ import java.util.Map;
 import android.content.Context;
 import android.net.ConnectivityManager;
 
+import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.ServerSettings.Type;
@@ -49,7 +50,6 @@ public abstract class RemoteStore extends Store {
         }
 
         Store store = sStores.get(uri);
-        ServerSettings settings = RemoteStore.decodeStoreUri(uri);
         if (store == null) {
             if (uri.startsWith("imap")) {
 //                OAuth2TokenProvider oAuth2TokenProvider = null;

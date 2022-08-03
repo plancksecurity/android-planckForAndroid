@@ -855,7 +855,7 @@ public class SmtpTransport extends Transport {
     private void saslOAuth(OAuthMethod method) throws MessagingException, IOException {
         retryOAuthWithNewToken = true;
         try {
-            attempOAuth(method, mUsername);
+            attemptOAuth(method, mUsername);
         } catch (NegativeSmtpReplyException negativeResponse) {
             if (negativeResponse.getReplyCode() != SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
                 throw negativeResponse;
@@ -889,7 +889,7 @@ public class SmtpTransport extends Transport {
 
         Timber.v(negativeResponseFromOldToken, "Authentication exception, re-trying with new token");
         try {
-            attempOAuth(method, username);
+            attemptOAuth(method, username);
         } catch (NegativeSmtpReplyException negativeResponseFromNewToken) {
             if (negativeResponseFromNewToken.getReplyCode() != SMTP_AUTHENTICATION_FAILURE_ERROR_CODE) {
                 throw negativeResponseFromNewToken;
@@ -905,8 +905,8 @@ public class SmtpTransport extends Transport {
         }
     }
 
-    private void attempOAuth(OAuthMethod method, String username) throws MessagingException, IOException {
-        String token = oauthTokenProvider.getToken(username, OAuth2TokenProvider.OAUTH2_TIMEOUT);
+    private void attemptOAuth(OAuthMethod method, String username) throws MessagingException, IOException {
+        String token = oauthTokenProvider.getToken((long) OAuth2TokenProvider.OAUTH2_TIMEOUT);
         String authString = method.buildInitialClientResponse(username, token);
         CommandResponse response = executeSensitiveCommand("%s %s", method.getCommand(), authString);
 

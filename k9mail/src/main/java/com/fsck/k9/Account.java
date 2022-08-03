@@ -16,13 +16,17 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
+import com.fsck.k9.backends.RealOAuth2TokenProvider;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
@@ -55,6 +59,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.fsck.k9.Preferences.getEnumStringPref;
+import static com.fsck.k9.Preferences.getPreferences;
 
 /**
  * Account stores all of the settings for a single account defined by the user. It is able to save
@@ -1352,7 +1357,11 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public RemoteStore getRemoteStore() throws MessagingException {
-        return RemoteStore.getInstance(K9.app, this, K9.oAuth2TokenStore);
+        ServerSettings settings = RemoteStore.decodeStoreUri(storeUri);
+        OAuth2TokenProvider oAuth2TokenProvider = settings.authenticationType == AuthType.XOAUTH2
+                ? new RealOAuth2TokenProvider(K9.app, ((K9)K9.app).getComponent().preferences(), this)
+                : null;
+        return RemoteStore.getInstance(K9.app, this, oAuth2TokenProvider);
     }
 
     // It'd be great if this actually went into the store implementation
