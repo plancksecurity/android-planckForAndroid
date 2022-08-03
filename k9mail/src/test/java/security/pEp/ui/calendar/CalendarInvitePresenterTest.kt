@@ -12,7 +12,6 @@ import com.fsck.k9.mailstore.BinaryMemoryBody
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -20,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
+
 
 @ExperimentalCoroutinesApi
 class CalendarInvitePresenterTest {
@@ -50,12 +50,11 @@ class CalendarInvitePresenterTest {
 
     @Test
     fun `when presenter is initialized with a calendar from MacOS, populates view with calendar invite fields`() {
-        val timeZone = TimeZone.getTimeZone("CET")
-        println("timezone is : ${timeZone.rawOffset}")
-        val calendar = Calendar.getInstance(timeZone)
-        val startDate = Date(calendar.time.time + ONE_HOUR)
+        val startDate = Date(Date().time + ONE_HOUR)
         val endDate = Date(startDate.time + ONE_HOUR)
-        stubAttachment(TestICalendarCreator.getMacosCalendarInvite(startDate, endDate))
+        val startDateCet = startDate.convertToCetTime()
+        val endDateCet = endDate.convertToCetTime()
+        stubAttachment(TestICalendarCreator.getMacosCalendarInvite(startDateCet, endDateCet))
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
@@ -72,7 +71,7 @@ class CalendarInvitePresenterTest {
         }
         verify { view.setLocation(TestICalendarCreator.EVENT_LOCATION) }
         println("==== expected dates: $startDate - $endDate")
-        coVerify { view.setStartAndEndTime("$startDate - $endDate") }
+        verify { view.setStartAndEndTime("$startDate - $endDate") }
     }
 
     @Test
@@ -260,6 +259,18 @@ class CalendarInvitePresenterTest {
             "",
             listOf()
         )
+    }
+
+    private fun Date.convertToCetTime(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+        val millis = calendar.timeInMillis
+        val fromOffset = TimeZone.getDefault().getOffset(millis).toLong()
+        val toOffset = TimeZone.getTimeZone("CET").getOffset(millis).toLong()
+        val convertedTime = millis - (fromOffset - toOffset)
+        val c = Calendar.getInstance()
+        c.timeInMillis = convertedTime
+        return c.time
     }
 
     companion object {

@@ -223,7 +223,7 @@ object TestICalendarCreator {
         return Biweekly.parse(calendarText).first()
     }
 
-    private fun getDateFormatter(): SimpleDateFormat =
+    fun getDateFormatter(): SimpleDateFormat =
         SimpleDateFormat("yyyyMMdd'T'HHmmss", Locale.getDefault())
 
     private const val ONE_HOUR = 60 * 60 * 1000L
