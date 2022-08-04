@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +39,7 @@ import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
+import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.helper.UrlEncodingHelper;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
@@ -101,6 +103,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
     private static final String WAS_LOADING = "wasLoading";
+    private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -487,11 +490,22 @@ public class AccountSetupBasicsFragment extends PEpFragment
             setupFolderNames(incomingUriTemplate.getHost().toLowerCase(Locale.US));
 
             ServerSettings incomingSettings = RemoteStore.decodeStoreUri(incomingUri.toString());
+            ServerSettings outgoingSettings = Transport.decodeTransportUri(outgoingUri.toString());
             mAccount.setDeletePolicy(AccountCreator.getDefaultDeletePolicy(incomingSettings.type));
 
-            // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            checkSettings();
+
+            if (incomingSettings != null && outgoingSettings !=null &&
+                    incomingSettings.authenticationType == AuthType.XOAUTH2 &&
+                    outgoingSettings.authenticationType == AuthType.XOAUTH2
+            ) {
+                startOAuthFlow();
+            } else {
+                checkSettings();
+            }
+
+            // Check incoming here.  Then check outgoing in onActivityResult()
+
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -499,6 +513,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
              */
             onManualSetup();
         }
+    }
+
+    private void startOAuthFlow() {
+        Intent intent = OAuthFlowActivity.Companion.buildLaunchIntent(requireContext(), mAccount.getUuid());
+        startActivityForResult(intent, REQUEST_CODE_OAUTH);
     }
 
     private void checkSettings() {
@@ -566,30 +585,31 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (isAValidAddress(email)) return;
 
         List<String> accounts = accountTokenStore.getAccounts();
-        if (accounts.contains(email)) {
-            mOAuth2CheckBox.setChecked(true);
-            mAccountSpinner.setSelection(accounts.indexOf(email));
-            setup(email);
-        } else if (email.contains(GMAIL)) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.add_account_title)
-                    .setMessage(R.string.add_account_message)
-                    .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            accountSetupNavigator.createGmailAccount(getActivity());
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            setup(email);
-                        }
-                    })
-                    .show();
-        } else {
-            setup(email);
-        }
+        //if (accounts.contains(email)) {
+        //    mOAuth2CheckBox.setChecked(true);
+        //    mAccountSpinner.setSelection(accounts.indexOf(email));
+        //    setup(email);
+        //} else if (email.contains(GMAIL)) {
+        //    new AlertDialog.Builder(getActivity())
+        //            .setTitle(R.string.add_account_title)
+        //            .setMessage(R.string.add_account_message)
+        //            .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
+        //                @Override
+        //                public void onClick(DialogInterface dialog, int which) {
+        //                    accountSetupNavigator.createGmailAccount(getActivity());
+        //                }
+        //            })
+        //            .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
+        //                @Override
+        //                public void onClick(DialogInterface dialog, int which) {
+        //                    setup(email);
+        //                }
+        //            })
+        //            .show();
+        //} else {
+        //    setup(email);
+        //}
+        setup(email);
     }
 
     private boolean isAValidAddress(String email) {
@@ -719,6 +739,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
                 && resultCode != RESULT_CANCELED) {
             ((AccountSetupBasics) getActivity()).onImport(data.getData());
+        } else if (requestCode == REQUEST_CODE_OAUTH) {
+            handleSignInResult(resultCode);
         } else {
             if (resultCode == RESULT_OK) {
                 if (!mCheckedIncoming) {
@@ -748,6 +770,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 }
             }
         }
+    }
+
+    private void handleSignInResult(int resultCode) {
+        if (resultCode != RESULT_OK) return;
+        if (mAccount == null) {
+            throw new IllegalStateException("Account instance missing");
+        }
+        checkSettings();
     }
 
     private void goForward() {

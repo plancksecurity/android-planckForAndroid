@@ -52,7 +52,7 @@ class ConfigurationManager(
     private fun isProvisionAvailable(restrictions: Bundle): Boolean {
         return restrictions.keySet().containsAll(
             setOf(
-                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                //RESTRICTION_ACCOUNT_MAIL_SETTINGS,
             )
         )
     }

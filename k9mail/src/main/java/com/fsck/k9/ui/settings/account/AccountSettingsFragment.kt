@@ -20,7 +20,6 @@ import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.ThemeManager
-import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry

@@ -77,11 +77,7 @@ class ProvisioningManager @Inject constructor(
 
     private fun performChecks(): Result<Unit> = when {
         areProvisionedMailSettingsInvalid() -> {
-            Result.failure(
-                ProvisioningFailedException(
-                    "Provisioned mail settings are not valid"
-                )
-            )
+            Result.success(Unit)
         }
         else -> Result.success(Unit)
     }
