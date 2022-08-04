@@ -26,16 +26,10 @@ import security.pEp.ui.permissions.PEpPermissionChecker;
 @Module
 public class ApplicationModule {
 
-    private final K9 application;
-
-    public ApplicationModule(K9 application) {
-        this.application = application;
-    }
-
     @Provides
     @Singleton
     @Named("AppContext")
-    Context provideContext() {
+    Context provideContext(K9 application) {
         return application.getApplicationContext();
     }
 
@@ -52,33 +46,33 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PEpSettingsChecker providepEpSettingsCheck(ThreadExecutor jobExecutor, UIThread uiThread) {
+    public PEpSettingsChecker providepEpSettingsCheck(
+            K9 application,
+            ThreadExecutor jobExecutor,
+            UIThread uiThread
+    ) {
         return new PEpSettingsCheck(application, jobExecutor, uiThread);
     }
 
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
     @Provides
-    public PermissionChecker providepEpPermissionChecker() {
-        return new PEpPermissionChecker(application.getApplicationContext());
+    public PermissionChecker providepEpPermissionChecker(@Named("AppContext") Context context) {
+        return new PEpPermissionChecker(context);
     }
 
     @Provides
-    public Preferences providePreferences() {
+    public Preferences providePreferences(K9 application) {
         return Preferences.getPreferences(application);
     }
 
     @Provides
     @Named("MainUI")
-    public PEpProvider providepEpProvider() {
+    public PEpProvider providepEpProvider(K9 application) {
         return application.getpEpProvider();
     }
 
     @Provides
     @Singleton
     public DispatcherProvider provideDispatcherProvider() { return new DefaultDispatcherProvider(); }
-
-    @Provides
-    @Singleton
-    public K9 provideK9() { return (K9) application; }
 
 }

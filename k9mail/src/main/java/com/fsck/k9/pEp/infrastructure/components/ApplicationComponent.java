@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.infrastructure.components;
 
 import android.content.Context;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
@@ -22,6 +23,7 @@ import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import dagger.BindsInstance;
 import dagger.Component;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsProvider;
@@ -56,6 +58,11 @@ public interface ApplicationComponent {
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();
+
+    @Component.Factory
+    interface Factory {
+        ApplicationComponent create(@BindsInstance K9 application);
+    }
 
     @Named("AppContext")
     Context getContext();
