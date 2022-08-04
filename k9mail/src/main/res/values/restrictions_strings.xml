@@ -25,4 +25,6 @@
     <string name="account_email_address_description">Email address for this account. It needs to be provisioned from MDM. Change it to change the sender name in emails.</string>
     <string name="account_display_count_description">Number of mails displayed in message list screen by default</string>
     <string name="account_remote_search_num_results_description">Number of remote search results displayed by default</string>
+    <string name="allow_pep_sync_new_devices_title">Allow to add new devices to sync group</string>
+    <string name="allow_pep_sync_new_devices_description">Allow to use p≡p sync to add new devices to sync group.</string>
 </resources>

@@ -9,6 +9,8 @@ const val RESTRICTION_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
 const val RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
 const val RESTRICTION_PEP_SYNC_FOLDER = "pep_sync_folder"
 const val RESTRICTION_PEP_DEBUG_LOG = "debug_logging"
+const val RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES = "allow_pep_sync_new_devices"
+
 const val RESTRICTION_ACCOUNT_DESCRIPTION = "account_description"
 const val RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE = "account_display_count"
 const val RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS = "max_push_folders"
