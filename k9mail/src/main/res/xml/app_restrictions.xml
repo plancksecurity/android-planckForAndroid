@@ -188,6 +188,13 @@
         android:title="@string/provisioning_url_title"/-->
 
     <restriction
+        android:defaultValue="@bool/default_allow_pep_sync_new_devices"
+        android:description="@string/allow_pep_sync_new_devices_description"
+        android:key="allow_pep_sync_new_devices"
+        android:restrictionType="bool"
+        android:title="@string/allow_pep_sync_new_devices_title"/>
+
+    <restriction
         android:description="@string/mail_settings_description"
         android:key="pep_mail_settings"
         android:restrictionType="bundle"
