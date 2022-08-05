@@ -1514,9 +1514,13 @@ public class TestUtils {
         waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
         waitForIdle();
-        if (text.equals("empty") && resourceID.equals("R.id.to")) {
-            while (!getTextFromView(onView(withId(field))).equals("")) {
-                removeAddressClickingX(1);
+        if (text.equals("") && resourceID.equals("to")) {
+            while (!getTextFromView(onView(withId(field))).equals(text)) {
+                waitForIdle();
+                clickView(R.id.to_label);
+                waitForIdle();
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
             }
         } else {
             onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
