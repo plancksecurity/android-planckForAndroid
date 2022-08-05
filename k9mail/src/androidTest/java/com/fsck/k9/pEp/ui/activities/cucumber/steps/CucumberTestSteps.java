@@ -575,7 +575,7 @@ public class CucumberTestSteps {
         if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
                 !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
                         "Southern Island, NBI 8250012 B, https://www.pep.security") ||
-                !getTextFromView(onView(withId(R.id.eventTime))).equals("Sat Nov 13 09:00:00 GMT+01:00 2021 - Sat Nov 13 10:00:00 GMT+01:00 2021") ||
+                !getTextFromView(onView(withId(R.id.eventTime))).contains("Sat Nov 13") ||
                 !getTextFromView(onView(withId(R.id.shortInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
                         "Organizer Name (organizer@mail.es) [Organizer]")) {
