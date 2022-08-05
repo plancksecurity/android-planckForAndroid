@@ -559,6 +559,7 @@ public class Account implements BaseAccount, StoreConfig {
         if (description == null) {
             description = getEmail();
         }
+        oAuthState = storage.getString(accountUuid + ".oAuthState", null);
     }
 
     protected synchronized void delete(Preferences preferences) {
@@ -843,6 +844,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
         editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(pEpPrivacyProtected));
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
+        editor.putString(accountUuid + ".oAuthState", oAuthState);
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);
