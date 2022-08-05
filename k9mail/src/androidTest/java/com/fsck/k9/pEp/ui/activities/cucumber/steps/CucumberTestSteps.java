@@ -133,9 +133,7 @@ public class CucumberTestSteps {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (!BuildConfig.IS_ENTERPRISE) {
-            Intents.init();
-        }
+        Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -177,7 +175,7 @@ public class CucumberTestSteps {
         }
         try {
             if (!exists(onView(withId(R.id.account_email)))) {
-                while (!exists(onView(withId(R.id.available_accounts_title)))) {
+                if (!exists(onView(withId(R.id.available_accounts_title)))) {
                     waitForIdle();
                     if (exists(onView(withText(R.string.discard_action)))) {
                         waitForIdle();
@@ -195,6 +193,7 @@ public class CucumberTestSteps {
         if (!BuildConfig.IS_ENTERPRISE) {
             testUtils.clearAllRecentApps();
         }
+        Intents.release();
     }
 
     @When(value = "^I created an account$")
@@ -2564,8 +2563,6 @@ public class CucumberTestSteps {
                 testUtils.pressBack();
                 waitForIdle();
             }
-        } else {
-            testUtils.getMessageListSize();
         }
     }
 
@@ -2987,7 +2984,6 @@ public class CucumberTestSteps {
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
-                I_remove_address_clicking_X(1);
                 break;
             case "myself":
                 cucumberMessageTo = testUtils.getAccountAddress(accountSelected);
