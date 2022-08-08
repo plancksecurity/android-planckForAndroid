@@ -639,7 +639,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             SimpleMailSettings settings,
             boolean outgoing
     ) throws URISyntaxException {
-        String sb = (outgoing ? "smtp" : "imap") +
+        String uri = (outgoing ? "smtp" : "imap") +
                 "+" +
                 settings.getConnectionSecurityString() +
                 "+" +
@@ -647,7 +647,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 settings.getServer() +
                 ":" +
                 settings.getPort();
-        return new URI(sb);
+        return new URI(uri);
     }
 
     private void setup(String email) {
