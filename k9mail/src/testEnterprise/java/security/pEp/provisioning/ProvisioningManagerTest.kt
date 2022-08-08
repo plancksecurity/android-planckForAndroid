@@ -1,7 +1,9 @@
 package security.pEp.provisioning
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
+import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
@@ -9,6 +11,7 @@ import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.*
+import org.junit.runner.RunWith
 import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
@@ -17,6 +20,7 @@ import java.io.File
 private const val TEST_PROVISIONING_URL = "https://test/url"
 
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class ProvisioningManagerTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
@@ -41,11 +45,29 @@ class ProvisioningManagerTest {
     @Before
     fun setUp() {
         coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    900,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
-        coEvery { configurationManagerFactory.getInstance(k9) }.returns(configurationManager)
+        coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
+        coEvery { configurationManager.loadConfigurationsSuspend(true) }
+            .returns(Result.success(Unit))
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
             .returns(Result.success(Unit))
@@ -65,6 +87,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `startProvisioning() provisions app using PEpProviderImplKotlin`() {
         manager.startProvisioning()
 
@@ -108,6 +131,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `when url has bad format, resulting state is error`() {
         coEvery { urlChecker.isValidUrl(any()) }.returns(false)
 
@@ -124,6 +148,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `when provisioning fails, resulting state is error`() {
         coEvery { PEpProviderImplKotlin.provision(any(), any()) }
             .returns(Result.failure(ProvisioningFailedException("fail", RuntimeException())))
@@ -183,6 +208,93 @@ class ProvisioningManagerTest {
         coVerify(exactly = 0) { PEpProviderImplKotlin.provision(any(), any()) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
+        }
+    }
+
+    @Test
+    fun `if ConfigurationManager_loadConfigurationSuspend fails, resulting state is error`() {
+        coEvery { configurationManager.loadConfigurationsSuspend(any()) }
+            .returns(Result.failure(RuntimeException("fail")))
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is RuntimeException)
+            assertTrue(throwable.message!!.contains("fail"))
+        }
+    }
+
+    @Test
+    fun `if mail settings are not valid, resulting state is error`() {
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    0,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(
+                throwable.message!!.contains("Provisioned mail settings are not valid")
+            )
+        }
+    }
+
+    @Test
+    fun `if url fails mail settings server url check, resulting state is error`() {
+        coEvery { urlChecker.isValidUrl(any()) }.returns(false)
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(
+            AccountMailSettingsProvision(
+                incoming = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.SSL_TLS_REQUIRED,
+                    "username"
+                ),
+                outgoing = SimpleMailSettings(
+                    700,
+                    "server",
+                    ConnectionSecurity.STARTTLS_REQUIRED,
+                    "username"
+                )
+            )
+        )
+
+
+        manager.startProvisioning()
+
+
+        assertListenerProvisionChangedWithState { state ->
+            coVerify { k9.wasNot(called) }
+            assertTrue(state is ProvisionState.Error)
+            val throwable = (state as ProvisionState.Error).throwable
+            assertTrue(throwable is ProvisioningFailedException)
+            assertTrue(
+                throwable.message!!.contains("Provisioned mail settings are not valid")
+            )
         }
     }
 

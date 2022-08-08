@@ -170,6 +170,7 @@ dependencies {
         exclude group: 'com.android.support'
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
+    kaptAndroidTest "com.google.dagger:dagger-compiler:${versions.dagger}"
 }
 
 android {

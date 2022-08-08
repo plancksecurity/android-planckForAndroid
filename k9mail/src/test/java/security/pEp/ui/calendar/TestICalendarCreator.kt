@@ -40,8 +40,8 @@ object TestICalendarCreator {
                 DESCRIPTION;LANGUAGE=en-US:$EVENT_DESCRIPTION
                 UID:$MACOS_EVENT_UID
                 SUMMARY;LANGUAGE=en-US:$EVENT_SUMMARY
-                DTSTART;TZID=Romance Standard Time:${dateFormatter.format(start)}
-                DTEND;TZID=Romance Standard Time:${dateFormatter.format(end)}
+                DTSTART;TZID=Romance Standard Time:${dateFormatter.format(start.toCetTime())}
+                DTEND;TZID=Romance Standard Time:${dateFormatter.format(end.toCetTime())}
                 CLASS:PUBLIC
                 PRIORITY:5
                 DTSTAMP:20211112T035710Z
@@ -140,8 +140,8 @@ object TestICalendarCreator {
             DESCRIPTION;LANGUAGE=en-US:$EVENT_DESCRIPTION
             UID:$MACOS_EVENT_UID
             SUMMARY;LANGUAGE=en-US:$EVENT_SUMMARY
-            DTSTART;TZID=Romance Standard Time:${dateFormatter.format(start)}
-            DTEND;TZID=Romance Standard Time:${dateFormatter.format(end)}
+            DTSTART;TZID=Romance Standard Time:${dateFormatter.format(start.toCetTime())}
+            DTEND;TZID=Romance Standard Time:${dateFormatter.format(end.toCetTime())}
             CLASS:PUBLIC
             PRIORITY:5
             DTSTAMP:20211122T153726Z
@@ -221,6 +221,18 @@ object TestICalendarCreator {
 
         """.trimIndent()
         return Biweekly.parse(calendarText).first()
+    }
+
+    private fun Date.toCetTime(): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = this
+        val millis = calendar.timeInMillis
+        val fromOffset = TimeZone.getDefault().getOffset(millis).toLong()
+        val toOffset = TimeZone.getTimeZone("CET").getOffset(millis).toLong()
+        val convertedTime = millis - (fromOffset - toOffset)
+        val c = Calendar.getInstance()
+        c.timeInMillis = convertedTime
+        return c.time
     }
 
     private fun getDateFormatter(): SimpleDateFormat =

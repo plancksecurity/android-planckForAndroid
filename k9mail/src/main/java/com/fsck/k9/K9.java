@@ -48,10 +48,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
-import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
-import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.network.ConnectionMonitor;
@@ -111,6 +109,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
+    private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
 
     public static K9JobManager jobManager;
 
@@ -300,7 +299,7 @@ public class K9 extends MultiDexApplication {
         WHEN_IN_LANDSCAPE
     }
 
-    private static boolean mMessageListCheckboxes = true;
+    private static boolean mMessageListCheckboxes = false;
     private static boolean mMessageListStars = true;
     private static int mMessageListPreviewLines = 2;
 
@@ -323,14 +322,14 @@ public class K9 extends MultiDexApplication {
     private static boolean mAutofitWidth = false;
     private static boolean mQuietTimeEnabled = false;
     private static boolean mNotificationDuringQuietTimeEnabled = true;
-    private static String mQuietTimeStarts = null;
-    private static String mQuietTimeEnds = null;
+    private static String mQuietTimeStarts = "21:00";
+    private static String mQuietTimeEnds = "7:00";
     private static String mAttachmentDefaultPath = "";
     private static boolean mWrapFolderNames = false;
     private static boolean mHideUserAgent = true;
     private static boolean mHideTimeZone = false;
 
-    private static SortType mSortType;
+    private static SortType mSortType = Account.DEFAULT_SORT_TYPE;
     private static Map<SortType, Boolean> mSortAscending = new HashMap<SortType, Boolean>();
 
     private static boolean sUseBackgroundAsUnreadIndicator = false;
@@ -600,7 +599,12 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("confirmMarkAllRead", mConfirmMarkAllRead);
 
         editor.putString("sortTypeEnum", mSortType.name());
-        editor.putBoolean("sortAscending", mSortAscending.get(mSortType));
+        editor.putBoolean(
+                "sortAscending",
+                mSortAscending.containsKey(mSortType)
+                        ? mSortAscending.get(mSortType)
+                        : mSortType.isDefaultAscending()
+        );
 
         editor.putString("notificationHideSubject", sNotificationHideSubject.toString());
         editor.putString("notificationQuickDelete", sNotificationQuickDelete.toString());
@@ -637,6 +641,7 @@ public class K9 extends MultiDexApplication {
                 "pEpUseTrustwords",
                 ManageableSettingKt.encodeBooleanToString(pEpUseTrustwords)
         );
+        editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
 
         fontSizes.save(editor);
     }
@@ -650,6 +655,7 @@ public class K9 extends MultiDexApplication {
         }
 
         super.onCreate();
+        app = this;
 
         initializeInjector();
 
@@ -659,7 +665,6 @@ public class K9 extends MultiDexApplication {
 
     public void finalizeSetup() {
         pEpSetupUiEngineSession();
-        app = this;
         DI.start(this);
         Globals.setContext(this);
         oAuth2TokenStore = new AndroidAccountOAuth2TokenStore(this);
@@ -677,7 +682,7 @@ public class K9 extends MultiDexApplication {
 
         checkCachedDatabaseVersion();
 
-        Preferences prefs = Preferences.getPreferences(this);
+        Preferences prefs = component.preferences();
         loadPrefs(prefs);
 
         /*
@@ -1066,6 +1071,7 @@ public class K9 extends MultiDexApplication {
                         )
                 )
         );
+        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1524,6 +1530,10 @@ public class K9 extends MultiDexApplication {
         pEpUseTrustwords.setValue(useTrustwords);
     }
 
+    public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
+        K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
+    }
+
     public static boolean ispEpUsingPassphraseForNewKey() {
         return pEpNewKeysPassphrase != null && !pEpNewKeysPassphrase.isEmpty();
     }
@@ -1833,9 +1843,13 @@ public class K9 extends MultiDexApplication {
     }
 
     private void initializeInjector() {
-        component = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
+        component = createApplicationComponent();
+    }
+
+    protected ApplicationComponent createApplicationComponent() {
+        return DaggerApplicationComponent
+                .factory()
+                .create(this);
     }
 
     public ApplicationComponent getComponent() {
@@ -1920,12 +1934,20 @@ public class K9 extends MultiDexApplication {
                     break;
                 case SyncNotifyInitAddOurDevice:
                 case SyncNotifyInitAddOtherDevice:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
+                        needsFastPoll = true;
+                    } else {
+                        pEpSyncProvider.cancelSync();
+                    }
                     break;
                 case SyncNotifyInitFormGroup:
-                    ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
-                    needsFastPoll = true;
+                    if (allowpEpSyncNewDevices) {
+                        ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
+                        needsFastPoll = true;
+                    } else {
+                        pEpSyncProvider.cancelSync();
+                    }
                     break;
                 case SyncNotifyTimeout:
                     //Close handshake

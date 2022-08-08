@@ -6,12 +6,14 @@ import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.*
+import security.pEp.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigurationManager(
     private val context: Context,
-    private val preferences: Preferences?
+    private val preferences: Preferences,
+    private val restrictionsManager: RestrictionsProvider
 ) {
 
     private var listener: RestrictionsListener? = null
@@ -21,31 +23,38 @@ class ConfigurationManager(
 
     fun loadConfigurations() {
         CoroutineScope(Dispatchers.Main).launch {
-            loadConfigurationsInBackground()
+            loadConfigurationsSuspend()
+                .onSuccess { sendRemoteConfig() }
+                .onFailure {
+                    Timber.e(
+                        it,
+                        "Could not load configurations after registering the receiver"
+                    )
+                }
         }
     }
 
-    suspend fun loadConfigurationsInBackground() {
-        loadConfigurationsSuspend()
-            .onSuccess { sendRemoteConfig() }
-            .onFailure {
-                Timber.e(
-                    it,
-                    "Could not load configurations after registering the receiver"
-                )
-            }
-    }
-
-    private suspend fun loadConfigurationsSuspend(): Result<Unit> = withContext(Dispatchers.IO) {
+    suspend fun loadConfigurationsSuspend(
+        startup: Boolean = false
+    ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
-            val manager = context.getSystemService(Context.RESTRICTIONS_SERVICE)
-                    as RestrictionsManager
-            val restrictions = manager.applicationRestrictions
-            val entries = manager.getManifestRestrictions(context.applicationContext?.packageName)
+            val restrictions = restrictionsManager.applicationRestrictions
+            if (startup && !isProvisionAvailable(restrictions)) {
+                throw ProvisioningFailedException("Provisioning data is missing")
+            }
+            val entries = restrictionsManager.manifestRestrictions
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()
         }
+    }
+
+    private fun isProvisionAvailable(restrictions: Bundle): Boolean {
+        return restrictions.keySet().containsAll(
+            setOf(
+                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+            )
+        )
     }
 
     private fun mapRestrictions(
@@ -58,18 +67,14 @@ class ConfigurationManager(
     }
 
     private fun saveAppSettings() {
-        preferences?.let {
-            val editor = preferences.storage.edit()
-            K9.save(editor)
-            editor.commit()
-        }
+        val editor = preferences.storage.edit()
+        K9.save(editor)
+        editor.commit()
     }
 
     private fun saveAccounts() {
-        preferences?.let {
-            preferences.accounts.forEach { account ->
-                account.save(preferences)
-            }
+        preferences.accounts.forEach { account ->
+            account.save(preferences)
         }
     }
 
@@ -98,10 +103,12 @@ class ConfigurationManager(
         this.listener = listener
     }
 
-    class Factory @Inject constructor() {
-        fun getInstance(
+    class Factory @Inject constructor(
+        private val preferences: Preferences,
+        private val restrictionsManager: RestrictionsProvider,
+    ) {
+        fun create(
             context: Context,
-            preferences: Preferences? = null
-        ): ConfigurationManager = ConfigurationManager(context, preferences)
+        ): ConfigurationManager = ConfigurationManager(context, preferences, restrictionsManager)
     }
 }

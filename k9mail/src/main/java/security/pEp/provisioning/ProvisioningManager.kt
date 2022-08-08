@@ -1,10 +1,10 @@
 package security.pEp.provisioning
 
+import android.util.Log
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.DispatcherProvider
-import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import kotlinx.coroutines.CoroutineScope
@@ -43,56 +43,51 @@ class ProvisioningManager @Inject constructor(
     fun startProvisioning() {
         CoroutineScope(dispatcherProvider.io()).launch {
             performProvisioningIfNeeded()
-                .onFailure { setProvisionState(ProvisionState.Error(it)) }
+                .onFailure {
+                    Log.e("Provisioning Manager", "Error", it)
+                    setProvisionState(ProvisionState.Error(it))
+                }
                 .onSuccess { setProvisionState(ProvisionState.Initialized) }
         }
     }
 
     private suspend fun performProvisioningIfNeeded(): Result<Unit> {
-        return if (!BuildConfig.IS_ENTERPRISE) {
-            finalizeSetup()
-        } else {
-            configurationManagerFactory.getInstance(k9).loadConfigurationsInBackground()
-            val provisioningUrl = provisioningSettings.provisioningUrl
-            if (provisioningUrl != null && !systemFileLocator.keysDbFile.exists()) {
-                performProvisioningAfterChecks(provisioningUrl)
-            } else {
+        return when {
+            !BuildConfig.IS_ENTERPRISE || systemFileLocator.keysDbFile.exists() -> {
                 finalizeSetup()
+            }
+            !isDeviceOnline() -> {
+                Result.failure(ProvisioningFailedException("Device is offline"))
+            }
+            else -> {
+                configurationManagerFactory.create(k9).loadConfigurationsSuspend(
+                    true
+                ).flatMapSuspend {
+                    performProvisioningAfterChecks()
+                }
             }
         }
     }
 
-    private suspend fun performProvisioningAfterChecks(provisioningUrl: String): Result<Unit> {
-        return performChecks(
-            provisioningUrl
-        ).flatMapSuspend {
-            setProvisionState(ProvisionState.InProvisioning)
-            PEpProviderImplKotlin.provision(
-                dispatcherProvider.io(),
-                provisioningUrl
-            )
-        }.flatMapSuspend {
+    private suspend fun performProvisioningAfterChecks(): Result<Unit> {
+        return performChecks().flatMapSuspend {
             finalizeSetup(true)
         }
     }
 
-    private fun performChecks(provisioningUrl: String): Result<Unit> = when {
-        !isDeviceOnline() -> {
-            Result.failure(ProvisioningFailedException("Device is offline"))
-        }
-        !urlChecker.isUrlReachable(provisioningUrl) -> {
+    private fun performChecks(): Result<Unit> = when {
+        areProvisionedMailSettingsInvalid() -> {
             Result.failure(
                 ProvisioningFailedException(
-                    "Provisioning url $provisioningUrl is not reachable"
+                    "Provisioned mail settings are not valid"
                 )
             )
         }
-        !urlChecker.isValidUrl(provisioningUrl) -> {
-            Result.failure(
-                ProvisioningFailedException("Url has bad format: $provisioningUrl")
-            )
-        }
         else -> Result.success(Unit)
+    }
+
+    private fun areProvisionedMailSettingsInvalid(): Boolean {
+        return !provisioningSettings.provisionedMailSettings.isValidForProvision(urlChecker)
     }
 
     private fun isDeviceOnline(): Boolean =

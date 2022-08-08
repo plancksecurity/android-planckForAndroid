@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -557,12 +558,14 @@ public class MessageCompose extends PepActivity implements OnClickListener,
             if (K9.isUsingTrustwords()) {
                 pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             }
-            pEpSecurityStatusLayout.setOnLongClickListener( view -> {
-                PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
-                        view, recipientPresenter);
-                statusMenu.show();
-                return true;
-            });
+            if (!BuildConfig.IS_ENTERPRISE) {
+                pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+                    PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
+                            view, recipientPresenter);
+                    statusMenu.show();
+                    return true;
+                });
+            }
         }
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
         toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.MESSAGEVIEW));
