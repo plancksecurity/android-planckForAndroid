@@ -4776,7 +4776,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     Account checkAccount(String address, Account account) {
         for (Identity identity : account.getIdentities()) {
-            if (identity.getEmail().equals(address)) {
+            if (identity.getEmail().equalsIgnoreCase(address)) {
                 return account;
             }
         }
