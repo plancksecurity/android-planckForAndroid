@@ -24,7 +24,7 @@ data class SimpleMailSettings(
     }
 
     fun isValid(urlChecker: UrlChecker): Boolean =
-        port in 1..65534
+        port in 1..65535
                 && !server.isNullOrBlank() && urlChecker.isValidUrl(server)
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
