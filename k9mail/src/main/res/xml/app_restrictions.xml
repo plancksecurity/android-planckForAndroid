@@ -23,7 +23,7 @@
                 android:defaultValue=""
                 android:key="fingerprint"
                 android:restrictionType="string"
-                android:title="@string/fingerprint"/>
+                android:title="@string/fingerprint_title"/>
 
         </restriction>
     </restriction>
@@ -36,9 +36,9 @@
         android:title="@string/use_trustwords_setting_title"/>
 
     <restriction
-        android:defaultValue="@bool/default_forward_warning"
+        android:defaultValue="@bool/default_unsecure_delivery_warning"
         android:description="@string/pep_forward_warning_description"
-        android:key="pep_forward_warning"
+        android:key="unsecure_delivery_warning"
         android:restrictionType="bool"
         android:title="@string/pep_forward_warning"/>
 
@@ -75,17 +75,29 @@
         android:title="@string/account_setup_push_limit_label"/>
 
     <restriction
+        android:defaultValue="{{username}}"
+        android:description="@string/account_description_description"
+        android:key="account_description"
+        android:restrictionType="string"
+        android:title="@string/account_settings_description_label"/>
+
+    <restriction
         android:description="@string/composition_description"
-        android:key="composition_signature_settings"
+        android:key="composition_settings"
         android:restrictionType="bundle"
         android:title="@string/account_settings_composition_label">
+        <restriction
+            android:defaultValue="{{username}}"
+            android:key="composition_sender_name"
+            android:restrictionType="string"
+            android:title="@string/composition_sender_name_title"/>
         <restriction
             android:defaultValue="@bool/default_use_signature"
             android:key="composition_use_signature"
             android:restrictionType="bool"
             android:title="@string/account_settings_signature_use_label"/>
         <restriction
-            android:defaultValue=""
+            android:defaultValue="@string/default_signature"
             android:key="composition_signature"
             android:restrictionType="string"
             android:title="@string/account_settings_signature_label"/>
@@ -168,11 +180,88 @@
         android:restrictionType="bool"
         android:title="@string/pep_sync_enable_account"/>
 
-    <restriction
-        android:defaultValue=""
+    <!--restriction
+        android:defaultValue="https://provisioning.pep.security/{{partialupn}}/pEp.ppk"
         android:description="@string/provisioning_url_description"
         android:key="pep_user_provisioning_url"
         android:restrictionType="string"
-        android:title="@string/provisioning_url_title"/>
+        android:title="@string/provisioning_url_title"/-->
+
+    <restriction
+        android:defaultValue="@bool/default_allow_pep_sync_new_devices"
+        android:description="@string/allow_pep_sync_new_devices_description"
+        android:key="allow_pep_sync_new_devices"
+        android:restrictionType="bool"
+        android:title="@string/allow_pep_sync_new_devices_title"/>
+
+    <restriction
+        android:description="@string/mail_settings_description"
+        android:key="pep_mail_settings"
+        android:restrictionType="bundle"
+        android:title="@string/mail_settings_title">
+
+        <restriction
+            android:defaultValue="{{mail}}"
+            android:description="@string/account_email_address_description"
+            android:key="account_email_address"
+            android:restrictionType="string"
+            android:title="@string/account_email_address_title"/>
+
+        <restriction
+            android:description="@string/account_settings_incoming_summary"
+            android:key="incoming_mail_settings"
+            android:restrictionType="bundle"
+            android:title="@string/account_settings_incoming_label">
+
+            <restriction
+                android:defaultValue=""
+                android:key="incoming_mail_settings_server"
+                android:restrictionType="string"
+                android:title="@string/account_setup_incoming_imap_server_label"/>
+            <restriction
+                android:defaultValue="@string/account_setup_incoming_security_ssl_label"
+                android:key="incoming_mail_settings_security_type"
+                android:restrictionType="string"
+                android:title="@string/account_setup_incoming_security_label"/>
+            <restriction
+                android:defaultValue="@integer/mail_settings_incoming_port_default"
+                android:key="incoming_mail_settings_port"
+                android:restrictionType="integer"
+                android:title="@string/account_setup_incoming_port_label"/>
+            <restriction
+                android:defaultValue="{{mail}}"
+                android:key="incoming_mail_settings_user_name"
+                android:restrictionType="string"
+                android:title="@string/account_setup_incoming_username_label"/>
+        </restriction>
+
+        <restriction
+            android:description="@string/account_settings_outgoing_summary"
+            android:key="outgoing_mail_settings"
+            android:restrictionType="bundle"
+            android:title="@string/account_settings_outgoing_label">
+
+            <restriction
+                android:defaultValue=""
+                android:key="outgoing_mail_settings_server"
+                android:restrictionType="string"
+                android:title="@string/account_setup_outgoing_smtp_server_label"/>
+            <restriction
+                android:defaultValue="@string/account_setup_incoming_security_tls_label"
+                android:key="outgoing_mail_settings_security_type"
+                android:restrictionType="string"
+                android:title="@string/account_setup_outgoing_security_label"/>
+            <restriction
+                android:defaultValue="@integer/mail_settings_outgoing_port_default"
+                android:key="outgoing_mail_settings_port"
+                android:restrictionType="integer"
+                android:title="@string/account_setup_outgoing_port_label"/>
+            <restriction
+                android:defaultValue="{{mail}}"
+                android:key="outgoing_mail_settings_user_name"
+                android:restrictionType="string"
+                android:title="@string/account_setup_outgoing_username_label"/>
+        </restriction>
+    </restriction>
 
 </restrictions>

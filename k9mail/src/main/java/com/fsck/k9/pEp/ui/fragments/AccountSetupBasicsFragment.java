@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -78,6 +77,9 @@ import javax.inject.Inject;
 import butterknife.OnTextChanged;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.provisioning.AccountMailSettingsProvision;
+import security.pEp.provisioning.ProvisioningSettings;
+import security.pEp.provisioning.SimpleMailSettings;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -138,6 +140,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     PermissionChecker permissionChecker;
     @Inject
     PermissionRequester permissionRequester;
+    @Inject
+    ProvisioningSettings provisioningSettings;
 
     @Nullable
     @Override
@@ -167,6 +171,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
+        } else if (BuildConfig.IS_ENTERPRISE) {
+            mEmailView.setText(provisioningSettings.getEmail());
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
@@ -358,14 +364,20 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private String getOwnerName() {
         String name = null;
-        try {
-            name = getDefaultAccountName();
-        } catch (Exception e) {
-            Log.e(K9.LOG_TAG, "Could not get default account name", e);
-        }
+        if (BuildConfig.IS_ENTERPRISE) {
+            if (provisioningSettings.getSenderName() != null) {
+                name = provisioningSettings.getSenderName();
+            }
+        } else {
+            try {
+                name = getDefaultAccountName();
+            } catch (Exception e) {
+                Log.e(K9.LOG_TAG, "Could not get default account name", e);
+            }
 
-        if (name == null) {
-            name = "";
+            if (name == null) {
+                name = "";
+            }
         }
         return name;
     }
@@ -457,8 +469,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
             }
             initializeAccount();
-            mAccount.setName(getOwnerName());
             mAccount.setEmail(email);
+            mAccount.setName(getOwnerName());
+            if (BuildConfig.IS_ENTERPRISE && mAccount.getName() == null) {
+                mAccount.setName(mAccount.getEmail());
+            }
+            if (BuildConfig.IS_ENTERPRISE) {
+                mAccount.setDescription(
+                        !Utility.isNullOrBlank(provisioningSettings.getAccountDescription())
+                            ? provisioningSettings.getAccountDescription()
+                            : mAccount.getEmail()
+                );
+            }
             mAccount.setStoreUri(incomingUri.toString());
             mAccount.setTransportUri(outgoingUri.toString());
 
@@ -581,6 +603,51 @@ public class AccountSetupBasicsFragment extends PEpFragment
             return true;
         }
         return false;
+    }
+
+    private Provider getProvisionedProvider(String domain) {
+        try {
+            AccountMailSettingsProvision provisionSettings =
+                    provisioningSettings.getProvisionedMailSettings();
+            if (provisionSettings == null) {
+                return null;
+            }
+            Provider provider = new Provider();
+            provider.domain = domain;
+            provider.id = "provisioned";
+            provider.label = "enterprise provisioned provider";
+            provider.incomingUriTemplate =
+                    getServerUriTemplate(provisionSettings.getIncoming(), false);
+            provider.outgoingUriTemplate = getServerUriTemplate(
+                    provisionSettings.getOutgoing(),
+                    true
+            );
+            provider.incomingUsernameTemplate = provisionSettings.getIncoming().getUserName();
+            provider.outgoingUsernameTemplate = provisionSettings.getOutgoing().getUserName();
+            return provider;
+        } catch (Exception ex) {
+            Timber.e(
+                    ex,
+                    "%s: Error while trying to parse provisioned provider.",
+                    K9.LOG_TAG
+            );
+        }
+        return null;
+    }
+
+    private URI getServerUriTemplate(
+            SimpleMailSettings settings,
+            boolean outgoing
+    ) throws URISyntaxException {
+        String uri = (outgoing ? "smtp" : "imap") +
+                "+" +
+                settings.getConnectionSecurityString() +
+                "+" +
+                "://" +
+                settings.getServer() +
+                ":" +
+                settings.getPort();
+        return new URI(uri);
     }
 
     private void setup(String email) {
@@ -803,10 +870,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private AccountSetupBasicsFragment.Provider findProviderForDomain(String domain) {
+        AccountSetupBasicsFragment.Provider provider = getProvisionedProvider(domain);
+        if (provider != null) {
+            return provider;
+        }
         try {
             XmlResourceParser xml = getResources().getXml(R.xml.providers);
             int xmlEventType;
-            AccountSetupBasicsFragment.Provider provider = null;
+            provider = null;
             while ((xmlEventType = xml.next()) != XmlResourceParser.END_DOCUMENT) {
                 if (xmlEventType == XmlResourceParser.START_TAG
                         && "provider".equals(xml.getName())

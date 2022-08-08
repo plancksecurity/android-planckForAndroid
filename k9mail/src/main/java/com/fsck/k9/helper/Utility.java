@@ -55,6 +55,10 @@ public class Utility {
         return false;
     }
 
+    public static boolean isNullOrBlank(String string) {
+        return string == null || string.trim().isEmpty();
+    }
+
     public static boolean isAnyMimeType(String o, String... a) {
         for (String element : a) {
             if (MimeUtil.isSameMimeType(element, o)) {

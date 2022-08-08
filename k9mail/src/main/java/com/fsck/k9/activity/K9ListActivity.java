@@ -21,6 +21,7 @@ import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import butterknife.Bind;
+import security.pEp.mdm.ConfigurationManager;
 
 
 public abstract class K9ListActivity extends AppCompatActivity implements K9ActivityMagic {
@@ -31,7 +32,9 @@ public abstract class K9ListActivity extends AppCompatActivity implements K9Acti
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mBase = K9ActivityCommon.newInstance(this);
+        ConfigurationManager.Factory configurationManagerFactory =
+                ((K9) getApplication()).getComponent().configurationManagerFactory();
+        mBase = K9ActivityCommon.newInstance(this, configurationManagerFactory);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_activity);
         mList = (ListView)findViewById(android.R.id.list);

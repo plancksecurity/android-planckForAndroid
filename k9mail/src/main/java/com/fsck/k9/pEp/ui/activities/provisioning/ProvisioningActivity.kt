@@ -67,7 +67,7 @@ class ProvisioningActivity : AppCompatActivity(), ProvisioningView, SplashScreen
     }
 
     override fun displayInitializationError(message: String) {
-        displayError(R.string.provisioning_error_template, message)
+        displayError(R.string.initialization_error_template, message)
     }
 
     override fun displayProvisioningError(message: String) {

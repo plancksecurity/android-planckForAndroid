@@ -220,4 +220,18 @@ public class ServerSettings {
         return new ServerSettings(type, host, port, connectionSecurity, AuthType.EXTERNAL,
                 username, password, newAlias);
     }
+
+    public ServerSettings newFromProvisionValues(
+            String server,
+            ConnectionSecurity connectionSecurity,
+            int port,
+            String userName
+    ) {
+        return new ServerSettings(type, server, port, connectionSecurity,
+                authenticationType, userName, password, clientCertificateAlias);
+    }
+
+    protected boolean isNotNullNorBlank(String string) {
+        return true;//string != null;// && !string.trim().isEmpty();
+    }
 }
