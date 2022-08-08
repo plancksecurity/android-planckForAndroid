@@ -517,6 +517,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void startOAuthFlow() {
         Intent intent = OAuthFlowActivity.Companion.buildLaunchIntent(requireContext(), mAccount.getUuid());
         startActivityForResult(intent, REQUEST_CODE_OAUTH);
+        nextProgressBar.hide();
+        mNextButton.setVisibility(View.VISIBLE);
+        accountSetupNavigator.setLoading(false);
     }
 
     private void checkSettings() {
