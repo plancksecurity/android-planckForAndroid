@@ -386,7 +386,7 @@ public class TestUtils {
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
-    public Activity getCurrentActivity() {
+    public static Activity getCurrentActivity() {
 
         final Activity[] resumedActivity = {null};
         getInstrumentation().runOnMainSync(() -> {
