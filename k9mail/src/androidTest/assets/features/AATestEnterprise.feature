@@ -3,6 +3,22 @@ Feature: Test
     Given I created an account
 
 
+  @QTR-2344
+  Scenario: Cucumber Enterprise Disable Protection
+
+    When I set pep_enable_privacy_protection restriction to false
+    And I send 1 message to bot1 with subject newContact and body DisableProtectionTest
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter unsecureTest in the messageSubject field
+    And I enter pEpProtectionMustBeDisabled in the messageBody field
+    And I check if the privacy status is pEpRatingUnsecure
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnsecure
+    And I click the send message button
+    When I set pep_enable_privacy_protection restriction to true
+
+
+
 	#Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
 	# when entering the email address of a new contact bot1.
 	# Also verify if pEp attaches my public key to outgoing messages
@@ -557,29 +573,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
 
-  @QTR-417
-  Scenario Outline: Cucumber Passive Mode ON
-
-    When I go back to accounts list
-    When I enable passive mode
-    And I select account <account>
-    And I click compose message
-    And I send 1 messages to bot7 with subject passiveMode and body TestingPassiveMode
-    And I click the first message
-    Then I check if the privacy status is pep_no_color
-    When I go back to the Inbox
-    And I send 1 messages to bot7 with subject passiveModeEncrypted and body TestingPassiveModeEncrypted
-    And I click the first message
-    Then I check if the privacy status is pep_yellow
-    When I go back to accounts list
-    Then I disable passive mode
-    Examples:
-      |account|
-      |  0    |
-      
-      
 
   @QTR-412
   Scenario Outline: Cucumber Search for email/s in the Inbox
