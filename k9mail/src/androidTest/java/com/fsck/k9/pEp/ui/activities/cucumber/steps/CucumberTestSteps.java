@@ -1432,13 +1432,18 @@ public class CucumberTestSteps {
                     }
                     I_check_toolBar_color_is("pep_red");
                     return;
+                case "pEpRatingUndefined":
+                    if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                        assertFailWithMessage("Showing a rating when there is no recipient");
+                    }
+                    return;
+                case "pEpRatingUnsecure":
+                    if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                        assertFailWithMessage("Not showing Unsecure status");
+                    }
+                    I_check_toolBar_color_is("pep_gray");
+                    return;
             }
-        }
-        if (status.equals("pEpRatingUndefined") && (getTextFromView(onView(withId(R.id.to))).equals(""))) {
-            if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                assertFailWithMessage("Showing a rating when there is no recipient");
-            }
-            return;
         }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
