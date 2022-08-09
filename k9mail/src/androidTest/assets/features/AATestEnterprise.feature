@@ -3,6 +3,18 @@ Feature: Test
     Given I created an account
 
 
+  @QTR-2345
+  Scenario: Cucumber Disable Warning
+
+    When I set unsecure_delivery_warning restriction to false
+    And I click compose message
+    And I enter 3 unreliable recipients in the messageTo field
+#FIXME: Only guaranteed to work with S22
+    Then I check insecurity warnings are not there
+    When I set unsecure_delivery_warning restriction to true
+
+
+
   @QTR-2344
   Scenario: Cucumber Enterprise Disable Protection
 
