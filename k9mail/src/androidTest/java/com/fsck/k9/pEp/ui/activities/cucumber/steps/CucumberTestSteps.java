@@ -38,6 +38,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -621,6 +622,11 @@ public class CucumberTestSteps {
     public void I_wait_for_the_message_and_click_it() {
         timeRequiredForThisMethod(45);
         testUtils.waitForMessageAndClickIt();
+    }
+
+    @When("^I set (\\S+) restriction to (true|false)$")
+    public void I_set_boolean_restriction(String restriction, boolean value) {
+        RestrictionsManager.setBooleanRestrictions(restriction, value);
     }
 
     @When("^I click the last message received$")
