@@ -277,6 +277,7 @@ public class CucumberTestSteps {
             case "messageTo":
                 viewID = R.id.to;
                 resourceID = "to";
+                getBotsList();
                 break;
             case "messageSubject":
                 I_fill_subject_field(text);
@@ -2456,6 +2457,7 @@ public class CucumberTestSteps {
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_message_to_address(int totalMessages, String botName, String subject, String body) {
         String messageTo = "nothing";
+        getBotsList();
         switch (botName) {
             case "myself":
                 switch (testUtils.test_number()) {
