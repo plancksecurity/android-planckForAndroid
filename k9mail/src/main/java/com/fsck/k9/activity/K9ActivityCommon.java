@@ -23,6 +23,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import java.util.Locale;
 
+import security.pEp.auth.OAuthTokenRevokedReceiver;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.passphrase.PassphraseActivity;
@@ -40,6 +41,7 @@ public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
     private IntentFilter passphraseReceiverfilter;
     private ConfigurationManager configurationManager;
+    private OAuthTokenRevokedReceiver oAuthTokenRevokedReceiver;
 
     /**
      * Creates a new instance of {@link K9ActivityCommon} bound to the specified activity.
@@ -119,6 +121,7 @@ public class K9ActivityCommon {
         mActivity.setTheme(ThemeManager.getAppThemeResourceId());
         initPassphraseRequestReceiver();
         initConfigurationManager(configurationManagerFactory);
+        initOAuthTokenRevokedReceiver();
         configureNavigationBar(activity);
     }
 
@@ -190,6 +193,10 @@ public class K9ActivityCommon {
         passphraseReceiverfilter.setPriority(1);
     }
 
+    private void initOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver = new OAuthTokenRevokedReceiver();
+    }
+
     public void registerPassphraseReceiver() {
         Timber.e("pEpEngine-passphrase register receiver");
         mActivity.getApplicationContext()
@@ -198,6 +205,14 @@ public class K9ActivityCommon {
 
     public void unregisterPassphraseReceiver() {
         mActivity.getApplicationContext().unregisterReceiver(passphraseReceiver);
+    }
+
+    public void registerOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver.register(mActivity);
+    }
+
+    public void unregisterOAuthTokenRevokedReceiver() {
+        oAuthTokenRevokedReceiver.unregister(mActivity);
     }
 
     public void registerConfigurationManager() {
