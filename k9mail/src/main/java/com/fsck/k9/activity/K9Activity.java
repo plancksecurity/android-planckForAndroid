@@ -257,6 +257,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onResume();
         mBase.registerPassphraseReceiver();
         mBase.registerConfigurationManager();
+        mBase.registerOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             showSearchView();
         }
@@ -267,6 +268,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onPause();
         mBase.unregisterPassphraseReceiver();
         mBase.unregisterConfigurationManager();
+        mBase.unregisterOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }
