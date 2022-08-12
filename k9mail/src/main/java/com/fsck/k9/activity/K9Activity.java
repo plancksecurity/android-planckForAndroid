@@ -1,7 +1,9 @@
 package com.fsck.k9.activity;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -17,11 +19,15 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.pEp.PePUIArtefactCache;
+import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
@@ -30,11 +36,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
+import security.pEp.auth.OAuthTokenRevokedListener;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
+public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
+        OAuthTokenRevokedListener {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
@@ -43,6 +51,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
+    private static final String TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID = "ACCOUNT_UUID";
+    private static final String TOKEN_REVOKED_FEEDBACK_INCOMING = "INCOMING";
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
@@ -50,6 +60,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
     private boolean isShowingSearchView;
     private String searchText;
+    private String accountUuid;
+    private boolean incoming;
+    private FeedbackTools.Feedback tokenRevokedFeedback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +83,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
 
+            restoreTokenRevokedFeedback(savedInstanceState);
+        }
+    }
 
+    private void restoreTokenRevokedFeedback(@NotNull Bundle savedInstanceState) {
+        accountUuid = savedInstanceState.getString(TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID);
+        if (accountUuid != null) {
+            incoming = savedInstanceState.getBoolean(
+                    TOKEN_REVOKED_FEEDBACK_INCOMING, false);
         }
     }
 
@@ -261,6 +282,66 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         if(isShowingSearchView) {
             showSearchView();
         }
+        if (accountUuid != null) {
+            showTokenRevokedFeedback(accountUuid, incoming);
+        }
+    }
+
+    @Override
+    public void onTokenRevoked(@NonNull String accountUuid, boolean incoming) {
+        this.accountUuid = accountUuid;
+        this.incoming = incoming;
+        showTokenRevokedFeedback(accountUuid, incoming);
+    }
+
+    private void launchAccountSetupCheckSettings(@NotNull Account account, boolean incoming) {
+        AccountSetupCheckSettings.actionCheckSettings(
+                K9Activity.this,
+                account,
+                incoming
+                        ? AccountSetupCheckSettings.CheckDirection.INCOMING
+                        : AccountSetupCheckSettings.CheckDirection.OUTGOING
+        );
+    }
+
+    private void showTokenRevokedFeedback(@NonNull String accountUuid, boolean outgoing) {
+        if (tokenRevokedFeedback == null) {
+            Account account = Preferences.getPreferences(this).getAccount(accountUuid);
+            if (account != null) {
+                tokenRevokedFeedback = FeedbackTools.createIndefiniteFeedback(
+                        getRootView(),
+                        getString(R.string.token_revoked_feedback, account.getDescription()),
+                        getString(R.string.token_revoked_feedback_login_action),
+                        v -> {
+                            launchAccountSetupCheckSettings(account, outgoing);
+                        }
+                );
+            }
+        }
+        if (tokenRevokedFeedback != null && !tokenRevokedFeedback.isShown()) {
+            tokenRevokedFeedback.show();
+        }
+    }
+
+    private void loginSuccessful() {
+        accountUuid = null;
+        hideTokenRevokedFeedback();
+    }
+
+    private void hideTokenRevokedFeedback() {
+        if (tokenRevokedFeedback != null) {
+            tokenRevokedFeedback.dismiss();
+            tokenRevokedFeedback = null;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
+         && resultCode == Activity.RESULT_OK) {
+            loginSuccessful();
+        }
     }
 
     @Override
@@ -279,5 +360,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onSaveInstanceState(outState);
         outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
         outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
+        outState.putString(TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID, accountUuid);
+        outState.putBoolean(TOKEN_REVOKED_FEEDBACK_INCOMING, incoming);
     }
 }
