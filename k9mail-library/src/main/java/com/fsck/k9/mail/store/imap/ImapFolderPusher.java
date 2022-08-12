@@ -195,7 +195,7 @@ class ImapFolderPusher extends ImapFolder {
                         Timber.e(e, "Authentication failed. Stopping ImapFolderPusher.");
                     }
 
-                    pushReceiver.authenticationFailed();
+                    pushReceiver.authenticationFailed(e);
                     stop = true;
                 } catch (Exception e) {
                     reacquireWakeLockAndCleanUp();

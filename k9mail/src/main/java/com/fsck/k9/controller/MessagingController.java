@@ -1016,7 +1016,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Done synchronizing folder %s:%s", account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
 
             for (MessagingListener l : getListeners(listener)) {
                 l.synchronizeMailboxFailed(account, folder, "Authentication failure");
@@ -1234,7 +1234,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
         } catch (Exception e) {
             Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
@@ -3022,7 +3022,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         lastFailure = e;
                         wasPermanentFailure = false;
 
-                        handleAuthenticationFailure(account, false);
+                        handleAuthenticationFailure(account, false, e);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (CertificateValidationException e) {
                         lastFailure = e;
