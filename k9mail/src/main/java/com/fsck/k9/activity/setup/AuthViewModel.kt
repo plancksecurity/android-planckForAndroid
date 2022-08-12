@@ -165,8 +165,10 @@ class AuthViewModel(
                 val account = account!!
                 account.oAuthState = authState.jsonSerializeString()
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    account.save(accountManager)
+                if (account.setupState == Account.SetupState.READY) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        account.save(accountManager)
+                    }
                 }
 
                 if (authorizationException != null) {
