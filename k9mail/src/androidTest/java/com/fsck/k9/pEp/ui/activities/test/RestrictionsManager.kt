@@ -26,6 +26,7 @@ class RestrictionsManager: BaseAndroidTest() {
             manager.updateTestRestrictions(activity)
         }
 
+        @JvmStatic
         fun setStringRestrictions(restriction: String, value: String) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
             val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
