@@ -52,7 +52,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private static final String SHOWING_SEARCH_VIEW = "showingSearchView";
     private static final String K9ACTIVITY_SEARCH_TEXT = "searchText";
     private static final String TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID = "ACCOUNT_UUID";
-    private static final String TOKEN_REVOKED_FEEDBACK_INCOMING = "INCOMING";
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
@@ -61,7 +60,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     private boolean isShowingSearchView;
     private String searchText;
     private String accountUuid;
-    private boolean incoming;
     private FeedbackTools.Feedback tokenRevokedFeedback;
 
     @Override
@@ -83,15 +81,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
 
-            restoreTokenRevokedFeedback(savedInstanceState);
+            accountUuid = savedInstanceState.getString(TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID);
         }
-    }
-
-    private void restoreTokenRevokedFeedback(@NotNull Bundle savedInstanceState) {
-        accountUuid = savedInstanceState.getString(TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID);
-        if (accountUuid != null) {
-            incoming = savedInstanceState.getBoolean(
-                    TOKEN_REVOKED_FEEDBACK_INCOMING, false);
+        if (accountUuid == null) {
+            accountUuid = mBase.findRevokedAccount();
         }
     }
 
@@ -284,37 +277,34 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             showSearchView();
         }
         if (accountUuid != null) {
-            showTokenRevokedFeedback(accountUuid, incoming);
+            showTokenRevokedFeedback(accountUuid);
         }
     }
 
     @Override
-    public void onTokenRevoked(@NonNull String accountUuid, boolean incoming) {
+    public void onTokenRevoked(@NonNull String accountUuid) {
         this.accountUuid = accountUuid;
-        this.incoming = incoming;
-        showTokenRevokedFeedback(accountUuid, incoming);
+        showTokenRevokedFeedback(accountUuid);
     }
 
-    private void launchAccountSetupCheckSettings(@NotNull Account account, boolean incoming) {
+    private void launchAccountSetupCheckSettings(@NotNull Account account) {
         AccountSetupCheckSettings.actionCheckSettings(
-                K9Activity.this,
+                this,
                 account,
-                incoming
-                        ? AccountSetupCheckSettings.CheckDirection.INCOMING
-                        : AccountSetupCheckSettings.CheckDirection.OUTGOING
+                account.getRevokedTokenDirection()
         );
     }
 
-    private void showTokenRevokedFeedback(@NonNull String accountUuid, boolean outgoing) {
+    private void showTokenRevokedFeedback(@NonNull String accountUuid) {
         if (tokenRevokedFeedback == null) {
             Account account = Preferences.getPreferences(this).getAccount(accountUuid);
-            if (account != null) {
+            if (account != null && account.getRevokedTokenDirection() != null) {
                 tokenRevokedFeedback = FeedbackTools.createIndefiniteFeedback(
                         getRootView(),
                         getString(R.string.token_revoked_feedback, account.getDescription()),
                         getString(R.string.token_revoked_feedback_login_action),
                         v -> {
-                            launchAccountSetupCheckSettings(account, outgoing);
+                            launchAccountSetupCheckSettings(account);
                         }
                 );
             }
@@ -325,7 +315,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     private void loginSuccessful() {
-        accountUuid = null;
+        if (accountUuid != null) {
+            Preferences.getPreferences(this).getAccount(accountUuid).setRevokedTokenDirection(null);
+            accountUuid = null;
+        }
         hideTokenRevokedFeedback();
     }
 
@@ -362,6 +355,5 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         outState.putString(K9ACTIVITY_SEARCH_TEXT, searchText);
         outState.putBoolean(SHOWING_SEARCH_VIEW, isShowingSearchView);
         outState.putString(TOKEN_REVOKED_FEEDBACK_ACCOUNT_UUID, accountUuid);
-        outState.putBoolean(TOKEN_REVOKED_FEEDBACK_INCOMING, incoming);
     }
 }

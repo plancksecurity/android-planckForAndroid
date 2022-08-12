@@ -15,12 +15,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.fsck.k9.Account;
 import com.fsck.k9.K9;
+import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
+import java.util.List;
 import java.util.Locale;
 
 import security.pEp.auth.OAuthTokenRevokedReceiver;
@@ -220,6 +223,16 @@ public class K9ActivityCommon {
 
     public void unregisterConfigurationManager() {
         configurationManager.unregisterReceiver();
+    }
+
+    public String findRevokedAccount() {
+        List<Account> accounts = Preferences.getPreferences(mActivity).getAccounts();
+        for (Account account : accounts) {
+            if (account.getRevokedTokenDirection() != null) {
+                return account.getUuid();
+            }
+        }
+        return null;
     }
 
     public static class PassphraseRequestReceiver extends BroadcastReceiver {

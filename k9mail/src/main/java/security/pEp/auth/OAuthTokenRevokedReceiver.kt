@@ -9,16 +9,14 @@ import timber.log.Timber
 
 const val OAUTH_TOKEN_REVOKED_ACTION = "OAUTH_TOKEN_REVOKED"
 const val EXTRA_ACCOUNT_UUID = "ACCOUNT_UUID"
-const val EXTRA_INCOMING = "INCOMING"
 
 class OAuthTokenRevokedReceiver: BroadcastReceiver() {
     private var listener: OAuthTokenRevokedListener? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == OAUTH_TOKEN_REVOKED_ACTION) {
-            val incoming = intent.getBooleanExtra(EXTRA_INCOMING, false)
             val accountUuid = intent.getStringExtra(EXTRA_ACCOUNT_UUID)
-            accountUuid?.let { listener?.onTokenRevoked(accountUuid, incoming) }
+            accountUuid?.let { listener?.onTokenRevoked(accountUuid) }
         }
     }
 
@@ -37,11 +35,9 @@ class OAuthTokenRevokedReceiver: BroadcastReceiver() {
         fun sendOAuthTokenRevokedBroadcast(
             context: Context,
             accountUuid: String,
-            incoming: Boolean,
         ) {
             Intent().apply {
                 putExtra(EXTRA_ACCOUNT_UUID, accountUuid)
-                putExtra(EXTRA_INCOMING, incoming)
                 action = OAUTH_TOKEN_REVOKED_ACTION
             }.also { context.sendBroadcast(it) }
         }
