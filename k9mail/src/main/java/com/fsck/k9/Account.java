@@ -74,6 +74,16 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean pEpSyncEnabled;
     private String oAuthState;
 
+    private CheckDirection revokedTokenDirection;
+
+    public CheckDirection getRevokedTokenDirection() {
+        return revokedTokenDirection;
+    }
+
+    public void setRevokedTokenDirection(CheckDirection revokedTokenDirection) {
+        this.revokedTokenDirection = revokedTokenDirection;
+    }
+
     public synchronized String getOAuthState() {
         return oAuthState;
     }

@@ -28,6 +28,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingAppend;
@@ -1267,8 +1268,9 @@ public class MessagingController implements Sync.MessageToSendCallback {
     ) {
         notificationController.showAuthenticationErrorNotification(account, incoming);
         if (exception.isOAuthTokenRevoked()) {
-            OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(
-                    context, account.getUuid(), incoming);
+            CheckDirection direction = incoming ? CheckDirection.INCOMING : CheckDirection.OUTGOING;
+            account.setRevokedTokenDirection(direction);
+            OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(context, account.getUuid());
         }
     }
 
