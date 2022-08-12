@@ -16,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -36,6 +35,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.helper.UrlEncodingHelper;
@@ -89,7 +89,7 @@ import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener,
         ClientCertificateSpinner.OnClientCertificateChangedListener, AccountSetupBasics.AccountSetupSettingsCheckerFragment {
-    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0;
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
     private final static String STATE_KEY_PROVIDER =
@@ -515,14 +515,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void checkSettings() {
-        checkSettings(AccountSetupCheckSettings.CheckDirection.INCOMING);
+        checkSettings(CheckDirection.INCOMING);
     }
 
-    private void checkSettings(AccountSetupCheckSettings.CheckDirection direction) {
-        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
-        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, direction, false, AccountSetupCheckSettingsFragment.LOGIN,
-                false, basicsSettingsCheckCallback);
+    private void checkSettings(CheckDirection direction) {
+        AccountSetupCheckSettings.actionCheckSettings(requireActivity(), mAccount, direction);
     }
 
     private void saveCredentialsInPreferences() {
@@ -702,36 +699,29 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
                 && resultCode != RESULT_CANCELED) {
             ((AccountSetupBasics) getActivity()).onImport(data.getData());
+        } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
+            handleCheckSettingsResult(resultCode);
         } else if (requestCode == REQUEST_CODE_OAUTH) {
             handleSignInResult(resultCode);
-        } else {
-            if (resultCode == RESULT_OK) {
-                if (!mCheckedIncoming) {
-                    //We've successfully checked incoming.  Now check outgoing.
-                    mCheckedIncoming = true;
-                    saveCredentialsInPreferences();
-                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
-                            false,
-                            new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                                @Override
-                                public void onError(PEpSetupException exception) {
-                                    handleErrorCheckingSettings(exception);
-                                }
+        } /*else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }*/
+    }
 
-                                @Override
-                                public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                    goForward();
-                                }
-                            });
-                } else {
-                    //We've successfully checked outgoing as well.
-                    mAccount.setDescription(mAccount.getEmail());
-                    mAccount.save(Preferences.getPreferences(getActivity()));
-                    K9.setServicesEnabled(getActivity());
-                    AccountSetupNames.actionSetNames(getActivity(), mAccount, false);
-                    getActivity().finish();
-                }
-            }
+    private void handleCheckSettingsResult(int resultCode) {
+        if (resultCode != RESULT_OK) return;
+        if (mAccount == null) {
+            throw new IllegalStateException("Account instance missing");
+        }
+
+        if (!mCheckedIncoming) {
+            // We've successfully checked incoming. Now check outgoing.
+            mCheckedIncoming = true;
+            checkSettings(CheckDirection.OUTGOING);
+        } else {
+            // We've successfully checked outgoing as well.
+            AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
+            requireActivity().finish();
         }
     }
 
@@ -995,7 +985,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void acceptKeyDialog(
             final int msgResId,
             final CertificateValidationException ex,
-            AccountSetupCheckSettings.CheckDirection direction
+            CheckDirection direction
     ) {
         Handler handler = new Handler();
         handler.post(new Runnable() {
@@ -1138,14 +1128,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void acceptCertificate(X509Certificate certificate,
-                                   AccountSetupCheckSettings.CheckDirection direction) {
+                                   CheckDirection direction) {
         try {
-            if(direction.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
-                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.INCOMING,
+            if(direction.equals(CheckDirection.INCOMING)) {
+                mAccount.addCertificate(CheckDirection.INCOMING,
                         certificate);
-                checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+                checkSettings(CheckDirection.OUTGOING);
             } else {
-                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.OUTGOING,
+                mAccount.addCertificate(CheckDirection.OUTGOING,
                         certificate);
                 mAccount.setDescription(mAccount.getEmail());
                 onSettingsChecked(PEpSettingsChecker.Redirection.TO_APP);
@@ -1165,7 +1155,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Override
     public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
         if(redirection.equals(PEpSettingsChecker.Redirection.OUTGOING)) {
-            checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+            checkSettings(CheckDirection.OUTGOING);
         } else {
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
             requireActivity().finish();
