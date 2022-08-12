@@ -48,8 +48,6 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Hex;
-import com.fsck.k9.mail.oauth.AuthorizationException;
-import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.imap.ImapStoreSettings;
 import com.fsck.k9.mail.store.webdav.WebDavStoreSettings;
@@ -73,6 +71,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import static android.app.Activity.RESULT_OK;
+import static com.fsck.k9.mail.store.imap.ImapStoreSettings.AUTODETECT_NAMESPACE_KEY;
 
 public class AccountSetupIncomingFragment extends PEpFragment implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
 
@@ -655,23 +654,20 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
                             ConnectionSecurity.SSL_TLS_REQUIRED, authType, username, password, clientCertificateAlias);
                     String transportUri = Transport.createTransportUri(transportServer);
                     mAccount.setTransportUri(transportUri);
+                    goForward();
                 } catch (URISyntaxException use) {
                     /*
                      * If we can't set up the URL we just continue. It's only for
                      * convenience.
                      */
                 }
-
-                checkSettings();
             }
         }
     }
 
     private void checkSettings() {
-        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
-        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, mMakeDefault, AccountSetupCheckSettingsFragment.INCOMING,
-                false, basicsSettingsCheckCallback);
+        AccountSetupCheckSettings.actionCheckSettings(
+                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
     }
 
     private void goForward() {
@@ -692,13 +688,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         mNextButton.setVisibility(View.INVISIBLE);
         accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
-        AuthType authType = getSelectedAuthType();
-        if (authType == AuthType.XOAUTH2) {
-            updateAccountSettings("");
-            checkSettings();
-            return;
-        }
-        updateAccountSettings(mPasswordView.getText().toString());
+        updateAccountSettings();
         checkSettings();
     }
 
@@ -735,9 +725,10 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
 
     }
 
-    private void updateAccountSettings(String password) {
+    private void updateAccountSettings() {
         ConnectionSecurity connectionSecurity = getSelectedSecurity();
         String username = mUsernameView.getText().toString();
+        String password = null;
         String clientCertificateAlias = null;
         AuthType authType = getSelectedAuthType();
         if (authType.isExternalAuth()) {
@@ -746,9 +737,12 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
         String host = mServerView.getText().toString();
         int port = Integer.parseInt(mPortView.getText().toString());
         Map<String, String> extra = null;
+        if (authType != AuthType.EXTERNAL) {
+            password = mPasswordView.getText().toString();
+        }
         if (ServerSettings.Type.IMAP == mStoreType) {
             extra = new HashMap<String, String>();
-            extra.put(ImapStoreSettings.AUTODETECT_NAMESPACE_KEY,
+            extra.put(AUTODETECT_NAMESPACE_KEY,
                     Boolean.toString(mImapAutoDetectNamespaceView.isChecked()));
             extra.put(ImapStoreSettings.PATH_PREFIX_KEY,
                     mImapPathPrefixView.getText().toString());

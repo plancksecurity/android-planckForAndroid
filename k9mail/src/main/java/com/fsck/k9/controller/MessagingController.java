@@ -4607,6 +4607,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearCertificateErrorNotifications(account, incoming);
     }
 
+    public void checkIncomingServerSettings(Account account) throws MessagingException {
+        Store store = account.getRemoteStore();
+        store.checkSettings();
+    }
+
+    public void checkOutgoingServerSettings(Account account) throws MessagingException {
+        Transport transport = TransportProvider.getInstance()
+                .getTransport(K9.app, account, account.getOAuth2TokenProvider());
+        transport.close();
+        try {
+            transport.open();
+        } finally {
+            transport.close();
+        }
+    }
+
     public void notifyUserIfCertificateProblem(Account account, Exception exception, boolean incoming) {
         if (!(exception instanceof CertificateValidationException)) {
             return;

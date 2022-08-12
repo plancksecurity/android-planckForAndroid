@@ -80,7 +80,9 @@ class RealOAuth2TokenProvider(
         } else if (token != oldAccessToken) {
             requestFreshToken = false
             account.oAuthState = authState.jsonSerializeString()
-            account.save(preferences)
+            if (account.setupState == Account.SetupState.READY) {
+                account.save(preferences)
+            }
         }
 
         return token ?: throw AuthenticationFailedException("Failed to fetch an access token")
