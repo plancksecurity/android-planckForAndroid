@@ -84,5 +84,16 @@ class RestrictionsManager: BaseAndroidTest() {
             return mailSettings
         }
 
+        @JvmStatic
+        fun compareSetting(server: String, securityType: String, port: Int, userName: String, settings: MailIncomingOutgoingSettings): Boolean {
+            if (settings.server != server ||
+                    settings.securityType != securityType ||
+                    settings.port != port ||
+                    settings.userName != userName) {
+                return false
+            }
+            return true
+        }
+
     }
 }
