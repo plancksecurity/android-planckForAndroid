@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +34,6 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
@@ -110,13 +108,11 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private CheckBox mClientCertificateCheckBox;
     private ClientCertificateSpinner mClientCertificateSpinner;
     private CheckBox mOAuth2CheckBox;
-    private Spinner mAccountSpinner;
     private Button mNextButton;
     private Button mManualSetupButton;
     private View passwordLayout;
     private Account mAccount;
     private AccountSetupBasicsFragment.Provider mProvider;
-    private AndroidAccountOAuth2TokenStore accountTokenStore;
 
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
 
@@ -163,7 +159,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mManualSetupButton = rootView.findViewById(R.id.manual_setup);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
-        mAccountSpinner = rootView.findViewById(R.id.account_spinner);
         passwordLayout = rootView.findViewById(R.id.account_password_layout);
 
         initializeViewListeners();
@@ -308,12 +303,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else if (usingXoauth) {
             // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.VISIBLE);
-            mAccountSpinner.setVisibility(View.GONE);
             passwordLayout.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
             mEmailView.setVisibility(View.VISIBLE);
-            mAccountSpinner.setVisibility(View.GONE);
             passwordLayout.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
@@ -541,10 +534,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
-        accountTokenStore = K9.oAuth2TokenStore;
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
-        mAccountSpinner.setAdapter(adapter);
         validateFields();
         restoreErrorDialogIfNeeded();
         restoreViewsEnabledState();
@@ -577,39 +566,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         accountSetupNavigator.setLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
 
-        String email;
-        if (mEmailView.getVisibility() == View.VISIBLE) {
-            email = mEmailView.getText().toString().trim();
-        } else {
-            email = mAccountSpinner.getSelectedItem().toString();
-        }
+        String email = mEmailView.getText().toString().trim();
+        // TODO: 9/8/22 REVIEW/RENAME THIS METHOD ISAVALIDADDRESS
         if (isAValidAddress(email)) return;
-
-        List<String> accounts = accountTokenStore.getAccounts();
-        //if (accounts.contains(email)) {
-        //    mOAuth2CheckBox.setChecked(true);
-        //    mAccountSpinner.setSelection(accounts.indexOf(email));
-        //    setup(email);
-        //} else if (email.contains(GMAIL)) {
-        //    new AlertDialog.Builder(getActivity())
-        //            .setTitle(R.string.add_account_title)
-        //            .setMessage(R.string.add_account_message)
-        //            .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
-        //                @Override
-        //                public void onClick(DialogInterface dialog, int which) {
-        //                    accountSetupNavigator.createGmailAccount(getActivity());
-        //                }
-        //            })
-        //            .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
-        //                @Override
-        //                public void onClick(DialogInterface dialog, int which) {
-        //                    setup(email);
-        //                }
-        //            })
-        //            .show();
-        //} else {
-        //    setup(email);
-        //}
         setup(email);
     }
 
@@ -737,6 +696,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!isAdded()) {
+            return;
+        }
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
                 && resultCode != RESULT_CANCELED) {
             ((AccountSetupBasics) getActivity()).onImport(data.getData());
@@ -792,12 +754,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void onManualSetup() {
         ((AccountSetupBasics) getActivity()).setManualSetupRequired(true);
-        String email;
-        if (mOAuth2CheckBox.isChecked()) {
-            email = mAccountSpinner.getSelectedItem().toString();
-        } else {
-            email = mEmailView.getText().toString().trim();
-        }
+        String email = mEmailView.getText().toString().trim();
 
         if (isAValidAddress(email)) return;
 

@@ -39,15 +39,6 @@
                     android:contentDescription="@string/account_settings_email_label"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <Spinner
-                android:id="@+id/account_spinner"
-                android:hint="@string/account_setup_basics_email_hint"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone">
-            </Spinner>
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/account_password_layout"
                 android:layout_width="match_parent"
