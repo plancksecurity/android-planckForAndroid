@@ -130,6 +130,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public void setUpToolbar(boolean showUpButton) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
@@ -172,7 +173,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    public ViewGroup getRootView() {
+    public View getRootView() {
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
