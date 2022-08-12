@@ -112,6 +112,16 @@ public class AndroidAccountOAuth2TokenStore implements OAuth2TokenProvider {
         authTokens.remove(username);
     }
 
+    @Override
+    public String getToken(long timeoutMillis) throws AuthenticationFailedException {
+        return null;
+    }
+
+    @Override
+    public void invalidateToken() {
+
+    }
+
     public List<String> getAccounts() {
         Account[] accounts = accountManager.getAccountsByType(GOOGLE_ACCOUNT_TYPE);
         ArrayList<String> accountNames = new ArrayList<>();
