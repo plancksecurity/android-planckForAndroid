@@ -64,6 +64,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -627,6 +628,39 @@ public class CucumberTestSteps {
     @When("^I set (\\S+) restriction to (true|false)$")
     public void I_set_boolean_restriction(String restriction, boolean value) {
         RestrictionsManager.setBooleanRestrictions(restriction, value);
+    }
+
+    @When("^I set (\\S+) setting to (\\S+)")
+    public void I_set_string_setting(String restriction, String value) {
+        RestrictionsManager.setStringRestrictions(restriction, value);
+    }
+
+    @When("^I set incoming settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
+    public void I_set_incoming_settings(String server, String securityType,int port, String userName) {
+        RestrictionsManager.setIncomingBundleSettings(server, securityType, port, userName);
+    }
+
+    @When("^I set outgoing settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
+    public void I_set_outgoing_settings(String server, String securityType,int port, String userName) {
+        RestrictionsManager.setOutgoingBundleSettings(server, securityType, port, userName);
+    }
+
+    @When("^I compare incoming settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
+    public void I_compare_incoming_settings(String server, String securityType,int port, String userName) {
+        MailSettings settings = RestrictionsManager.getRestrictions();
+        assert settings != null;
+        if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getIncoming())) {
+            assertFailWithMessage("Incoming settings are not the same: " + server + " // " + settings.getIncoming().getServer() + " ; "  + securityType + " // " + settings.getIncoming().getSecurityType() + " ; "  + port + " // " + settings.getIncoming().getPort() + " ; "  + userName + " // " + settings.getIncoming().getUserName());
+        }
+    }
+
+    @When("^I compare outgoing settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
+    public void I_compare_outgoing_settings(String server, String securityType,int port, String userName) {
+        MailSettings settings = RestrictionsManager.getRestrictions();
+        assert settings != null;
+        if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getOutgoing())) {
+            assertFailWithMessage("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
+        }
     }
 
     @When("^I click the last message received$")
