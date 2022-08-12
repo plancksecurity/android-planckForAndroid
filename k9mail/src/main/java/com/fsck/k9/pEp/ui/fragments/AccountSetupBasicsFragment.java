@@ -113,6 +113,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private Spinner mAccountSpinner;
     private Button mNextButton;
     private Button mManualSetupButton;
+    private View passwordLayout;
     private Account mAccount;
     private AccountSetupBasicsFragment.Provider mProvider;
     private AndroidAccountOAuth2TokenStore accountTokenStore;
@@ -163,6 +164,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
         mAccountSpinner = rootView.findViewById(R.id.account_spinner);
+        passwordLayout = rootView.findViewById(R.id.account_password_layout);
 
         initializeViewListeners();
         validateFields();
@@ -307,12 +309,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
             // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.VISIBLE);
             mAccountSpinner.setVisibility(View.GONE);
-            mPasswordView.setVisibility(View.GONE);
+            passwordLayout.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
             mEmailView.setVisibility(View.VISIBLE);
             mAccountSpinner.setVisibility(View.GONE);
-            mPasswordView.setVisibility(View.VISIBLE);
+            passwordLayout.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
             mOAuth2CheckBox.setEnabled(true);
