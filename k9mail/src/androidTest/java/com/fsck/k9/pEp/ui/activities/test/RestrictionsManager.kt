@@ -79,7 +79,6 @@ class RestrictionsManager: BaseAndroidTest() {
             var mailSettings = manager.getMailSettings()
             val manifestMailSettings = manager.getManifestMailSettings()
             Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
-            manager.applicationRestrictions.clear()
             mailSettings = manager.getMailSettings()
             Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
             return mailSettings
