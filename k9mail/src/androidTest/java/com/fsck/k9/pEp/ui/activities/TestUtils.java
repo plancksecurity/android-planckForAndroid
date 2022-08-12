@@ -1064,10 +1064,14 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
                 }
-                if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
-                    manualAccount();
-                } else {
+                if (BuildConfig.IS_ENTERPRISE) {
                     automaticAccount();
+                } else {
+                    if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
+                        manualAccount();
+                    } else {
+                        automaticAccount();
+                    }
                 }
                 try {
                     waitForIdle();
