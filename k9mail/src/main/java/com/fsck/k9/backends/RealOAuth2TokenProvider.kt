@@ -70,7 +70,9 @@ class RealOAuth2TokenProvider(
             throw IOException("Error while fetching an access token", authException)
         } else if (authException != null) {
             account.oAuthState = null
-            account.save(preferences)
+            if (account.setupState == Account.SetupState.READY) {
+                account.save(preferences)
+            }
 
             throw AuthenticationFailedException(
                 message = "Failed to fetch an access token",
