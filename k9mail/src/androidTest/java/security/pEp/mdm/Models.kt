@@ -1,29 +1,29 @@
 package security.pEp.mdm
 
 data class MailSettings @JvmOverloads constructor(
-    val email: String? = null,
-    val incoming: MailIncomingOutgoingSettings? = null,
-    val outgoing: MailIncomingOutgoingSettings? = null,
+    var email: String? = null,
+    var incoming: MailIncomingOutgoingSettings? = null,
+    var outgoing: MailIncomingOutgoingSettings? = null,
 )
 
 data class MailIncomingOutgoingSettings @JvmOverloads constructor(
-    val server: String? = null,
-    val securityType: String? = null,
-    val port: Int? = null,
-    val userName: String? = null,
+    var server: String? = null,
+    var securityType: String? = null,
+    var port: Int? = null,
+    var userName: String? = null,
 )
 
 data class FolderSettings @JvmOverloads constructor(
-    val archiveFolder: String? = null,
-    val draftsFolder: String? = null,
-    val sentFolder: String? = null,
-    val spamFolder: String? = null,
-    val trashFolder: String? = null,
+    var archiveFolder: String? = null,
+    var draftsFolder: String? = null,
+    var sentFolder: String? = null,
+    var spamFolder: String? = null,
+    var trashFolder: String? = null,
 )
 
 data class CompositionSettings @JvmOverloads constructor(
-    val senderName: String? = null,
-    val signature: String? = null,
-    val useSignature: Boolean? = null,
-    val signatureBefore: Boolean? = null,
+    var senderName: String? = null,
+    var signature: String? = null,
+    var useSignature: Boolean? = null,
+    var signatureBefore: Boolean? = null,
 )
