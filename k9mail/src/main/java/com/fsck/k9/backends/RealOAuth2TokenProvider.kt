@@ -5,6 +5,7 @@ import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.AuthenticationFailedException
+import com.fsck.k9.mail.LOGIN_REQUIRED
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
@@ -44,7 +45,7 @@ class RealOAuth2TokenProvider(
         var exception: AuthorizationException? = null
 
         val authState = account.oAuthState?.let { AuthState.jsonDeserialize(it) }
-            ?: throw AuthenticationFailedException("Login required")
+            ?: throw AuthenticationFailedException(LOGIN_REQUIRED)
 
         if (requestFreshToken) {
             authState.needsTokenRefresh = true
