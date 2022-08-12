@@ -982,8 +982,7 @@ public class ImapConnectionTest {
             private int invalidationCount = 0;
 
             @Override
-            public String getToken(String username, long timeoutMillis) throws AuthenticationFailedException {
-                assertEquals(USERNAME, username);
+            public String getToken(long timeoutMillis) throws AuthenticationFailedException {
                 assertEquals(OAUTH2_TIMEOUT, timeoutMillis);
 
                 switch (invalidationCount) {
@@ -1000,19 +999,8 @@ public class ImapConnectionTest {
             }
 
             @Override
-            public void invalidateToken(String username) {
-                assertEquals(USERNAME, username);
+            public void invalidateToken() {
                 invalidationCount++;
-            }
-
-            @Override
-            public List<String> getAccounts() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public void authorizeApi(String username, Activity activity, OAuth2TokenProviderAuthCallback callback) {
-                throw new UnsupportedOperationException();
             }
         };
     }

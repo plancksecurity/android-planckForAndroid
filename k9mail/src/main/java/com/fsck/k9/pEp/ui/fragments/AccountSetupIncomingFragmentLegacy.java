@@ -636,19 +636,19 @@ public class AccountSetupIncomingFragmentLegacy extends PEpFragment {
         rootView.setEnabled(false);
         AuthType authType = getSelectedAuthType();
         if (authType == AuthType.XOAUTH2) {
-            K9.oAuth2TokenStore.authorizeApi(mAccount.getEmail(), getActivity(),
-                    new OAuth2TokenProvider.OAuth2TokenProviderAuthCallback() {
-                        @Override
-                        public void success() {
-                            updateAccountSettings("");
-                            checkSettings();
-                        }
-
-                        @Override
-                        public void failure(AuthorizationException e) {
-                            fail(e);
-                        }
-                    });
+//            K9.oAuth2TokenStore.authorizeApi(mAccount.getEmail(), getActivity(),
+//                    new OAuth2TokenProvider.OAuth2TokenProviderAuthCallback() {
+//                        @Override
+//                        public void success() {
+//                            updateAccountSettings("");
+//                            checkSettings();
+//                        }
+//
+//                        @Override
+//                        public void failure(AuthorizationException e) {
+//                            fail(e);
+//                        }
+//                    });
             return;
         }
         updateAccountSettings(mPasswordView.getText().toString());
