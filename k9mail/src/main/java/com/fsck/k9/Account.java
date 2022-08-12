@@ -948,6 +948,11 @@ public class Account implements BaseAccount, StoreConfig {
         return transportUri;
     }
 
+    @Override
+    public OAuth2TokenProvider getOAuth2TokenProvider() {
+        return new RealOAuth2TokenProvider(K9.app, Preferences.getPreferences(K9.app), this);
+    }
+
     public synchronized void setTransportUri(String transportUri) {
         this.transportUri = transportUri;
     }
