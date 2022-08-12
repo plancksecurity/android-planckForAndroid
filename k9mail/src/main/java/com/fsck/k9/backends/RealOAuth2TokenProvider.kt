@@ -1,5 +1,6 @@
 package com.fsck.k9.backends
 
+import android.app.Activity
 import android.content.Context
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
@@ -21,6 +22,21 @@ class RealOAuth2TokenProvider(
 ) : OAuth2TokenProvider {
     private val authService = AuthorizationService(context)
     private var requestFreshToken = false
+    override fun getAccounts(): MutableList<String> {
+        return mutableListOf()
+    }
+
+    override fun authorizeApi(
+        username: String?,
+        activity: Activity?,
+        callback: OAuth2TokenProvider.OAuth2TokenProviderAuthCallback?
+    ) {
+
+    }
+
+    override fun getToken(username: String?, timeoutMillis: Long): String {
+        return ""
+    }
 
     override fun getToken(timeoutMillis: Long): String {
         val latch = CountDownLatch(1)
@@ -68,6 +84,10 @@ class RealOAuth2TokenProvider(
         }
 
         return token ?: throw AuthenticationFailedException("Failed to fetch an access token")
+    }
+
+    override fun invalidateToken(username: String?) {
+
     }
 
     override fun invalidateToken() {
