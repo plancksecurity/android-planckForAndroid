@@ -540,7 +540,8 @@ public class AccountSetupCheckSettingsFragment extends PEpFragment implements Co
             if (!(account.getRemoteStore() instanceof WebDavStore)) {
                 publishProgress(R.string.account_setup_check_settings_check_outgoing_msg);
             }
-            Transport transport = TransportProvider.getInstance().getTransport(K9.app, account, K9.oAuth2TokenStore);
+            Transport transport = TransportProvider.getInstance()
+                    .getTransport(K9.app, account, account.getOAuth2TokenProvider());
             transport.close();
             try {
                 transport.open();
