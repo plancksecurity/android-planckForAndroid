@@ -305,8 +305,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mOAuth2CheckBox.setEnabled(false);
         } else if (usingXoauth) {
             // hide username and password fields, show account spinner
-            mEmailView.setVisibility(View.GONE);
-            mAccountSpinner.setVisibility(View.VISIBLE);
+            mEmailView.setVisibility(View.VISIBLE);
+            mAccountSpinner.setVisibility(View.GONE);
             mPasswordView.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
@@ -330,8 +330,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
         boolean oauth2 =
                 oauth2Checked &&
-                mAccountSpinner.getSelectedItem() != null &&
-                !mAccountSpinner.getSelectedItem().toString().isEmpty();
+                        emailValid;
 
         boolean certificateAuth =
                 clientCertificateChecked && clientCertificateAlias != null && emailValid;
@@ -420,7 +419,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
         String email;
         if (usingXOAuth2)
-            email = mAccountSpinner.getSelectedItem().toString();
+            email = mEmailView.getText().toString().trim();
         else
             email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
@@ -671,7 +670,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void setup(String email) {
-        if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
+        if (mClientCertificateCheckBox.isChecked()) {
             // Auto-setup doesn't support client certificates.
             onManualSetup();
             return;
