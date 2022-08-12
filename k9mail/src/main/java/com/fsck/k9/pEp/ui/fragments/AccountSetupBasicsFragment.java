@@ -721,7 +721,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         } else {
             // We've successfully checked outgoing as well.
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
-            requireActivity().finish();
         }
     }
 
