@@ -48,7 +48,7 @@ public class FeedbackTools {
             Resources resources = rootView.getResources();
             Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
             snackbar.setAction(actionText, actionListener);
-            snackbar.setActionTextColor(resources.getColor(R.color.pep_yellow));
+            snackbar.setActionTextColor(resources.getColor(R.color.yellow));
             TextView snackTextView = snackbar.getView().findViewById(R.id.snackbar_text);
             snackTextView.setMaxLines(10);
             snackbar.show();
@@ -91,7 +91,7 @@ public class FeedbackTools {
         }
     }
 
-    public static interface Feedback {
+    public interface Feedback {
         void show();
 
         void dismiss();
