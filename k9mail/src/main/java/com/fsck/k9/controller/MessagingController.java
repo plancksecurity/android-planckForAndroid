@@ -117,6 +117,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import security.pEp.auth.OAuthTokenRevokedReceiver;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -1259,8 +1260,16 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    void handleAuthenticationFailure(Account account, boolean incoming) {
+    void handleAuthenticationFailure(
+            Account account,
+            boolean incoming,
+            AuthenticationFailedException exception
+    ) {
         notificationController.showAuthenticationErrorNotification(account, incoming);
+        if (exception.isOAuthTokenRevoked()) {
+            OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(
+                    context, account.getUuid(), incoming);
+        }
     }
 
     private void updateMoreMessages(Folder remoteFolder, LocalFolder localFolder, Date earliestDate, int remoteStart)
