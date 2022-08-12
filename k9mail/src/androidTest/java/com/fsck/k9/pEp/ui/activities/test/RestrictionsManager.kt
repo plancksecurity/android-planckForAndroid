@@ -1,13 +1,16 @@
 package com.fsck.k9.pEp.ui.activities.test
 
 import androidx.test.core.app.ApplicationProvider
+import com.fsck.k9.Preferences
 import com.fsck.k9.common.BaseAndroidTest
 import com.fsck.k9.pEp.infrastructure.TestK9
 import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.preferences.SettingsExporter
+import kotlinx.coroutines.*
 import security.pEp.mdm.FakeRestrictionsManager
+import security.pEp.mdm.FakeRestrictionsManager.Companion.getProvisioningRestrictions
+import security.pEp.mdm.MailIncomingOutgoingSettings
 import security.pEp.mdm.MailSettings
-import security.pEp.mdm.RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION
-import security.pEp.mdm.RESTRICTION_PEP_EXTRA_KEYS
 import timber.log.Timber
 
 
@@ -32,6 +35,43 @@ class RestrictionsManager: BaseAndroidTest() {
 
         }
 
+        @JvmStatic
+        fun setIncomingBundleSettings(server: String, securityType: String, port: Int, userName: String) {
+            val app = ApplicationProvider.getApplicationContext<TestK9>()
+            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
+            var settings = manager.getMailSettings()!!
+            val newSettings = settings.copy(
+                incoming = settings!!.incoming!!.copy(
+                    server = server,
+                    securityType = securityType,
+                    port = port,
+                    userName = userName
+                )
+            )
+            manager.setMailSettings(newSettings)
+            val activity = TestUtils.getCurrentActivity()
+            manager.updateTestRestrictions(activity)
+        }
+
+        @JvmStatic
+        fun setOutgoingBundleSettings(server: String, securityType: String, port: Int, userName: String) {
+            val app = ApplicationProvider.getApplicationContext<TestK9>()
+            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
+            var settings = manager.getMailSettings()!!
+            val newSettings = settings.copy(
+                outgoing = settings!!.incoming!!.copy(
+                    server = server,
+                    securityType = securityType,
+                    port = port,
+                    userName = userName
+                )
+            )
+            manager.setMailSettings(newSettings)
+            val activity = TestUtils.getCurrentActivity()
+            manager.updateTestRestrictions(activity)
+        }
+
+        @JvmStatic
         fun getRestrictions(): MailSettings? {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
             val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
