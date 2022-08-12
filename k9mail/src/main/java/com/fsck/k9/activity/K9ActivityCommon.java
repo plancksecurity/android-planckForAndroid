@@ -35,7 +35,6 @@ import timber.log.Timber;
  * This class implements functionality common to most activities used in K-9 Mail.
  *
  * @see K9Activity
- * @see K9ListActivity
  */
 public class K9ActivityCommon {
     private PassphraseRequestReceiver passphraseReceiver;
