@@ -1557,7 +1557,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     private void showNotEncryptedMessageSnackBar(Message message) {
         if (message.isSet(X_PEP_WASNT_ENCRYPTED)) {
-            FeedbackTools.showIndefiniteFeedback(
+            FeedbackTools.createIndefiniteFeedback(
                     rootView,
                     getString(R.string.message_failed_to_encrypt),
                     getString(R.string.pep_force_unprotected),
