@@ -51,7 +51,10 @@ class SendFailedNotifications {
                 .setAutoCancel(true)
                 .setTicker(title)
                 .setContentTitle(title)
-                .setContentText(text)
+                .setStyle(
+                        new NotificationCompat.BigTextStyle()
+                                .bigText(text)
+                )
                 .setContentIntent(folderListPendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_ERROR);
