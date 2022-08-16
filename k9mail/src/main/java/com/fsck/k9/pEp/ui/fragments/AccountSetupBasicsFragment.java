@@ -38,6 +38,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
+import com.fsck.k9.auth.OAuthProviderType;
 import com.fsck.k9.helper.UrlEncodingHelper;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
@@ -102,6 +103,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
     private static final String WAS_LOADING = "wasLoading";
     private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
+    private static final String OAUTH_GMAIL_INCOMING_SERVER = "imap.gmail.com";
+    private static final String OAUTH_GMAIL_OUTGOING_SERVER = "stmp.gmail.com";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -173,6 +176,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mPasswordView.setText(password);
         } else if (BuildConfig.IS_ENTERPRISE) {
             mEmailView.setText(provisioningSettings.getEmail());
+            AccountMailSettingsProvision provisionSettings =
+                    provisioningSettings.getProvisionedMailSettings();
+            if (provisionSettings != null) {
+                mOAuth2CheckBox.setChecked(
+                        provisionSettings.getOAuthType() != OAuthProviderType.NONE);
+            }
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
@@ -413,10 +422,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         boolean usingXOAuth2 = mOAuth2CheckBox.isChecked();
 
         String email;
-        if (usingXOAuth2)
-            email = mEmailView.getText().toString().trim();
-        else
-            email = mEmailView.getText().toString().trim();
+        email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String[] emailParts = splitEmail(email);
         String user = emailParts[0];
@@ -593,11 +599,18 @@ public class AccountSetupBasicsFragment extends PEpFragment
             provider.domain = domain;
             provider.id = "provisioned";
             provider.label = "enterprise provisioned provider";
+            provider.oAuthProviderType = provisionSettings.getOAuthType();
+
             provider.incomingUriTemplate =
-                    getServerUriTemplate(provisionSettings.getIncoming(), false);
+                    getServerUriTemplate(
+                            provisionSettings.getIncoming(),
+                            false,
+                            provider.oAuthProviderType
+                    );
             provider.outgoingUriTemplate = getServerUriTemplate(
                     provisionSettings.getOutgoing(),
-                    true
+                    true,
+                    provider.oAuthProviderType
             );
             provider.incomingUsernameTemplate = provisionSettings.getIncoming().getUserName();
             provider.outgoingUsernameTemplate = provisionSettings.getOutgoing().getUserName();
@@ -614,14 +627,20 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private URI getServerUriTemplate(
             SimpleMailSettings settings,
-            boolean outgoing
+            boolean outgoing,
+            OAuthProviderType oAuthProviderType
     ) throws URISyntaxException {
+        String server = oAuthProviderType == OAuthProviderType.GMAIL
+                ? outgoing
+                    ? OAUTH_GMAIL_OUTGOING_SERVER
+                    : OAUTH_GMAIL_INCOMING_SERVER
+                : settings.getServer();
         String uri = (outgoing ? "smtp" : "imap") +
                 "+" +
                 settings.getConnectionSecurityString() +
                 "+" +
                 "://" +
-                settings.getServer() +
+                server +
                 ":" +
                 settings.getPort();
         return new URI(uri);
@@ -1186,5 +1205,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         public String outgoingUsernameTemplate;
 
         public String note;
+
+        public OAuthProviderType oAuthProviderType = OAuthProviderType.NONE;
     }
 }
