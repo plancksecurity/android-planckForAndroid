@@ -616,6 +616,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
+            showLoading(true);
             if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
                 boolean isPushCapable = false;
                 try {
@@ -668,12 +669,11 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
                 requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
+        showLoading(false);
     }
 
     private void goForward() {
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
-        rootView.setEnabled(true);
+        showLoading(false);
         if (editSettings) {
             if (getActivity() != null) {
                 getActivity().finish();
@@ -684,12 +684,23 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
     }
 
     protected void onNext() {
-        nextProgressBar.show();
-        mNextButton.setVisibility(View.INVISIBLE);
-        accountSetupNavigator.setLoading(true);
+        showLoading(true);
         enableViewGroup(false, (ViewGroup) rootView);
         updateAccountSettings();
         checkSettings();
+    }
+
+    private void showLoading(boolean loading) {
+        if (loading) {
+            nextProgressBar.show();
+            mNextButton.setVisibility(View.INVISIBLE);
+        } else {
+            nextProgressBar.hide();
+            mNextButton.setVisibility(View.VISIBLE);
+
+        }
+        accountSetupNavigator.setLoading(loading);
+        enableViewGroup(!loading, (ViewGroup) rootView);
     }
 
     private void fail(Exception use) {

@@ -518,6 +518,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void startOAuthFlow() {
         Intent intent = OAuthFlowActivity.Companion.buildLaunchIntent(requireContext(), mAccount.getUuid());
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH);
+        showLoading(false);
     }
 
     private void checkSettings() {
@@ -526,6 +527,21 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void checkSettings(CheckDirection direction) {
         AccountSetupCheckSettings.actionCheckSettings(requireActivity(), mAccount, direction);
+        showLoading(false);
+    }
+
+    private void showLoading(boolean loading) {
+        if (loading) {
+            nextProgressBar.show();
+            mNextButton.setVisibility(View.GONE);
+        } else {
+            nextProgressBar.hide();
+            mNextButton.setVisibility(View.VISIBLE);
+
+        }
+        accountSetupNavigator.setLoading(loading);
+        enableViewGroup(!loading, (ViewGroup) rootView);
+        mManualSetupButton.setEnabled(!wasLoading);
     }
 
     private void saveCredentialsInPreferences() {
@@ -543,17 +559,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(wasLoading ? View.GONE : View.VISIBLE);
-        mManualSetupButton.setEnabled(!wasLoading);
-        enableViewGroup(!wasLoading, (ViewGroup)rootView);
-        if(wasLoading) {
-            nextProgressBar.setVisibility(View.VISIBLE);
-            nextProgressBar.show();
-            wasLoading = false;
-        }
-        else {
-            nextProgressBar.hide();
-        }
+        showLoading(wasLoading);
+        wasLoading = false;
     }
 
     private void restoreErrorDialogIfNeeded() {
@@ -564,10 +571,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void onNext() {
-        nextProgressBar.show();
-        mNextButton.setVisibility(View.GONE);
-        accountSetupNavigator.setLoading(true);
-        enableViewGroup(false, (ViewGroup) rootView);
+        showLoading(true);
 
         String email = mEmailView.getText().toString().trim();
         // TODO: 9/8/22 REVIEW/RENAME THIS METHOD ISAVALIDADDRESS
@@ -732,7 +736,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (mAccount == null) {
             throw new IllegalStateException("Account instance missing");
         }
-
+        showLoading(true);
         if (!mCheckedIncoming) {
             // We've successfully checked incoming. Now check outgoing.
             mCheckedIncoming = true;
@@ -741,6 +745,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
             // We've successfully checked outgoing as well.
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
         }
+        showLoading(false);
     }
 
     private void handleSignInResult(int resultCode) {
@@ -748,6 +753,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (mAccount == null) {
             throw new IllegalStateException("Account instance missing");
         }
+        showLoading(true);
         checkSettings();
     }
 
