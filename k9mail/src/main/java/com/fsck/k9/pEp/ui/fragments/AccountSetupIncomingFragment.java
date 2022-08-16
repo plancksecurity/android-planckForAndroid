@@ -630,7 +630,7 @@ public class AccountSetupIncomingFragment extends PEpFragment implements Account
                 }
                 mAccount.save(preferences);
                 getActivity().finish();
-            } else {
+            } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
                 /*
                  * Set the username and password for the outgoing settings to the username and
                  * password the user just set for incoming.

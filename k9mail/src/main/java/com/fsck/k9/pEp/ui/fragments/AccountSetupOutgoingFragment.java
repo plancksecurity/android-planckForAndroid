@@ -618,8 +618,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
             if (mEdit) {
                 mAccount.save(preferences);
                 goForward();
-            } else {
-                AccountSetupOptions.actionOptions(getActivity(), mAccount, mMakeDefault);
+            } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
                 goForward();
             }
         }
