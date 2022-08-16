@@ -9,6 +9,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
@@ -116,6 +117,8 @@ class ConfiguredSettingsUpdater(
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
                     saveAccountEmailAddress(bundle, restriction)
+                RESTRICTION_ACCOUNT_OAUTH_PROVIDER ->
+                    saveAccountOAuthProvider(bundle, restriction)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = saveAccountIncomingSettings(
                         bundle,
@@ -130,9 +133,31 @@ class ConfiguredSettingsUpdater(
                 }
             }
         }
-        provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-            incoming, outgoing
-        )
+        provisioningSettings.provisionedMailSettings = provisioningSettings.provisionedMailSettings
+            ?.copy(incoming = incoming, outgoing = outgoing)
+            ?: AccountMailSettingsProvision(incoming, outgoing)
+    }
+
+    private fun saveAccountOAuthProvider(bundle: Bundle?, entry: RestrictionEntry) {
+        updateString(
+            bundle,
+            entry,
+            accepted = { newValue ->
+                !newValue.isNullOrBlank() &&
+                        newValue in OAuthProviderType.values().map { it.toString() }
+            }
+        ) { newValue ->
+            newValue ?.let {
+                provisioningSettings.provisionedMailSettings =
+                    provisioningSettings.provisionedMailSettings
+                        ?.copy(oAuthType = OAuthProviderType.valueOf(it))
+                        ?: AccountMailSettingsProvision(
+                            SimpleMailSettings(),
+                            SimpleMailSettings(),
+                            OAuthProviderType.valueOf(it)
+                        )
+            }
+        }
     }
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {

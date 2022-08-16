@@ -1,11 +1,13 @@
 package security.pEp.provisioning
 
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
 import security.pEp.network.UrlChecker
 
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
+    val oAuthType: OAuthProviderType = OAuthProviderType.NONE
 )
 
 fun AccountMailSettingsProvision?.isValidForProvision(urlChecker: UrlChecker): Boolean =
