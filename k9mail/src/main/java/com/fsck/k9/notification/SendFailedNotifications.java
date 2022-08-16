@@ -41,7 +41,11 @@ class SendFailedNotifications {
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
-            folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
+            folderListPendingIntent = actionBuilder.createViewFolderPendingIntent(
+                    account,
+                    account.getOutboxFolderName(),
+                    notificationId
+            );
         }
 
         NotificationCompat.Builder builder = controller
