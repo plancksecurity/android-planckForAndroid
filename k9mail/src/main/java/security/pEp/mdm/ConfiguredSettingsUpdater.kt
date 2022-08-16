@@ -113,12 +113,14 @@ class ConfiguredSettingsUpdater(
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
         var outgoing = SimpleMailSettings()
+        var oAuthProviderType = OAuthProviderType.NONE
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
                     saveAccountEmailAddress(bundle, restriction)
                 RESTRICTION_ACCOUNT_OAUTH_PROVIDER ->
-                    saveAccountOAuthProvider(bundle, restriction)
+                    oAuthProviderType = getAccountOAuthProvider(
+                        bundle, restriction, oAuthProviderType)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = saveAccountIncomingSettings(
                         bundle,
@@ -133,12 +135,18 @@ class ConfiguredSettingsUpdater(
                 }
             }
         }
-        provisioningSettings.provisionedMailSettings = provisioningSettings.provisionedMailSettings
-            ?.copy(incoming = incoming, outgoing = outgoing)
-            ?: AccountMailSettingsProvision(incoming, outgoing)
+        provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
+            incoming,
+            outgoing,
+            oAuthProviderType
+        )
     }
 
-    private fun saveAccountOAuthProvider(bundle: Bundle?, entry: RestrictionEntry) {
+    private fun getAccountOAuthProvider(
+        bundle: Bundle?,
+        entry: RestrictionEntry,
+        default: OAuthProviderType
+    ): OAuthProviderType {
         updateString(
             bundle,
             entry,
@@ -148,16 +156,10 @@ class ConfiguredSettingsUpdater(
             }
         ) { newValue ->
             newValue ?.let {
-                provisioningSettings.provisionedMailSettings =
-                    provisioningSettings.provisionedMailSettings
-                        ?.copy(oAuthType = OAuthProviderType.valueOf(it))
-                        ?: AccountMailSettingsProvision(
-                            SimpleMailSettings(),
-                            SimpleMailSettings(),
-                            OAuthProviderType.valueOf(it)
-                        )
+                return OAuthProviderType.valueOf(it)
             }
         }
+        return default
     }
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
@@ -581,7 +583,7 @@ class ConfiguredSettingsUpdater(
         entry: RestrictionEntry,
         crossinline default: () -> String? = { entry.selectedString },
         crossinline accepted: (String?) -> Boolean = { true },
-        crossinline block: (newValue: String?) -> Unit
+        block: (newValue: String?) -> Unit
     ) {
         kotlin.runCatching {
             val newValue = restrictions?.getString(entry.key) ?: default()
