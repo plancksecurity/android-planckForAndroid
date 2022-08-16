@@ -3039,10 +3039,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }  catch (AppDidntEncryptMessageException e) {
                         // TODO: 06/07/2020 Check if this catch branch is really needed.
-                        lastFailure = e;
                         wasPermanentFailure = true;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+
+                        lastFailure = new AppDidntEncryptMessageException(message);
+                        lastFailure.setStackTrace(e.getStackTrace());
                     } catch (AuthFailurePassphraseNeeded e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
