@@ -11,6 +11,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
@@ -496,7 +497,7 @@ class ConfiguredSettingsUpdaterTest {
     fun `update() takes the value for mail settings from the provided restrictions`() {
         stubInitialServerSettings()
 
-        val restrictions = getMailSettingsBundle()
+        val restrictions = getMailSettingsBundle(oAuthProvider = OAuthProviderType.GMAIL)
         val entry = getMailRestrictionEntry()
 
 
@@ -528,7 +529,8 @@ class ConfiguredSettingsUpdaterTest {
                     "mail.server.host",
                     ConnectionSecurity.SSL_TLS_REQUIRED,
                     "username"
-                )
+                ),
+                oAuthType = OAuthProviderType.GMAIL,
             )
             account.storeUri = "incomingUri"
             account.transportUri = "outgoingUri"
@@ -551,6 +553,7 @@ class ConfiguredSettingsUpdaterTest {
 
     private fun getMailSettingsBundle(
         email: String? = "email@mail.ch",
+        oAuthProvider: OAuthProviderType = OAuthProviderType.NONE,
         server: String? = "mail.server.host",
         username: String? = "username",
         security: String? = "SSL/TLS",
@@ -560,6 +563,7 @@ class ConfiguredSettingsUpdaterTest {
             RESTRICTION_ACCOUNT_MAIL_SETTINGS,
             Bundle().apply {
                 putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
+                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
                 putBundle(
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                     bundleOf(
@@ -589,6 +593,7 @@ class ConfiguredSettingsUpdaterTest {
         RESTRICTION_ACCOUNT_MAIL_SETTINGS,
         arrayOf(
             RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "email@default.ch"),
+            RestrictionEntry(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, OAuthProviderType.NONE.toString()),
             RestrictionEntry.createBundleEntry(
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                 arrayOf(
@@ -757,7 +762,8 @@ class ConfiguredSettingsUpdaterTest {
                     "oldServer",
                     ConnectionSecurity.NONE,
                     "oldUsername"
-                )
+                ),
+                oAuthType = OAuthProviderType.NONE,
             )
         }
         verify(exactly = 0) {
