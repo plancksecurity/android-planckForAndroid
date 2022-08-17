@@ -39,7 +39,7 @@ public class Storage {
 
     private Context context = null;
     private PassphraseStorage passphraseStorage;
-    private OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences;
+    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
 
     private SQLiteDatabase openDB() {
         SQLiteDatabase mDb = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
@@ -189,7 +189,7 @@ public class Storage {
     private Storage(Context context) {
         this.context = context;
         passphraseStorage = new PassphraseStorage(context);
-        ongoingDecryptMessagesPreferences = new OngoingDecryptMessagesPreferences(context);
+        ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
         loadValues();
     }
 
@@ -267,7 +267,7 @@ public class Storage {
     }
 
     public StorageEditor edit() {
-        return new StorageEditor(this, passphraseStorage, ongoingDecryptMessagesPreferences);
+        return new StorageEditor(this, passphraseStorage, ongoingDecryptMessagesStorage);
     }
 
     public Map<String, String> getAll() {
@@ -357,10 +357,10 @@ public class Storage {
     }
 
     public Set<String> getOngoingDecryptMessages() {
-        return ongoingDecryptMessagesPreferences.getOngoingDecryptMessages();
+        return ongoingDecryptMessagesStorage.getOngoingDecryptMessages();
     }
 
     public Set<String> getOngoingDecryptMessageTempFilePaths() {
-        return ongoingDecryptMessagesPreferences.getTempFilePaths();
+        return ongoingDecryptMessagesStorage.getTempFilePaths();
     }
 }

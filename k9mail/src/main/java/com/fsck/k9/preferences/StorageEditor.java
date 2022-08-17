@@ -16,7 +16,7 @@ import timber.log.Timber;
 public class StorageEditor {
     private Storage storage;
     private PassphraseStorage passphraseStorage;
-    private OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences;
+    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
 
     private Map<String, String> changes = new HashMap<>();
     private List<String> removals = new ArrayList<>();
@@ -26,10 +26,10 @@ public class StorageEditor {
 
     StorageEditor(Storage storage,
                   PassphraseStorage passphraseStorage,
-                  OngoingDecryptMessagesPreferences ongoingDecryptMessagesPreferences) {
+                  OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage) {
         this.storage = storage;
         this.passphraseStorage = passphraseStorage;
-        this.ongoingDecryptMessagesPreferences = ongoingDecryptMessagesPreferences;
+        this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
 
         snapshot.putAll(storage.getAll());
     }
@@ -117,18 +117,18 @@ public class StorageEditor {
     }
 
     public void addOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.addMessageId(messageId);
+        ongoingDecryptMessagesStorage.addMessageId(messageId);
     }
 
     public void removeOngoingDecryptMessageId(String messageId) {
-        ongoingDecryptMessagesPreferences.removeMessageId(messageId);
+        ongoingDecryptMessagesStorage.removeMessageId(messageId);
     }
 
     public void addOngoingDecryptMessageTempFilePaths(Collection<String> filePaths) {
-        ongoingDecryptMessagesPreferences.addTempFilePaths(filePaths);
+        ongoingDecryptMessagesStorage.addTempFilePaths(filePaths);
     }
 
     public void clearOngoingDecryptMessageTempFilePaths() {
-        ongoingDecryptMessagesPreferences.clearTempFilePaths();
+        ongoingDecryptMessagesStorage.clearTempFilePaths();
     }
 }

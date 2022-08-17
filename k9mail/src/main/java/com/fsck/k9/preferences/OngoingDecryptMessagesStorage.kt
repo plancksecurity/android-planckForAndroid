@@ -3,7 +3,7 @@ package com.fsck.k9.preferences
 import android.content.Context
 import android.content.SharedPreferences
 
-class OngoingDecryptMessagesPreferences(val context: Context) {
+class OngoingDecryptMessagesStorage(val context: Context) {
     private val ongoingDecryptMessagesPreferences: SharedPreferences = context.getSharedPreferences(
         ONGOING_DECRYPT_MESSAGES_PREFERENCES,
         Context.MODE_PRIVATE
