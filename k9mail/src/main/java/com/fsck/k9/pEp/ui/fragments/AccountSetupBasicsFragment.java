@@ -104,7 +104,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String WAS_LOADING = "wasLoading";
     private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
     private static final String OAUTH_GMAIL_INCOMING_SERVER = "imap.gmail.com";
-    private static final String OAUTH_GMAIL_OUTGOING_SERVER = "stmp.gmail.com";
+    private static final String OAUTH_GMAIL_OUTGOING_SERVER = "smtp.gmail.com";
 
     private EditText mEmailView;
     private EditText mPasswordView;
