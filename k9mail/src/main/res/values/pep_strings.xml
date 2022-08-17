@@ -345,7 +345,7 @@
     <string name="initialization_complete">Initialization complete</string>
     <string name="provisioning_error_template">Provisioning error:\n%s\nPlease contact your IT department.</string>
     <string name="initialization_error_template">Initialization error:\n%s\nPlease contact your IT department.</string>
-    <string name="account_setup_oauth_description">To use this email account with K-9 Mail, you need to sign in and grant the app access to your emails.</string>
+    <string name="account_setup_oauth_description">To use this email account with p≡p, you need to sign in and grant the app access to your emails.</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in">Sign in</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
