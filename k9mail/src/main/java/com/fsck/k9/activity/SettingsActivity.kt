@@ -1056,7 +1056,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         private const val DIALOG_NO_FILE_MANAGER = 4
 
 
-        private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1
+        private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0
         private const val ACTIVITY_REQUEST_SAVE_SETTINGS_FILE = 2
 
         private const val ACCOUNT_STATS = "accountStats"
