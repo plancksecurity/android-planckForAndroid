@@ -5019,7 +5019,7 @@ public class TestUtils {
     }
 
     public String getAccountAddress (int account) {
-        while (testConfig.test_number.equals("-10")) {
+        while (testConfig == null || testConfig.test_number.equals("-10")) {
             readConfigFile();
         }
         return testConfig.getMail(account);
