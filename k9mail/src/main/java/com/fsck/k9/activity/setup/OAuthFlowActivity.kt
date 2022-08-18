@@ -12,6 +12,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
+import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.observe
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
@@ -66,8 +67,12 @@ class OAuthFlowActivity : K9Activity() {
                 return
             }
             AuthFlowState.Success -> {
-                setResult(RESULT_OK)
-                finish()
+                if (intent.getBooleanExtra(EXTRA_TOKEN_REVOKED, false)) {
+                    SettingsActivity.actionBasicStart(this)
+                } else {
+                    setResult(RESULT_OK)
+                    finish()
+                }
             }
             AuthFlowState.Canceled -> {
                 displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
@@ -109,6 +114,7 @@ class OAuthFlowActivity : K9Activity() {
 
     companion object {
         private const val EXTRA_ACCOUNT_UUID = "accountUuid"
+        private const val EXTRA_TOKEN_REVOKED = "tokenRevoked"
 
         private const val STATE_PROGRESS = "signInProgress"
 
@@ -116,6 +122,13 @@ class OAuthFlowActivity : K9Activity() {
             return Intent(context, OAuthFlowActivity::class.java).apply {
                 putExtra(EXTRA_ACCOUNT_UUID, accountUuid)
             }
+        }
+
+        fun startOAuthFlowOnTokenRevoked(context: Context, accountUuid: String) {
+            Intent(context, OAuthFlowActivity::class.java).apply {
+                putExtra(EXTRA_ACCOUNT_UUID, accountUuid)
+                putExtra(EXTRA_TOKEN_REVOKED, true)
+            }.also { context.startActivity(it) }
         }
     }
 }
