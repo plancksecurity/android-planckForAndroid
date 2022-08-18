@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="pep_reset_trust">Vertrauen aufheben</string>
     <string name="pep_pgp_fingerprint">PGP-Fingerabdruck</string>
     <string name="pEp_trustwords">p≡p Trustwords</string>
@@ -287,5 +287,15 @@
     <string name="initialization_complete">Initialisierung abgeschlossen</string>
     <string name="provisioning_error_template">Bereitstellung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
     <string name="initialization_error_template">Initialisierung Fehlermeldung error:\n%s\nBitte wenden Sie sich an Ihre IT-Abteilung.</string>
+    <string name="account_setup_oauth_description">Um dieses E-Mail-Konto mit p≡p zu verwenden, müssen Sie sich anmelden und der App Zugriff auf Ihre E-Mails gewähren.</string>
+    <!--Displayed below the 'account_setup_oauth_description' text-->
+    <string name="account_setup_oauth_sign_in">Anmelden</string>
+    <!--Displayed below the 'account_setup_oauth_description' text-->
+    <string name="account_setup_oauth_sign_in_with_google">Mit Google anmelden</string>
+
+    <string name="account_setup_failed_dlg_oauth_flow_canceled">Berechtigung aufgehoben</string>
+    <string name="account_setup_failed_dlg_oauth_flow_failed">Die Autorisierung ist aufgrund des folgenden Fehlers fehlgeschlagen: <xliff:g id="error">%s</xliff:g></string>
+    <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 wird von diesem Anbieter derzeit nicht unterstützt.</string>
+    <string name="account_setup_failed_dlg_browser_not_found">Die App konnte keinen Browser finden, der für den Zugriff auf Ihr Konto verwendet werden kann.</string>
 
 </resources>
