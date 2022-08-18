@@ -126,6 +126,13 @@ class OAuthFlowActivity : K9Activity() {
 
     override fun search(query: String?) {}
 
+    override fun onTokenRevoked(accountUuid: String) {
+        val currentAccountUuid = intent.getStringExtra(EXTRA_ACCOUNT_UUID)
+        if (currentAccountUuid != null && currentAccountUuid != accountUuid) {
+            super.onTokenRevoked(accountUuid)
+        }
+    }
+
     companion object {
         private const val EXTRA_ACCOUNT_UUID = "accountUuid"
         private const val EXTRA_TOKEN_REVOKED = "tokenRevoked"
