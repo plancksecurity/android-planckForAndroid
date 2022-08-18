@@ -1603,7 +1603,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             final List<LocalMessage> messagesToNotify,
             final StorageEditor storageEditor) {
         if (shouldRemoveId) {
-            storageEditor.removeOngoingDecryptMessageId(String.valueOf(originalMessage.getId()));
+            storageEditor.removeOngoingDecryptMessageId(originalMessage.getMessageId());
         }
         // Increment the number of "new messages" if the newly downloaded message is
         // not marked as read.
@@ -1652,10 +1652,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
-                            if (storage.getOngoingDecryptMessages().contains(String.valueOf(message.getId()))) {
+                            if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
                                 throw new MessagingException(OngoingDecryptMessagesStorage.DO_NOT_REMOVE_ID);
                             }
-                            storageEditor.addOngoingDecryptMessageId(String.valueOf(message.getId()));
+                            storageEditor.addOngoingDecryptMessageId(message.getMessageId());
                             storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
                             long time = System.currentTimeMillis();
 
