@@ -14,6 +14,8 @@ import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.search.LocalSearch;
 import org.junit.After;
 import org.junit.Before;
@@ -100,6 +102,10 @@ public class MessagingControllerTest {
     private PEpProvider pEpProvider;
     @Mock
     private Preferences preferences;
+    @Mock
+    private Storage storage;
+    @Mock
+    private StorageEditor storageEditor;
 
     private volatile boolean hasFetchedMessage = false;
 
@@ -119,6 +125,8 @@ public class MessagingControllerTest {
     private void stubPreferences() {
         doReturn(account).when(preferences).getAccount(anyString());
         doReturn(Collections.singletonList(account)).when(preferences).getAccounts();
+        doReturn(storage).when(preferences).getStorage();
+        doReturn(storageEditor).when(storage).edit();
     }
 
     @After
