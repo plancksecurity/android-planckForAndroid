@@ -1,12 +1,10 @@
 package com.fsck.k9.pEp.ui.message_compose
 
 import android.view.View
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,8 +15,8 @@ import androidx.test.uiautomator.UiDevice
 import com.fsck.k9.R
 import com.fsck.k9.pEp.ui.activities.SplashActivity
 import com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed
+import com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers.anything
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -90,10 +88,8 @@ class PEpFabMenuTest {
     }
 
     private fun clickListItem(position: Int) {
-        onData(anything())
-                .inAdapterView(withId(R.id.message_list))
-                .atPosition(position)
-                .perform(click())
+        onView(withRecyclerView(R.id.message_list).atPosition(position))
+            .perform(click())
         device?.waitForIdle()
     }
 
