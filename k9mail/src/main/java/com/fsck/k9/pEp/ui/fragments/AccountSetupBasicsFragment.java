@@ -55,11 +55,6 @@ import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.SetupAccountType;
 import com.fsck.k9.view.ClientCertificateSpinner;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -76,8 +71,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
 import security.pEp.provisioning.AccountMailSettingsProvision;
 import security.pEp.provisioning.ProvisioningSettings;
 import security.pEp.provisioning.SimpleMailSettings;
@@ -125,10 +118,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private AccountSetupNavigator accountSetupNavigator;
     private PePUIArtefactCache pEpUIArtefactCache;
 
-    public boolean ismCheckedIncoming() {
-        return mCheckedIncoming;
-    }
-
     private AlertDialog errorDialog;
     private int errorDialogTitle;
     private String errorDialogMessage;
@@ -139,10 +128,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     PEpSettingsChecker pEpSettingsChecker;
     @Inject
     SetupAccountType setupAccountType;
-    @Inject
-    PermissionChecker permissionChecker;
-    @Inject
-    PermissionRequester permissionRequester;
     @Inject
     ProvisioningSettings provisioningSettings;
 
@@ -274,35 +259,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
      */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!permissionChecker.hasContactsPermission()) {
-            if (isChecked) {
-                permissionRequester.requestContactsPermission(rootView, new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        contactsPermissionGranted();
-                    }
+        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
+        validateFields();
 
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        contactsPermissionDenied();
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                        //NOP
-                    }
-                });
-            }
-        } else {
-            updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-            validateFields();
-
-            // Have the user select (or confirm) the client certificate
-            if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
-                mClientCertificateSpinner.chooseCertificate();
-            }
+        // Have the user select (or confirm) the client certificate
+        if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
+            mClientCertificateSpinner.chooseCertificate();
         }
-
     }
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
@@ -310,7 +273,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
             mOAuth2CheckBox.setEnabled(false);
         } else if (usingXoauth) {
-            // hide username and password fields, show account spinner
             mEmailView.setVisibility(View.VISIBLE);
             passwordLayout.setVisibility(View.GONE);
         } else {
@@ -703,6 +665,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
+        boolean oAuthCheckboxEnabled = mOAuth2CheckBox.isEnabled();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ViewGroup) {
@@ -711,7 +674,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 child.setEnabled(enable);
             }
         }
-
+        mOAuth2CheckBox.setEnabled(oAuthCheckboxEnabled);
     }
 
     @Override
@@ -922,15 +885,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Override
     protected void inject() {
         getpEpComponent().inject(this);
-    }
-
-    public void contactsPermissionDenied() {
-        mOAuth2CheckBox.setChecked(false);
-    }
-
-    public void contactsPermissionGranted() {
-        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-        validateFields();
     }
 
     private void handleErrorCheckingSettings(PEpSetupException exception) {
