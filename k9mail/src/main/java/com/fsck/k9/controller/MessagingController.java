@@ -1727,8 +1727,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     "-> Only saving original message without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                boolean shouldRemoveId = me.getMessage() == null
-                                        || !me.getMessage().equals(OngoingDecryptMessagesStorage.DO_NOT_REMOVE_ID);
+                                boolean shouldRemoveId = me.getMessage() != null
+                                         && me.getMessage().equals(OngoingDecryptMessagesStorage.DO_NOT_REMOVE_ID);
                                 updateStatus(account, folder, localFolder, progress, newMessages, todo,
                                         localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
 
