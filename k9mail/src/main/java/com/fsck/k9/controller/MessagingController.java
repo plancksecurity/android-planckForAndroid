@@ -1653,7 +1653,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
                             if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
-                                throw new MessagingException(OngoingDecryptMessagesStorage.DO_NOT_REMOVE_ID);
+                                throw new MessagingException(OngoingDecryptMessagesStorage.REMOVE_FAILED_MESSAGE_ID);
                             }
                             storageEditor.addOngoingDecryptMessageId(message.getMessageId());
                             storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
@@ -1728,7 +1728,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
                                 boolean shouldRemoveId = me.getMessage() != null
-                                         && me.getMessage().equals(OngoingDecryptMessagesStorage.DO_NOT_REMOVE_ID);
+                                         && me.getMessage().equals(OngoingDecryptMessagesStorage.REMOVE_FAILED_MESSAGE_ID);
                                 updateStatus(account, folder, localFolder, progress, newMessages, todo,
                                         localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
 
