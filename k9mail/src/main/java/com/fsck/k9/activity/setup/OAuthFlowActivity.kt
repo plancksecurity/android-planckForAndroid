@@ -24,6 +24,10 @@ class OAuthFlowActivity : K9Activity() {
     private lateinit var errorText: TextView
     private lateinit var signInButton: Button
     private lateinit var signInProgress: ProgressBar
+    private lateinit var explanationText: TextView
+
+    private val isTokenRevoked: Boolean
+        get() = intent.getBooleanExtra(EXTRA_TOKEN_REVOKED, false)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +36,23 @@ class OAuthFlowActivity : K9Activity() {
             ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
         setSupportActionBar(toolbar)
-        setTitle(R.string.account_setup_basics_title)
+        val title =
+            if(isTokenRevoked) R.string.account_setup_oauth_title_retry_login
+            else R.string.account_setup_basics_title
+        setTitle(title)
 
         val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
         val account = accountManager.getAccountAllowingIncomplete(accountUUid) ?: error("Account not found")
 
         errorText = findViewById(R.id.error_text)
         signInProgress = findViewById(R.id.sign_in_progress)
+        explanationText = findViewById(R.id.oauth_login_explanation_txt)
+        if(isTokenRevoked) {
+            explanationText.text = getString(
+                R.string.account_setup_oauth_description_retry_login,
+                account.email
+            )
+        }
         signInButton = if (authViewModel.isUsingGoogle(account)) {
             findViewById(R.id.google_sign_in_button)
         } else {
@@ -67,7 +81,7 @@ class OAuthFlowActivity : K9Activity() {
                 return
             }
             AuthFlowState.Success -> {
-                if (intent.getBooleanExtra(EXTRA_TOKEN_REVOKED, false)) {
+                if (isTokenRevoked) {
                     SettingsActivity.actionBasicStart(this)
                 } else {
                     setResult(RESULT_OK)
