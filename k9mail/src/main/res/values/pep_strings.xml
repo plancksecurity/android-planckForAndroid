@@ -354,7 +354,5 @@
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
     <string name="account_setup_failed_dlg_browser_not_found">The app couldn\'t find a browser to use for granting access to your account.</string>
-    <string name="token_revoked_feedback">Could not login to account %s, please manually log in again.</string>
-    <string name="token_revoked_feedback_login_action">Login</string>
 
 </resources>
