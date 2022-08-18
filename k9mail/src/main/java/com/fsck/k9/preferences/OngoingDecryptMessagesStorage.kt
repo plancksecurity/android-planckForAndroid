@@ -63,7 +63,7 @@ class OngoingDecryptMessagesStorage(val context: Context) {
     }
 
     companion object {
-        const val ONGOING_DECRYPT_MESSAGES_PREFERENCES = "ONGOING_DECRYPT_MESSAGES_PREFERENCES"
+        const val ONGOING_DECRYPT_MESSAGES_PREFERENCES = "ongoing_decrypt_messages_preferences"
         const val ONGOING_DECRYPT_MESSAGES = "ONGOING_DECRYPT_MESSAGES"
         const val TEMPORARY_FILES = "TEMPORARY_FILES"
         const val DO_NOT_REMOVE_ID = "DO_NOT_REMOVE_ID"
