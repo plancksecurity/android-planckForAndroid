@@ -53,4 +53,24 @@
         <item>GMAIL</item>
         <item>NONE</item>
     </string-array>
+
+    <string name="account_authentication_type_title">Authentication type</string>
+    <string name="account_authentication_type_plain_entry">Normal password (Plain)</string>
+    <string name="account_authentication_type_cram_md5_entry">Encrypted password (Cram MD5)</string>
+    <string name="account_authentication_type_external_entry">Client certificate (External)</string>
+    <string name="account_authentication_type_oauth_entry">OAuth 2.0 (OAuth)</string>
+
+    <string-array name="account_authentication_type_entries">
+        <item>@string/account_authentication_type_plain_entry</item>
+        <item>@string/account_authentication_type_cram_md5_entry</item>
+        <item>@string/account_authentication_type_external_entry</item>
+        <item>@string/account_authentication_type_oauth_entry</item>
+    </string-array>
+
+    <string-array name="account_authentication_type_values" translatable="false">
+        <item>PLAIN</item>
+        <item>CRAM_MD5</item>
+        <item>EXTERNAL</item>
+        <item>XOAUTH2</item>
+    </string-array>
 </resources>
