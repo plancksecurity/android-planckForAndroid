@@ -22,6 +22,11 @@ import timber.log.Timber
 private const val CONNECTION_SECURITY_NONE = "NONE"
 private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
 private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
+private const val GMAIL_INCOMING_PORT = 993
+private const val GMAIL_OUTGOING_PORT = 465
+private const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
+private const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
+private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
@@ -113,20 +118,30 @@ class ConfiguredSettingsUpdater(
         var outgoing = SimpleMailSettings()
         var oAuthProviderType = OAuthProviderType.NONE
         oAuthProviderType = getNewOAuthProviderType(entry, bundle, oAuthProviderType)
+
+        entry.restrictions
+            .firstOrNull {
+                it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
+            } ?.let { restriction ->
+                saveAccountEmailAddress(bundle, restriction)
+            }
+
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
-                RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
-                    saveAccountEmailAddress(bundle, restriction)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
                     incoming = saveAccountIncomingSettings(
                         bundle,
-                        restriction
+                        restriction,
+                        oAuthProviderType,
+                        provisioningSettings.email
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
                     outgoing = saveAccountOutgoingSettings(
                         bundle,
-                        restriction
+                        restriction,
+                        oAuthProviderType,
+                        provisioningSettings.email
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
             }
@@ -136,6 +151,34 @@ class ConfiguredSettingsUpdater(
             outgoing,
             oAuthProviderType
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getNewAuthType(
+        entry: RestrictionEntry,
+        bundle: Bundle?,
+        previous: AuthType?,
+        incoming: Boolean
+    ): AuthType? {
+        var authType = previous
+        entry.restrictions
+            .firstOrNull {
+                it.key ==
+                        if (incoming) RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
+                        else RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
+            } ?.let { restriction ->
+                updateString(
+                    bundle,
+                    restriction,
+                    accepted = { newValue ->
+                        newValue.isNotBlank() &&
+                                newValue in AuthType.values().map { it.toString() }
+                    }
+                ) {
+                    authType = AuthType.valueOf(it)
+                }
+            }
+        return authType
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -184,67 +227,85 @@ class ConfiguredSettingsUpdater(
     @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountIncomingSettings(
         restrictions: Bundle?,
-        entry: RestrictionEntry
+        entry: RestrictionEntry,
+        oAuthProviderType: OAuthProviderType,
+        email: String?
     ): SimpleMailSettings {
         val currentSettings: ServerSettings? = getCurrentIncomingSettings()
         var simpleSettings = currentSettings?.toSimpleMailSettings() ?: SimpleMailSettings()
         val bundle = restrictions?.getBundle(entry.key)
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
-                    updateInt(
-                        bundle,
-                        restriction,
-                        accepted = { it.isValidPort() }
-                    ) {
-                        simpleSettings = simpleSettings.copy(port = it)
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { server ->
-                            server.isValidServer(urlChecker)
+        val authType = getNewAuthType(entry, bundle, simpleSettings.authType, true)
+        if (authType != null && authType == AuthType.XOAUTH2
+            && oAuthProviderType == OAuthProviderType.GMAIL
+            && email != null) {
+            simpleSettings = getGmailOAuthIncomingServerSettings(email)
+        } else {
+            entry.restrictions.forEach { restriction ->
+                when (restriction.key) {
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
+                        updateInt(
+                            bundle,
+                            restriction,
+                            accepted = { it.isValidPort() }
+                        ) {
+                            simpleSettings = simpleSettings.copy(port = it)
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(server = it)
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue.toConnectionSecurity() != null
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { server ->
+                                server.isValidServer(urlChecker)
+                            }
+                        ) {
+                            simpleSettings = simpleSettings.copy(server = it)
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(
-                            connectionSecurity = it.toConnectionSecurity()
-                        )
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { it.isNotBlank() && !it.contains("{{") }
-                    ) {
-                        simpleSettings = simpleSettings.copy(userName = it)
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue.isNotBlank() &&
-                                    newValue in AuthType.values().map { it.toString() }
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { newValue ->
+                                newValue.toConnectionSecurity() != null
+                            }
+                        ) {
+                            simpleSettings = simpleSettings.copy(
+                                connectionSecurity = it.toConnectionSecurity()
+                            )
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(authType = AuthType.valueOf(it))
-                    }
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { it.isNotBlank() && !it.contains("{{") }
+                        ) {
+                            simpleSettings = simpleSettings.copy(userName = it)
+                        }
+                }
             }
         }
 
         applyNewIncomingMailSettings(currentSettings, simpleSettings)
         return simpleSettings
+    }
+
+    private fun getGmailOAuthIncomingServerSettings(email: String): SimpleMailSettings {
+        return SimpleMailSettings(
+            GMAIL_INCOMING_PORT,
+            GMAIL_INCOMING_SERVER,
+            GMAIL_SECURITY_TYPE,
+            email,
+            AuthType.XOAUTH2
+        )
+    }
+
+    private fun getGmailOAuthOutgoingServerSettings(email: String): SimpleMailSettings {
+        return SimpleMailSettings(
+            GMAIL_OUTGOING_PORT,
+            GMAIL_OUTGOING_SERVER,
+            GMAIL_SECURITY_TYPE,
+            email,
+            AuthType.XOAUTH2
+        )
     }
 
     private fun applyNewIncomingMailSettings(
@@ -289,62 +350,61 @@ class ConfiguredSettingsUpdater(
     @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountOutgoingSettings(
         restrictions: Bundle?,
-        entry: RestrictionEntry
+        entry: RestrictionEntry,
+        oAuthProviderType: OAuthProviderType,
+        email: String?
     ): SimpleMailSettings {
         val currentSettings: ServerSettings? = getCurrentOutgoingSettings()
         var simpleSettings = currentSettings?.toSimpleMailSettings() ?: SimpleMailSettings()
+
         val bundle = restrictions?.getBundle(entry.key)
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
-                    updateInt(
-                        bundle,
-                        restriction,
-                        accepted = { it.isValidPort() }
-                    ) {
-                        simpleSettings = simpleSettings.copy(port = it)
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { server ->
-                            server.isValidServer(urlChecker)
+        val authType = getNewAuthType(entry, bundle, simpleSettings.authType, false)
+        if (authType != null && authType == AuthType.XOAUTH2
+            && oAuthProviderType == OAuthProviderType.GMAIL
+            && email != null) {
+            simpleSettings = getGmailOAuthOutgoingServerSettings(email)
+        } else {
+            entry.restrictions.forEach { restriction ->
+                when (restriction.key) {
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
+                        updateInt(
+                            bundle,
+                            restriction,
+                            accepted = { it.isValidPort() }
+                        ) {
+                            simpleSettings = simpleSettings.copy(port = it)
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(server = it)
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue.toConnectionSecurity() != null
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { server ->
+                                server.isValidServer(urlChecker)
+                            }
+                        ) {
+                            simpleSettings = simpleSettings.copy(server = it)
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(
-                            connectionSecurity = it.toConnectionSecurity()
-                        )
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { it.isNotBlank() && !it.contains("{{") }
-                    ) {
-                        simpleSettings = simpleSettings.copy(userName = it)
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue.isNotBlank() &&
-                                    newValue in AuthType.values().map { it.toString() }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { newValue ->
+                                newValue.toConnectionSecurity() != null
+                            }
+                        ) {
+                            simpleSettings = simpleSettings.copy(
+                                connectionSecurity = it.toConnectionSecurity()
+                            )
                         }
-                    ) {
-                        simpleSettings = simpleSettings.copy(authType = AuthType.valueOf(it))
-                    }
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
+                        updateString(
+                            bundle,
+                            restriction,
+                            accepted = { it.isNotBlank() && !it.contains("{{") }
+                        ) {
+                            simpleSettings = simpleSettings.copy(userName = it)
+                        }
+                }
             }
         }
 
