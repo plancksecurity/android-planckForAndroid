@@ -1064,7 +1064,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_settings_no_openpgp_provider_configured">Keine OpenPGP-App konfiguriert</string>
     <string name="account_settings_crypto_summary_on">Verbunden mit %s</string>
     <string name="account_settings_crypto_summary_off">Keine OpenPGP-App konfiguriert</string>
-    <string name="account_setup_auth_type_xoauth2">OAuth 2.0 Token</string>
+    <string name="account_setup_auth_type_xoauth2">OAuth 2.0</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Als \'localhost\' ausgeben, wenn eine Verbindung zu SMTP-Servern hergestellt wird</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting">Hostname ausblenden</string>
     <string name="global_settings_privacy_hide_timezone_detail">UTC anstelle der lokalen Zeitzone in Mail-Headern und Antwort-Headern verwenden</string>
