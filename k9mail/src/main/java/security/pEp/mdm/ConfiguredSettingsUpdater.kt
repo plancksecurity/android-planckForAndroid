@@ -243,6 +243,14 @@ class ConfiguredSettingsUpdater(
             }
         }
 
+        applyNewIncomingMailSettings(currentSettings, simpleSettings)
+        return simpleSettings
+    }
+
+    private fun applyNewIncomingMailSettings(
+        currentSettings: ServerSettings?,
+        simpleSettings: SimpleMailSettings
+    ) {
         preferences.accounts.forEach { account ->
             val currentStoreUri = account.storeUri
             val settings = currentSettings ?: RemoteStore.decodeStoreUri(currentStoreUri)
@@ -255,11 +263,10 @@ class ConfiguredSettingsUpdater(
             )
             account.storeUri = try {
                 RemoteStore.createStoreUri(newSettings)
-            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible 
+            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible
                 currentStoreUri
             }
         }
-        return simpleSettings
     }
 
     private fun getCurrentIncomingSettings(): ServerSettings? {
@@ -341,6 +348,14 @@ class ConfiguredSettingsUpdater(
             }
         }
 
+        applyNewOutgoingMailSettings(currentSettings, simpleSettings)
+        return simpleSettings
+    }
+
+    private fun applyNewOutgoingMailSettings(
+        currentSettings: ServerSettings?,
+        simpleSettings: SimpleMailSettings
+    ) {
         preferences.accounts.forEach { account ->
             val currentTransportUri = account.transportUri
             val settings = currentSettings ?: Transport.decodeTransportUri(currentTransportUri)
@@ -357,7 +372,6 @@ class ConfiguredSettingsUpdater(
                 currentTransportUri
             }
         }
-        return simpleSettings
     }
 
     private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
