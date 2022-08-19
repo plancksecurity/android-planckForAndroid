@@ -225,10 +225,11 @@ public class ServerSettings {
             String server,
             ConnectionSecurity connectionSecurity,
             int port,
-            String userName
+            String userName,
+            AuthType authType
     ) {
         return new ServerSettings(type, server, port, connectionSecurity,
-                authenticationType, userName, password, clientCertificateAlias);
+                authType, userName, password, clientCertificateAlias);
     }
 
     protected boolean isNotNullNorBlank(String string) {

@@ -10,3 +10,6 @@ enum class AuthType {
 
     fun toAppAuthType(): AuthType = AuthType.valueOf(this.toString())
 }
+
+fun AuthType.toMdmAuthType(): security.pEp.mdm.AuthType =
+    security.pEp.mdm.AuthType.valueOf(this.toString())
