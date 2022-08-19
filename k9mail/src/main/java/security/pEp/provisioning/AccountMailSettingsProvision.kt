@@ -30,8 +30,8 @@ data class SimpleMailSettings(
     }
 
     fun isValid(urlChecker: UrlChecker): Boolean =
-        port in 1..65535
-                && !server.isNullOrBlank() && urlChecker.isValidUrl(server)
+        port.isValidPort()
+                && server != null && server!!.isValidServer(urlChecker)
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
                 && authType != null
@@ -40,4 +40,9 @@ data class SimpleMailSettings(
 fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettings(
     port, host, connectionSecurity, username, authenticationType.toMdmAuthType()
 )
+
+fun Int.isValidPort() = this in 1..65535
+
+fun String.isValidServer(urlChecker: UrlChecker) =
+    this.isNotBlank() && urlChecker.isValidUrl(this)
 

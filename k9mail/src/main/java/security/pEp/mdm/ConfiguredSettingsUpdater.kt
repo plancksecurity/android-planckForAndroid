@@ -16,10 +16,7 @@ import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import security.pEp.network.UrlChecker
-import security.pEp.provisioning.AccountMailSettingsProvision
-import security.pEp.provisioning.ProvisioningSettings
-import security.pEp.provisioning.SimpleMailSettings
-import security.pEp.provisioning.toSimpleMailSettings
+import security.pEp.provisioning.*
 import timber.log.Timber
 
 private const val CONNECTION_SECURITY_NONE = "NONE"
@@ -198,7 +195,7 @@ class ConfiguredSettingsUpdater(
                     updateInt(
                         bundle,
                         restriction,
-                        accepted = { it > 0 }
+                        accepted = { it.isValidPort() }
                     ) {
                         simpleSettings = simpleSettings.copy(port = it)
                     }
@@ -207,7 +204,7 @@ class ConfiguredSettingsUpdater(
                         bundle,
                         restriction,
                         accepted = { server ->
-                            server.isNotBlank() && urlChecker.isValidUrl(server)
+                            server.isValidServer(urlChecker)
                         }
                     ) {
                         simpleSettings = simpleSettings.copy(server = it)
@@ -296,7 +293,7 @@ class ConfiguredSettingsUpdater(
                     updateInt(
                         bundle,
                         restriction,
-                        accepted = { it > 0 }
+                        accepted = { it.isValidPort() }
                     ) {
                         simpleSettings = simpleSettings.copy(port = it)
                     }
@@ -305,7 +302,7 @@ class ConfiguredSettingsUpdater(
                         bundle,
                         restriction,
                         accepted = { server ->
-                            server.isNotBlank() && urlChecker.isValidUrl(server)
+                            server.isValidServer(urlChecker)
                         }
                     ) {
                         simpleSettings = simpleSettings.copy(server = it)
