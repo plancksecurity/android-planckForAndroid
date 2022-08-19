@@ -244,6 +244,14 @@
                 android:key="incoming_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_incoming_username_label"/>
+
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="incoming_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
         </restriction>
 
         <restriction
@@ -274,6 +282,13 @@
                 android:key="outgoing_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_outgoing_username_label"/>
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="outgoing_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
         </restriction>
     </restriction>
 

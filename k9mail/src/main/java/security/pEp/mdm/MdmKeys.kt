@@ -41,6 +41,7 @@ const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE =
     "incoming_mail_settings_security_type"
 const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT = "incoming_mail_settings_port"
 const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME = "incoming_mail_settings_user_name"
+const val RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE = "incoming_mail_settings_auth_type"
 
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS = "outgoing_mail_settings"
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER = "outgoing_mail_settings_server"
@@ -48,4 +49,5 @@ const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE =
     "outgoing_mail_settings_security_type"
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT = "outgoing_mail_settings_port"
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME = "outgoing_mail_settings_user_name"
+const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE = "incoming_mail_settings_auth_type"
 

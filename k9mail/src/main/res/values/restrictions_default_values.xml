@@ -23,4 +23,5 @@
     <string name="default_account_display_count" translatable="false">250</string>
     <string name="default_account_remote_search_num_results" translatable="false">50</string>
     <string name="account_oauth_provider_default" translatable="false">NONE</string>
+    <string name="account_authentication_type_default" translatable="false">PLAIN</string>
 </resources>

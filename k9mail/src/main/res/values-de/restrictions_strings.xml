@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_authentication_type_plain_entry">Passwort, normal (Plain)</string>
+    <string name="account_authentication_type_cram_md5_entry">Verschlüsseltes Passwort (Cram MD5)</string>
+    <string name="account_authentication_type_external_entry">Client-Zertifikat (External)</string>
+</resources>
