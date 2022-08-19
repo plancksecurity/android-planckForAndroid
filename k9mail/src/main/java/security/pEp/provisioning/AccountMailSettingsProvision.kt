@@ -2,6 +2,9 @@ package security.pEp.provisioning
 
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mail.ServerSettings
+import security.pEp.mdm.AuthType
+import security.pEp.mdm.toMdmAuthType
 import security.pEp.network.UrlChecker
 
 data class AccountMailSettingsProvision(
@@ -14,10 +17,11 @@ fun AccountMailSettingsProvision?.isValidForProvision(urlChecker: UrlChecker): B
     this != null && incoming.isValid(urlChecker) && outgoing.isValid(urlChecker)
 
 data class SimpleMailSettings(
-    val port: Int = -1,
-    val server: String? = null,
-    val connectionSecurity: ConnectionSecurity? = null,
-    val userName: String? = null,
+    var port: Int = -1,
+    var server: String? = null,
+    var connectionSecurity: ConnectionSecurity? = null,
+    var userName: String? = null,
+    var authType: AuthType? = null,
 ){
     fun getConnectionSecurityString(): String = when(connectionSecurity) {
         null, ConnectionSecurity.NONE -> ""
@@ -30,5 +34,10 @@ data class SimpleMailSettings(
                 && !server.isNullOrBlank() && urlChecker.isValidUrl(server)
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
+                && authType != null
 }
+
+fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettings(
+    port, host, connectionSecurity, username, authenticationType.toMdmAuthType()
+)
 
