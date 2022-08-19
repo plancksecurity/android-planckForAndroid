@@ -296,6 +296,6 @@
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Berechtigung aufgehoben</string>
     <string name="account_setup_failed_dlg_oauth_flow_failed">Die Autorisierung ist aufgrund des folgenden Fehlers fehlgeschlagen: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 wird von diesem Anbieter derzeit nicht unterstützt.</string>
-    <string name="account_setup_failed_dlg_browser_not_found">Die App konnte keinen Browser finden, der für den Zugriff auf Ihr Konto verwendet werden kann.</string>
+    <string name="account_setup_failed_dlg_browser_not_found">p≡p konnte keinen Browser finden, der für den Zugriff auf Ihr Konto verwendet werden kann.</string>
 
 </resources>
