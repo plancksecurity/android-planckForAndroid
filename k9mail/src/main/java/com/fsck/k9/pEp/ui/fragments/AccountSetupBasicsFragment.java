@@ -96,8 +96,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
     private static final String WAS_LOADING = "wasLoading";
     private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
-    private static final String OAUTH_GMAIL_INCOMING_SERVER = "imap.gmail.com";
-    private static final String OAUTH_GMAIL_OUTGOING_SERVER = "smtp.gmail.com";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -565,18 +563,15 @@ public class AccountSetupBasicsFragment extends PEpFragment
             provider.domain = domain;
             provider.id = "provisioned";
             provider.label = "enterprise provisioned provider";
-            provider.oAuthProviderType = provisionSettings.getOAuthType();
 
             provider.incomingUriTemplate =
                     getServerUriTemplate(
                             provisionSettings.getIncoming(),
-                            false,
-                            provider.oAuthProviderType
+                            false
                     );
             provider.outgoingUriTemplate = getServerUriTemplate(
                     provisionSettings.getOutgoing(),
-                    true,
-                    provider.oAuthProviderType
+                    true
             );
             provider.incomingUsernameTemplate = provisionSettings.getIncoming().getUserName();
             provider.outgoingUsernameTemplate = provisionSettings.getOutgoing().getUserName();
@@ -593,20 +588,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private URI getServerUriTemplate(
             SimpleMailSettings settings,
-            boolean outgoing,
-            OAuthProviderType oAuthProviderType
+            boolean outgoing
     ) throws URISyntaxException {
-        String server = oAuthProviderType == OAuthProviderType.GMAIL
-                ? outgoing
-                    ? OAUTH_GMAIL_OUTGOING_SERVER
-                    : OAUTH_GMAIL_INCOMING_SERVER
-                : settings.getServer();
         String uri = (outgoing ? "smtp" : "imap") +
                 "+" +
                 settings.getConnectionSecurityString() +
                 "+" +
                 "://" +
-                server +
+                settings.getServer() +
                 ":" +
                 settings.getPort();
         return new URI(uri);
@@ -1165,7 +1154,5 @@ public class AccountSetupBasicsFragment extends PEpFragment
         public String outgoingUsernameTemplate;
 
         public String note;
-
-        public OAuthProviderType oAuthProviderType = OAuthProviderType.NONE;
     }
 }
