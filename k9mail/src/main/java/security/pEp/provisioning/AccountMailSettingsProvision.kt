@@ -1,6 +1,5 @@
 package security.pEp.provisioning
 
-import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import security.pEp.mdm.AuthType
@@ -10,7 +9,6 @@ import security.pEp.network.UrlChecker
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
-    val oAuthType: OAuthProviderType = OAuthProviderType.NONE
 )
 
 fun AccountMailSettingsProvision?.isValidForProvision(urlChecker: UrlChecker): Boolean =
@@ -22,8 +20,8 @@ data class SimpleMailSettings(
     var connectionSecurity: ConnectionSecurity? = null,
     var userName: String? = null,
     var authType: AuthType? = null,
-){
-    fun getConnectionSecurityString(): String = when(connectionSecurity) {
+) {
+    fun getConnectionSecurityString(): String = when (connectionSecurity) {
         null, ConnectionSecurity.NONE -> ""
         ConnectionSecurity.SSL_TLS_REQUIRED -> "ssl"
         ConnectionSecurity.STARTTLS_REQUIRED -> "tls"

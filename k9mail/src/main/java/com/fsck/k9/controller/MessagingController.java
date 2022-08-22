@@ -1268,8 +1268,6 @@ public class MessagingController implements Sync.MessageToSendCallback {
     ) {
         notificationController.showAuthenticationErrorNotification(account, incoming);
         if (exception.isOAuthTokenRevoked()) {
-            CheckDirection direction = incoming ? CheckDirection.INCOMING : CheckDirection.OUTGOING;
-            account.setRevokedTokenDirection(direction);
             OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(context, account.getUuid());
         }
     }
