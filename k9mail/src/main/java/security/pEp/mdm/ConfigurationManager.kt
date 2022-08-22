@@ -2,7 +2,6 @@ package security.pEp.mdm
 
 import android.content.*
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
