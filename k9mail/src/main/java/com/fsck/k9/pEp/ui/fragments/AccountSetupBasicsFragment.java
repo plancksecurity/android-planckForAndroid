@@ -156,7 +156,8 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
-        } else if (BuildConfig.IS_ENTERPRISE) {
+        }
+        if (BuildConfig.IS_ENTERPRISE) {
             updateUiFromProvisioningSettings();
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
@@ -165,6 +166,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void updateUiFromProvisioningSettings() {
         mEmailView.setText(provisioningSettings.getEmail());
+        mEmailView.setFocusable(false);
         AccountMailSettingsProvision provisionSettings =
                 provisioningSettings.getProvisionedMailSettings();
         mOAuth2CheckBox.setChecked(provisioningSettings.getOAuthType() != null);
