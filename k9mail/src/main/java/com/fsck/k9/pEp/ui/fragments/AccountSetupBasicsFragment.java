@@ -169,11 +169,13 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mEmailView.setFocusable(false);
         AccountMailSettingsProvision provisionSettings =
                 provisioningSettings.getProvisionedMailSettings();
-        mOAuth2CheckBox.setChecked(provisioningSettings.getOAuthType() != null);
         if (provisionSettings != null) {
+            boolean isOAuth =
+                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.XOAUTH2
+                            && provisioningSettings.getOAuthType() != null;
+            mOAuth2CheckBox.setChecked(isOAuth);
             boolean isExternalAuth =
-                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL
-                    && provisionSettings.getOutgoing().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL;
+                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL;
             mClientCertificateCheckBox.setChecked(isExternalAuth);
         }
     }
