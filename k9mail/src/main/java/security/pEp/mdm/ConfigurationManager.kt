@@ -2,6 +2,7 @@ package security.pEp.mdm
 
 import android.content.*
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -61,6 +62,8 @@ class ConfigurationManager(
         entries: List<RestrictionEntry>,
         restrictions: Bundle,
     ) {
+        Log.e("PEPA-28-QA", "allow = " + restrictions.getBoolean("allow_pep_sync_new_devices"))
+        Log.e("PEPA-28-QA", "syncr = " + restrictions.getBoolean("pep_enable_sync_account"))
         entries.forEach { entry ->
             settingsUpdater.update(restrictions, entry)
         }

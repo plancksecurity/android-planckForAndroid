@@ -625,14 +625,18 @@ public class CucumberTestSteps {
         testUtils.waitForMessageAndClickIt();
     }
 
-    @When("^I set (\\S+) restriction to (true|false)$")
-    public void I_set_boolean_restriction(String restriction, boolean value) {
-        RestrictionsManager.setBooleanRestrictions(restriction, value);
-    }
-
     @When("^I set (\\S+) setting to (\\S+)")
-    public void I_set_string_setting(String restriction, String value) {
-        RestrictionsManager.setStringRestrictions(restriction, value);
+    public void I_set_string_setting(String setting, String value) {
+        waitForIdle();
+        if (value.equals("true") || value.equals("false")) {
+            boolean valueB = false;
+            if (value.equals("true")) {
+                valueB = true;
+            }
+            RestrictionsManager.setBooleanRestrictions(setting, valueB);
+        } else {
+            RestrictionsManager.setStringRestrictions(setting, value);
+        }
     }
 
     @When("^I set incoming settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
@@ -660,6 +664,14 @@ public class CucumberTestSteps {
         assert settings != null;
         if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getOutgoing())) {
             assertFailWithMessage("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
+        }
+    }
+
+    @When("^I compare (\\S+) setting with (\\S+)$")
+    public void I_compare_setting(String setting, String value) {
+        String settingValue = RestrictionsManager.getSetting(setting);
+        if (!settingValue.equals(value)) {
+            assertFailWithMessage("Setting " + setting + " has value " + settingValue + " and not " + value);
         }
     }
 
