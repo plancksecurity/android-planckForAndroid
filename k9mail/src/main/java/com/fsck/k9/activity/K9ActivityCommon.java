@@ -225,16 +225,6 @@ public class K9ActivityCommon {
         configurationManager.unregisterReceiver();
     }
 
-    public String findRevokedAccount() {
-        List<Account> accounts = Preferences.getPreferences(mActivity).getAccounts();
-        for (Account account : accounts) {
-            if (account.getRevokedTokenDirection() != null) {
-                return account.getUuid();
-            }
-        }
-        return null;
-    }
-
     public static class PassphraseRequestReceiver extends BroadcastReceiver {
 
         @Override

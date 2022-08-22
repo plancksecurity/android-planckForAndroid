@@ -22,10 +22,10 @@ import timber.log.Timber
 private const val CONNECTION_SECURITY_NONE = "NONE"
 private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
 private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
-private const val GMAIL_INCOMING_PORT = 993
-private const val GMAIL_OUTGOING_PORT = 465
-private const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
-private const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
+const val GMAIL_INCOMING_PORT = 993
+const val GMAIL_OUTGOING_PORT = 465
+const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
+const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
 private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 
 class ConfiguredSettingsUpdater(
@@ -116,8 +116,8 @@ class ConfiguredSettingsUpdater(
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
         var outgoing = SimpleMailSettings()
-        var oAuthProviderType = OAuthProviderType.NONE
-        oAuthProviderType = getNewOAuthProviderType(entry, bundle, oAuthProviderType)
+        saveOAuthProviderType(entry, bundle)
+        val oAuthProviderType = getCurrentOAuthProvider()
 
         entry.restrictions
             .firstOrNull {
@@ -153,7 +153,6 @@ class ConfiguredSettingsUpdater(
         provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
             incoming,
             outgoing,
-            oAuthProviderType
         )
     }
 
@@ -187,12 +186,10 @@ class ConfiguredSettingsUpdater(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getNewOAuthProviderType(
+    private fun saveOAuthProviderType(
         entry: RestrictionEntry,
-        bundle: Bundle?,
-        previous: OAuthProviderType
-    ): OAuthProviderType {
-        var oAuthProvider = previous
+        bundle: Bundle?
+    ) {
         entry.restrictions
             .firstOrNull { it.key == RESTRICTION_ACCOUNT_OAUTH_PROVIDER }
             ?.let { restriction ->
@@ -204,11 +201,26 @@ class ConfiguredSettingsUpdater(
                                 newValue in OAuthProviderType.values().map { it.toString() }
                     },
                 ) {
-                    oAuthProvider = OAuthProviderType.valueOf(it)
+                    provisioningSettings.oAuthType = OAuthProviderType.valueOf(it)
+                }
+
+                updateAccountString(
+                    bundle,
+                    restriction,
+                    accepted = { newValue ->
+                        !newValue.isNullOrBlank() &&
+                                newValue in OAuthProviderType.values().map { it.toString() }
+                    },
+                ) { account, newValue ->
+                    newValue?.let {
+                        account.oAuthProviderType = OAuthProviderType.valueOf(newValue)
+                    }
                 }
             }
-        return oAuthProvider
     }
+
+    private fun getCurrentOAuthProvider(): OAuthProviderType? =
+        preferences.accounts.firstOrNull()?.oAuthProviderType ?: provisioningSettings.oAuthType
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
         updateNullableString(
@@ -233,7 +245,7 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountMailSettings(
         restrictions: Bundle?,
         entry: RestrictionEntry,
-        oAuthProviderType: OAuthProviderType,
+        oAuthProviderType: OAuthProviderType?,
         email: String?,
         incoming: Boolean
     ): SimpleMailSettings {

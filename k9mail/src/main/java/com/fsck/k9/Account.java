@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
+import com.fsck.k9.auth.OAuthProviderType;
 import com.fsck.k9.backends.RealOAuth2TokenProvider;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
@@ -73,15 +74,14 @@ public class Account implements BaseAccount, StoreConfig {
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
     private String oAuthState;
+    private OAuthProviderType oAuthProviderType;
 
-    private CheckDirection revokedTokenDirection;
-
-    public CheckDirection getRevokedTokenDirection() {
-        return revokedTokenDirection;
+    public OAuthProviderType getOAuthProviderType() {
+        return oAuthProviderType;
     }
 
-    public void setRevokedTokenDirection(CheckDirection revokedTokenDirection) {
-        this.revokedTokenDirection = revokedTokenDirection;
+    public void setOAuthProviderType(OAuthProviderType oAuthProviderType) {
+        this.oAuthProviderType = oAuthProviderType;
     }
 
     public synchronized String getOAuthState() {
@@ -570,6 +570,10 @@ public class Account implements BaseAccount, StoreConfig {
             description = getEmail();
         }
         oAuthState = storage.getString(accountUuid + ".oAuthState", null);
+        String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
+        oAuthProviderType = oAuthProvider != null
+                ? OAuthProviderType.valueOf(oAuthProvider)
+                : null;
     }
 
     protected synchronized void delete(Preferences preferences) {
@@ -855,6 +859,10 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(pEpPrivacyProtected));
         editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
         editor.putString(accountUuid + ".oAuthState", oAuthState);
+        editor.putString(
+                accountUuid + ".oAuthProviderType",
+                oAuthProviderType != null ? oAuthProviderType.toString() : null
+        );
 
         for (NetworkType type : NetworkType.values()) {
             Boolean useCompression = compressionMap.get(type);

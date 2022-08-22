@@ -38,7 +38,6 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
-import com.fsck.k9.auth.OAuthProviderType;
 import com.fsck.k9.helper.UrlEncodingHelper;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
@@ -158,16 +157,23 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mEmailView.setText(email);
             mPasswordView.setText(password);
         } else if (BuildConfig.IS_ENTERPRISE) {
-            mEmailView.setText(provisioningSettings.getEmail());
-            AccountMailSettingsProvision provisionSettings =
-                    provisioningSettings.getProvisionedMailSettings();
-            if (provisionSettings != null) {
-                mOAuth2CheckBox.setChecked(
-                        provisionSettings.getOAuthType() != OAuthProviderType.NONE);
-            }
+            updateUiFromProvisioningSettings();
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
+    }
+
+    private void updateUiFromProvisioningSettings() {
+        mEmailView.setText(provisioningSettings.getEmail());
+        AccountMailSettingsProvision provisionSettings =
+                provisioningSettings.getProvisionedMailSettings();
+        mOAuth2CheckBox.setChecked(provisioningSettings.getOAuthType() != null);
+        if (provisionSettings != null) {
+            boolean isExternalAuth =
+                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL
+                    && provisionSettings.getOutgoing().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL;
+            mClientCertificateCheckBox.setChecked(isExternalAuth);
+        }
     }
 
     @Override
