@@ -9,10 +9,10 @@ import security.pEp.network.UrlChecker
 data class AccountMailSettingsProvision(
     val incoming: SimpleMailSettings,
     val outgoing: SimpleMailSettings,
-)
-
-fun AccountMailSettingsProvision?.isValidForProvision(urlChecker: UrlChecker): Boolean =
-    this != null && incoming.isValid(urlChecker) && outgoing.isValid(urlChecker)
+) {
+    fun isValidForProvision(urlChecker: UrlChecker): Boolean =
+        incoming.isValid(urlChecker) && outgoing.isValid(urlChecker)
+}
 
 data class SimpleMailSettings(
     var port: Int = -1,
@@ -34,13 +34,3 @@ data class SimpleMailSettings(
                 && !userName.isNullOrBlank()
                 && authType != null
 }
-
-fun ServerSettings.toSimpleMailSettings(): SimpleMailSettings = SimpleMailSettings(
-    port, host, connectionSecurity, username, authenticationType.toMdmAuthType()
-)
-
-fun Int.isValidPort() = this in 1..65535
-
-fun String.isValidServer(urlChecker: UrlChecker) =
-    this.isNotBlank() && urlChecker.isValidUrl(this)
-

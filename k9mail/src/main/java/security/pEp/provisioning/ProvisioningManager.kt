@@ -87,7 +87,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun areProvisionedMailSettingsInvalid(): Boolean {
-        return !provisioningSettings.provisionedMailSettings.isValidForProvision(urlChecker)
+        return !provisioningSettings.hasValidMailSettings(urlChecker)
     }
 
     private fun isDeviceOnline(): Boolean =
