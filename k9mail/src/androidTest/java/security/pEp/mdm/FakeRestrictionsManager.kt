@@ -389,6 +389,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                         DEFAULT_ACCOUNT_STORE_MESSAGES_SECURELY
                     ),
                     RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
+                    RestrictionEntry(
+                        RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES,
+                        DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES
+                    ),
+
                     getMailSettingsRestrictionEntry()
                 )
             } else emptyList()
