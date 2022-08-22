@@ -3,6 +3,22 @@ Feature: Test
     Given I created an account
 
 
+  @QTR-2354
+  Scenario: Cucumber Enterprise Email Settings
+    When I set account_description setting to newUser
+    And I set account_display_count setting to 50
+    And I set max_push_folders setting to 30
+    And I set account_remote_search_num_results setting to 20
+    And I set incoming settings to server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
+    And I set outgoing settings to server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
+    Then I compare account_description setting with newUser
+    And I compare account_display_count setting with 50
+    And I compare max_push_folders setting with 30
+    And I compare account_remote_search_num_results setting with 20
+    And I compare incoming settings with server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
+    And I compare outgoing settings with server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
+
+
   @QTR-2345
   Scenario: Cucumber Enterprise Disable Warning
 
