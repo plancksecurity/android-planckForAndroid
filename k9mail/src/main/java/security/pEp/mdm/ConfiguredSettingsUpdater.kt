@@ -119,12 +119,7 @@ class ConfiguredSettingsUpdater(
         saveOAuthProviderType(entry, bundle)
         val oAuthProviderType = getCurrentOAuthProvider()
 
-        entry.restrictions
-            .firstOrNull {
-                it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
-            } ?.let { restriction ->
-                saveAccountEmailAddress(bundle, restriction)
-            }
+        saveEmail(entry, bundle)
 
         val email = getCurrentEmail()
 
@@ -154,6 +149,16 @@ class ConfiguredSettingsUpdater(
             incoming,
             outgoing,
         )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveEmail(entry: RestrictionEntry, bundle: Bundle?) {
+        entry.restrictions
+            .firstOrNull {
+                it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
+            }?.let { restriction ->
+                saveAccountEmailAddress(bundle, restriction)
+            }
     }
 
     private fun getCurrentEmail(): String? =
@@ -226,6 +231,9 @@ class ConfiguredSettingsUpdater(
         updateNullableString(
             restrictions,
             entry,
+            accepted = { newValue ->
+                !newValue.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(newValue).matches()
+            },
             default = { null }
         ) {
             provisioningSettings.email = it
