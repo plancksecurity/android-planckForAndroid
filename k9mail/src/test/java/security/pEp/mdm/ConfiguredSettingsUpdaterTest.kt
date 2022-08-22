@@ -1,11 +1,9 @@
 package security.pEp.mdm
 
-import android.content.Context
 import android.content.RestrictionEntry
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -28,16 +26,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import security.pEp.network.UrlChecker
-import security.pEp.provisioning.AccountMailSettingsProvision
-import security.pEp.provisioning.ProvisioningSettings
-import security.pEp.provisioning.SimpleMailSettings
+import security.pEp.provisioning.*
 
 @RunWith(AndroidJUnit4::class)
 class ConfiguredSettingsUpdaterTest {
     private val k9: K9 = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val account: Account = mockk(relaxed = true)
-    private val provisioningSettings: ProvisioningSettings = mockk(relaxed = true)
+    private val provisioningSettings: ProvisioningSettings = spyk(ProvisioningSettings())
     private val folderRepositoryManager: FolderRepositoryManager = mockk()
     private val folderRepository: FolderRepository = mockk()
     private val urlChecker: UrlChecker = mockk()
@@ -494,176 +490,203 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for mail settings from the provided restrictions`() {
+    fun `update() takes the value for provisioning mail settings from the provided restrictions`() {
         stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
 
-        val restrictions = getMailSettingsBundle(oAuthProvider = OAuthProviderType.GMAIL)
+        val restrictions = getMailSettingsBundle()
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+        
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() takes the value for account mail settings from the provided restrictions`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle()
         val entry = getMailRestrictionEntry()
 
 
         updater.update(restrictions, entry)
 
 
-        val incomingSettingsSlot = slot<ServerSettings>()
-        val outgoingSettingsSlot = slot<ServerSettings>()
-        verify {
-            RemoteStore.decodeStoreUri("storeUri")
-            RemoteStore.createStoreUri(
-                capture(incomingSettingsSlot)
-            )
-            Transport.decodeTransportUri("transportUri")
-            Transport.createTransportUri(
-                capture(outgoingSettingsSlot)
-            )
-            provisioningSettings.email = "email@mail.ch"
-            account.email = "email@mail.ch"
-            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    999,
-                    "mail.server.host",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                ),
-                outgoing = SimpleMailSettings(
-                    999,
-                    "mail.server.host",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                ),
-                oAuthType = OAuthProviderType.GMAIL,
-            )
-            account.storeUri = "incomingUri"
-            account.transportUri = "outgoingUri"
-        }
-
-        val newIncoming = incomingSettingsSlot.captured
-
-        assertEquals("mail.server.host", newIncoming.host)
-        assertEquals(999, newIncoming.port)
-        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newIncoming.connectionSecurity)
-        assertEquals("username", newIncoming.username)
-
-        val newOutgoing = outgoingSettingsSlot.captured
-
-        assertEquals("mail.server.host", newOutgoing.host)
-        assertEquals(999, newOutgoing.port)
-        assertEquals(ConnectionSecurity.SSL_TLS_REQUIRED, newOutgoing.connectionSecurity)
-        assertEquals("username", newOutgoing.username)
-    }
-
-    private fun getMailSettingsBundle(
-        email: String? = "email@mail.ch",
-        oAuthProvider: OAuthProviderType = OAuthProviderType.NONE,
-        server: String? = "mail.server.host",
-        username: String? = "username",
-        security: String? = "SSL/TLS",
-        port: Int = 999,
-    ): Bundle = Bundle().apply {
-        putBundle(
-            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-            Bundle().apply {
-                putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
-                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
-                putBundle(
-                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username
-                    )
-                )
-                putBundle(
-                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                    bundleOf(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username
-                    )
-                )
-            }
+        verifyAccountMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
         )
     }
-
-    private fun getMailRestrictionEntry(
-        server: String = "serverDefault",
-        username: String = "usernameDefault"
-    ): RestrictionEntry = RestrictionEntry.createBundleEntry(
-        RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-        arrayOf(
-            RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, "email@default.ch"),
-            RestrictionEntry(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, OAuthProviderType.NONE.toString()),
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
-                        server
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-                        888
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
-                        "STARTTLS"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
-                        username
-                    ),
-                )
-            ),
-            RestrictionEntry.createBundleEntry(
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
-                arrayOf(
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
-                        server
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-                        888
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
-                        "STARTTLS"
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
-                        username
-                    ),
-                )
-            ),
-        )
-    )
-
-    private fun getInitialIncomingSettings(): ServerSettings = ServerSettings(
-        ServerSettings.Type.IMAP,
-        "oldServer",
-        333,
-        ConnectionSecurity.NONE,
-        AuthType.PLAIN,
-        "oldUsername",
-        "oldPassword",
-        "cert"
-    )
-
-    private fun getInitialOutgoingSettings(): ServerSettings = ServerSettings(
-        ServerSettings.Type.SMTP,
-        "oldServer",
-        333,
-        ConnectionSecurity.NONE,
-        AuthType.PLAIN,
-        "oldUsername",
-        "oldPassword",
-        "cert"
-    )
 
     @Test
-    fun `update() takes the value for mail settings from the restriction entry if not provided in bundle`() {
+    fun `update() uses specific values for provisioning mail settings when using a Gmail account with OAuth auth type`() {
         stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
+
+        val restrictions = getMailSettingsBundle(
+            oAuthProvider = OAuthProviderType.GOOGLE,
+            authType = AuthType.XOAUTH2
+        )
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = GMAIL_INCOMING_PORT,
+            expectedOutgoingPort = GMAIL_OUTGOING_PORT,
+            expectedIncomingServer = GMAIL_INCOMING_SERVER,
+            expectedOutgoingServer = GMAIL_OUTGOING_SERVER,
+            expectedConnectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
+            expectedUserName = NEW_EMAIL,
+            expectedAuthType = security.pEp.mdm.AuthType.XOAUTH2,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() uses specific values for account mail settings when using a Gmail account with OAuth auth type`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle(
+            oAuthProvider = OAuthProviderType.GOOGLE,
+            authType = AuthType.XOAUTH2
+        )
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = GMAIL_INCOMING_PORT,
+            expectedOutgoingPort = GMAIL_OUTGOING_PORT,
+            expectedIncomingServer = GMAIL_INCOMING_SERVER,
+            expectedOutgoingServer = GMAIL_OUTGOING_SERVER,
+            expectedConnectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
+            expectedUserName = NEW_EMAIL,
+            expectedAuthType = AuthType.XOAUTH2,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() uses given values for provisioning mail settings when using certificate auth`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
+
+        val restrictions = getMailSettingsBundle(authType = AuthType.EXTERNAL)
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.EXTERNAL,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() uses given values for account mail settings when using certificate auth`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle(authType = AuthType.EXTERNAL)
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = AuthType.EXTERNAL,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() uses given values for provisioning mail settings when using encrypted password auth`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
+
+        val restrictions = getMailSettingsBundle(authType = AuthType.CRAM_MD5)
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.CRAM_MD5,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() uses given values for account mail settings when using encrypted password auth`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle(authType = AuthType.CRAM_MD5)
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = AuthType.CRAM_MD5,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() takes the value for provisioning mail settings from the restriction entry if not provided in bundle`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = Bundle()
         val entry = getMailRestrictionEntry()
@@ -672,67 +695,44 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        val incomingSettingsSlot = slot<ServerSettings>()
-        val outgoingSettingsSlot = slot<ServerSettings>()
-        verify {
-            RemoteStore.decodeStoreUri("storeUri")
-            RemoteStore.createStoreUri(
-                capture(incomingSettingsSlot)
-            )
-            Transport.decodeTransportUri("transportUri")
-            Transport.createTransportUri(
-                capture(outgoingSettingsSlot)
-            )
-            provisioningSettings.email = null
-            account.email = "email@default.ch"
-            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    888,
-                    "serverDefault",
-                    ConnectionSecurity.STARTTLS_REQUIRED,
-                    "usernameDefault"
-                ),
-                outgoing = SimpleMailSettings(
-                    888,
-                    "serverDefault",
-                    ConnectionSecurity.STARTTLS_REQUIRED,
-                    "usernameDefault"
-                )
-            )
-            account.storeUri = "incomingUri"
-            account.transportUri = "outgoingUri"
-        }
-
-        val newIncoming = incomingSettingsSlot.captured
-
-        assertEquals("serverDefault", newIncoming.host)
-        assertEquals(888, newIncoming.port)
-        assertEquals(ConnectionSecurity.STARTTLS_REQUIRED, newIncoming.connectionSecurity)
-        assertEquals("usernameDefault", newIncoming.username)
-
-        val newOutgoing = outgoingSettingsSlot.captured
-
-        assertEquals("serverDefault", newOutgoing.host)
-        assertEquals(888, newOutgoing.port)
-        assertEquals(ConnectionSecurity.STARTTLS_REQUIRED, newOutgoing.connectionSecurity)
-        assertEquals("usernameDefault", newOutgoing.username)
-    }
-
-    private fun stubInitialServerSettings() {
-        val incomingSettings = getInitialIncomingSettings()
-        val outgoingSettings = getInitialOutgoingSettings()
-
-        every { RemoteStore.decodeStoreUri(any()) }.returns(incomingSettings)
-        every { RemoteStore.createStoreUri(any()) }.returns("incomingUri")
-        every { Transport.decodeTransportUri(any()) }.returns(outgoingSettings)
-        every { Transport.createTransportUri(any()) }.returns("outgoingUri")
-        every { account.storeUri }.returns("storeUri")
-        every { account.transportUri }.returns("transportUri")
+        verifyProvisioningMailSettings(
+            expectedEmail = null,
+            expectedIncomingPort = DEFAULT_PORT,
+            expectedIncomingServer = DEFAULT_SERVER,
+            expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
+            expectedUserName = DEFAULT_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
     }
 
     @Test
-    fun `update() keeps the old mail settings for the new settings that are not valid`() {
+    fun `update() takes the value for account mail settings from the restriction entry if not provided in bundle`() {
         stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = Bundle()
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = DEFAULT_EMAIL,
+            expectedIncomingPort = DEFAULT_PORT,
+            expectedIncomingServer = DEFAULT_SERVER,
+            expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
+            expectedUserName = DEFAULT_USER_NAME,
+            expectedAuthType = AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() keeps the old provisioning mail setting values for each new value that is not valid`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getMailSettingsBundle(
             email = "malformedEmail",
@@ -747,62 +747,50 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify {
-            provisioningSettings.email =
-                "malformedEmail" // this is acceptable for now, user will edit the email address in account setup screen
-            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    333,
-                    "oldServer",
-                    ConnectionSecurity.NONE,
-                    "oldUsername"
-                ),
-                outgoing = SimpleMailSettings(
-                    333,
-                    "oldServer",
-                    ConnectionSecurity.NONE,
-                    "oldUsername"
-                ),
-                oAuthType = OAuthProviderType.NONE,
-            )
-        }
-        verify(exactly = 0) {
-            account.email = any()
-        }
-
-        val incomingSettingsSlot = slot<ServerSettings>()
-        val outgoingSettingsSlot = slot<ServerSettings>()
-        verify {
-            RemoteStore.decodeStoreUri("storeUri")
-            RemoteStore.createStoreUri(
-                capture(incomingSettingsSlot)
-            )
-            Transport.decodeTransportUri("transportUri")
-            Transport.createTransportUri(
-                capture(outgoingSettingsSlot)
-            )
-            account.storeUri = "incomingUri"
-            account.transportUri = "outgoingUri"
-        }
-
-        val newIncoming = incomingSettingsSlot.captured
-
-        assertEquals("oldServer", newIncoming.host)
-        assertEquals(333, newIncoming.port)
-        assertEquals(ConnectionSecurity.NONE, newIncoming.connectionSecurity)
-        assertEquals("oldUsername", newIncoming.username)
-
-        val newOutgoing = outgoingSettingsSlot.captured
-
-        assertEquals("oldServer", newOutgoing.host)
-        assertEquals(333, newOutgoing.port)
-        assertEquals(ConnectionSecurity.NONE, newOutgoing.connectionSecurity)
-        assertEquals("oldUsername", newOutgoing.username)
+        verifyProvisioningMailSettings(
+            expectedEmail = null,
+            expectedIncomingPort = -1,
+            expectedIncomingServer = null,
+            expectedConnectionSecurity = null,
+            expectedUserName = null,
+            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
     }
 
     @Test
-    fun `update() keeps the old mail settings server if UrlChecker fails to check it`() {
+    fun `update() keeps the old account mail setting values for each new value that is not valid`() {
         stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle(
+            email = "malformedEmail",
+            server = "",
+            username = "{{}}",
+            security = "wrong security",
+            port = -4
+        )
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = OLD_EMAIL,
+            expectedIncomingPort = OLD_PORT,
+            expectedIncomingServer = OLD_SERVER,
+            expectedConnectionSecurity = OLD_SECURITY_TYPE,
+            expectedUserName = OLD_USER_NAME,
+            expectedAuthType = AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() keeps the old provisioning mail settings server if UrlChecker fails to check it`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
         every { urlChecker.isValidUrl(any()) }.returns(false)
 
         val restrictions = getMailSettingsBundle()
@@ -812,42 +800,85 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        val incomingSettingsSlot = slot<ServerSettings>()
-        val outgoingSettingsSlot = slot<ServerSettings>()
-        verify {
-            RemoteStore.decodeStoreUri("storeUri")
-            RemoteStore.createStoreUri(
-                capture(incomingSettingsSlot)
-            )
-            Transport.decodeTransportUri("transportUri")
-            Transport.createTransportUri(
-                capture(outgoingSettingsSlot)
-            )
-            provisioningSettings.email = "email@mail.ch"
-            account.email = "email@mail.ch"
-            provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    999,
-                    "oldServer",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                ),
-                outgoing = SimpleMailSettings(
-                    999,
-                    "oldServer",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                )
-            )
-            account.storeUri = "incomingUri"
-            account.transportUri = "outgoingUri"
-        }
+        verifyProvisioningMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = null,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
 
-        val newIncoming = incomingSettingsSlot.captured
-        assertEquals("oldServer", newIncoming.host)
+    @Test
+    fun `update() keeps the old account mail settings server if UrlChecker fails to check it`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+        every { urlChecker.isValidUrl(any()) }.returns(false)
 
-        val newOutgoing = outgoingSettingsSlot.captured
-        assertEquals("oldServer", newOutgoing.host)
+        val restrictions = getMailSettingsBundle()
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = NEW_EMAIL,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = OLD_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
+    }
+
+    @Test
+    fun `update() keeps the old provisioning email address if provided email address has no right format`() {
+        stubInitialServerSettings()
+        every { preferences.accounts }.returns(emptyList())
+
+        val restrictions = getMailSettingsBundle(email = "malformedEmail")
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyProvisioningMailSettings(
+            expectedEmail = null,
+            expectedIncomingPort = NEW_PORT,
+            expectedIncomingServer = NEW_SERVER,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE
+        )
+    }
+
+    @Test
+    fun `update() keeps the old account email address if provided email address has no right format`() {
+        stubInitialServerSettings()
+        stubAccountSettersAndGetters()
+
+        val restrictions = getMailSettingsBundle(email = "malformedEmail")
+        val entry = getMailRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verifyAccountMailSettings(
+            expectedEmail = OLD_EMAIL,
+            expectedIncomingServer = NEW_SERVER,
+            expectedIncomingPort = NEW_PORT,
+            expectedConnectionSecurity = NEW_SECURITY_TYPE,
+            expectedUserName = NEW_USER_NAME,
+            expectedAuthType = AuthType.PLAIN,
+            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+        )
     }
 
     @Test
@@ -900,5 +931,263 @@ class ConfiguredSettingsUpdaterTest {
 
 
         verify { account.wasNot(called) }
+    }
+
+    private fun stubAccountSettersAndGetters() {
+        val oAuthProviderSlot = slot<OAuthProviderType>()
+        every { account.oAuthProviderType = capture(oAuthProviderSlot) }.answers {
+            every { account.oAuthProviderType }.returns(oAuthProviderSlot.captured)
+        }
+        val emailSlot = slot<String>()
+        every { account.email = capture(emailSlot) }.answers {
+            every { account.email }.returns(emailSlot.captured)
+        }
+    }
+
+    private fun verifyProvisioningMailSettings(
+        expectedEmail: String?,
+        expectedIncomingPort: Int,
+        expectedOutgoingPort: Int = expectedIncomingPort,
+        expectedIncomingServer: String?,
+        expectedOutgoingServer: String? = expectedIncomingServer,
+        expectedConnectionSecurity: ConnectionSecurity?,
+        expectedUserName: String?,
+        expectedAuthType: security.pEp.mdm.AuthType,
+        expectedOAuthProvider: OAuthProviderType?
+    ) {
+        val slot = slot<AccountMailSettingsProvision>()
+        verify {
+            provisioningSettings.provisionedMailSettings = capture(slot)
+        }
+
+        val provision = slot.captured
+        assertEquals(expectedIncomingPort, provision.incoming.port)
+        assertEquals(expectedIncomingServer, provision.incoming.server)
+        assertEquals(expectedConnectionSecurity, provision.incoming.connectionSecurity)
+        assertEquals(expectedUserName, provision.incoming.userName)
+        assertEquals(expectedAuthType, provision.incoming.authType)
+
+        assertEquals(expectedOutgoingPort, provision.outgoing.port)
+        assertEquals(expectedOutgoingServer, provision.outgoing.server)
+        assertEquals(expectedConnectionSecurity, provision.outgoing.connectionSecurity)
+        assertEquals(expectedUserName, provision.outgoing.userName)
+        assertEquals(expectedAuthType, provision.outgoing.authType)
+
+        assertEquals(expectedOAuthProvider, provisioningSettings.oAuthType)
+        assertEquals(expectedEmail, provisioningSettings.email)
+    }
+
+    private fun verifyAccountMailSettings(
+        expectedEmail: String?,
+        expectedIncomingPort: Int,
+        expectedOutgoingPort: Int = expectedIncomingPort,
+        expectedIncomingServer: String?,
+        expectedOutgoingServer: String? = expectedIncomingServer,
+        expectedConnectionSecurity: ConnectionSecurity,
+        expectedUserName: String?,
+        expectedAuthType: AuthType,
+        expectedOAuthProvider: OAuthProviderType?
+    ) {
+        val incomingSettingsSlot = slot<ServerSettings>()
+        val outgoingSettingsSlot = slot<ServerSettings>()
+        verify {
+            RemoteStore.decodeStoreUri("storeUri")
+            RemoteStore.createStoreUri(
+                capture(incomingSettingsSlot)
+            )
+            Transport.decodeTransportUri("transportUri")
+            Transport.createTransportUri(
+                capture(outgoingSettingsSlot)
+            )
+
+            account.storeUri = "incomingUri"
+            account.transportUri = "outgoingUri"
+            account.oAuthProviderType = expectedOAuthProvider
+        }
+
+        assertEquals(expectedEmail, account.email)
+
+        val newIncoming = incomingSettingsSlot.captured
+
+        assertEquals(expectedIncomingServer, newIncoming.host)
+        assertEquals(expectedIncomingPort, newIncoming.port)
+        assertEquals(expectedConnectionSecurity, newIncoming.connectionSecurity)
+        assertEquals(expectedUserName, newIncoming.username)
+        assertEquals(expectedAuthType, newIncoming.authenticationType)
+
+        val newOutgoing = outgoingSettingsSlot.captured
+
+        assertEquals(expectedOutgoingServer, newOutgoing.host)
+        assertEquals(expectedOutgoingPort, newOutgoing.port)
+        assertEquals(expectedConnectionSecurity, newOutgoing.connectionSecurity)
+        assertEquals(expectedUserName, newOutgoing.username)
+        assertEquals(expectedAuthType, newOutgoing.authenticationType)
+    }
+
+    private fun getMailSettingsBundle(
+        email: String? = NEW_EMAIL,
+        authType: AuthType = AuthType.PLAIN,
+        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
+        server: String? = NEW_SERVER,
+        username: String? = NEW_USER_NAME,
+        security: String? = NEW_SECURITY_TYPE_STRING,
+        port: Int = NEW_PORT,
+    ): Bundle = Bundle().apply {
+        putBundle(
+            RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+            Bundle().apply {
+                putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, email)
+                putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, oAuthProvider.toString())
+                putBundle(
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to security,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to username,
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+                    )
+                )
+                putBundle(
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                    bundleOf(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to server,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to port,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to security,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to username,
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to authType.toString()
+                    )
+                )
+            }
+        )
+    }
+
+    private fun getMailRestrictionEntry(): RestrictionEntry = RestrictionEntry.createBundleEntry(
+        RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+        arrayOf(
+            RestrictionEntry(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, DEFAULT_EMAIL),
+            RestrictionEntry(
+                RESTRICTION_ACCOUNT_OAUTH_PROVIDER,
+                DEFAULT_OAUTH_PROVIDER.toString()
+            ),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
+                        DEFAULT_SERVER
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                        DEFAULT_PORT
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
+                        DEFAULT_SECURITY_TYPE.toMdmName()
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
+                        DEFAULT_USER_NAME
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE,
+                        DEFAULT_AUTH_TYPE.toString()
+                    )
+                )
+            ),
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
+                        DEFAULT_SERVER
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
+                        DEFAULT_PORT
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE,
+                        DEFAULT_SECURITY_TYPE.toMdmName()
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
+                        DEFAULT_USER_NAME
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE,
+                        DEFAULT_AUTH_TYPE.toString()
+                    )
+                )
+            ),
+        )
+    )
+
+    private fun getInitialIncomingSettings(): ServerSettings = ServerSettings(
+        ServerSettings.Type.IMAP,
+        OLD_SERVER,
+        OLD_PORT,
+        OLD_SECURITY_TYPE,
+        OLD_AUTH_TYPE,
+        OLD_USER_NAME,
+        OLD_PASSWORD,
+        OLD_CERTIFICATE_ALIAS
+    )
+
+    private fun getInitialOutgoingSettings(): ServerSettings = ServerSettings(
+        ServerSettings.Type.SMTP,
+        OLD_SERVER,
+        OLD_PORT,
+        OLD_SECURITY_TYPE,
+        OLD_AUTH_TYPE,
+        OLD_USER_NAME,
+        OLD_PASSWORD,
+        OLD_CERTIFICATE_ALIAS
+    )
+
+    private fun stubInitialServerSettings(previousOAuthProviderType: OAuthProviderType? = null) {
+        val incomingSettings = getInitialIncomingSettings()
+        val outgoingSettings = getInitialOutgoingSettings()
+
+        every { RemoteStore.decodeStoreUri(any()) }.returns(incomingSettings)
+        every { RemoteStore.createStoreUri(any()) }.returns("incomingUri")
+        every { Transport.decodeTransportUri(any()) }.returns(outgoingSettings)
+        every { Transport.createTransportUri(any()) }.returns("outgoingUri")
+        every { account.storeUri }.returns("storeUri")
+        every { account.transportUri }.returns("transportUri")
+        every { account.email }.returns("old.email@example.ch")
+        every { account.oAuthProviderType }.returns(previousOAuthProviderType)
+    }
+
+    private fun ConnectionSecurity.toMdmName(): String = when(this) {
+        ConnectionSecurity.NONE -> CONNECTION_SECURITY_NONE
+        ConnectionSecurity.STARTTLS_REQUIRED -> CONNECTION_SECURITY_STARTTLS
+        ConnectionSecurity.SSL_TLS_REQUIRED -> CONNECTION_SECURITY_SSL_TLS
+    }
+
+    companion object {
+        private const val OLD_SERVER = "oldServer"
+        private const val OLD_PORT = 333
+        private val OLD_SECURITY_TYPE = ConnectionSecurity.NONE
+        private val OLD_AUTH_TYPE = AuthType.PLAIN
+        private const val OLD_USER_NAME = "oldUsername"
+        private const val OLD_PASSWORD = "oldPassword"
+        private const val OLD_CERTIFICATE_ALIAS = "cert"
+        private const val OLD_EMAIL = "old.email@example.ch"
+
+        private const val DEFAULT_SERVER = "serverDefault"
+        private const val DEFAULT_PORT = 888
+        private val DEFAULT_SECURITY_TYPE = ConnectionSecurity.STARTTLS_REQUIRED
+        private const val DEFAULT_USER_NAME = "usernameDefault"
+        private const val DEFAULT_EMAIL = "email@default.ch"
+        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.GOOGLE
+        private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
+
+        private const val NEW_EMAIL = "email@mail.ch"
+        private const val NEW_SERVER = "mail.server.host"
+        private const val NEW_USER_NAME = "username"
+        private const val NEW_SECURITY_TYPE_STRING = "SSL/TLS"
+        private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
+        private const val NEW_PORT = 999
     }
 }
