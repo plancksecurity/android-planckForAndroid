@@ -27,10 +27,10 @@ class RestrictionsManager: BaseAndroidTest() {
         }
 
         @JvmStatic
-        fun setStringRestrictions(restriction: String, value: String) {
+        fun setStringRestrictions(setting: String, value: String) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
             val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            manager.setString(restriction, value)
+            manager.setString(setting, value)
             val activity = TestUtils.getCurrentActivity()
             manager.updateTestRestrictions(activity)
 
@@ -85,6 +85,13 @@ class RestrictionsManager: BaseAndroidTest() {
         }
 
         @JvmStatic
+        fun getSetting(setting: String): String? {
+            val app = ApplicationProvider.getApplicationContext<TestK9>()
+            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
+            return manager.getString(setting)
+        }
+
+        @JvmStatic
         fun compareSetting(server: String, securityType: String, port: Int, userName: String, settings: MailIncomingOutgoingSettings): Boolean {
             if (settings.server != server ||
                     settings.securityType != securityType ||
@@ -93,6 +100,13 @@ class RestrictionsManager: BaseAndroidTest() {
                 return false
             }
             return true
+        }
+
+        @JvmStatic
+        fun resetSettings() {
+            val app = ApplicationProvider.getApplicationContext<TestK9>()
+            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
+            manager.resetSettings()
         }
 
     }
