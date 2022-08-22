@@ -62,8 +62,6 @@ class ConfigurationManager(
         entries: List<RestrictionEntry>,
         restrictions: Bundle,
     ) {
-        Log.e("PEPA-28-QA", "allow = " + restrictions.getBoolean("allow_pep_sync_new_devices"))
-        Log.e("PEPA-28-QA", "syncr = " + restrictions.getBoolean("pep_enable_sync_account"))
         entries.forEach { entry ->
             settingsUpdater.update(restrictions, entry)
         }
