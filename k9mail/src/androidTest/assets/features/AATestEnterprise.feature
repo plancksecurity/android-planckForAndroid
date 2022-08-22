@@ -6,31 +6,30 @@ Feature: Test
   @QTR-2345
   Scenario: Cucumber Enterprise Disable Warning
 
-    When I set unsecure_delivery_warning restriction to false
+    When I set unsecure_delivery_warning setting to false
     And I click compose message
     And I enter 3 unreliable recipients in the messageTo field
-#FIXME: Only guaranteed to work with S22
     Then I check insecurity warnings are not there
-    When I set unsecure_delivery_warning restriction to true
+    When I set unsecure_delivery_warning setting to true
 
 
   @QTR-2351
   Scenario: Cucumber Enterprise TrustWords
 
-    When I set pep_use_trustwords restriction to true
+    When I set pep_use_trustwords setting to true
     And I send 1 message to bot1 with subject TrustWordsTest and body ThisTestIsForTrustWords
     And I click the last message received
     Then I check if the privacy status is pep_green
     And I confirm trust words match
     When I click confirm trust words
     Then I check if the privacy status is pep_green
-    When I set pep_use_trustwords restriction to false
+    When I set pep_use_trustwords setting to false
 
 
   @QTR-2344
   Scenario: Cucumber Enterprise Disable Protection
 
-    When I set pep_enable_privacy_protection restriction to false
+    When I set pep_enable_privacy_protection setting to false
     And I send 1 message to bot1 with subject newContact and body DisableProtectionTest
     And I click compose message
     And I enter bot1 in the messageTo field
@@ -39,7 +38,7 @@ Feature: Test
     And I check if the privacy status is pEpRatingUnsecure
     Then I check in the handshake dialog if the privacy status is pEpRatingUnsecure
     And I click the send message button
-    When I set pep_enable_privacy_protection restriction to true
+    When I set pep_enable_privacy_protection setting to true
 
 
 
