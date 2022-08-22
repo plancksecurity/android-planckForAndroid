@@ -5025,6 +5025,13 @@ public class TestUtils {
         return testConfig.getMail(account);
     }
 
+    public String getSyncAccount (int account) {
+        while (testConfig == null || testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getKeySync_account(account);
+    }
+
     public String getFormatAccount () { return testConfig.format_test_account; }
 
     public String getPassphraseAccount() { return testConfig.getPassphrase_account(Integer.parseInt(testConfig.test_number) - 4);}
