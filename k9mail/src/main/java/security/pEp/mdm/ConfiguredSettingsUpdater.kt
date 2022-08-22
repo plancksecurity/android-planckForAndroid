@@ -3,7 +3,6 @@ package security.pEp.mdm
 import android.content.RestrictionEntry
 import android.os.Build
 import android.os.Bundle
-import android.util.Patterns
 import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -264,7 +263,7 @@ class ConfiguredSettingsUpdater(
         val bundle = restrictions?.getBundle(entry.key)
         updateAuthType(entry, bundle, simpleSettings, incoming)
         if (simpleSettings.authType == AuthType.XOAUTH2
-            && oAuthProviderType == OAuthProviderType.GMAIL
+            && oAuthProviderType == OAuthProviderType.GOOGLE
             && email != null) {
             simpleSettings =
                 if (incoming) getGmailOAuthIncomingServerSettings(email)

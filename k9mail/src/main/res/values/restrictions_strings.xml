@@ -41,17 +41,16 @@
     </string-array>
 
     <string name="account_oauth_provider_title">OAuth Provider</string>
-    <string name="account_oauth_provider_description">OAuth provider when using login via OAuth (choose "None" if not using Oauth).</string>
-    <string name="gmail" translatable="false">Gmail</string>
+    <string name="account_oauth_provider_description">OAuth provider when using login via OAuth. Default is Google. Only used when incoming or outgoing mail settings auth type is OAuth.</string>
+    <string name="google" translatable="false">Google</string>
     <string name="none">None</string>
     <string-array name="account_oauth_provider_entries">
-        <item>@string/gmail</item>
+        <item>@string/google</item>
         <item>@string/none</item>
     </string-array>
 
     <string-array name="account_oauth_provider_values" translatable="false" >
-        <item>GMAIL</item>
-        <item>NONE</item>
+        <item>GOOGLE</item>
     </string-array>
 
     <string name="account_authentication_type_title">Authentication type</string>
