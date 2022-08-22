@@ -18,9 +18,6 @@ import security.pEp.network.UrlChecker
 import security.pEp.provisioning.*
 import timber.log.Timber
 
-private const val CONNECTION_SECURITY_NONE = "NONE"
-private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
-private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
 const val GMAIL_INCOMING_PORT = 993
 const val GMAIL_OUTGOING_PORT = 465
 const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
@@ -431,16 +428,6 @@ class ConfiguredSettingsUpdater(
                 currentTransportUri
             }
         }
-    }
-
-    private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
-        this.equals(CONNECTION_SECURITY_NONE, true) ->
-            ConnectionSecurity.NONE
-        this.equals(CONNECTION_SECURITY_STARTTLS, true) ->
-            ConnectionSecurity.STARTTLS_REQUIRED
-        this.equals(CONNECTION_SECURITY_SSL_TLS, true) ->
-            ConnectionSecurity.SSL_TLS_REQUIRED
-        else -> null
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
