@@ -196,6 +196,7 @@ public class CucumberTestSteps {
             testUtils.clearAllRecentApps();
         }
         Intents.release();
+        RestrictionsManager.resetSettings();
     }
 
     @When(value = "^I created an account$")
