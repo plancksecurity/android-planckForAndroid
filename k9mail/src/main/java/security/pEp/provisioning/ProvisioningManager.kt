@@ -53,17 +53,19 @@ class ProvisioningManager @Inject constructor(
 
     private suspend fun performProvisioningIfNeeded(): Result<Unit> {
         return when {
-            !BuildConfig.IS_ENTERPRISE || systemFileLocator.keysDbFile.exists() -> {
+            !BuildConfig.IS_ENTERPRISE -> {
                 finalizeSetup()
             }
-            !isDeviceOnline() -> {
-                Result.failure(ProvisioningFailedException("Device is offline"))
-            }
             else -> {
+                val dbsExist = systemFileLocator.keysDbFile.exists()
                 configurationManagerFactory.create(k9).loadConfigurationsSuspend(
-                    true
+                    !dbsExist
                 ).flatMapSuspend {
-                    performProvisioningAfterChecks()
+                    if(!dbsExist) {
+                        performProvisioningAfterChecks()
+                    } else {
+                        finalizeSetup()
+                    }
                 }
             }
         }
@@ -76,6 +78,9 @@ class ProvisioningManager @Inject constructor(
     }
 
     private fun performChecks(): Result<Unit> = when {
+        !isDeviceOnline() -> {
+            Result.failure(ProvisioningFailedException("Device is offline"))
+        }
         areProvisionedMailSettingsInvalid() -> {
             Result.failure(
                 ProvisioningFailedException(
