@@ -280,6 +280,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (usingCertificates) {
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
             mOAuth2CheckBox.setEnabled(false);
+            if (BuildConfig.IS_ENTERPRISE) {
+                passwordLayout.setVisibility(View.GONE);
+            }
         } else if (usingXoauth) {
             mEmailView.setVisibility(View.VISIBLE);
             passwordLayout.setVisibility(View.GONE);
