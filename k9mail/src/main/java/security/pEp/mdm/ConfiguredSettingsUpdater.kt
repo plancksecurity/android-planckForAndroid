@@ -232,7 +232,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
             accepted = { newValue ->
-                !newValue.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(newValue).matches()
+                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
             },
             default = { null }
         ) {
@@ -242,7 +242,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
             accepted = { newValue ->
-                !newValue.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(newValue).matches()
+                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
             }
         ) { account, newValue ->
             account.email = newValue
