@@ -126,6 +126,8 @@ class ConfiguredSettingsUpdater(
                 saveAccountEmailAddress(bundle, restriction)
             }
 
+        val email = getCurrentEmail()
+
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
@@ -133,7 +135,7 @@ class ConfiguredSettingsUpdater(
                         bundle,
                         restriction,
                         oAuthProviderType,
-                        provisioningSettings.email,
+                        email,
                         true
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
@@ -142,7 +144,7 @@ class ConfiguredSettingsUpdater(
                         bundle,
                         restriction,
                         oAuthProviderType,
-                        provisioningSettings.email,
+                        email,
                         false
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
@@ -155,14 +157,16 @@ class ConfiguredSettingsUpdater(
         )
     }
 
+    private fun getCurrentEmail(): String? =
+        preferences.accounts.firstOrNull()?.email ?: provisioningSettings.email
+
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun getNewAuthType(
+    private fun updateAuthType(
         entry: RestrictionEntry,
         bundle: Bundle?,
-        previous: AuthType?,
+        simpleSettings: SimpleMailSettings,
         incoming: Boolean
-    ): AuthType? {
-        var authType = previous
+    ) {
         entry.restrictions
             .firstOrNull {
                 it.key ==
@@ -177,10 +181,9 @@ class ConfiguredSettingsUpdater(
                                 newValue in AuthType.values().map { it.toString() }
                     }
                 ) {
-                    authType = AuthType.valueOf(it)
+                    simpleSettings.authType = AuthType.valueOf(it)
                 }
             }
-        return authType
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -239,8 +242,8 @@ class ConfiguredSettingsUpdater(
             else getCurrentOutgoingSettings()
         var simpleSettings = currentSettings?.toSimpleMailSettings() ?: SimpleMailSettings()
         val bundle = restrictions?.getBundle(entry.key)
-        val authType = getNewAuthType(entry, bundle, simpleSettings.authType, true)
-        if (authType != null && authType == AuthType.XOAUTH2
+        updateAuthType(entry, bundle, simpleSettings, incoming)
+        if (simpleSettings.authType == AuthType.XOAUTH2
             && oAuthProviderType == OAuthProviderType.GMAIL
             && email != null) {
             simpleSettings =
