@@ -28,7 +28,7 @@ import security.pEp.mdm.ManageableSettingMdmEntry
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-////@Ignore("Only to be run via ./gradlew testRestrictions")
+@Ignore("Only to be run via ./gradlew testRestrictions")
 class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     private var forcedAppConfig = false
