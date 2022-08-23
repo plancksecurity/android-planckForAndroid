@@ -51,7 +51,7 @@ class ProvisioningManagerTest {
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
         coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
-        coEvery { configurationManager.loadConfigurationsSuspend(true) }
+        coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
@@ -184,14 +184,14 @@ class ProvisioningManagerTest {
     }
 
     @Test
-    fun `if pEp databases already exist, provisioning does not happen`() {
+    fun `if pEp databases already exist, configurationManager_loadConfigurationsSuspend is called with parameter false`() {
         coEvery { keysDbFile.exists() }.returns(true)
 
 
         manager.startProvisioning()
 
 
-        coVerify(exactly = 0) { PEpProviderImplKotlin.provision(any(), any()) }
+        coVerify { configurationManager.loadConfigurationsSuspend(false) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
