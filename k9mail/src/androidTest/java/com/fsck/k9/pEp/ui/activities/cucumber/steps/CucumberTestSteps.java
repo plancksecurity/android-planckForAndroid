@@ -130,7 +130,14 @@ public class CucumberTestSteps {
     @Before
     public void setup() {
         scenario = ActivityScenario.launch(SplashActivity.class);
-        waitForIdle();
+        while (TestUtils.getCurrentActivity() == null) {
+            waitForIdle();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
@@ -197,14 +204,6 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        while (TestUtils.getCurrentActivity() == null) {
-            waitForIdle();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         if (BuildConfig.IS_ENTERPRISE) {
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
