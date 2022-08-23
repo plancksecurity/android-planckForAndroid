@@ -130,11 +130,7 @@ public class CucumberTestSteps {
     @Before
     public void setup() {
         scenario = ActivityScenario.launch(SplashActivity.class);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        waitForIdle();
         Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
