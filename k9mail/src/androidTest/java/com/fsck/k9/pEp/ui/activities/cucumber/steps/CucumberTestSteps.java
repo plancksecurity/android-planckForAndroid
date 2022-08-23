@@ -131,7 +131,6 @@ public class CucumberTestSteps {
     public void setup() {
         scenario = ActivityScenario.launch(SplashActivity.class);
         while (TestUtils.getCurrentActivity() == null) {
-            waitForIdle();
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
