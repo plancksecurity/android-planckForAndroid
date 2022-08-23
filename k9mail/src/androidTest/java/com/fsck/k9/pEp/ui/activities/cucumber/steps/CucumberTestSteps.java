@@ -2641,6 +2641,7 @@ public class CucumberTestSteps {
                 waitForIdle();
             }
         }
+        testUtils.getMessageListSize();
     }
 
     @Then("^I wait for the new message$")
