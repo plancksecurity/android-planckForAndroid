@@ -43,10 +43,8 @@
     <string name="account_oauth_provider_title">OAuth Provider</string>
     <string name="account_oauth_provider_description">OAuth provider when using login via OAuth. Default is Google. Only used when incoming or outgoing mail settings auth type is OAuth.</string>
     <string name="google" translatable="false">Google</string>
-    <string name="none">None</string>
     <string-array name="account_oauth_provider_entries">
         <item>@string/google</item>
-        <item>@string/none</item>
     </string-array>
 
     <string-array name="account_oauth_provider_values" translatable="false" >
