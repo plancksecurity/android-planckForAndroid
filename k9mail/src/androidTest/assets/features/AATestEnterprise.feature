@@ -3,6 +3,61 @@ Feature: Test
     Given I created an account
 
 
+  @QTR-2354
+  Scenario: Cucumber Enterprise Email Settings
+    When I set account_description setting to newUser
+    And I set account_display_count setting to 50
+    And I set max_push_folders setting to 30
+    And I set account_remote_search_num_results setting to 20
+    And I set incoming settings to server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
+    And I set outgoing settings to server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
+    Then I compare account_description setting with newUser
+    And I compare account_display_count setting with 50
+    And I compare max_push_folders setting with 30
+    And I compare account_remote_search_num_results setting with 20
+    And I compare incoming settings with server peptest.ch, securityType SSL/TLS, port 993 and userName elUser
+    And I compare outgoing settings with server peptest.ch, securityType STARTTLS, port 587 and userName elUserOUT
+
+
+  @QTR-2345
+  Scenario: Cucumber Enterprise Disable Warning
+
+    When I set unsecure_delivery_warning setting to false
+    And I click compose message
+    And I enter 3 unreliable recipients in the messageTo field
+    Then I check insecurity warnings are not there
+    When I set unsecure_delivery_warning setting to true
+
+
+  @QTR-2351
+  Scenario: Cucumber Enterprise TrustWords
+
+    When I set pep_use_trustwords setting to true
+    And I send 1 message to bot1 with subject TrustWordsTest and body ThisTestIsForTrustWords
+    And I click the last message received
+    Then I check if the privacy status is pep_green
+    And I confirm trust words match
+    When I click confirm trust words
+    Then I check if the privacy status is pep_green
+    When I set pep_use_trustwords setting to false
+
+
+  @QTR-2344
+  Scenario: Cucumber Enterprise Disable Protection
+
+    When I set pep_enable_privacy_protection setting to false
+    And I send 1 message to bot1 with subject newContact and body DisableProtectionTest
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter unsecureTest in the messageSubject field
+    And I enter pEpProtectionMustBeDisabled in the messageBody field
+    And I check if the privacy status is pEpRatingUnsecure
+    Then I check in the handshake dialog if the privacy status is pEpRatingUnsecure
+    And I click the send message button
+    When I set pep_enable_privacy_protection setting to true
+
+
+
 	#Description: Test if pEp changes to Privacy Status from “Unknown” to “Unsecure”
 	# when entering the email address of a new contact bot1.
 	# Also verify if pEp attaches my public key to outgoing messages
@@ -557,29 +612,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
 
-  @QTR-417
-  Scenario Outline: Cucumber Passive Mode ON
-
-    When I go back to accounts list
-    When I enable passive mode
-    And I select account <account>
-    And I click compose message
-    And I send 1 messages to bot7 with subject passiveMode and body TestingPassiveMode
-    And I click the first message
-    Then I check if the privacy status is pep_no_color
-    When I go back to the Inbox
-    And I send 1 messages to bot7 with subject passiveModeEncrypted and body TestingPassiveModeEncrypted
-    And I click the first message
-    Then I check if the privacy status is pep_yellow
-    When I go back to accounts list
-    Then I disable passive mode
-    Examples:
-      |account|
-      |  0    |
-      
-      
 
   @QTR-412
   Scenario Outline: Cucumber Search for email/s in the Inbox

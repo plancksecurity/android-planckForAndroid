@@ -38,6 +38,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +64,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
@@ -128,18 +130,26 @@ public class CucumberTestSteps {
     @Before
     public void setup() {
         scenario = ActivityScenario.launch(SplashActivity.class);
+        while (TestUtils.getCurrentActivity() == null) {
+            waitForIdle();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
             testUtils = new TestUtils(device, instrumentation);
-            testUtils.increaseTimeoutWait();
+            //testUtils.increaseTimeoutWait();
             espressoTestingIdlingResource = new EspressoTestingIdlingResource();
             IdlingRegistry.getInstance().register(EspressoTestingIdlingResource.getIdlingResource());
             bot = new String[9];
             resources = getApplicationContext().getResources();
             //startTimer(2000);
-            testUtils.testReset = true;
+            //testUtils.testReset = true;
         }
     }
 
@@ -150,34 +160,64 @@ public class CucumberTestSteps {
         } catch (Exception ex) {
             Timber.i("Error in After: " + ex.getMessage());
         }
-        if (exists(onView(withId(R.id.actionbar_title_first)))) {
-            while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
-                testUtils.pressBack();
-                waitForIdle();
-            }
-        }
-        if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
-            testUtils.selectFromMenu(R.string.action_settings);
-            waitForIdle();
-        }
-        if (!exists(onView(withId(R.id.account_email)))) {
-            while (!exists(onView(withId(R.id.available_accounts_title)))) {
-                waitForIdle();
-                if (exists(onView(withText(R.string.discard_action)))) {
-                    waitForIdle();
-                    onView(withText(R.string.discard_action)).perform(click());
-                }
-                if (!BuildConfig.IS_ENTERPRISE) {
+        try {
+            if (exists(onView(withId(R.id.actionbar_title_first)))) {
+                while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
                     testUtils.pressBack();
+                    waitForIdle();
                 }
+            }
+        } catch (Exception exception) {
+            Timber.i("Action bar doesn't exist");
+        }
+        try {
+            if (!exists(onView(withId(R.id.available_accounts_title))) && exists(onView(withId(R.id.message_list)))) {
+                testUtils.selectFromMenu(R.string.action_settings);
                 waitForIdle();
             }
+        } catch (Exception exception) {
+            Timber.i("App could be closed");
         }
-        testUtils.clearAllRecentApps();
+        try {
+            if (!exists(onView(withId(R.id.account_email)))) {
+                if (!exists(onView(withId(R.id.available_accounts_title)))) {
+                    waitForIdle();
+                    if (exists(onView(withText(R.string.discard_action)))) {
+                        waitForIdle();
+                        onView(withText(R.string.discard_action)).perform(click());
+                    }
+                    if (!BuildConfig.IS_ENTERPRISE) {
+                        testUtils.pressBack();
+                    }
+                    waitForIdle();
+                }
+            }
+        } catch (Exception exception) {
+            Timber.i("App could be closed");
+        }
+        if (!BuildConfig.IS_ENTERPRISE) {
+            testUtils.clearAllRecentApps();
+        }
+        Intents.release();
+        RestrictionsManager.resetSettings();
     }
 
     @When(value = "^I created an account$")
     public void I_create_account() {
+        if (BuildConfig.IS_ENTERPRISE) {
+            String account = testUtils.getAccountAddress(0);
+            if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
+                account = testUtils.getSyncAccount(0);
+            }
+            I_set_string_setting("pep_enable_sync_account", "true");
+            I_set_string_setting("account_description", "ThisIsUserName");
+            I_set_string_setting("account_display_count", "50");
+            I_set_string_setting("max_push_folders", "50");
+            I_set_string_setting("account_remote_search_num_results", "50");
+            I_set_string_setting("account_email_address", account);
+            I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
+            I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
+        }
         waitForIdle();
         try {
             if (!exists(onView(withId(R.id.message_list)))) {
@@ -204,7 +244,7 @@ public class CucumberTestSteps {
         waitForIdle();
         if (!exists(onView(withId(R.id.accounts_list))) && !exists(onView(withId(android.R.id.list))) && !exists(onView(withId(R.id.message_list)))) {
             testUtils.createAccount();
-        } else if (exists(onView(withId(R.id.add_account_container)))) {
+        } else if (viewIsDisplayed(onView(withId(R.id.add_account_container)))) {
             if (exists(onView(withId(R.id.accounts_list)))) {
                 int[] accounts = new int[1];
                 try {
@@ -241,7 +281,7 @@ public class CucumberTestSteps {
     }
 
         @When("^I enter (\\S+) in the (\\S+) field")
-        public void I_enter_text_in_field(String account, String field) {
+        public void I_enter_text_in_field(String text, String field) {
         waitForIdle();
         int viewID = 0;
         String resourceID = "";
@@ -257,17 +297,18 @@ public class CucumberTestSteps {
             case "messageTo":
                 viewID = R.id.to;
                 resourceID = "to";
+                getBotsList();
                 break;
             case "messageSubject":
-                I_fill_subject_field(account);
+                I_fill_subject_field(text);
                 return;
             case "messageBody":
-                I_fill_body_field(account);
+                I_fill_body_field(text);
                 return;
             default:
                 break;
         }
-        account = accountAddress(account);
+        text = accountAddress(text);
         if (viewIsDisplayed(R.id.recipient_expander)) {
             onView(withId(R.id.recipient_expander)).perform(click());
         }
@@ -279,32 +320,10 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        waitForIdle();
-        if (!(getTextFromView(onView(withId(viewID))).equals("") || getTextFromView(onView(withId(viewID))).equals(" "))) {
-            try {
-                testUtils.typeTextInField(account, viewID, resourceID);
-            } catch (Exception ex) {
-                Timber.i("Couldn't fill " + resourceID + ": " + ex.getMessage());
-            }
-        } else {
-            boolean filled = false;
-            while (!filled) {
-                try {
-                    waitForIdle();
-                    onView(withId(viewID)).check(matches(isDisplayed()));
-                    onView(withId(viewID)).perform(closeSoftKeyboard());
-                    waitForIdle();
-                    testUtils.typeTextInField(account, viewID, resourceID);
-                    onView(withId(viewID)).perform(closeSoftKeyboard());
-                    filled = true;
-                } catch (Exception ex) {
-                    Timber.i("Couldn't find view: " + ex.getMessage());
-                }
-            }
-        }
+        testUtils.typeTextInField(text, viewID, resourceID);
         testUtils.scrollDownToSubject();
-            testUtils.typeTextToForceRatingCalculation(R.id.subject);
-            onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
+        testUtils.typeTextToForceRatingCalculation(R.id.subject);
+        onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         if (field.equals("BCC")) {
             try {
                 BySelector selector;
@@ -539,48 +558,7 @@ public class CucumberTestSteps {
 
     @When("^I remove the (\\d+) address clicking X button")
     public void I_remove_address_clicking_X(int address) {
-        BySelector selector = By.clazz("android.widget.MultiAutoCompleteTextView");
-        waitForIdle();
-        testUtils.clickView(R.id.to_label);
-        waitForIdle();
-        int boxBottom = 0;
-        boolean clicked = false;
-        while (!clicked) {
-            for (UiObject2 multiTextView : device.findObjects(selector)) {
-                boxBottom = multiTextView.getVisibleBounds().bottom;
-                int rightX = multiTextView.getVisibleBounds().right;
-                int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
-                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 >= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(testUtils.getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                device.click(rightX, centerY);
-            }
-            waitForIdle();
-            testUtils.clickView(R.id.to_label);
-            waitForIdle();
-            for (UiObject2 multiTextView : device.findObjects(selector)) {
-                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
-                    clicked = true;
-                }
-            }
-        }
+        testUtils.removeAddressClickingX(address);
     }
 
     @When("^I compare (\\S+) from json file with (\\S+)")
@@ -618,7 +596,7 @@ public class CucumberTestSteps {
         if (!getTextFromView(onView(withId(R.id.eventSummary))).equals("EVENT FINDE") ||
                 !getTextFromView(onView(withId(R.id.eventLocation))).equals("KAME-HOUSE\n" +
                         "Southern Island, NBI 8250012 B, https://www.pep.security") ||
-                !getTextFromView(onView(withId(R.id.eventTime))).equals("Sat Nov 13 09:00:00 GMT+01:00 2021 - Sat Nov 13 10:00:00 GMT+01:00 2021") ||
+                !getTextFromView(onView(withId(R.id.eventTime))).contains("Sat Nov 13") ||
                 !getTextFromView(onView(withId(R.id.shortInvitees))).equals("AttendeeName (attendee@mail.es)\n" +
                         "Master Roshi (turtle@mail.es)\n" +
                         "Organizer Name (organizer@mail.es) [Organizer]")) {
@@ -663,6 +641,56 @@ public class CucumberTestSteps {
     public void I_wait_for_the_message_and_click_it() {
         timeRequiredForThisMethod(45);
         testUtils.waitForMessageAndClickIt();
+    }
+
+    @When("^I set (\\S+) setting to (\\S+)")
+    public void I_set_string_setting(String setting, String value) {
+        waitForIdle();
+        if (value.equals("true") || value.equals("false")) {
+            boolean valueB = false;
+            if (value.equals("true")) {
+                valueB = true;
+            }
+            RestrictionsManager.setBooleanRestrictions(setting, valueB);
+        } else {
+            RestrictionsManager.setStringRestrictions(setting, value);
+        }
+    }
+
+    @When("^I set incoming settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
+    public void I_set_incoming_settings(String server, String securityType,int port, String userName) {
+        RestrictionsManager.setIncomingBundleSettings(server, securityType, port, userName);
+    }
+
+    @When("^I set outgoing settings to server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)")
+    public void I_set_outgoing_settings(String server, String securityType,int port, String userName) {
+        RestrictionsManager.setOutgoingBundleSettings(server, securityType, port, userName);
+    }
+
+    @When("^I compare incoming settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
+    public void I_compare_incoming_settings(String server, String securityType,int port, String userName) {
+        MailSettings settings = RestrictionsManager.getRestrictions();
+        assert settings != null;
+        if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getIncoming())) {
+            assertFailWithMessage("Incoming settings are not the same: " + server + " // " + settings.getIncoming().getServer() + " ; "  + securityType + " // " + settings.getIncoming().getSecurityType() + " ; "  + port + " // " + settings.getIncoming().getPort() + " ; "  + userName + " // " + settings.getIncoming().getUserName());
+        }
+    }
+
+    @When("^I compare outgoing settings with server (\\S+), securityType (\\S+), port (\\d+) and userName (\\S+)$")
+    public void I_compare_outgoing_settings(String server, String securityType,int port, String userName) {
+        MailSettings settings = RestrictionsManager.getRestrictions();
+        assert settings != null;
+        if (!RestrictionsManager.compareSetting(server, securityType, port, userName, settings.getOutgoing())) {
+            assertFailWithMessage("Outgoing settings are not the same: " + server + " // " + settings.getOutgoing().getServer() + " ; "  + securityType + " // " + settings.getOutgoing().getSecurityType() + " ; "  + port + " // " + settings.getOutgoing().getPort() + " ; "  + userName + " // " + settings.getOutgoing().getUserName());
+        }
+    }
+
+    @When("^I compare (\\S+) setting with (\\S+)$")
+    public void I_compare_setting(String setting, String value) {
+        String settingValue = RestrictionsManager.getSetting(setting);
+        if (!settingValue.equals(value)) {
+            assertFailWithMessage("Setting " + setting + " has value " + settingValue + " and not " + value);
+        }
     }
 
     @When("^I click the last message received$")
@@ -1468,13 +1496,18 @@ public class CucumberTestSteps {
                     }
                     I_check_toolBar_color_is("pep_red");
                     return;
+                case "pEpRatingUndefined":
+                    if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                        assertFailWithMessage("Showing a rating when there is no recipient");
+                    }
+                    return;
+                case "pEpRatingUnsecure":
+                    if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
+                        assertFailWithMessage("Not showing Unsecure status");
+                    }
+                    I_check_toolBar_color_is("pep_gray");
+                    return;
             }
-        }
-        if (status.equals("pEpRatingUndefined") && (getTextFromView(onView(withId(R.id.to))).equals(""))) {
-            if (viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
-                assertFailWithMessage("Showing a rating when there is no recipient");
-            }
-            return;
         }
         Rating[] statusRating = new Rating[1];
         BySelector selector = By.clazz("android.widget.ScrollView");
@@ -2499,6 +2532,7 @@ public class CucumberTestSteps {
     @Then("^I send (\\d+) (?:message|messages) to (\\S+) with subject (\\S+) and body (\\S+)$")
     public void I_send_message_to_address(int totalMessages, String botName, String subject, String body) {
         String messageTo = "nothing";
+        getBotsList();
         switch (botName) {
             case "myself":
                 switch (testUtils.test_number()) {
@@ -2606,9 +2640,8 @@ public class CucumberTestSteps {
                 testUtils.pressBack();
                 waitForIdle();
             }
-        } else {
-            testUtils.getMessageListSize();
         }
+        testUtils.getMessageListSize();
     }
 
     @Then("^I wait for the new message$")
@@ -3029,7 +3062,6 @@ public class CucumberTestSteps {
         switch (cucumberMessageTo) {
             case "empty":
                 cucumberMessageTo = "";
-                testUtils.removeTextFromTextView("to");
                 break;
             case "myself":
                 cucumberMessageTo = testUtils.getAccountAddress(accountSelected);

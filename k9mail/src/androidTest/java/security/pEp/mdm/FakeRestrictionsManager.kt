@@ -17,7 +17,8 @@ import java.lang.reflect.Field
 import javax.inject.Inject
 
 class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
-    override val applicationRestrictions: Bundle = getProvisioningRestrictions()
+    override var applicationRestrictions: Bundle = getProvisioningRestrictions()
+        private set
     override val manifestRestrictions: List<RestrictionEntry> = getDefaultManifestRestrictions()
 
     fun updateTestRestrictions(activity: Activity) = when (activity) {
@@ -64,6 +65,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
     fun removeSetting(key: String) = applicationRestrictions.remove(key)
 
     fun clearSettings() = applicationRestrictions.clear()
+
+    fun resetSettings() {
+        applicationRestrictions = getProvisioningRestrictions()
+    }
 
     fun getManifestExtraKeys(): Set<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -247,9 +252,9 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         if (mailSettings == null) {
             remove(RESTRICTION_ACCOUNT_MAIL_SETTINGS)
         } else {
-            val incomingBundle = mailSettings.incoming?.let {
+            val incomingBundle = mailSettings.incoming?.let { incoming ->
                 Bundle().apply {
-                    with(mailSettings.incoming) {
+                    with(incoming) {
                         putStringOrRemove(
                             RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
                             server
@@ -269,9 +274,9 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     }
                 }
             }
-            val outgoingBundle = mailSettings.outgoing?.let {
+            val outgoingBundle = mailSettings.outgoing?.let { outgoing ->
                 Bundle().apply {
-                    with(mailSettings.outgoing) {
+                    with(outgoing) {
                         putStringOrRemove(
                             RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER,
                             server
@@ -384,6 +389,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                         DEFAULT_ACCOUNT_STORE_MESSAGES_SECURELY
                     ),
                     RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
+                    RestrictionEntry(
+                        RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES,
+                        DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES
+                    ),
+
                     getMailSettingsRestrictionEntry()
                 )
             } else emptyList()

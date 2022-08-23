@@ -266,6 +266,9 @@ public class TestUtils {
     }
 
     private void fillAccountAddress(String accountAddress) {
+        if (!getTextFromView(onView(withId(R.id.account_email))).equals(accountAddress)) {
+            removeTextFromTextView(R.id.account_email);
+        }
         while (getTextFromView(onView(withId(R.id.account_email))).equals("")) {
             try {
                 waitForIdle();
@@ -383,7 +386,7 @@ public class TestUtils {
         assertTrue(currentActivity.getClass().isAssignableFrom(activityClass));
     }
 
-    public Activity getCurrentActivity() {
+    public static Activity getCurrentActivity() {
 
         final Activity[] resumedActivity = {null};
         getInstrumentation().runOnMainSync(() -> {
@@ -640,7 +643,6 @@ public class TestUtils {
                 totalAccounts = 1;
             }
         }
-
     }
 
     public void syncDevices() {
@@ -1062,10 +1064,14 @@ public class TestUtils {
                     fillAccountAddress(testConfig.getMail(account));
                     fillAccountPassword(testConfig.getPassword(account));
                 }
-                if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
-                    manualAccount();
-                } else {
+                if (BuildConfig.IS_ENTERPRISE) {
                     automaticAccount();
+                } else {
+                    if (!(testConfig.getImap_server(account) == null) && !(testConfig.getSmtp_server(account) == null)) {
+                        manualAccount();
+                    } else {
+                        automaticAccount();
+                    }
                 }
                 try {
                     waitForIdle();
@@ -1327,7 +1333,7 @@ public class TestUtils {
             try {
                 waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
-                    removeTextFromTextView("account_server");
+                    removeTextFromTextView(R.id.account_server);
                 }
                 waitForIdle();
                 while (!getTextFromView(onView(withId(R.id.account_server))).equals(accountServer)) {
@@ -1363,7 +1369,7 @@ public class TestUtils {
     private void setupPort(String port) {
         if (port != null && !getTextFromView(onView(withId(R.id.account_port))).equals(port)) {
             waitForIdle();
-            removeTextFromTextView("account_port");
+            removeTextFromTextView(R.id.account_port);
             waitForIdle();
             onView(withId(R.id.account_port)).perform(click());
             onView(withId(R.id.account_port)).perform(typeText(port), closeSoftKeyboard());
@@ -1381,7 +1387,7 @@ public class TestUtils {
             waitForIdle();
         }
         while (!getTextFromView(onView(withId(R.id.account_server))).equals("")) {
-            removeTextFromTextView("account_server");
+            removeTextFromTextView(R.id.account_server);
         }
         onView(withId(R.id.account_server)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
@@ -1512,7 +1518,62 @@ public class TestUtils {
         waitForIdle();
         device.click(bounds.left - 1, bounds.centerY());
         waitForIdle();
-        onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
+        if (text.equals("") && resourceID.equals("to")) {
+            while (!getTextFromView(onView(withId(field))).equals(text)) {
+                waitForIdle();
+                clickView(R.id.to_label);
+                waitForIdle();
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+                waitForIdle();device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            }
+        } else {
+            onView(withId(field)).perform(appendTextInTextView(text), closeSoftKeyboard());
+        }
+    }
+
+    public void removeAddressClickingX (int address) {
+        BySelector selector = By.clazz("android.widget.MultiAutoCompleteTextView");
+        waitForIdle();
+        clickView(R.id.to_label);
+        waitForIdle();
+        int boxBottom = 0;
+        boolean clicked = false;
+        while (!clicked) {
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                boxBottom = multiTextView.getVisibleBounds().bottom;
+                int rightX = multiTextView.getVisibleBounds().right;
+                int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
+                    rightX--;
+                }
+                device.click(rightX, centerY);
+            }
+            waitForIdle();
+            clickView(R.id.to_label);
+            waitForIdle();
+            for (UiObject2 multiTextView : device.findObjects(selector)) {
+                if (boxBottom != multiTextView.getVisibleBounds().bottom) {
+                    clicked = true;
+                }
+            }
+        }
     }
 
     public void checkOwnKey(String mainKeyID, boolean isTheSame) {
@@ -2087,12 +2148,17 @@ public class TestUtils {
     public void removeTextFromTextView(String viewId) {
         waitForIdle();
         int view = intToID(viewId);
+        removeTextFromTextView(view);
+    }
+
+    public void removeTextFromTextView(int view) {
+        waitForIdle();
         while (!exists(onView(withId(view)))) {
             waitForIdle();
         }
         onView(withId(view)).perform(closeSoftKeyboard());
         onView(withId(view)).perform(click());
-        clickTextView(viewId);
+        //clickTextView(viewId);
         while (!(hasValueEqualTo(onView(withId(view)), " ")
                 || hasValueEqualTo(onView(withId(view)), ""))) {
             try {
@@ -2103,7 +2169,7 @@ public class TestUtils {
                 onView(withId(view)).perform(click());
             } catch (Exception ex) {
                 pressBack();
-                Timber.i("Cannot remove text from field " + viewId + ": " + ex.getMessage());
+                Timber.i("Cannot remove text from field " + view + ": " + ex.getMessage());
             }
         }
     }
@@ -2123,7 +2189,7 @@ public class TestUtils {
         }
     }
 
-    private void clickTextView (String viewId) {
+    public void clickTextView(String viewId) {
         while (true) {
             try {
                 UiObject2 list = device.findObject(By.res(APP_ID, viewId));
@@ -4953,10 +5019,17 @@ public class TestUtils {
     }
 
     public String getAccountAddress (int account) {
-        while (testConfig.test_number.equals("-10")) {
+        while (testConfig == null || testConfig.test_number.equals("-10")) {
             readConfigFile();
         }
         return testConfig.getMail(account);
+    }
+
+    public String getSyncAccount (int account) {
+        while (testConfig == null || testConfig.test_number.equals("-10")) {
+            readConfigFile();
+        }
+        return testConfig.getKeySync_account(account);
     }
 
     public String getFormatAccount () { return testConfig.format_test_account; }
