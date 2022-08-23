@@ -1,14 +1,10 @@
 package com.fsck.k9.pEp.ui.activities.test
 
 import androidx.test.core.app.ApplicationProvider
-import com.fsck.k9.Preferences
 import com.fsck.k9.common.BaseAndroidTest
 import com.fsck.k9.pEp.infrastructure.TestK9
 import com.fsck.k9.pEp.ui.activities.TestUtils
-import com.fsck.k9.preferences.SettingsExporter
-import kotlinx.coroutines.*
 import security.pEp.mdm.FakeRestrictionsManager
-import security.pEp.mdm.FakeRestrictionsManager.Companion.getProvisioningRestrictions
 import security.pEp.mdm.MailIncomingOutgoingSettings
 import security.pEp.mdm.MailSettings
 import timber.log.Timber
