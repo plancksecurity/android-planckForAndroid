@@ -178,11 +178,11 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode gitVersionCode
+        versionCode 500
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
 
-        setProperty("archivesBaseName", "${gitVersionName}-${gitVersionCode}")
+        setProperty("archivesBaseName", "${gitVersionName}-${versionCode}")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
