@@ -272,14 +272,16 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
         // Have the user select (or confirm) the client certificate
         if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
+            mOAuth2CheckBox.setChecked(false);
             mClientCertificateSpinner.chooseCertificate();
+        } else if (buttonView.equals(mOAuth2CheckBox) && isChecked) {
+            mClientCertificateCheckBox.setChecked(false);
         }
     }
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
         if (usingCertificates) {
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
-            mOAuth2CheckBox.setEnabled(false);
             if (BuildConfig.IS_ENTERPRISE) {
                 passwordLayout.setVisibility(View.GONE);
             }
@@ -292,7 +294,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             passwordLayout.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
-            mOAuth2CheckBox.setEnabled(true);
         }
     }
 
@@ -667,7 +668,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
-        boolean oAuthCheckboxEnabled = mOAuth2CheckBox.isEnabled();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
             if (child instanceof ViewGroup) {
@@ -676,7 +676,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 child.setEnabled(enable);
             }
         }
-        mOAuth2CheckBox.setEnabled(oAuthCheckboxEnabled);
     }
 
     @Override
