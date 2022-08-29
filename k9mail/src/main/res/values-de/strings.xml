@@ -296,7 +296,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="account_setup_basics_password_hint">Passwort</string>
     <string name="account_setup_basics_show_password">Passwort anzeigen</string>
     <string name="account_setup_basics_manual_setup_action">Manuelle Einrichtung</string>
-    <string name="account_setup_check_settings_title">.</string>
     <string name="account_setup_check_settings_retr_info_msg">Kontoinformationen werden abgerufen\u2026</string>
     <string name="account_setup_check_settings_check_incoming_msg">Einstellungen des Empfangsservers werden überprüft\u2026</string>
     <string name="account_setup_check_settings_check_outgoing_msg">Einstellungen des Ausgangsservers werden überprüft\u2026</string>
