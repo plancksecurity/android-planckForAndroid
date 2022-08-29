@@ -30,7 +30,7 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import timber.log.Timber
 
-private const val KEY_AUTHORIZATION = "app.k9mail_auth"
+private const val KEY_AUTHORIZATION = "app.pep_auth"
 
 class AuthViewModel(
     application: Application,
