@@ -12,7 +12,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
@@ -517,6 +516,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             val intent = Intent(context, AccountSetupCheckSettings::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account.uuid)
                 putExtra(EXTRA_CHECK_DIRECTION, direction)
+                addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 
             context.startActivityForResult(intent, ACTIVITY_REQUEST_CODE)
