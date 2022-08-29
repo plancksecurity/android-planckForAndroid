@@ -342,9 +342,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                 dialogId,
                 getString(R.string.account_setup_failed_dlg_title),
                 customMessage,
-                getString(R.string.account_setup_failed_dlg_edit_details_action),
-                getString(R.string.account_setup_failed_dlg_continue_action)
-            )
+                getString(R.string.account_setup_failed_dlg_edit_details_action)
+            ).apply { isCancelable = false }
         } else {
             throw RuntimeException("Called showDialog(int) with unknown dialog id.")
         }
@@ -361,16 +360,11 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         return String.format(Locale.US, "dialog-%d", dialogId)
     }
 
-    override fun doPositiveClick(dialogId: Int) {
-        if (dialogId == R.id.dialog_account_setup_error) {
-            finish()
-        }
-    }
+    override fun doPositiveClick(dialogId: Int) = Unit
 
     override fun doNegativeClick(dialogId: Int) {
         if (dialogId == R.id.dialog_account_setup_error) {
             canceled = false
-            setResult(RESULT_OK)
             finish()
         }
     }
