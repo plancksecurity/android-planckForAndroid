@@ -229,12 +229,18 @@ public class PEpUtils {
 //        return rv.replace("\n", "<nl>").replace("\r", "<cr>");
 //    }
 
-    static byte[] extractBodyContent(Body body) throws MessagingException, IOException {
-        InputStream is = MimeUtility.decodeBody(body);
+    static byte[] extractBodyContent(
+            Body body,
+            boolean deleteTempFile
+    ) throws MessagingException, IOException {
+        InputStream is = MimeUtility.decodeBody(body, deleteTempFile);
         if (is != null) {
             byte[] rv = IOUtils.toByteArray(is);
-            // Forcing the file to be erased
-            body.writeTo(new ByteArrayOutputStream());
+            if (deleteTempFile) {
+                // Forcing the file to be erased
+                body.writeTo(new ByteArrayOutputStream());
+            }
+
             is.close();
             return rv;
         } else if (body instanceof TextBody) {

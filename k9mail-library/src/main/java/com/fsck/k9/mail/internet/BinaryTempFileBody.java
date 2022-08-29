@@ -1,6 +1,8 @@
 package com.fsck.k9.mail.internet;
 
 
+import androidx.annotation.NonNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,8 +10,11 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fsck.k9.mail.MessagingException;
+import com.fsck.k9.mail.TransitoryFileBody;
 import com.fsck.k9.mail.filter.Base64OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.james.mime4j.codec.QuotedPrintableOutputStream;
@@ -23,7 +28,7 @@ import timber.log.Timber;
  * and writeTo one time. After writeTo is called, or the InputStream returned from
  * getInputStream is closed the file is deleted and the Body should be considered disposed of.
  */
-public class BinaryTempFileBody implements RawDataBody, SizeAware {
+public class BinaryTempFileBody implements RawDataBody, SizeAware, TransitoryFileBody {
     private static File mTempDirectory;
 
     private File mFile;
@@ -122,6 +127,16 @@ public class BinaryTempFileBody implements RawDataBody, SizeAware {
 
     public File getFile() {
         return mFile;
+    }
+
+    @NonNull
+    @Override
+    public List<String> getTransitoryFilePaths() {
+        List<String> out = new ArrayList<>();
+        if (mFile != null) {
+            out.add(mFile.getAbsolutePath());
+        }
+        return out;
     }
 
     class BinaryTempFileBodyInputStream extends FilterInputStream {

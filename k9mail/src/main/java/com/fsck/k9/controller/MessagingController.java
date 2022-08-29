@@ -78,6 +78,8 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.preferences.Storage;
+import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.StatsColumns;
 import com.fsck.k9.search.ConditionsTreeNode;
@@ -1587,6 +1589,44 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return true;
     }
 
+    private <MSG extends Message> void updateStatus(
+            final Account account,
+            final String folder,
+            final LocalFolder localFolder,
+            final AtomicInteger progress,
+            final AtomicInteger newMessages,
+            final int todo,
+            final LocalMessage localMessage,
+            final MSG originalMessage,
+            final boolean shouldRemoveId,
+            final List<LocalMessage> messagesToNotify,
+            final StorageEditor storageEditor) {
+        if (shouldRemoveId) {
+            storageEditor.removeOngoingDecryptMessageId(originalMessage.getMessageId());
+        }
+        // Increment the number of "new messages" if the newly downloaded message is
+        // not marked as read.
+        if (!localMessage.isSet(Flag.SEEN)) {
+            newMessages.incrementAndGet();
+        }
+
+        Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
+                account, folder, originalMessage.getUid());
+
+        // Update the listener with what we've found
+        for (MessagingListener l : getListeners()) {
+            l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
+            if (!localMessage.isSet(Flag.SEEN)) {
+                l.synchronizeMailboxNewMessage(account, folder, localMessage);
+            }
+        }
+
+        // Send a notification of this message
+        if (shouldNotifyForMessage(account, localFolder, originalMessage)) {
+            messagesToNotify.add(localMessage);
+        }
+    }
+
     private <T extends Message> void downloadSmallMessages(final Account account, final Folder<T> remoteFolder,
                                                            final LocalFolder localFolder,
                                                            List<T> smallMessages,
@@ -1604,11 +1644,18 @@ public class MessagingController implements Sync.MessageToSendCallback {
         Timber.d("SYNC: Fetching %d small messages for folder %s", smallMessages.size(), folder);
 
         List<LocalMessage> messagesToNotify = new ArrayList<>();
+        Storage storage = preferences.getStorage();
+        StorageEditor storageEditor = preferences.getStorage().edit();
         remoteFolder.fetch(smallMessages,
                 fp, new MessageRetrievalListener<T>() {
                     @Override
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
+                            if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
+                                throw new CrashedWhileDecryptingException(message.getMessageId());
+                            }
+                            storageEditor.addOngoingDecryptMessageId(message.getMessageId());
+                            storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
                             long time = System.currentTimeMillis();
 
                             if (!shouldImportMessage(account, message, earliestDate)) {
@@ -1622,7 +1669,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 return;
                             }
 
-                            Timber.d("pep in download loop (nr= + %s ) pre", number);
+                            Timber.d("pep in download loop (nr= %s ) pre", number);
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
                             final PEpProvider.DecryptResult result;
                             //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
@@ -1670,31 +1717,30 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     if (controller.shouldReuploadMessageInTrustedServer(result, decryptedMessage, account, alreadyDecrypted)) {
                                         appendMessageCommand(account, localMessage, localFolder);
                                     }
-                                    Timber.d("pep", "in download loop (nr=" + number + ") post pep");// Increment the number of "new messages" if the newly downloaded message is
-                                    // not marked as read.
-                                    if (!localMessage.isSet(Flag.SEEN)) {
-                                        newMessages.incrementAndGet();
-                                    }
-
-                                    Timber.v("About to notify listeners that we got a new small message %s:%s:%s",
-                                            account, folder, message.getUid());
-
-                                    // Update the listener with what we've found
-                                    for (MessagingListener l : getListeners()) {
-                                        l.synchronizeMailboxProgress(account, folder, progress.get(), todo);
-                                        if (!localMessage.isSet(Flag.SEEN)) {
-                                            l.synchronizeMailboxNewMessage(account, folder, localMessage);
-                                        }
-                                    }
-                                    // Send a notification of this message
-
-                                    if (shouldNotifyForMessage(account, localFolder, message)) {
-                                        messagesToNotify.add(localMessage);
-                                    }
-                                    //End message Store
-
+                            Timber.d("pep in download loop (nr= %s ) post", number);
+                            updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                    localMessage, message, true, messagesToNotify, storageEditor);
+                            //End message Store
                         } catch (MessagingException | RuntimeException me) {
-                            Timber.e(me, "SYNC: fetch small messages");
+                            Timber.e(me, "SYNC: failed to pEpProcess small messages " +
+                                    "-> Only saving original message without pEp processing");
+                            try {
+                                final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
+                                boolean shouldRemoveId = me instanceof CrashedWhileDecryptingException;
+                                updateStatus(account, folder, localFolder, progress, newMessages, todo,
+                                        localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
+
+                            } catch (MessagingException e) {
+                                Timber.e(me, "SYNC: fetch small messages");
+                            }
+                        } finally {
+                            Set<String> filePaths = storage.getOngoingDecryptMessageTempFilePaths();
+                            for (String filePath : filePaths) {
+                                if(!new File(filePath).delete()) {
+                                    Timber.i("Could not delete temp file %s", filePath);
+                                }
+                            }
+                            storageEditor.clearOngoingDecryptMessageTempFilePaths();
                         }
                     }
 

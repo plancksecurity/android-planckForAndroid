@@ -559,7 +559,7 @@ class PEpProviderImplKotlin @Inject constructor(
         try {
             createEngineInstanceIfNeeded()
 
-            srcMsg = PEpMessageBuilder(source).createMessage(context)
+            srcMsg = NotRemovingTransientFilespEpMessageBuilder(source).createMessage(context)
             srcMsg.dir = Message.Direction.Incoming
             srcMsg.recvBy = PEpUtils.createIdentity(Address(receivedBy), context)
 
