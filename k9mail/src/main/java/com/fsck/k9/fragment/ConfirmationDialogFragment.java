@@ -66,7 +66,7 @@ public class ConfirmationDialogFragment extends DialogFragment implements OnClic
             builder.setPositiveButton(confirmText, this);
             builder.setNegativeButton(cancelText, this);
         } else if (cancelText != null) {
-            builder.setNeutralButton(cancelText, this);
+            builder.setNegativeButton(cancelText, this);
         } else {
             throw new RuntimeException("Set at least cancelText!");
         }
