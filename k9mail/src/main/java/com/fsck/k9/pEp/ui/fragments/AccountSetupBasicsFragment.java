@@ -722,6 +722,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void goForward() {
+        showLoading(false);
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
             accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
