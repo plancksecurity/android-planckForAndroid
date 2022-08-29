@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.fsck.k9.mail.Body;
-import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.Part;
 import com.fsck.k9.mail.internet.MessageExtractor;
@@ -71,7 +70,7 @@ class PEpMessageBuilder {
         if (!(b instanceof MimeMultipart)) { //FIXME: Don't do this assumption (if not Multipart then plain or html text)
 
             String disposition = MimeUtility.unfoldAndDecode(mm.getDisposition());
-            byte[] bodyContent = PEpUtils.extractBodyContent(b);
+            byte[] bodyContent = extractBodyContent(b);
             if ((isAnAttachment(mm))) {
                 Log.i("PEpMessageBuilder", "addBody 1 " + disposition);
                 String filename = MimeUtility.getHeaderParameter(disposition, "filename");
@@ -93,6 +92,10 @@ class PEpMessageBuilder {
         handleMultipart(pEpMsg, mmp, attachments);           // recurse into the Joys of Mime...
 
         pEpMsg.setAttachments(attachments);
+    }
+
+    protected byte[] extractBodyContent(Body body) throws MessagingException, IOException {
+        return PEpUtils.extractBodyContent(body, true);
     }
 
     private String getMessagePartCharset(Part part) {
@@ -129,7 +132,7 @@ class PEpMessageBuilder {
             boolean plain = mbp.isMimeType("text/plain");
             if (!isAnAttachment(mbp) && (plain || mbp.isMimeType("text/html"))) {
                 String charset = getMessagePartCharset(mbp);
-                String text = new String(PEpUtils.extractBodyContent(mbp_body), charset);
+                String text = new String(extractBodyContent(mbp_body), charset);
 
                 if (plain) {
                     String longmsg = pEpMsg.getLongmsg();
@@ -163,7 +166,7 @@ class PEpMessageBuilder {
     private void addAttachment(Vector<Blob> attachments, MimeBodyPart attachment) throws IOException, MessagingException {
         Blob attachmentBlob = new Blob();
         attachmentBlob.mime_type = attachment.getMimeType();
-        attachmentBlob.data = PEpUtils.extractBodyContent(attachment.getBody());
+        attachmentBlob.data = extractBodyContent(attachment.getBody());
         attachmentBlob.filename = getFilenameUri(attachment);
 
 //        Log.d("pep", "PePMessageBuilder: BLOB #" + attachments.size() + ":" + mimeType + ":" + filename);

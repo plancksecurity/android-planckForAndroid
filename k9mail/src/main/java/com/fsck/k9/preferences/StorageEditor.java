@@ -2,6 +2,7 @@ package com.fsck.k9.preferences;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,14 +10,13 @@ import java.util.Map.Entry;
 
 import android.os.SystemClock;
 
-import androidx.annotation.NonNull;
-
 import timber.log.Timber;
 
 
 public class StorageEditor {
     private Storage storage;
     private PassphraseStorage passphraseStorage;
+    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
 
     private Map<String, String> changes = new HashMap<>();
     private List<String> removals = new ArrayList<>();
@@ -24,9 +24,13 @@ public class StorageEditor {
     Map<String, String> snapshot = new HashMap<>();
 
 
-    StorageEditor(Storage storage,PassphraseStorage passphraseStorage) {
+    StorageEditor(Storage storage,
+                  PassphraseStorage passphraseStorage,
+                  OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage) {
         this.storage = storage;
         this.passphraseStorage = passphraseStorage;
+        this.ongoingDecryptMessagesStorage = ongoingDecryptMessagesStorage;
+
         snapshot.putAll(storage.getAll());
     }
 
@@ -110,5 +114,21 @@ public class StorageEditor {
     public StorageEditor remove(String key) {
         removals.add(key);
         return this;
+    }
+
+    public void addOngoingDecryptMessageId(String messageId) {
+        ongoingDecryptMessagesStorage.addMessageId(messageId);
+    }
+
+    public void removeOngoingDecryptMessageId(String messageId) {
+        ongoingDecryptMessagesStorage.removeMessageId(messageId);
+    }
+
+    public void addOngoingDecryptMessageTempFilePaths(Collection<String> filePaths) {
+        ongoingDecryptMessagesStorage.addTempFilePaths(filePaths);
+    }
+
+    public void clearOngoingDecryptMessageTempFilePaths() {
+        ongoingDecryptMessagesStorage.clearTempFilePaths();
     }
 }

@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -38,6 +39,7 @@ public class Storage {
 
     private Context context = null;
     private PassphraseStorage passphraseStorage;
+    private OngoingDecryptMessagesStorage ongoingDecryptMessagesStorage;
 
     private SQLiteDatabase openDB() {
         SQLiteDatabase mDb = context.openOrCreateDatabase(DB_NAME, Context.MODE_PRIVATE, null);
@@ -187,6 +189,7 @@ public class Storage {
     private Storage(Context context) {
         this.context = context;
         passphraseStorage = new PassphraseStorage(context);
+        ongoingDecryptMessagesStorage = new OngoingDecryptMessagesStorage(context);
         loadValues();
     }
 
@@ -264,7 +267,7 @@ public class Storage {
     }
 
     public StorageEditor edit() {
-        return new StorageEditor(this, passphraseStorage);
+        return new StorageEditor(this, passphraseStorage, ongoingDecryptMessagesStorage);
     }
 
     public Map<String, String> getAll() {
@@ -351,5 +354,13 @@ public class Storage {
 
     public String getPassphrase() {
         return passphraseStorage.getPassphrase();
+    }
+
+    public Set<String> getOngoingDecryptMessages() {
+        return ongoingDecryptMessagesStorage.getOngoingDecryptMessages();
+    }
+
+    public Set<String> getOngoingDecryptMessageTempFilePaths() {
+        return ongoingDecryptMessagesStorage.getTempFilePaths();
     }
 }
