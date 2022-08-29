@@ -10,11 +10,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
