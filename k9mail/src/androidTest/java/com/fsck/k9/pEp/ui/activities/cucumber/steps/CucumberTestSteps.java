@@ -197,8 +197,12 @@ public class CucumberTestSteps {
         if (!BuildConfig.IS_ENTERPRISE) {
             testUtils.clearAllRecentApps();
         }
-        Intents.release();
-        RestrictionsManager.resetSettings();
+        try {
+            Intents.release();
+            RestrictionsManager.resetSettings();
+        } catch (Exception exception) {
+            Timber.e("Cannot finish the test: " + exception.getMessage());
+        }
     }
 
     @When(value = "^I created an account$")
