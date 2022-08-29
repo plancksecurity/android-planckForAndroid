@@ -1318,7 +1318,7 @@ public class TestUtils {
     }
 
     private void setupSMTPServer() {
-        setupAccountSMTPServer(testConfig.getSmtp_server(account), "SMTP server");
+        setupAccountSMTPServer(testConfig.getSmtp_server(account), testConfig.getSmtp_port(account));
     }
 
     private void setupAccountIMAPServer(String accountServer, String server) {
@@ -1379,9 +1379,8 @@ public class TestUtils {
         }
     }
 
-    private void setupAccountSMTPServer(String accountServer, String server) {
+    private void setupAccountSMTPServer(String accountServer, String accountPort) {
         waitForIdle();
-        waitUntilIdle();
         onView(withId(R.id.account_server)).check(matches(isDisplayed()));
         while (!exists(onView(withId(R.id.account_server)))) {
             waitForIdle();
@@ -1399,7 +1398,28 @@ public class TestUtils {
                     onView(withId(R.id.account_server)).perform(typeText(accountServer), closeSoftKeyboard());
                     waitForIdle();
                 }
-                setupPort(testConfig.getSmtp_port(account));
+                if (!getTextFromView(onView(withId(R.id.account_port))).equals(accountPort)) {
+                    setupPort(testConfig.getSmtp_port(account));
+                }
+                if (accountPort.equals("587")) {
+                    BySelector selector = By.clazz("android.widget.TextView");
+                    for (UiObject2 textView : device.findObjects(selector)) {
+                        if (textView.getText().equals("SSL/TLS")) {
+                            textView.click();
+                            selector = By.clazz("android.widget.CheckedTextView");
+                            for (UiObject2 checkedTextView : device.findObjects(selector)) {
+                                if (checkedTextView.getText().equals("STARTTLS")) {
+                                    waitForIdle();
+                                    checkedTextView.click();
+                                    waitForIdle();
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    waitForIdle();
+                }
                 waitForIdle();
                 while (viewIsDisplayed(R.id.account_server)) {
                     waitForIdle();
@@ -1416,6 +1436,7 @@ public class TestUtils {
                     }
                 }
             } catch (Exception e) {
+                Log.e("PEPA-208-QA", "Exception: " + e.getMessage());
                 Timber.i("Cannot setup server: " + e.getMessage());
             }
         }
