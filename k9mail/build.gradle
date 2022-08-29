@@ -257,6 +257,8 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
 
             buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-e5dg5vtd1p3hk6moncnps67ed02v8rbk.apps.googleusercontent.com\""
+            buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"411baad4-1682-4b51-bf3d-5d219b2cfb97\""
+            buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
             
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep']
         }
@@ -268,6 +270,8 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
 
             buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-jqoa776om9fq731beiqap4h52b1hu3bs.apps.googleusercontent.com\""
+            buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"e647013a-ada4-4114-b419-e43d250f99c5\""
+            buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/VZF2DYuLYAu4TurFd6usQB2JPts%3D\""
 
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
         }
