@@ -287,6 +287,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 passwordLayout.setVisibility(View.GONE);
             }
         } else if (usingXoauth) {
+            mClientCertificateSpinner.setVisibility(View.GONE);
             mEmailView.setVisibility(View.VISIBLE);
             passwordLayout.setVisibility(View.GONE);
         } else {
