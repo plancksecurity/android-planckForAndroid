@@ -78,7 +78,6 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
-import com.fsck.k9.preferences.OngoingDecryptMessagesStorage;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -1653,7 +1652,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     public void messageFinished(final T message, int number, int ofTotal) {
                         try {
                             if (storage.getOngoingDecryptMessages().contains(message.getMessageId())) {
-                                throw new MessagingException(OngoingDecryptMessagesStorage.REMOVE_FAILED_MESSAGE_ID);
+                                throw new CrashedWhileDecryptingException(message.getMessageId());
                             }
                             storageEditor.addOngoingDecryptMessageId(message.getMessageId());
                             storageEditor.addOngoingDecryptMessageTempFilePaths(message.getTransitoryFilePaths());
@@ -1727,8 +1726,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                     "-> Only saving original message without pEp processing");
                             try {
                                 final LocalMessage localMessage = localFolder.storeSmallMessage(message, progress::incrementAndGet);
-                                boolean shouldRemoveId = me.getMessage() != null
-                                         && me.getMessage().equals(OngoingDecryptMessagesStorage.REMOVE_FAILED_MESSAGE_ID);
+                                boolean shouldRemoveId = me instanceof CrashedWhileDecryptingException;
                                 updateStatus(account, folder, localFolder, progress, newMessages, todo,
                                         localMessage, message, shouldRemoveId, messagesToNotify, storageEditor);
 

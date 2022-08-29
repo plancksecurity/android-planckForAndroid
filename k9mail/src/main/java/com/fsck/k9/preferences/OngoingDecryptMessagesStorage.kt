@@ -66,7 +66,6 @@ class OngoingDecryptMessagesStorage(val context: Context) {
         const val ONGOING_DECRYPT_MESSAGES_PREFERENCES = "ongoing_decrypt_messages_preferences"
         const val ONGOING_DECRYPT_MESSAGES = "ONGOING_DECRYPT_MESSAGES"
         const val TEMPORARY_FILES = "TEMPORARY_FILES"
-        const val REMOVE_FAILED_MESSAGE_ID = "REMOVE_FAILED_MESSAGE_ID"
     }
 
 }
