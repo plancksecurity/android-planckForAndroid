@@ -515,7 +515,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
         accountSetupNavigator.setLoading(loading);
         enableViewGroup(!loading, (ViewGroup) rootView);
-        mManualSetupButton.setEnabled(!wasLoading);
+        mManualSetupButton.setEnabled(!loading);
     }
 
     private void saveCredentialsInPreferences() {
