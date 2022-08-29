@@ -95,6 +95,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
     private static final String WAS_LOADING = "wasLoading";
     private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
+    private static final String GMAIL_ADDRESS_TAIL = "@gmail.com";
 
     private EditText mEmailView;
     private EditText mPasswordView;
@@ -393,10 +394,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void finishAutoSetup() {
-        boolean usingXOAuth2 = mOAuth2CheckBox.isChecked();
+        String email = mEmailView.getText().toString().trim();
+        boolean usingXOAuth2 = mOAuth2CheckBox.isChecked() || email.contains(GMAIL_ADDRESS_TAIL);
 
-        String email;
-        email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String[] emailParts = splitEmail(email);
         String user = emailParts[0];
