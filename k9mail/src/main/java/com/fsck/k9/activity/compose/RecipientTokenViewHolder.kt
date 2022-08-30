@@ -134,8 +134,6 @@ class RecipientTokenViewHolder internal constructor(
                     null
                 )
             }
-        } else {
-            contactPhoto.setPepRating(rating, account.ispEpPrivacyProtected())
         }
     }
     class ViewLocation(

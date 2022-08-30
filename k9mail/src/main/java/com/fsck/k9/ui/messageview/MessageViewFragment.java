@@ -311,7 +311,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         messageLoaderHelper.asyncStartOrResumeLoadingMessage(mMessageReference, null);
         mInitialized = true;
         mFragmentListener.updateMenu();
-        mMessageView.setPrivacyProtected(mAccount.ispEpPrivacyProtected());
     }
 
     @Override
