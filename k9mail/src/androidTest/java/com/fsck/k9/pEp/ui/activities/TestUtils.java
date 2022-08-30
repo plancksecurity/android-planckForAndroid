@@ -1414,7 +1414,7 @@ public class TestUtils {
                 if (accountPort.equals("587")) {
                     BySelector selector = By.clazz("android.widget.TextView");
                     for (UiObject2 textView : device.findObjects(selector)) {
-                        if (textView.getText().equals("SSL/TLS")) {
+                        while (textView.getText().equals("SSL/TLS")) {
                             textView.click();
                             selector = By.clazz("android.widget.CheckedTextView");
                             for (UiObject2 checkedTextView : device.findObjects(selector)) {
