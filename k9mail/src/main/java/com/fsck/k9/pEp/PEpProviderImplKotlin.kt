@@ -573,14 +573,12 @@ class PEpProviderImplKotlin @Inject constructor(
 
             if (PEpUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
-                if (K9.DEBUG) {
                     // Using Log.e on purpose
                     try {
                         Log.e(TAG, message.attachments[0].toString())
                     } catch (e: Exception) {
                         Timber.d(e, "%s %s", TAG, "Could not print the autoconsume message contents")
                     }
-                }
             } else {
                 Timber.e("%s %s", TAG, "Called decrypt on non auto-consume message")
                 Timber.e("%s %s", TAG, "Subject: " + decMsg.subject + "Message-id: " + decMsg.messageId)

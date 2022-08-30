@@ -49,10 +49,6 @@ import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-
-import security.pEp.mdm.ManageableSetting;
-import security.pEp.mdm.ManageableSettingKt;
-import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.Theme;
@@ -88,6 +84,9 @@ import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
+import security.pEp.network.ConnectionMonitor;
 import security.pEp.sync.KeySyncCleaner;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseRequirementType;
@@ -109,7 +108,7 @@ public class K9 extends MultiDexApplication {
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
-    private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
+    private static boolean allowpEpSyncNewDevices = true;
 
     public static K9JobManager jobManager;
 
@@ -661,6 +660,9 @@ public class K9 extends MultiDexApplication {
 
         ACRA.init(this);
         component.provisioningManager().startProvisioning();
+
+        Log.e("pEpEngine-app-settings", "allowpEpSyncNewDevices: " + allowpEpSyncNewDevices);
+        Log.e("pEpEngine-app-settings", "pEpSyncEnabledGlobal: " + pEpSyncEnabled);
     }
 
     public void finalizeSetup() {
@@ -1137,10 +1139,9 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getK9CurrentLanguage() {
-        if(language.isEmpty()) {
-           return LangUtils.getDefaultLocale().getLanguage();
-        }
-        else return language;
+        if (language.isEmpty()) {
+            return LangUtils.getDefaultLocale().getLanguage();
+        } else return language;
     }
 
     public static void setK9Language(String nlanguage) {
@@ -1506,11 +1507,11 @@ public class K9 extends MultiDexApplication {
         K9.mAttachmentDefaultPath = attachmentDefaultPath;
     }
 
-    public static String getpEpNewKeysPassphrase(){
+    public static String getpEpNewKeysPassphrase() {
         return pEpNewKeysPassphrase;
     }
 
-    public static void setpEpNewKeysPassphrase(String passphrase){
+    public static void setpEpNewKeysPassphrase(String passphrase) {
         K9.pEpNewKeysPassphrase = passphrase;
     }
 
@@ -1712,7 +1713,7 @@ public class K9 extends MultiDexApplication {
 
     private static void updateLoggingStatus() {
         Timber.uprootAll();
-        boolean enableDebugLogging = BuildConfig.DEBUG || DEBUG;
+        boolean enableDebugLogging = true;
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }

@@ -4,10 +4,12 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartScreenCallback
 import androidx.preference.PreferenceScreen
 import android.view.MenuItem
+import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.ConfirmationDialog
 import com.fsck.k9.activity.K9Activity
@@ -37,6 +39,10 @@ class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
                     add(R.id.generalSettingsContainer, GeneralSettingsFragment.create(it))
                 }
             }
+        }
+
+        for (account in Preferences.getPreferences(applicationContext).accounts) {
+            Log.e("pEpEngine-app-settings", account.email +  " pEpSyncEnabled: " +  account.isPepSyncEnabled)
         }
     }
 
