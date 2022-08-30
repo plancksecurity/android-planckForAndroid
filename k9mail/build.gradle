@@ -55,6 +55,7 @@ dependencies {
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
     implementation project(':foldableFolders')
 
+    implementation 'net.openid:appauth:0.11.1'
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.legacySupport}"
@@ -95,8 +96,12 @@ dependencies {
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycleViewModel}"
     implementation "androidx.constraintlayout:constraintlayout:${versions.constraintLayout}"
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
+    implementation "androidx.lifecycle:lifecycle-common:${versions.androidxLifecycle}"
+    //implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
     implementation "com.xwray:groupie:${versions.groupie}"
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
@@ -250,6 +255,10 @@ android {
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
+
+            buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-e5dg5vtd1p3hk6moncnps67ed02v8rbk.apps.googleusercontent.com\""
+            
+            manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep']
         }
 
         debug {
@@ -257,6 +266,10 @@ android {
             testCoverageEnabled rootProject.testCoverage
 
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
+
+            buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-jqoa776om9fq731beiqap4h52b1hu3bs.apps.googleusercontent.com\""
+
+            manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
         }
     }
     // Do not abort build if lint finds errors

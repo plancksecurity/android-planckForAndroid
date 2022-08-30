@@ -41,7 +41,11 @@ class SendFailedNotifications {
             MessageReference messageReference = new MessageReference(account.getUuid(), account.getDraftsFolderName(), cannotEncryptEx.getMimeMessage().getUid(), Flag.X_PEP_WASNT_ENCRYPTED);
             folderListPendingIntent = actionBuilder.createMessageComposePendingIntent(messageReference, notificationId);
         } else {
-            folderListPendingIntent = actionBuilder.createViewFolderListPendingIntent(account, notificationId);
+            folderListPendingIntent = actionBuilder.createViewFolderPendingIntent(
+                    account,
+                    account.getOutboxFolderName(),
+                    notificationId
+            );
         }
 
         NotificationCompat.Builder builder = controller
@@ -51,7 +55,10 @@ class SendFailedNotifications {
                 .setAutoCancel(true)
                 .setTicker(title)
                 .setContentTitle(title)
-                .setContentText(text)
+                .setStyle(
+                        new NotificationCompat.BigTextStyle()
+                                .bigText(text)
+                )
                 .setContentIntent(folderListPendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_ERROR);

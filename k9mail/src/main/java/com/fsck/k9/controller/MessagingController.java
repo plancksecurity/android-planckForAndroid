@@ -28,6 +28,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingAppend;
@@ -119,6 +120,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import security.pEp.auth.OAuthTokenRevokedReceiver;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -1017,7 +1019,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Done synchronizing folder %s:%s", account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
 
             for (MessagingListener l : getListeners(listener)) {
                 l.synchronizeMailboxFailed(account, folder, "Authentication failure");
@@ -1235,7 +1237,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     account.getDescription(), folder);
 
         } catch (AuthenticationFailedException e) {
-            handleAuthenticationFailure(account, true);
+            handleAuthenticationFailure(account, true, e);
         } catch (Exception e) {
             Timber.e(e, "synchronizeMailbox");
             // If we don't set the last checked, it can try too often during
@@ -1261,8 +1263,15 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     }
 
-    void handleAuthenticationFailure(Account account, boolean incoming) {
+    void handleAuthenticationFailure(
+            Account account,
+            boolean incoming,
+            AuthenticationFailedException exception
+    ) {
         notificationController.showAuthenticationErrorNotification(account, incoming);
+        if (exception.isOAuthTokenRevoked()) {
+            OAuthTokenRevokedReceiver.sendOAuthTokenRevokedBroadcast(context, account.getUuid());
+        }
     }
 
     private void updateMoreMessages(Folder remoteFolder, LocalFolder localFolder, Date earliestDate, int remoteStart)
@@ -2997,7 +3006,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Scanning folder '%s' (%d) for messages to send",
                     account.getOutboxFolderName(), localFolder.getId());
 
-            Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
+            Transport transport = transportProvider
+                    .getTransport(K9.app, account, account.getOAuth2TokenProvider());
 
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
@@ -3058,7 +3068,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         lastFailure = e;
                         wasPermanentFailure = false;
 
-                        handleAuthenticationFailure(account, false);
+                        handleAuthenticationFailure(account, false, e);
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     } catch (CertificateValidationException e) {
                         lastFailure = e;
@@ -3073,10 +3083,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
                     }  catch (AppDidntEncryptMessageException e) {
                         // TODO: 06/07/2020 Check if this catch branch is really needed.
-                        lastFailure = e;
                         wasPermanentFailure = true;
 
                         handleSendFailure(account, localStore, localFolder, message, e, wasPermanentFailure);
+
+                        lastFailure = new AppDidntEncryptMessageException(message);
+                        lastFailure.setStackTrace(e.getStackTrace());
                     } catch (AuthFailurePassphraseNeeded e) {
                         lastFailure = e;
                         wasPermanentFailure = false;
@@ -4652,6 +4664,22 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearCertificateErrorNotifications(account, incoming);
     }
 
+    public void checkIncomingServerSettings(Account account) throws MessagingException {
+        Store store = account.getRemoteStore();
+        store.checkSettings();
+    }
+
+    public void checkOutgoingServerSettings(Account account) throws MessagingException {
+        Transport transport = TransportProvider.getInstance()
+                .getTransport(K9.app, account, account.getOAuth2TokenProvider());
+        transport.close();
+        try {
+            transport.open();
+        } finally {
+            transport.close();
+        }
+    }
+
     public void notifyUserIfCertificateProblem(Account account, Exception exception, boolean incoming) {
         if (!(exception instanceof CertificateValidationException)) {
             return;
@@ -4815,7 +4843,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
         Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
-        Transport transport = transportProvider.getTransport(K9.app, account, K9.oAuth2TokenStore);
+        Transport transport = transportProvider.getTransport(
+                K9.app, account, account.getOAuth2TokenProvider());
         sendMessage(transport, message);
         Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
     }

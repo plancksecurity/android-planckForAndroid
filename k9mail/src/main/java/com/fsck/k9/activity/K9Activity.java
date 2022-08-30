@@ -1,7 +1,9 @@
 package com.fsck.k9.activity;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -21,6 +23,7 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
+import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -30,11 +33,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
+import security.pEp.auth.OAuthTokenRevokedListener;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic{
+public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
+        OAuthTokenRevokedListener {
 
     @Nullable @Bind(R.id.toolbar) Toolbar toolbar;
     @Nullable @Bind(R.id.toolbar_search_container) FrameLayout toolbarSearchContainer;
@@ -69,8 +74,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
             isShowingSearchView = savedInstanceState.getBoolean(SHOWING_SEARCH_VIEW, false);
 
             searchText = savedInstanceState.getString(K9ACTIVITY_SEARCH_TEXT, null);
-
-
         }
     }
 
@@ -109,6 +112,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     }
 
     public void setUpToolbar(boolean showUpButton) {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             if (getSupportActionBar() != null) {
@@ -151,7 +155,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         }
     }
 
-    public ViewGroup getRootView() {
+    public View getRootView() {
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
@@ -257,9 +261,20 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onResume();
         mBase.registerPassphraseReceiver();
         mBase.registerConfigurationManager();
+        mBase.registerOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             showSearchView();
         }
+    }
+
+    @Override
+    public void onTokenRevoked(@NonNull String accountUuid) {
+        blockAppInOAuthScreen(accountUuid);
+    }
+
+    private void blockAppInOAuthScreen(@NotNull String accountUuid) {
+        OAuthFlowActivity.Companion.startOAuthFlowOnTokenRevoked(this, accountUuid);
+        finishAffinity();
     }
 
     @Override
@@ -267,6 +282,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onPause();
         mBase.unregisterPassphraseReceiver();
         mBase.unregisterConfigurationManager();
+        mBase.unregisterOAuthTokenRevokedReceiver();
         if(isShowingSearchView) {
             searchText = searchInput.getText().toString();
         }

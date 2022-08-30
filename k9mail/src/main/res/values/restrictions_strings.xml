@@ -27,4 +27,47 @@
     <string name="account_remote_search_num_results_description">Number of remote search results displayed by default</string>
     <string name="allow_pep_sync_new_devices_title">Allow to add new devices to sync group</string>
     <string name="allow_pep_sync_new_devices_description">Allow to use p≡p sync to add new devices to sync group.</string>
+
+    <string-array name="mail_settings_security_type_entries">
+        <item>@string/account_setup_incoming_security_none_label</item>
+        <item>@string/account_setup_incoming_security_ssl_label</item>
+        <item>@string/account_setup_incoming_security_tls_label</item>
+    </string-array>
+
+    <string-array name="mail_settings_security_type_values" translatable="false">
+        <item>NONE</item>
+        <item>SSL/TLS</item>
+        <item>STARTTLS</item>
+    </string-array>
+
+    <string name="account_oauth_provider_title">OAuth Provider</string>
+    <string name="account_oauth_provider_description">OAuth provider when using login via OAuth. Default is Google. Only used when incoming or outgoing mail settings auth type is OAuth.</string>
+    <string name="google" translatable="false">Google</string>
+    <string-array name="account_oauth_provider_entries">
+        <item>@string/google</item>
+    </string-array>
+
+    <string-array name="account_oauth_provider_values" translatable="false" >
+        <item>GOOGLE</item>
+    </string-array>
+
+    <string name="account_authentication_type_title">Authentication type</string>
+    <string name="account_authentication_type_plain_entry">Normal password (Plain)</string>
+    <string name="account_authentication_type_cram_md5_entry">Encrypted password (Cram MD5)</string>
+    <string name="account_authentication_type_external_entry">Client certificate (External)</string>
+    <string name="account_authentication_type_oauth_entry">OAuth 2.0 (OAuth)</string>
+
+    <string-array name="account_authentication_type_entries">
+        <item>@string/account_authentication_type_plain_entry</item>
+        <item>@string/account_authentication_type_cram_md5_entry</item>
+        <item>@string/account_authentication_type_external_entry</item>
+        <item>@string/account_authentication_type_oauth_entry</item>
+    </string-array>
+
+    <string-array name="account_authentication_type_values" translatable="false">
+        <item>PLAIN</item>
+        <item>CRAM_MD5</item>
+        <item>EXTERNAL</item>
+        <item>XOAUTH2</item>
+    </string-array>
 </resources>

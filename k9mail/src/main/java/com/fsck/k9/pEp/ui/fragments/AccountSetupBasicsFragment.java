@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.ui.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,12 +16,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,10 +33,11 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.account.AccountCreator;
-import com.fsck.k9.account.AndroidAccountOAuth2TokenStore;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.activity.setup.AccountSetupNames;
+import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.helper.UrlEncodingHelper;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
@@ -54,11 +54,6 @@ import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.SetupAccountType;
 import com.fsck.k9.view.ClientCertificateSpinner;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -75,8 +70,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import butterknife.OnTextChanged;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
 import security.pEp.provisioning.AccountMailSettingsProvision;
 import security.pEp.provisioning.ProvisioningSettings;
 import security.pEp.provisioning.SimpleMailSettings;
@@ -89,7 +82,7 @@ import static com.fsck.k9.mail.ServerSettings.Type.IMAP;
 public class AccountSetupBasicsFragment extends PEpFragment
         implements View.OnClickListener, TextWatcher, CompoundButton.OnCheckedChangeListener,
         ClientCertificateSpinner.OnClientCertificateChangedListener, AccountSetupBasics.AccountSetupSettingsCheckerFragment {
-    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
+    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0;
     private final static String EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account";
     private final static int DIALOG_NOTE = 1;
     private final static String STATE_KEY_PROVIDER =
@@ -101,18 +94,19 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
     private static final String WAS_LOADING = "wasLoading";
+    private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
+    private static final String GMAIL_DOMAIN = "gmail.com";
 
     private EditText mEmailView;
     private EditText mPasswordView;
     private CheckBox mClientCertificateCheckBox;
     private ClientCertificateSpinner mClientCertificateSpinner;
     private CheckBox mOAuth2CheckBox;
-    private Spinner mAccountSpinner;
     private Button mNextButton;
     private Button mManualSetupButton;
+    private View passwordLayout;
     private Account mAccount;
     private AccountSetupBasicsFragment.Provider mProvider;
-    private AndroidAccountOAuth2TokenStore accountTokenStore;
 
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
 
@@ -121,10 +115,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
     private PePUIArtefactCache pEpUIArtefactCache;
-
-    public boolean ismCheckedIncoming() {
-        return mCheckedIncoming;
-    }
 
     private AlertDialog errorDialog;
     private int errorDialogTitle;
@@ -136,10 +126,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     PEpSettingsChecker pEpSettingsChecker;
     @Inject
     SetupAccountType setupAccountType;
-    @Inject
-    PermissionChecker permissionChecker;
-    @Inject
-    PermissionRequester permissionRequester;
     @Inject
     ProvisioningSettings provisioningSettings;
 
@@ -159,7 +145,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mManualSetupButton = rootView.findViewById(R.id.manual_setup);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
-        mAccountSpinner = rootView.findViewById(R.id.account_spinner);
+        passwordLayout = rootView.findViewById(R.id.account_password_layout);
 
         initializeViewListeners();
         validateFields();
@@ -171,11 +157,28 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (email != null && password != null) {
             mEmailView.setText(email);
             mPasswordView.setText(password);
-        } else if (BuildConfig.IS_ENTERPRISE) {
-            mEmailView.setText(provisioningSettings.getEmail());
+        }
+        if (BuildConfig.IS_ENTERPRISE) {
+            updateUiFromProvisioningSettings();
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
+    }
+
+    private void updateUiFromProvisioningSettings() {
+        mEmailView.setText(provisioningSettings.getEmail());
+        mEmailView.setFocusable(false);
+        AccountMailSettingsProvision provisionSettings =
+                provisioningSettings.getProvisionedMailSettings();
+        if (provisionSettings != null) {
+            boolean isOAuth =
+                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.XOAUTH2
+                            && provisioningSettings.getOAuthType() != null;
+            mOAuth2CheckBox.setChecked(isOAuth);
+            boolean isExternalAuth =
+                    provisionSettings.getIncoming().getAuthType() == security.pEp.mdm.AuthType.EXTERNAL;
+            mClientCertificateCheckBox.setChecked(isExternalAuth);
+        }
     }
 
     @Override
@@ -265,54 +268,34 @@ public class AccountSetupBasicsFragment extends PEpFragment
      */
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!permissionChecker.hasContactsPermission()) {
-            if (isChecked) {
-                permissionRequester.requestContactsPermission(rootView, new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        contactsPermissionGranted();
-                    }
+        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
+        validateFields();
 
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        contactsPermissionDenied();
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-                        //NOP
-                    }
-                });
-            }
-        } else {
-            updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-            validateFields();
-
-            // Have the user select (or confirm) the client certificate
-            if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
-                mClientCertificateSpinner.chooseCertificate();
-            }
+        // Have the user select (or confirm) the client certificate
+        if (buttonView.equals(mClientCertificateCheckBox) && isChecked) {
+            mOAuth2CheckBox.setChecked(false);
+            mClientCertificateSpinner.chooseCertificate();
+        } else if (buttonView.equals(mOAuth2CheckBox) && isChecked) {
+            mClientCertificateCheckBox.setChecked(false);
         }
-
     }
 
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
         if (usingCertificates) {
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
-            mOAuth2CheckBox.setEnabled(false);
+            if (BuildConfig.IS_ENTERPRISE) {
+                passwordLayout.setVisibility(View.GONE);
+            }
         } else if (usingXoauth) {
-            // hide username and password fields, show account spinner
-            mEmailView.setVisibility(View.GONE);
-            mAccountSpinner.setVisibility(View.VISIBLE);
-            mPasswordView.setVisibility(View.GONE);
+            mClientCertificateSpinner.setVisibility(View.GONE);
+            mEmailView.setVisibility(View.VISIBLE);
+            passwordLayout.setVisibility(View.GONE);
         } else {
             // show username & password fields, hide client certificate spinner
             mEmailView.setVisibility(View.VISIBLE);
-            mAccountSpinner.setVisibility(View.GONE);
-            mPasswordView.setVisibility(View.VISIBLE);
+            passwordLayout.setVisibility(View.VISIBLE);
             mClientCertificateSpinner.setVisibility(View.GONE);
             mClientCertificateCheckBox.setEnabled(true);
-            mOAuth2CheckBox.setEnabled(true);
         }
     }
 
@@ -327,8 +310,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
         boolean oauth2 =
                 oauth2Checked &&
-                mAccountSpinner.getSelectedItem() != null &&
-                !mAccountSpinner.getSelectedItem().toString().isEmpty();
+                        emailValid;
 
         boolean certificateAuth =
                 clientCertificateChecked && clientCertificateAlias != null && emailValid;
@@ -413,17 +395,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void finishAutoSetup() {
-        boolean usingXOAuth2 = mOAuth2CheckBox.isChecked();
-
-        String email;
-        if (usingXOAuth2)
-            email = mAccountSpinner.getSelectedItem().toString();
-        else
-            email = mEmailView.getText().toString().trim();
+        String email = mEmailView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String[] emailParts = splitEmail(email);
         String user = emailParts[0];
         String domain = emailParts[1];
+        boolean usingXOAuth2 = isOAuth(domain);
         try {
             String userEnc = UrlEncodingHelper.encodeUtf8(user);
             String passwordEnc = UrlEncodingHelper.encodeUtf8(password);
@@ -487,11 +464,22 @@ public class AccountSetupBasicsFragment extends PEpFragment
             setupFolderNames(incomingUriTemplate.getHost().toLowerCase(Locale.US));
 
             ServerSettings incomingSettings = RemoteStore.decodeStoreUri(incomingUri.toString());
+            ServerSettings outgoingSettings = Transport.decodeTransportUri(outgoingUri.toString());
             mAccount.setDeletePolicy(AccountCreator.getDefaultDeletePolicy(incomingSettings.type));
 
-            // Check incoming here.  Then check outgoing in onActivityResult()
             saveCredentialsInPreferences();
-            checkSettings();
+
+            if (incomingSettings != null && outgoingSettings !=null &&
+                    incomingSettings.authenticationType == AuthType.XOAUTH2 &&
+                    outgoingSettings.authenticationType == AuthType.XOAUTH2
+            ) {
+                startOAuthFlow();
+            } else {
+                checkSettings();
+            }
+
+            // Check incoming here.  Then check outgoing in onActivityResult()
+
         } catch (URISyntaxException use) {
             /*
              * If there is some problem with the URI we give up and go on to
@@ -501,15 +489,37 @@ public class AccountSetupBasicsFragment extends PEpFragment
         }
     }
 
-    private void checkSettings() {
-        checkSettings(AccountSetupCheckSettings.CheckDirection.INCOMING);
+    private boolean isOAuth(String domain) {
+        return mOAuth2CheckBox.isChecked() || domain.equalsIgnoreCase(GMAIL_DOMAIN);
     }
 
-    private void checkSettings(AccountSetupCheckSettings.CheckDirection direction) {
-        AccountSetupBasics.BasicsSettingsCheckCallback basicsSettingsCheckCallback = new AccountSetupBasics.BasicsSettingsCheckCallback(this);
-        ((AccountSetupBasics)requireActivity()).setBasicsFragmentSettingsCallback(basicsSettingsCheckCallback);
-        pEpSettingsChecker.checkSettings(mAccount, direction, false, AccountSetupCheckSettingsFragment.LOGIN,
-                false, basicsSettingsCheckCallback);
+    private void startOAuthFlow() {
+        Intent intent = OAuthFlowActivity.Companion.buildLaunchIntent(requireContext(), mAccount.getUuid());
+        requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH);
+        showLoading(false);
+    }
+
+    private void checkSettings() {
+        checkSettings(CheckDirection.INCOMING);
+    }
+
+    private void checkSettings(CheckDirection direction) {
+        AccountSetupCheckSettings.actionCheckSettings(requireActivity(), mAccount, direction);
+        showLoading(false);
+    }
+
+    private void showLoading(boolean loading) {
+        if (loading) {
+            nextProgressBar.show();
+            mNextButton.setVisibility(View.GONE);
+        } else {
+            nextProgressBar.hide();
+            mNextButton.setVisibility(View.VISIBLE);
+
+        }
+        accountSetupNavigator.setLoading(loading);
+        enableViewGroup(!loading, (ViewGroup) rootView);
+        mManualSetupButton.setEnabled(!loading);
     }
 
     private void saveCredentialsInPreferences() {
@@ -521,27 +531,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
-        accountTokenStore = K9.oAuth2TokenStore;
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                getActivity(), R.layout.simple_spinner_item, accountTokenStore.getAccounts());
-        mAccountSpinner.setAdapter(adapter);
         validateFields();
         restoreErrorDialogIfNeeded();
         restoreViewsEnabledState();
     }
 
     private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(wasLoading ? View.GONE : View.VISIBLE);
-        mManualSetupButton.setEnabled(!wasLoading);
-        enableViewGroup(!wasLoading, (ViewGroup)rootView);
-        if(wasLoading) {
-            nextProgressBar.setVisibility(View.VISIBLE);
-            nextProgressBar.show();
-            wasLoading = false;
-        }
-        else {
-            nextProgressBar.hide();
-        }
+        showLoading(wasLoading);
+        wasLoading = false;
     }
 
     private void restoreErrorDialogIfNeeded() {
@@ -552,44 +549,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void onNext() {
-        nextProgressBar.show();
-        mNextButton.setVisibility(View.GONE);
-        accountSetupNavigator.setLoading(true);
-        enableViewGroup(false, (ViewGroup) rootView);
+        showLoading(true);
 
-        String email;
-        if (mEmailView.getVisibility() == View.VISIBLE) {
-            email = mEmailView.getText().toString().trim();
-        } else {
-            email = mAccountSpinner.getSelectedItem().toString();
-        }
+        String email = mEmailView.getText().toString().trim();
+        // TODO: 9/8/22 REVIEW/RENAME THIS METHOD ISAVALIDADDRESS
         if (isAValidAddress(email)) return;
-
-        List<String> accounts = accountTokenStore.getAccounts();
-        if (accounts.contains(email)) {
-            mOAuth2CheckBox.setChecked(true);
-            mAccountSpinner.setSelection(accounts.indexOf(email));
-            setup(email);
-        } else if (email.contains(GMAIL)) {
-            new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.add_account_title)
-                    .setMessage(R.string.add_account_message)
-                    .setPositiveButton(getResources().getString(R.string.okay_action), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            accountSetupNavigator.createGmailAccount(getActivity());
-                        }
-                    })
-                    .setNegativeButton(getResources().getString(R.string.app_intro_skip_button), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            setup(email);
-                        }
-                    })
-                    .show();
-        } else {
-            setup(email);
-        }
+        setup(email);
     }
 
     private boolean isAValidAddress(String email) {
@@ -616,8 +581,12 @@ public class AccountSetupBasicsFragment extends PEpFragment
             provider.domain = domain;
             provider.id = "provisioned";
             provider.label = "enterprise provisioned provider";
+
             provider.incomingUriTemplate =
-                    getServerUriTemplate(provisionSettings.getIncoming(), false);
+                    getServerUriTemplate(
+                            provisionSettings.getIncoming(),
+                            false
+                    );
             provider.outgoingUriTemplate = getServerUriTemplate(
                     provisionSettings.getOutgoing(),
                     true
@@ -651,7 +620,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void setup(String email) {
-        if (mClientCertificateCheckBox.isChecked() || mOAuth2CheckBox.isChecked()) {
+        if (mClientCertificateCheckBox.isChecked()) {
             // Auto-setup doesn't support client certificates.
             onManualSetup();
             return;
@@ -711,46 +680,53 @@ public class AccountSetupBasicsFragment extends PEpFragment
                 child.setEnabled(enable);
             }
         }
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!isAdded()) {
+            return;
+        }
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
                 && resultCode != RESULT_CANCELED) {
             ((AccountSetupBasics) getActivity()).onImport(data.getData());
-        } else {
-            if (resultCode == RESULT_OK) {
-                if (!mCheckedIncoming) {
-                    //We've successfully checked incoming.  Now check outgoing.
-                    mCheckedIncoming = true;
-                    saveCredentialsInPreferences();
-                    pEpSettingsChecker.checkSettings(mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, AccountSetupCheckSettingsFragment.LOGIN,
-                            false,
-                            new PEpSettingsChecker.ResultCallback<PEpSettingsChecker.Redirection>() {
-                                @Override
-                                public void onError(PEpSetupException exception) {
-                                    handleErrorCheckingSettings(exception);
-                                }
+        } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
+            handleCheckSettingsResult(resultCode);
+        } else if (requestCode == REQUEST_CODE_OAUTH) {
+            handleSignInResult(resultCode);
+        } /*else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }*/
+    }
 
-                                @Override
-                                public void onLoaded(PEpSettingsChecker.Redirection redirection) {
-                                    goForward();
-                                }
-                            });
-                } else {
-                    //We've successfully checked outgoing as well.
-                    mAccount.setDescription(mAccount.getEmail());
-                    mAccount.save(Preferences.getPreferences(getActivity()));
-                    K9.setServicesEnabled(getActivity());
-                    AccountSetupNames.actionSetNames(getActivity(), mAccount, false);
-                    getActivity().finish();
-                }
-            }
+    private void handleCheckSettingsResult(int resultCode) {
+        if (resultCode != RESULT_OK) return;
+        if (mAccount == null) {
+            throw new IllegalStateException("Account instance missing");
         }
+        showLoading(true);
+        if (!mCheckedIncoming) {
+            // We've successfully checked incoming. Now check outgoing.
+            mCheckedIncoming = true;
+            checkSettings(CheckDirection.OUTGOING);
+        } else {
+            // We've successfully checked outgoing as well.
+            AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
+        }
+        showLoading(false);
+    }
+
+    private void handleSignInResult(int resultCode) {
+        if (resultCode != RESULT_OK) return;
+        if (mAccount == null) {
+            throw new IllegalStateException("Account instance missing");
+        }
+        showLoading(true);
+        checkSettings();
     }
 
     private void goForward() {
+        showLoading(false);
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
             accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
@@ -761,12 +737,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void onManualSetup() {
         ((AccountSetupBasics) getActivity()).setManualSetupRequired(true);
-        String email;
-        if (mOAuth2CheckBox.isChecked()) {
-            email = mAccountSpinner.getSelectedItem().toString();
-        } else {
-            email = mEmailView.getText().toString().trim();
-        }
+        String email = mEmailView.getText().toString().trim();
 
         if (isAValidAddress(email)) return;
 
@@ -922,15 +893,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         getpEpComponent().inject(this);
     }
 
-    public void contactsPermissionDenied() {
-        mOAuth2CheckBox.setChecked(false);
-    }
-
-    public void contactsPermissionGranted() {
-        updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-        validateFields();
-    }
-
     private void handleErrorCheckingSettings(PEpSetupException exception) {
         if (exception.isCertificateAcceptanceNeeded()) {
             handleCertificateValidationException(exception);
@@ -1007,7 +969,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void acceptKeyDialog(
             final int msgResId,
             final CertificateValidationException ex,
-            AccountSetupCheckSettings.CheckDirection direction
+            CheckDirection direction
     ) {
         Handler handler = new Handler();
         handler.post(new Runnable() {
@@ -1150,14 +1112,14 @@ public class AccountSetupBasicsFragment extends PEpFragment
     }
 
     private void acceptCertificate(X509Certificate certificate,
-                                   AccountSetupCheckSettings.CheckDirection direction) {
+                                   CheckDirection direction) {
         try {
-            if(direction.equals(AccountSetupCheckSettings.CheckDirection.INCOMING)) {
-                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.INCOMING,
+            if(direction.equals(CheckDirection.INCOMING)) {
+                mAccount.addCertificate(CheckDirection.INCOMING,
                         certificate);
-                checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+                checkSettings(CheckDirection.OUTGOING);
             } else {
-                mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.OUTGOING,
+                mAccount.addCertificate(CheckDirection.OUTGOING,
                         certificate);
                 mAccount.setDescription(mAccount.getEmail());
                 onSettingsChecked(PEpSettingsChecker.Redirection.TO_APP);
@@ -1177,7 +1139,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Override
     public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
         if(redirection.equals(PEpSettingsChecker.Redirection.OUTGOING)) {
-            checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING);
+            checkSettings(CheckDirection.OUTGOING);
         } else {
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
             requireActivity().finish();

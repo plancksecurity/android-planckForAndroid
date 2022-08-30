@@ -19,9 +19,7 @@ import security.pEp.ui.about.AboutActivity;
 import security.pEp.ui.about.LicenseActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupCheckSettingsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragmentLegacy;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
@@ -71,11 +69,7 @@ public interface PEpComponent extends ActivityComponent {
 
     void inject(MessageViewFragment fragment);
 
-    void inject(AccountSetupIncomingFragmentLegacy accountSetupIncomingFragment);
-
     void inject(AccountSetupOutgoingFragment accountSetupOutgoingFragment);
-
-    void inject(AccountSetupCheckSettingsFragment fragment);
 
     void inject(AccountSetupBasics accountSetupBasics);
 
