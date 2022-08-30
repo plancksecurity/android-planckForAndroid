@@ -184,17 +184,20 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
     fun getManifestMailSettings(): MailSettings = MailSettings(
         email = DEFAULT_ACCOUNT_EMAIL_ADDRESS,
+        oAuthProvider = DEFAULT_ACCOUNT_OAUTH_PROVIDER,
         incoming = MailIncomingOutgoingSettings(
             server = DEFAULT_ACCOUNT_MAIL_SETTINGS_SERVER,
             securityType = DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY,
             port = DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
-            userName = DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME
+            userName = DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME,
+            authType = DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
         ),
         outgoing = MailIncomingOutgoingSettings(
             server = DEFAULT_ACCOUNT_MAIL_SETTINGS_SERVER,
             securityType = DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY,
             port = DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
-            userName = DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME
+            userName = DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME,
+            authType = DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
         )
     )
 
@@ -206,6 +209,7 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
             val outgoing = getBundle(RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS)
             MailSettings(
                 email = getString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS),
+                oAuthProvider = getString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER),
                 incoming = incoming?.let {
                     with(incoming) {
                         MailIncomingOutgoingSettings(
@@ -220,7 +224,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                             ),
                             userName = getString(
                                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME
-                            )
+                            ),
+                            authType = getString(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
+                            ),
                         )
                     }
                 },
@@ -238,7 +245,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                             ),
                             userName = getString(
                                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME
-                            )
+                            ),
+                            authType = getString(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
+                            ),
                         )
                     }
                 }
@@ -269,6 +279,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                             RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
                             userName
                         )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE,
+                            authType
+                        )
                     }
                 }
             }
@@ -291,12 +305,24 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                             RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
                             userName
                         )
+                        putStringOrRemove(
+                            RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE,
+                            authType
+                        )
                     }
                 }
             }
             putBundle(
                 RESTRICTION_ACCOUNT_MAIL_SETTINGS,
                 Bundle().apply {
+                    putStringOrRemove(
+                        RESTRICTION_ACCOUNT_EMAIL_ADDRESS,
+                        mailSettings.email
+                    )
+                    putStringOrRemove(
+                        RESTRICTION_ACCOUNT_OAUTH_PROVIDER,
+                        mailSettings.oAuthProvider
+                    )
                     incomingBundle?.let {
                         putBundle(
                             RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
@@ -454,6 +480,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                         RESTRICTION_ACCOUNT_EMAIL_ADDRESS,
                         DEFAULT_ACCOUNT_EMAIL_ADDRESS
                     ),
+                    RestrictionEntry(
+                        RESTRICTION_ACCOUNT_OAUTH_PROVIDER,
+                        DEFAULT_ACCOUNT_OAUTH_PROVIDER
+                    ),
                     RestrictionEntry.createBundleEntry(
                         RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                         arrayOf(
@@ -472,6 +502,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                             RestrictionEntry(
                                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
                                 DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME
+                            ),
+                            RestrictionEntry(
+                                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE,
+                                DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE
                             ),
                         )
                     ),
@@ -494,6 +528,10 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME,
                                 DEFAULT_ACCOUNT_MAIL_SETTINGS_USER_NAME
                             ),
+                            RestrictionEntry(
+                                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE,
+                                DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE
+                            ),
                         )
                     ),
                 )
@@ -501,6 +539,7 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
         private fun getMailSettingsBundle(): Bundle = Bundle().apply {
             putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+            putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, DEFAULT_ACCOUNT_OAUTH_PROVIDER)
             putBundle(
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                 bundleOf(
@@ -511,7 +550,9 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to
                             DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to
-                            BuildConfig.PEP_TEST_EMAIL_ADDRESS
+                            BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to
+                            DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
                 )
             )
             putBundle(
@@ -524,7 +565,9 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to
                             DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to
-                            BuildConfig.PEP_TEST_EMAIL_ADDRESS
+                            BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to
+                            DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
                 )
             )
         }
