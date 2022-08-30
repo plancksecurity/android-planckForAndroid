@@ -45,28 +45,13 @@ class ProvisioningManagerTest {
     @Before
     fun setUp() {
         coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
-        coEvery { provisioningSettings.provisionedMailSettings }.returns(
-            AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    900,
-                    "server",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                ),
-                outgoing = SimpleMailSettings(
-                    700,
-                    "server",
-                    ConnectionSecurity.STARTTLS_REQUIRED,
-                    "username"
-                )
-            )
-        )
+        coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(true)
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
         coEvery { keysDbFile.exists() }.returns(false)
         coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
-        coEvery { configurationManager.loadConfigurationsSuspend(true) }
+        coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
         mockkObject(PEpProviderImplKotlin)
         coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
@@ -183,6 +168,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `if provisioning url was not provided, provisioning does not happen`() {
         coEvery { provisioningSettings.provisioningUrl }.returns(null)
 
@@ -198,14 +184,14 @@ class ProvisioningManagerTest {
     }
 
     @Test
-    fun `if pEp databases already exist, provisioning does not happen`() {
+    fun `if pEp databases already exist, configurationManager_loadConfigurationsSuspend is called with parameter false`() {
         coEvery { keysDbFile.exists() }.returns(true)
 
 
         manager.startProvisioning()
 
 
-        coVerify(exactly = 0) { PEpProviderImplKotlin.provision(any(), any()) }
+        coVerify { configurationManager.loadConfigurationsSuspend(false) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
@@ -231,22 +217,7 @@ class ProvisioningManagerTest {
 
     @Test
     fun `if mail settings are not valid, resulting state is error`() {
-        coEvery { provisioningSettings.provisionedMailSettings }.returns(
-            AccountMailSettingsProvision(
-                incoming = SimpleMailSettings(
-                    0,
-                    "server",
-                    ConnectionSecurity.SSL_TLS_REQUIRED,
-                    "username"
-                ),
-                outgoing = SimpleMailSettings(
-                    700,
-                    "server",
-                    ConnectionSecurity.STARTTLS_REQUIRED,
-                    "username"
-                )
-            )
-        )
+        coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(false)
 
 
         manager.startProvisioning()
@@ -264,6 +235,7 @@ class ProvisioningManagerTest {
     }
 
     @Test
+    @Ignore("provisioning url disabled")
     fun `if url fails mail settings server url check, resulting state is error`() {
         coEvery { urlChecker.isValidUrl(any()) }.returns(false)
         coEvery { provisioningSettings.provisionedMailSettings }.returns(

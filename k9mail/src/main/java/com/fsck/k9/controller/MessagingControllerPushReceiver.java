@@ -4,7 +4,7 @@ import android.content.Context;
 import timber.log.Timber;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
+import com.fsck.k9.mail.AuthenticationFailedException;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mail.Folder;
 
@@ -86,8 +86,8 @@ public class MessagingControllerPushReceiver implements PushReceiver {
     }
 
     @Override
-    public void authenticationFailed() {
-        controller.handleAuthenticationFailure(account, true);
+    public void authenticationFailed(AuthenticationFailedException e) {
+        controller.handleAuthenticationFailure(account, true, e);
     }
 
     public String getPushState(String folderName) {

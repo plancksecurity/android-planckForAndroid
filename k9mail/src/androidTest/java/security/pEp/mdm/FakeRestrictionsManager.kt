@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.K9ActivityCommon
-import com.fsck.k9.activity.K9ListActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -23,7 +22,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
     fun updateTestRestrictions(activity: Activity) = when (activity) {
         is K9Activity -> K9Activity::class.java
-        is K9ListActivity -> K9ListActivity::class.java
         else -> null
     }?.let { activityClass ->
         val commonField: Field = activityClass.getDeclaredField("mBase")

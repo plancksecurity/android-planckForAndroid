@@ -3,26 +3,26 @@ package security.pEp.mdm
 import android.content.RestrictionEntry
 import android.os.Build
 import android.os.Bundle
-import android.util.Patterns
 import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import security.pEp.network.UrlChecker
-import security.pEp.provisioning.AccountMailSettingsProvision
-import security.pEp.provisioning.ProvisioningSettings
-import security.pEp.provisioning.SimpleMailSettings
+import security.pEp.provisioning.*
 import timber.log.Timber
 
-private const val CONNECTION_SECURITY_NONE = "NONE"
-private const val CONNECTION_SECURITY_STARTTLS = "STARTTLS"
-private const val CONNECTION_SECURITY_SSL_TLS = "SSL/TLS"
+const val GMAIL_INCOMING_PORT = 993
+const val GMAIL_OUTGOING_PORT = 465
+const val GMAIL_INCOMING_SERVER = "imap.gmail.com"
+const val GMAIL_OUTGOING_SERVER = "smtp.gmail.com"
+private val GMAIL_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
 
 class ConfiguredSettingsUpdater(
     private val k9: K9,
@@ -38,7 +38,7 @@ class ConfiguredSettingsUpdater(
     ) {
         when (entry.key) {
             RESTRICTION_PROVISIONING_URL ->
-                updateString(restrictions, entry, accepted = { !it.isNullOrBlank() }) {
+                updateString(restrictions, entry, accepted = { it.isNotBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
             RESTRICTION_PEP_EXTRA_KEYS ->
@@ -91,7 +91,7 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountDescription(restrictions: Bundle, entry: RestrictionEntry) {
-        updateString(
+        updateNullableString(
             restrictions,
             entry,
             default = { null }
@@ -112,33 +112,124 @@ class ConfiguredSettingsUpdater(
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
         var outgoing = SimpleMailSettings()
+        saveOAuthProviderType(entry, bundle)
+        val oAuthProviderType = getCurrentOAuthProvider()
+
+        saveEmail(entry, bundle)
+
+        val email = getCurrentEmail()
+
         entry.restrictions.forEach { restriction ->
             when (restriction.key) {
-                RESTRICTION_ACCOUNT_EMAIL_ADDRESS ->
-                    saveAccountEmailAddress(bundle, restriction)
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS -> {
-                    incoming = saveAccountIncomingSettings(
+                    incoming = saveAccountMailSettings(
                         bundle,
-                        restriction
+                        restriction,
+                        oAuthProviderType,
+                        email,
+                        true
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS -> {
-                    outgoing = saveAccountOutgoingSettings(
+                    outgoing = saveAccountMailSettings(
                         bundle,
-                        restriction
+                        restriction,
+                        oAuthProviderType,
+                        email,
+                        false
                     ) // TODO: 22/7/22 give feedback of invalid settings for operations
                 }
             }
         }
         provisioningSettings.provisionedMailSettings = AccountMailSettingsProvision(
-            incoming, outgoing
+            incoming,
+            outgoing,
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveEmail(entry: RestrictionEntry, bundle: Bundle?) {
+        entry.restrictions
+            .firstOrNull {
+                it.key == RESTRICTION_ACCOUNT_EMAIL_ADDRESS
+            }?.let { restriction ->
+                saveAccountEmailAddress(bundle, restriction)
+            }
+    }
+
+    private fun getCurrentEmail(): String? =
+        preferences.accounts.firstOrNull()?.email ?: provisioningSettings.email
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun updateAuthType(
+        entry: RestrictionEntry,
+        bundle: Bundle?,
+        simpleSettings: SimpleMailSettings,
+        incoming: Boolean
+    ) {
+        entry.restrictions
+            .firstOrNull {
+                it.key ==
+                        if (incoming) RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
+                        else RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
+            } ?.let { restriction ->
+                updateString(
+                    bundle,
+                    restriction,
+                    accepted = { newValue ->
+                        newValue.isNotBlank() &&
+                                newValue in AuthType.values().map { it.toString() }
+                    }
+                ) {
+                    simpleSettings.authType = AuthType.valueOf(it)
+                }
+            }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveOAuthProviderType(
+        entry: RestrictionEntry,
+        bundle: Bundle?
+    ) {
+        entry.restrictions
+            .firstOrNull { it.key == RESTRICTION_ACCOUNT_OAUTH_PROVIDER }
+            ?.let { restriction ->
+                updateString(
+                    bundle,
+                    restriction,
+                    accepted = { newValue ->
+                        newValue.isNotBlank() &&
+                                newValue in OAuthProviderType.values().map { it.toString() }
+                    },
+                ) {
+                    provisioningSettings.oAuthType = OAuthProviderType.valueOf(it)
+                }
+
+                updateAccountString(
+                    bundle,
+                    restriction,
+                    accepted = { newValue ->
+                        !newValue.isNullOrBlank() &&
+                                newValue in OAuthProviderType.values().map { it.toString() }
+                    },
+                ) { account, newValue ->
+                    newValue?.let {
+                        account.oAuthProviderType = OAuthProviderType.valueOf(newValue)
+                    }
+                }
+            }
+    }
+
+    private fun getCurrentOAuthProvider(): OAuthProviderType? =
+        preferences.accounts.firstOrNull()?.oAuthProviderType ?: provisioningSettings.oAuthType
+
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
-        updateString(
+        updateNullableString(
             restrictions,
             entry,
+            accepted = { newValue ->
+                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
+            },
             default = { null }
         ) {
             provisioningSettings.email = it
@@ -147,7 +238,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
             accepted = { newValue ->
-                !newValue.isNullOrBlank() && Patterns.EMAIL_ADDRESS.matcher(newValue).matches()
+                !newValue.isNullOrBlank() && newValue.isValidEmailAddress()
             }
         ) { account, newValue ->
             account.email = newValue
@@ -155,66 +246,133 @@ class ConfiguredSettingsUpdater(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun saveAccountIncomingSettings(
+    private fun saveAccountMailSettings(
         restrictions: Bundle?,
-        entry: RestrictionEntry
+        entry: RestrictionEntry,
+        oAuthProviderType: OAuthProviderType?,
+        email: String?,
+        incoming: Boolean
     ): SimpleMailSettings {
-        var simpleSettings = SimpleMailSettings()
-        var currentSettings: ServerSettings? = null
-        val firstAccount = preferences.accounts.firstOrNull()
-        if (firstAccount != null) {
-            currentSettings = RemoteStore.decodeStoreUri(firstAccount.storeUri)
-            simpleSettings = simpleSettings.copy(
-                port = currentSettings.port,
-                server = currentSettings.host,
-                connectionSecurity = currentSettings.connectionSecurity,
-                userName = currentSettings.username
-            )
-        }
+        val currentSettings: ServerSettings? =
+            if (incoming) getCurrentIncomingSettings()
+            else getCurrentOutgoingSettings()
+        var simpleSettings = currentSettings?.toSimpleMailSettings() ?: SimpleMailSettings()
         val bundle = restrictions?.getBundle(entry.key)
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT ->
-                    updateInt(
-                        bundle,
-                        restriction,
-                        accepted = { it > 0 }
-                    ) {
-                        simpleSettings = simpleSettings.copy(port = it)
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { server ->
-                            !server.isNullOrBlank() && urlChecker.isValidUrl(server)
-                        }
-                    ) {
-                        simpleSettings = simpleSettings.copy(server = it)
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue?.toConnectionSecurity() != null
-                        }
-                    ) {
-                        simpleSettings = simpleSettings.copy(
-                            connectionSecurity = it?.toConnectionSecurity()
-                        )
-                    }
-                RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { !it.isNullOrBlank() && !it.contains("{{") }
-                    ) {
-                        simpleSettings = simpleSettings.copy(userName = it)
-                    }
+        updateAuthType(entry, bundle, simpleSettings, incoming)
+        if (simpleSettings.authType == AuthType.XOAUTH2
+            && oAuthProviderType == OAuthProviderType.GOOGLE
+            && email != null) {
+            simpleSettings =
+                if (incoming) getGmailOAuthIncomingServerSettings(email)
+                else getGmailOAuthOutgoingServerSettings(email)
+        } else {
+            entry.restrictions.forEach { restriction ->
+                when (restriction.key) {
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
+                        updatePort(bundle, restriction, simpleSettings)
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
+                        updateServer(bundle, restriction, simpleSettings)
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
+                        updateSecurityType(bundle, restriction, simpleSettings)
+                    RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME,
+                    RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
+                        updateUsername(bundle, restriction, simpleSettings)
+                }
             }
         }
 
+        if (incoming) applyNewIncomingMailSettings(currentSettings, simpleSettings)
+        else applyNewOutgoingMailSettings(currentSettings, simpleSettings)
+        return simpleSettings
+    }
+
+    private fun updateUsername(
+        bundle: Bundle?,
+        restriction: RestrictionEntry,
+        simpleSettings: SimpleMailSettings
+    ) {
+        updateString(
+            bundle,
+            restriction,
+            accepted = { it.isNotBlank() && !it.contains("{{") }
+        ) {
+            simpleSettings.userName = it
+        }
+    }
+
+    private fun updateSecurityType(
+        bundle: Bundle?,
+        restriction: RestrictionEntry,
+        simpleSettings: SimpleMailSettings
+    ) {
+        updateString(
+            bundle,
+            restriction,
+            accepted = { newValue ->
+                newValue.toConnectionSecurity() != null
+            }
+        ) {
+            simpleSettings.connectionSecurity = it.toConnectionSecurity()
+        }
+    }
+
+    private fun updateServer(
+        bundle: Bundle?,
+        restriction: RestrictionEntry,
+        simpleSettings: SimpleMailSettings
+    ) {
+        updateString(
+            bundle,
+            restriction,
+            accepted = { server ->
+                server.isValidServer(urlChecker)
+            }
+        ) {
+            simpleSettings.server = it
+        }
+    }
+
+    private fun updatePort(
+        bundle: Bundle?,
+        restriction: RestrictionEntry,
+        simpleSettings: SimpleMailSettings
+    ) {
+        updateInt(
+            bundle,
+            restriction,
+            accepted = { it.isValidPort() }
+        ) {
+            simpleSettings.port = it
+        }
+    }
+
+    private fun getGmailOAuthIncomingServerSettings(email: String): SimpleMailSettings {
+        return SimpleMailSettings(
+            GMAIL_INCOMING_PORT,
+            GMAIL_INCOMING_SERVER,
+            GMAIL_SECURITY_TYPE,
+            email,
+            AuthType.XOAUTH2
+        )
+    }
+
+    private fun getGmailOAuthOutgoingServerSettings(email: String): SimpleMailSettings {
+        return SimpleMailSettings(
+            GMAIL_OUTGOING_PORT,
+            GMAIL_OUTGOING_SERVER,
+            GMAIL_SECURITY_TYPE,
+            email,
+            AuthType.XOAUTH2
+        )
+    }
+
+    private fun applyNewIncomingMailSettings(
+        currentSettings: ServerSettings?,
+        simpleSettings: SimpleMailSettings
+    ) {
         preferences.accounts.forEach { account ->
             val currentStoreUri = account.storeUri
             val settings = currentSettings ?: RemoteStore.decodeStoreUri(currentStoreUri)
@@ -222,78 +380,38 @@ class ConfiguredSettingsUpdater(
                 simpleSettings.server,
                 simpleSettings.connectionSecurity,
                 simpleSettings.port,
-                simpleSettings.userName
+                simpleSettings.userName,
+                simpleSettings.authType?.toAppAuthType()
             )
             account.storeUri = try {
                 RemoteStore.createStoreUri(newSettings)
-            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible 
+            } catch (ex: Throwable) { // TODO: 28/7/22 notify back to MDM incoming server settings could not be applied, if possible
                 currentStoreUri
             }
         }
-        return simpleSettings
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    private fun saveAccountOutgoingSettings(
-        restrictions: Bundle?,
-        entry: RestrictionEntry
-    ): SimpleMailSettings {
-        var simpleSettings = SimpleMailSettings()
-        var currentSettings: ServerSettings? = null
-        val firstAccount = preferences.accounts.firstOrNull()
-        if (firstAccount != null) {
-            currentSettings = Transport.decodeTransportUri(firstAccount.transportUri)
-            simpleSettings = simpleSettings.copy(
-                port = currentSettings.port,
-                server = currentSettings.host,
-                connectionSecurity = currentSettings.connectionSecurity,
-                userName = currentSettings.username
-            )
+    private fun getCurrentIncomingSettings(): ServerSettings? {
+        return preferences.accounts.firstOrNull()?.let {
+            kotlin.runCatching { RemoteStore.decodeStoreUri(it.storeUri) }
+                .onFailure { Timber.e(it) }
+                .getOrNull()
         }
-        val bundle = restrictions?.getBundle(entry.key)
-        entry.restrictions.forEach { restriction ->
-            when (restriction.key) {
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT ->
-                    updateInt(
-                        bundle,
-                        restriction,
-                        accepted = { it > 0 }
-                    ) {
-                        simpleSettings = simpleSettings.copy(port = it)
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { server ->
-                            !server.isNullOrBlank() && urlChecker.isValidUrl(server)
-                        }
-                    ) {
-                        simpleSettings = simpleSettings.copy(server = it)
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { newValue ->
-                            newValue?.toConnectionSecurity() != null
-                        }
-                    ) {
-                        simpleSettings = simpleSettings.copy(
-                            connectionSecurity = it?.toConnectionSecurity()
-                        )
-                    }
-                RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME ->
-                    updateString(
-                        bundle,
-                        restriction,
-                        accepted = { !it.isNullOrBlank() && !it.contains("{{") }
-                    ) {
-                        simpleSettings = simpleSettings.copy(userName = it)
-                    }
-            }
-        }
+    }
 
+    private fun getCurrentOutgoingSettings(): ServerSettings? {
+        return preferences.accounts.firstOrNull()?.let {
+            kotlin.runCatching { Transport.decodeTransportUri(it.transportUri) }
+                .onFailure {
+                    Timber.e(it)
+                }.getOrNull()
+        }
+    }
+
+    private fun applyNewOutgoingMailSettings(
+        currentSettings: ServerSettings?,
+        simpleSettings: SimpleMailSettings
+    ) {
         preferences.accounts.forEach { account ->
             val currentTransportUri = account.transportUri
             val settings = currentSettings ?: Transport.decodeTransportUri(currentTransportUri)
@@ -301,7 +419,8 @@ class ConfiguredSettingsUpdater(
                 simpleSettings.server,
                 simpleSettings.connectionSecurity,
                 simpleSettings.port,
-                simpleSettings.userName
+                simpleSettings.userName,
+                simpleSettings.authType?.toAppAuthType()
             )
             account.transportUri = try {
                 Transport.createTransportUri(newSettings)
@@ -309,17 +428,6 @@ class ConfiguredSettingsUpdater(
                 currentTransportUri
             }
         }
-        return simpleSettings
-    }
-
-    private fun String.toConnectionSecurity(): ConnectionSecurity? = when {
-        this.equals(CONNECTION_SECURITY_NONE, true) ->
-            ConnectionSecurity.NONE
-        this.equals(CONNECTION_SECURITY_STARTTLS, true) ->
-            ConnectionSecurity.STARTTLS_REQUIRED
-        this.equals(CONNECTION_SECURITY_SSL_TLS, true) ->
-            ConnectionSecurity.SSL_TLS_REQUIRED
-        else -> null
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -416,7 +524,7 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun saveAccountSenderName(bundle: Bundle?, entry: RestrictionEntry) {
-        updateString(
+        updateNullableString(
             bundle,
             entry,
             default = { null }
@@ -551,12 +659,27 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    private inline fun updateString(
+    private inline fun updateNullableString(
         restrictions: Bundle?,
         entry: RestrictionEntry,
         crossinline default: () -> String? = { entry.selectedString },
         crossinline accepted: (String?) -> Boolean = { true },
-        crossinline block: (newValue: String?) -> Unit
+        block: (newValue: String?) -> Unit
+    ) {
+        kotlin.runCatching {
+            val newValue = restrictions?.getString(entry.key) ?: default()
+            if (accepted(newValue)) {
+                block(newValue)
+            }
+        }.onFailure { Timber.e(it) }
+    }
+
+    private inline fun updateString(
+        restrictions: Bundle?,
+        entry: RestrictionEntry,
+        crossinline default: () -> String = { entry.selectedString },
+        crossinline accepted: (String) -> Boolean = { true },
+        block: (newValue: String) -> Unit
     ) {
         kotlin.runCatching {
             val newValue = restrictions?.getString(entry.key) ?: default()

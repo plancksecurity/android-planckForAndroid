@@ -208,6 +208,15 @@
             android:title="@string/account_email_address_title"/>
 
         <restriction
+            android:defaultValue="@string/account_oauth_provider_default"
+            android:description="@string/account_oauth_provider_description"
+            android:key="account_oauth_provider"
+            android:restrictionType="choice"
+            android:entries="@array/account_oauth_provider_entries"
+            android:entryValues="@array/account_oauth_provider_values"
+            android:title="@string/account_oauth_provider_title"/>
+
+        <restriction
             android:description="@string/account_settings_incoming_summary"
             android:key="incoming_mail_settings"
             android:restrictionType="bundle"
@@ -221,7 +230,9 @@
             <restriction
                 android:defaultValue="@string/account_setup_incoming_security_ssl_label"
                 android:key="incoming_mail_settings_security_type"
-                android:restrictionType="string"
+                android:restrictionType="choice"
+                android:entries="@array/mail_settings_security_type_entries"
+                android:entryValues="@array/mail_settings_security_type_values"
                 android:title="@string/account_setup_incoming_security_label"/>
             <restriction
                 android:defaultValue="@integer/mail_settings_incoming_port_default"
@@ -233,6 +244,14 @@
                 android:key="incoming_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_incoming_username_label"/>
+
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="incoming_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
         </restriction>
 
         <restriction
@@ -249,7 +268,9 @@
             <restriction
                 android:defaultValue="@string/account_setup_incoming_security_tls_label"
                 android:key="outgoing_mail_settings_security_type"
-                android:restrictionType="string"
+                android:restrictionType="choice"
+                android:entries="@array/mail_settings_security_type_entries"
+                android:entryValues="@array/mail_settings_security_type_values"
                 android:title="@string/account_setup_outgoing_security_label"/>
             <restriction
                 android:defaultValue="@integer/mail_settings_outgoing_port_default"
@@ -261,6 +282,13 @@
                 android:key="outgoing_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_outgoing_username_label"/>
+            <restriction
+                android:defaultValue="@string/account_authentication_type_default"
+                android:key="outgoing_mail_settings_auth_type"
+                android:restrictionType="choice"
+                android:entries="@array/account_authentication_type_entries"
+                android:entryValues="@array/account_authentication_type_values"
+                android:title="@string/account_authentication_type_title"/>
         </restriction>
     </restriction>
 
