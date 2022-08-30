@@ -400,6 +400,7 @@ public class TestUtils {
 
     public void createAccount() {
         createNewAccountWithPermissions();
+        waitForIdle();
         if (test_number().equals("0")) {
             getMessageListSize();
         }
