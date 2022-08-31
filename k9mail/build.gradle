@@ -183,7 +183,7 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 500
+        versionCode 501
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
 
