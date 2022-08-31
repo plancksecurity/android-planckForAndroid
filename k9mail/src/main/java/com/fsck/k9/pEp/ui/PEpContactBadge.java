@@ -21,7 +21,7 @@ public class PEpContactBadge extends QuickContactBadge {
     Paint paint;
     Rect contactBoundsBadgeRect, pEpBadgeRect;
     Drawable currentStatus;
-
+    boolean showStatusBadge = false;
 
 
     public PEpContactBadge(Context context) {
@@ -52,6 +52,13 @@ public class PEpContactBadge extends QuickContactBadge {
         invalidate();
     }
 
+    public void enableStatusBadge() {
+        showStatusBadge = true;
+    }
+    public void disableStatusBadge() {
+        showStatusBadge = false;
+    }
+
     private void init(Context context) {
         this.context = context;
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -64,7 +71,8 @@ public class PEpContactBadge extends QuickContactBadge {
             super.getDrawable().setBounds(contactBoundsBadgeRect);
             super.getDrawable().draw(canvas);
         }
-        if (paint.getAlpha() != 0 && currentStatus != null
+
+        if (showStatusBadge && paint.getAlpha() != 0 && currentStatus != null
                 && color != getResources().getColor(R.color.pep_no_color)) {
             currentStatus.setBounds(pEpBadgeRect);
             currentStatus.draw(canvas);

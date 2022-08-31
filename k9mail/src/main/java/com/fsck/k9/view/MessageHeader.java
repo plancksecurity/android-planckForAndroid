@@ -409,7 +409,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
                 Timber.e("Message %s from is null or empty, uid = %s",
                         message.getMessageId(), message.getUid());
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, account.ispEpPrivacyProtected());
             }
         }
     }
@@ -420,14 +419,12 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 Timber.e(throwable);
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
         });
     }
@@ -437,14 +434,12 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
             @Override
             public void onLoaded(Rating rating) {
                 pEpRating = rating;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
 
             @Override
             public void onError(Throwable throwable) {
                 Timber.e(throwable);
                 pEpRating = Rating.pEpRatingUndefined;
-                mContactBadge.setPepRating(pEpRating, isPrivacyProtected);
             }
         });
     }
@@ -639,10 +634,6 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     public void setOnCryptoClickListener(OnCryptoClickListener onCryptoClickListener) {
         this.onCryptoClickListener = onCryptoClickListener;
-    }
-
-    public void setPrivacyProtected(boolean enabled) {
-        mContactBadge.setPepRating(pEpRating, enabled);
     }
 
     private ApplicationComponent getApplicationComponent() {
