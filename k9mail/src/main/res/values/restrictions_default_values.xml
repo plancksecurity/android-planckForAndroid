@@ -7,6 +7,7 @@
     <bool name="default_use_pep_sync_folder">true</bool>
     <bool name="default_quoted_text_shown">true</bool>
     <bool name="default_debug_logging">false</bool>
+    <bool name="default_enable_echo_protocol">true</bool>
     <bool name="default_remote_search_enabled">true</bool>
     <bool name="default_pep_save_encrypted">true</bool>
     <bool name="default_pep_enable_sync_account">true</bool>
