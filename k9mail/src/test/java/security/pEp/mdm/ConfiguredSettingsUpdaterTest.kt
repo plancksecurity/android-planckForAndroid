@@ -702,7 +702,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
             expectedUserName = DEFAULT_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = DEFAULT_OAUTH_PROVIDER
         )
     }
 
@@ -725,7 +725,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
             expectedUserName = DEFAULT_USER_NAME,
             expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = DEFAULT_OAUTH_PROVIDER,
         )
     }
 
@@ -1180,7 +1180,7 @@ class ConfiguredSettingsUpdaterTest {
         private val DEFAULT_SECURITY_TYPE = ConnectionSecurity.STARTTLS_REQUIRED
         private const val DEFAULT_USER_NAME = "usernameDefault"
         private const val DEFAULT_EMAIL = "email@default.ch"
-        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.GOOGLE
+        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.MICROSOFT
         private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
 
         private const val NEW_EMAIL = "email@mail.ch"
