@@ -170,7 +170,7 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = Bundle().apply {
             putParcelableArray(
                 RESTRICTION_PEP_EXTRA_KEYS,
-                arrayOf(Bundle().apply { putString(RESTRICTION_PEP_FINGERPRINT, "fpr") })
+                arrayOf(Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "fpr") })
             )
         }
         val entry = RestrictionEntry.createBundleArrayEntry(
@@ -178,7 +178,7 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "defaultFpr"))
+                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "defaultFpr"))
                 )
             )
         )
@@ -199,7 +199,7 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "defaultFpr"))
+                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "defaultFpr"))
                 )
             )
         )
@@ -220,7 +220,7 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "  "))
+                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "  "))
                 )
             )
         )

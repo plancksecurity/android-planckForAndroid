@@ -80,13 +80,13 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
     fun getExtraKeys(): Set<String?>? = applicationRestrictions.getParcelableArray(
         RESTRICTION_PEP_EXTRA_KEYS
     )?.map {
-        (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT)
+        (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
     }?.toSet()
 
     fun setExtraKeys(keys: Set<String>) = applicationRestrictions.putParcelableArray(
         RESTRICTION_PEP_EXTRA_KEYS,
         keys.map {
-            Bundle().apply { putString(RESTRICTION_PEP_FINGERPRINT, it) }
+            Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it) }
         }.toTypedArray()
     )
 
@@ -440,7 +440,7 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 arrayOf(
                     RestrictionEntry.createBundleEntry(
                         RESTRICTION_PEP_EXTRA_KEY,
-                        arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, DEFAULT_EXTRA_KEY))
+                        arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, DEFAULT_EXTRA_KEY))
                     )
                 )
             )

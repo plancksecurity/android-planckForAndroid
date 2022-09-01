@@ -436,7 +436,7 @@ class ConfiguredSettingsUpdater(
     private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
             val newExtraKeys = restrictions.getParcelableArray(entry.key)
-                ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
+                ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT) }
                 ?: entry.restrictions.map { bundleRestriction ->
                     bundleRestriction.restrictions.first()
                 }.map {
