@@ -493,6 +493,21 @@
         </provider>
 
         <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="merge">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Microsoft uses a special redirect URI format for Android apps -->
+                <data android:scheme="msauth" android:host="${applicationId}"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".pEp.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status" />
         <activity

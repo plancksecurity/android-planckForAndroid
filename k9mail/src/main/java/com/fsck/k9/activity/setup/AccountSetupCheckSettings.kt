@@ -121,7 +121,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     private fun needsAuthorization(): Boolean {
         return (
                 RemoteStore.decodeStoreUri(account.storeUri).authenticationType == AuthType.XOAUTH2
-                        || Transport.decodeTransportUri(account.transportUri)
+                        && Transport.decodeTransportUri(account.transportUri)
                     .authenticationType == AuthType.XOAUTH2
                 ) && !authViewModel.isAuthorized(account)
     }
