@@ -73,6 +73,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
+        engine.config_media_keys(K9.getMediaKeys())
     }
 
     @get:Throws(pEpException::class)
