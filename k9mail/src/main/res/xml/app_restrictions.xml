@@ -57,6 +57,12 @@
         android:title="@string/debug_enable_debug_logging_title"/>
 
     <restriction
+        android:defaultValue="@bool/default_enable_echo_protocol"
+        android:key="enable_echo_protocol"
+        android:restrictionType="bool"
+        android:title="@string/enable_echo_protocol_title"/>
+
+    <restriction
         android:defaultValue="@string/default_account_display_count"
         android:description="@string/account_display_count_description"
         android:key="account_display_count"
