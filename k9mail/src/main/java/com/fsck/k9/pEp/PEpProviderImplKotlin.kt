@@ -49,21 +49,19 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private fun createEngineInstanceIfNeeded() {
-        if (!this::engine.isInitialized) {
-            try {
+        try {
+            if (!this::engine.isInitialized) {
                 createEngineSession()
-            } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
             }
-        } else {
-            Timber.d("%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
+            initEngineConfig(engine)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
         }
     }
 
     @Throws(pEpException::class)
     private fun createEngineSession() {
         engine = Engine()
-        initEngineConfig(engine)
     }
 
     private fun initEngineConfig(engine: Engine) {
@@ -74,6 +72,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
+        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
     }
 
     @get:Throws(pEpException::class)
@@ -334,7 +333,6 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
             createEngineInstanceIfNeeded()
-            initEngineConfig(engine)
             val containerMsg = PEpMessageBuilder(message).createMessage(context)
             containerMsg.dir = Message.Direction.Outgoing
             getMimeMessage(engine.encrypt_message_and_add_priv_key(containerMsg, fpr))
@@ -371,7 +369,6 @@ class PEpProviderImplKotlin @Inject constructor(
     @Throws(pEpException::class)
     private suspend fun encryptMessageSuspend(result: Message): Message = withContext(Dispatchers.Default) {
         createEngineInstanceIfNeeded()
-        initEngineConfig(engine)
         return@withContext engine.encrypt_message(result, null, result.encFormat)
     }
 

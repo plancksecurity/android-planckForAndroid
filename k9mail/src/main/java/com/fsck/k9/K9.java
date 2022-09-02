@@ -109,6 +109,7 @@ public class K9 extends MultiDexApplication {
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
+    private static boolean enableEchoProtocol = true;
 
     public static K9JobManager jobManager;
 
@@ -640,6 +641,7 @@ public class K9 extends MultiDexApplication {
                 ManageableSettingKt.encodeBooleanToString(pEpUseTrustwords)
         );
         editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
+        editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
 
         fontSizes.save(editor);
     }
@@ -1069,6 +1071,7 @@ public class K9 extends MultiDexApplication {
                 )
         );
         allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", true);
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1529,6 +1532,14 @@ public class K9 extends MultiDexApplication {
 
     public void setAllowpEpSyncNewDevices(boolean allowpEpSyncNewDevices) {
         K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
+    }
+
+    public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
+        K9.enableEchoProtocol = enableEchoProtocol;
+    }
+
+    public static boolean isEchoProtocolEnabled() {
+        return enableEchoProtocol;
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
