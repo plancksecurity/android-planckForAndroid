@@ -1098,6 +1098,7 @@ public class K9 extends MultiDexApplication {
     }
 
     private static String serializeMediaKeys() {
+        if (mediaKeys == null) return null;
         StringBuilder sb = new StringBuilder();
         for (MdmMediaKey key : mediaKeys) {
             sb.append(key.getAddressPattern());
