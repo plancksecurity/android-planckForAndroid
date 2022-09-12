@@ -178,7 +178,7 @@ class ConfiguredSettingsUpdater(
                 it.key ==
                         if (incoming) RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
                         else RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
-            } ?.let { restriction ->
+            }?.let { restriction ->
                 updateString(
                     bundle,
                     restriction,
@@ -267,7 +267,8 @@ class ConfiguredSettingsUpdater(
         updateAuthType(entry, bundle, simpleSettings, incoming)
         if (simpleSettings.authType == AuthType.XOAUTH2
             && oAuthProviderType == OAuthProviderType.GOOGLE
-            && email != null) {
+            && email != null
+        ) {
             simpleSettings =
                 if (incoming) getGmailOAuthIncomingServerSettings(email)
                 else getGmailOAuthOutgoingServerSettings(email)
@@ -472,14 +473,14 @@ class ConfiguredSettingsUpdater(
                         MdmMediaKey(addressPattern, fingerprint)
                     } else null
                 } ?: entry.restrictions.map { bundleRestriction ->
-                val addressPattern = bundleRestriction.restrictions.first {
-                    it.key == RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
-                }.selectedString
-                val fpr = bundleRestriction.restrictions.first {
-                    it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
-                }.selectedString
-                MdmMediaKey(addressPattern, fpr)
-            }
+                    val addressPattern = bundleRestriction.restrictions.first {
+                        it.key == RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
+                    }.selectedString
+                    val fpr = bundleRestriction.restrictions.first {
+                        it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
+                    }.selectedString
+                    MdmMediaKey(addressPattern, fpr)
+                }
 
             newMediaKeys.filter {
                 it.addressPattern.isNotBlank() && it.fpr.isNotBlank()
