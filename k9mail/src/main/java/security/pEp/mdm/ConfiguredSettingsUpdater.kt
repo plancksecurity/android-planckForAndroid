@@ -45,6 +45,10 @@ class ConfiguredSettingsUpdater(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     saveExtrasKeys(restrictions, entry)
                 }
+            RESTRICTION_PEP_MEDIA_KEYS ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveMediaKeys(restrictions, entry)
+                }
             RESTRICTION_PEP_USE_TRUSTWORDS ->
                 K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
@@ -451,6 +455,39 @@ class ConfiguredSettingsUpdater(
                 } else {
                     newKeys.filter { it.isNotBlank() }
                         .also { K9.setMasterKeys(it.toSet()) }
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveMediaKeys(restrictions: Bundle, entry: RestrictionEntry) {
+        kotlin.runCatching {
+            val newMediaKeys = restrictions.getParcelableArray(entry.key)
+                ?.mapNotNull {
+                    val bundle = it as Bundle
+                    val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
+                    val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
+                    if (addressPattern != null && fingerprint != null) {
+                        MdmMediaKey(addressPattern, fingerprint)
+                    } else null
+                } ?: entry.restrictions.map { bundleRestriction ->
+                val addressPattern = bundleRestriction.restrictions.first {
+                    it.key == RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
+                }.selectedString
+                val fpr = bundleRestriction.restrictions.first {
+                    it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
+                }.selectedString
+                MdmMediaKey(addressPattern, fpr)
+            }
+
+            newMediaKeys.filter {
+                it.addressPattern.isNotBlank() && it.fpr.isNotBlank()
+            }.also { newKeys ->
+                if (newKeys.isEmpty()) {
+                    K9.setMediaKeys(null)
+                } else {
+                    K9.setMediaKeys(newKeys.toSet())
                 }
             }
         }
