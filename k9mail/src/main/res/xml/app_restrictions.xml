@@ -58,7 +58,7 @@
 
     <restriction
         android:defaultValue="@bool/default_enable_echo_protocol"
-        android:key="enable_echo_protocol"
+        android:key="pep_enable_echo_protocol"
         android:restrictionType="bool"
         android:title="@string/enable_echo_protocol_title"/>
 
