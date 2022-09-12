@@ -233,6 +233,120 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
+    fun `update() takes the value for media keys from the provided restrictions`() {
+
+        val restrictions = Bundle().apply {
+            putParcelableArray(
+                RESTRICTION_PEP_MEDIA_KEYS,
+                arrayOf(
+                    bundleOf(
+                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test1.test",
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to "fpr1"
+                    ),
+                    bundleOf(
+                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test2.test",
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to "fpr2"
+                    ),
+                )
+            )
+        }
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern1"),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr1")
+                    )
+                ),
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern2"),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr2")
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            K9.setMediaKeys(
+                setOf(
+                    MdmMediaKey("*@test1.test", "fpr1"),
+                    MdmMediaKey("*@test2.test", "fpr2")
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() takes the value for media keys from the restriction entry if not provided in bundle`() {
+
+        val restrictions = Bundle()
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern1"),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr1")
+                    )
+                ),
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern2"),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr2")
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            K9.setMediaKeys(
+                setOf(
+                    MdmMediaKey("defaultPattern1", "defaultFpr1"),
+                    MdmMediaKey("defaultPattern2", "defaultFpr2")
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() sets media keys with null if all provided media keys are blank`() {
+
+        val restrictions = Bundle()
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, ""),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, " ")
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { K9.setMediaKeys(null) }
+    }
+
+    @Test
     fun `update() takes the value for composition defaults from the provided restrictions`() {
 
         val restrictions = Bundle().apply {
