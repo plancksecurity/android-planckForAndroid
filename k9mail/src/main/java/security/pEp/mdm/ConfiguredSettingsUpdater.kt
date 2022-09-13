@@ -470,7 +470,7 @@ class ConfiguredSettingsUpdater(
                     val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
                     val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
                     if (addressPattern != null && fingerprint != null) {
-                        MdmMediaKey(addressPattern, fingerprint)
+                        MdmMediaKey(addressPattern, fingerprint.uppercase())
                     } else null
                 } ?: entry.restrictions.map { bundleRestriction ->
                     val addressPattern = bundleRestriction.restrictions.first {
@@ -483,7 +483,7 @@ class ConfiguredSettingsUpdater(
                 }
 
             newMediaKeys.filter {
-                it.addressPattern.isNotBlank() && it.fpr.isNotBlank()
+                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint()
             }.also { newKeys ->
                 if (newKeys.isEmpty()) {
                     K9.setMediaKeys(null)
@@ -493,6 +493,8 @@ class ConfiguredSettingsUpdater(
             }
         }
     }
+
+    private fun String.isPgpFingerprint(): Boolean = matches("[A-F0-9]{40}".toRegex())
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
