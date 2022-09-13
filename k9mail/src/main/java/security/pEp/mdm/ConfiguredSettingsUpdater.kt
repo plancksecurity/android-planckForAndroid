@@ -483,7 +483,7 @@ class ConfiguredSettingsUpdater(
                 }
 
             newMediaKeys.filter {
-                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint()
+                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint() // TODO: send feedback, keys with bad format
             }.also { newKeys ->
                 if (newKeys.isEmpty()) {
                     K9.setMediaKeys(null)
