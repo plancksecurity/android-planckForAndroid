@@ -178,7 +178,12 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "defaultFpr"))
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                            "defaultFpr"
+                        )
+                    )
                 )
             )
         )
@@ -199,7 +204,12 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "defaultFpr"))
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                            "defaultFpr"
+                        )
+                    )
                 )
             )
         )
@@ -220,7 +230,9 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "  "))
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "  ")
+                    )
                 )
             )
         )
@@ -241,11 +253,13 @@ class ConfiguredSettingsUpdaterTest {
                 arrayOf(
                     bundleOf(
                         RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test1.test",
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to "fpr1"
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
+                                "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
                     ),
                     bundleOf(
                         RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test2.test",
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to "fpr2"
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
+                                "C90E4DC0A1835B161062852597179D2D8C3D09EA"
                     ),
                 )
             )
@@ -256,15 +270,27 @@ class ConfiguredSettingsUpdaterTest {
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_MEDIA_KEY,
                     arrayOf(
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern1"),
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr1")
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern1"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "defaultFpr1"
+                        )
                     )
                 ),
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_MEDIA_KEY,
                     arrayOf(
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern2"),
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr2")
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern2"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "defaultFpr2"
+                        )
                     )
                 )
             )
@@ -277,8 +303,14 @@ class ConfiguredSettingsUpdaterTest {
         verify {
             K9.setMediaKeys(
                 setOf(
-                    MdmMediaKey("*@test1.test", "fpr1"),
-                    MdmMediaKey("*@test2.test", "fpr2")
+                    MdmMediaKey(
+                        "*@test1.test",
+                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    ),
+                    MdmMediaKey(
+                        "*@test2.test",
+                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    )
                 )
             )
         }
@@ -294,15 +326,27 @@ class ConfiguredSettingsUpdaterTest {
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_MEDIA_KEY,
                     arrayOf(
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern1"),
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr1")
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern1"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                        )
                     )
                 ),
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_MEDIA_KEY,
                     arrayOf(
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, "defaultPattern2"),
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, "defaultFpr2")
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern2"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                        )
                     )
                 )
             )
@@ -315,8 +359,14 @@ class ConfiguredSettingsUpdaterTest {
         verify {
             K9.setMediaKeys(
                 setOf(
-                    MdmMediaKey("defaultPattern1", "defaultFpr1"),
-                    MdmMediaKey("defaultPattern2", "defaultFpr2")
+                    MdmMediaKey(
+                        "defaultPattern1",
+                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    ),
+                    MdmMediaKey(
+                        "defaultPattern2",
+                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    )
                 )
             )
         }
@@ -614,7 +664,7 @@ class ConfiguredSettingsUpdaterTest {
 
         updater.update(restrictions, entry)
 
-        
+
         verifyProvisioningMailSettings(
             expectedEmail = NEW_EMAIL,
             expectedIncomingPort = NEW_PORT,
@@ -1273,7 +1323,7 @@ class ConfiguredSettingsUpdaterTest {
         every { account.oAuthProviderType }.returns(previousOAuthProviderType)
     }
 
-    private fun ConnectionSecurity.toMdmName(): String = when(this) {
+    private fun ConnectionSecurity.toMdmName(): String = when (this) {
         ConnectionSecurity.NONE -> CONNECTION_SECURITY_NONE
         ConnectionSecurity.STARTTLS_REQUIRED -> CONNECTION_SECURITY_STARTTLS
         ConnectionSecurity.SSL_TLS_REQUIRED -> CONNECTION_SECURITY_SSL_TLS
