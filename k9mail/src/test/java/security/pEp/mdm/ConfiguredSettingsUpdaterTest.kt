@@ -170,7 +170,7 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = Bundle().apply {
             putParcelableArray(
                 RESTRICTION_PEP_EXTRA_KEYS,
-                arrayOf(Bundle().apply { putString(RESTRICTION_PEP_FINGERPRINT, "fpr") })
+                arrayOf(Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "fpr") })
             )
         }
         val entry = RestrictionEntry.createBundleArrayEntry(
@@ -178,7 +178,12 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "defaultFpr"))
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                            "defaultFpr"
+                        )
+                    )
                 )
             )
         )
@@ -199,7 +204,12 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "defaultFpr"))
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                            "defaultFpr"
+                        )
+                    )
                 )
             )
         )
@@ -220,7 +230,9 @@ class ConfiguredSettingsUpdaterTest {
             arrayOf(
                 RestrictionEntry.createBundleEntry(
                     RESTRICTION_PEP_EXTRA_KEY,
-                    arrayOf(RestrictionEntry(RESTRICTION_PEP_FINGERPRINT, "  "))
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "  ")
+                    )
                 )
             )
         )
@@ -230,6 +242,158 @@ class ConfiguredSettingsUpdaterTest {
 
 
         verify { K9.setMasterKeys(emptySet()) }
+    }
+
+    @Test
+    fun `update() takes the value for media keys from the provided restrictions`() {
+
+        val restrictions = Bundle().apply {
+            putParcelableArray(
+                RESTRICTION_PEP_MEDIA_KEYS,
+                arrayOf(
+                    bundleOf(
+                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test1.test",
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
+                                "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    ),
+                    bundleOf(
+                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test2.test",
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
+                                "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    ),
+                )
+            )
+        }
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern1"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "defaultFpr1"
+                        )
+                    )
+                ),
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern2"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "defaultFpr2"
+                        )
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            K9.setMediaKeys(
+                setOf(
+                    MdmMediaKey(
+                        "*@test1.test",
+                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    ),
+                    MdmMediaKey(
+                        "*@test2.test",
+                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() takes the value for media keys from the restriction entry if not provided in bundle`() {
+
+        val restrictions = Bundle()
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern1"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                        )
+                    )
+                ),
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                            "defaultPattern2"
+                        ),
+                        RestrictionEntry(
+                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                            "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                        )
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            K9.setMediaKeys(
+                setOf(
+                    MdmMediaKey(
+                        "defaultPattern1",
+                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    ),
+                    MdmMediaKey(
+                        "defaultPattern2",
+                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() sets media keys with null if all provided media keys are blank`() {
+
+        val restrictions = Bundle()
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_MEDIA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, ""),
+                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, " ")
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify { K9.setMediaKeys(null) }
     }
 
     @Test
@@ -500,7 +664,7 @@ class ConfiguredSettingsUpdaterTest {
 
         updater.update(restrictions, entry)
 
-        
+
         verifyProvisioningMailSettings(
             expectedEmail = NEW_EMAIL,
             expectedIncomingPort = NEW_PORT,
@@ -1159,7 +1323,7 @@ class ConfiguredSettingsUpdaterTest {
         every { account.oAuthProviderType }.returns(previousOAuthProviderType)
     }
 
-    private fun ConnectionSecurity.toMdmName(): String = when(this) {
+    private fun ConnectionSecurity.toMdmName(): String = when (this) {
         ConnectionSecurity.NONE -> CONNECTION_SECURITY_NONE
         ConnectionSecurity.STARTTLS_REQUIRED -> CONNECTION_SECURITY_STARTTLS
         ConnectionSecurity.SSL_TLS_REQUIRED -> CONNECTION_SECURITY_SSL_TLS
