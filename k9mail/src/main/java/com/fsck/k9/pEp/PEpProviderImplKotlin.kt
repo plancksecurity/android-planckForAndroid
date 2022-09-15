@@ -32,6 +32,7 @@ import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 class PEpProviderImplKotlin @Inject constructor(
@@ -73,6 +74,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
+        engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
     }
 
     @get:Throws(pEpException::class)

@@ -45,6 +45,10 @@ class ConfiguredSettingsUpdater(
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     saveExtrasKeys(restrictions, entry)
                 }
+            RESTRICTION_PEP_MEDIA_KEYS ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    saveMediaKeys(restrictions, entry)
+                }
             RESTRICTION_PEP_USE_TRUSTWORDS ->
                 K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
@@ -174,7 +178,7 @@ class ConfiguredSettingsUpdater(
                 it.key ==
                         if (incoming) RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
                         else RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
-            } ?.let { restriction ->
+            }?.let { restriction ->
                 updateString(
                     bundle,
                     restriction,
@@ -263,7 +267,8 @@ class ConfiguredSettingsUpdater(
         updateAuthType(entry, bundle, simpleSettings, incoming)
         if (simpleSettings.authType == AuthType.XOAUTH2
             && oAuthProviderType == OAuthProviderType.GOOGLE
-            && email != null) {
+            && email != null
+        ) {
             simpleSettings =
                 if (incoming) getGmailOAuthIncomingServerSettings(email)
                 else getGmailOAuthOutgoingServerSettings(email)
@@ -436,7 +441,7 @@ class ConfiguredSettingsUpdater(
     private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
             val newExtraKeys = restrictions.getParcelableArray(entry.key)
-                ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_FINGERPRINT) }
+                ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT) }
                 ?: entry.restrictions.map { bundleRestriction ->
                     bundleRestriction.restrictions.first()
                 }.map {
@@ -455,6 +460,41 @@ class ConfiguredSettingsUpdater(
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun saveMediaKeys(restrictions: Bundle, entry: RestrictionEntry) {
+        kotlin.runCatching {
+            val newMediaKeys = restrictions.getParcelableArray(entry.key)
+                ?.mapNotNull {
+                    val bundle = it as Bundle
+                    val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
+                    val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
+                    if (addressPattern != null && fingerprint != null) {
+                        MdmMediaKey(addressPattern, fingerprint.uppercase())
+                    } else null
+                } ?: entry.restrictions.map { bundleRestriction ->
+                    val addressPattern = bundleRestriction.restrictions.first {
+                        it.key == RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
+                    }.selectedString
+                    val fpr = bundleRestriction.restrictions.first {
+                        it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
+                    }.selectedString
+                    MdmMediaKey(addressPattern, fpr)
+                }
+
+            newMediaKeys.filter {
+                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint() // TODO: send feedback, keys with bad format
+            }.also { newKeys ->
+                if (newKeys.isEmpty()) {
+                    K9.setMediaKeys(null)
+                } else {
+                    K9.setMediaKeys(newKeys.toSet())
+                }
+            }
+        }
+    }
+
+    private fun String.isPgpFingerprint(): Boolean = matches("[A-F0-9]{40}".toRegex())
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
