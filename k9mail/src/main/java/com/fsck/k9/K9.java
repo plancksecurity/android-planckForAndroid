@@ -51,7 +51,7 @@ import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
-import security.pEp.mdm.MdmMediaKey;
+import security.pEp.mdm.MediaKey;
 import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
@@ -112,7 +112,7 @@ public class K9 extends MultiDexApplication {
     private boolean pEpSyncEnvironmentInitialized;
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
     private static boolean enableEchoProtocol = true;
-    private static Set<MdmMediaKey> mediaKeys;
+    private static Set<MediaKey> mediaKeys;
 
     public static K9JobManager jobManager;
 
@@ -1080,8 +1080,8 @@ public class K9 extends MultiDexApplication {
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
-    private static Set<MdmMediaKey> parseMediaKeys(String mediaKeysString) {
-        Set<MdmMediaKey> set = null;
+    private static Set<MediaKey> parseMediaKeys(String mediaKeysString) {
+        Set<MediaKey> set = null;
         if (mediaKeysString != null) {
             set = new HashSet<>();
             for (String s : mediaKeysString.split(",")) {
@@ -1090,7 +1090,7 @@ public class K9 extends MultiDexApplication {
                     Timber.e("Bad format for saved media keys");
                     return null;
                 } else {
-                    set.add(new MdmMediaKey(pair[0], pair[1]));
+                    set.add(new MediaKey(pair[0], pair[1]));
                 }
             }
         }
@@ -1100,7 +1100,7 @@ public class K9 extends MultiDexApplication {
     private static String serializeMediaKeys() {
         if (mediaKeys == null) return null;
         StringBuilder sb = new StringBuilder();
-        for (MdmMediaKey key : mediaKeys) {
+        for (MediaKey key : mediaKeys) {
             sb.append(key.getAddressPattern());
             sb.append(" : ");
             sb.append(key.getFpr());
@@ -1578,11 +1578,11 @@ public class K9 extends MultiDexApplication {
         return enableEchoProtocol;
     }
 
-    public static void setMediaKeys(Set<MdmMediaKey> mediaKeys) {
+    public static void setMediaKeys(Set<MediaKey> mediaKeys) {
         K9.mediaKeys = mediaKeys;
     }
 
-    public static Set<MdmMediaKey> getMediaKeys() {
+    public static Set<MediaKey> getMediaKeys() {
         return mediaKeys;
     }
 
