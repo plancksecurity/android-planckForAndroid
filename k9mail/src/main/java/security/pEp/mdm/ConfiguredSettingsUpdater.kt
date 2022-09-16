@@ -495,38 +495,42 @@ class ConfiguredSettingsUpdater(
                 if (newMdmKeys.isEmpty()) {
                     K9.setMediaKeys(null)
                 } else {
-                    val newMediaKeys = newMdmMediaKeys.mapNotNull { mdmMediaKey ->
-                        kotlin.runCatching {
-                            val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
-                            val errorMsg = when {
-                                ids == null ->
-                                    "Error: got null from media key import"
-                                ids.isEmpty() ->
-                                    "Error: got empty identity vector from media key import"
-                                ids.size > 1 ->
-                                    "Error: got too many identities from media key import: " +
-                                            "${ids.size}, expected: 1"
-                                ids.first().fpr != mdmMediaKey.fpr ->
-                                    "Error: got an unexpected fpr from media key import: " +
-                                            "${ids.first().fpr}, expected: ${mdmMediaKey.fpr}"
-                                else -> null
-                            }
-                            errorMsg?.let { error(it) }
-                            mdmMediaKey.toMediaKey()
-                        }.onFailure {
-                            if (K9.isDebug()) {
-                                Log.e("MDM", "error importing media key: ", it)
-                            }
-                        }.getOrNull()
-                    }
-
-                    K9.setMediaKeys(
-                        if (newMediaKeys.isEmpty()) null
-                        else newMediaKeys.toSet()
-                    )
+                    saveFilteredMediaKeys(newMdmMediaKeys)
                 }
             }
         }
+    }
+
+    private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
+        val newMediaKeys = newMdmMediaKeys.mapNotNull { mdmMediaKey ->
+            kotlin.runCatching {
+                val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
+                val errorMsg = when {
+                    ids == null ->
+                        "Error: got null from media key import"
+                    ids.isEmpty() ->
+                        "Error: got empty identity vector from media key import"
+                    ids.size != 2 ->
+                        "Error: got too many or too few identities from media key import: " +
+                                "${ids.size}, expected: 2"
+                    ids.first().fpr != mdmMediaKey.fpr ->
+                        "Error: got an unexpected fpr from media key import: " +
+                                "${ids.first().fpr}, expected: ${mdmMediaKey.fpr}"
+                    else -> null
+                }
+                errorMsg?.let { error(it) }
+                mdmMediaKey.toMediaKey()
+            }.onFailure {
+                if (K9.isDebug()) {
+                    Log.e("MDM", "error importing media key:\n$mdmMediaKey", it)
+                }
+            }.getOrNull()
+        }
+
+        K9.setMediaKeys(
+            if (newMediaKeys.isEmpty()) null
+            else newMediaKeys.toSet()
+        )
     }
 
     private fun String.isPgpFingerprint(): Boolean = matches("[A-F0-9]{40}".toRegex())
