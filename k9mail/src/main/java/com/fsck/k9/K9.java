@@ -51,6 +51,7 @@ import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
+import security.pEp.mdm.MdmMediaKey;
 import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
@@ -77,6 +78,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -110,6 +112,7 @@ public class K9 extends MultiDexApplication {
     private boolean pEpSyncEnvironmentInitialized;
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
     private static boolean enableEchoProtocol = true;
+    private static Set<MdmMediaKey> mediaKeys;
 
     public static K9JobManager jobManager;
 
@@ -642,6 +645,7 @@ public class K9 extends MultiDexApplication {
         );
         editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
+        editor.putString("mediaKeys", serializeMediaKeys());
 
         fontSizes.save(editor);
     }
@@ -1072,7 +1076,39 @@ public class K9 extends MultiDexApplication {
         );
         allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", true);
+        mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
+    }
+
+    private static Set<MdmMediaKey> parseMediaKeys(String mediaKeysString) {
+        Set<MdmMediaKey> set = null;
+        if (mediaKeysString != null) {
+            set = new HashSet<>();
+            for (String s : mediaKeysString.split(",")) {
+                String[] pair = s.split(" : ");
+                if (pair.length != 2) {
+                    Timber.e("Bad format for saved media keys");
+                    return null;
+                } else {
+                    set.add(new MdmMediaKey(pair[0], pair[1]));
+                }
+            }
+        }
+        return set;
+    }
+
+    private static String serializeMediaKeys() {
+        if (mediaKeys == null) return null;
+        StringBuilder sb = new StringBuilder();
+        for (MdmMediaKey key : mediaKeys) {
+            sb.append(key.getAddressPattern());
+            sb.append(" : ");
+            sb.append(key.getFpr());
+            sb.append(",");
+        }
+        return sb.length() > 0
+                ? sb.substring(0, sb.length() - 1)
+                : null;
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
@@ -1540,6 +1576,14 @@ public class K9 extends MultiDexApplication {
 
     public static boolean isEchoProtocolEnabled() {
         return enableEchoProtocol;
+    }
+
+    public static void setMediaKeys(Set<MdmMediaKey> mediaKeys) {
+        K9.mediaKeys = mediaKeys;
+    }
+
+    public static Set<MdmMediaKey> getMediaKeys() {
+        return mediaKeys;
     }
 
     public static boolean ispEpUsingPassphraseForNewKey() {
