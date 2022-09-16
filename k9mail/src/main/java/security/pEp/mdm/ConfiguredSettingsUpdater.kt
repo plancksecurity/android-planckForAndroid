@@ -3,6 +3,7 @@ package security.pEp.mdm
 import android.content.RestrictionEntry
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
@@ -14,6 +15,7 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
+import com.fsck.k9.pEp.PEpProvider
 import security.pEp.network.UrlChecker
 import security.pEp.provisioning.*
 import timber.log.Timber
@@ -31,6 +33,7 @@ class ConfiguredSettingsUpdater(
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
+    lateinit var pEp: PEpProvider
 
     fun update(
         restrictions: Bundle,
@@ -464,13 +467,14 @@ class ConfiguredSettingsUpdater(
     @RequiresApi(Build.VERSION_CODES.M)
     private fun saveMediaKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
-            val newMediaKeys = restrictions.getParcelableArray(entry.key)
+            val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
                     val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
                     val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
-                    if (addressPattern != null && fingerprint != null) {
-                        MdmMediaKey(addressPattern, fingerprint.uppercase())
+                    val keyMaterial = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
+                    if (addressPattern != null && fingerprint != null && keyMaterial != null) {
+                        MdmMediaKey(addressPattern, fingerprint.uppercase(), keyMaterial)
                     } else null
                 } ?: entry.restrictions.map { bundleRestriction ->
                     val addressPattern = bundleRestriction.restrictions.first {
@@ -479,16 +483,47 @@ class ConfiguredSettingsUpdater(
                     val fpr = bundleRestriction.restrictions.first {
                         it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
                     }.selectedString
-                    MdmMediaKey(addressPattern, fpr)
+                    val material = bundleRestriction.restrictions.first {
+                        it.key == RESTRICTION_PEP_MEDIA_KEY_MATERIAL
+                    }.selectedString
+                    MdmMediaKey(addressPattern, fpr, material)
                 }
 
-            newMediaKeys.filter {
-                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint() // TODO: send feedback, keys with bad format
-            }.also { newKeys ->
-                if (newKeys.isEmpty()) {
+            newMdmMediaKeys.filter {
+                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint() && it.material.isNotBlank() // TODO: send feedback, keys with bad format
+            }.also { newMdmKeys ->
+                if (newMdmKeys.isEmpty()) {
                     K9.setMediaKeys(null)
                 } else {
-                    K9.setMediaKeys(newKeys.toSet())
+                    val newMediaKeys = newMdmMediaKeys.mapNotNull { mdmMediaKey ->
+                        kotlin.runCatching {
+                            val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
+                            val errorMsg = when {
+                                ids == null ->
+                                    "Error: got null from media key import"
+                                ids.isEmpty() ->
+                                    "Error: got empty identity vector from media key import"
+                                ids.size > 1 ->
+                                    "Error: got too many identities from media key import: " +
+                                            "${ids.size}, expected: 1"
+                                ids.first().fpr != mdmMediaKey.fpr ->
+                                    "Error: got an unexpected fpr from media key import: " +
+                                            "${ids.first().fpr}, expected: ${mdmMediaKey.fpr}"
+                                else -> null
+                            }
+                            errorMsg?.let { error(it) }
+                            mdmMediaKey.toMediaKey()
+                        }.onFailure {
+                            if (K9.isDebug()) {
+                                Log.e("MDM", "error importing media key: ", it)
+                            }
+                        }.getOrNull()
+                    }
+
+                    K9.setMediaKeys(
+                        if (newMediaKeys.isEmpty()) null
+                        else newMediaKeys.toSet()
+                    )
                 }
             }
         }
