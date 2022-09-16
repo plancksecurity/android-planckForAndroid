@@ -7,6 +7,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.pEp.DispatcherProvider;
+import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.pEp.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
@@ -58,6 +59,8 @@ public interface ApplicationComponent {
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();
+    @Named("Background")
+    PEpProvider backgroundpEpProvider();
 
     @Component.Factory
     interface Factory {
