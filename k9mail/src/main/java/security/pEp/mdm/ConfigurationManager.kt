@@ -49,13 +49,14 @@ class ConfigurationManager(
             if (firstTimeStartup && !isProvisionAvailable(restrictions)) {
                 throw ProvisioningFailedException("Provisioning data is missing")
             }
-            val entries = restrictionsManager.manifestRestrictions.let { entries ->
-                if (startup) {
-                    // ignore media keys from MDM before PEpProvider has been initialized
-                    entries.toMutableList().filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
-                } else entries
+            var entries = restrictionsManager.manifestRestrictions
+            if (startup) {
+                // ignore media keys from MDM before PEpProvider has been initialized
+                entries = entries.filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
+            } else {
+                settingsUpdater.pEp = k9.component.backgroundpEpProvider()
             }
-            settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()
