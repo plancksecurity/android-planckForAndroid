@@ -1,11 +1,17 @@
 package security.pEp.mdm
 
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.RestrictionEntry
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import security.pEp.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import javax.inject.Inject
@@ -35,14 +41,21 @@ class ConfigurationManager(
     }
 
     suspend fun loadConfigurationsSuspend(
-        startup: Boolean = false
+        firstTimeStartup: Boolean = false,
+        startup: Boolean = false,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
-            if (startup && !isProvisionAvailable(restrictions)) {
+            if (firstTimeStartup && !isProvisionAvailable(restrictions)) {
                 throw ProvisioningFailedException("Provisioning data is missing")
             }
-            val entries = restrictionsManager.manifestRestrictions
+            val entries = restrictionsManager.manifestRestrictions.let { entries ->
+                if (startup) {
+                    // ignore media keys from MDM before PEpProvider has been initialized
+                    entries.toMutableList().filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                } else entries
+            }
+            settingsUpdater.pEp = k9.component.backgroundpEpProvider()
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()

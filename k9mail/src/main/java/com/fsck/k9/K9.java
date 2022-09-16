@@ -790,6 +790,10 @@ public class K9 extends MultiDexApplication {
 
         });
 
+        if (BuildConfig.IS_ENTERPRISE) {
+            component.provisioningManager().performInitializedEngineProvisioning();
+        }
+
         refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
