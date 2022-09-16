@@ -11,7 +11,8 @@
     <string name="media_key_title">Media key</string>
     <string name="extra_keys_description">Set extra keys</string>
     <string name="media_keys_description">Set media keys</string>
-    <string name="media_key_address_pattern_title">Media key</string>
+    <string name="media_key_address_pattern_title">Address pattern</string>
+    <string name="media_key_material_title">Media key</string>
     <string name="enable_echo_protocol_title">Enable echo protocol</string>
     <string name="account_description_description">Name displayed for account in the app.</string>
     <string name="composition_title">Composition settings for account</string>

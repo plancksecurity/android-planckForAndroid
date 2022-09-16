@@ -32,7 +32,7 @@
         android:description="@string/media_keys_description"
         android:key="pep_media_keys"
         android:restrictionType="bundle_array"
-        android:title="@string/extra_keys_title">
+        android:title="@string/media_keys_title">
 
         <restriction
             android:key="pep_media_key"
@@ -50,6 +50,12 @@
                 android:key="media_key_fingerprint"
                 android:restrictionType="string"
                 android:title="@string/fingerprint_title"/>
+
+            <restriction
+                android:defaultValue=""
+                android:key="media_key_material"
+                android:restrictionType="string"
+                android:title="@string/media_key_material_title"/>
 
         </restriction>
     </restriction>
