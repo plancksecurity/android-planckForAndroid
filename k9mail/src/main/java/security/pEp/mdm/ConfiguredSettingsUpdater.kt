@@ -308,7 +308,7 @@ class ConfiguredSettingsUpdater(
         updateString(
             bundle,
             restriction,
-            accepted = { it.isNotBlank() && !it.contains("{{") }
+            accepted = { it.isNotBlank() }
         ) {
             simpleSettings.userName = it
         }

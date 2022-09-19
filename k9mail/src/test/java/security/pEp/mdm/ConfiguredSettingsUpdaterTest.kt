@@ -1092,7 +1092,7 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = getMailSettingsBundle(
             email = "malformedEmail",
             server = "",
-            username = "{{}}",
+            username = " ",
             security = "wrong security",
             port = -4
         )
@@ -1121,7 +1121,7 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = getMailSettingsBundle(
             email = "malformedEmail",
             server = "",
-            username = "{{}}",
+            username = " ",
             security = "wrong security",
             port = -4
         )
