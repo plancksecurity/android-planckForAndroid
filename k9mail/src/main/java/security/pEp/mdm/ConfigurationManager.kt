@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.provisioning.ProvisioningFailedException
+import security.pEp.provisioning.ProvisioningStage
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,20 +42,29 @@ class ConfigurationManager(
     }
 
     suspend fun loadConfigurationsSuspend(
-        firstTimeStartup: Boolean = false,
-        startup: Boolean = false,
+        provisioningStage: ProvisioningStage = ProvisioningStage.ProvisioningDone,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
-            if (firstTimeStartup && !isProvisionAvailable(restrictions)) {
-                throw ProvisioningFailedException("Provisioning data is missing")
-            }
-            var entries = restrictionsManager.manifestRestrictions
-            if (startup) {
-                // ignore media keys from MDM before PEpProvider has been initialized
-                entries = entries.filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
-            } else {
-                settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+            val entries: List<RestrictionEntry>
+            when (provisioningStage) {
+                is ProvisioningStage.Startup -> {
+                    if (provisioningStage.firstStartup && !isProvisionAvailable(restrictions)) {
+                        throw ProvisioningFailedException("Provisioning data is missing")
+                    }
+                    entries = restrictionsManager.manifestRestrictions
+                        // ignore media keys from MDM before PEpProvider has been initialized
+                        .filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                }
+                is ProvisioningStage.InitializedEngine -> {
+                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    entries = restrictionsManager.manifestRestrictions
+                        .filter{ it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                }
+                is ProvisioningStage.ProvisioningDone -> {
+                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    entries = restrictionsManager.manifestRestrictions
+                }
             }
 
             mapRestrictions(entries, restrictions)
