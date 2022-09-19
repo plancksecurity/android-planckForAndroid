@@ -210,7 +210,10 @@ class ConfiguredSettingsUpdaterTest {
         val restrictions = Bundle().apply {
             putParcelableArray(
                 RESTRICTION_PEP_EXTRA_KEYS,
-                arrayOf(Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "fpr") })
+                arrayOf(
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to EXTRA_KEY_FPR_1),
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to EXTRA_KEY_FPR_2),
+                )
             )
         }
         val entry = RestrictionEntry.createBundleArrayEntry(
@@ -232,7 +235,7 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify { K9.setMasterKeys(setOf("fpr")) }
+        verify { K9.setMasterKeys(setOf(EXTRA_KEY_FPR_1, EXTRA_KEY_FPR_2)) }
     }
 
     @Test
@@ -262,16 +265,15 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() ignores blank extra keys`() {
+    fun `update() ignores blank and badly formatted extra keys`() {
 
         val restrictions = Bundle().apply {
             putParcelableArray(
                 RESTRICTION_PEP_EXTRA_KEYS,
                 arrayOf(
-                    bundleOf(
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to " ",
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to "fpr2",
-                    )
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to " "),
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to EXTRA_KEY_FPR_2),
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to WRONG_FPR),
                 )
             )
         }
@@ -291,20 +293,19 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify { K9.setMasterKeys(setOf("fpr2")) }
+        verify { K9.setMasterKeys(setOf(EXTRA_KEY_FPR_2)) }
     }
 
     @Test
-    fun `update() does not set extra keys if all keys are blank`() {
+    fun `update() does not set extra keys if all keys are blank or badly formatted`() {
 
         val restrictions = Bundle().apply {
             putParcelableArray(
                 RESTRICTION_PEP_EXTRA_KEYS,
                 arrayOf(
-                    bundleOf(
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to " ",
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to "   ",
-                    )
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to ""),
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to "     "),
+                    bundleOf(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to WRONG_FPR),
                 )
             )
         }
@@ -410,27 +411,6 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() does not set media keys if all keys are blank or have errors`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp)
-        updater.pEp = pEp
-        val restrictions = getMediaKeysBundle(
-            pattern1 = " ",
-            fpr2 = WRONG_FPR
-        )
-        val entry = getMediaKeysRestrictionEntry()
-
-
-        updater.update(restrictions, entry)
-
-
-        verify(exactly = 0) {
-            pEp.importKey(any())
-            K9.setMediaKeys(any())
-        }
-    }
-
-    @Test
     fun `update() ignores media keys with badly formated fingerprints`() {
         val pEp: PEpProvider = mockk()
         stubImportKeyBehavior(pEp)
@@ -452,6 +432,27 @@ class ConfiguredSettingsUpdaterTest {
                     )
                 )
             )
+        }
+    }
+
+    @Test
+    fun `update() does not set media keys if all keys are blank or have errors`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(pEp)
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle(
+            pattern1 = " ",
+            fpr2 = WRONG_FPR
+        )
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify(exactly = 0) {
+            pEp.importKey(any())
+            K9.setMediaKeys(any())
         }
     }
 
@@ -1544,6 +1545,8 @@ class ConfiguredSettingsUpdaterTest {
         private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
         private const val NEW_PORT = 999
 
+        private const val EXTRA_KEY_FPR_1 = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+        private const val EXTRA_KEY_FPR_2 = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
         private const val MEDIA_KEY_PATTERN_1 = "*@test1.test"
         private const val MEDIA_KEY_PATTERN_2 = "*@test2.test"
         private const val MEDIA_KEY_FPR_1 = "1111111111111111111111111111111111111111"
