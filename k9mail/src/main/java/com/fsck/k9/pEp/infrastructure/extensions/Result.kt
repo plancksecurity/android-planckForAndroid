@@ -1,5 +1,11 @@
 package com.fsck.k9.pEp.infrastructure.extensions
 
+fun <Type, NewType> Result<Type>.flatMap(block: (Type) -> Result<NewType>): Result<NewType> =
+    fold(
+        onSuccess = { block(it) },
+        onFailure = { Result.failure(it) }
+    )
+
 suspend fun <Type, NewType> Result<Type>.flatMapSuspend(block: suspend (Type) -> Result<NewType>): Result<NewType> =
     fold(
         onSuccess = { block(it) },
