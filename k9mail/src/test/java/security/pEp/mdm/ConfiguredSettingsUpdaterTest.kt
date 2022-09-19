@@ -19,6 +19,9 @@ import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.mailstore.FolderRepository
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.mailstore.FolderType
+import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.testutils.ReturnBehavior
+import foundation.pEp.jniadapter.Identity
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import org.junit.After
@@ -27,6 +30,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import security.pEp.network.UrlChecker
 import security.pEp.provisioning.*
+import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 class ConfiguredSettingsUpdaterTest {
@@ -44,6 +48,42 @@ class ConfiguredSettingsUpdaterTest {
         folderRepositoryManager,
         provisioningSettings
     )
+
+    private val defaultImportKeyBehaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> =
+        mutableMapOf(
+            MEDIA_KEY_MATERIAL_1 to ReturnBehavior.Return(
+                Vector<Identity?>(2).apply {
+                    add(
+                        Identity().apply {
+                            this.fpr = MEDIA_KEY_FPR_1
+                            this.address = MEDIA_KEY_PATTERN_1
+                        }
+                    )
+                    add(
+                        Identity().apply {
+                            this.fpr = MEDIA_KEY_FPR_1
+                            this.address = MEDIA_KEY_PATTERN_1
+                        }
+                    )
+                }
+            ),
+            MEDIA_KEY_MATERIAL_2 to ReturnBehavior.Return(
+                Vector<Identity?>(2).apply {
+                    add(
+                        Identity().apply {
+                            this.fpr = MEDIA_KEY_FPR_2
+                            this.address = MEDIA_KEY_PATTERN_2
+                        }
+                    )
+                    add(
+                        Identity().apply {
+                            this.fpr = MEDIA_KEY_FPR_2
+                            this.address = MEDIA_KEY_PATTERN_2
+                        }
+                    )
+                }
+            ),
+        )
 
     @Before
     fun setUp() {
@@ -181,7 +221,7 @@ class ConfiguredSettingsUpdaterTest {
                     arrayOf(
                         RestrictionEntry(
                             RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
-                            "defaultFpr"
+                            ""
                         )
                     )
                 )
@@ -196,7 +236,7 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for extra keys from the restriction entry if not provided in bundle`() {
+    fun `update() sets the value for extra keys to empty if not provided in bundle`() {
 
         val restrictions = Bundle()
         val entry = RestrictionEntry.createBundleArrayEntry(
@@ -207,7 +247,7 @@ class ConfiguredSettingsUpdaterTest {
                     arrayOf(
                         RestrictionEntry(
                             RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
-                            "defaultFpr"
+                            ""
                         )
                     )
                 )
@@ -218,13 +258,23 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify { K9.setMasterKeys(setOf("defaultFpr")) }
+        verify { K9.setMasterKeys(emptySet()) }
     }
 
     @Test
-    fun `update() sets extra keys with empty set if all provided extra keys are blank`() {
+    fun `update() ignores blank extra keys`() {
 
-        val restrictions = Bundle()
+        val restrictions = Bundle().apply {
+            putParcelableArray(
+                RESTRICTION_PEP_EXTRA_KEYS,
+                arrayOf(
+                    bundleOf(
+                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to " ",
+                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to "fpr2",
+                    )
+                )
+            )
+        }
         val entry = RestrictionEntry.createBundleArrayEntry(
             RESTRICTION_PEP_EXTRA_KEYS,
             arrayOf(
@@ -241,75 +291,66 @@ class ConfiguredSettingsUpdaterTest {
         updater.update(restrictions, entry)
 
 
-        verify { K9.setMasterKeys(emptySet()) }
+        verify { K9.setMasterKeys(setOf("fpr2")) }
+    }
+
+    @Test
+    fun `update() does not set extra keys if all keys are blank`() {
+
+        val restrictions = Bundle().apply {
+            putParcelableArray(
+                RESTRICTION_PEP_EXTRA_KEYS,
+                arrayOf(
+                    bundleOf(
+                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to " ",
+                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to "   ",
+                    )
+                )
+            )
+        }
+        val entry = RestrictionEntry.createBundleArrayEntry(
+            RESTRICTION_PEP_EXTRA_KEYS,
+            arrayOf(
+                RestrictionEntry.createBundleEntry(
+                    RESTRICTION_PEP_EXTRA_KEY,
+                    arrayOf(
+                        RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, "  ")
+                    )
+                )
+            )
+        )
+
+
+        updater.update(restrictions, entry)
+
+
+        verify(exactly = 0) { K9.setMasterKeys(any()) }
     }
 
     @Test
     fun `update() takes the value for media keys from the provided restrictions`() {
-
-        val restrictions = Bundle().apply {
-            putParcelableArray(
-                RESTRICTION_PEP_MEDIA_KEYS,
-                arrayOf(
-                    bundleOf(
-                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test1.test",
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
-                                "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
-                    ),
-                    bundleOf(
-                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to "*@test2.test",
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to
-                                "C90E4DC0A1835B161062852597179D2D8C3D09EA"
-                    ),
-                )
-            )
-        }
-        val entry = RestrictionEntry.createBundleArrayEntry(
-            RESTRICTION_PEP_MEDIA_KEYS,
-            arrayOf(
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_PEP_MEDIA_KEY,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
-                            "defaultPattern1"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
-                            "defaultFpr1"
-                        )
-                    )
-                ),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_PEP_MEDIA_KEY,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
-                            "defaultPattern2"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
-                            "defaultFpr2"
-                        )
-                    )
-                )
-            )
-        )
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(pEp)
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle()
+        val entry = getMediaKeysRestrictionEntry()
 
 
         updater.update(restrictions, entry)
 
 
         verify {
+            pEp.importKey(MEDIA_KEY_MATERIAL_1.toByteArray())
+            pEp.importKey(MEDIA_KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
-                    MdmMediaKey(
-                        "*@test1.test",
-                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_1,
+                        MEDIA_KEY_FPR_1
                     ),
-                    MdmMediaKey(
-                        "*@test2.test",
-                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_2,
+                        MEDIA_KEY_FPR_2
                     )
                 )
             )
@@ -317,83 +358,232 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     @Test
-    fun `update() takes the value for media keys from the restriction entry if not provided in bundle`() {
+    fun `update() set media keys to null if not provided in bundle`() {
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry.createBundleArrayEntry(
-            RESTRICTION_PEP_MEDIA_KEYS,
-            arrayOf(
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_PEP_MEDIA_KEY,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
-                            "defaultPattern1"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
-                            "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
-                        )
-                    )
-                ),
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_PEP_MEDIA_KEY,
-                    arrayOf(
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
-                            "defaultPattern2"
-                        ),
-                        RestrictionEntry(
-                            RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
-                            "C90E4DC0A1835B161062852597179D2D8C3D09EA"
-                        )
-                    )
-                )
-            )
-        )
+        val entry = getMediaKeysRestrictionEntry()
 
 
         updater.update(restrictions, entry)
 
 
         verify {
-            K9.setMediaKeys(
-                setOf(
-                    MdmMediaKey(
-                        "defaultPattern1",
-                        "97B69752A72FC5036971F5C83AC51FA45F01DA6C"
-                    ),
-                    MdmMediaKey(
-                        "defaultPattern2",
-                        "C90E4DC0A1835B161062852597179D2D8C3D09EA"
-                    )
-                )
-            )
+            K9.setMediaKeys(null)
         }
     }
 
     @Test
-    fun `update() sets media keys with null if all provided media keys are blank`() {
-
+    fun `update() sets media keys with null if no media keys are provided`() {
         val restrictions = Bundle()
-        val entry = RestrictionEntry.createBundleArrayEntry(
-            RESTRICTION_PEP_MEDIA_KEYS,
-            arrayOf(
-                RestrictionEntry.createBundleEntry(
-                    RESTRICTION_PEP_MEDIA_KEY,
-                    arrayOf(
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, ""),
-                        RestrictionEntry(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, " ")
-                    )
-                )
-            )
-        )
+        val entry = getMediaKeysRestrictionEntry()
 
 
         updater.update(restrictions, entry)
 
 
         verify { K9.setMediaKeys(null) }
+    }
+
+    @Test
+    fun `update() ignores media keys with blank or missing fields`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(pEp)
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle(pattern1 = " ")
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            pEp.importKey(MEDIA_KEY_MATERIAL_2.toByteArray())
+            K9.setMediaKeys(
+                setOf(
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_2,
+                        MEDIA_KEY_FPR_2
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() does not set media keys if all keys are blank or have errors`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(pEp)
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle(
+            pattern1 = " ",
+            fpr2 = WRONG_FPR
+        )
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify(exactly = 0) {
+            pEp.importKey(any())
+            K9.setMediaKeys(any())
+        }
+    }
+
+    @Test
+    fun `update() ignores media keys with badly formated fingerprints`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(pEp)
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle(fpr1 = WRONG_FPR)
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            pEp.importKey(MEDIA_KEY_MATERIAL_2.toByteArray())
+            K9.setMediaKeys(
+                setOf(
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_2,
+                        MEDIA_KEY_FPR_2
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() ignores media keys for which PEpProvider returns bad key import result`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(
+            pEp,
+            defaultImportKeyBehaviors.apply {
+                this[MEDIA_KEY_MATERIAL_1] = ReturnBehavior.Return(null)
+            }
+        )
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle()
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            pEp.importKey(MEDIA_KEY_MATERIAL_2.toByteArray())
+            K9.setMediaKeys(
+                setOf(
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_2,
+                        MEDIA_KEY_FPR_2
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `update() ignores media keys for which PEpProvider throws an exception`() {
+        val pEp: PEpProvider = mockk()
+        stubImportKeyBehavior(
+            pEp,
+            defaultImportKeyBehaviors.apply {
+                this[MEDIA_KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
+            }
+        )
+        updater.pEp = pEp
+        val restrictions = getMediaKeysBundle()
+        val entry = getMediaKeysRestrictionEntry()
+
+
+        updater.update(restrictions, entry)
+
+
+        verify {
+            pEp.importKey(MEDIA_KEY_MATERIAL_2.toByteArray())
+            K9.setMediaKeys(
+                setOf(
+                    MediaKey(
+                        MEDIA_KEY_PATTERN_2,
+                        MEDIA_KEY_FPR_2
+                    )
+                )
+            )
+        }
+    }
+
+    private fun getMediaKeysRestrictionEntry() = RestrictionEntry.createBundleArrayEntry(
+        RESTRICTION_PEP_MEDIA_KEYS,
+        arrayOf(
+            RestrictionEntry.createBundleEntry(
+                RESTRICTION_PEP_MEDIA_KEY,
+                arrayOf(
+                    RestrictionEntry(
+                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                        ""
+                    ),
+                    RestrictionEntry(
+                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                        ""
+                    )
+                )
+            )
+        )
+    )
+
+    private fun getMediaKeysBundle(
+        pattern1: String = MEDIA_KEY_PATTERN_1,
+        pattern2: String = MEDIA_KEY_PATTERN_2,
+        fpr1: String = MEDIA_KEY_FPR_1,
+        fpr2: String = MEDIA_KEY_FPR_2,
+    ) = Bundle().apply {
+        putParcelableArray(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            arrayOf(
+                bundleOf(
+                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern1,
+                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr1,
+                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to MEDIA_KEY_MATERIAL_1
+                ),
+                bundleOf(
+                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern2,
+                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr2,
+                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to MEDIA_KEY_MATERIAL_2
+                ),
+            )
+        )
+    }
+
+    fun stubImportKeyBehavior(
+        pEp: PEpProvider,
+        material: String,
+        behavior: ReturnBehavior<Vector<Identity?>>
+    ) {
+        every { pEp.importKey(material.toByteArray()) }.answers {
+            when (behavior) {
+                is ReturnBehavior.Return -> behavior.value
+                is ReturnBehavior.Throw -> throw behavior.e
+            }
+        }
+    }
+
+    private fun stubImportKeyBehavior(
+        pEp: PEpProvider,
+        behaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> = defaultImportKeyBehaviors
+    ) {
+        val keySlot = mutableListOf<ByteArray>()
+        every { pEp.importKey(capture(keySlot)) }.answers {
+            val material = keySlot.last()
+            behaviors[material.decodeToString()]!!.let { behavior ->
+                when (behavior) {
+                    is ReturnBehavior.Return -> behavior.value
+                    is ReturnBehavior.Throw -> throw behavior.e
+                }
+            }
+        }
     }
 
     @Test
@@ -1353,5 +1543,13 @@ class ConfiguredSettingsUpdaterTest {
         private const val NEW_SECURITY_TYPE_STRING = "SSL/TLS"
         private val NEW_SECURITY_TYPE = ConnectionSecurity.SSL_TLS_REQUIRED
         private const val NEW_PORT = 999
+
+        private const val MEDIA_KEY_PATTERN_1 = "*@test1.test"
+        private const val MEDIA_KEY_PATTERN_2 = "*@test2.test"
+        private const val MEDIA_KEY_FPR_1 = "1111111111111111111111111111111111111111"
+        private const val MEDIA_KEY_FPR_2 = "2222222222222222222222222222222222222222"
+        private const val MEDIA_KEY_MATERIAL_1 = "keymaterial1"
+        private const val MEDIA_KEY_MATERIAL_2 = "keymaterial2"
+        private const val WRONG_FPR = "WRONG_FPR"
     }
 }

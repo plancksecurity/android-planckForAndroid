@@ -2,6 +2,7 @@ package security.pEp.provisioning
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.pEp.PEpProviderImplKotlin
@@ -12,10 +13,8 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.*
 import org.junit.runner.RunWith
-import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
-import java.io.File
 
 private const val TEST_PROVISIONING_URL = "https://test/url"
 
@@ -26,16 +25,15 @@ class ProvisioningManagerTest {
     val coroutinesTestRule = CoroutineTestRule()
 
     private val k9: K9 = mockk(relaxed = true)
-    private val systemFileLocator: PEpSystemFileLocator = mockk()
     private val urlChecker: UrlChecker = mockk()
-    private val keysDbFile: File = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
     private val configurationManager: ConfigurationManager = mockk(relaxed = true)
     private val provisioningSettings: ProvisioningSettings = mockk()
+    private val preferences: Preferences = mockk()
     private val manager = ProvisioningManager(
         k9,
-        systemFileLocator,
+        preferences,
         urlChecker,
         configurationManagerFactory,
         provisioningSettings,
@@ -48,8 +46,7 @@ class ProvisioningManagerTest {
         coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(true)
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
-        coEvery { systemFileLocator.keysDbFile }.returns(keysDbFile)
-        coEvery { keysDbFile.exists() }.returns(false)
+        coEvery { preferences.accounts }.returns(emptyList())
         coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
@@ -184,17 +181,36 @@ class ProvisioningManagerTest {
     }
 
     @Test
-    fun `if pEp databases already exist, configurationManager_loadConfigurationsSuspend is called with parameter false`() {
-        coEvery { keysDbFile.exists() }.returns(true)
+    fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup true`() {
+        manager.startProvisioning()
+
+
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(true)) }
+        assertListenerProvisionChangedWithState { state ->
+            assertEquals(ProvisionState.Initialized, state)
+        }
+    }
+
+    @Test
+    fun `if there are any accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup false`() {
+        coEvery { preferences.accounts }.returns(listOf(mockk()))
 
 
         manager.startProvisioning()
 
 
-        coVerify { configurationManager.loadConfigurationsSuspend(false) }
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(false)) }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
         }
+    }
+
+    @Test
+    fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine`() {
+        manager.performInitializedEngineProvisioning()
+
+
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.InitializedEngine) }
     }
 
     @Test
