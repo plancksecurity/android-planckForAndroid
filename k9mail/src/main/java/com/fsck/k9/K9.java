@@ -699,7 +699,11 @@ public class K9 extends MultiDexApplication {
                 component.pEpSystemFileLocator().getKeyStoreFolder().toString()
         );
 
-        initJobManager(prefs);
+        MessagingController messagingController = MessagingController.getInstance(this);
+        // Perform engine provisioning just after its initialization in MessagingController
+        component.provisioningManager().performInitializedEngineProvisioning();
+
+        initJobManager(prefs, messagingController);
 
         /*
          * Enable background sync of messages
@@ -790,10 +794,6 @@ public class K9 extends MultiDexApplication {
 
         });
 
-        if (BuildConfig.IS_ENTERPRISE) {
-            component.provisioningManager().performInitializedEngineProvisioning();
-        }
-
         refreshFoldersForAllAccounts();
         //pEpInitSyncEnvironment();
         setupFastPoller();
@@ -819,9 +819,7 @@ public class K9 extends MultiDexApplication {
         }
     }
 
-    private void initJobManager(Preferences prefs) {
-        MessagingController messagingController = MessagingController.getInstance(this);
-
+    private void initJobManager(Preferences prefs, MessagingController messagingController) {
         MailSyncJobManager mailSyncJobManager = new MailSyncJobManager(messagingController, prefs);
         PusherRefreshJobManager pusherRefreshJobManager = new PusherRefreshJobManager(this, messagingController, prefs);
         K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager);

@@ -74,8 +74,11 @@ class ProvisioningManager @Inject constructor(
     }
 
     fun performInitializedEngineProvisioning() = runBlocking<Unit> {
-        configurationManagerFactory.create(k9)
-            .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine).onFailure { throw it }
+        if (BuildConfig.IS_ENTERPRISE) {
+            configurationManagerFactory.create(k9)
+                .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
+                .onFailure { throw it }
+        }
     }
 
     private suspend fun finalizeSetupAfterChecks(): Result<Unit> {
