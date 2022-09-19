@@ -660,6 +660,7 @@ public class K9 extends MultiDexApplication {
 
         super.onCreate();
         app = this;
+        Globals.setContext(this);
 
         initializeInjector();
 
@@ -670,7 +671,6 @@ public class K9 extends MultiDexApplication {
     public void finalizeSetup() {
         pEpSetupUiEngineSession();
         DI.start(this);
-        Globals.setContext(this);
         K9MailLib.setDebugStatus(new K9MailLib.DebugStatus() {
             @Override
             public boolean enabled() {
