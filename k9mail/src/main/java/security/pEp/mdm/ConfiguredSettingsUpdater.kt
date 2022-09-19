@@ -16,6 +16,7 @@ import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.infrastructure.extensions.mapSuccess
 import security.pEp.network.UrlChecker
 import security.pEp.provisioning.*
 import timber.log.Timber
@@ -445,23 +446,13 @@ class ConfiguredSettingsUpdater(
         kotlin.runCatching {
             val newExtraKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull { (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT) }
-                ?: entry.restrictions.map { bundleRestriction ->
-                    bundleRestriction.restrictions.first()
-                }.map {
-                    it.selectedString
-                }
-
-            newExtraKeys.filter {
-                it.isNotBlank()
-            }.toSet().also { newKeys ->
-                if (newKeys.isEmpty()) {
-                    K9.setMasterKeys(emptySet())
-                } else {
-                    newKeys.filter { it.isNotBlank() }
-                        .also { K9.setMasterKeys(it.toSet()) }
-                }
+                ?.filter { it.isNotBlank() }
+            if (newExtraKeys == null) {
+                K9.setMasterKeys(emptySet())
+            } else if (newExtraKeys.isNotEmpty()) {
+                K9.setMasterKeys(newExtraKeys.toSet())
             }
-        }
+        }.onFailure { if (K9.isDebug()) Log.e("MDM", "error saving extra keys: ", it) }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -476,33 +467,23 @@ class ConfiguredSettingsUpdater(
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
                         MdmMediaKey(addressPattern, fingerprint.uppercase(), keyMaterial)
                     } else null
-                } ?: entry.restrictions.map { bundleRestriction ->
-                    val addressPattern = bundleRestriction.restrictions.first {
-                        it.key == RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
-                    }.selectedString
-                    val fpr = bundleRestriction.restrictions.first {
-                        it.key == RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
-                    }.selectedString
-                    val material = bundleRestriction.restrictions.first {
-                        it.key == RESTRICTION_PEP_MEDIA_KEY_MATERIAL
-                    }.selectedString
-                    MdmMediaKey(addressPattern, fpr, material)
+                }?.filter {
+                    with(it) {
+                        addressPattern.isNotBlank()
+                                && fpr.isPgpFingerprint()
+                                && material.isNotBlank()
+                    }
                 }
-
-            newMdmMediaKeys.filter {
-                it.addressPattern.isNotBlank() && it.fpr.isPgpFingerprint() && it.material.isNotBlank() // TODO: send feedback, keys with bad format
-            }.also { newMdmKeys ->
-                if (newMdmKeys.isEmpty()) {
-                    K9.setMediaKeys(null)
-                } else {
-                    saveFilteredMediaKeys(newMdmMediaKeys)
-                }
+            if (newMdmMediaKeys == null) {
+                K9.setMediaKeys(null)
+            } else if (newMdmMediaKeys.isNotEmpty()) {
+                saveFilteredMediaKeys(newMdmMediaKeys)
             }
-        }
+        }.onFailure { if (K9.isDebug()) Log.e("MDM", "error saving media keys: ", it) }
     }
 
     private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
-        val newMediaKeys = newMdmMediaKeys.mapNotNull { mdmMediaKey ->
+        val newMediaKeys = newMdmMediaKeys.mapSuccess { mdmMediaKey ->
             kotlin.runCatching {
                 val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
                 val errorMsg = when {
@@ -524,13 +505,12 @@ class ConfiguredSettingsUpdater(
                 if (K9.isDebug()) {
                     Log.e("MDM", "error importing media key:\n$mdmMediaKey", it)
                 }
-            }.getOrNull()
+            }
         }
 
-        K9.setMediaKeys(
-            if (newMediaKeys.isEmpty()) null
-            else newMediaKeys.toSet()
-        )
+        if (newMediaKeys.isNotEmpty()) {
+            K9.setMediaKeys(newMediaKeys.toSet())
+        }
     }
 
     private fun String.isPgpFingerprint(): Boolean = matches("[A-F0-9]{40}".toRegex())

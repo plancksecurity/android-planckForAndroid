@@ -11,3 +11,7 @@ fun <Type> Result<Type>.mapError(block: (Throwable) -> Throwable): Result<Type> 
         onSuccess = { this },
         onFailure = { Result.failure(block(it)) }
     )
+
+inline fun <T, R> Iterable<T>.mapSuccess(transform: (T) -> Result<R>): List<R> {
+    return mapNotNull { transform(it).getOrNull() }
+}
