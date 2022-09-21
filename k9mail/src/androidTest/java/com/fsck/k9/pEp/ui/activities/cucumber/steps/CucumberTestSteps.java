@@ -198,8 +198,15 @@ public class CucumberTestSteps {
         if (!BuildConfig.IS_ENTERPRISE) {
             testUtils.clearAllRecentApps();
         }
-        Intents.release();
-        RestrictionsManager.resetSettings();
+        try {
+            testUtils.clearAllRecentApps();
+            Intents.release();
+        } catch (Exception exception) {
+            Timber.i("Intents.init was not called before Intents.release");
+        }
+        if (BuildConfig.IS_ENTERPRISE) {
+            RestrictionsManager.resetSettings();
+        }
     }
 
     @When(value = "^I created an account$")
