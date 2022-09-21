@@ -1046,6 +1046,10 @@ public class TestUtils {
     public void createNAccounts(int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
+                if (testConfig.getMail(account) == null || testConfig.getMail(account).equals("")) {
+                    Timber.e("Is not possible to create more accounts, email address is empty");
+                    return;
+                }
                 waitForIdle();
                 while (exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
