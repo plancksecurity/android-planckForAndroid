@@ -115,6 +115,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import foundation.pEp.jniadapter.Rating;
 import security.pEp.permissions.PermissionChecker;
@@ -227,8 +228,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
      */
     private boolean relatedMessageProcessed = false;
 
-    private PEpProvider pEp;
-
     private RecipientPresenter recipientPresenter;
     private MessageBuilder currentMessageBuilder;
     private boolean finishAfterDraftSaved;
@@ -273,6 +272,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     @ComposeView
     DisplayHtml displayHtml;
+    @Inject
+    @Named("MainUI")
+    PEpProvider pEp;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
     private FeedbackTools.Feedback unsafeDeliveryWarning;
@@ -670,6 +672,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     protected void onResume() {
         super.onResume();
         MessagingController.getInstance(this).addListener(messagingListener);
+        MessagingController.getInstance(this).setEchoMessageReceivedListener(recipientPresenter);
         messageRatingIsBeingLoaded();
         recipientPresenter.onResume();
         invalidateOptionsMenu();
@@ -681,6 +684,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         super.onPause();
         hideUnsecureDeliveryWarning();
         MessagingController.getInstance(this).removeListener(messagingListener);
+        MessagingController.getInstance(this).setEchoMessageReceivedListener(null);
 
         boolean isPausingOnConfigurationChange = (getChangingConfigurations() & ActivityInfo.CONFIG_ORIENTATION)
                 == ActivityInfo.CONFIG_ORIENTATION;

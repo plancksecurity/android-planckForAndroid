@@ -792,6 +792,25 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
     }
 
+    public void updateRecipientsFromEcho(String echoSender) {
+        unsecureAddressHelper.updateRecipientsFromEcho(
+                getObjects(),
+                echoSender,
+                recipients -> {
+                    for (RatedRecipient recipient : recipients) {
+                        setCountColorIfNeeded();
+                        RecipientTokenViewHolder holder = getRecipientHolder(recipient.getBaseRecipient());
+                        if (holder == null) {
+                            Timber.e("Tried to refresh invalid view token!");
+                        } else {
+                            holder.updateRating(recipient.getRating());
+                            postInvalidateDelayed(100);
+                        }
+                    }
+                }
+        );
+    }
+
     /**
      * This method builds the span given a recipient object. We override it with identical
      * functionality, but using the custom RecipientTokenSpan class which allows us to
@@ -825,6 +844,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         }
 
         return null;
+    }
+
+    private RecipientTokenViewHolder getRecipientHolder(Recipient currentRecipient) {
+        View view = getTokenViewForRecipient(currentRecipient);
+        return view != null
+                ? (RecipientTokenViewHolder) view.getTag()
+                : null;
     }
 
     /**
