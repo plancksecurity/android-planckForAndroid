@@ -8,10 +8,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.provisioning.ProvisioningStage
 import timber.log.Timber
@@ -36,6 +33,18 @@ class ConfigurationManager(
                     Timber.e(
                         it,
                         "Could not load configurations after registering the receiver"
+                    )
+                }
+        }
+    }
+
+    fun loadConfigurationsBlocking() {
+        runBlocking {
+            loadConfigurationsSuspend()
+                .onFailure {
+                    Timber.e(
+                        it,
+                        "Could not load configurations"
                     )
                 }
         }
