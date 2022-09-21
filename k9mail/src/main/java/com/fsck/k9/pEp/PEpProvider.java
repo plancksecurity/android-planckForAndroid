@@ -16,6 +16,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
+import security.pEp.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 /**
@@ -45,6 +46,8 @@ public interface PEpProvider extends AutoCloseable {
 
 
     void setup();
+
+    void setEchoMessageReceivedListener(EchoMessageReceivedListener listener);
 
     /**
      * checks the privacy level of the addresses supplied. This method creates a pEp message and

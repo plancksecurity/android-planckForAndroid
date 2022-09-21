@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -121,6 +122,7 @@ import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
 import security.pEp.auth.OAuthTokenRevokedReceiver;
+import security.pEp.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;
@@ -318,6 +320,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
             }
         }
         throw new Error(e);
+    }
+
+    public void setEchoMessageReceivedListener(EchoMessageReceivedListener listener) {
+        pEpProvider.setEchoMessageReceivedListener(listener);
     }
 
     public void addListener(MessagingListener listener) {
