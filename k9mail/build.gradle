@@ -270,8 +270,8 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
 
             buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-jqoa776om9fq731beiqap4h52b1hu3bs.apps.googleusercontent.com\""
-            buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"e647013a-ada4-4114-b419-e43d250f99c5\""
-            buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/VZF2DYuLYAu4TurFd6usQB2JPts%3D\""
+            buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"b02baebf-9635-41fc-8cf0-023f4fa0b33e\""
+            buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.debug/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D\""
 
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
         }
