@@ -27,3 +27,9 @@ data class CompositionSettings @JvmOverloads constructor(
     var useSignature: Boolean? = null,
     var signatureBefore: Boolean? = null,
 )
+
+data class TestMdmMediaKey @JvmOverloads constructor(
+    var pattern: String? = null,
+    var fpr: String? = null,
+    var material: String? = null,
+)

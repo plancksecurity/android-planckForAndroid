@@ -83,12 +83,41 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
     }?.toSet()
 
-    fun setExtraKeys(keys: Set<String>) = applicationRestrictions.putParcelableArray(
-        RESTRICTION_PEP_EXTRA_KEYS,
-        keys.map {
-            Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it) }
-        }.toTypedArray()
-    )
+    fun getMediaKeys(): Set<TestMdmMediaKey>? = applicationRestrictions.getParcelableArray(
+        RESTRICTION_PEP_MEDIA_KEYS
+    )?.map {
+        val bundle = it as Bundle
+        val pattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
+        val fpr = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
+        val material = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
+        TestMdmMediaKey(pattern, fpr, material)
+    }?.toSet()
+
+    fun setExtraKeys(keys: Set<String>?) = if (keys == null) {
+        applicationRestrictions.remove(RESTRICTION_PEP_EXTRA_KEYS)
+    } else {
+        applicationRestrictions.putParcelableArray(
+            RESTRICTION_PEP_EXTRA_KEYS,
+            keys.map {
+                Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it) }
+            }.toTypedArray()
+        )
+    }
+
+    fun setMediaKeys(keys: Set<TestMdmMediaKey>?) = if (keys == null) {
+        applicationRestrictions.remove(RESTRICTION_PEP_EXTRA_KEYS)
+    } else {
+        applicationRestrictions.putParcelableArray(
+            RESTRICTION_PEP_MEDIA_KEYS,
+            keys.map {
+                Bundle().apply {
+                    putString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, it.pattern)
+                    putString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, it.fpr)
+                    putString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL, it.material)
+                }
+            }.toTypedArray()
+        )
+    }
 
     fun getManifestCompositionSettings(): CompositionSettings = CompositionSettings(
         senderName = DEFAULT_ACCOUNT_COMPOSITION_SENDER_NAME,
@@ -352,6 +381,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                         DEFAULT_PRIVACY_PROTECTION
                     ),
                     getExtraKeysRestrictionEntry(),
+                    getMediaKeysRestrictionEntry(),
+                    RestrictionEntry(
+                        RESTRICTION_ENABLE_ECHO_PROTOCOL,
+                        DEFAULT_ENABLE_ECHO_PROTOCOL
+                    ),
                     RestrictionEntry(RESTRICTION_PEP_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
                     RestrictionEntry(
                         RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING,
@@ -441,6 +475,25 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RestrictionEntry.createBundleEntry(
                         RESTRICTION_PEP_EXTRA_KEY,
                         arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, DEFAULT_EXTRA_KEY))
+                    )
+                )
+            )
+
+        @RequiresApi(Build.VERSION_CODES.M)
+        private fun getMediaKeysRestrictionEntry(): RestrictionEntry =
+            RestrictionEntry.createBundleArrayEntry(
+                RESTRICTION_PEP_MEDIA_KEYS,
+                arrayOf(
+                    RestrictionEntry.createBundleEntry(
+                        RESTRICTION_PEP_MEDIA_KEY,
+                        arrayOf(
+                            RestrictionEntry(DEFAULT_MEDIA_KEY_PATTERN, DEFAULT_MEDIA_KEY_PATTERN),
+                            RestrictionEntry(DEFAULT_MEDIA_KEY_FPR, DEFAULT_MEDIA_KEY_FPR),
+                            RestrictionEntry(
+                                DEFAULT_MEDIA_KEY_MATERIAL,
+                                DEFAULT_MEDIA_KEY_MATERIAL
+                            ),
+                        )
                     )
                 )
             )
