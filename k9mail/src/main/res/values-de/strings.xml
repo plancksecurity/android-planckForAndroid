@@ -58,8 +58,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="app_revision_fmt">Revisionsinformationen: &lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"app_revision_url\"&gt;%s&lt;/xliff:g&gt;</string>
     <string name="app_libraries">Wir verwenden die folgenden Bibliotheken von Drittanbietern:</string>
     <string name="app_emoji_icons">Emoji icons: <xliff:g id="app_emoji_icons_link">%s</xliff:g></string>
-    <string name="read_attachment_label">E-Mail-Anhänge lesen</string>
-    <string name="read_attachment_desc">Der Anwendung erlauben, Ihre E-Mail-Anhänge zu lesen.</string>
     <string name="read_messages_label">E-Mails lesen</string>
     <string name="read_messages_desc">Der Anwendung erlauben, Ihre E-Mails zu lesen.</string>
     <string name="delete_messages_label">E-Mails löschen</string>
