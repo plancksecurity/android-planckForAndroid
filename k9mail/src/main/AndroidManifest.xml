@@ -103,7 +103,8 @@
             android:configChanges="locale"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -206,7 +207,8 @@
         <activity
             android:name=".activity.FolderList"
             android:configChanges="locale"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:exported="true">
             <intent-filter>
 
                 <!-- This action is only to allow an entry point for launcher shortcuts -->
@@ -217,7 +219,8 @@
             android:name=".activity.MessageList"
             android:configChanges="locale"
             android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:exported="true">
             <intent-filter>
 
                 <!-- This action is only to allow an entry point for launcher shortcuts -->
@@ -237,7 +240,8 @@
             android:name=".activity.MessageCompose"
             android:configChanges="locale"
             android:enabled="false"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
 
@@ -274,7 +278,8 @@
             android:name=".activity.Search"
             android:configChanges="locale"
             android:label="@string/search_action"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
@@ -288,14 +293,16 @@
         <activity
             android:name=".activity.LauncherShortcuts"
             android:configChanges="locale"
-            android:label="@string/shortcuts_title">
+            android:label="@string/shortcuts_title"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.UnreadWidgetConfiguration">
+        <activity android:name=".activity.UnreadWidgetConfiguration"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
@@ -318,7 +325,8 @@
 
         <receiver
             android:name=".service.BootReceiver"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -340,8 +348,9 @@
         </receiver>
         <receiver
             android:name=".service.RemoteControlReceiver"
-            android:enabled="true"
-            android:permission="${applicationId}.permission.REMOTE_CONTROL">
+            android:enabled="false"
+            android:permission="${applicationId}.permission.REMOTE_CONTROL"
+            android:exported="false">
             <intent-filter>
                 <action android:name="${applicationId}.K9RemoteControl.set" />
             </intent-filter>
@@ -354,7 +363,8 @@
             android:exported="false" />
         <receiver
             android:name=".service.StorageReceiver"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
 
                 <!--
@@ -376,7 +386,8 @@
         <receiver
             android:name=".provider.UnreadWidgetProvider"
             android:icon="@mipmap/icon"
-            android:label="@string/unread_widget_label">
+            android:label="@string/unread_widget_label"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -388,7 +399,8 @@
         <receiver
             android:name=".widget.list.MessageListWidgetProvider"
             android:icon="@drawable/message_list_widget_preview"
-            android:label="@string/mail_list_widget_text">
+            android:label="@string/mail_list_widget_text"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -490,7 +502,8 @@
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"
             android:launchMode="singleInstance"
-            android:theme="@style/OverlayTheme">
+            android:theme="@style/OverlayTheme"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
 
@@ -498,17 +511,20 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver">
+        <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver">
+        <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver">
+        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="PEP_SYNC_SIGNAL" />
             </intent-filter>
@@ -517,7 +533,8 @@
         <activity
             android:name=".pEp.ui.activities.SplashActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -544,7 +561,8 @@
         <activity android:name="security.pEp.ui.permissions.PermissionsActivity" />
         <activity
             android:name=".pEp.filepicker.FilePickerActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
