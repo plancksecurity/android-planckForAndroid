@@ -52,14 +52,6 @@
 
     <!-- Needed for Android 28+ compatibility -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <permission
-        android:name="${applicationId}.permission.READ_ATTACHMENT"
-        android:description="@string/read_attachment_desc"
-        android:label="@string/read_attachment_label"
-        android:permissionGroup="android.permission-group.MESSAGES"
-        android:protectionLevel="dangerous" />
-
-    <uses-permission android:name="${applicationId}.permission.READ_ATTACHMENT" />
 
     <permission
         android:name="${applicationId}.permission.READ_MESSAGES"
