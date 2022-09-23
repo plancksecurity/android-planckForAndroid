@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.activity_passphrase.*
+import kotlinx.android.synthetic.main.activity_export_pep_support_data.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -27,6 +30,9 @@ fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
     @Inject
     lateinit var presenter: PassphrasePresenter
+    private lateinit var afirmativeActionButton: Button
+    private lateinit var passphrase: EditText
+    private lateinit var description: TextView
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -35,8 +41,15 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_passphrase)
+        setupViews()
         val type = intent?.extras?.getSerializable(REQUEST_TYPE_EXTRA)
         presenter.init(this, type as PassphraseRequirementType)
+    }
+
+    private fun setupViews() {
+        afirmativeActionButton = findViewById(R.id.affirmativeActionButton)
+        passphrase = findViewById(R.id.passphrase)
+        description = findViewById(R.id.description)
     }
 
     override fun init() {
