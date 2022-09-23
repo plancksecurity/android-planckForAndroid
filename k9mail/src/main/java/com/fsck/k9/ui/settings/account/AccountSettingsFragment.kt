@@ -27,7 +27,6 @@ import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import foundation.pEp.jniadapter.exceptions.pEpException
-import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
@@ -267,6 +266,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
+        val loading = requireView().findViewById<View>(R.id.loading)
         loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
