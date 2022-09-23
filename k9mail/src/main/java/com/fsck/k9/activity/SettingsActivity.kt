@@ -47,7 +47,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
-import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
@@ -99,6 +98,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
+    private var loading: View? = null
     private var addAccountButton: View? = null
 
     @Inject
@@ -203,6 +203,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         bindViews(R.layout.accounts)
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
+        loading = findViewById(R.id.loading)
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
@@ -725,14 +726,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         uiScope.launch {
             // Show loading
             loading?.visibility = View.VISIBLE
-            accounts_list?.alpha = 0.2f
+            accountsList?.alpha = 0.2f
             //Move account
             moveAccount(account, up)
             refresh()
 
             //Hide loading
             loading?.visibility = View.GONE
-            accounts_list?.alpha = 1f
+            accountsList?.alpha = 1f
 
         }
     }
