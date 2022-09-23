@@ -5,11 +5,12 @@ import android.graphics.drawable.Animatable
 import android.util.AttributeSet
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
-import kotlinx.android.synthetic.main.fab_menu_layout.view.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
@@ -27,6 +28,14 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
     private val slideDownReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_down_reply_all)
     private val slideDownForward = AnimationUtils.loadAnimation(context, R.anim.slide_down_forward)
 
+    private val openCloseButton: FloatingActionButton? = findViewById(R.id.openCloseButton)
+    private val fabForward: FloatingActionButton? = findViewById(R.id.fabForward)
+    private val fabReplyAll: FloatingActionButton? = findViewById(R.id.fabReplyAll)
+    private val fabReply: FloatingActionButton? = findViewById(R.id.fabReply)
+    private val textviewForward: TextView? = findViewById(R.id.textviewForward)
+    private val textviewReplyAll: TextView? = findViewById(R.id.textviewReplyAll)
+    private val textviewReply: TextView? = findViewById(R.id.textviewReply)
+
     val presenter: PEpFabMenuPresenter = PEpFabMenuPresenter(this)
 
     override fun onAttachedToWindow() {
@@ -36,7 +45,7 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
-        openCloseButton.setOnLongClickListener {
+        openCloseButton?.setOnLongClickListener {
             presenter.onLongClicked()
             true
         }
@@ -53,45 +62,45 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
 
     override fun openMenu() {
         textAnimation(fabOpenAnimation)
-        fabForward.startAnimation(slideUpForward)
-        fabReplyAll.startAnimation(slideUpReplyAll)
-        fabReply.startAnimation(slideUpReply)
-        fabReply.show()
-        fabReplyAll.show()
-        fabForward.show()
+        fabForward?.startAnimation(slideUpForward)
+        fabReplyAll?.startAnimation(slideUpReplyAll)
+        fabReply?.startAnimation(slideUpReply)
+        fabReply?.show()
+        fabReplyAll?.show()
+        fabForward?.show()
         animateOpenCloseFab(R.drawable.reply_to_cross_animated)
         setTextHintsVisibility(VISIBLE)
     }
 
     override fun closeMenu() {
         textAnimation(fabCloseAnimation)
-        fabForward.startAnimation(slideDownForward)
-        fabReplyAll.startAnimation(slideDownReplyAll)
-        fabReply.startAnimation(slideDownReply)
-        fabReply.hide()
-        fabReplyAll.hide()
-        fabForward.hide()
+        fabForward?.startAnimation(slideDownForward)
+        fabReplyAll?.startAnimation(slideDownReplyAll)
+        fabReply?.startAnimation(slideDownReply)
+        fabReply?.hide()
+        fabReplyAll?.hide()
+        fabForward?.hide()
         animateOpenCloseFab(R.drawable.cross_to_reply_animated)
         setTextHintsVisibility(GONE)
     }
 
     private fun animateOpenCloseFab(@DrawableRes drawable: Int) {
-        openCloseButton.setImageResource(drawable)
-        if (openCloseButton.drawable is Animatable) {
+        openCloseButton?.setImageResource(drawable)
+        if (openCloseButton?.drawable is Animatable) {
             (openCloseButton.drawable as Animatable).start()
         }
     }
 
     private fun textAnimation(animation: Animation) {
-        textviewForward.startAnimation(animation)
-        textviewReplyAll.startAnimation(animation)
-        textviewReply.startAnimation(animation)
+        textviewForward?.startAnimation(animation)
+        textviewReplyAll?.startAnimation(animation)
+        textviewReply?.startAnimation(animation)
     }
 
     private fun setTextHintsVisibility(visible: Int) {
-        textviewForward.visibility = visible
-        textviewReplyAll.visibility = visible
-        textviewReply.visibility = visible
+        textviewForward?.visibility = visible
+        textviewReplyAll?.visibility = visible
+        textviewReply?.visibility = visible
     }
 
     override fun showInitialState() {
