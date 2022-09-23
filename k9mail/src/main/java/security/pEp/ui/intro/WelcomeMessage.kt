@@ -9,6 +9,7 @@ import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
@@ -17,13 +18,12 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
+import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.fragments.PEpFragment
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.fragment_intro_first.*
-import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.permissions.PermissionsActivity
 import javax.inject.Inject
@@ -129,14 +129,15 @@ class IntroFirstFragment : PEpFragment() {
 
     private fun startTexts() {
         val primaryColorARGB = PEpUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
-        headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        requireView().findViewById<TextView>(R.id.headerText).text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        requireView().findViewById<TextView>(R.id.secondText).text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun startImage() {
         val address = Address("A")
+        val contactBadge = requireView().findViewById<PEpContactBadge>(R.id.contactBadge)
         contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(contactBadge, address)
+        contactBadge?.let { contactsPictureLoader.setContactPicture(contactBadge, address) }
     }
 }
 
@@ -175,10 +176,12 @@ class IntroFourthFragment : PEpFragment() {
     }
 
     private fun startImage() {
+        val secureBadge = requireView().findViewById<PEpContactBadge>(R.id.secureBadge)
         var address = Address("A")
         secureBadge.setPepRating(Rating.pEpRatingReliable, true)
         contactsPictureLoader.setContactPicture(secureBadge, address)
         address = Address("B")
+        val secureTrustedBadge = requireView().findViewById<PEpContactBadge>(R.id.secureTrustedBadge)
         secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
         contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
     }
