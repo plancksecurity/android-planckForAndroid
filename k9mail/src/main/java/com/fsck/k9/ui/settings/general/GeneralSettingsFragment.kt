@@ -23,7 +23,6 @@ import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import security.pEp.permissions.PermissionChecker
@@ -245,6 +244,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset() {
         disableKeyResetClickListener()
+        val loading = requireView().findViewById<View>(R.id.loading)
         loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
