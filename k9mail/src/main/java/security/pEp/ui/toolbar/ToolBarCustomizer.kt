@@ -8,12 +8,11 @@ import android.os.Build
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.ColorInt
-import androidx.appcompat.view.menu.ActionMenuItemView
-import androidx.appcompat.widget.ActionMenuView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
+import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpColorUtils
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,6 +33,9 @@ interface ToolBarCustomizer {
 }
 
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
+
+    private val toolbar: Toolbar?
+        get() = activity.findViewById(R.id.toolbar)
 
     override fun setStatusBarPepColor(pEpRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -59,7 +61,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
         uiScope.launch {
             val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating)
-            activity.toolbar?.setBackgroundColor(color)
+            toolbar?.setBackgroundColor(color)
         }
 
     }
@@ -68,7 +70,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            activity.toolbar?.setBackgroundColor(colorReference)
+            toolbar?.setBackgroundColor(colorReference)
         }
     }
 
@@ -79,11 +81,11 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
-            activity.toolbar?.children?.forEach { v ->
+            toolbar?.children?.forEach { v ->
                 if(v is ImageButton)
                         v.drawable.mutate().colorFilter = colorFilter
             }
-            activity.toolbar?.overflowIcon?.colorFilter = colorFilter
+            toolbar?.overflowIcon?.colorFilter = colorFilter
         }
     }
 
