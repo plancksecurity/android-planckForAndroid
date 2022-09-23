@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.recyclerview.widget.RecyclerView
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
@@ -13,7 +14,6 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.Section
 import com.xwray.groupie.kotlinandroidextensions.ViewHolder
-import kotlinx.android.synthetic.main.activity_settings.*
 import org.koin.android.architecture.ext.viewModel
 
 class K9SettingsActivity : K9Activity() {
@@ -42,7 +42,7 @@ class K9SettingsActivity : K9Activity() {
             handleItemClick(item)
         }
 
-        with(settings_list) {
+        with(findViewById<RecyclerView>(R.id.settings_list)) {
             adapter = settingsAdapter
             layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@K9SettingsActivity)
         }
