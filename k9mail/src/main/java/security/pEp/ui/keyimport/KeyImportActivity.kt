@@ -6,12 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
-import kotlinx.android.synthetic.main.import_key_dialog.*
-import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
 
@@ -19,6 +19,14 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     @Inject
     internal lateinit var presenter: KeyImportPresenter
+    private var acceptButton: Button? = null
+    private var cancelButton: Button? = null
+    private var addressText: TextView? = null
+    private var fingerprintTextView: TextView? = null
+    private var layout: View? = null
+    private var confirmationLayout: View? = null
+    private var keyImportLoadingLayout: View? = null
+
 
     override fun inject() {
         getpEpComponent().inject(this)
@@ -27,6 +35,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_key_dialog)
+        setupViews()
         if (isValidKeyImportIntent(intent)) {
             val accountUuid: String = intent.getStringExtra(ACCOUNT_UUID_EXTRA) ?: ""
             presenter.initialize(this, accountUuid)
@@ -36,11 +45,21 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
         setClickListeners()
     }
 
+    private fun setupViews() {
+        acceptButton = findViewById(R.id.acceptButton)
+        cancelButton = findViewById(R.id.cancelButton)
+        addressText = findViewById(R.id.addressText)
+        fingerprintTextView = findViewById(R.id.fingerprintTextView)
+        layout = findViewById(R.id.layout)
+        confirmationLayout = findViewById(R.id.confirmationLayout)
+        keyImportLoadingLayout = findViewById(R.id.keyImportLoadingLayout)
+    }
+
     private fun setClickListeners() {
-        acceptButton.setOnClickListener {
+        acceptButton?.setOnClickListener {
             presenter.onKeyImportAccepted()
         }
-        cancelButton.setOnClickListener {
+        cancelButton?.setOnClickListener {
             presenter.onKeyImportRejected()
         }
     }
@@ -79,16 +98,16 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
-        addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
-        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+        addressText?.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
+        fingerprintTextView?.text = PEpUtils.formatFpr(firstIdentity.fpr)
     }
 
     override fun showLayout() {
-        layout.visibility = View.VISIBLE
+        layout?.visibility = View.VISIBLE
     }
 
     override fun hideLayout() {
-        layout.visibility = View.GONE
+        layout?.visibility = View.GONE
     }
 
     override fun showCorrectKeyImport() {
@@ -113,13 +132,13 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     }
 
     override fun showLoading() {
-        confirmationLayout.visibility = View.INVISIBLE
-        keyImportLoadingLayout.visibility = View.VISIBLE
+        confirmationLayout?.visibility = View.INVISIBLE
+        keyImportLoadingLayout?.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-        keyImportLoadingLayout.visibility = View.GONE
-        confirmationLayout.visibility = View.VISIBLE
+        keyImportLoadingLayout?.visibility = View.GONE
+        confirmationLayout?.visibility = View.VISIBLE
     }
 
     private fun isValidKeyImportIntent(intent: Intent): Boolean = when {
