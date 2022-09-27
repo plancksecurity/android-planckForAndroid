@@ -37,6 +37,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
+import security.pEp.mdm.ConfigurationManager;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
@@ -238,7 +239,13 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             if(manualSetup) {
                 account.setOptionsOnInstall();
             }
-            account.save(Preferences.getPreferences(mActivity));
+            if (BuildConfig.IS_ENTERPRISE) {
+                ((K9) mContext.getApplicationContext()).getComponent()
+                        .configurationManagerFactory().create(mContext)
+                        .loadConfigurationsBlocking();
+            } else {
+                account.save(Preferences.getPreferences(mActivity));
+            }
             MessagingController.getInstance(mActivity).refreshRemoteSynchronous(account);
             accountKeysGenerator.generateAccountKeys();
             return null;

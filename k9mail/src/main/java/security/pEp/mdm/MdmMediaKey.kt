@@ -1,10 +1,9 @@
 package security.pEp.mdm
 
-import foundation.pEp.jniadapter.Pair
-
 data class MdmMediaKey(
     val addressPattern: String,
     val fpr: String,
+    val material: String,
 ) {
-    fun toPair(): Pair<String, String> = Pair(addressPattern, fpr)
+    fun toMediaKey(): MediaKey = MediaKey(addressPattern, fpr)
 }

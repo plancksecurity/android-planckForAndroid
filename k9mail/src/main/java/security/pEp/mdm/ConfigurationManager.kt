@@ -1,12 +1,16 @@
 package security.pEp.mdm
 
-import android.content.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.RestrictionEntry
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.*
 import security.pEp.provisioning.ProvisioningFailedException
+import security.pEp.provisioning.ProvisioningStage
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -34,15 +38,44 @@ class ConfigurationManager(
         }
     }
 
+    fun loadConfigurationsBlocking() {
+        runBlocking {
+            loadConfigurationsSuspend()
+                .onFailure {
+                    Timber.e(
+                        it,
+                        "Could not load configurations"
+                    )
+                }
+        }
+    }
+
     suspend fun loadConfigurationsSuspend(
-        startup: Boolean = false
+        provisioningStage: ProvisioningStage = ProvisioningStage.ProvisioningDone,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
-            if (startup && !isProvisionAvailable(restrictions)) {
-                throw ProvisioningFailedException("Provisioning data is missing")
+            val entries: List<RestrictionEntry>
+            when (provisioningStage) {
+                is ProvisioningStage.Startup -> {
+                    if (provisioningStage.firstStartup && !isProvisionAvailable(restrictions)) {
+                        throw ProvisioningFailedException("Provisioning data is missing")
+                    }
+                    entries = restrictionsManager.manifestRestrictions
+                        // ignore media keys from MDM before PEpProvider has been initialized
+                        .filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                }
+                is ProvisioningStage.InitializedEngine -> {
+                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    entries = restrictionsManager.manifestRestrictions
+                        .filter{ it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                }
+                is ProvisioningStage.ProvisioningDone -> {
+                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    entries = restrictionsManager.manifestRestrictions
+                }
             }
-            val entries = restrictionsManager.manifestRestrictions
+
             mapRestrictions(entries, restrictions)
             saveAppSettings()
             saveAccounts()

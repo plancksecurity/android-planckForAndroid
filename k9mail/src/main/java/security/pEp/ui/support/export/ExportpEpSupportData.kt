@@ -5,6 +5,7 @@ import android.os.Build
 import android.webkit.MimeTypeMap
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.pEp.infrastructure.extensions.flatMap
 import com.fsck.k9.pEp.saveToDocuments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -91,10 +92,4 @@ class ExportpEpSupportData @Inject constructor(
             }
             return total
         }
-
-    private fun <Type, NewType> Result<Type>.flatMap(block: (Type) -> Result<NewType>): Result<NewType> =
-        fold(
-            onSuccess = { block(it) },
-            onFailure = { Result.failure(it) }
-        )
 }
