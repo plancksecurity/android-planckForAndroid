@@ -295,7 +295,6 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
         }
     }
-    //testBuildType "release"
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
@@ -353,6 +352,7 @@ android {
             assets.srcDirs = ['src/androidTest/assets']
         }
     }
+    testBuildType "release"
 
 }
 
