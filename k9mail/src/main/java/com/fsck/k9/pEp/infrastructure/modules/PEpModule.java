@@ -55,12 +55,6 @@ public class PEpModule {
     }
 
     @Provides
-    @Named("Background")
-    public PEpProvider providepEpProviderBackground() {
-        return MessagingController.getInstance(context).getpEpProvider();
-    }
-
-    @Provides
     public MessagingController provideMessagingController() {
         return MessagingController.getInstance(context);
     }

@@ -32,7 +32,7 @@
         android:description="@string/media_keys_description"
         android:key="pep_media_keys"
         android:restrictionType="bundle_array"
-        android:title="@string/extra_keys_title">
+        android:title="@string/media_keys_title">
 
         <restriction
             android:key="pep_media_key"
@@ -50,6 +50,12 @@
                 android:key="media_key_fingerprint"
                 android:restrictionType="string"
                 android:title="@string/fingerprint_title"/>
+
+            <restriction
+                android:defaultValue=""
+                android:key="media_key_material"
+                android:restrictionType="string"
+                android:title="@string/media_key_material_title"/>
 
         </restriction>
     </restriction>
@@ -107,7 +113,7 @@
         android:title="@string/account_setup_push_limit_label"/>
 
     <restriction
-        android:defaultValue="{{username}}"
+        android:defaultValue=""
         android:description="@string/account_description_description"
         android:key="account_description"
         android:restrictionType="string"
@@ -119,7 +125,7 @@
         android:restrictionType="bundle"
         android:title="@string/account_settings_composition_label">
         <restriction
-            android:defaultValue="{{username}}"
+            android:defaultValue=""
             android:key="composition_sender_name"
             android:restrictionType="string"
             android:title="@string/composition_sender_name_title"/>
@@ -213,7 +219,7 @@
         android:title="@string/pep_sync_enable_account"/>
 
     <!--restriction
-        android:defaultValue="https://provisioning.pep.security/{{partialupn}}/pEp.ppk"
+        android:defaultValue=""
         android:description="@string/provisioning_url_description"
         android:key="pep_user_provisioning_url"
         android:restrictionType="string"
@@ -233,7 +239,7 @@
         android:title="@string/mail_settings_title">
 
         <restriction
-            android:defaultValue="{{mail}}"
+            android:defaultValue=""
             android:description="@string/account_email_address_description"
             android:key="account_email_address"
             android:restrictionType="string"
@@ -272,7 +278,7 @@
                 android:restrictionType="integer"
                 android:title="@string/account_setup_incoming_port_label"/>
             <restriction
-                android:defaultValue="{{mail}}"
+                android:defaultValue=""
                 android:key="incoming_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_incoming_username_label"/>
@@ -310,7 +316,7 @@
                 android:restrictionType="integer"
                 android:title="@string/account_setup_outgoing_port_label"/>
             <restriction
-                android:defaultValue="{{mail}}"
+                android:defaultValue=""
                 android:key="outgoing_mail_settings_user_name"
                 android:restrictionType="string"
                 android:title="@string/account_setup_outgoing_username_label"/>

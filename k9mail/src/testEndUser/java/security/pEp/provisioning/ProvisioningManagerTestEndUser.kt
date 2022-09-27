@@ -2,6 +2,7 @@ package security.pEp.provisioning
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
@@ -13,7 +14,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 
@@ -24,14 +24,14 @@ class ProvisioningManagerTestEndUser {
     val coroutinesTestRule = CoroutineTestRule()
 
     private val k9: K9 = mockk(relaxed = true)
-    private val systemFileLocator: PEpSystemFileLocator = mockk()
     private val urlChecker: UrlChecker = mockk()
     private val listener: ProvisioningManager.ProvisioningStateListener = mockk(relaxed = true)
     private val configurationManagerFactory: ConfigurationManager.Factory = mockk()
     private val provisioningSettings: ProvisioningSettings = mockk()
+    private val preferences: Preferences = mockk()
     private val manager = ProvisioningManager(
         k9,
-        systemFileLocator,
+        preferences,
         urlChecker,
         configurationManagerFactory,
         provisioningSettings,
@@ -78,6 +78,18 @@ class ProvisioningManagerTestEndUser {
             val throwable = (state as ProvisionState.Error).throwable
             assertTrue(throwable is InitializationFailedException)
         }
+    }
+
+    @Test
+    fun `performInitializedEngineProvisioning() never calls configurationManager_loadConfigurationsSuspend`() {
+        val configurationManager: ConfigurationManager = mockk()
+        every { configurationManagerFactory.create(any()) }.returns(configurationManager)
+
+
+        manager.performInitializedEngineProvisioning()
+
+
+        coVerify { configurationManager.wasNot(called) }
     }
 
     private fun assertListenerProvisionChangedWithState(block: (state: ProvisionState) -> Unit) {

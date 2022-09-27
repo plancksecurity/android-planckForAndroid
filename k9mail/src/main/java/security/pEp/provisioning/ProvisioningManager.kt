@@ -3,14 +3,15 @@ package security.pEp.provisioning
 import android.util.Log
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import security.pEp.file.PEpSystemFileLocator
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 import javax.inject.Inject
@@ -19,7 +20,7 @@ import javax.inject.Singleton
 @Singleton
 class ProvisioningManager @Inject constructor(
     private val k9: K9,
-    private val systemFileLocator: PEpSystemFileLocator,
+    private val preferences: Preferences,
     private val urlChecker: UrlChecker,
     private val configurationManagerFactory: ConfigurationManager.Factory,
     private val provisioningSettings: ProvisioningSettings,
@@ -42,6 +43,7 @@ class ProvisioningManager @Inject constructor(
 
     fun startProvisioning() {
         CoroutineScope(dispatcherProvider.io()).launch {
+            // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
             performProvisioningIfNeeded()
                 .onFailure {
                     Log.e("Provisioning Manager", "Error", it)
@@ -57,12 +59,12 @@ class ProvisioningManager @Inject constructor(
                 finalizeSetup()
             }
             else -> {
-                val dbsExist = systemFileLocator.keysDbFile.exists()
+                val hasAccounts = preferences.accounts.isNotEmpty()
                 configurationManagerFactory.create(k9).loadConfigurationsSuspend(
-                    !dbsExist
+                    ProvisioningStage.Startup(!hasAccounts)
                 ).flatMapSuspend {
-                    if(!dbsExist) {
-                        performProvisioningAfterChecks()
+                    if(!hasAccounts) {
+                        finalizeSetupAfterChecks()
                     } else {
                         finalizeSetup()
                     }
@@ -71,7 +73,15 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
-    private suspend fun performProvisioningAfterChecks(): Result<Unit> {
+    fun performInitializedEngineProvisioning() = runBlocking<Unit> {
+        if (BuildConfig.IS_ENTERPRISE) {
+            configurationManagerFactory.create(k9)
+                .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
+                .onFailure { throw it }
+        }
+    }
+
+    private suspend fun finalizeSetupAfterChecks(): Result<Unit> {
         return performChecks().flatMapSuspend {
             finalizeSetup(true)
         }
