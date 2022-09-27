@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.loader.app.LoaderManager;
@@ -50,13 +51,14 @@ import java.util.Collections;
 import java.util.List;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;
 import static com.fsck.k9.pEp.ui.privacy.status.PEpStatus.REQUEST_STATUS;
 
 
-public class RecipientPresenter {
+public class RecipientPresenter implements EchoMessageReceivedListener {
     private static final String STATE_KEY_CC_SHOWN = "state:ccShown";
     private static final String STATE_KEY_BCC_SHOWN = "state:bccShown";
     private static final String STATE_KEY_LAST_FOCUSED_TYPE = "state:lastFocusedType";
@@ -840,6 +842,17 @@ public class RecipientPresenter {
         return cachedCryptoStatus == null || !cachedCryptoStatus.isEncryptionEnabled();
     }
 
+    @Override
+    public void echoMessageReceived(@NonNull String from, @NonNull String to) {
+        dirty = true;
+        loadPEpStatus();
+        if (account.ispEpPrivacyProtected() && K9.ispEpForwardWarningEnabled()) {
+            if (to.equalsIgnoreCase(recipientMvpView.getFromAddress().getAddress())) {
+                recipientMvpView.updateRecipientsFromEcho(from);
+            }
+        }
+    }
+
     public interface RecipientsChangedListener {
         void onRecipientsChanged();
     }
@@ -900,7 +913,6 @@ public class RecipientPresenter {
             ccAdresses = newCcAdresses;
             bccAdresses = newBccAdresses;
             recipientMvpView.messageRatingIsBeingLoaded();
-            pEp = ((K9) context.getApplicationContext()).getpEpProvider();
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
                 public void onLoaded(Rating rating) {

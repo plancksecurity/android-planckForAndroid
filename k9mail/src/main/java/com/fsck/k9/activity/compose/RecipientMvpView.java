@@ -554,7 +554,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         notifyRecipientsChanged(toView, toRecipients);
         notifyRecipientsChanged(ccView, ccRecipients);
         notifyRecipientsChanged(bccView, bccRecipients);
-        bccView.post(currentFocus::requestFocus);
+        if (currentFocus != null) {
+            bccView.post(currentFocus::requestFocus);
+        }
     }
 
     private void notifyRecipientsChanged(
@@ -566,6 +568,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             view.addRecipients(recipient);
         }
         view.restoreFirstRecipientTruncation();
+    }
+
+    public void updateRecipientsFromEcho(String echoSender) {
+        toView.updateRecipientsFromEcho(echoSender);
+        ccView.updateRecipientsFromEcho(echoSender);
     }
 
     public enum CryptoStatusDisplayType {
