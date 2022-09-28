@@ -18,7 +18,7 @@ class UnsecureAddressHelper @Inject constructor(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private lateinit var view: RecipientSelectViewContract
 
-    fun initialize (view: RecipientSelectViewContract) {
+    fun initialize(view: RecipientSelectViewContract) {
         this.view = view
     }
 
@@ -35,6 +35,27 @@ class UnsecureAddressHelper @Inject constructor(
                 pair.first
             }.also { recipientsReadyListener.recipientsReady(it.toMutableList()) }
         }
+    }
+
+    fun updateRecipientsFromEcho(
+        recipients: List<Recipient>,
+        echoSender: String,
+        ratedRecipientsReadyListener: RatedRecipientsReadyListener
+    ) {
+        recipients
+            .filter { it.address.address.equals(echoSender, true) }
+            .filter { it.address in unsecureAddresses }
+            .map { recipient ->
+                recipient
+                    .toRatedRecipient(pEp.getRating(recipient.address))
+                    .also {
+                        if (!PEpUtils.isRatingUnsecure(it.rating)) {
+                            removeUnsecureAddressChannel(it.baseRecipient.address)
+                        }
+                    }
+            }.also {
+                ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList())
+            }
     }
 
     fun rateRecipients(
@@ -63,7 +84,8 @@ class UnsecureAddressHelper @Inject constructor(
                         rating
                     }
                 if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(viewRating)
-                    && view.hasRecipient(recipient)) {
+                    && view.hasRecipient(recipient)
+                ) {
                     addUnsecureAddressChannel(address)
                 }
                 callback.onLoaded(viewRating)

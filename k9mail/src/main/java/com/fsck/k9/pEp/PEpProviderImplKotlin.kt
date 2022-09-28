@@ -27,6 +27,7 @@ import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
+import security.pEp.echo.EchoMessageReceivedListener
 import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
@@ -44,9 +45,14 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private val sendMessageSet = false
     private val showHandshakeSet = false
+    private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
 
     override fun setup() {
         createEngineInstanceIfNeeded()
+    }
+
+    override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
+        echoMessageReceivedListener = listener
     }
 
     private fun createEngineInstanceIfNeeded() {
@@ -569,6 +575,14 @@ class PEpProviderImplKotlin @Inject constructor(
             Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
+            if (decMsg.subject.contains(ECHO_PROTOCOL_MESSAGE_SUBJECT)) {
+                if (!decMsg.from.isNullOrEmpty()) {
+                    echoMessageReceivedListener?.echoMessageReceived(
+                        decMsg.from[0].address,
+                        message.to[0].address
+                    )
+                }
+            }
 
             if (PEpUtils.isAutoConsumeMessage(decMsg)) {
                 Timber.e("%s %s", TAG, "Called decrypt on auto-consume message")
@@ -596,7 +610,7 @@ class PEpProviderImplKotlin @Inject constructor(
             flaggedResult ?: DecryptResult(decMsg, decReturn.rating, -1, srcMsg.isEncrypted())
 
         } catch (t: Throwable) {
-            Timber.e(t, "%s %s %s",
+            Timber.e(t, "MDM ERROR: %s %s %s",
                 TAG,
                 "\n${source.sentDate}",
                 "\n${source.messageId}"
@@ -1306,6 +1320,7 @@ class PEpProviderImplKotlin @Inject constructor(
     companion object {
         private const val TAG = "pEpEngine-provider"
         private const val PEP_SIGNALING_BYPASS_DOMAIN = "@peptunnel.com"
+        private const val ECHO_PROTOCOL_MESSAGE_SUBJECT = "key management message (Distribution)"
 
         @Throws(MessagingException::class)
         private fun getMimeMessage(source: MimeMessage?, message: Message): MimeMessage {
