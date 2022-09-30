@@ -40,9 +40,9 @@ toolchain image:
   # Auth to our registry using runner-provided credentials
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
   script:
-    - docker pull --quiet ${IMAGE_NAME}/toolchain:latest || true
+    - docker pull --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG} || true
     - docker build
-      --cache-from ${IMAGE_NAME}/toolchain:latest
+      --cache-from ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
       --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
       --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
       --tag=${IMAGE_NAME}/toolchain:latest
@@ -67,9 +67,9 @@ base image:
     - *compose_deps
   script:
     - cat DEPENDENCIES
-    - docker pull --quiet ${IMAGE_NAME}/base:latest || docker pull --quiet ${IMAGE_NAME}/toolchain:latest
+    - docker pull --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG} || docker pull --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
     - docker build
-      --cache-from ${IMAGE_NAME}/base:latest
+      --cache-from ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
       --build-arg ENGINE_VERSION=${pEpEngine}
       --build-arg JNI_ADAPTER_VERSION=${pEpJNIAdapter}
       --build-arg LIBPEPADAPTER_VERSION=${libpEpAdapter}
@@ -82,7 +82,7 @@ base image:
       --file Dockerfile.base
       .
     - docker image inspect ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA} | grep Size
-    - docker push ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
     - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
     - docker push --quiet ${IMAGE_NAME}/base:latest
   rules:
