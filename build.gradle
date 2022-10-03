@@ -42,7 +42,7 @@ buildscript {
                 'appIntro'           : '5.1.0',
                 'swipeLayout'        : '1.2.0',
                 'dexter'             : '6.0.1',
-                'workRuntime'        : '2.5.0',
+                'workRuntime'        : '2.7.1',
                 'crypto'             : '1.1.0-alpha03',
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
