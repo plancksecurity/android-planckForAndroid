@@ -88,7 +88,6 @@ dependencies {
     implementation "androidx.webkit:webkit:1.4.0"
 
 
-    implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
     implementation "androidx.security:security-crypto:${versions.crypto}"
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
