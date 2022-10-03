@@ -1,23 +1,15 @@
 package com.fsck.k9.job
 
-import com.evernote.android.job.JobManager
+import androidx.work.WorkManager
 import com.fsck.k9.Preferences
 import timber.log.Timber
 
 class K9JobManager(
-        jobCreator: K9JobCreator,
-        private val jobManager: JobManager,
-        private val preferences: Preferences,
-        private val mailSyncJobManager: MailSyncJobManager,
-        private val pusherRefreshJobManager: PusherRefreshJobManager
+    private val workManager: WorkManager,
+    private val preferences: Preferences,
+    private val mailSyncWorkerManager: MailSyncWorkerManager,
+    private val pusherRefreshWorkerManager: PusherRefreshWorkerManager,
 ) {
-
-    // It's recommended to initialize JobManager in Application onCreate()
-    // I.e. by calling JobManager.create(this).addJobCreator(jobCreator)
-    // Using this DI approach should provide a similar initialization
-    init {
-        jobManager.addJobCreator(jobCreator)
-    }
 
     fun scheduleAllMailJobs() {
         Timber.v("scheduling all jobs")
@@ -29,7 +21,7 @@ class K9JobManager(
         cancelAllMailSyncJobs()
 
         preferences.availableAccounts?.forEach { account ->
-            mailSyncJobManager.scheduleJob(account)
+            mailSyncWorkerManager.scheduleMailSync(account)
         }
     }
 
@@ -37,18 +29,18 @@ class K9JobManager(
         cancelAllPusherRefreshJobs()
 
         preferences.availableAccounts?.forEach { account ->
-            pusherRefreshJobManager.scheduleJob(account)
+            pusherRefreshWorkerManager.scheduleJob(account)
         }
     }
 
     fun cancelAllMailSyncJobs() {
         Timber.v("canceling mail sync job")
-        jobManager.cancelAllForTag(MailSyncJob.TAG)
+        workManager.cancelAllWorkByTag(MailSyncWorkerManager.MAIL_SYNC_TAG)
     }
 
     fun cancelAllPusherRefreshJobs() {
         Timber.v("canceling pusher refresh job")
-        jobManager.cancelAllForTag(PusherRefreshJob.TAG)
+        workManager.cancelAllWorkByTag(PusherRefreshWorkerManager.PUSHER_REFRESH_TAG)
     }
 
     companion object {
