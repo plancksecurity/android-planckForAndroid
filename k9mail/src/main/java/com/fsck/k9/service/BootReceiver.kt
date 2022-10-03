@@ -6,15 +6,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.helper.K9AlarmManager
 import com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE
 import com.fsck.k9.job.K9JobManager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class BootReceiver : CoreReceiver() {
 
-    private val jobManager: K9JobManager = K9.jobManager
+    private val jobManager: K9JobManager? = K9.jobManager
 
     override fun receive(context: Context, intent: Intent, _tmpWakeLockId: Int?): Int? {
         var tmpWakeLockId = _tmpWakeLockId
@@ -27,7 +30,15 @@ class BootReceiver : CoreReceiver() {
         } else if ("com.android.sync.SYNC_CONN_STATUS_CHANGED" == action) {
             val bOps = K9.getBackgroundOps()
             if (bOps == K9.BACKGROUND_OPS.WHEN_CHECKED_AUTO_SYNC) {
-                jobManager.scheduleAllMailJobs()
+                var jobManager = jobManager
+                var tries = 0
+                while(jobManager == null && tries++ < MAX_TRIES_APP_INIT) {
+                    jobManager = K9.jobManager
+                    runBlocking { delay(WAIT_APP_INITIALIZATION_STEP) }
+                }
+
+                jobManager?.scheduleAllMailJobs()
+                    ?: Log.e("BootReceiver", "Job Manager is null, will not do schedule")
             }
         } else if (FIRE_INTENT == action) {
             val alarmedIntent = intent.getParcelableExtra<Intent>(ALARMED_INTENT)
@@ -69,6 +80,8 @@ class BootReceiver : CoreReceiver() {
         const val SCHEDULE_INTENT = "com.fsck.k9.service.BroadcastReceiver.scheduleIntent"
         const val ALARMED_INTENT = "com.fsck.k9.service.BroadcastReceiver.pendingIntent"
         const val AT_TIME = "com.fsck.k9.service.BroadcastReceiver.atTime"
+        private const val WAIT_APP_INITIALIZATION_STEP = 100L
+        private const val MAX_TRIES_APP_INIT = 50
 
         @JvmStatic
         fun scheduleIntent(context: Context, atTime: Long, alarmedIntent: Intent) {
