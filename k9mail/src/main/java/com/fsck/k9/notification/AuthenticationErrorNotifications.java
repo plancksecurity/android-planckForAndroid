@@ -13,6 +13,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 
 
+import static com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE;
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_BLINK_FAST;
 import static com.fsck.k9.notification.NotificationController.NOTIFICATION_LED_FAILURE_COLOR;
 
@@ -64,7 +65,7 @@ class AuthenticationErrorNotifications {
                 AccountSetupBasics.intentActionEditOutgoingSettings(context, account.getUuid());
 
         return PendingIntent.getActivity(context, account.getAccountNumber(), editServerSettingsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     private NotificationManagerCompat getNotificationManager() {

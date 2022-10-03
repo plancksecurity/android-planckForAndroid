@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import com.fsck.k9.K9
 import com.fsck.k9.helper.K9AlarmManager
+import com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE
 import com.fsck.k9.job.K9JobManager
 import timber.log.Timber
 
@@ -59,7 +60,7 @@ class BootReceiver : CoreReceiver() {
         i.putExtra(ALARMED_INTENT, alarmedIntent)
         val uri = Uri.parse("action://" + alarmedAction!!)
         i.data = uri
-        return PendingIntent.getBroadcast(context, 0, i, 0)
+        return PendingIntent.getBroadcast(context, 0, i, FLAG_IMMUTABLE)
     }
 
     companion object {

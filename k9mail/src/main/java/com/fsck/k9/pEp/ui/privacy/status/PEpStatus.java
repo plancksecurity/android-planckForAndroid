@@ -1,5 +1,7 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
+import static com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -80,7 +82,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             Activity context, Rating currentRating, String sender, MessageReference messageReference,
             Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
         Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, forceUnencrypted, alwaysSecure);
-        return PendingIntent.getActivity(context, REQUEST_STATUS, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, REQUEST_STATUS, intent, PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     @NotNull
