@@ -208,6 +208,9 @@ android {
 
         def useCucumber = System.getProperty("useCucumber") ?: "false"
         buildConfigField "boolean", "USE_CUCUMBER", useCucumber
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "false"
+
+        testBuildType "release"
     }
     flavorDimensions "type", "store"
 
@@ -215,8 +218,10 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
-            versionName "${gitVersionName}" + ".enterprise"
+            versionName "${gitVersionName}" + ".enterprise.test.ig2"
+            versionCode 39
             dimension "type"
+            applicationIdSuffix ".enterprise.test.ig2"
         }
 
         endUser {
