@@ -10,6 +10,10 @@
 * Run "plain" Espresso instrumentation tests : `./gradldew connectedCheck`
 * Run all instrumentation tests (both "plain" Espresso and Cucumber instrumentation tests): `./gradldew connectedCheckAll`
 
+### Running on already installed app
+* Task `customTest`. Example: `./gradlew customTest --build="release" --flavor="enterprisePlayStore" --useCucumber --work --verbose --device="1f77616"`
+* Task info: `./gradlew help --task :k9mail:customTest`
+
 
 ## generate app screenshots 
 
