@@ -246,6 +246,8 @@ android {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
+            versionCode 10
+            applicationIdSuffix ".enterprise.test.juan2"
         }
 
         endUser {
@@ -291,6 +293,7 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
         }
     }
+    //testBuildType "release"
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
