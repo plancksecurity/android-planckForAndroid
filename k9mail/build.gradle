@@ -219,12 +219,14 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "int", "USER", "10"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
         }
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            buildConfigField "int", "USER", "0"
             versionName "${gitVersionName}"
             dimension "type"
         }
