@@ -9,7 +9,8 @@ class CucumberTestFilter : ParentFilter() {
     }
 
     override fun evaluateTest(description: Description?): Boolean {
-        return description != null && description.testClass == null
+        return description != null &&
+                (description.testClass == null || description.testClass.name.contains("cucumber"))
     }
 }
 
