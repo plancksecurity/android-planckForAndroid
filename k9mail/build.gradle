@@ -235,8 +235,6 @@ android {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
-            versionCode 21
-            applicationIdSuffix ".enterprise.test.juan2"
         }
 
         endUser {
@@ -268,7 +266,6 @@ android {
     }
     buildTypes {
         release {
-            debuggable true
             if (project.hasProperty("storeFile")) {
                 signingConfig signingConfigs.release
 
@@ -296,7 +293,6 @@ android {
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
         }
     }
-    //testBuildType "release"
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
@@ -353,7 +349,6 @@ android {
             assets.srcDirs = ['src/androidTest/assets']
         }
     }
-    testBuildType "release"
 
 }
 
