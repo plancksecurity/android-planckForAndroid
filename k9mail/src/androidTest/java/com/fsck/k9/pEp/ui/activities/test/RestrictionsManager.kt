@@ -16,75 +16,86 @@ class RestrictionsManager: BaseAndroidTest() {
         @JvmStatic
         fun setBooleanRestrictions(restriction: String, value: Boolean) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            manager.setBoolean(restriction, value)
-            val activity = TestUtils.getCurrentActivity()
-            manager.updateTestRestrictions(activity)
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                manager.setBoolean(restriction, value)
+                val activity = TestUtils.getCurrentActivity()
+                manager.updateTestRestrictions(activity)
+            }
         }
 
         @JvmStatic
         fun setStringRestrictions(setting: String, value: String) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            manager.setString(setting, value)
-            val activity = TestUtils.getCurrentActivity()
-            manager.updateTestRestrictions(activity)
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                manager.setString(setting, value)
+                val activity = TestUtils.getCurrentActivity()
+                manager.updateTestRestrictions(activity)
+            }
 
         }
 
         @JvmStatic
         fun setIncomingBundleSettings(server: String, securityType: String, port: Int, userName: String) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            var settings = manager.getMailSettings()!!
-            val newSettings = settings.copy(
-                incoming = settings!!.incoming!!.copy(
-                    server = server,
-                    securityType = securityType,
-                    port = port,
-                    userName = userName
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                var settings = manager.getMailSettings()!!
+                val newSettings = settings.copy(
+                    incoming = settings!!.incoming!!.copy(
+                        server = server,
+                        securityType = securityType,
+                        port = port,
+                        userName = userName
+                    )
                 )
-            )
-            manager.setMailSettings(newSettings)
-            val activity = TestUtils.getCurrentActivity()
-            manager.updateTestRestrictions(activity)
+                manager.setMailSettings(newSettings)
+                val activity = TestUtils.getCurrentActivity()
+                manager.updateTestRestrictions(activity)
+            }
         }
 
         @JvmStatic
         fun setOutgoingBundleSettings(server: String, securityType: String, port: Int, userName: String) {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            var settings = manager.getMailSettings()!!
-            val newSettings = settings.copy(
-                outgoing = settings!!.incoming!!.copy(
-                    server = server,
-                    securityType = securityType,
-                    port = port,
-                    userName = userName
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                var settings = manager.getMailSettings()!!
+                val newSettings = settings.copy(
+                    outgoing = settings!!.incoming!!.copy(
+                        server = server,
+                        securityType = securityType,
+                        port = port,
+                        userName = userName
+                    )
                 )
-            )
-            manager.setMailSettings(newSettings)
-            val activity = TestUtils.getCurrentActivity()
-            manager.updateTestRestrictions(activity)
+                manager.setMailSettings(newSettings)
+                val activity = TestUtils.getCurrentActivity()
+                manager.updateTestRestrictions(activity)
+            }
         }
 
         @JvmStatic
         fun getRestrictions(): MailSettings? {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            var mailSettings = manager.getMailSettings()
-            val manifestMailSettings = manager.getManifestMailSettings()
-            Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
-            mailSettings = manager.getMailSettings()
-            Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
-            return mailSettings
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                var mailSettings = manager.getMailSettings()
+                val manifestMailSettings = manager.getManifestMailSettings()
+                Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
+                mailSettings = manager.getMailSettings()
+                Timber.e("==== app is $app, mailsettings is $mailSettings, manifestmailsettins is $manifestMailSettings")
+                return mailSettings
+            }
+            return null
         }
 
         @JvmStatic
         fun getSetting(setting: String): String? {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            return manager.getString(setting)
+            val manager = app.component.restrictionsProvider()
+            return if (manager is FakeRestrictionsManager) manager.getString(setting) else ""
         }
 
         @JvmStatic
@@ -101,8 +112,10 @@ class RestrictionsManager: BaseAndroidTest() {
         @JvmStatic
         fun resetSettings() {
             val app = ApplicationProvider.getApplicationContext<TestK9>()
-            val manager = app.component.restrictionsProvider() as FakeRestrictionsManager
-            manager.resetSettings()
+            val manager = app.component.restrictionsProvider()
+            if (manager is FakeRestrictionsManager) {
+                manager.resetSettings()
+            }
         }
 
     }
