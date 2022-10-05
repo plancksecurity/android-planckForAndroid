@@ -1,0 +1,151 @@
+class CustomTest extends DefaultTask {
+    private boolean work = false
+    private String flavor = "enterprisePlayStore"
+    private String buildType = "debug"
+    private boolean useCucumber = true
+    private String device = null
+    private boolean verbose = false
+
+    @Option(option = "work", description = "Whether to run tests on work profile. Default is false.")
+    void setWork(boolean work) {
+        this.work = work
+    }
+
+    @Input
+    boolean getWork() {
+        return work
+    }
+
+    @Option(option = "flavor", description = "Flavor to run the test on. Default is enterprisePlayStore")
+    void setFlavor(String flavor) {
+        this.flavor = flavor
+    }
+
+    @Input
+    String getFlavor() {
+        return flavor
+    }
+
+    @Option(option = "build", description = "Build to run the test on. Default is debug")
+    void setBuildType(String buildType) {
+        this.buildType = buildType
+    }
+
+    @Input
+    String getBuildType() {
+        return buildType
+    }
+
+    @Option(option = "useCucumber", description = "Whether to use cucumber to run the tests. Default is true.")
+    void setUseCucumber(boolean useCucumber) {
+        this.useCucumber = useCucumber
+    }
+
+    @Input
+    boolean getUseCucumber() {
+        return useCucumber
+    }
+
+    @Option(option = "device", description = "Device to run the task on (optional, just needed when several devices connected).")
+    void setDevice(String device) {
+        this.device = device
+    }
+
+    @Input
+    String getDevice() {
+        return device
+    }
+
+    @Option(option = "verbose", description = "More verbose output")
+    void setVerbose(boolean verbose) {
+        this.verbose = verbose
+    }
+
+    @Input
+    boolean getVerbose() {
+        return verbose
+    }
+}
+
+task customTest(type: CustomTest) {
+
+    description = "Run all cucumber or non-cucumber tests. " +
+            "Useful when we want to run the tests on already " +
+            "installed apps and/or on work profiles. " +
+            "Requires for the app to be already installed."
+    group = "verification"
+
+    if (verbose) {
+        println("options:" +
+                "\nwork = $work" +
+                "\nflavor = $flavor" +
+                "\nbuild = $buildType" +
+                "\nuseCucumber = $useCucumber" +
+                "\ndevice = $device")
+    }
+
+    doLast {
+
+        String deviceText = device == null || device == "null" ? "" : " -s $device"
+        // 1. Assemble Android Test if needed (dependency)
+        exec {
+            String command = "../gradlew assemble${flavor.capitalize()}${buildType.capitalize()}AndroidTest"
+            commandLine command.split(' ')
+        }
+        // 2. Uninstall previous test app
+        try {
+            exec {
+                String command = "adb$deviceText uninstall com.fsck.k9.pEp.ui.activities.test"
+                commandLine command.split(' ')
+            }
+        } catch (Throwable ex) {
+            if (verbose) {
+                ex.printStackTrace()
+            }
+        }
+        // 3. Push test apk to device
+        String folder = "${project.projectDir}/build/outputs/apk/androidTest/$flavor/$buildType"
+        String apkToPush = fileTree(folder).matching {
+            include "**/*androidTest.apk"
+        }.first()
+        if (verbose) {
+            println("apk to push is $apkToPush")
+        }
+        exec {
+            String command = "adb$deviceText push $apkToPush /data/local/tmp/test.apk"
+            commandLine command.split(' ')
+        }
+        // 4. Find the user for work profile if needed
+        int user = 0
+        if (work) {
+            String command = "adb$deviceText shell pm list users"
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine command.split(' ')
+                standardOutput = stdout
+            }
+            String line = stdout.toString().readLines().find { it.contains("Work profile:") }
+            user = line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
+            if (verbose) {
+                println("user: $user")
+            }
+        }
+        // 5. Install test apk
+        exec {
+            String command = "adb$deviceText shell pm install --user $user -t -r /data/local/tmp/test.apk"
+            commandLine command.split(' ')
+        }
+        // 6. Remove installed test apk
+        exec {
+            String command = "adb$deviceText shell rm /data/local/tmp/test.apk"
+            commandLine command.split(' ')
+        }
+        // 6. Run test
+        exec {
+            String command = "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
+                    "$useCucumber -e package com -e debug false " +
+                    "com.fsck.k9.pEp.ui.activities.test/com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+            commandLine command.split(' ')
+        }
+    }
+}
