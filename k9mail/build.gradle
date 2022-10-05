@@ -208,6 +208,7 @@ android {
 
         def useCucumber = System.getProperty("useCucumber") ?: "false"
         buildConfigField "boolean", "USE_CUCUMBER", useCucumber
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "true"
     }
     flavorDimensions "type", "store"
 

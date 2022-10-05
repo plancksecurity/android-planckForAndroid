@@ -14,7 +14,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.lang.reflect.Field
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
     override var applicationRestrictions: Bundle = getProvisioningRestrictions()
         private set
