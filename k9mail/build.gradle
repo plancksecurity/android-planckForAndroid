@@ -264,6 +264,7 @@ android {
             buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
             
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep']
+            testBuildType "release"
         }
 
         debug {
@@ -277,6 +278,7 @@ android {
             buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/VZF2DYuLYAu4TurFd6usQB2JPts%3D\""
 
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
+            testBuildType "debug"
         }
     }
     // Do not abort build if lint finds errors
