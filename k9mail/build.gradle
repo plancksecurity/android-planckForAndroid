@@ -248,8 +248,6 @@ android {
             buildConfigField "boolean", "IS_DEMO", "false"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
-            versionCode 21
-            applicationIdSuffix ".enterprise.test.juan2"
         }
 
         demoCorp {
@@ -289,7 +287,6 @@ android {
 
     buildTypes {
         release {
-            debuggable true
             if (project.hasProperty("storeFile")) {
                 productFlavors.endUser.signingConfig signingConfigs.endUserRelease
             }
@@ -308,7 +305,6 @@ android {
             buildConfigField "boolean", "DEVELOPER_MODE", "true"
         }
     }
-    //testBuildType "release"
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
@@ -366,7 +362,6 @@ android {
             assets.srcDirs = ['src/androidTest/assets']
         }
     }
-    testBuildType "release"
 
 }
 
