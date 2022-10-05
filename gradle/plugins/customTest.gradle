@@ -41,7 +41,6 @@ class CustomTest extends DefaultTask {
         this.useCucumber = useCucumber
     }
 
-    @Input
     boolean getUseCucumber() {
         return useCucumber
     }
@@ -51,7 +50,6 @@ class CustomTest extends DefaultTask {
         this.device = device
     }
 
-    @Input
     String getDevice() {
         return device
     }
@@ -61,7 +59,6 @@ class CustomTest extends DefaultTask {
         this.verbose = verbose
     }
 
-    @Input
     boolean getVerbose() {
         return verbose
     }
