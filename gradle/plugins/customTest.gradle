@@ -75,23 +75,24 @@ task customTest(type: CustomTest) {
             "Requires for the app to be already installed."
     group = "verification"
 
-    if (verbose) {
-        println("options:" +
-                "\nwork = $work" +
-                "\nflavor = $flavor" +
-                "\nbuild = $buildType" +
-                "\nuseCucumber = $useCucumber" +
-                "\ndevice = $device")
+    // 1. Assemble Android Test if needed (dependency)
+    afterEvaluate {
+        dependsOn(tasks.getByName("assemble${flavor.capitalize()}${buildType.capitalize()}AndroidTest"))
+    }
+
+    doFirst {
+        if (verbose) {
+            println("options:" +
+                    "\nwork = $work" +
+                    "\nflavor = $flavor" +
+                    "\nbuild = $buildType" +
+                    "\nuseCucumber = $useCucumber" +
+                    "\ndevice = $device")
+        }
     }
 
     doLast {
-
         String deviceText = device == null || device == "null" ? "" : " -s $device"
-        // 1. Assemble Android Test if needed (dependency)
-        exec {
-            String command = "../gradlew assemble${flavor.capitalize()}${buildType.capitalize()}AndroidTest"
-            commandLine command.split(' ')
-        }
         // 2. Uninstall previous test app
         try {
             exec {
@@ -140,7 +141,7 @@ task customTest(type: CustomTest) {
             String command = "adb$deviceText shell rm /data/local/tmp/test.apk"
             commandLine command.split(' ')
         }
-        // 6. Run test
+        // 7. Run test
         exec {
             String command = "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
                     "$useCucumber -e package com -e debug false " +
