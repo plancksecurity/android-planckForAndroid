@@ -222,10 +222,12 @@ android {
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
-        buildConfigField "boolean", "USE_CUCUMBER", "${project.property("useCucumber")}"
-        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"
-        buildConfigField "int", "USER", "0"
-        testBuildType project.property("testBuildType")
+        def useCucumber = System.getProperty("useCucumber") ?: "false"
+        buildConfigField "boolean", "USE_CUCUMBER", useCucumber
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "true"
+        if (project.hasProperty("testBuildType")) {
+            testBuildType project.property("testBuildType")
+        }
     }
     flavorDimensions "type", "store"
 
