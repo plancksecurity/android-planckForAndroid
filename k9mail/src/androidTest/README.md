@@ -10,9 +10,20 @@
 * Run "plain" Espresso instrumentation tests : `./gradldew connectedCheck`
 * Run all instrumentation tests (both "plain" Espresso and Cucumber instrumentation tests): `./gradldew connectedCheckAll`
 
+### Running any instrumentation tests from gradle on release build
+* `./gradlew -PtestBuildType="release" <test task>`
+
 ### Running on already installed app
-* Task `customTest`. Example: `./gradlew customTest -PtestBuildType="release" --flavor="enterprisePlayStore" --useCucumber --work --verbose --device="1f77616"`
-* Task info: `./gradlew help --task :k9mail:customTest`
+* Task `customTest`. Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" --useCucumber --verbose`
+* Project properties:
+  * `-PtestBuildType` ("release" or "debug")
+  * `-Pflavor` (build variant or flavor)
+  * `-Pwork` (whether to run tests on work profile, result of `adb devices`)
+  * `-PuseFakeManager` (whether to use FakeRestrictionsManager for the tests)
+  * `-Pdevice` (which device to run tests on, when we have several devices connected)
+* Options:
+  * `--useCucumber` (whether to run Cucumber or "plain Espresso" tests)
+  * `--verbose` (more verbose output)
 
 
 ## generate app screenshots 
