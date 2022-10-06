@@ -212,7 +212,8 @@ android {
 
         def useCucumber = System.getProperty("useCucumber") ?: "false"
         buildConfigField "boolean", "USE_CUCUMBER", useCucumber
-        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "false"
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"
+        buildConfigField "int", "USER", "0"
         if (project.hasProperty("testBuildType")) {
             testBuildType project.property("testBuildType")
         }
@@ -223,7 +224,6 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
-            buildConfigField "int", "USER", "10"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
             versionCode 10
@@ -232,7 +232,6 @@ android {
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
-            buildConfigField "int", "USER", "0"
             versionName "${gitVersionName}"
             dimension "type"
         }

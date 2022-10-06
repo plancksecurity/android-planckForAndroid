@@ -1,29 +1,6 @@
 class CustomTest extends DefaultTask {
-    private boolean work = false
-    private String flavor = "enterprisePlayStore"
     private boolean useCucumber = true
-    private String device = null
     private boolean verbose = false
-
-    @Option(option = "work", description = "Whether to run tests on work profile. Default is false.")
-    void setWork(boolean work) {
-        this.work = work
-    }
-
-    @Input
-    boolean getWork() {
-        return work
-    }
-
-    @Option(option = "flavor", description = "Flavor to run the test on. Default is enterprisePlayStore")
-    void setFlavor(String flavor) {
-        this.flavor = flavor
-    }
-
-    @Input
-    String getFlavor() {
-        return flavor
-    }
 
     @Option(option = "useCucumber", description = "Whether to use cucumber to run the tests. Default is true.")
     void setUseCucumber(boolean useCucumber) {
@@ -32,15 +9,6 @@ class CustomTest extends DefaultTask {
 
     boolean getUseCucumber() {
         return useCucumber
-    }
-
-    @Option(option = "device", description = "Device to run the task on (optional, just needed when several devices connected).")
-    void setDevice(String device) {
-        this.device = device
-    }
-
-    String getDevice() {
-        return device
     }
 
     @Option(option = "verbose", description = "More verbose output")
@@ -61,27 +29,44 @@ task customTest(type: CustomTest) {
             "Requires for the app to be already installed."
     group = "verification"
 
-    // 1. Assemble Android Test if needed (dependency)
+    String device = project.property("device")
+    String flavor = project.property("flavor")
+    boolean work = project.property("work")
+    String useFakeManager = project.property("useFakeManager")
+    String deviceText = device == null || device == "null" ? "" : " -s $device"
+    // 1. Find the user for work profile if needed
+    int user = 0
+    if (work) {
+        user = getCurrentUser(deviceText)
+    }
+
+    // 2. Assemble Android Test (dependency)
     afterEvaluate {
+        println("==MYLOG== USER AFTER EVALUATE IS: $user")
+        android.defaultConfig.buildConfigField "int", "USER", "$user"
         dependsOn(tasks.getByName("assemble${flavor.capitalize()}${android.testBuildType.capitalize()}AndroidTest"))
     }
 
     doFirst {
         if (verbose) {
-            println("customTest options:" +
+            println("==MYLOG== Current configuration:" +
                     "\nwork = $work" +
                     "\nflavor = $flavor" +
                     "\nuseCucumber = $useCucumber" +
-                    "\ndevice = $device")
+                    "\ndevice = $device" +
+                    "\nuseFakeManager = $useFakeManager"
+            )
         }
     }
 
     doLast {
-        String deviceText = device == null || device == "null" ? "" : " -s $device"
-        // 2. Uninstall previous test app
+        // 3. Uninstall previous test app
         try {
             exec {
                 String command = "adb$deviceText uninstall com.fsck.k9.pEp.ui.activities.test"
+                if (verbose) {
+                    println("running command: $command")
+                }
                 commandLine command.split(' ')
             }
         } catch (Throwable ex) {
@@ -89,7 +74,7 @@ task customTest(type: CustomTest) {
                 ex.printStackTrace()
             }
         }
-        // 3. Push test apk to device
+        // 4. Push test apk to device
         String folder = "${project.projectDir}/build/outputs/apk/androidTest/$flavor/${android.testBuildType}"
         String apkToPush = fileTree(folder).matching {
             include "**/*androidTest.apk"
@@ -99,31 +84,25 @@ task customTest(type: CustomTest) {
         }
         exec {
             String command = "adb$deviceText push $apkToPush /data/local/tmp/test.apk"
-            commandLine command.split(' ')
-        }
-        // 4. Find the user for work profile if needed
-        int user = 0
-        if (work) {
-            String command = "adb$deviceText shell pm list users"
-            def stdout = new ByteArrayOutputStream()
-            exec {
-                commandLine command.split(' ')
-                standardOutput = stdout
-            }
-            String line = stdout.toString().readLines().find { it.contains("Work profile:") }
-            user = line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
             if (verbose) {
-                println("user: $user")
+                println("running command: $command")
             }
+            commandLine command.split(' ')
         }
         // 5. Install test apk
         exec {
             String command = "adb$deviceText shell pm install --user $user -t -r /data/local/tmp/test.apk"
+            if (verbose) {
+                println("running command: $command")
+            }
             commandLine command.split(' ')
         }
         // 6. Remove installed test apk
         exec {
             String command = "adb$deviceText shell rm /data/local/tmp/test.apk"
+            if (verbose) {
+                println("running command: $command")
+            }
             commandLine command.split(' ')
         }
         // 7. Run test
@@ -131,7 +110,21 @@ task customTest(type: CustomTest) {
             String command = "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
                     "$useCucumber -e package com -e debug false " +
                     "com.fsck.k9.pEp.ui.activities.test/com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+            if (verbose) {
+                println("running command: $command")
+            }
             commandLine command.split(' ')
         }
     }
+}
+
+private int getCurrentUser(String deviceText) {
+    String command = "adb$deviceText shell pm list users"
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine command.split(' ')
+        standardOutput = stdout
+    }
+    String line = stdout.toString().readLines().find { it.contains("Work profile:") }
+    return line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
 }
