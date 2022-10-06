@@ -3,7 +3,7 @@ build-tools;30.0.3
 cmake;3.10.2.4988404
 extras;android;m2repository
 extras;google;m2repository
-ndk;21.0.6113669
+ndk;25.1.8937393
 platform-tools
 platforms;android-30
 tools
