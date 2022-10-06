@@ -1,7 +1,6 @@
 class CustomTest extends DefaultTask {
     private boolean work = false
     private String flavor = "enterprisePlayStore"
-    private String buildType = "debug"
     private boolean useCucumber = true
     private String device = null
     private boolean verbose = false
@@ -24,16 +23,6 @@ class CustomTest extends DefaultTask {
     @Input
     String getFlavor() {
         return flavor
-    }
-
-    @Option(option = "build", description = "Build to run the test on. Default is debug")
-    void setBuildType(String buildType) {
-        this.buildType = buildType
-    }
-
-    @Input
-    String getBuildType() {
-        return buildType
     }
 
     @Option(option = "useCucumber", description = "Whether to use cucumber to run the tests. Default is true.")
@@ -74,15 +63,14 @@ task customTest(type: CustomTest) {
 
     // 1. Assemble Android Test if needed (dependency)
     afterEvaluate {
-        dependsOn(tasks.getByName("assemble${flavor.capitalize()}${buildType.capitalize()}AndroidTest"))
+        dependsOn(tasks.getByName("assemble${flavor.capitalize()}${android.testBuildType.capitalize()}AndroidTest"))
     }
 
     doFirst {
         if (verbose) {
-            println("options:" +
+            println("customTest options:" +
                     "\nwork = $work" +
                     "\nflavor = $flavor" +
-                    "\nbuild = $buildType" +
                     "\nuseCucumber = $useCucumber" +
                     "\ndevice = $device")
         }
@@ -102,7 +90,7 @@ task customTest(type: CustomTest) {
             }
         }
         // 3. Push test apk to device
-        String folder = "${project.projectDir}/build/outputs/apk/androidTest/$flavor/$buildType"
+        String folder = "${project.projectDir}/build/outputs/apk/androidTest/$flavor/${android.testBuildType}"
         String apkToPush = fileTree(folder).matching {
             include "**/*androidTest.apk"
         }.first()
