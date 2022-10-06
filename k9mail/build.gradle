@@ -213,6 +213,9 @@ android {
         def useCucumber = System.getProperty("useCucumber") ?: "false"
         buildConfigField "boolean", "USE_CUCUMBER", useCucumber
         buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "true"
+        if (project.hasProperty("testBuildType")) {
+            testBuildType project.property("testBuildType")
+        }
     }
     flavorDimensions "type", "store"
 
@@ -267,7 +270,6 @@ android {
             buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/NNpRUrCyM0zbAKQkbt3aKegrREA%3D\""
             
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep']
-            testBuildType "release"
         }
 
         debug {
@@ -281,7 +283,6 @@ android {
             buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp/VZF2DYuLYAu4TurFd6usQB2JPts%3D\""
 
             manifestPlaceholders = ['appAuthRedirectScheme': 'security.pep.debug']
-            testBuildType "debug"
         }
     }
     // Do not abort build if lint finds errors
