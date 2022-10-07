@@ -564,6 +564,10 @@
         <activity android:name="security.pEp.ui.about.LicenseActivity"
             android:label="@string/license"/>
         <activity
+            android:name="security.pEp.ui.mdm.MdmSettingsFeedbackActivity"
+            android:label="@string/mdm_settings_feedback_title"
+            android:exported="false" />
+        <activity
             android:name=".pEp.ui.keys.PepExtraKeys"
             android:label="Extra keys" />
         <activity android:name="security.pEp.ui.permissions.PermissionsActivity" />
