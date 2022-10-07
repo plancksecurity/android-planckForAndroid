@@ -33,6 +33,7 @@ import com.fsck.k9.ui.messageview.MessageViewFragment;
 import dagger.Component;
 import security.pEp.ui.intro.IntroFirstFragment;
 import security.pEp.ui.intro.IntroFourthFragment;
+import security.pEp.ui.mdm.MdmSettingsFeedbackActivity;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.permissions.PermissionsActivity;
 import security.pEp.ui.support.export.ExportpEpSupportDataActivity;
@@ -102,4 +103,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(ExportpEpSupportDataActivity activity);
 
     void inject(CalendarInviteLayout layout);
+
+    void inject(MdmSettingsFeedbackActivity activity);
 }

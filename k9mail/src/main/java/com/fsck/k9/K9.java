@@ -1572,6 +1572,10 @@ public class K9 extends MultiDexApplication {
         K9.allowpEpSyncNewDevices = allowpEpSyncNewDevices;
     }
 
+    public static boolean isAllowpEpSyncNewDevices() {
+        return allowpEpSyncNewDevices;
+    }
+
     public static void setEchoProtocolEnabled(boolean enableEchoProtocol) {
         K9.enableEchoProtocol = enableEchoProtocol;
     }
