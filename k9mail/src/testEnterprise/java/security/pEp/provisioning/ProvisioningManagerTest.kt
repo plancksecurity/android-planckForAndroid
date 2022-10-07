@@ -44,6 +44,7 @@ class ProvisioningManagerTest {
     fun setUp() {
         coEvery { provisioningSettings.provisioningUrl }.returns(TEST_PROVISIONING_URL)
         coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(true)
+        coEvery { provisioningSettings.provisionedMailSettings }.returns(null)
         coEvery { urlChecker.isValidUrl(any()) }.returns(true)
         coEvery { urlChecker.isUrlReachable(any()) }.returns(true)
         coEvery { preferences.accounts }.returns(emptyList())
