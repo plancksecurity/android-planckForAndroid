@@ -225,6 +225,7 @@ android {
             buildConfigField "boolean", "IS_DEMO", "false"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
+            applicationIdSuffix ".enterprise"
         }
 
         demoCorp {
