@@ -90,7 +90,7 @@ task customTest(type: CustomTest) {
     }
 }
 
-private String execCommand(String command, boolean verbose) {
+private void execCommand(String command, boolean verbose) {
     exec {
         if (verbose) {
             println("running command: $command")
@@ -100,21 +100,16 @@ private String execCommand(String command, boolean verbose) {
 }
 
 private int getCurrentUser(String deviceText) {
-    try {
-        String command = "adb$deviceText shell pm list users"
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine command.split(' ')
-            standardOutput = stdout
-        }
-        String line = stdout.toString().readLines().find { it.contains("Work profile:") }
-        if (line == null) {
-            System.err.println("No work profile found in this device!")
-            return 0
-        }
-        return line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
-    } catch(Throwable ex) {
-        System.err.println("getCurrentUser: " + ex.message)
+    String command = "adb$deviceText shell pm list users"
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine command.split(' ')
+        standardOutput = stdout
+    }
+    String line = stdout.toString().readLines().find { it.contains("Work profile:") }
+    if (line == null) {
+        System.err.println("No work profile found in this device!")
         return 0
     }
+    return line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
 }
