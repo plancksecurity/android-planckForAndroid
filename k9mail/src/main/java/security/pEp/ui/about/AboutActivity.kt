@@ -7,13 +7,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.MenuItem
-import androidx.core.content.ContextCompat
+import android.widget.ImageView
 import androidx.core.text.HtmlCompat
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
-import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.pEp.PepActivity
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.activity_about.*
+import security.pEp.ui.mdm.MdmSettingsFeedbackActivity
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import java.util.*
 import javax.inject.Inject
@@ -23,6 +24,7 @@ class AboutActivity : PepActivity() {
 
     @Inject
     lateinit var toolbarCustomizer: ToolBarCustomizer
+    private var iconClickCount = 0
 
     private//Log.e(TAG, "Package name not found", e);
     val versionNumber: String
@@ -41,6 +43,14 @@ class AboutActivity : PepActivity() {
         super.onCreate(savedInstanceState)
         bindViews(R.layout.activity_about)
         setUpToolbar(true)
+        if (BuildConfig.IS_ENTERPRISE) {
+            findViewById<ImageView>(R.id.icon).setOnClickListener {
+                if (++iconClickCount >= UNLOCK_SETTINGS_SCREEN_CLICK_COUNT) {
+                    iconClickCount = 0
+                    MdmSettingsFeedbackActivity.start(this)
+                }
+            }
+        }
 
         toolbarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT))
         val about = getString(R.string.about_action) + " " + getString(R.string.app_name)
@@ -62,6 +72,11 @@ class AboutActivity : PepActivity() {
 
         license_button.setOnClickListener { openLicenseActivity(this) }
         license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+    }
+
+    override fun onResume() {
+        super.onResume()
+        iconClickCount = 0
     }
 
     override fun inject() {
@@ -102,6 +117,8 @@ class AboutActivity : PepActivity() {
     }
 
     companion object {
+
+        private const val UNLOCK_SETTINGS_SCREEN_CLICK_COUNT = 5
 
         fun onAbout(context: Context) {
             context.startActivity(Intent(context, AboutActivity::class.java))

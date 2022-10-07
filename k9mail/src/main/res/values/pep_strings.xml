@@ -356,5 +356,7 @@
     <string name="account_setup_failed_dlg_browser_not_found">p≡p couldn\'t find a browser to use for granting access to your account.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
     <string name="account_setup_oauth_description_retry_login">p≡p could not log in to account %s. Please try login again below.</string>
+    <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>
+    <string name="mdm_settings_feedback_share_action" translatable="false">Share</string>
 
 </resources>
