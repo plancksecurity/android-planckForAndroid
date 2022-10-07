@@ -215,6 +215,22 @@ android {
         buildConfigField "int", "USER", "0"
         testBuildType project.property("testBuildType")
     }
+
+    signingConfigs {
+        endUserRelease {
+            if (project.hasProperty("keyAlias")) { keyAlias = project.keyAlias }
+            if (project.hasProperty("keyPassword")) { keyPassword = project.keyPassword }
+            if (project.hasProperty("storeFile")) { storeFile = file(project.storeFile) }
+            if (project.hasProperty("storePassword")) { storePassword = project.storePassword }
+        }
+        enterpriseRelease {
+            if (project.hasProperty("enterpriseKeyAlias")) { keyAlias = project.enterpriseKeyAlias }
+            if (project.hasProperty("enterpriseKeyPassword")) { keyPassword = project.enterpriseKeyPassword }
+            if (project.hasProperty("enterpriseStoreFile")) { storeFile = file(project.enterpriseStoreFile) }
+            if (project.hasProperty("enterpriseStorePassword")) { storePassword = project.enterpriseStorePassword }
+        }
+    }
+
     flavorDimensions "type", "store"
 
     productFlavors {
@@ -264,14 +280,13 @@ android {
         }
     }
 
-    signingConfigs {
-        release
-    }
     buildTypes {
         release {
             if (project.hasProperty("storeFile")) {
-                signingConfig signingConfigs.release
-
+                productFlavors.endUser.signingConfig signingConfigs.endUserRelease
+            }
+            if (project.hasProperty("enterpriseStoreFile")) {
+                productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
@@ -364,16 +379,3 @@ androidExtensions {
         coroutines "enable"
     }
 }*/
-
-if (project.hasProperty("keyAlias")) {
-    android.signingConfigs.release.keyAlias = keyAlias
-}
-if (project.hasProperty("keyPassword")) {
-    android.signingConfigs.release.keyPassword = keyPassword
-}
-if (project.hasProperty("storeFile")) {
-    android.signingConfigs.release.storeFile = file(storeFile)
-}
-if (project.hasProperty("storePassword")) {
-    android.signingConfigs.release.storePassword = storePassword
-}
