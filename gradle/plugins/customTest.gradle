@@ -1,0 +1,152 @@
+task customTest() {
+    description = "Run all cucumber or non-cucumber tests. " +
+            "Useful when we want to run the tests on already " +
+            "installed apps and/or on work profiles. " +
+            "Requires for the app to be already installed."
+
+    String device = project.property("device")
+    String flavor = project.property("flavor")
+    boolean work = project.property("work").toBoolean()
+    boolean useFakeManager = project.property("useFakeManager").toBoolean()
+    boolean verbose = project.property("verbose").toBoolean()
+    boolean useCucumber = project.property("useCucumber").toBoolean()
+    String deviceText = device == null || device == "null" ? "" : " -s $device"
+
+    if (verbose) {
+        println("customTest current configuration:" +
+                "\nwork = $work" +
+                "\nflavor = $flavor" +
+                "\nbuildType = ${android.testBuildType}" +
+                "\nuseCucumber = $useCucumber" +
+                "\ndevice = $device" +
+                "\nuseFakeManager = $useFakeManager"
+        )
+    }
+
+    List<Throwable> customTestErrors = new ArrayList<>()
+
+    // 1. Find the user for work profile if needed
+    int user = 0
+    if (work) {
+        try {
+            user = getCurrentUser(deviceText, verbose)
+        } catch (Throwable ex) {
+            customTestErrors.add(ex)
+        }
+    }
+
+    // 2. Assemble Android Test (dependency)
+    afterEvaluate {
+        android.defaultConfig.buildConfigField "int", "USER", "$user"
+        String packageName = getPackageName(flavor, android.testBuildType)
+        boolean packageInstalled = false
+        try {
+            packageInstalled = isPackageInstalled(packageName, user, deviceText, verbose)
+        } catch (Throwable ex) {
+            customTestErrors.add(ex)
+        }
+        if (!packageInstalled) {
+            customTestErrors.add(
+                    new IllegalStateException(
+                            "ERROR: Package $packageName is not installed for " +
+                                    "$user on selected device. " +
+                                    "Please install it and run command again."
+                    )
+            )
+        }
+        if (customTestErrors.isEmpty()) {
+            dependsOn(tasks.getByName("assemble${flavor.capitalize()}${android.testBuildType.capitalize()}AndroidTest"))
+        }
+    }
+
+    doFirst {
+        for (Throwable error : customTestErrors) {
+            throw error
+        }
+    }
+
+    doLast {
+        // 3. Uninstall previous test app
+        try {
+            execCommand("adb$deviceText uninstall com.fsck.k9.pEp.ui.activities.test", verbose)
+        } catch (Throwable ex) {
+            if (verbose) {
+                ex.printStackTrace()
+            }
+        }
+        // 4. Push test apk to device
+        String folder = "${project.projectDir}/build/outputs/apk/androidTest/$flavor/${android.testBuildType}"
+        String apkToPush = fileTree(folder).matching {
+            include "**/*androidTest.apk"
+        }.first()
+        if (verbose) {
+            println("apk to push is $apkToPush")
+        }
+        execCommand("adb$deviceText push $apkToPush /data/local/tmp/test.apk", verbose)
+        // 5. Install test apk
+        execCommand("adb$deviceText shell pm install --user $user -t -r /data/local/tmp/test.apk", verbose)
+        // 6. Remove installed test apk
+        execCommand("adb$deviceText shell rm /data/local/tmp/test.apk", verbose)
+        // 7. Run test
+        execCommand(
+                "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
+                        "$useCucumber -e package com -e debug false " +
+                        "com.fsck.k9.pEp.ui.activities.test/com.fsck.k9.pEp.ui.activities.test.CucumberTestCase",
+                verbose
+        )
+    }
+}
+
+private String getPackageName(String flavor, String buildType) {
+    return android.applicationVariants.find {
+        it.name == flavor + buildType.capitalize()
+    }.properties["applicationId"]
+}
+
+private boolean isPackageInstalled(String packageName, int user, String deviceText, boolean verbose) {
+    if (!anyDeviceConnected(verbose)) {
+        throw new IllegalStateException("No devices connected")
+    }
+    def matchingPackages = execCommand(
+            "adb$deviceText shell pm list packages --user $user $packageName",
+            verbose,
+            true
+    ).readLines()
+    return matchingPackages.any { it == "package:" + packageName }
+}
+
+private int getCurrentUser(String deviceText, boolean verbose) {
+    if (!anyDeviceConnected(verbose)) {
+        throw new IllegalStateException("No devices connected")
+    }
+    String result = execCommand("adb$deviceText shell pm list users", verbose, true)
+    String line = result.readLines().find { it.contains("Work profile:") }
+    if (line == null) {
+        System.err.println("No work profile found in this device!")
+        return 0
+    }
+    return line.substring(line.indexOf("{") + 1, line.indexOf(":Work")).toInteger()
+}
+
+private boolean anyDeviceConnected(boolean verbose) {
+    def lines = execCommand("adb devices", verbose, true).readLines()
+    lines.remove(0)
+    return lines.any {
+        println(it)
+        it.endsWith("device")
+    }
+}
+
+private String execCommand(String command, boolean verbose, boolean captureOutput = false) {
+    def stdout = captureOutput ? new ByteArrayOutputStream() : null
+    exec {
+        if (verbose) {
+            println("running command: $command")
+        }
+        commandLine command.split(' ')
+        if (stdout != null) {
+            standardOutput = stdout
+        }
+    }
+    return stdout != null ? stdout.toString() : null
+}

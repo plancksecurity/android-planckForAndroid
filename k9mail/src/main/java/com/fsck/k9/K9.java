@@ -22,18 +22,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.multidex.MultiDexApplication;
+import androidx.work.WorkManager;
 
-import com.evernote.android.job.JobManager;
 import com.fsck.k9.Account.SortType;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.UpgradeDatabases;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.SimpleMessagingListener;
 import com.fsck.k9.helper.AppUpdater;
-import com.fsck.k9.job.K9JobCreator;
 import com.fsck.k9.job.K9JobManager;
-import com.fsck.k9.job.MailSyncJobManager;
-import com.fsck.k9.job.PusherRefreshJobManager;
+import com.fsck.k9.job.MailSyncWorkerManager;
+import com.fsck.k9.job.PusherRefreshWorkerManager;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.K9MailLib;
 import com.fsck.k9.mail.Message;
@@ -820,12 +819,14 @@ public class K9 extends MultiDexApplication {
     }
 
     private void initJobManager(Preferences prefs, MessagingController messagingController) {
-        MailSyncJobManager mailSyncJobManager = new MailSyncJobManager(messagingController, prefs);
-        PusherRefreshJobManager pusherRefreshJobManager = new PusherRefreshJobManager(this, messagingController, prefs);
-        K9JobCreator jobCreator = new K9JobCreator(mailSyncJobManager, pusherRefreshJobManager);
+        WorkManager workManager = WorkManager.getInstance(this);
+        MailSyncWorkerManager mailSyncWorkerManager = new MailSyncWorkerManager(workManager);
+        PusherRefreshWorkerManager pusherRefreshWorkerManager =
+                new PusherRefreshWorkerManager(workManager, this, messagingController);
 
-        jobManager = new K9JobManager(jobCreator, JobManager.create(this), prefs,
-                mailSyncJobManager, pusherRefreshJobManager);
+        jobManager = new K9JobManager(
+                workManager, prefs, mailSyncWorkerManager, pusherRefreshWorkerManager
+        );
     }
 
     public boolean ispEpSyncEnvironmentInitialized() {

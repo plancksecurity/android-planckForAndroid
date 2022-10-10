@@ -1,19 +1,34 @@
 package security.pEp.sync
 
 import android.content.Context
+import android.util.Log
 import androidx.work.*
 import com.fsck.k9.controller.MessagingController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 
 //TODO: Cleanup and take worker infra from k9.
+private const val WAIT_APP_INITIALIZATION_STEP = 100L
+private const val MAX_TRIES_APP_INIT = 50
 
 class CleanWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
 
     override fun doWork(): Result {
+        var messagingController: MessagingController?
+        messagingController = kotlin.runCatching { MessagingController.getInstance() }
+            .getOrNull()
+        var tries = 0
+        while (messagingController == null && tries++ < MAX_TRIES_APP_INIT) {
+            messagingController = kotlin.runCatching { MessagingController.getInstance() }
+                .getOrNull()
+            runBlocking { delay(WAIT_APP_INITIALIZATION_STEP) }
+        }
 
-        MessagingController.getInstance().consumeMessages(applicationContext)
+        messagingController?.consumeMessages(applicationContext)
+            ?: Log.e("CleanWorker", "MessagingController is null, will not do work")
         return Result.success()
     }
 }
