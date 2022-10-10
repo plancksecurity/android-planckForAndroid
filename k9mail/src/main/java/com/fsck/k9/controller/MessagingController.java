@@ -4884,7 +4884,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         void act(Account account, LocalFolder messageFolder, List<LocalMessage> messages);
     }
 
-    public void checkMailBlocking(Account account) {
+    public void performPeriodicMailSync(Account account) {
         final CountDownLatch latch = new CountDownLatch(1);
         checkMail(context, account, true, false, new SimpleMessagingListener() {
             @Override

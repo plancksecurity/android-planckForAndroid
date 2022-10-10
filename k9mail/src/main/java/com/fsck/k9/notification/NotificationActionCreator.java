@@ -1,6 +1,8 @@
 package com.fsck.k9.notification;
 
 
+import static com.fsck.k9.helper.PendingIntentCompat.FLAG_IMMUTABLE;
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -46,12 +48,12 @@ class NotificationActionCreator {
     }
     public PendingIntent createViewMessagePendingIntent(MessageReference messageReference, int notificationId) {
         TaskStackBuilder stack = buildMessageViewBackStack(messageReference);
-        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createViewFolderPendingIntent(Account account, String folderName, int notificationId) {
         TaskStackBuilder stack = buildMessageListBackStack(account, folderName);
-        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createViewMessagesPendingIntent(Account account, List<MessageReference> messageReferences,
@@ -70,7 +72,7 @@ class NotificationActionCreator {
             }
         }
 
-        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        return stack.getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createViewFolderListPendingIntent(Account account, int notificationId) {
@@ -82,7 +84,7 @@ class NotificationActionCreator {
         Intent intent = NotificationActionService.createDismissAllMessagesIntent(context, account);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createDismissMessagePendingIntent(Context context, MessageReference messageReference,
@@ -91,33 +93,33 @@ class NotificationActionCreator {
         Intent intent = NotificationActionService.createDismissMessageIntent(context, messageReference);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createReplyPendingIntent(MessageReference messageReference, int notificationId) {
         Intent intent = MessageActions.getActionReplyIntent(context, messageReference);
 
         return PendingIntent.getActivity(context, notificationId, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createMarkMessageAsReadPendingIntent(MessageReference messageReference, int notificationId) {
         Intent intent = NotificationActionService.createMarkMessageAsReadIntent(context, messageReference);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createMarkAllAsReadPendingIntent(Account account, List<MessageReference> messageReferences,
             int notificationId) {
         return getMarkAsReadPendingIntent(account, messageReferences, notificationId, context,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent getMarkAllAsReadPendingIntent(Account account, List<MessageReference> messageReferences,
             int notificationId) {
         return getMarkAsReadPendingIntent(account, messageReferences, notificationId, context,
-                PendingIntent.FLAG_NO_CREATE);
+                PendingIntent.FLAG_NO_CREATE | FLAG_IMMUTABLE);
     }
 
     private PendingIntent getMarkAsReadPendingIntent(Account account, List<MessageReference> messageReferences,
@@ -140,23 +142,24 @@ class NotificationActionCreator {
         Intent intent = NotificationActionService.createDeleteMessageIntent(context, messageReference);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     private PendingIntent createDeleteConfirmationPendingIntent(MessageReference messageReference, int notificationId) {
         Intent intent = NotificationDeleteConfirmation.getIntent(context, messageReference);
 
-        return PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, notificationId, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createDeleteAllPendingIntent(Account account, List<MessageReference> messageReferences,
             int notificationId) {
         if (K9.confirmDeleteFromNotification()) {
             return getDeleteAllConfirmationPendingIntent(messageReferences, notificationId,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent.FLAG_CANCEL_CURRENT | FLAG_IMMUTABLE);
         } else {
             return getDeleteAllServicePendingIntent(account, messageReferences, notificationId,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                    PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
         }
     }
 
@@ -164,10 +167,10 @@ class NotificationActionCreator {
             int notificationId) {
         if (K9.confirmDeleteFromNotification()) {
             return getDeleteAllConfirmationPendingIntent(messageReferences, notificationId,
-                    PendingIntent.FLAG_NO_CREATE);
+                    PendingIntent.FLAG_NO_CREATE | FLAG_IMMUTABLE);
         } else {
             return getDeleteAllServicePendingIntent(account, messageReferences, notificationId,
-                    PendingIntent.FLAG_NO_CREATE);
+                    PendingIntent.FLAG_NO_CREATE | FLAG_IMMUTABLE);
         }
     }
 
@@ -191,7 +194,7 @@ class NotificationActionCreator {
         Intent intent = NotificationActionService.createArchiveMessageIntent(context, messageReference);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createArchiveAllPendingIntent(Account account, List<MessageReference> messageReferences,
@@ -199,14 +202,14 @@ class NotificationActionCreator {
         Intent intent = NotificationActionService.createArchiveAllIntent(context, account, messageReferences);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     public PendingIntent createMarkMessageAsSpamPendingIntent(MessageReference messageReference, int notificationId) {
         Intent intent = NotificationActionService.createMarkMessageAsSpamIntent(context, messageReference);
 
         return PendingIntent.getService(context, notificationId, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_UPDATE_CURRENT | FLAG_IMMUTABLE);
     }
 
     private TaskStackBuilder buildAccountsBackStack() {

@@ -207,7 +207,7 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.add_account_container)).perform(click())
         TestUtils.waitForIdle()
-        assertTrue(testUtils.currentActivity is AccountSetupBasics)
+        assertTrue(TestUtils.getCurrentActivity() is AccountSetupBasics)
     }
 
     @Test(timeout = TestUtils.TIMEOUT_TEST)
@@ -216,6 +216,6 @@ class DrawerLayoutTest : SetupDevTestAccounts() {
         onView(withId(R.id.navFoldersAccountsButton)).perform(click())
         onView(withId(R.id.configure_account_container)).perform(click())
         TestUtils.waitForIdle()
-        assertTrue(testUtils.currentActivity is SettingsActivity)
+        assertTrue(TestUtils.getCurrentActivity() is SettingsActivity)
     }
 }

@@ -92,6 +92,8 @@ class ProvisioningManager @Inject constructor(
             Result.failure(ProvisioningFailedException("Device is offline"))
         }
         areProvisionedMailSettingsInvalid() -> {
+            Log.e("MDM", "mail settings not valid: " +
+                    "${provisioningSettings.provisionedMailSettings}")
             Result.failure(
                 ProvisioningFailedException(
                     "Provisioned mail settings are not valid"

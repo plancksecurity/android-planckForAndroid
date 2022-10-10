@@ -28,6 +28,7 @@ apply from: '../gradle/plugins/utils/appconfig-test.gradle'
 apply from: '../gradle/plugins/utils/git-version.gradle'
 apply from: '../gradle/plugins/utils/addaccount.gradle'
 apply from: '../gradle/plugins/cucumber.gradle'
+apply from: '../gradle/plugins/customTest.gradle'
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -88,7 +89,6 @@ dependencies {
     implementation "androidx.webkit:webkit:1.4.0"
 
 
-    implementation "com.evernote:android-job:${versions.androidJob}"
     implementation "androidx.work:work-runtime-ktx:${versions.workRuntime}"
     implementation "androidx.security:security-crypto:${versions.crypto}"
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
@@ -101,7 +101,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycleExtensions}"
     implementation "androidx.lifecycle:lifecycle-common:${versions.androidxLifecycle}"
     //implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidxLifecycle}"
     implementation "com.xwray:groupie:${versions.groupie}"
     implementation "com.xwray:groupie-kotlin-android-extensions:${versions.groupie}"
     implementation "org.jetbrains.anko:anko-coroutines:${versions.ankoCoroutines}"
@@ -136,7 +136,10 @@ dependencies {
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
 
     androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:${versions.espresso}"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.espresso}"
+
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:${versions.espresso}") {
+        exclude module: "protobuf-lite"
+    }
     testImplementation "androidx.test:core:${versions.androidXcoreTest}"
     testImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
     androidTestImplementation "androidx.test.ext:junit:${versions.androidXjunit}"
@@ -207,8 +210,10 @@ android {
 
         buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
 
-        def useCucumber = System.getProperty("useCucumber") ?: "false"
-        buildConfigField "boolean", "USE_CUCUMBER", useCucumber
+        buildConfigField "boolean", "USE_CUCUMBER", "${project.property("useCucumber")}"
+        buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"
+        buildConfigField "int", "USER", "0"
+        testBuildType project.property("testBuildType")
     }
     flavorDimensions "type", "store"
 
