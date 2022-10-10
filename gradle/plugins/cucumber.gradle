@@ -3,7 +3,7 @@ task cucumberTest() {
 
     doLast {
         exec {
-            String command = "../gradlew connectedCheck -DuseCucumber=true"
+            String command = "../gradlew connectedCheck -PuseCucumber=true"
             commandLine command.split(' ')
         }
     }
