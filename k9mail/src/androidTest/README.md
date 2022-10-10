@@ -14,16 +14,17 @@
 * `./gradlew -PtestBuildType="release" <test task>`
 
 ### Running on already installed app
-* Task `customTest`. Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" --useCucumber --verbose`
-* Project properties:
+* Command: `./gradlew customTest`. 
+* Applicable project properties:
   * `-PtestBuildType` (build type for tests, "release" or "debug". Default `debug`)
   * `-Pflavor` (build variant or flavor. Default `enterprisePlayStore`)
   * `-Pwork` (whether to run tests on work profile. Default `false`)
   * `-PuseFakeManager` (whether to use FakeRestrictionsManager for the tests. Default `false`)
   * `-Pdevice` (which device to run tests on, when we have several devices connected, result of `adb devices`. Default `null`)
-* Options:
-  * `--useCucumber` (whether to run Cucumber or "plain Espresso" tests. Default `false`)
-  * `--verbose` (more verbose output. Default `false`)
+  * `-PuseCucumber` (whether to run Cucumber or "plain Espresso" tests. Default `false`)
+  * `-Pverbose` (more verbose output. Default `false`)
+
+* Example: `./gradlew customTest -PtestBuildType="release" -Pflavor="enterprisePlayStore" -Pwork=true -PuseFakeManager=false -Pdevice="1f77616" -PuseCucumber=true -Pverbose=true`
 
 
 ## generate app screenshots 
