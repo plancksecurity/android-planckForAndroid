@@ -1013,9 +1013,9 @@ Feature: Test
     And I enter 3 unreliable recipients in the messageTo field
     Then I remove the 3 address clicking X button
     Then I remove the 2 address clicking X button
-    Then I remove the 2 address clicking X button
+    Then I remove the 1 address clicking X button
     Then I check insecurity warnings are not there
-    Then I check if the privacy status is pep_green
+    #Then I check if the privacy status is pep_green
 
     Examples:
       |account|
