@@ -336,7 +336,7 @@ public class CucumberTestSteps {
                 BySelector selector;
                 selector = By.clazz("android.widget.EditText");
                 for (UiObject2 textView : device.findObjects(selector)) {
-                    if (textView.getResourceName().equals("security.pEp.debug:id/subject")) {
+                    if (textView.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/subject")) {
                         textView.click();
                         waitForIdle();
                         textView.setText(" ");
@@ -612,7 +612,7 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.webkit.WebView");
         for (UiObject2 webv : device.findObjects(selector)) {
             if (webv.getParent().getResourceName() != null &&
-                    webv.getParent().getResourceName().equals("security.pEp.debug:id/calendarInviteLayout") &&
+                    webv.getParent().getResourceName().equals(BuildConfig.APPLICATION_ID+":id/calendarInviteLayout") &&
                     !webv.getChildren().get(0).getChildren().get(0).getText().contains(bodyText)) {
                 assertFailWithMessage("Wrong message body");
             }
@@ -1864,7 +1864,7 @@ public class CucumberTestSteps {
         while (!endOfLoop) {
             for (UiObject2 editText : device.findObjects(selector)) {
                 try {
-                    if (editText.getResourceName().equals("security.pEp.debug:id/incoming_server_password")) {
+                    if (editText.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/incoming_server_password")) {
                         editText.setText(testUtils.getAccountPassword());
                         endOfLoop = true;
                         break;
@@ -2852,10 +2852,10 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @And("^I open attached files$")
-    public void I_open_attached_files() {
+    @And("^I open (\\d+) attached files$")
+    public void I_open_attached_files(int attachments) {
         testUtils.emptyFolder("Download");
-        openAttached();
+        openAttached(attachments);
         waitForIdle();
         File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
         File[] files = directory.listFiles();
@@ -2938,33 +2938,47 @@ public class CucumberTestSteps {
         testUtils.emptyFolder("");
     }
 
-    private void openAttached() {
+    private void openAttached(int numberOfAttachments) {
+        int attachments = -1;
         while (true) {
             try {
-                while (!exists(onView(withId(R.id.attachments)))) {
+                if (!exists(onView(withId(R.id.attachments)))) {
                     TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                while (!viewIsDisplayed(R.id.attachments)) {
+                if (!viewIsDisplayed(R.id.attachments)) {
                     TestUtils.swipeUpScreen();
                 }
                 TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
+                if (attachments == 0) {
+                    assertFailWithMessage("There are no attachments");
+                }
+                attachments = 0;
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
                             if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json")) {
+                                attachments ++;
                                 object.getChildren().get(attachment).getChildren().get(0).click();
                             }
                         }
-                        Timber.i("");
+                        if (attachments != numberOfAttachments) {
+                            assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                        }
                         return;
                     }
                 }
             } catch (Exception ex) {
                 Timber.i("Message Error: " + ex.getMessage());
+                if (attachments == 0) {
+                    assertFailWithMessage("There are no attachments");
+                }
+                if (attachments != numberOfAttachments) {
+                    assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                }
             }
         }
     }
@@ -2977,7 +2991,7 @@ public class CucumberTestSteps {
                 TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(2).getText().contains("masterkey")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments") && object.getChildren().get(0).getChildren().get(2).getText().contains("masterkey")) {
                         object.getChildren().get(0).getChildren().get(0).click();
                         return;
                     }
@@ -3058,7 +3072,7 @@ public class CucumberTestSteps {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
         try {
-            file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
+            file = new File("/data/data/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
             testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
         } catch (Throwable e) {
             SetDirectory(file);
