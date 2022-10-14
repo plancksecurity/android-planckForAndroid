@@ -47,7 +47,7 @@ class ConfiguredSettingsUpdater(
                 }
             RESTRICTION_PEP_EXTRA_KEYS ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveExtrasKeys(restrictions, entry)
+                    saveExtraKeys(restrictions, entry)
                 }
             RESTRICTION_PEP_MEDIA_KEYS ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -442,18 +442,61 @@ class ConfiguredSettingsUpdater(
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    private fun saveExtrasKeys(restrictions: Bundle, entry: RestrictionEntry) {
+    private fun saveExtraKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
-            val newExtraKeys = restrictions.getParcelableArray(entry.key)
+            val newMdmExtraKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
-                    (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)?.uppercase()
-                }?.filter { it.isPgpFingerprint() }
-            if (newExtraKeys == null) {
+                    val bundle = it as Bundle
+                    val fingerprint = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
+                    val keyMaterial = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL)
+                    if (fingerprint != null && keyMaterial != null) {
+                        MdmExtraKey(
+                            fingerprint.formatPgpFingerprint(),
+                            keyMaterial
+                        )
+                    } else null
+                }?.filter {
+                    with(it) {
+                        fpr.isPgpFingerprint() && material.isNotBlank()
+                    }
+                }
+            if (newMdmExtraKeys == null) {
                 K9.setMasterKeys(emptySet())
-            } else if (newExtraKeys.isNotEmpty()) {
-                K9.setMasterKeys(newExtraKeys.toSet())
+            } else if (newMdmExtraKeys.isNotEmpty()) {
+                saveFilteredExtraKeys(newMdmExtraKeys)
             }
         }.onFailure { if (K9.isDebug()) Log.e("MDM", "error saving extra keys: ", it) }
+    }
+
+    private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
+        val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
+            kotlin.runCatching {
+                val ids = pEp.importKey(mdmExtraKey.material.toByteArray())
+                val errorMsg = when {
+                    ids == null ->
+                        "Error: got null from extra key import"
+                    ids.isEmpty() ->
+                        "Error: got empty identity vector from extra key import"
+                    ids.size != 1 ->
+                        "Error: got too many or too few identities from extra key import: " +
+                                "${ids.size}, expected: 1"
+                    ids.first().fpr != mdmExtraKey.fpr ->
+                        "Error: got an unexpected fpr from extra key import: " +
+                                "${ids.first().fpr}, expected: ${mdmExtraKey.fpr}"
+                    else -> null
+                }
+                errorMsg?.let { error(it) }
+                mdmExtraKey.fpr
+            }.onFailure {
+                if (K9.isDebug()) {
+                    Log.e("MDM", "error importing extra key:\n$mdmExtraKey", it)
+                }
+            }
+        }
+
+        if (newExtraKeys.isNotEmpty()) {
+            K9.setMasterKeys(newExtraKeys.toSet())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -466,7 +509,11 @@ class ConfiguredSettingsUpdater(
                     val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
                     val keyMaterial = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
-                        MdmMediaKey(addressPattern, fingerprint.uppercase(), keyMaterial)
+                        MdmMediaKey(
+                            addressPattern,
+                            fingerprint.formatPgpFingerprint(),
+                            keyMaterial
+                        )
                     } else null
                 }?.filter {
                     with(it) {
@@ -515,6 +562,10 @@ class ConfiguredSettingsUpdater(
     }
 
     private fun String.isPgpFingerprint(): Boolean = matches("[A-F0-9]{40}".toRegex())
+
+    private fun String.formatPgpFingerprint(): String = this
+        .replace("\\s".toRegex(), "")
+        .uppercase()
 
     private fun savePrivacyProtection(restrictions: Bundle, entry: RestrictionEntry) {
         updateAccountBoolean(
