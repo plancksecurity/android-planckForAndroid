@@ -402,11 +402,13 @@ public class CucumberTestSteps {
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         loopText = "";
-        for (int loop = 1; loop < recipients; loop++) {
+        for (int loop = 1; loop < recipients + 1; loop++) {
             waitForIdle();
             loopText = loopText + loop + "of" + recipients + recipient + "; ";
+            waitForIdle();
         }
         testUtils.typeTextInField("", R.id.to, "to");
+        testUtils.typeTextInField(BuildConfig.APPLICATION_ID, R.id.subject, "subject");
         waitForIdle();
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
