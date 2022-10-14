@@ -25,6 +25,12 @@
                 android:restrictionType="string"
                 android:title="@string/fingerprint_title"/>
 
+            <restriction
+                android:defaultValue=""
+                android:key="extra_key_material"
+                android:restrictionType="string"
+                android:title="@string/extra_key_material_title"/>
+
         </restriction>
     </restriction>
 
