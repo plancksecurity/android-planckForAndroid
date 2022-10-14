@@ -252,13 +252,13 @@ public class TestUtils {
             waitForIdle();
         }
         try {
-            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
+            UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/alertTitle"));
             while (uiObject.getText() != null) {
                 pressBack();
                 waitForIdle();
                 onView(withId(R.id.next)).perform(click());
                 waitForIdle();
-                uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
+                uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/alertTitle"));
             }
         } catch (Exception ex) {
             Timber.i("Doesn't exist popup alert message");
@@ -1034,7 +1034,7 @@ public class TestUtils {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.FrameLayout");
         for (UiObject2 frameLayout : device.findObjects(selector)) {
-            if (frameLayout.getResourceName() != null && frameLayout.getResourceName().equals("security.pEp.debug:id/message_container")) {
+            if (frameLayout.getResourceName() != null && frameLayout.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/message_container")) {
                 message = frameLayout.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(0).getText();
                 message = message.substring(0, message.indexOf("\n"));
                 break;
@@ -1818,7 +1818,7 @@ public class TestUtils {
         StringBuilder text = new StringBuilder();
         File directory = new File(Environment.getExternalStorageDirectory().toString() + folder);
         if (folder.equals("")) {
-            directory = new File("/storage/emulated/0/Android/data/security.pEp.debug/files/");
+            directory = new File("/storage/emulated/" + BuildConfig.USER + "/Android/data/" + BuildConfig.APPLICATION_ID + "/files/");
         }
         File[] files = directory.listFiles();
         for (File fileOpen : files) {
@@ -2115,7 +2115,7 @@ public class TestUtils {
             while (size == 0) {
                 size = device.findObjects(selector).size();
             }
-            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/attachment"));
+            UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/attachment"));
             position = -1;
             for (UiObject2 frameLayout : device.findObjects(selector)) {
                 waitForIdle();
@@ -2555,7 +2555,7 @@ public class TestUtils {
         while (!assertedBadgeColor) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getResourceName().equals("security.pEp.debug:id/privacyBadge")) {
+                    if (object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
                         }
@@ -3302,7 +3302,7 @@ public class TestUtils {
     public void  insertTextNTimes (String messageText, int repetitionsOfTheText) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.EditText");
-        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/message_content"));
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
@@ -3827,7 +3827,7 @@ public class TestUtils {
         swipeUpScreen();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.EditText");
-        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/message_content"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
                 waitForIdle();
@@ -4109,7 +4109,7 @@ public class TestUtils {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
-                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                            || listView.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != boxChecked) {
                             listView.getChildren().get(item).click();
                         } else {
@@ -4142,7 +4142,7 @@ public class TestUtils {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
-                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                            || listView.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != isSelected) {
                             itemSelected = false;
                         } else {
@@ -4164,7 +4164,7 @@ public class TestUtils {
         while (true) {
             for (UiObject2 clock : device.findObjects(selector)) {
                 try {
-                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                    if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         clock.getChildren().get(hour).click();
                         return;
                     }
@@ -4182,7 +4182,7 @@ public class TestUtils {
         while (!timeAssertDone) {
             for (UiObject2 time : device.findObjects(selector)) {
                 try {
-                    if (time.getResourceName().equals("security.pEp.debug:id/time_header")) {
+                    if (time.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/time_header")) {
                         if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
                             assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
                         }
@@ -4199,7 +4199,7 @@ public class TestUtils {
         while (true) {
             for (UiObject2 clock : device.findObjects(selector)) {
                 try {
-                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                    if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         if (!clock.getChildren().get(hour).isSelected()) {
                             assertFailWithMessage("Wrong time selected");
                         }
