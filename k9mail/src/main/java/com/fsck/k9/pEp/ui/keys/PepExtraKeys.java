@@ -27,15 +27,10 @@ import butterknife.ButterKnife;
 
 public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
-    public static final String ACCOUNT_UUID = "accountUuid";
     @Inject
     PepExtraKeysPresenter presenter;
     @Bind(R.id.extra_keys_view)
     RecyclerView keysView;
-    private PEpProvider pEp;
-    private KeyItemAdapter keysAdapter;
-    private LinearLayoutManager keysViewManager;
-    private HashSet<String> keys;
 
     public static void actionStart(Context context) {
         Intent i = new Intent(context, PepExtraKeys.class);
@@ -47,14 +42,11 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pep_extra_keys);
         ButterKnife.bind(PepExtraKeys.this);
-        pEp = ((K9) getApplication()).getpEpProvider();
 
-        keysViewManager = new LinearLayoutManager(this);
+        LinearLayoutManager keysViewManager = new LinearLayoutManager(this);
         keysViewManager.setOrientation(LinearLayoutManager.VERTICAL);
         keysView.setLayoutManager(keysViewManager);
-
-        keys = new HashSet<>(K9.getMasterKeys());
-        presenter.initialize(this, pEp, keys);
+        presenter.initialize(this);
         initializeToolbar(true, R.string.master_key_management);
     }
 
@@ -65,13 +57,11 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
 
     @Override
     public void showKeys(List<KeyListItem> availableKeys) {
-        keysAdapter = new KeyItemAdapter(availableKeys,(item, checked) -> {
+        KeyItemAdapter keysAdapter = new KeyItemAdapter(availableKeys, (item, checked) -> {
             if (checked) {
-                keys.add(item.getFpr());
-                K9.setMasterKeys(keys);
+                presenter.addMasterKey(item.getFpr());
             } else {
-                keys.remove(item.getFpr());
-                K9.setMasterKeys(keys);
+                presenter.removeMasterKey(item.getFpr());
             }
         });
         keysView.setVisibility(View.VISIBLE);
@@ -80,13 +70,17 @@ public class PepExtraKeys extends PepActivity implements PepExtraKeysView {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }
