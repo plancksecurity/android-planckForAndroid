@@ -35,3 +35,8 @@ data class TestMdmMediaKey @JvmOverloads constructor(
     var fpr: String? = null,
     var material: String? = null,
 )
+
+data class TestMdmExtraKey @JvmOverloads constructor(
+    var fpr: String? = null,
+    var material: String? = null,
+)
