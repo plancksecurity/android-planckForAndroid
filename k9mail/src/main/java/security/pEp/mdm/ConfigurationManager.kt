@@ -63,12 +63,12 @@ class ConfigurationManager(
                     }
                     entries = restrictionsManager.manifestRestrictions
                         // ignore media keys from MDM before PEpProvider has been initialized
-                        .filterNot { it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                        .filterNot { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.InitializedEngine -> {
                     settingsUpdater.pEp = k9.component.backgroundpEpProvider()
                     entries = restrictionsManager.manifestRestrictions
-                        .filter{ it.key == RESTRICTION_PEP_MEDIA_KEYS }
+                        .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.ProvisioningDone -> {
                     settingsUpdater.pEp = k9.component.backgroundpEpProvider()

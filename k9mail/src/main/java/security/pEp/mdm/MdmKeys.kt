@@ -5,6 +5,7 @@ const val RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION = "pep_enable_privacy_protec
 const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
 const val RESTRICTION_PEP_EXTRA_KEY = "pep_extra_key"
 const val RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT = "extra_key_fingerprint"
+const val RESTRICTION_PEP_EXTRA_KEY_MATERIAL = "extra_key_material"
 const val RESTRICTION_PEP_MEDIA_KEYS = "pep_media_keys"
 const val RESTRICTION_PEP_MEDIA_KEY = "pep_media_key"
 const val RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN = "media_key_address_pattern"
@@ -56,4 +57,9 @@ const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE =
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT = "outgoing_mail_settings_port"
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME = "outgoing_mail_settings_user_name"
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE = "outgoing_mail_settings_auth_type"
+
+val INITIALIZED_ENGINE_RESTRICTIONS = listOf(
+    RESTRICTION_PEP_EXTRA_KEYS,
+    RESTRICTION_PEP_MEDIA_KEYS
+)
 

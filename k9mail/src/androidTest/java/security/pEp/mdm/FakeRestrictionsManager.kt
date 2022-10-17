@@ -79,10 +79,13 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
             }.toSet()
         } else emptySet()
 
-    fun getExtraKeys(): Set<String?>? = applicationRestrictions.getParcelableArray(
+    fun getExtraKeys(): Set<TestMdmExtraKey>? = applicationRestrictions.getParcelableArray(
         RESTRICTION_PEP_EXTRA_KEYS
     )?.map {
-        (it as Bundle).getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
+        val bundle = it as Bundle
+        val fpr = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
+        val material = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL)
+        TestMdmExtraKey(fpr, material)
     }?.toSet()
 
     fun getMediaKeys(): Set<TestMdmMediaKey>? = applicationRestrictions.getParcelableArray(
@@ -95,13 +98,16 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         TestMdmMediaKey(pattern, fpr, material)
     }?.toSet()
 
-    fun setExtraKeys(keys: Set<String>?) = if (keys == null) {
+    fun setExtraKeys(keys: Set<TestMdmExtraKey>?) = if (keys == null) {
         applicationRestrictions.remove(RESTRICTION_PEP_EXTRA_KEYS)
     } else {
         applicationRestrictions.putParcelableArray(
             RESTRICTION_PEP_EXTRA_KEYS,
             keys.map {
-                Bundle().apply { putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it) }
+                Bundle().apply {
+                    putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it.fpr)
+                    putString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL, it.material)
+                }
             }.toTypedArray()
         )
     }
@@ -395,11 +401,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
     companion object {
         fun getProvisioningRestrictions(): Bundle = Bundle().apply {
-                putBundle(
-                    RESTRICTION_ACCOUNT_MAIL_SETTINGS,
-                    getMailSettingsBundle()
-                )
-            }
+            putBundle(
+                RESTRICTION_ACCOUNT_MAIL_SETTINGS,
+                getMailSettingsBundle()
+            )
+        }
 
         fun getDefaultManifestRestrictions(): List<RestrictionEntry> =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -501,8 +507,17 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 RESTRICTION_PEP_EXTRA_KEYS,
                 arrayOf(
                     RestrictionEntry.createBundleEntry(
-                        RESTRICTION_PEP_EXTRA_KEY,
-                        arrayOf(RestrictionEntry(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, DEFAULT_EXTRA_KEY))
+                        RESTRICTION_PEP_MEDIA_KEY,
+                        arrayOf(
+                            RestrictionEntry(
+                                RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                                DEFAULT_MEDIA_KEY_FPR
+                            ),
+                            RestrictionEntry(
+                                RESTRICTION_PEP_EXTRA_KEY_MATERIAL,
+                                DEFAULT_MEDIA_KEY_MATERIAL
+                            ),
+                        )
                     )
                 )
             )
@@ -515,10 +530,16 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RestrictionEntry.createBundleEntry(
                         RESTRICTION_PEP_MEDIA_KEY,
                         arrayOf(
-                            RestrictionEntry(DEFAULT_MEDIA_KEY_PATTERN, DEFAULT_MEDIA_KEY_PATTERN),
-                            RestrictionEntry(DEFAULT_MEDIA_KEY_FPR, DEFAULT_MEDIA_KEY_FPR),
                             RestrictionEntry(
-                                DEFAULT_MEDIA_KEY_MATERIAL,
+                                RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                                DEFAULT_MEDIA_KEY_PATTERN
+                            ),
+                            RestrictionEntry(
+                                RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                                DEFAULT_MEDIA_KEY_FPR
+                            ),
+                            RestrictionEntry(
+                                RESTRICTION_PEP_MEDIA_KEY_MATERIAL,
                                 DEFAULT_MEDIA_KEY_MATERIAL
                             ),
                         )
