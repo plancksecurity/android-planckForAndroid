@@ -35,7 +35,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green)
-            rating.value == Rating.pEpRatingReliable.value ->
+            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
             else ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
@@ -53,7 +53,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_bordered)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green_bordered)
-            rating.value == Rating.pEpRatingReliable.value ->
+            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_bordered)
             else ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
@@ -71,7 +71,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_white)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green_dark)
-            rating.value == Rating.pEpRatingReliable.value ->
+            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_white)
             else ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
@@ -93,7 +93,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green)
-            rating.value == Rating.pEpRatingReliable.value ->
+            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
             else ->
                 ColorDrawable(Color.TRANSPARENT)
@@ -120,7 +120,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green)
-            rating.value == Rating.pEpRatingReliable.value ->
+            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
             else ->
                 null
@@ -146,7 +146,7 @@ object PEpUIUtils {
                 else View.GONE
             !pEpEnabled ->
                 View.VISIBLE
-            rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingReliable.value ->
+            rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 View.VISIBLE
             else ->
                 View.GONE
@@ -174,7 +174,7 @@ object PEpUIUtils {
                 R.color.compose_unsecure_delivery_warning
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
-            rating.value < Rating.pEpRatingReliable.value ->
+            rating.value < Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 R.color.pep_no_color
             rating.value < Rating.pEpRatingTrusted.value ->
                 R.color.pep_yellow
@@ -193,7 +193,7 @@ object PEpUIUtils {
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.string.pep_rating_none
             BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
-                R.color.pep_no_color
+                R.string.pep_rating_none
             BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
                 R.string.enterprise_unsecure
             rating == Rating.pEpRatingUndefined ->
@@ -202,7 +202,7 @@ object PEpUIUtils {
                 R.string.pep_rating_forced_unencrypt
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.string.pep_rating_mistrusted
-            rating.value < Rating.pEpRatingReliable.value ->
+            rating.value < Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
                 R.string.pep_rating_none
             rating.value < Rating.pEpRatingTrusted.value ->
                 R.string.pep_rating_secure
