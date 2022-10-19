@@ -1,52 +1,92 @@
 package com.fsck.k9.pEp.ui.keys
 
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.nhaarman.mockito_kotlin.any
+import com.fsck.k9.pEp.ui.blacklist.KeyListItem
+import com.fsck.k9.preferences.Storage
+import com.fsck.k9.preferences.StorageEditor
+import io.mockk.*
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 
 @ExperimentalCoroutinesApi
 class PepExtraKeysPresenterTest {
     @get:Rule
     var coroutinesTestRule = CoroutineTestRule()
 
-    private lateinit var presenter: PepExtraKeysPresenter
+    private val view: PepExtraKeysView = mockk(relaxed = true)
+    private val provider: PEpProvider = mockk()
+    private val preferences: Preferences = mockk()
+    private val presenter = PepExtraKeysPresenter(
+        provider,
+        preferences,
+        coroutinesTestRule.testDispatcherProvider
+    )
 
-    @Mock
-    private lateinit var view: PepExtraKeysView
-
-    @Mock
-    private lateinit var provider: PEpProvider
     @Before
-    @Throws(Exception::class)
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
-        presenter = PepExtraKeysPresenter(coroutinesTestRule.testDispatcherProvider)
+        every { provider.masterKeysInfo }.returns(
+            listOf(
+                KeyListItem("fpr1", "guid1"),
+                KeyListItem("fpr2", "guid2")
+            )
+        )
+
+        mockkStatic(K9::class)
+        every { K9.getMasterKeys() }.returns(emptySet())
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(K9::class)
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldGetMasterKeysInfoWhenSetupMasterKeys(): Unit =
-            coroutinesTestRule.testDispatcher.run {
-        presenter.initialize(view, provider, keys())
-        Mockito.verify(provider).masterKeysInfo
+    fun `presenter gets master key info on initialization`() {
+        presenter.initialize(view)
+
+
+        verify { K9.getMasterKeys() }
+        coVerify { provider.masterKeysInfo }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun shouldShowKeysInfoWhenSetupMasterKeys() =
-            coroutinesTestRule.testDispatcher.run {
-        presenter.initialize(view, provider, keys())
-        Mockito.verify(view).showKeys(any())
+    fun `view shows keys on presenter initialization`() {
+        presenter.initialize(view)
+
+
+        val slot = slot<List<KeyListItem>>()
+        verify {
+            view.showKeys(capture(slot))
+        }
+
+        val keys = slot.captured
+        assertEquals(2, keys.size)
+        assertEquals("fpr1", keys.first().fpr)
+        assertEquals("fpr2", keys[1].fpr)
+        assertEquals("guid1", keys.first().gpgUid)
+        assertEquals("guid2", keys[1].gpgUid)
     }
 
-    private fun keys(): Set<String> {
-        return emptySet()
+    @Test
+    fun `onPause saves K9 app settings to disk`() {
+        val storage: Storage = mockk()
+        val storageEditor: StorageEditor = mockk(relaxed = true)
+        coEvery { preferences.storage }.returns(storage)
+        coEvery { storage.edit() }.returns(storageEditor)
+
+
+        presenter.initialize(view)
+        presenter.onPause()
+
+
+        coVerify { K9.save(storageEditor) }
+        coVerify { storageEditor.commit() }
     }
 }

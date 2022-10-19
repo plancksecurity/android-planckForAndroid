@@ -73,6 +73,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -645,6 +646,7 @@ public class K9 extends MultiDexApplication {
         editor.putBoolean("allowpEpSyncNewDevices", allowpEpSyncNewDevices);
         editor.putBoolean("enableEchoProtocol", enableEchoProtocol);
         editor.putString("mediaKeys", serializeMediaKeys());
+        editor.putString("extraKeys", serializeExtraKeys());
 
         fontSizes.save(editor);
     }
@@ -1080,6 +1082,7 @@ public class K9 extends MultiDexApplication {
         allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
         enableEchoProtocol = storage.getBoolean("enableEchoProtocol", true);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
+        pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
     }
 
@@ -1100,6 +1103,15 @@ public class K9 extends MultiDexApplication {
         return set;
     }
 
+    private static Set<String> parseExtraKeys(String extraKeysString) {
+        Set<String> set = Collections.emptySet();
+        if (extraKeysString != null) {
+            String[] array = extraKeysString.split(",");
+            return new HashSet<>(Arrays.asList(array));
+        }
+        return set;
+    }
+
     private static String serializeMediaKeys() {
         if (mediaKeys == null) return null;
         StringBuilder sb = new StringBuilder();
@@ -1112,6 +1124,11 @@ public class K9 extends MultiDexApplication {
         return sb.length() > 0
                 ? sb.substring(0, sb.length() - 1)
                 : null;
+    }
+
+    private static String serializeExtraKeys() {
+        if (pEpExtraKeys == null || pEpExtraKeys.isEmpty()) return null;
+        return String.join(",", pEpExtraKeys);
     }
 
     private static boolean getValuePEpSubjectProtection(Storage storage) {
