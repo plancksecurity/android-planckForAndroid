@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.activities;
 
 import android.app.Activity;
 import android.app.Instrumentation;
+import android.app.UiAutomation;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
@@ -439,11 +440,28 @@ public class TestUtils {
     }
 
     public void moveFile(File file, File dir) throws IOException {
+        //getInstrumentation().getUiAutomation().executeShellCommand("adb ");
+        /*File fileToShare = new File(dir, file.getName());
+
+        Uri contentUriToShare = FileProvider.getUriForFile(getContext(),
+                "androidx.core.content.FileProvider", fileToShare);*/
+        File file2 = null;
+        file2 = new File("/storage/emulated/0/Download/test/cucumber.json");
+        Timber.i("Estoy en pre-provider: " + BuildConfig.APPLICATION_ID);
+        Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", file);
+        Timber.i("Estoy en provider: " + uri);
         if (!dir.exists()) {
+            Timber.i("Estoy mkdir");
             dir.mkdirs();
         }
         File newFile = new File(dir, file.getName());
-        Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
+        Timber.i("Estoy 2:" + newFile.getAbsolutePath());
+        Timber.i("Estoy 2:" + newFile.toPath());
+        Timber.i("Estoy 3:" + file2.toPath());
+
+        //Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
+        Files.move(newFile.toPath(), file2.toPath(), REPLACE_EXISTING);
+        Timber.i("Estoy movido");
     }
 
     public void readConfigFile() {
