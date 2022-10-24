@@ -3071,11 +3071,15 @@ public class CucumberTestSteps {
 
     @Then("^I save test report$")
     public void I_save_report() {
+        Timber.i("Estoy 0");
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
         try {
-            file = new File("/data/data/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
+            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
+            Timber.i("Estoy 1:" + file.getAbsolutePath());
+            Timber.i("Estoy 1.A:" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
             testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            Timber.i("Estoy fin");
         } catch (Throwable e) {
             SetDirectory(file);
         }
