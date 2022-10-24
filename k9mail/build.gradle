@@ -223,7 +223,7 @@ android {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
-            versionCode 10
+            versionCode 18
             applicationIdSuffix ".enterprise.test.juan2"
         }
 
@@ -256,6 +256,7 @@ android {
     }
     buildTypes {
         release {
+            debuggable true
             if (project.hasProperty("storeFile")) {
                 signingConfig signingConfigs.release
 
