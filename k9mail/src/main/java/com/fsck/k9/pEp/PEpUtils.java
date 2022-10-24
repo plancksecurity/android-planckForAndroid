@@ -592,7 +592,7 @@ public class PEpUtils {
     }
 
     public static boolean isRatingUnsecure(Rating rating){
-        return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value;
+        return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingUnreliable.value; // TODO: change this to the media key rating when implemented on engine side.
     }
 
     public static void updateSyncAccountsConfig(Context context) {
