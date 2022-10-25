@@ -475,14 +475,14 @@ class ConfiguredSettingsUpdater(
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from extra key import"
-                    ids.isEmpty() ->
-                        "Error: got empty identity vector from extra key import"
-                    ids.size != 1 ->
-                        "Error: got too many or too few identities from extra key import: " +
-                                "${ids.size}, expected: 1"
-                    ids.first().fpr != mdmExtraKey.fpr ->
-                        "Error: got an unexpected fpr from extra key import: " +
-                                "${ids.first().fpr}, expected: ${mdmExtraKey.fpr}"
+                    //ids.isEmpty() -> todo if possible call import_key_with_fpr_return, it needs to be implemented in the pEpJNIAdapter.
+                    //    "Error: got empty identity vector from extra key import"
+                    //ids.size != 1 ->
+                    //    "Error: got too many or too few identities from extra key import: " +
+                    //            "${ids.size}, expected: 1"
+                    //ids.first().fpr != mdmExtraKey.fpr ->
+                    //    "Error: got an unexpected fpr from extra key import: " +
+                    //            "${ids.first().fpr}, expected: ${mdmExtraKey.fpr}"
                     else -> null
                 }
                 errorMsg?.let { error(it) }
