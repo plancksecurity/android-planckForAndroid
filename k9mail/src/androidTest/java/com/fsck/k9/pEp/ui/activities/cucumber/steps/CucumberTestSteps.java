@@ -11,9 +11,12 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
@@ -38,6 +41,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.activities.jiraConnector;
 import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
@@ -52,6 +56,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Timer;
@@ -64,6 +69,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import retrofit2.http.Headers;
 import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
@@ -3071,17 +3079,53 @@ public class CucumberTestSteps {
 
     @Then("^I save test report$")
     public void I_save_report() {
-        Timber.i("Estoy 0");
+        //Timber.i("Estoy 0 " + UserManager.supportsMultipleUsers());
+        //UserManager.supportsMultipleUsers();
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
+        String username = "username";
+        String password = "password";
+        String auth = TestUtils.getBasicAuthenticationHeader(username, password);
+        jiraConnector jc = new jiraConnector() {
+            @Nullable
+            @Override
+            public Object rawJSON(@NonNull String url, @NonNull String jsonObjectString, @NonNull String auth, @NonNull Continuation<? super Unit> $completion) {
+                return jiraConnector.super.rawJSON(jsonObjectString, auth, $completion);
+            }
+
+            @NonNull
+            @Override
+            public Headers getHeaders() {
+                return null;
+            }
+        };
         try {
             file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
-            Timber.i("Estoy 1:" + file.getAbsolutePath());
-            Timber.i("Estoy 1.A:" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
             testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
-            Timber.i("Estoy fin");
+            String fileText = testUtils.readFile(file.getAbsolutePath(), file.getName());
+            jc.rawJSON(fileText, auth);
         } catch (Throwable e) {
             SetDirectory(file);
+        }
+    }
+
+    @Then("^I save test report2$")
+    public void I_save_report2() {
+        Log.e("TEST","Estoy en save report");
+        try  {
+
+
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://www.google.com").openConnection();
+            connection.setRequestMethod("HEAD");
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                // Not OK.
+            }
+            Log.e("TEST","Estoy en hecho en "+responseCode);
+            return;
+        } catch (Exception exception) {
+            Log.e("TEST","Estoy en NO hecho: " + exception);
+            return;
         }
     }
 
