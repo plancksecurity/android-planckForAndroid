@@ -87,6 +87,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -440,28 +441,14 @@ public class TestUtils {
     }
 
     public void moveFile(File file, File dir) throws IOException {
-        //getInstrumentation().getUiAutomation().executeShellCommand("adb ");
-        /*File fileToShare = new File(dir, file.getName());
-
-        Uri contentUriToShare = FileProvider.getUriForFile(getContext(),
-                "androidx.core.content.FileProvider", fileToShare);*/
         File file2 = null;
         file2 = new File("/storage/emulated/0/Download/test/cucumber.json");
-        Timber.i("Estoy en pre-provider: " + BuildConfig.APPLICATION_ID);
         Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", file);
-        Timber.i("Estoy en provider: " + uri);
         if (!dir.exists()) {
-            Timber.i("Estoy mkdir");
             dir.mkdirs();
         }
         File newFile = new File(dir, file.getName());
-        Timber.i("Estoy 2:" + newFile.getAbsolutePath());
-        Timber.i("Estoy 2:" + newFile.toPath());
-        Timber.i("Estoy 3:" + file2.toPath());
-
-        //Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
         Files.move(newFile.toPath(), file2.toPath(), REPLACE_EXISTING);
-        Timber.i("Estoy movido");
     }
 
     public void readConfigFile() {
@@ -1860,6 +1847,11 @@ public class TestUtils {
             }
         }
         return text.toString();
+    }
+
+    public static final String getBasicAuthenticationHeader(String username, String password) {
+        String valueToEncode = username + ":" + password;
+        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
     private Intent insertFileIntoIntentAsData(int id) {

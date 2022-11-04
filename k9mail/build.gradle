@@ -174,7 +174,19 @@ dependencies {
         //exclude group: 'org.jetbrains.kotlin' // Only if you already use Kotlin in your project
     }
     kaptAndroidTest "com.google.dagger:dagger-compiler:${versions.dagger}"
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    //implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    //implementation' org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
 }
+
+// Okhttp3 for the POST requests
+    //implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+
+// Gson (To convert raw JSON to pretty JSON)
+    //implementation 'com.google.code.gson:gson:2.8.9'
 
 android {
     compileSdkVersion buildConfig.compileSdk
@@ -236,7 +248,7 @@ android {
             buildConfigField "boolean", "IS_DEMO", "false"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
-            versionCode 18
+            versionCode 21
             applicationIdSuffix ".enterprise.test.juan2"
         }
 
