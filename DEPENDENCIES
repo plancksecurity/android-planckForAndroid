@@ -1,5 +1,5 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpJNIAdapter=Release_2.1.47
+pEpJNIAdapter=dc841f9453917820e3033f2eb05b691a2ae7736a
 foldableFolderList=v0.2.2
