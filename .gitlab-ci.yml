@@ -15,13 +15,13 @@ workflow:
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
-  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter/raw/tag/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O - https://gitea.pep.foundation/TSaschabc/raw/tag/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpEngine Version = ${pEpEngine}"
   - echo "libpEpAdapter Version = ${libpEpAdapter}"
-  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpEngine/raw/tag/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O - https://gitea.pep.foundation/TSaschabc/raw/tag/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
