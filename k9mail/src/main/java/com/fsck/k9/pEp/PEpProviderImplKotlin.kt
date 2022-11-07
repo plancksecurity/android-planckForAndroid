@@ -1117,7 +1117,7 @@ class PEpProviderImplKotlin @Inject constructor(
             val identities: MutableList<KeyListItem> = ArrayList()
             val keys = engine.OpenPGP_list_keyinfo("")
             keys?.forEach { key ->
-                identities.add(KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)))
+      //          identities.add(KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)))
             }
             return identities
         } catch (e: pEpException) {
@@ -1128,12 +1128,12 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun addToBlacklist(fpr: String) {
-        engine.blacklist_add(fpr)
+      //  engine.blacklist_add(fpr)
     }
 
     @WorkerThread
     override fun deleteFromBlacklist(fpr: String) {
-        engine.blacklist_delete(fpr)
+    //    engine.blacklist_delete(fpr)
     }
 
     @WorkerThread
