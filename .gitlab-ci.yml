@@ -103,7 +103,7 @@ build:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
@@ -127,7 +127,7 @@ test:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
