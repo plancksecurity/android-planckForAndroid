@@ -1821,30 +1821,20 @@ public class TestUtils {
 
     public String readFile (String folder, String fileName) {
         StringBuilder text = new StringBuilder();
-        File directory = new File(Environment.getExternalStorageDirectory().toString() + folder);
-        if (folder.equals("")) {
-            directory = new File("/storage/emulated/" + BuildConfig.USER + "/Android/data/" + BuildConfig.APPLICATION_ID + "/files/");
-        }
-        File[] files = directory.listFiles();
-        for (File fileOpen : files) {
-            if (fileOpen.getName().equals(fileName)) {
-                File file = new File(Environment.getExternalStorageDirectory().toString() + folder + fileOpen.getName());
-                waitForIdle();
-                try {
-                    FileInputStream fin = new FileInputStream(fileOpen);
-                    InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    String receiveString;
-                    while ((receiveString = bufferedReader.readLine()) != null) {
-                        text.append(receiveString);
-                    }
-                    fin.close();
-                } catch (Exception e) {
-                    Timber.i("Error reading " + fileName + ", trying again");
-                } finally {
-                    file.delete();
-                }
+        File file = new File(folder);
+        try {
+            FileInputStream fin = new FileInputStream(file + "/" + fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                text.append(receiveString);
             }
+            fin.close();
+        } catch (Exception e) {
+            Timber.e("Error reading " + fileName + ", trying again");
+        } finally {
+            file.delete();
         }
         return text.toString();
     }
