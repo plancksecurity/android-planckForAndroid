@@ -26,10 +26,10 @@ ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch pEp for Android First-Party Dependencies
 RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
-RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git -b master $HOME/code/libpEpTransport
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter.git ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git ${LIBPEPTRANSPORT_VERSION} $HOME/code/libpEpTransport
 RUN git clone --depth=1 http://pep-security.lu/gitlab/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
 
 COPY . /root/code/pEp
