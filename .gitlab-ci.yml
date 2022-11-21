@@ -22,7 +22,7 @@ workflow:
   - echo "pEpEngine Version = ${pEpEngine}"
   - echo "libpEpAdapter Version = ${libpEpAdapter}"
   - echo "libpEpCxx11 Version = ${libpEpCxx11}"
-  - wget -q -O - https://gitea.pep.foundation/TSaschabc/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
