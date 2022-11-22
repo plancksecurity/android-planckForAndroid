@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.ui.activities
 
 import android.util.Log
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import retrofit2.Call;
 import retrofit2.Callback
@@ -9,6 +10,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 import retrofit2.http.*;
+import java.util.concurrent.CompletableFuture
+import java.util.function.BiConsumer
 
 
 interface jiraConnector {
@@ -27,7 +30,7 @@ interface jiraConnector {
                     call: Call<ResponseClass>,
                     response: Response<ResponseClass>
                 ) {
-                    Log.d("Pretty Printed JSON :", "prettyJson")
+                    Log.d("Pretty Printed JSON :", jsonObjectString)
                 }
                 override fun onFailure(call: Call<ResponseClass>, t: Throwable) {
                     Log.e("RETROFIT_ERROR", "Message")
@@ -35,6 +38,18 @@ interface jiraConnector {
             }
         )
     }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun rawJSONsync(jsonObjectString: String, auth: String) {
+        GlobalScope.launch (Dispatchers.Main) {
+            withContext(Dispatchers.IO)  {rawJSON(jsonObjectString,auth) }  }
+    }
+
+}
+
+open class connector() : jiraConnector {
+    override val headers: Headers
+        get() = TODO("Not yet implemented")
 }
 
 interface APIInterface {
@@ -46,7 +61,7 @@ interface APIInterface {
     //@Headers(value = ["Accept: application/json",
     //    "Content-type:application/json"])
 
-    @POST("api/v1/create") //201 when created
+    @POST("/api/v1/import/execution/cucumber/") //201 when created
     suspend fun requestLogin(@Body requestModel: RequestModel) : Call<ResponseClass>
 }
 
@@ -54,7 +69,7 @@ object ServiceBuilder {
     private val client = OkHttpClient.Builder().build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://pep.foundation/jira/") //
+        .baseUrl("https://xray.cloud.getxray.app/") //
         .addConverterFactory(GsonConverterFactory.create())
         .client(client)
         .build()

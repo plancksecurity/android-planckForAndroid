@@ -41,6 +41,7 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.activities.connector;
 import com.fsck.k9.pEp.ui.activities.jiraConnector;
 import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
@@ -137,16 +138,7 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        scenario = ActivityScenario.launch(SplashActivity.class);
-        while (TestUtils.getCurrentActivity() == null) {
-            waitForIdle();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Intents.init();
+        Log.e("TEST","Estoy en Before");
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -159,10 +151,26 @@ public class CucumberTestSteps {
             //startTimer(2000);
             //testUtils.testReset = true;
         }
+        Intents.init();
+        try {
+            scenario = ActivityScenario.launch(SplashActivity.class);
+            while (TestUtils.getCurrentActivity() == null) {
+                try {
+                    waitForIdle();
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("TEST","Estoy en BeforeCatch: " + e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     @After
     public void tearDown() {
+        Log.e("TEST","Estoy en After");
         try {
             IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         } catch (Exception ex) {
@@ -2934,13 +2942,13 @@ public class CucumberTestSteps {
             openAttachedMasterKey();
             waitForIdle();
             try {
-                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc");
+                masterKeyText = testUtils.readFile(Environment.getExternalStorageDirectory().toString() + "/Download/", "masterkey.asc");
             } catch (Exception e) {
                 Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
             }
         }
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
-        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc");
+        masterKeyText2 = testUtils.readFile(Environment.getExternalStorageDirectory().toString(), "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
             TestUtils.assertFailWithMessage("Wrong Master key file");
         }
@@ -3077,39 +3085,29 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @Then("^I save test report$")
+    @Then("^I save test report2$")
     public void I_save_report() {
-        //Timber.i("Estoy 0 " + UserManager.supportsMultipleUsers());
-        //UserManager.supportsMultipleUsers();
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
-        String username = "username";
-        String password = "password";
+        String username = "a-automation@pep.security";
+        String password = "DfPz5GKY%bPbqT&x";
         String auth = TestUtils.getBasicAuthenticationHeader(username, password);
-        jiraConnector jc = new jiraConnector() {
-            @Nullable
-            @Override
-            public Object rawJSON(@NonNull String url, @NonNull String jsonObjectString, @NonNull String auth, @NonNull Continuation<? super Unit> $completion) {
-                return jiraConnector.super.rawJSON(jsonObjectString, auth, $completion);
-            }
-
-            @NonNull
-            @Override
-            public Headers getHeaders() {
-                return null;
-            }
-        };
+        connector jc = new connector() {};
         try {
-            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
-            testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
-            String fileText = testUtils.readFile(file.getAbsolutePath(), file.getName());
-            jc.rawJSON(fileText, auth);
+            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
+            //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            String fileText = testUtils.readFile("storage/emulated/" + BuildConfig.USER + "/Download/test/", "cucumber3.json");
+            Log.e("TEST","Estoy en 3");
+            jc.rawJSONsync(fileText, auth);
+            Log.e("TEST","Estoy en 4");
         } catch (Throwable e) {
+            Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
+            e.printStackTrace();
             SetDirectory(file);
         }
     }
 
-    @Then("^I save test report2$")
+    @Then("^I save test report$")
     public void I_save_report2() {
         Log.e("TEST","Estoy en save report");
         try  {

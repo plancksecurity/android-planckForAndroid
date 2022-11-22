@@ -27,13 +27,15 @@ class SyncScreenshotTest : BaseScreenshotTest() {
         acceptSync()
         waitSyncFinish()
     }
-
     private fun waitSyncDialog() {
+
+    }
+    /*private fun waitSyncDialog() {
         while (getCurrentActivity()?.localClassName?.contains("ImportWizardFrompEp") == false) {
             sleep(2000)
         }
         getScreenShotCurrentActivity("first screen")
-    }
+    }*/
 
     private fun acceptSync() {
         click(R.id.afirmativeActionButton)
