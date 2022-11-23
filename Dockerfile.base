@@ -25,13 +25,13 @@ ARG LIBPEPTRANSPORT_VERSION
 ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch pEp for Android First-Party Dependencies
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git $HOME/code/pEpEngine && $HOME/code/pEpEngine git checkout ${ENGINE_VERSION}
-RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git $HOME/code/pEpJNIAdapter && pushd $HOME/code/pEpJNIAdapter && git checkout ${JNI_ADAPTER_VERSION} && popd
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git $HOME/code/libpEpAdapter && pushd $HOME/code/libpEpAdapter && git checkout ${LIBPEPADAPTER_VERSION} && popd
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git $HOME/code/libpEpCxx11 && pushd $HOME/code/libpEpCxx11 && git checkout ${LIBPEPCXX_VERSION} && popd
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git $HOME/code/libpEpTransport && pushd $HOME/code/libpEpTransport && git checkout ${LIBPEPTRANSPORT_VERSION} && popd
-RUN git clone --depth=1 https://pep-security.lu/gitlab/android/foldable-folder $HOME/code/foldable-folder-list && pushd $HOME/code/foldable-folder-list && git checkout ${FOLDABLE_FOLDER_VERSION} && popd
-
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git $HOME/code/pEpEngine && cd $HOME/code/pEpEngine && git checkout ${ENGINE_VERSION}
+RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git $HOME/code/pEpJNIAdapter && cd $HOME/code/pEpJNIAdapter && git checkout ${JNI_ADAPTER_VERSION}
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git $HOME/code/libpEpAdapter && cd $HOME/code/libpEpAdapter && git checkout ${LIBPEPADAPTER_VERSION}
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git $HOME/code/libpEpCxx11 && cd $HOME/code/libpEpCxx11 && git checkout ${LIBPEPCXX_VERSION}
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git $HOME/code/libpEpTransport && cd $HOME/code/libpEpTransport && git checkout ${LIBPEPTRANSPORT_VERSION}
+RUN git clone --depth=1 https://pep-security.lu/gitlab/android/foldable-folder $HOME/code/foldable-folder-list && cd $HOME/code/foldable-folder-list && git checkout ${FOLDABLE_FOLDER_VERSION}
+RUN cd $HOME
 COPY . /root/code/pEp
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
