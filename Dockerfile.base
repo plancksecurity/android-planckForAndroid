@@ -25,12 +25,12 @@ ARG LIBPEPTRANSPORT_VERSION
 ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch pEp for Android First-Party Dependencies
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git ${ENGINE_VERSION} $HOME/code/pEpEngine
-RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
-RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git ${LIBPEPTRANSPORT_VERSION} $HOME/code/libpEpTransport
-RUN git clone --depth=1 http://pep-security.lu/gitlab/android/foldable-folder-list.git ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git $HOME/code/pEpEngine && pushd $HOME/code/pEpEngine && git checkout ${ENGINE_VERSION} && popd
+RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git $HOME/code/pEpJNIAdapter && pushd $HOME/code/pEpJNIAdapter && git checkout ${JNI_ADAPTER_VERSION} && popd
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git $HOME/code/libpEpAdapter && pushd $HOME/code/libpEpAdapter && git checkout ${LIBPEPADAPTER_VERSION} && popd
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git $HOME/code/libpEpCxx11 && pushd $HOME/code/libpEpCxx11 && git checkout ${LIBPEPCXX_VERSION} && popd
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git $HOME/code/libpEpTransport && pushd $HOME/code/libpEpTransport && git checkout ${LIBPEPTRANSPORT_VERSION} && popd
+RUN git clone --depth=1 https://pep-security.lu/gitlab/android/foldable-folder $HOME/code/foldable-folder-list && pushd $HOME/code/foldable-folder-list && git checkout ${FOLDABLE_FOLDER_VERSION} && popd
 
 COPY . /root/code/pEp
 
