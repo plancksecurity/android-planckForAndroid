@@ -109,7 +109,7 @@ public class CucumberTestSteps {
     private boolean syncThirdDevice = false;
 
     private String[] bot;
-    private int accounts = 3;
+    private final int accounts = 3;
     private int accountSelected = 0;
     public String b = "";
 
@@ -383,7 +383,7 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to_label)).perform(click());
             waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient));
+            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + recipient));
             waitForIdle();
         }
     }
@@ -422,7 +422,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(1);
         String recipient = "filling@email.pep";
         for (int loop = 0; loop < recipients; loop++) {
-            I_enter_text_in_field(String.valueOf(recipients) + recipient, field);
+            I_enter_text_in_field(recipients + recipient, field);
         }
     }
 
@@ -656,10 +656,7 @@ public class CucumberTestSteps {
     public void I_set_string_setting(String setting, String value) {
         waitForIdle();
         if (value.equals("true") || value.equals("false")) {
-            boolean valueB = false;
-            if (value.equals("true")) {
-                valueB = true;
-            }
+            boolean valueB = value.equals("true");
             RestrictionsManager.setBooleanRestrictions(setting, valueB);
         } else {
             RestrictionsManager.setStringRestrictions(setting, value);
@@ -836,7 +833,7 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
+        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
@@ -1293,10 +1290,10 @@ public class CucumberTestSteps {
         }
         testUtils.getMessageListSize();
         if (!ignoreThisTest && totalMessages >= getTotalMessagesSize()) {
-            testUtils.assertFailWithMessage("There are more sync messages before sync than after sync");
+            assertFailWithMessage("There are more sync messages before sync than after sync");
         }
         if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
-            testUtils.assertFailWithMessage("Sync messages went to wrong folder");
+            assertFailWithMessage("Sync messages went to wrong folder");
         }
         testUtils.getMessageListSize();
     }
@@ -2284,7 +2281,7 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.getMessageListSize();
         if (testUtils.getListSize() <= 101) {
-            testUtils.assertFailWithMessage("Is not loading more messages");
+            assertFailWithMessage("Is not loading more messages");
         }
         waitForIdle();
     }
@@ -2325,7 +2322,7 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
         //I_click_reply_message();
         waitForIdle();
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         onView(withId(R.id.message_content)).perform(click());
         int[] firstLetterCentralThickness = new int[2];
         int[] firstLetterTopThickness = new int[2];
@@ -2348,21 +2345,21 @@ public class CucumberTestSteps {
                 switch (viewView.getText()) {
                     case "Testing Header":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top <= textBoxHeight + 2) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not Header");
+                            assertFailWithMessage(viewView.getText() + " is not Header");
                         }
                         break;
                     case "Testing Blue":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not BLUE");
+                            assertFailWithMessage(viewView.getText() + " is not BLUE");
                         }
                         break;
                     case "Testing Red":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not RED");
+                            assertFailWithMessage(viewView.getText() + " is not RED");
                         }
                         break;
                     case "Testing Italic\n":
@@ -2370,41 +2367,41 @@ public class CucumberTestSteps {
                         int italicCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(italicCentralXStart, viewView.getVisibleBounds().centerY());
                         if ((firstLetterCentralThickness[1] - firstLetterCentralThickness[0] + 1 < italicCentralXEnd - italicCentralXStart)
                                 || (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] - 1 > italicCentralXEnd - italicCentralXStart)) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
                         firstLetterTopYPixel = testUtils.getNextVerticalColoredYPixelToTheBottom(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().top + 1);
                         int italicTopStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         int italicTopEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         if (firstLetterTopThickness[0] == italicTopStart || firstLetterTopThickness[1] == italicTopEnd) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
                         if ((firstLetterTopThickness[1] - firstLetterTopThickness[0] - 2 > italicTopEnd - italicTopStart) || (firstLetterTopThickness[1] - firstLetterTopThickness[0] + 2 < italicTopEnd - italicTopStart)) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
+                            assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
                         break;
                     case "Testing Bold\n":
                         int boldCentralXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int boldCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(boldCentralXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] >= boldCentralXEnd - boldCentralXStart) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not BOLD");
+                            assertFailWithMessage(viewView.getText() + " is not BOLD");
                         }
                         break;
                     case "Testing Underline":
                         int underlineFirstLetterXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int underlineFirstLetterXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(underlineFirstLetterXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] != underlineFirstLetterXEnd || firstLetterCentralThickness[0] != underlineFirstLetterXStart) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
+                            assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
                         int bottomUnderline = testUtils.getNextVerticalColoredYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().bottom) - 1;
                         int underlineYStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         int underlineYEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         if (underlineYEnd - underlineYStart < 30) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not Underlined");
+                            assertFailWithMessage(viewView.getText() + " is not Underlined");
                         }
                         break;
                     case "Testing No Format":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top >= textBoxHeight - 2) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " has format");
+                            assertFailWithMessage(viewView.getText() + " has format");
                         }
                         break;
                 }
@@ -2422,7 +2419,7 @@ public class CucumberTestSteps {
         testUtils.goBackToMessageList();
         testUtils.clickLastMessage();
         waitForIdle();
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         waitForIdle();
         images = device.findObjects(By.clazz("android.widget.Image"));
         int newPic0 = testUtils.getPixelColor(images.get(0).getVisibleBounds().centerX(),
@@ -2432,7 +2429,7 @@ public class CucumberTestSteps {
         int newPic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
                 images.get(2).getVisibleBounds().centerY());
         if (pic0 == newPic0 || pic1 == newPic1 || pic2 == newPic2) {
-            testUtils.assertFailWithMessage("Cannot show images or were shown before");
+            assertFailWithMessage("Cannot show images or were shown before");
         }
         testUtils.pressBack();
         switch (testUtils.test_number()) {
@@ -2621,7 +2618,7 @@ public class CucumberTestSteps {
     public void I_send_and_remove_N_messages(int totalMessages, String botName, String subject, String body) {
         for (int i = 0; i < totalMessages; i++) {
             testUtils.getMessageListSize();
-            I_send_message_to_address(1, botName, subject, body + ". Message to remove " + Integer.toString(i + 1) + " of " + Integer.toString(totalMessages));
+            I_send_message_to_address(1, botName, subject, body + ". Message to remove " + (i + 1) + " of " + totalMessages);
             testUtils.clickLastMessage();
             testUtils.clickView(R.id.delete);
             testUtils.goBackToMessageList();
@@ -2666,7 +2663,7 @@ public class CucumberTestSteps {
         for (int i = 0; i < 500; i++) {
             I_select_account(account);
             I_wait_seconds(5);
-            I_send_and_remove_N_messages(3, "bot1", "stability", "TestingStability of message " + String.valueOf(i));
+            I_send_and_remove_N_messages(3, "bot1", "stability", "TestingStability of message " + i);
             I_go_back_to_the_Inbox();
             testUtils.getMessageListSize();
             I_wait_seconds(5);
