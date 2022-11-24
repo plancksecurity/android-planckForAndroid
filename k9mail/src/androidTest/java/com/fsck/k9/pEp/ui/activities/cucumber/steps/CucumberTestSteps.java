@@ -2121,8 +2121,40 @@ public class CucumberTestSteps {
         testUtils.rotateDevice();
     }
 
-    @When("^I select (\\S+) folder of account (\\S+)$")
-    public void I_select_folder_account(String folder, String account) {
+
+    @When("^I select (\\S+) folder from hamburger menu$")
+    public void I_select_folder_from_hamburger_menu(String folder) {
+        int folderID = 0;
+        testUtils.openHamburgerMenu();
+        switch (folder){
+            case "Inbox":
+                folderID = R.string.special_mailbox_name_inbox;
+                break;
+            case "Outbox":
+                folderID = R.string.special_mailbox_name_outbox;
+                break;
+            case "Drafts":
+                folderID = R.string.special_mailbox_name_drafts;
+                break;
+            case "Trash":
+                folderID = R.string.special_mailbox_name_trash;
+                break;
+            case "Sent":
+                folderID = R.string.special_mailbox_name_sent;
+                break;
+            case "Archive":
+                folderID = R.string.special_mailbox_name_archive;
+                break;
+            case "Spam":
+                folderID = R.string.special_mailbox_name_spam;
+                break;
+            default:
+                assertFailWithMessage("Folder " + folder + " doesn't exist");
+        }
+        testUtils.selectFromScreen(folderID);
+    }
+        @When("^I select (\\S+) folder of account (\\S+)$")
+        public void I_select_folder_account(String folder, String account) {
         accountSelected = Integer.parseInt(account);
         while (testUtils.getTotalAccounts() == -1) {
             testUtils.readConfigFile();
