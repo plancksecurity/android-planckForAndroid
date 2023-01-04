@@ -348,7 +348,6 @@ android {
             assets.srcDirs = ['src/androidTest/assets']
         }
     }
-    testBuildType "release"
 
     testOptions {
         unitTests {
