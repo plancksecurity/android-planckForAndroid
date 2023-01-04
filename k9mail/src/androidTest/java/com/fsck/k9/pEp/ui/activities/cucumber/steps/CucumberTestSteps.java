@@ -170,7 +170,6 @@ public class CucumberTestSteps {
 
     @After
     public void tearDown() {
-        Log.e("TEST","Estoy en After");
         try {
             IdlingRegistry.getInstance().unregister(EspressoTestingIdlingResource.getIdlingResource());
         } catch (Exception ex) {
@@ -178,7 +177,7 @@ public class CucumberTestSteps {
         }
         try {
             if (exists(onView(withId(R.id.actionbar_title_first)))) {
-                while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+                if (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
                     testUtils.pressBack();
                     waitForIdle();
                 }
