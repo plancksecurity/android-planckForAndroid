@@ -162,7 +162,7 @@ public class CucumberTestSteps {
         }
         try {
             if (exists(onView(withId(R.id.actionbar_title_first)))) {
-                while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+                if (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
                     testUtils.pressBack();
                     waitForIdle();
                 }
