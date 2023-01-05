@@ -1,6 +1,7 @@
 package security.pEp.provisioning
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProviderImplKotlin
@@ -9,17 +10,15 @@ import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
+import org.junit.Assume.assumeFalse
 import org.junit.runner.RunWith
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class ProvisioningManagerTestEndUser {
+class NonProvisioningManagerTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
 
@@ -40,6 +39,7 @@ class ProvisioningManagerTestEndUser {
 
     @Before
     fun setUp() {
+        assumeFalse(BuildConfig.IS_ENTERPRISE)
         mockkObject(PEpProviderImplKotlin)
 
         manager.addListener(listener)
