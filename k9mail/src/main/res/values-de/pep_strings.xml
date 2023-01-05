@@ -44,12 +44,12 @@
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
     <string-array name="pep_title">
-        <item>Unbekannt<!--pEpRatingUndefined--></item>
+        <item>Nicht sicher<!--pEpRatingUndefined--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingHaveNoKey--></item>
         <item>Nicht sicher<!--pEpRatingUnencrypted--></item>
-        <item>Teilweise unsicher<!--pEpRatingUnencryptedForSome--></item>
-        <item>Unzuverlässig<!--pEpRatingUnreliable--></item>
+        <item>Nicht sicher<!--pEpRatingUnencryptedForSome--></item>
+        <item>Nicht sicher<!--pEpRatingUnreliable--></item>
         <item>Sicher<!--pEpRatingReliable--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrusted--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrustedAndAnonymized--></item>

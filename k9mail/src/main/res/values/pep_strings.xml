@@ -119,12 +119,12 @@
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
     <string name="permissions_needed_message">Not granting required permissions might cause unexpected behavior. Press OK to grant the permissions.</string>
     <string-array name="pep_title">
-        <item>Unknown<!--pEpRatingUndefined--></item>
+        <item>Unsecure<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
         <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
         <item>Unsecure<!--pEpRatingUnencrypted--></item>
-        <item>Unsecure for some<!--pEpRatingUnencryptedForSome--></item>
-        <item>Unreliable Security<!--pEpRatingUnreliable--></item>
+        <item>Unsecure<!--pEpRatingUnencryptedForSome--></item>
+        <item>Unsecure<!--pEpRatingUnreliable--></item>
         <item>Secure<!--pEpRatingReliable--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
