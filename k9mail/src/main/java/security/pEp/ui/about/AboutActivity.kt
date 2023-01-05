@@ -43,7 +43,7 @@ class AboutActivity : PepActivity() {
         super.onCreate(savedInstanceState)
         bindViews(R.layout.activity_about)
         setUpToolbar(true)
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_END_USER) {
             findViewById<ImageView>(R.id.icon).setOnClickListener {
                 if (++iconClickCount >= UNLOCK_SETTINGS_SCREEN_CLICK_COUNT) {
                     iconClickCount = 0

@@ -45,7 +45,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
 
     @Before
     public void setUp() throws Exception {
-        assumeFalse(BuildConfig.IS_ENTERPRISE);
+        assumeTrue(BuildConfig.IS_END_USER);
         preferences = Preferences.getPreferences(ApplicationProvider.getApplicationContext());
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
     }

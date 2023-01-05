@@ -161,7 +161,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (BuildConfig.IS_ENTERPRISE) {
             updateUiFromProvisioningSettings();
         }
-        setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
+        setHasOptionsMenu(BuildConfig.IS_END_USER);
         return rootView;
     }
 
