@@ -370,27 +370,18 @@ class PEpProviderImplKotlin @Inject constructor(
     // ************************************************************************************
     @WorkerThread //Only in controller
     @Throws(pEpException::class)
-    override fun encryptMessage(result: Message): Message = runBlocking {
-        return@runBlocking encryptMessageSuspend(result)
-    }
-
-    @Throws(pEpException::class)
-    private suspend fun encryptMessageSuspend(result: Message): Message = withContext(Dispatchers.Default) {
-        createEngineInstanceIfNeeded()
-        return@withContext engine.encrypt_message(result, null, result.encFormat)
+    override fun encryptMessage(result: Message): Message {
+        return engine.encrypt_message(result, null, result.encFormat)
     }
 
     @WorkerThread
-    override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
-        encryptMessageSuspend(source, extraKeys)
-    }
-
-    private suspend fun encryptMessageSuspend(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = withContext(Dispatchers.IO) {
+    @Throws(RuntimeException::class)
+    override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> {
         // TODO: 06/12/16 add unencrypted for some
         Timber.d("%s %s", TAG, "encryptMessage() enter")
         val resultMessages: MutableList<MimeMessage> = ArrayList()
         val message = PEpMessageBuilder(source).createMessage(context)
-        return@withContext try {
+        return try {
             createEngineInstanceIfNeeded()
             if (source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).isNotEmpty()) {
                 val key = source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)[0]
@@ -420,17 +411,13 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread //Only in controller
-    override fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage? = runBlocking {
-        encryptMessageToSelfSuspend(source, keys)
-    }
-
-    private suspend fun encryptMessageToSelfSuspend(source: MimeMessage?, keys: Array<String>): MimeMessage? = withContext(Dispatchers.Default) {
+    override fun encryptMessageToSelf(source: MimeMessage?, keys: Array<String>): MimeMessage? {
         if (source == null) {
-            return@withContext null
+            return null
         }
         createEngineInstanceIfNeeded()
         var message: Message? = null
-        return@withContext try {
+        return try {
             message = PEpMessageBuilder(source).createMessage(context)
             message.dir = Message.Direction.Outgoing
             Timber.d("%s %s", TAG, "encryptMessage() before encrypt to self")
@@ -452,25 +439,18 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Throws(pEpException::class, MessagingException::class)
-    private suspend fun encryptMessages(source: MimeMessage, extraKeys: Array<String>,
-                                        messagesToEncrypt: List<Message>): List<MimeMessage> = withContext(Dispatchers.IO) {
+    private fun encryptMessages(source: MimeMessage, extraKeys: Array<String>,
+                                        messagesToEncrypt: List<Message>): List<MimeMessage> {
         val messages: MutableList<MimeMessage> = ArrayList()
-        messagesToEncrypt.forEach { message -> messages.add(getEncryptedCopySuspend(source, message, extraKeys)) }
-        return@withContext messages
+        messagesToEncrypt.forEach { message -> messages.add(getEncryptedCopy(source, message, extraKeys)) }
+        return messages
     }
 
 
     @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
     private fun getEncryptedCopy(source: MimeMessage,
                                  message: Message,
-                                 extraKeys: Array<String>): MimeMessage = runBlocking {
-        getEncryptedCopySuspend(source, message, extraKeys)
-    }
-
-    @Throws(pEpException::class, MessagingException::class, AppDidntEncryptMessageException::class)
-    private suspend fun getEncryptedCopySuspend(source: MimeMessage,
-                                                message: Message,
-                                                extraKeys: Array<String>): MimeMessage = withContext(Dispatchers.Default) {
+                                 extraKeys: Array<String>): MimeMessage {
         createEngineInstanceIfNeeded()
         message.dir = Message.Direction.Outgoing
         Timber.d("%s %s", TAG, "encryptMessage() before encrypt")
@@ -490,7 +470,7 @@ class PEpProviderImplKotlin @Inject constructor(
             currentEnc.encFormat = Message.EncFormat.None
         }
         Timber.d("%s %s", TAG, "encryptMessage() after encrypt")
-        return@withContext getMimeMessage(source, currentEnc)
+        return getMimeMessage(source, currentEnc)
     }
 
     @Throws(pEpException::class, MessagingException::class)
@@ -552,7 +532,7 @@ class PEpProviderImplKotlin @Inject constructor(
         return@withContext true
     }
 
-    @WorkerThread //Only in controller, already done
+    @WorkerThread
     override fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult = runBlocking {
         Timber.d("%s %s", TAG, "decryptMessage() enter")
         decryptMessageSuspend(source, receivedBy)
@@ -672,13 +652,13 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 20/07/2020 move to suspend
+    @WorkerThread
     override fun importKey(key: ByteArray): Vector<Identity> {
         createEngineInstanceIfNeeded()
         return engine.importKey(key)
     }
 
-    @WorkerThread // TODO: 29/07/2020 move to suspend
+    @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
         createEngineInstanceIfNeeded()
         return try {
@@ -749,12 +729,11 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // done
+    @WorkerThread
     override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
         incomingMessageRatingSuspend(message)
     }
 
-    // TODO: 30/07/2020 move to suspend
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
@@ -974,7 +953,7 @@ class PEpProviderImplKotlin @Inject constructor(
         throw UnsupportedOperationException()
     }
 
-    @WorkerThread // Done
+    @WorkerThread
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? = runBlocking {
         withContext(Dispatchers.IO) {
             try {
@@ -1094,7 +1073,7 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.keyResetTrust(id)
     }
 
-    @WorkerThread // TODO: 20/07/2020 move to suspend
+    @WorkerThread
     override fun keyResetIdentity(ident: Identity, fpr: String?) {
         createEngineInstanceIfNeeded()
         val identity = updateIdentity(ident)
@@ -1107,7 +1086,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 20/07/2020 move to suspend
+    @WorkerThread
     override fun keyResetUser(userId: String, fpr: String?) {
         createEngineInstanceIfNeeded()
         try {
@@ -1119,7 +1098,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 20/07/2020 move to suspend
+    @WorkerThread
     override fun keyResetAllOwnKeys() {
         createEngineInstanceIfNeeded()
         try {
@@ -1131,19 +1110,19 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 20/07/2020 move to suspend
-    override fun leaveDeviceGroup() {
+    @WorkerThread
+    override fun leaveDeviceGroup() { // TODO: THIS SHOULD THROW pEpException, review where to handle it. Just try catch here?
         createEngineInstanceIfNeeded()
         engine.leave_device_group()
     }
 
-    @WorkerThread // TODO: 28/07/2020 move to suspend
+    @WorkerThread
     override fun updateIdentity(id: Identity): Identity {
         createEngineInstanceIfNeeded()
         return engine.updateIdentity(id)
     }
 
-    @WorkerThread // TODO: 29/07/2020 move to suspend
+    @WorkerThread
     override fun getBlacklistInfo(): List<KeyListItem>? {
         try {
             val identities: MutableList<KeyListItem> = ArrayList()
@@ -1158,17 +1137,17 @@ class PEpProviderImplKotlin @Inject constructor(
         return null
     }
 
-    @WorkerThread // TODO: 29/07/2020 move to suspend
+    @WorkerThread
     override fun addToBlacklist(fpr: String) {
         engine.blacklist_add(fpr)
     }
 
-    @WorkerThread // TODO: 29/07/2020 move to suspend
+    @WorkerThread
     override fun deleteFromBlacklist(fpr: String) {
         engine.blacklist_delete(fpr)
     }
 
-    @WorkerThread // TODO: 29/07/2020 move to suspend
+    @WorkerThread
     override fun getMasterKeysInfo(): List<KeyListItem>? {
         try {
             val identities: MutableList<KeyListItem> = ArrayList()
@@ -1256,7 +1235,7 @@ class PEpProviderImplKotlin @Inject constructor(
 
     }
 
-    @WorkerThread // TODO: 21/07/2020 move to suspend //already done
+    @WorkerThread
     override fun setIdentityFlag(identity: Identity, sync: Boolean) {
         try {
             when {
@@ -1268,7 +1247,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // TODO: 21 /07/2020 move to suspend //already done
+    @WorkerThread
     override fun unsetIdentityFlag(identity: Identity, flags: Int) {
         try {
             engine.unset_identity_flags(identity, flags)
@@ -1277,7 +1256,7 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread // DONE
+    @WorkerThread
     override fun printLog() {
         val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         uiScope.launch {
@@ -1288,7 +1267,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    // DONE
     override fun getLog(callback: CompletedCallback): String {
         var result = ""
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -1299,7 +1277,6 @@ class PEpProviderImplKotlin @Inject constructor(
         return result
     }
 
-    // DONE
     override fun getLog(): String {
         var result = ""
         val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
