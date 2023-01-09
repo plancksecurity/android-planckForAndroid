@@ -8,10 +8,7 @@ import com.fsck.k9.helper.Utility
 import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 import javax.inject.Inject
@@ -42,7 +39,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     fun startProvisioning() {
-        CoroutineScope(dispatcherProvider.io()).launch {
+        runBlocking(dispatcherProvider.io()) {
             // performPresetProvisioning() -> If Engine preset provisioning needed, do it here or at the beginning of next method.
             performProvisioningIfNeeded()
                 .onFailure {
@@ -110,7 +107,7 @@ class ProvisioningManager @Inject constructor(
     private fun isDeviceOnline(): Boolean =
         kotlin.runCatching { Utility.hasConnectivity(k9) }.getOrDefault(false)
 
-    private suspend fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
+    private fun finalizeSetup(provisionDone: Boolean = false): Result<Unit> {
         setProvisionState(ProvisionState.Initializing(provisionDone))
         return kotlin.runCatching {
             k9.finalizeSetup()
@@ -119,11 +116,9 @@ class ProvisioningManager @Inject constructor(
         }
     }
 
-    private suspend fun setProvisionState(newState: ProvisionState) {
+    private fun setProvisionState(newState: ProvisionState) {
         provisionState = newState
-        withContext(dispatcherProvider.main()) {
-            listeners.forEach { it.provisionStateChanged(newState) }
-        }
+        listeners.forEach { it.provisionStateChanged(newState) }
     }
 
     interface ProvisioningStateListener {
