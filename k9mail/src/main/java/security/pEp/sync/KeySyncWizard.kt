@@ -33,6 +33,7 @@ interface KeySyncWizard {
             SyncHandshakeSignal.SyncNotifyAcceptedGroupCreated -> TODO()
             SyncHandshakeSignal.SyncNotifyAcceptedDeviceAccepted -> TODO()
             SyncHandshakeSignal.SyncNotifyInGroup -> TODO()
+            else -> TODO()
         }
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
