@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import java.io.ByteArrayOutputStream;
@@ -48,9 +49,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 @RunWith(K9RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LEGACY)
 public class MessageBuilderTest {
     private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
     private static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
