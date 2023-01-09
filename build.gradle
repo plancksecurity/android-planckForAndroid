@@ -53,6 +53,10 @@ buildscript {
                 'kotlinSerialization': '1.0.0',
                 'multidex'           : '2.0.1',
                 'biweekly'           : '0.6.6',
+                'apacheTools'        : '1.8.3',
+
+
+
 
                 'androidXjunit'      : '1.1.3',
                 'androidXcoreTest'   : '1.1.0',
