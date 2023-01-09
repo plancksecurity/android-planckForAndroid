@@ -30,6 +30,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import security.pEp.permissions.PermissionRequester;
@@ -146,11 +147,15 @@ public class PepPermissionRequester implements PermissionRequester {
 
     @Override
     public void requestAllPermissions(@NotNull PermissionListener listener) {
+        ArrayList<String> permissions = new ArrayList<>();
+        permissions.add(Manifest.permission.READ_CONTACTS);
+        permissions.add(Manifest.permission.WRITE_CONTACTS);
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(Manifest.permission.POST_NOTIFICATIONS);
+        }
         Dexter.withActivity(activity)
-                .withPermissions(
-                        Manifest.permission.READ_CONTACTS,
-                        Manifest.permission.WRITE_CONTACTS,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withPermissions(permissions)
                 .withListener(
                         new MultiplePermissionsListener() {
                             @Override
