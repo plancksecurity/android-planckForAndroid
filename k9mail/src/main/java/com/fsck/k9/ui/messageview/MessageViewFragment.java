@@ -234,6 +234,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     @Override
+    public void onDestroyView() {
+        if (pEpSecurityStatusLayout != null) {
+            pEpSecurityStatusLayout.setRating(pEpRatingUndefined, true);
+        }
+        super.onDestroyView();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         ((MessageList) getActivity()).setMessageViewVisible(true);
