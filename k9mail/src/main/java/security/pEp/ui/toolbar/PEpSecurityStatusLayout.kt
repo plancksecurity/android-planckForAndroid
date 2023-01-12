@@ -30,6 +30,12 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         secondLineText = findViewById(R.id.securityStatusSecondLine)
     }
 
+    public fun hideRating() {
+        if (visibility != GONE) {
+            visibility = GONE
+        }
+    }
+
     @JvmOverloads
     fun setRating(rating: Rating?, forceHide: Boolean = false) {
         visibility = getToolbarRatingVisibility(rating, ispEpEnabled, forceHide)

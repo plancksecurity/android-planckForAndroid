@@ -161,6 +161,12 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
     };
 
+    public void hideInitialStatus() {
+        if (pEpSecurityStatusLayout != null) {
+            pEpSecurityStatusLayout.hideRating();
+        }
+    }
+
     @Inject
     PermissionRequester permissionRequester;
     @Inject
@@ -231,6 +237,14 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (pEpSecurityStatusLayout != null) {
+            pEpSecurityStatusLayout.hideRating();
+        }
+        super.onDestroyView();
     }
 
     @Override
