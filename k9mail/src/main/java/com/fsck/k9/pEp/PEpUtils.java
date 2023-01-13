@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.WorkerThread;
@@ -382,6 +383,7 @@ public class PEpUtils {
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
         foundation.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
+        Log.d("pEpGenerateAccountKeys", "boss myselfSuspend at "+Thread.currentThread().getId());
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
@@ -506,6 +508,7 @@ public class PEpUtils {
         result = new foundation.pEp.jniadapter.Message();
         Address address = new Address(account.getEmail());
         Identity identity = createIdentity(address, context);
+        Log.d("generateKeyImpt", "boss myselfSuspend at "+Thread.currentThread().getId());
         identity = pEp.myself(identity);
         result.setFrom(identity);
         result.setTo(new Vector<>(Collections.singletonList(identity)));
@@ -595,17 +598,16 @@ public class PEpUtils {
         return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingUnreliable.value; // TODO: change this to the media key rating when implemented on engine side.
     }
 
-    public static void updateSyncAccountsConfig(Context context) {
-        try (PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context)) {
-            pEp.disableSyncForAllIdentites();
-
-            for (Account account : Preferences.getPreferences(context).getAccounts()) {
-                Identity id = createIdentity(
-                        new Address(account.getEmail(), account.getName()), context);
-                // TODO: 04/08/2020 Move to PepProvider.
-                id = pEp.myself(id);
-                pEp.setIdentityFlag(id, account.isPepSyncEnabled());
-            }
+    public static void updateSyncAccountsConfig(Context context, PEpProvider pEp) {
+        pEp.disableSyncForAllIdentites();
+        for (Account account : Preferences.getPreferences(context).getAccounts()) {
+            Identity id = createIdentity(
+                    new Address(account.getEmail(), account.getName()), context);
+            // TODO: 04/08/2020 Move to PepProvider.
+            Log.d("updateSyncAccounts", "boss myselfSuspend at "+Thread.currentThread().getId());
+            Log.d("updateSyncAccounts", "boss myselfSuspend at "+Thread.currentThread().getId());
+            id = pEp.myself(id);
+            pEp.setIdentityFlag(id, account.isPepSyncEnabled());
         }
     }
 }

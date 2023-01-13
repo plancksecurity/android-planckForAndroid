@@ -875,11 +875,10 @@ public class K9 extends MultiDexApplication {
 
     private void initSync() {
 
-        PEpUtils.updateSyncAccountsConfig(this);
+        pEpProvider.updateSyncAccountsConfig();
         if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
-//        }
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
