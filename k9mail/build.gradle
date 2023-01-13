@@ -221,12 +221,26 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "boolean", "IS_END_USER", "false"
+            buildConfigField "boolean", "IS_DEMO", "false"
             versionName "${gitVersionName}" + ".enterprise"
+            dimension "type"
+        }
+
+        demoCorp {
+            buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            buildConfigField "boolean", "IS_END_USER", "false"
+            buildConfigField "boolean", "IS_DEMO", "true"
+            versionName "${gitVersionName}" + ".democorp"
+            applicationIdSuffix ".democorp"
+            versionCode 1
             dimension "type"
         }
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            buildConfigField "boolean", "IS_END_USER", "true"
+            buildConfigField "boolean", "IS_DEMO", "false"
             versionName "${gitVersionName}"
             dimension "type"
         }
@@ -243,7 +257,7 @@ android {
 
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
-        if (names.contains('enterprise') && names.contains('fDroid')) {
+        if ((names.contains('enterprise') || names.contains('democorp')) && names.contains('fDroid')) {
             println("names: $names")
             variant.setIgnore(true)
         }

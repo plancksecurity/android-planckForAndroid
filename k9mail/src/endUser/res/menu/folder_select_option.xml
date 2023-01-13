@@ -10,20 +10,16 @@
         android:title="@string/filter_folders_action"/>
     <item
         android:id="@+id/display_all"
-        android:title="@string/folder_list_display_mode_all"
-        android:visible="false"/>
+        android:title="@string/folder_list_display_mode_all"/>
     <item
         android:id="@+id/display_1st_class"
-        android:title="@string/folder_list_display_mode_first_class"
-        android:visible="false"/>
+        android:title="@string/folder_list_display_mode_first_class"/>
     <item
         android:id="@+id/display_1st_and_2nd_class"
-        android:title="@string/folder_list_display_mode_first_and_second_class"
-        android:visible="false"/>
+        android:title="@string/folder_list_display_mode_first_and_second_class"/>
     <item
         android:id="@+id/display_not_second_class"
-        android:title="@string/folder_list_display_mode_not_second_class"
-        android:visible="false"/>
+        android:title="@string/folder_list_display_mode_not_second_class"/>
     <item
         android:id="@+id/list_folders"
         android:icon="?attr/iconActionRefresh"

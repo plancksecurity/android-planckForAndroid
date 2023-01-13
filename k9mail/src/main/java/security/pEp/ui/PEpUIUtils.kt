@@ -84,10 +84,10 @@ object PEpUIUtils {
             rating == null ->
                 ColorDrawable(Color.TRANSPARENT)
             isRatingUnsecure(rating) ->
-                if (BuildConfig.IS_ENTERPRISE) {
-                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
-                } else {
+                if (BuildConfig.IS_END_USER) {
                     ColorDrawable(Color.TRANSPARENT)
+                } else {
+                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
                 }
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -105,16 +105,16 @@ object PEpUIUtils {
         return when {
             rating == null ->
                 null
-            BuildConfig.IS_ENTERPRISE
+            !BuildConfig.IS_END_USER
                     && (
                     rating == Rating.pEpRatingCannotDecrypt
                             || rating == Rating.pEpRatingHaveNoKey
                     ) -> null
             isRatingUnsecure(rating) ->
-                if (BuildConfig.IS_ENTERPRISE) {
-                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
-                } else {
+                if (BuildConfig.IS_END_USER) {
                     null
+                } else {
+                    ContextCompat.getDrawable(context, R.drawable.enterprise_status_unsecure)
                 }
             rating.value == Rating.pEpRatingMistrust.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red)
@@ -136,14 +136,14 @@ object PEpUIUtils {
         return when {
             forceHide || rating == null ->
                 View.GONE
-            BuildConfig.IS_ENTERPRISE
+            !BuildConfig.IS_END_USER
                     && (
                         rating == Rating.pEpRatingCannotDecrypt
                                 || rating == Rating.pEpRatingHaveNoKey
                     ) -> View.GONE
             isRatingUnsecure(rating) ->
-                if (BuildConfig.IS_ENTERPRISE) View.VISIBLE
-                else View.GONE
+                if (BuildConfig.IS_END_USER) View.GONE
+                else View.VISIBLE
             !pEpEnabled ->
                 View.VISIBLE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
@@ -168,9 +168,9 @@ object PEpUIUtils {
                 R.color.pep_no_color
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.color.pep_no_color
-            BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
+            !BuildConfig.IS_END_USER && rating == Rating.pEpRatingCannotDecrypt ->
                 R.color.pep_no_color
-            BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
+            !BuildConfig.IS_END_USER && isRatingUnsecure(rating) ->
                 R.color.compose_unsecure_delivery_warning
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
@@ -192,9 +192,9 @@ object PEpUIUtils {
                 R.string.pep_rating_none
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.string.pep_rating_none
-            BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
+            !BuildConfig.IS_END_USER && rating == Rating.pEpRatingCannotDecrypt ->
                 R.string.pep_rating_none
-            BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
+            !BuildConfig.IS_END_USER && isRatingUnsecure(rating) ->
                 R.string.enterprise_unsecure
             rating == Rating.pEpRatingUndefined ->
                 R.string.pep_rating_none

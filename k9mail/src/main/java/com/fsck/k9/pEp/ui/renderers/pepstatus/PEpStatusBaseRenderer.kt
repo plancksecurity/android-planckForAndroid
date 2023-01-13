@@ -58,7 +58,7 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
         permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
         val view: View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
-        badge.enableStatusBadge()
+        //badge.enableStatusBadge()
         return view
     }
 

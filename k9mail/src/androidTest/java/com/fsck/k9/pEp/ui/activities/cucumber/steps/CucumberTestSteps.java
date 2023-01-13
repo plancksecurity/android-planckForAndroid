@@ -186,7 +186,7 @@ public class CucumberTestSteps {
                         waitForIdle();
                         onView(withText(R.string.discard_action)).perform(click());
                     }
-                    if (!BuildConfig.IS_ENTERPRISE) {
+                    if (!BuildConfig.IS_END_USER) {
                         testUtils.pressBack();
                     }
                     waitForIdle();
@@ -195,7 +195,7 @@ public class CucumberTestSteps {
         } catch (Exception exception) {
             Timber.i("App could be closed");
         }
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_END_USER) {
             testUtils.clearAllRecentApps();
         }
         Intents.release();
@@ -204,7 +204,7 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_END_USER) {
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
@@ -2230,7 +2230,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_END_USER) {
             testUtils.selectAccount(folder, accountToStart);
         }
     }
@@ -2635,7 +2635,7 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_END_USER) {
             while (!exists(onView(withId(R.id.available_accounts_title)))) {
                 testUtils.pressBack();
                 waitForIdle();

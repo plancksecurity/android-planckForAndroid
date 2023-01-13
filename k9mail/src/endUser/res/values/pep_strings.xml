@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pep_title">
-        <item>Unsecure<!--pEpRatingUndefined--></item>
+        <item>Unknown<!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
         <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
         <item>Unsecure<!--pEpRatingUnencrypted--></item>
-        <item>Unsecure<!--pEpRatingUnencryptedForSome--></item>
-        <item>Unsecure<!--pEpRatingUnreliable--></item>
+        <item>Unsecure for some<!--pEpRatingUnencryptedForSome--></item>
+        <item>Unreliable Security<!--pEpRatingUnreliable--></item>
         <item>Secure<!--pEpRatingReliable--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
