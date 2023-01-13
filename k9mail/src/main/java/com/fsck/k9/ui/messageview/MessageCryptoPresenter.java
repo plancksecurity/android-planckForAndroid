@@ -1,6 +1,8 @@
 package com.fsck.k9.ui.messageview;
 
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -141,7 +143,7 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
             messageCryptoMvpView.restartMessageCryptoProcessing();
         } else if (requestCode == REQUEST_CODE_SECURITY_WARNING) {
             messageCryptoMvpView.redisplayMessage();
-        } else {
+        } else if (resultCode != RESULT_CANCELED) {
             throw new IllegalStateException("got an activity result that wasn't meant for us. this is a bug!");
         }
     }
