@@ -1111,7 +1111,8 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread
-    override fun leaveDeviceGroup() { // TODO: THIS SHOULD THROW pEpException, review where to handle it. Just try catch here?
+    @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
+    override fun leaveDeviceGroup() {
         createEngineInstanceIfNeeded()
         engine.leave_device_group()
     }
