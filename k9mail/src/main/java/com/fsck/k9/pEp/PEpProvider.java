@@ -250,7 +250,7 @@ public interface PEpProvider extends AutoCloseable {
 
     void keyResetAllOwnKeys();
 
-    void leaveDeviceGroup();
+    void leaveDeviceGroup() throws pEpException; // TODO: 13/1/23 review where to handle this exception.
 
     void startSync();
     void stopSync();
