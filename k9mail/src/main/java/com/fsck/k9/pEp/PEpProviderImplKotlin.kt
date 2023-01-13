@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
@@ -80,7 +81,9 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+        if (!BuildConfig.IS_DEMO) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
+            engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+        }
     }
 
     @get:Throws(pEpException::class)

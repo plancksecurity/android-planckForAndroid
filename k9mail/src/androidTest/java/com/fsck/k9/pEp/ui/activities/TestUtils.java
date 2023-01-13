@@ -639,7 +639,7 @@ public class TestUtils {
                 default:
                     break;
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (!BuildConfig.IS_END_USER) {
                 totalAccounts = 1;
             }
         }
@@ -2275,7 +2275,7 @@ public class TestUtils {
             if (R.drawable.pep_status_green != statusColor
                     && R.drawable.pep_status_red != statusColor
                     && R.drawable.pep_status_yellow != statusColor
-                    && BuildConfig.IS_ENTERPRISE
+                    && !BuildConfig.IS_END_USER
                     && R.drawable.enterprise_status_unsecure != statusColor
             ) {
                 assertFailWithMessage("Wrong Status color");
@@ -2323,9 +2323,9 @@ public class TestUtils {
         if (rating == null) {
             color = -10;
         } else if (PEpUtils.isRatingUnsecure(rating)) {
-            color = BuildConfig.IS_ENTERPRISE
-                    ? R.drawable.enterprise_status_unsecure
-                    : -10;
+            color = BuildConfig.IS_END_USER
+                    ? -10
+                    : R.drawable.enterprise_status_unsecure;
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
             color = R.drawable.pep_status_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
@@ -2481,7 +2481,7 @@ public class TestUtils {
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         while (true) {
             waitForIdle();
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (!BuildConfig.IS_END_USER) {
                 if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
                     assertFailWithMessage("Status is not shown");
                 }

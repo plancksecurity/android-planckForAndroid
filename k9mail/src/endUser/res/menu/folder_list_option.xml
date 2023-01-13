@@ -26,8 +26,7 @@
         android:title="@string/compose_action"/>
     <item
         android:icon="?attr/iconFolder"
-        android:title="@string/folder_list_display_mode_label"
-        android:visible="false">
+        android:title="@string/folder_list_display_mode_label">
         <menu>
             <item
                 android:id="@+id/display_all"

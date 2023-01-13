@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="pep_yellow">@color/colorPrimary</color>
-    <color name="pep_red">@color/compose_unsecure_delivery_warning</color>
-</resources>
