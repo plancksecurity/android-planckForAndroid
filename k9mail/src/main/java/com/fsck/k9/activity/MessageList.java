@@ -535,7 +535,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else {
                 mMessageListFragment = MessageListFragment.newInstance(mSearch, false, !mNoThreading);
             }
-            ft.add(R.id.message_list_container, mMessageListFragment);
+            ft.replace(R.id.message_list_container, mMessageListFragment);
             ft.commit();
         }
 
@@ -1289,6 +1289,11 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         if (mDisplayMode == DisplayMode.MESSAGE_LIST
                 || mMessageViewFragment == null
                 || !mMessageViewFragment.isInitialized()) {
+
+            if (mMessageViewFragment != null) {
+                mMessageViewFragment.hideInitialStatus();
+            }
+
             int toolbarIconsColor = resourcesProvider.getColorFromAttributeResource(R.attr.messageListToolbarIconsColor);
             toolBarCustomizer.colorizeToolbarActionItemsAndNavButton(toolbarIconsColor);
             menu.findItem(R.id.next_message).setVisible(false);
@@ -1959,7 +1964,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.message_view_container, fragment);
             mMessageViewFragment = fragment;
-            ft.commitNow();
+            ft.commit();
         }
     }
 }
