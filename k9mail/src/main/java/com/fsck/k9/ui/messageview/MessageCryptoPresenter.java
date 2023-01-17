@@ -143,7 +143,7 @@ public class MessageCryptoPresenter implements OnCryptoClickListener {
             messageCryptoMvpView.restartMessageCryptoProcessing();
         } else if (requestCode == REQUEST_CODE_SECURITY_WARNING) {
             messageCryptoMvpView.redisplayMessage();
-        } else if (resultCode != RESULT_CANCELED) {
+        } else {
             throw new IllegalStateException("got an activity result that wasn't meant for us. this is a bug!");
         }
     }

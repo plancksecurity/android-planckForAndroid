@@ -334,6 +334,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
 
         if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
+            if (resultCode == RESULT_CANCELED) {
+                return;
+            }
             requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
