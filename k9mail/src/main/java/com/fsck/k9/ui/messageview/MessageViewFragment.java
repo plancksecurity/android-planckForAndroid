@@ -348,9 +348,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         }
 
         if ((requestCode & REQUEST_MASK_CRYPTO_PRESENTER) == REQUEST_MASK_CRYPTO_PRESENTER) {
-            if (resultCode == RESULT_CANCELED) {
-                return;
-            }
             requestCode ^= REQUEST_MASK_CRYPTO_PRESENTER;
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
@@ -582,7 +579,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             }
             case ACTIVITY_CHOOSE_FOLDER_MOVE:
             case ACTIVITY_CHOOSE_FOLDER_COPY: {
-                if (data == null) {
+                if (data == null || resultCode != RESULT_CANCELED) {
                     return;
                 }
 
