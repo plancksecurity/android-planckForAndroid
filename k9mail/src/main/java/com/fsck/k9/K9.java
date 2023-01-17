@@ -1081,7 +1081,7 @@ public class K9 extends MultiDexApplication {
                 )
         );
         allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
-        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", true);
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_DEMO);
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);
