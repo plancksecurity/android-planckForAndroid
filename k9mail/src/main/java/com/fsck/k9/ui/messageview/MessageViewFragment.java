@@ -341,6 +341,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     public void onPendingIntentResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_CANCELED) {
+            return;
+        }
+
         if ((requestCode & REQUEST_MASK_LOADER_HELPER) == REQUEST_MASK_LOADER_HELPER) {
             requestCode ^= REQUEST_MASK_LOADER_HELPER;
             messageLoaderHelper.onActivityResult(requestCode, resultCode, data);
