@@ -583,7 +583,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             }
             case ACTIVITY_CHOOSE_FOLDER_MOVE:
             case ACTIVITY_CHOOSE_FOLDER_COPY: {
-                if (data == null || resultCode != RESULT_CANCELED) {
+                if (data == null || resultCode == RESULT_CANCELED) {
                     return;
                 }
 
