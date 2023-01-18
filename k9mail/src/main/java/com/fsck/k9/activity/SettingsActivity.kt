@@ -300,7 +300,12 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
-        addAccountButton!!.setOnClickListener { onAddNewAccount() }
+
+        if (BuildConfig.IS_ENTERPRISE) {
+            addAccountButton!!.visibility = View.GONE
+        } else {
+            addAccountButton!!.setOnClickListener { onAddNewAccount() }
+        }
     }
 
     private fun initializeActionBar() {
