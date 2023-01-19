@@ -113,7 +113,7 @@ class IntroFirstFragment : PEpFragment() {
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
-    override fun inject() {
+    override fun injectFragment() {
         getpEpComponent().inject(this)
     }
 
@@ -161,7 +161,7 @@ class IntroFourthFragment : PEpFragment() {
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
-    override fun inject() {
+    override fun injectFragment() {
         getpEpComponent().inject(this)
     }
 

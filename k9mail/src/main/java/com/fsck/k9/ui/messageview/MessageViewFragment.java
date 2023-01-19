@@ -178,7 +178,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     DisplayHtml displayHtml;
 
     @Override
-    protected void inject() {
+    protected void injectFragment() {
         getpEpComponent().inject(this);
     }
 

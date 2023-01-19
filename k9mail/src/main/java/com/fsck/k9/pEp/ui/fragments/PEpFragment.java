@@ -25,10 +25,10 @@ public abstract class PEpFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initializeInjector(getApplicationComponent());
-        inject();
+        injectFragment();
     }
 
-    protected abstract void inject();
+    protected abstract void injectFragment();
 
     protected void setupPEpFragmentToolbar() {
         setupCustomPEpFragmentToolbar(ThemeManager.ToolbarType.DEFAULT);

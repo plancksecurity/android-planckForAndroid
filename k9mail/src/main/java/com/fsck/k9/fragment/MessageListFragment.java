@@ -562,7 +562,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     @Override
-    protected void inject() {
+    protected void injectFragment() {
         getpEpComponent().inject(this);
     }
 

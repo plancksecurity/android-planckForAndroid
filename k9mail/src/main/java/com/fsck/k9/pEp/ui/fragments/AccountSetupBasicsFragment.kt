@@ -653,7 +653,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         return retParts
     }
 
-    override fun inject() {
+    override fun injectFragment() {
         getpEpComponent().inject(this)
     }
 

@@ -307,7 +307,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     }
 
     @Override
-    protected void inject() {
+    protected void injectFragment() {
         getpEpComponent().inject(this);
     }
 
