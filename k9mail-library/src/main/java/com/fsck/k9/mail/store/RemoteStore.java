@@ -110,7 +110,7 @@ public abstract class RemoteStore extends Store {
         } else if (uri.startsWith("webdav")) {
             return WebDavStore.decodeUri(uri);
         } else {
-            throw new IllegalArgumentException("Not a valid store URI");
+            throw new IllegalArgumentException("Not a valid store URI: " + uri);
         }
     }
 
