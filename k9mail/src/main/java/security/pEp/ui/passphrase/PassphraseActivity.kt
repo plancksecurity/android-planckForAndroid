@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
+import com.fsck.k9.databinding.ActivityPassphraseBinding
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.activity_passphrase.*
@@ -25,6 +26,8 @@ fun PreferenceFragmentCompat.requestPassphraseForNewKeys() {
 }
 
 class PassphraseActivity : WizardActivity(), PassphraseInputView {
+
+    private lateinit var binding: ActivityPassphraseBinding
     @Inject
     lateinit var presenter: PassphrasePresenter
 
@@ -34,7 +37,8 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_passphrase)
+        binding = ActivityPassphraseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val type = intent?.extras?.getSerializable(REQUEST_TYPE_EXTRA)
         presenter.init(this, type as PassphraseRequirementType)
     }

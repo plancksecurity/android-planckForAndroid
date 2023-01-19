@@ -26,6 +26,7 @@ import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.databinding.AccountsBinding
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
@@ -47,7 +48,6 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
-import kotlinx.android.synthetic.main.accounts.*
 import kotlinx.coroutines.*
 import security.pEp.permissions.PermissionChecker
 import security.pEp.permissions.PermissionRequester
@@ -64,7 +64,6 @@ import javax.inject.Inject
 
 
 class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
-
     private var controller: MessagingController? = null
 
     /*
@@ -98,9 +97,9 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      * @see .onRetainCustomNonConfigurationInstance
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
-    private var accountsList: NestedListView? = null
     private var addAccountButton: View? = null
 
+    private lateinit var binding: AccountsBinding
     @Inject
     lateinit var permissionRequester: PermissionRequester
     @Inject
@@ -154,7 +153,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         fun workingAccount(account: Account, res: Int) {
             runOnUiThread {
                 val toastText = getString(res, account.description)
-                FeedbackTools.showShortFeedback(accountsList, toastText)
+                FeedbackTools.showShortFeedback(binding.accountsList, toastText)
             }
         }
 
@@ -167,7 +166,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
                 val toastText = getString(R.string.account_size_changed, account.description,
                         SizeFormatter.formatSize(application, oldSize), SizeFormatter.formatSize(application, newSize))
-                FeedbackTools.showLongFeedback(accountsList, toastText)
+                FeedbackTools.showLongFeedback(binding.accountsList, toastText)
                 if (adapter != null) {
                     adapter!!.notifyDataSetChanged()
                 }
@@ -200,9 +199,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         super.onCreate(savedInstanceState)
 
         controller = MessagingController.getInstance(applicationContext)
+        binding = AccountsBinding.inflate(layoutInflater)
 
-        bindViews(R.layout.accounts)
-        accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
+        setContentView(binding.root)
+
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
@@ -254,7 +254,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         if (!BuildConfig.IS_ENTERPRISE) {
-            registerForContextMenu(accountsList)
+            registerForContextMenu(binding.accountsList)
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_CONTEXT_ACCOUNT)) {
@@ -423,11 +423,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         adapter = AccountListAdapter(accounts,
                 indexedFolderClickListener { position ->
-                    val account = accountsList?.getItemAtPosition(position) as BaseAccount
+                    val account = binding.accountsList!!.getItemAtPosition(position) as BaseAccount
                     onEditAccount(account as Account)
                 }
         )
-        accountsList?.adapter = adapter
+        binding.accountsList!!.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -503,7 +503,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             return false
         } else if (!realAccount.isAvailable(this)) {
             val toastText = getString(R.string.account_unavailable, realAccount.description)
-            FeedbackTools.showShortFeedback(accountsList, toastText)
+            FeedbackTools.showShortFeedback(binding.accountsList, toastText)
             Timber.i("refusing to open account that is not available")
             return false
         }
@@ -684,7 +684,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         // submenus don't actually set the menuInfo, so the "advanced"
         // submenu wouldn't work.
         if (menuInfo != null) {
-            selectedContextAccount = accountsList!!.getItemAtPosition(menuInfo.position) as BaseAccount
+            selectedContextAccount = binding.accountsList!!.getItemAtPosition(menuInfo.position) as BaseAccount
         }
         if (selectedContextAccount is Account) {
             val realAccount = selectedContextAccount as Account?
@@ -738,15 +738,16 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         uiScope.launch {
             // Show loading
-            loading?.visibility = View.VISIBLE
-            accounts_list?.alpha = 0.2f
+            binding.loading.visibility = View.VISIBLE
+            binding.accountsList.alpha = 0.2f
+
             //Move account
             moveAccount(account, up)
             refresh()
 
             //Hide loading
-            loading?.visibility = View.GONE
-            accounts_list?.alpha = 1f
+            binding.loading.visibility = View.GONE
+            binding.accountsList.alpha = 1f
 
         }
     }
@@ -975,7 +976,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 holder.newMessageCountWrapper!!.setOnClickListener(createUnreadSearchListener(account))
 
                 holder.activeIcons!!.setOnClickListener {
-                    FeedbackTools.showShortFeedback(accountsList, getString(R.string.tap_hint))
+                    FeedbackTools.showShortFeedback(binding.accountsList, getString(R.string.tap_hint))
                 }
 
             } else {

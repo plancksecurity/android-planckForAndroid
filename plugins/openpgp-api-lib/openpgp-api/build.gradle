@@ -8,14 +8,15 @@ android {
     }
 
     // Do not abort build if lint finds errors
-    lintOptions {
-        abortOnError false
-    }
 
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    lint {
+        abortOnError false
+    }
+    namespace 'org.openintents.openpgp'
 
 }
 

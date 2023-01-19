@@ -7,7 +7,7 @@ buildscript {
         ]
 
         versions = [
-                'kotlin'             : '1.6.20',
+                'kotlin'             : '1.6.21',
 
                 'supportLibrary'     : '28.0.0',
                 'preferencesFix'     : '1.1.0',
@@ -47,7 +47,7 @@ buildscript {
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
                 'dagger'             : '2.41',
-                'groupie'            : '2.1.0',
+                'groupie'            : '2.9.0',
                 'ankoCoroutines'     : '0.10.4',
                 'kotlinCoroutines'   : '1.6.4',
                 'kotlinSerialization': '1.0.0',
@@ -88,7 +88,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"

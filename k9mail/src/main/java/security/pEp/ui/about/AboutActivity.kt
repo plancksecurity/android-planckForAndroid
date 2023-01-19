@@ -11,9 +11,9 @@ import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
+import com.fsck.k9.databinding.ActivityAboutBinding
 import com.fsck.k9.pEp.PepActivity
 import com.fsck.k9.pEp.ui.tools.ThemeManager
-import kotlinx.android.synthetic.main.activity_about.*
 import security.pEp.ui.mdm.MdmSettingsFeedbackActivity
 import security.pEp.ui.toolbar.ToolBarCustomizer
 import java.util.*
@@ -24,6 +24,7 @@ class AboutActivity : PepActivity() {
 
     @Inject
     lateinit var toolbarCustomizer: ToolBarCustomizer
+    private lateinit var binding: ActivityAboutBinding
     private var iconClickCount = 0
 
     private//Log.e(TAG, "Package name not found", e);
@@ -41,7 +42,8 @@ class AboutActivity : PepActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindViews(R.layout.activity_about)
+        binding = ActivityAboutBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setUpToolbar(true)
         if (!BuildConfig.IS_END_USER) {
             findViewById<ImageView>(R.id.icon).setOnClickListener {
@@ -57,21 +59,22 @@ class AboutActivity : PepActivity() {
         initializeToolbar(true, about)
 
         val aboutString = buildAboutString()
-        aboutText.movementMethod = LinkMovementMethod.getInstance()
-        aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.aboutText.movementMethod = LinkMovementMethod.getInstance()
+        binding.aboutText.text = HtmlCompat.fromHtml(aboutString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
-        documentation_button.setOnClickListener {
+        binding.documentationButton.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.pEp_documentation_url))))
         }
-        documentation_button.paintFlags = documentation_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.documentationButton.paintFlags = binding.documentationButton.paintFlags or Paint
+            .UNDERLINE_TEXT_FLAG
 
         val librariesString = buildLibrariesHtml()
-        librariesText.movementMethod = LinkMovementMethod.getInstance()
-        librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        binding.librariesText.movementMethod = LinkMovementMethod.getInstance()
+        binding.librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
 
-        license_button.setOnClickListener { openLicenseActivity(this) }
-        license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.licenseButton.setOnClickListener { openLicenseActivity(this) }
+        binding.licenseButton.paintFlags = binding.licenseButton.paintFlags or Paint.UNDERLINE_TEXT_FLAG
     }
 
     override fun onResume() {
