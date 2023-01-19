@@ -90,7 +90,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
         clientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate)
         clientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner)
-        //allowClientCertificateView = findViewById(R.id.account_allow_client_certificate)
         advancedOptionsContainer = rootView.findViewById(R.id.foldable_advanced_options)
         nextButton = rootView.findViewById(R.id.next)
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
@@ -117,6 +116,8 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        restoreScreenState(savedInstanceState)
         /*
          * We wait until now to initialize the listeners because we didn't want the OnCheckedChangeListener active
          * while the clientCertificateCheckBox state was being restored because it could trigger the pop-up of a
@@ -203,8 +204,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, checkedIncoming)
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    private fun restoreScreenState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             uiState = savedInstanceState.getEnum(STATE_KEY_UI_STATE, UiState.EMAIL_ADDRESS_ONLY)
 
