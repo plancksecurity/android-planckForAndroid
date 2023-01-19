@@ -402,7 +402,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         super.onResume()
         accountSetupNavigator = (activity as AccountSetupBasics?)!!.accountSetupNavigator
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, account)
-        validateFields()
     }
 
     private fun accountWasAlreadySet(email: String): Boolean {
@@ -530,17 +529,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     override fun onPause() {
         super.onPause()
-        dismissErrorDialogIfNeeded()
-        wasLoading = nextButton.visibility != View.VISIBLE
         nextProgressBar.hide()
-    }
-
-    private fun dismissErrorDialogIfNeeded() {
-        if (errorDialog != null && errorDialog!!.isShowing) {
-            errorDialog!!.dismiss()
-            errorDialog = null
-            errorDialogWasShowing = true
-        }
     }
 
     private enum class UiState {
