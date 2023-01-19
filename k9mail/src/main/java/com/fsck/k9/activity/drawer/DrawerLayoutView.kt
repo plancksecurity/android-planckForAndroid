@@ -405,9 +405,14 @@ class DrawerLayoutView @Inject constructor(
             drawerLayout.closeDrawers()
             messageListView.editAccount()
         }
-        addAccountContainer.setOnClickListener {
-            drawerLayout.closeDrawers()
-            AccountSetupBasics.actionNewAccount(context)
+
+        if (BuildConfig.IS_ENTERPRISE) {
+            addAccountContainer.visibility = View.GONE
+        } else {
+            addAccountContainer.setOnClickListener {
+                drawerLayout.closeDrawers()
+                AccountSetupBasics.actionNewAccount(context)
+            }
         }
     }
 
