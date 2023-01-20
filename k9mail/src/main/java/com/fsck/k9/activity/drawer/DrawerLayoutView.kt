@@ -406,7 +406,7 @@ class DrawerLayoutView @Inject constructor(
             messageListView.editAccount()
         }
 
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO) {
             addAccountContainer.visibility = View.GONE
         } else {
             addAccountContainer.setOnClickListener {

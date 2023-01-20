@@ -301,7 +301,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
 
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO) {
             addAccountButton!!.visibility = View.GONE
         } else {
             addAccountButton!!.setOnClickListener { onAddNewAccount() }
