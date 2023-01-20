@@ -96,9 +96,9 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.config_enable_echo_protocol(false)
         engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        if (!BuildConfig.IS_DEMO) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
+        //if (!BuildConfig.IS_DEMO) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
         //    engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
-        }
+       // }
     }
 
     @get:Throws(pEpException::class)
