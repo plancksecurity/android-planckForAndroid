@@ -16,14 +16,16 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.databinding.FragmentIntroFirstBinding
+import com.fsck.k9.databinding.FragmentIntroFourthBinding
+import com.fsck.k9.databinding.FragmentIntroSecondBinding
+import com.fsck.k9.databinding.FragmentIntroThirdBinding
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.ui.fragments.PEpFragment
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.fragment_intro_first.*
-import kotlinx.android.synthetic.main.fragment_intro_fourth.*
 import security.pEp.ui.PEpUIUtils
 import security.pEp.ui.permissions.PermissionsActivity
 import javax.inject.Inject
@@ -110,6 +112,7 @@ class WelcomeMessage : AppIntro() {
 }
 class IntroFirstFragment : PEpFragment() {
 
+    private lateinit var binding: FragmentIntroFirstBinding
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
@@ -117,8 +120,9 @@ class IntroFirstFragment : PEpFragment() {
         getpEpComponent().inject(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_first, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = FragmentIntroFirstBinding.inflate(inflater, container, false)
+        return binding.root;
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -129,34 +133,43 @@ class IntroFirstFragment : PEpFragment() {
 
     private fun startTexts() {
         val primaryColorARGB = PEpUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
-        headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        with(binding){
+            headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+            secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        }
     }
 
     private fun startImage() {
         val address = Address("A")
-        contactBadge.setPepRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(contactBadge, address)
+        with(binding){
+            contactBadge.setPepRating(Rating.pEpRatingReliable, true)
+            contactsPictureLoader.setContactPicture(contactBadge, address)
+        }
     }
 }
 
 class IntroSecondFragment : Fragment() {
+    private lateinit var binding: FragmentIntroSecondBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_second, container, false)
+        binding = FragmentIntroSecondBinding.inflate(inflater, container, false)
+        return binding.root;
     }
 
 }
 
 class IntroThirdFragment : Fragment() {
+    private lateinit var binding: FragmentIntroThirdBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_third, container, false)
+        binding = FragmentIntroThirdBinding.inflate(inflater, container, false)
+        return binding.root;
     }
 
 }
 
 class IntroFourthFragment : PEpFragment() {
+    private lateinit var binding: FragmentIntroFourthBinding
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
@@ -166,7 +179,8 @@ class IntroFourthFragment : PEpFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_intro_fourth, container, false)
+        binding = FragmentIntroFourthBinding.inflate(inflater, container, false)
+        return binding.root;
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -176,11 +190,13 @@ class IntroFourthFragment : PEpFragment() {
 
     private fun startImage() {
         var address = Address("A")
-        secureBadge.setPepRating(Rating.pEpRatingReliable, true)
-        contactsPictureLoader.setContactPicture(secureBadge, address)
-        address = Address("B")
-        secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
-        contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
+        with(binding){
+            secureBadge.setPepRating(foundation.pEp.jniadapter.Rating.pEpRatingReliable, true)
+            contactsPictureLoader.setContactPicture(secureBadge, address)
+            address = Address("B")
+            secureTrustedBadge.setPepRating(foundation.pEp.jniadapter.Rating.pEpRatingTrusted, true)
+            contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
+        }
     }
 
 }

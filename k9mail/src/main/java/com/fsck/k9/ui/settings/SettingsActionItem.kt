@@ -4,7 +4,6 @@ import android.view.View
 import com.fsck.k9.R
 import com.fsck.k9.databinding.TextListItemBinding
 import com.xwray.groupie.viewbinding.BindableItem
-import kotlinx.android.synthetic.main.text_list_item.*
 
 internal class SettingsActionItem(val actionName: String, val action: SettingsAction) : BindableItem<TextListItemBinding>() {
 

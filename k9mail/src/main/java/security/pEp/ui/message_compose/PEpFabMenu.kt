@@ -3,16 +3,18 @@ package security.pEp.ui.message_compose
 import android.content.Context
 import android.graphics.drawable.Animatable
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
+import com.fsck.k9.databinding.FabMenuLayoutBinding
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
-import kotlinx.android.synthetic.main.fab_menu_layout.view.*
 
 
 class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
+    private var binding = FabMenuLayoutBinding.inflate(LayoutInflater.from(context), this, true)
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -36,7 +38,7 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
 
     public override fun onFinishInflate() {
         super.onFinishInflate()
-        openCloseButton.setOnLongClickListener {
+        binding.openCloseButton.setOnLongClickListener {
             presenter.onLongClicked()
             true
         }
@@ -44,60 +46,77 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
 
     fun setClickListeners(listener: OnMessageOptionsListener) {
         presenter.listener = listener
-
-        openCloseButton?.setOnClickListener { presenter.onMainActionClicked() }
-        fabForward?.setOnClickListener { presenter.onForwardClicked() }
-        fabReplyAll?.setOnClickListener { presenter.onReplyAllClicked() }
-        fabReply?.setOnClickListener { presenter.onReplyClicked() }
+        with(binding){
+            openCloseButton.setOnClickListener { presenter.onMainActionClicked() }
+            fabForward.setOnClickListener { presenter.onForwardClicked() }
+            fabReplyAll.setOnClickListener { presenter.onReplyAllClicked() }
+            fabReply.setOnClickListener { presenter.onReplyClicked() }
+        }
     }
 
     override fun openMenu() {
         textAnimation(fabOpenAnimation)
-        fabForward.startAnimation(slideUpForward)
-        fabReplyAll.startAnimation(slideUpReplyAll)
-        fabReply.startAnimation(slideUpReply)
-        fabReply.show()
-        fabReplyAll.show()
-        fabForward.show()
+        with(binding){
+            fabForward.startAnimation(slideUpForward)
+            fabReplyAll.startAnimation(slideUpReplyAll)
+            fabReply.startAnimation(slideUpReply)
+            fabReply.show()
+            fabReplyAll.show()
+            fabForward.show()
+        }
         animateOpenCloseFab(R.drawable.reply_to_cross_animated)
         setTextHintsVisibility(VISIBLE)
     }
 
     override fun closeMenu() {
         textAnimation(fabCloseAnimation)
-        fabForward.startAnimation(slideDownForward)
-        fabReplyAll.startAnimation(slideDownReplyAll)
-        fabReply.startAnimation(slideDownReply)
-        fabReply.hide()
-        fabReplyAll.hide()
-        fabForward.hide()
+        with(binding){
+            fabForward.startAnimation(slideDownForward)
+            fabReplyAll.startAnimation(slideDownReplyAll)
+            fabReply.startAnimation(slideDownReply)
+            fabReply.hide()
+            fabReplyAll.hide()
+            fabForward.hide()
+        }
         animateOpenCloseFab(R.drawable.cross_to_reply_animated)
         setTextHintsVisibility(GONE)
     }
 
     private fun animateOpenCloseFab(@DrawableRes drawable: Int) {
-        openCloseButton.setImageResource(drawable)
-        if (openCloseButton.drawable is Animatable) {
-            (openCloseButton.drawable as Animatable).start()
+        with(binding){
+            openCloseButton.setImageResource(drawable)
+            if (openCloseButton.drawable is Animatable) {
+                (openCloseButton.drawable as Animatable).start()
+            }
+
         }
     }
 
     private fun textAnimation(animation: Animation) {
-        textviewForward.startAnimation(animation)
-        textviewReplyAll.startAnimation(animation)
-        textviewReply.startAnimation(animation)
+        with(binding){
+            textviewForward.startAnimation(animation)
+            textviewReplyAll.startAnimation(animation)
+            textviewReply.startAnimation(animation)
+
+        }
     }
 
     private fun setTextHintsVisibility(visible: Int) {
-        textviewForward.visibility = visible
-        textviewReplyAll.visibility = visible
-        textviewReply.visibility = visible
+        with(binding){
+            textviewForward.visibility = visible
+            textviewReplyAll.visibility = visible
+            textviewReply.visibility = visible
+
+        }
     }
 
     override fun showInitialState() {
-        openCloseButton?.post {
-            setTextHintsVisibility(GONE)
-            openCloseButton.setImageResource(R.drawable.ic_reply_green)
+        with(binding){
+            openCloseButton?.post {
+                setTextHintsVisibility(GONE)
+                openCloseButton.setImageResource(R.drawable.ic_reply_green)
+            }
+
         }
     }
 

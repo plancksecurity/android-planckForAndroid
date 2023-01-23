@@ -14,6 +14,8 @@ import com.fsck.k9.*
 import com.fsck.k9.activity.ManageIdentities
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
+import com.fsck.k9.databinding.CryptoKeyTransferBinding
+import com.fsck.k9.databinding.PreferenceLoadingWidgetBinding
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpProviderFactory
@@ -27,7 +29,6 @@ import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import foundation.pEp.jniadapter.exceptions.pEpException
-import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
@@ -45,6 +46,8 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     private var rootkey:String? = null
     private var mdmDialog: AlertDialog? = null
     private lateinit var account:Account
+    private lateinit var binding: PreferenceLoadingWidgetBinding
+
     private val accountUuid: String by lazy {
         checkNotNull(arguments?.getString(ARG_ACCOUNT_UUID)) { "$ARG_ACCOUNT_UUID == null" }
     }
@@ -54,6 +57,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferencesFix(savedInstanceState: Bundle?, rootKey: String?) {
         account = getAccount()
         val dataStore = dataStoreFactory.create(account)
+        binding = PreferenceLoadingWidgetBinding.inflate(layoutInflater)
 
         preferenceManager.preferenceDataStore = dataStore
         this.rootkey = rootKey
@@ -267,7 +271,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset(account: Account) {
         disableKeyResetClickListener()
-        loading?.visibility = View.VISIBLE
+        binding.loading?.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -285,7 +289,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
                 }
             }
             initializeAccountpEpKeyReset(account)
-            loading?.visibility = View.GONE
+            binding.loading?.visibility = View.GONE
         }
     }
 

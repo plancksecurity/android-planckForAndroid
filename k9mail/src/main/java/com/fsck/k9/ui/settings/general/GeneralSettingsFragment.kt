@@ -11,6 +11,7 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
+import com.fsck.k9.databinding.PreferenceLoadingWidgetBinding
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
@@ -23,7 +24,6 @@ import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import security.pEp.permissions.PermissionChecker
@@ -41,6 +41,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private lateinit var attachmentDefaultPathPreference: Preference
+    private lateinit var binding: PreferenceLoadingWidgetBinding
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
@@ -77,6 +78,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
+        binding = PreferenceLoadingWidgetBinding.inflate(layoutInflater)
     }
 
     private fun initializeTheme() {
@@ -245,7 +247,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun dopEpKeyReset() {
         disableKeyResetClickListener()
-        loading?.visibility = View.VISIBLE
+        binding.loading.visibility = View.VISIBLE
 
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -256,7 +258,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                         it.getString(R.string.key_reset_all_own_identitities_feedback))
             }
             initializeGlobalpEpKeyReset()
-            loading?.visibility = View.GONE
+            binding.loading.visibility = View.GONE
         }
     }
 

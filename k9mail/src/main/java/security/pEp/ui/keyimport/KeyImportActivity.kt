@@ -11,7 +11,6 @@ import com.fsck.k9.databinding.ImportKeyDialogBinding
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
-import kotlinx.android.synthetic.main.key_import_progress_dialog.*
 import javax.inject.Inject
 
 
@@ -116,11 +115,11 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     override fun showLoading() {
         binding.confirmationLayout.visibility = View.INVISIBLE
-        keyImportLoadingLayout.visibility = View.VISIBLE
+        binding.importLayout.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
-        keyImportLoadingLayout.visibility = View.GONE
+        binding.importLayout.visibility = View.GONE
         binding.confirmationLayout.visibility = View.VISIBLE
     }
 

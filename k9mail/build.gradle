@@ -19,7 +19,6 @@ buildscript {
 apply plugin: "com.android.application"
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 
 apply from: '../gradle/plugins/checkstyle-android.gradle'
@@ -382,10 +381,6 @@ private static void defineOAuthConfigs(variant) {
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"\""
             break
     }
-}
-
-androidExtensions {
-    experimental = true
 }
 
 /*kotlin {

@@ -5,15 +5,17 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
+import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.view.children
+import com.fsck.k9.databinding.ComposeAccountItemBinding
+import com.fsck.k9.databinding.ToolbarBinding
 import com.fsck.k9.pEp.PEpColorUtils
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,6 +36,7 @@ interface ToolBarCustomizer {
 }
 
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
+    private var binding = ToolbarBinding.inflate(activity.layoutInflater)
 
     override fun setStatusBarPepColor(pEpRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -59,7 +62,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
         uiScope.launch {
             val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating)
-            activity.toolbar?.setBackgroundColor(color)
+            binding.toolbar.setBackgroundColor(color)
         }
 
     }
@@ -68,7 +71,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            activity.toolbar?.setBackgroundColor(colorReference)
+            binding.toolbar.setBackgroundColor(colorReference)
         }
     }
 
@@ -79,11 +82,11 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
-            activity.toolbar?.children?.forEach { v ->
+            binding.toolbar.children.forEach { v ->
                 if(v is ImageButton)
                         v.drawable.mutate().colorFilter = colorFilter
             }
-            activity.toolbar?.overflowIcon?.colorFilter = colorFilter
+            binding.toolbar.overflowIcon?.colorFilter = colorFilter
         }
     }
 
