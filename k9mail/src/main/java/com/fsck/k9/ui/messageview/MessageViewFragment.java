@@ -554,7 +554,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         intent.putExtra(ChooseFolder.EXTRA_CUR_FOLDER, mMessageReference.getFolderName());
         intent.putExtra(ChooseFolder.EXTRA_SEL_FOLDER, mAccount.getLastSelectedFolderName());
         intent.putExtra(ChooseFolder.EXTRA_MESSAGE, mMessageReference.toIdentityString());
-        startActivityForResult(intent, activity);
+        requireActivity().startActivityForResult(intent, activity);
     }
 
     @Override

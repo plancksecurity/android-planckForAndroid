@@ -1934,14 +1934,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if ((requestCode & REQUEST_MASK_PENDING_INTENT) == REQUEST_MASK_PENDING_INTENT) {
-            requestCode ^= REQUEST_MASK_PENDING_INTENT;
-            if (mMessageViewFragment != null) {
-                mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
-            }
-        }
-
         if (mMessageViewFragment != null) {
+            mMessageViewFragment.onActivityResult(requestCode, resultCode, data);
             mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
         }
     }
