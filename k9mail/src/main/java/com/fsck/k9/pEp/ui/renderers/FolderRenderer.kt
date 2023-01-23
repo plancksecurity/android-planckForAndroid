@@ -8,24 +8,25 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
+import com.fsck.k9.databinding.FolderNavigationListItemBinding
 import com.fsck.k9.pEp.models.FolderModel
 import security.pEp.foldable.folders.defaults.renderer.DefaultLevelItemRenderer
 import security.pEp.foldable.folders.model.LevelListItem
 import security.pEp.foldable.folders.util.Constants
 
 class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
-
+    private lateinit var binding: FolderNavigationListItemBinding
     private lateinit var folderNewMessages: TextView
     private lateinit var folderIcon: View
 
     override fun inflate(inflater: LayoutInflater, parent: ViewGroup): View {
-        val inflatedView = inflater.inflate(R.layout.folder_navigation_list_item, parent, false)
-        folderName = inflatedView.findViewById(R.id.folder_name)
-        folderNewMessages = inflatedView.findViewById(R.id.folder_new_messages)
-        showChildrenButton = inflatedView.findViewById(R.id.showchildrenbutton)
-        showChildrenClicker = inflatedView.findViewById(R.id.showchildrenclicker)
-        folderIcon = inflatedView.findViewById(R.id.folder_icon)
-        return inflatedView
+        binding = FolderNavigationListItemBinding.inflate(inflater, parent, false)
+        folderName = binding.folderName
+        folderNewMessages = binding.folderNewMessages
+        showChildrenButton = binding.showchildrenbutton
+        showChildrenClicker = binding.showchildrenclicker
+        folderIcon = binding.folderIcon
+        return binding.root
     }
 
     override fun bind() {
