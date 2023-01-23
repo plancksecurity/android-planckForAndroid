@@ -23,8 +23,8 @@ class FolderRenderer : DefaultLevelItemRenderer<FolderModel>() {
         binding = FolderNavigationListItemBinding.inflate(inflater, parent, false)
         folderName = binding.folderName
         folderNewMessages = binding.folderNewMessages
-        showChildrenButton = binding.showchildrenbutton
-        showChildrenClicker = binding.showchildrenclicker
+        showChildrenButton = binding.showChildrenButton
+        showChildrenClicker = binding.showChildrenClicker
         folderIcon = binding.folderIcon
         return binding.root
     }

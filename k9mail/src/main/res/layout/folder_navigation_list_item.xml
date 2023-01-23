@@ -14,12 +14,12 @@
         android:id="@+id/folder_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/showchildrenbutton"
+        android:layout_toEndOf="@id/show_children_button"
         android:background="@drawable/ic_label_black_24dp"
         tools:ignore="ContentDescription" />
 
     <ImageView
-        android:id="@+id/showchildrenbutton"
+        android:id="@+id/show_children_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -27,12 +27,12 @@
         tools:ignore="ContentDescription" />
 
     <View
-        android:id="@+id/showchildrenclicker"
+        android:id="@+id/show_children_clicker"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/showchildrenbutton"
-        android:layout_alignTop="@+id/showchildrenbutton"
-        android:layout_alignBottom="@+id/showchildrenbutton"
+        android:layout_alignStart="@+id/show_children_button"
+        android:layout_alignTop="@+id/show_children_button"
+        android:layout_alignBottom="@+id/show_children_button"
         />
 
     <TextView

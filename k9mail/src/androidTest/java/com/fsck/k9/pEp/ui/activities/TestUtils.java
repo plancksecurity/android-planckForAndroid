@@ -124,7 +124,6 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getElementsInRecycler;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
@@ -3231,7 +3230,7 @@ public class TestUtils {
                             .atPositionOnView(index, R.id.folder_name)
             );
             ViewInteraction clickerInteraction = onView(withRecyclerView(R.id.navigation_folders)
-                    .atPositionOnView(index, R.id.showchildrenclicker));
+                    .atPositionOnView(index, R.id.show_children_clicker));
             if (viewIsDisplayed(clickerInteraction)) {
                 clickerInteraction.perform(click());
                 waitForIdle();
