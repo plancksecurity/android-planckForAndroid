@@ -332,11 +332,6 @@
             app:initialExpandedChildrenCount="0">
 
             <Preference
-                android:key="pep_key_reset"
-                android:summary="@string/pep_key_reset_all_own_ids_summary"
-                android:title="@string/reset" />
-
-            <Preference
                 android:key="pep_extra_keys"
                 android:persistent="false"
                 android:singleLine="true"
@@ -447,5 +442,10 @@
         </PreferenceCategory>
 
     </PreferenceScreen>
+
+    <Preference
+        android:key="pep_key_reset"
+        android:summary="@string/pep_key_reset_all_own_ids_summary"
+        android:title="@string/reset" />
 
 </PreferenceScreen>
