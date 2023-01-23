@@ -301,10 +301,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
 
-        if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO) {
-            addAccountButton!!.visibility = View.GONE
+        if (BuildConfig.IS_END_USER) {
+            addAccountButton?.setOnClickListener { onAddNewAccount() }
         } else {
-            addAccountButton!!.setOnClickListener { onAddNewAccount() }
+            //It meant to be BuildConfig.IS_ENTERPRISE and BuildConfig.IS_DEMO only
+            addAccountButton?.visibility = View.GONE
         }
     }
 
@@ -414,11 +415,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         adapter = AccountListAdapter(accounts,
                 indexedFolderClickListener { position ->
-                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    val account = accountsList?.getItemAtPosition(position) as BaseAccount
                     onEditAccount(account as Account)
                 }
         )
-        accountsList!!.adapter = adapter
+        accountsList?.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -485,7 +486,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun openSearchAccount(searchAccount: SearchAccount?) {
-        MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+        MessageList.actionDisplaySearch(this, searchAccount?.relatedSearch, false, false)
     }
 
     private fun accountWasOpenable(realAccount: Account): Boolean {
@@ -548,7 +549,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 } else ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description),
+                        selectedContextAccount?.description),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
