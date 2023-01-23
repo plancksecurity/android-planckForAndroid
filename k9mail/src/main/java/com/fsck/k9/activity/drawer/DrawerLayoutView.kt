@@ -406,13 +406,14 @@ class DrawerLayoutView @Inject constructor(
             messageListView.editAccount()
         }
 
-        if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO) {
-            addAccountContainer.visibility = View.GONE
-        } else {
+        if (BuildConfig.IS_END_USER) {
             addAccountContainer.setOnClickListener {
                 drawerLayout.closeDrawers()
                 AccountSetupBasics.actionNewAccount(context)
             }
+        } else {
+            //It meant to be BuildConfig.IS_ENTERPRISE and BuildConfig.IS_DEMO only
+            addAccountContainer.visibility = View.GONE
         }
     }
 
