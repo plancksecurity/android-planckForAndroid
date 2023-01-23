@@ -981,7 +981,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
+            if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO || account is SearchAccount) {
                 holder.folders!!.visibility = View.GONE
             } else {
                 holder.folders?.let {
