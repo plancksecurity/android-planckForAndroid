@@ -29,9 +29,7 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -69,7 +67,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     TextView itsOwnMessageTV;
 
     RecyclerView.LayoutManager recipientsLayoutManager;
-    private RVRendererAdapter<PEpIdentity> recipientsAdapter;
+    private RVRendererAdapter recipientsAdapter;
 
     String sender = "";
     private MessageReference messageReference;
@@ -186,8 +184,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         getOnHandshakeResultListener(),
                         myself
                 );
-        ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
-        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
+        recipientsAdapter = new RVRendererAdapter(rendererBuilder, pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -215,7 +212,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void updateIdentities(List<PEpIdentity> updatedIdentities) {
-        recipientsAdapter.setCollection(new ListAdapteeCollection<>(updatedIdentities));
+        recipientsAdapter.setList(updatedIdentities);
         recipientsAdapter.notifyDataSetChanged();
     }
 

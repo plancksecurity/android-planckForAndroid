@@ -37,7 +37,7 @@ buildscript {
                 'moshi'              : '1.2.0',
                 'butterKnife'        : '7.0.1',
                 'circleImageView'    : '2.1.0',
-                'renderers'          : '3.5.0',
+                'renderers'          : '4.1.0',
                 'acra'               : '4.6.1',
                 'appIntro'           : '5.1.0',
                 'swipeLayout'        : '1.2.0',

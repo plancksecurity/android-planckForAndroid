@@ -11,7 +11,6 @@ import com.fsck.k9.pEp.AccountUtils
 import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
-import com.pedrogomez.renderers.ListAdapteeCollection
 import security.pEp.foldable.folders.model.LevelListItem
 import security.pEp.foldable.folders.util.Constants
 import security.pEp.foldable.folders.util.LevelListBuilderImpl
@@ -96,8 +95,7 @@ class DrawerLayoutPresenter @Inject constructor(
     private fun setAccountAdapter() {
         val accounts: MutableList<Account> = ArrayList(preferences.availableAccounts)
         accounts.remove(account)
-        val collection = ListAdapteeCollection(accounts)
-        drawerView.setAccountsAdapter(collection)
+        drawerView.setAccountsAdapter(accounts)
     }
 
     fun setFoldersAdapter() {
