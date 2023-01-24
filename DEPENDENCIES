@@ -2,4 +2,4 @@
 ## Prefer git tags instead of SHA hashes when possible.
 
 pEpJNIAdapter=gradleupdate
-foldableFolderList=PEMA-115
+foldableFolderList=v0.2.3-RC1
