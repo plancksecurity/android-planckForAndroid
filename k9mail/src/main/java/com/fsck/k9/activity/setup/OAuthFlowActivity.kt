@@ -14,12 +14,14 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.observe
+import com.fsck.k9.auth.OAuthProviderType
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 
 class OAuthFlowActivity : K9Activity() {
     private val authViewModel: AuthViewModel by viewModel()
     private val accountManager: Preferences by inject()
+    var oAuthProviderType: OAuthProviderType? = null
 
     private lateinit var errorText: TextView
     private lateinit var signInButton: Button
@@ -53,14 +55,12 @@ class OAuthFlowActivity : K9Activity() {
                 account.email
             )
         }
+        val oAuthProviderType = intent.extras?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
         signInButton = if (authViewModel.isUsingGoogle(account)) {
             findViewById(R.id.google_sign_in_button)
         } else {
             findViewById(R.id.oauth_sign_in_button)
         }
-
-        signInButton.isVisible = true
-        signInButton.setOnClickListener { startOAuthFlow(account) }
 
         savedInstanceState?.let {
             val signInRunning = it.getBoolean(STATE_PROGRESS)
@@ -69,9 +69,18 @@ class OAuthFlowActivity : K9Activity() {
         }
 
         authViewModel.init(activityResultRegistry, lifecycle)
+        authViewModel.oAuthProviderType = oAuthProviderType
 
         authViewModel.uiState.observe(this) { state ->
             handleUiUpdates(state)
+        }
+
+        when(oAuthProviderType) {
+            null -> {
+                signInButton.isVisible = true
+                signInButton.setOnClickListener { startOAuthFlow(account) }
+            }
+            else -> startOAuthFlow(account)
         }
     }
 
@@ -136,12 +145,14 @@ class OAuthFlowActivity : K9Activity() {
     companion object {
         private const val EXTRA_ACCOUNT_UUID = "accountUuid"
         private const val EXTRA_TOKEN_REVOKED = "tokenRevoked"
+        private const val EXTRA_OAUTH_PROVIDER_TYPE = "com.fsck.k9.OAuthFlowActivity.oAuthProviderType"
 
         private const val STATE_PROGRESS = "signInProgress"
 
-        fun buildLaunchIntent(context: Context, accountUuid: String): Intent {
+        fun buildLaunchIntent(context: Context, accountUuid: String, oAuthProviderType: OAuthProviderType? = null): Intent {
             return Intent(context, OAuthFlowActivity::class.java).apply {
                 putExtra(EXTRA_ACCOUNT_UUID, accountUuid)
+                putExtra(EXTRA_OAUTH_PROVIDER_TYPE, oAuthProviderType?.toString())
             }
         }
 

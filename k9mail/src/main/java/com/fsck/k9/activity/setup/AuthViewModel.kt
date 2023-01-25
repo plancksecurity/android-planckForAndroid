@@ -12,6 +12,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
@@ -39,6 +40,7 @@ class AuthViewModel(
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
     private val authState = AuthState()
+    var oAuthProviderType: OAuthProviderType? = null
 
     private var account: Account? = null
 
@@ -132,7 +134,11 @@ class AuthViewModel(
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
         val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
+        return when(oAuthProviderType) {
+            null -> oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
+            OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
+            OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
+        }
     }
 
     private fun onLoginResult(authorizationResult: AuthorizationResult?) {

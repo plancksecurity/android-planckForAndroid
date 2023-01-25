@@ -2,6 +2,7 @@ package com.fsck.k9.autodiscovery.providersxml
 
 import android.content.res.XmlResourceParser
 import android.net.Uri
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.api.ConnectionSettingsDiscovery
 import com.fsck.k9.autodiscovery.api.DiscoveredServerSettings
 import com.fsck.k9.autodiscovery.api.DiscoveryResults
@@ -18,13 +19,13 @@ class ProvidersXmlDiscovery(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider
 ) : ConnectionSettingsDiscovery {
 
-    override fun discover(email: String): DiscoveryResults? {
+    override fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
         val provider = findProviderForDomain(domain) ?: return null
 
-        val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
-        val outgoingSettings = provider.toOutgoingServerSettings(email) ?: return null
+        val incomingSettings = provider.toIncomingServerSettings(email, oAuthProviderType) ?: return null
+        val outgoingSettings = provider.toOutgoingServerSettings(email, oAuthProviderType) ?: return null
         return DiscoveryResults(listOf(incomingSettings), listOf(outgoingSettings))
     }
 
@@ -85,7 +86,7 @@ class ProvidersXmlDiscovery(
         }
     }
 
-    private fun Provider.toIncomingServerSettings(email: String): DiscoveredServerSettings? {
+    private fun Provider.toIncomingServerSettings(email: String, oAuthProviderType: OAuthProviderType?): DiscoveredServerSettings? {
         val user = EmailHelper.getLocalPartFromEmailAddress(email) ?: return null
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
@@ -105,7 +106,7 @@ class ProvidersXmlDiscovery(
             uri.port
         }
 
-        val authType = if (oAuthConfigurationProvider.getConfiguration(host) != null) {
+        val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.getConfiguration(host) != null) {
             AuthType.XOAUTH2
         } else {
             AuthType.PLAIN
@@ -114,7 +115,7 @@ class ProvidersXmlDiscovery(
         return DiscoveredServerSettings(ServerSettings.Type.IMAP, host, port, security, authType, username)
     }
 
-    private fun Provider.toOutgoingServerSettings(email: String): DiscoveredServerSettings? {
+    private fun Provider.toOutgoingServerSettings(email: String, oAuthProviderType: OAuthProviderType?): DiscoveredServerSettings? {
         val user = EmailHelper.getLocalPartFromEmailAddress(email) ?: return null
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
@@ -134,7 +135,7 @@ class ProvidersXmlDiscovery(
             uri.port
         }
 
-        val authType = if (oAuthConfigurationProvider.getConfiguration(host) != null) {
+        val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.getConfiguration(host) != null) {
             AuthType.XOAUTH2
         } else {
             AuthType.PLAIN

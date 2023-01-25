@@ -18,6 +18,7 @@ import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupChooseOAuthFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.PEpSettingsChecker;
@@ -45,6 +46,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
     private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
     private static final String EXTRA_BACK_OUTGOING = "extra_back_outgoing";
     private AccountSetupBasicsFragment accountSetupBasicsFragment;
+    private AccountSetupChooseOAuthFragment accountSetupChooseOAuthFragment;
     public boolean isManualSetupRequired;
     public boolean isEditingIncomingSettings;
     public boolean isEditingOutgoingSettings;
@@ -122,10 +124,15 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
                 ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
             } else {
-                accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                accountSetupChooseOAuthFragment = new AccountSetupChooseOAuthFragment();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.addToBackStack("AccountSetupBasicsFragment");
-                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+                ft.addToBackStack("AccountSetupChooseOAuthFragment");
+                ft.replace(R.id.account_setup_container, accountSetupChooseOAuthFragment).commit();
+
+                //accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                //ft.addToBackStack("AccountSetupBasicsFragment");
+                //ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
             }
         }
         permissionRequester.requestBatteryOptimizationPermission();

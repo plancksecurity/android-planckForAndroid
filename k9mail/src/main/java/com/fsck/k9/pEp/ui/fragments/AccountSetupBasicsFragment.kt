@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.ContentLoadingProgressBar
 import com.fsck.k9.*
@@ -19,6 +20,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
@@ -65,6 +67,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private var errorDialog: AlertDialog? = null
     private var errorDialogWasShowing = false
     private var wasLoading = false
+    private var oAuthProviderType: OAuthProviderType? = null
 
     @Inject
     lateinit var pEpSettingsChecker: PEpSettingsChecker
@@ -74,6 +77,11 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     @Inject
     lateinit var provisioningSettings: ProvisioningSettings
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        oAuthProviderType = arguments?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -248,7 +256,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         val email = emailView.text?.toString() ?: error("Email missing")
         if (accountWasAlreadySet(email)) return
 
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
+        val connectionSettings = providersXmlDiscoveryDiscover(email, oAuthProviderType)
 
         if (connectionSettings != null &&
             connectionSettings.incoming.authenticationType == AuthType.XOAUTH2 &&
@@ -263,7 +271,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private fun startOAuthFlow(connectionSettings: ConnectionSettings) {
         val account = createAccount(connectionSettings)
 
-        val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
+        val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid, oAuthProviderType)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
 
@@ -337,8 +345,8 @@ class AccountSetupBasicsFragment : PEpFragment() {
         return preferences.defaultAccount?.name ?: ""
     }
 
-    private fun providersXmlDiscoveryDiscover(email: String): ConnectionSettings? {
-        val discoveryResults = providersXmlDiscovery.discover(email)
+    private fun providersXmlDiscoveryDiscover(email: String, oAuthProviderType: OAuthProviderType? = null): ConnectionSettings? {
+        val discoveryResults = providersXmlDiscovery.discover(email, oAuthProviderType)
         if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
             return null
         }
@@ -540,10 +548,22 @@ class AccountSetupBasicsFragment : PEpFragment() {
     companion object {
         private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0
         private const val EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account"
+        private const val EXTRA_OAUTH_PROVIDER_TYPE = "com.fsck.k9.AccountSetupBasics.oAuthProviderType"
         private const val STATE_KEY_UI_STATE = "com.fsck.k9.AccountSetupBasics.uiState"
         private const val STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
         private const val REQUEST_CODE_CHECK_SETTINGS = AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
+
+        fun newInstance(oAuthProviderType: OAuthProviderType?): AccountSetupBasicsFragment {
+            return AccountSetupBasicsFragment().apply {
+                oAuthProviderType?.let {oAuthProviderType ->
+                    arguments = bundleOf(
+                        EXTRA_OAUTH_PROVIDER_TYPE to
+                                oAuthProviderType.toString()
+                    )
+                }
+            }
+        }
     }
 }
