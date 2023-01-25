@@ -22,7 +22,7 @@ abstract class ConnectionSettingsDiscovery(
 
     }
     private fun DiscoveredServerSettings.addOAuthIfPossible(oAuthProviderType: OAuthProviderType?): DiscoveredServerSettings {
-        val authType = if (oAuthProviderType != null /*|| oAuthConfigurationProvider.getConfiguration(host) != null*/) {
+        val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.isGoogle(host)) {
             AuthType.XOAUTH2
         } else {
             AuthType.PLAIN
