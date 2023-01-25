@@ -6,14 +6,9 @@ import com.fsck.k9.mail.ServerSettings
 fun DiscoveredServerSettings.toServerSettings(): ServerSettings? {
     val authType = this.authType ?: return null
     val username = this.username ?: return null
-    this.authType
-    this.host
-    this.protocol
-    this.security
-    this.authType
 
     return ServerSettings(
-        protocol,
+        ServerSettings.Type.valueOf(protocol),
         host,
         port,
         security,

@@ -5,7 +5,9 @@ import android.content.Context
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autocrypt.autocryptModule
+import com.fsck.k9.autodiscovery.advanced.autodiscoveryAdvancedModule
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
+import com.fsck.k9.autodiscovery.thunderbird.autodiscoveryThunderbirdModule
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.crypto.openPgpModule
 import com.fsck.k9.mail.TransportProvider
@@ -45,6 +47,8 @@ object DI {
             mailStoreModule,
             authModule,
             autodiscoveryProvidersXmlModule,
+            autodiscoveryAdvancedModule,
+            autodiscoveryThunderbirdModule,
     )
 
     @JvmStatic fun start(application: Application) {

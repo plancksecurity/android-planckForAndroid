@@ -93,6 +93,8 @@ dependencies {
     implementation "androidx.security:security-crypto:${versions.crypto}"
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
+    implementation 'org.minidns:minidns-hla:1.0.4'
+
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
@@ -116,6 +118,7 @@ dependencies {
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
+    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {

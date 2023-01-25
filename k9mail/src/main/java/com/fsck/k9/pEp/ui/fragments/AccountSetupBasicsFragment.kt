@@ -21,7 +21,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionChec
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
-import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
+import com.fsck.k9.autodiscovery.advanced.AdvancedSettingsDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -44,7 +44,7 @@ import java.net.URISyntaxException
 import javax.inject.Inject
 
 class AccountSetupBasicsFragment : PEpFragment() {
-    private val providersXmlDiscovery: ProvidersXmlDiscovery by inject()
+    private val mailSettingsDiscovery: AdvancedSettingsDiscovery by inject()
     private val preferences: Preferences by inject()
     private val emailValidator: EmailAddressValidator by inject()
 
@@ -346,7 +346,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun providersXmlDiscoveryDiscover(email: String, oAuthProviderType: OAuthProviderType? = null): ConnectionSettings? {
-        val discoveryResults = providersXmlDiscovery.discover(email, oAuthProviderType)
+        val discoveryResults = mailSettingsDiscovery.discover(email, oAuthProviderType)
         if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
             return null
         }
