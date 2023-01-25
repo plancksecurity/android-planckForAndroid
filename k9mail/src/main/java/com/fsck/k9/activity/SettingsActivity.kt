@@ -272,6 +272,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
+        setupAvailableAccounts()
+    }
+
+    private fun setupAvailableAccounts() {
+        if (!BuildConfig.IS_END_USER) {
+            accountsList?.visibility = View.GONE
+            findViewById<View>(R.id.available_accounts_title)?.visibility = View.GONE
+        }
     }
 
     fun startOnBoarding() {
