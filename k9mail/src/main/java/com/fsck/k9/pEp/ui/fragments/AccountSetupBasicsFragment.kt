@@ -81,6 +81,9 @@ class AccountSetupBasicsFragment : PEpFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         oAuthProviderType = arguments?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
+        uiState =
+            if (oAuthProviderType == null) UiState.PASSWORD_FLOW
+            else UiState.EMAIL_ADDRESS_ONLY
     }
 
     override fun onCreateView(
