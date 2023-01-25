@@ -193,12 +193,43 @@ class AccountSetupBasicsFragment : PEpFragment() {
             UiState.EMAIL_ADDRESS_ONLY -> {
                 passwordLayout.isVisible = false
                 advancedOptionsContainer.isVisible = false
-                nextButton.setOnClickListener { attemptAutoSetupUsingOnlyEmailAddress() }
             }
             UiState.PASSWORD_FLOW -> {
                 passwordLayout.isVisible = true
                 advancedOptionsContainer.isVisible = true
-                nextButton.setOnClickListener { attemptAutoSetup() }
+            }
+        }
+        nextButton.setOnClickListener { attemptAutomaticSetup() }
+    }
+
+    private fun attemptAutomaticSetup() {
+        // this method runs when we click on nextButton
+        // here we call the common things we need to call
+        val email = emailView.text?.toString() ?: error("Email missing")
+        if (accountWasAlreadySet(email)) return
+        if (uiState == UiState.PASSWORD_FLOW && clientCertificateCheckBox.isChecked) {
+            // Auto-setup doesn't support client certificates.
+            onManualSetup()
+            return
+        }
+
+        val connectionSettings = discoverMailSettings(
+            email,
+            if (uiState == UiState.EMAIL_ADDRESS_ONLY) oAuthProviderType
+            else null
+        ) // RUN THIS IN BACKGROUND, WHEN RESULT COMES WE WILL CONTINUE
+        // FROM HERE NOW WILL BE A CALLBACK, OR A LIVEDATA OBSERVER
+        if (connectionSettings == null) {
+            onManualSetup()
+            return
+        }
+        when(uiState) {
+            UiState.EMAIL_ADDRESS_ONLY -> { // this is the original, intial state
+                attemptAutoSetupUsingOnlyEmailAddress(connectionSettings)
+            }
+            UiState.PASSWORD_FLOW -> {
+                //attemptAutoSetup(connectionSettings)
+                finishAutoSetup(connectionSettings)
             }
         }
     }
@@ -252,14 +283,8 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 clientCertificateChecked && clientCertificateAlias != null
     }
 
-    private fun attemptAutoSetupUsingOnlyEmailAddress() {
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) return
-
-        val connectionSettings = providersXmlDiscoveryDiscover(email, oAuthProviderType)
-
-        if (connectionSettings != null &&
-            connectionSettings.incoming.authenticationType == AuthType.XOAUTH2 &&
+    private fun attemptAutoSetupUsingOnlyEmailAddress(connectionSettings: ConnectionSettings) {
+        if (connectionSettings.incoming.authenticationType == AuthType.XOAUTH2 &&
             connectionSettings.outgoing.authenticationType == AuthType.XOAUTH2
         ) {
             startOAuthFlow(connectionSettings)
@@ -294,7 +319,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
             return
         }
 
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
+        val connectionSettings = discoverMailSettings(email)
         if (connectionSettings != null) {
             finishAutoSetup(connectionSettings)
         } else {
@@ -345,7 +370,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         return preferences.defaultAccount?.name ?: ""
     }
 
-    private fun providersXmlDiscoveryDiscover(email: String, oAuthProviderType: OAuthProviderType? = null): ConnectionSettings? {
+    private fun discoverMailSettings(email: String, oAuthProviderType: OAuthProviderType? = null): ConnectionSettings? {
         val discoveryResults = mailSettingsDiscovery.discover(email, oAuthProviderType)
         if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
             return null
