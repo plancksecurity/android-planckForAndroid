@@ -6,6 +6,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mailstore.LocalFolder;
+import com.fsck.k9.mailstore.LocalMessage;
 
 
 public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
@@ -17,7 +18,7 @@ public class FolderInfoHolder implements Comparable<FolderInfoHolder> {
     public boolean loading;
     public String status;
     public boolean lastCheckFailed;
-    public Folder folder;
+    public LocalFolder folder;
     public boolean pushActive;
     public boolean moreMessages;
 
