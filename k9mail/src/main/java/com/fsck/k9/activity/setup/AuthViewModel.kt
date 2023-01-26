@@ -68,7 +68,7 @@ class AuthViewModel(
     }
 
     fun isUsingGoogle(account: Account): Boolean {
-        if (account.oAuthProviderType == OAuthProviderType.GOOGLE) return true
+        if (account.mandatoryOAuthProviderType == OAuthProviderType.GOOGLE) return true
         val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
         return oAuthConfigurationProvider.isGoogle(incomingSettings.host!!)
     }
@@ -134,7 +134,7 @@ class AuthViewModel(
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
         val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return when(account.oAuthProviderType) {
+        return when(account.mandatoryOAuthProviderType) {
             null -> oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
             OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
             OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration

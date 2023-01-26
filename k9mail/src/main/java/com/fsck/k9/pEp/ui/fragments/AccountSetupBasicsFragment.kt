@@ -300,7 +300,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun startOAuthFlow(connectionSettings: ConnectionSettings) {
         val account = createAccount(connectionSettings)
-        account.oAuthProviderType = oAuthProviderType
+        account.mandatoryOAuthProviderType = oAuthProviderType
         val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }

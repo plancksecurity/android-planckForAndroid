@@ -87,7 +87,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
             <br/>
             <p><b>Mail settings:</b></p>
                 <p><b>&emsp;Email address:</b> ${account.email}</p>
-                <p><b>&emsp;OAuth Provider:</b> ${account.oAuthProviderType}</p>
+                <p><b>&emsp;OAuth Provider:</b> ${account.mandatoryOAuthProviderType}</p>
                 <p><b>&emsp;Incoming server:</b></p>
                     <p><b>&emsp;&emsp;IMAP server:</b> ${incomingMailSettings?.server}</p>
                     <p><b>&emsp;&emsp;Security:</b> ${incomingMailSettings?.connectionSecurity}</p>

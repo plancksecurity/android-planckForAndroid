@@ -73,7 +73,7 @@ class OAuthFlowActivity : K9Activity() {
         }
 
         when {
-            account.oAuthProviderType == null || isTokenRevoked -> {
+            account.mandatoryOAuthProviderType == null || isTokenRevoked -> {
                 signInButton.isVisible = true
                 signInButton.setOnClickListener { startOAuthFlow(account) }
             }
