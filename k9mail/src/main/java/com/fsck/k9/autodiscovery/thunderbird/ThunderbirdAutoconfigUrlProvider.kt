@@ -1,19 +1,18 @@
 package com.fsck.k9.autodiscovery.thunderbird
 
-import androidx.annotation.WorkerThread
+import com.fsck.k9.autodiscovery.dnsrecords.DnsRecordsResolver
 import com.fsck.k9.helper.EmailHelper
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import org.minidns.hla.DnssecResolverApi
-import org.minidns.record.MX
-import timber.log.Timber
 
-class ThunderbirdAutoconfigUrlProvider {
+class ThunderbirdAutoconfigUrlProvider(
+    private val dnsRecordsResolver: DnsRecordsResolver
+) {
     fun getAutoconfigUrls(email: String): List<HttpUrl> {
         var domain = EmailHelper.getDomainFromEmailAddress(email)
 
         requireNotNull(domain) { "Couldn't extract domain from email address: $email" }
-        domain = getRealDomain(domain)
+        domain = dnsRecordsResolver.getRealDomain(domain)
 
         return listOf(
             createProviderUrl(domain, email),
@@ -49,19 +48,5 @@ class ThunderbirdAutoconfigUrlProvider {
             .newBuilder()
             .addPathSegment(domain)
             .build()
-    }
-
-    @WorkerThread
-    private fun getRealDomain(domain: String): String {
-        var realDomain = domain
-        kotlin.runCatching { DnssecResolverApi.INSTANCE.resolve(domain, MX::class.java) }
-            .onSuccess {
-                val realDomains = it.answersOrEmptySet
-                if (realDomains.isNotEmpty()) {
-                    realDomain = realDomains.first().target.domainpart
-                }
-            }
-            .onFailure { Timber.e(it) }
-        return realDomain
     }
 }

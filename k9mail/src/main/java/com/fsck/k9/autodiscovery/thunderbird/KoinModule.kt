@@ -4,7 +4,7 @@ import okhttp3.OkHttpClient
 import org.koin.dsl.module.applicationContext
 
 val autodiscoveryThunderbirdModule = applicationContext {
-    factory { ThunderbirdAutoconfigUrlProvider() }
+    factory { ThunderbirdAutoconfigUrlProvider(get()) }
     factory { OkHttpClient() }
     factory { ThunderbirdAutoconfigFetcher(get()) }
     factory { ThunderbirdAutoconfigParser() }

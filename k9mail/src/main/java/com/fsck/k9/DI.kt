@@ -7,6 +7,7 @@ import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autocrypt.autocryptModule
 import com.fsck.k9.autodiscovery.advanced.autodiscoveryAdvancedModule
+import com.fsck.k9.autodiscovery.dnsrecords.dnsRecordsResolverModule
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
 import com.fsck.k9.autodiscovery.thunderbird.autodiscoveryThunderbirdModule
 import com.fsck.k9.controller.MessagingController
@@ -51,6 +52,7 @@ object DI {
             autodiscoveryProvidersXmlModule,
             autodiscoveryAdvancedModule,
             autodiscoveryThunderbirdModule,
+            dnsRecordsResolverModule,
     )
 
     @JvmStatic fun start(application: Application) {
