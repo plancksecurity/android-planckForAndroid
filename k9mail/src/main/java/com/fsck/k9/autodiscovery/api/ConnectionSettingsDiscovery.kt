@@ -8,7 +8,7 @@ import com.fsck.k9.oauth.OAuthConfigurationProvider
 abstract class ConnectionSettingsDiscovery(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider
 ) {
-    open fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
+    fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         return discover(email)?.addOAuthIfPossible(oAuthProviderType)
     }
 
