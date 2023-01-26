@@ -1,8 +1,7 @@
 package com.fsck.k9.autodiscovery.thunderbird
 
+import androidx.annotation.WorkerThread
 import com.fsck.k9.helper.EmailHelper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.minidns.hla.DnssecResolverApi
@@ -52,7 +51,8 @@ class ThunderbirdAutoconfigUrlProvider {
             .build()
     }
 
-    private fun getRealDomain(domain: String): String = runBlocking(Dispatchers.IO) {
+    @WorkerThread
+    private fun getRealDomain(domain: String): String {
         var realDomain = domain
         kotlin.runCatching { DnssecResolverApi.INSTANCE.resolve(domain, MX::class.java) }
             .onSuccess {
@@ -62,6 +62,6 @@ class ThunderbirdAutoconfigUrlProvider {
                 }
             }
             .onFailure { Timber.e(it) }
-        realDomain
+        return realDomain
     }
 }
