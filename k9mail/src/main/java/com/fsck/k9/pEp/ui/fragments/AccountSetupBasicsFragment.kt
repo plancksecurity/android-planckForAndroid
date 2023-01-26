@@ -134,17 +134,20 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
         accountSetupBasicsViewModel.connectionSettings.observe(viewLifecycleOwner) { pair ->
             val ready = pair.second
-            val connectionSettings = pair.first
+            val event = pair.first
             if (ready) {
-                if (connectionSettings == null) {
-                    onManualSetup()
-                } else {
-                    when(uiState) {
-                        UiState.EMAIL_ADDRESS_ONLY -> { // this is the original, intial state
-                            attemptAutoSetupUsingOnlyEmailAddress(connectionSettings)
-                        }
-                        UiState.PASSWORD_FLOW -> {
-                            finishAutoSetup(connectionSettings)
+                if (!event.hasBeenHandled) {
+                    val connectionSettings = event.getContent()
+                    if (connectionSettings == null) {
+                        onManualSetup()
+                    } else {
+                        when(uiState) {
+                            UiState.EMAIL_ADDRESS_ONLY -> { // this is the original, intial state
+                                attemptAutoSetupUsingOnlyEmailAddress(connectionSettings)
+                            }
+                            UiState.PASSWORD_FLOW -> {
+                                finishAutoSetup(connectionSettings)
+                            }
                         }
                     }
                 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.advanced.AdvancedSettingsDiscovery
+import com.fsck.k9.pEp.infrastructure.livedata.Event
 import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.fragments.toServerSettings
 import kotlinx.coroutines.Dispatchers
@@ -16,13 +17,13 @@ class AccountSetupBasicsViewModel(
     private val mailSettingsDiscovery: AdvancedSettingsDiscovery
 ): ViewModel() {
 
-    private val _connectionSettings = MutableLiveData<Pair<ConnectionSettings?, Boolean>>(Pair(null, false))
-    val connectionSettings: LiveData<Pair<ConnectionSettings?, Boolean>> = _connectionSettings
+    private val _connectionSettings = MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
+    val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> = _connectionSettings
 
     fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
         viewModelScope.launch {
             discoverMailSettings(email, oAuthProviderType)
-                .also { _connectionSettings.value = Pair(it, true) }
+                .also { _connectionSettings.value = Pair(Event(it), true) }
         }
     }
 
