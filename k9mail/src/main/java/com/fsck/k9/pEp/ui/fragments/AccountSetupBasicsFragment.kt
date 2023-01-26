@@ -8,7 +8,6 @@ import android.view.*
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.ContentLoadingProgressBar
@@ -18,7 +17,6 @@ import com.fsck.k9.activity.setup.*
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.auth.OAuthProviderType
-import com.fsck.k9.autodiscovery.advanced.AdvancedSettingsDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -62,8 +60,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var rootView: View
     private lateinit var accountSetupNavigator: AccountSetupNavigator
     private lateinit var pEpUIArtefactCache: PePUIArtefactCache
-    private var errorDialog: AlertDialog? = null
-    private var errorDialogWasShowing = false
     private var wasLoading = false
     private var oAuthProviderType: OAuthProviderType? = null
 
@@ -223,8 +219,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun attemptAutomaticSetup() {
-        // this method runs when we click on nextButton
-        // here we call the common things we need to call
         val email = emailView.text?.toString() ?: error("Email missing")
         if (accountWasAlreadySet(email)) return
         if (uiState == UiState.PASSWORD_FLOW && clientCertificateCheckBox.isChecked) {
@@ -232,7 +226,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
             onManualSetup()
             return
         }
-
+        showLoading(true)
         accountSetupBasicsViewModel.discoverMailSettingsAsync(
             email,
             if (uiState == UiState.EMAIL_ADDRESS_ONLY) oAuthProviderType
@@ -246,6 +240,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         outState.putEnum(STATE_KEY_UI_STATE, uiState)
         outState.putString(EXTRA_ACCOUNT, account?.uuid)
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, checkedIncoming)
+        outState.putBoolean(WAS_LOADING, wasLoading)
     }
 
     private fun restoreScreenState(savedInstanceState: Bundle?) {
@@ -258,6 +253,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
             }
 
             checkedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING)
+            wasLoading = savedInstanceState.getBoolean(WAS_LOADING)
             updateViewVisibility(clientCertificateCheckBox.isChecked)
         }
     }
@@ -266,7 +262,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         clientCertificateSpinner.isVisible = usingCertificates
         if (usingCertificates) {
             if (BuildConfig.IS_ENTERPRISE) {
-                passwordLayout.visibility = View.GONE
+                passwordLayout.isVisible = false
             }
         }
     }
@@ -361,6 +357,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         if (!isAdded) {
             return
         }
+        showLoading(false)
         if (requestCode == ACTIVITY_REQUEST_PICK_SETTINGS_FILE
             && resultCode != Activity.RESULT_CANCELED
         ) {
@@ -410,6 +407,37 @@ class AccountSetupBasicsFragment : PEpFragment() {
         super.onResume()
         accountSetupNavigator = (activity as AccountSetupBasics?)!!.accountSetupNavigator
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, account)
+        restoreViewsEnabledState()
+    }
+
+    private fun restoreViewsEnabledState() {
+        showLoading(wasLoading)
+        wasLoading = false
+    }
+
+    private fun enableViewGroup(enable: Boolean, viewGroup: ViewGroup) {
+        for (i in 0 until viewGroup.childCount) {
+            val child = viewGroup.getChildAt(i)
+            if (child is ViewGroup) {
+                enableViewGroup(enable, child)
+            } else {
+                child.isEnabled = enable
+            }
+        }
+    }
+
+    private fun showLoading(loading: Boolean) {
+        wasLoading = loading
+        if (loading) {
+            nextProgressBar.show()
+            nextButton.isVisible = false
+        } else {
+            nextProgressBar.hide()
+            nextButton.isVisible = true
+        }
+        accountSetupNavigator.isLoading = loading
+        enableViewGroup(!loading, rootView as ViewGroup)
+        manualSetupButton.isEnabled = !loading
     }
 
     private fun accountWasAlreadySet(email: String): Boolean {
@@ -435,6 +463,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun goForward() {
+        showLoading(false)
         try {
             setupAccountType.setupStoreAndSmtpTransport(
                 account,
@@ -537,6 +566,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     override fun onPause() {
         super.onPause()
+        wasLoading = !nextButton.isVisible
         nextProgressBar.hide()
     }
 
@@ -554,6 +584,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
         private const val REQUEST_CODE_CHECK_SETTINGS = AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
+        private const val WAS_LOADING = "wasLoading"
 
         fun newInstance(oAuthProviderType: OAuthProviderType?): AccountSetupBasicsFragment {
             return AccountSetupBasicsFragment().apply {
