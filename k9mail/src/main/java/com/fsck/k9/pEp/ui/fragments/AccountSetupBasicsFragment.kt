@@ -406,9 +406,9 @@ class AccountSetupBasicsFragment : PEpFragment() {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        accountSetupNavigator = (activity as AccountSetupBasics?)!!.accountSetupNavigator
+    override fun onStart() {
+        super.onStart()
+        accountSetupNavigator = (requireActivity() as AccountSetupBasics).accountSetupNavigator
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, account)
         restoreViewsEnabledState()
     }
@@ -567,8 +567,8 @@ class AccountSetupBasicsFragment : PEpFragment() {
         getpEpComponent().inject(this)
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         wasLoading = !nextButton.isVisible
         nextProgressBar.hide()
     }
