@@ -21,7 +21,6 @@ import org.koin.android.ext.android.inject
 class OAuthFlowActivity : K9Activity() {
     private val authViewModel: AuthViewModel by viewModel()
     private val accountManager: Preferences by inject()
-    var oAuthProviderType: OAuthProviderType? = null
 
     private lateinit var errorText: TextView
     private lateinit var signInButton: Button
@@ -55,7 +54,6 @@ class OAuthFlowActivity : K9Activity() {
                 account.email
             )
         }
-        val oAuthProviderType = intent.extras?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
         signInButton = if (authViewModel.isUsingGoogle(account)) {
             findViewById(R.id.google_sign_in_button)
         } else {
@@ -69,18 +67,17 @@ class OAuthFlowActivity : K9Activity() {
         }
 
         authViewModel.init(activityResultRegistry, lifecycle)
-        authViewModel.oAuthProviderType = oAuthProviderType
 
         authViewModel.uiState.observe(this) { state ->
             handleUiUpdates(state)
         }
 
-        when(oAuthProviderType) {
-            null -> {
+        when {
+            account.oAuthProviderType == null || isTokenRevoked -> {
                 signInButton.isVisible = true
                 signInButton.setOnClickListener { startOAuthFlow(account) }
             }
-            else -> startOAuthFlow(account)
+            else -> startOAuthFlow(account) // start directly on account setup flow
         }
     }
 

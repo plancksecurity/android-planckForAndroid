@@ -80,6 +80,13 @@ public class Account implements BaseAccount, StoreConfig {
         return oAuthProviderType;
     }
 
+    /**
+     * Only to be done when the provider is set as mandatory. This can be:
+     * - when the user chooses this type of provider at the beginning of the account setup
+     * - when the IT Manager sets this value via MDM
+     * NOT to be used when the OAuth type is guessed from mail settings (case of gemail)
+     * @param oAuthProviderType
+     */
     public void setOAuthProviderType(OAuthProviderType oAuthProviderType) {
         this.oAuthProviderType = oAuthProviderType;
     }
