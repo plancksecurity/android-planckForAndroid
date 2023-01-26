@@ -48,9 +48,13 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
 
+    var automaticLoginDone = false
+        private set
+
     @Synchronized
     private fun getAuthService(): AuthorizationService {
-        return authService ?: AuthorizationService(getApplication<Application>()).also { authService = it }
+        return authService
+            ?: AuthorizationService(getApplication<Application>()).also { authService = it }
     }
 
     fun init(activityResultRegistry: ActivityResultRegistry, lifecycle: Lifecycle) {
@@ -82,21 +86,29 @@ class AuthViewModel(
         }
     }
 
-    fun login(account: Account) {
+    fun login(account: Account, automatic: Boolean = false) {
         this.account = account
 
         viewModelScope.launch {
-            val config = findOAuthConfiguration(account)
-            if (config == null) {
-                _uiState.value = AuthFlowState.NotSupported
-                return@launch
+            if (automatic && automaticLoginDone) return@launch
+            if (automatic) {
+                automaticLoginDone = true
             }
+            loginSuspend(account)
+        }
+    }
 
-            try {
-                startLogin(account, config)
-            } catch (e: ActivityNotFoundException) {
-                _uiState.value = AuthFlowState.BrowserNotFound
-            }
+    private suspend fun loginSuspend(account: Account) {
+        val config = findOAuthConfiguration(account)
+        if (config == null) {
+            _uiState.value = AuthFlowState.NotSupported
+            return
+        }
+
+        try {
+            startLogin(account, config)
+        } catch (e: ActivityNotFoundException) {
+            _uiState.value = AuthFlowState.BrowserNotFound
         }
     }
 
@@ -108,7 +120,10 @@ class AuthViewModel(
         resultObserver.login(authRequestIntent)
     }
 
-    private fun createAuthorizationRequestIntent(email: String, config: OAuthConfiguration): Intent {
+    private fun createAuthorizationRequestIntent(
+        email: String,
+        config: OAuthConfiguration
+    ): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
             config.authorizationEndpoint.toUri(),
             config.tokenEndpoint.toUri()
@@ -134,7 +149,7 @@ class AuthViewModel(
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
         val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return when(account.mandatoryOAuthProviderType) {
+        return when (account.mandatoryOAuthProviderType) {
             null -> oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
             OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
             OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
@@ -153,7 +168,7 @@ class AuthViewModel(
         }
 
         authorizationResult.exception?.let { authorizationException ->
-            _uiState.value =  AuthFlowState.Failed(
+            _uiState.value = AuthFlowState.Failed(
                 errorCode = authorizationException.error,
                 errorMessage = authorizationException.errorDescription
             )
@@ -195,12 +210,14 @@ class AuthViewModel(
         authService = null
     }
 
-    inner class AppAuthResultObserver(private val registry: ActivityResultRegistry) : LifecycleEventObserver {
+    inner class AppAuthResultObserver(private val registry: ActivityResultRegistry) :
+        LifecycleEventObserver {
         private var authorizationLauncher: ActivityResultLauncher<Intent>? = null
         private var authRequestIntent: Intent? = null
 
         fun onCreate() {
-            authorizationLauncher = registry.register(KEY_AUTHORIZATION, AuthorizationContract(), ::onLoginResult)
+            authorizationLauncher =
+                registry.register(KEY_AUTHORIZATION, AuthorizationContract(), ::onLoginResult)
             authRequestIntent?.let { intent ->
                 authRequestIntent = null
                 login(intent)
