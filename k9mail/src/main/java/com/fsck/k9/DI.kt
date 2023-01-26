@@ -2,6 +2,7 @@ package com.fsck.k9
 
 import android.app.Application
 import android.content.Context
+import com.fsck.k9.activity.setup.accountSetupModule
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autocrypt.autocryptModule
@@ -46,6 +47,7 @@ object DI {
             autocryptModule,
             mailStoreModule,
             authModule,
+            accountSetupModule,
             autodiscoveryProvidersXmlModule,
             autodiscoveryAdvancedModule,
             autodiscoveryThunderbirdModule,

@@ -6,3 +6,7 @@ import org.koin.dsl.module.applicationContext
 val authModule = applicationContext {
     viewModel { AuthViewModel(application = get(), accountManager = get(), oAuthConfigurationProvider = get()) }
 }
+
+val accountSetupModule = applicationContext {
+    viewModel { AccountSetupBasicsViewModel(mailSettingsDiscovery = get()) }
+}

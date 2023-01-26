@@ -14,12 +14,9 @@ import androidx.core.view.isVisible
 import androidx.core.widget.ContentLoadingProgressBar
 import com.fsck.k9.*
 import com.fsck.k9.account.AccountCreator
-import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings
+import com.fsck.k9.activity.setup.*
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
-import com.fsck.k9.activity.setup.AccountSetupNames
-import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.advanced.AdvancedSettingsDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
@@ -37,6 +34,7 @@ import com.fsck.k9.pEp.ui.tools.SetupAccountType
 import com.fsck.k9.ui.getEnum
 import com.fsck.k9.ui.putEnum
 import com.fsck.k9.view.ClientCertificateSpinner
+import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import security.pEp.provisioning.ProvisioningSettings
 import timber.log.Timber
@@ -44,9 +42,9 @@ import java.net.URISyntaxException
 import javax.inject.Inject
 
 class AccountSetupBasicsFragment : PEpFragment() {
-    private val mailSettingsDiscovery: AdvancedSettingsDiscovery by inject()
     private val preferences: Preferences by inject()
     private val emailValidator: EmailAddressValidator by inject()
+    private val accountSetupBasicsViewModel: AccountSetupBasicsViewModel by viewModel()
 
     private lateinit var emailView: EditText
     private lateinit var passwordView: EditText
@@ -137,6 +135,25 @@ class AccountSetupBasicsFragment : PEpFragment() {
         validateFields()
 
         updateUi()
+
+        accountSetupBasicsViewModel.connectionSettings.observe(viewLifecycleOwner) { pair ->
+            val ready = pair.second
+            val connectionSettings = pair.first
+            if (ready) {
+                if (connectionSettings == null) {
+                    onManualSetup()
+                } else {
+                    when(uiState) {
+                        UiState.EMAIL_ADDRESS_ONLY -> { // this is the original, intial state
+                            attemptAutoSetupUsingOnlyEmailAddress(connectionSettings)
+                        }
+                        UiState.PASSWORD_FLOW -> {
+                            finishAutoSetup(connectionSettings)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun updateUiFromProvisioningSettings() {
@@ -216,25 +233,11 @@ class AccountSetupBasicsFragment : PEpFragment() {
             return
         }
 
-        val connectionSettings = discoverMailSettings(
+        accountSetupBasicsViewModel.discoverMailSettingsAsync(
             email,
             if (uiState == UiState.EMAIL_ADDRESS_ONLY) oAuthProviderType
             else null
-        ) // RUN THIS IN BACKGROUND, WHEN RESULT COMES WE WILL CONTINUE
-        // FROM HERE NOW WILL BE A CALLBACK, OR A LIVEDATA OBSERVER
-        if (connectionSettings == null) {
-            onManualSetup()
-            return
-        }
-        when(uiState) {
-            UiState.EMAIL_ADDRESS_ONLY -> { // this is the original, intial state
-                attemptAutoSetupUsingOnlyEmailAddress(connectionSettings)
-            }
-            UiState.PASSWORD_FLOW -> {
-                //attemptAutoSetup(connectionSettings)
-                finishAutoSetup(connectionSettings)
-            }
-        }
+        )
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -312,25 +315,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         passwordView.requestFocus()
     }
 
-    private fun attemptAutoSetup() {
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) return
-
-        if (clientCertificateCheckBox.isChecked) {
-            // Auto-setup doesn't support client certificates.
-            onManualSetup()
-            return
-        }
-
-        val connectionSettings = discoverMailSettings(email)
-        if (connectionSettings != null) {
-            finishAutoSetup(connectionSettings)
-        } else {
-            // We don't have default settings for this account, start the manual setup process.
-            onManualSetup()
-        }
-    }
-
     private fun finishAutoSetup(connectionSettings: ConnectionSettings) {
         val account = createAccount(connectionSettings)
 
@@ -371,18 +355,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun getOwnerName(): String {
         return preferences.defaultAccount?.name ?: ""
-    }
-
-    private fun discoverMailSettings(email: String, oAuthProviderType: OAuthProviderType? = null): ConnectionSettings? {
-        val discoveryResults = mailSettingsDiscovery.discover(email, oAuthProviderType)
-        if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
-            return null
-        }
-
-        val incomingServerSettings = discoveryResults.incoming.first().toServerSettings() ?: return null
-        val outgoingServerSettings = discoveryResults.outgoing.first().toServerSettings() ?: return null
-
-        return ConnectionSettings(incomingServerSettings, outgoingServerSettings)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
