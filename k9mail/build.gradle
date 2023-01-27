@@ -250,6 +250,7 @@ android {
             buildConfigField "boolean", "IS_DEMO", "true"
             versionName "${gitVersionName}" + ".democorp"
             dimension "type"
+            applicationIdSuffix ".demo"
         }
 
         endUser {
