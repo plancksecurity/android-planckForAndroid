@@ -49,7 +49,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var clientCertificateCheckBox: CheckBox
     private lateinit var clientCertificateSpinner: ClientCertificateSpinner
     private lateinit var advancedOptionsContainer: View
-    private lateinit var mOAuth2CheckBox: CheckBox
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
@@ -74,7 +73,8 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        oAuthProviderType = arguments?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
+        oAuthProviderType = provisioningSettings.oAuthType ?:
+            arguments?.getString(EXTRA_OAUTH_PROVIDER_TYPE)?.let { OAuthProviderType.valueOf(it) }
         uiState =
             if (oAuthProviderType == null) UiState.PASSWORD_FLOW
             else UiState.EMAIL_ADDRESS_ONLY
@@ -158,11 +158,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private fun updateUiFromProvisioningSettings() {
         emailView.setText(provisioningSettings.email)
         emailView.isFocusable = false
-        val provisionSettings = provisioningSettings.provisionedMailSettings
-        if (provisionSettings != null) {
-            val isOAuth = (provisionSettings.incoming.authType === security.pEp.mdm.AuthType.XOAUTH2
-                    && provisioningSettings.oAuthType != null)
-            mOAuth2CheckBox.isChecked = isOAuth
+        provisioningSettings.provisionedMailSettings?.let { provisionSettings ->
             val isExternalAuth =
                 provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
             clientCertificateCheckBox.isChecked = isExternalAuth
