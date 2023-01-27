@@ -1,8 +1,14 @@
 package com.fsck.k9.crypto;
 
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
@@ -17,23 +23,11 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-
-
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class MessageDecryptVerifierTest {
+public class MessageDecryptVerifierTest extends RobolectricTest {
     private static final String MIME_TYPE_MULTIPART_ENCRYPTED = "multipart/encrypted";
     private MessageCryptoAnnotations messageCryptoAnnotations = mock(MessageCryptoAnnotations.class);
     private static final String PROTCOL_PGP_ENCRYPTED = "application/pgp-encrypted";

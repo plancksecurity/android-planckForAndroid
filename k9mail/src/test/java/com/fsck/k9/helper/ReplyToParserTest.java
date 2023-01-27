@@ -1,22 +1,6 @@
 package com.fsck.k9.helper;
 
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import com.fsck.k9.Account;
-import com.fsck.k9.helper.ReplyToParser.ReplyToAddresses;
-import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.Message;
-import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.mail.internet.ListHeaders;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,9 +10,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class ReplyToParserTest {
+import com.fsck.k9.Account;
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.helper.ReplyToParser.ReplyToAddresses;
+import com.fsck.k9.mail.Address;
+import com.fsck.k9.mail.Message;
+import com.fsck.k9.mail.Message.RecipientType;
+import com.fsck.k9.mail.internet.ListHeaders;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+public class ReplyToParserTest extends RobolectricTest {
     private static final Address[] REPLY_TO_ADDRESSES = Address.parse("replyTo1@example.com, replyTo2@example.com");
     private static final Address[] LIST_POST_ADDRESSES = Address.parse("listPost@example.com");
     private static final Address[] FROM_ADDRESSES = Address.parse("from@example.com");

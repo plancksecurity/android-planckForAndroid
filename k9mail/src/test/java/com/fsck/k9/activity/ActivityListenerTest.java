@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.Message;
 
 import org.junit.Before;
@@ -22,9 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(AndroidJUnit4.class)
-@Config(sdk = 22)
-public class ActivityListenerTest {
+public class ActivityListenerTest extends RobolectricTest {
     private static final String FOLDER = "folder";
     private static final String ERROR_MESSAGE = "errorMessage";
     private static final int COUNT = 23;

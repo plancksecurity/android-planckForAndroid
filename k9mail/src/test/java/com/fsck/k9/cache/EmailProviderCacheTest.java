@@ -4,6 +4,7 @@ package com.fsck.k9.cache;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
 
@@ -25,8 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-public class EmailProviderCacheTest {
+public class EmailProviderCacheTest extends RobolectricTest {
 
     private EmailProviderCache cache;
     @Mock

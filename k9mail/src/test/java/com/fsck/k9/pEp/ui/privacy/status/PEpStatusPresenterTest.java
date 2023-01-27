@@ -1,7 +1,15 @@
 package com.fsck.k9.pEp.ui.privacy.status;
 
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.os.Looper;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -11,27 +19,25 @@ import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
-import foundation.pEp.jniadapter.Identity;
-import foundation.pEp.jniadapter.Rating;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import foundation.pEp.jniadapter.Identity;
+import foundation.pEp.jniadapter.Rating;
 
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class PEpStatusPresenterTest {
+public class PEpStatusPresenterTest extends RobolectricTest {
 
     @Captor
     private ArgumentCaptor<PEpProvider.SimpleResultCallback<Rating>> simpleResultCallbackCaptor;

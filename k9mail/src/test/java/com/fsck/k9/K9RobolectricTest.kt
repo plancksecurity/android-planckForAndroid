@@ -7,10 +7,10 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * A Robolectric test that creates an instance of our [Application] class [K9].
+ * A Robolectric test that does not create an instance of our [Application] class [K9].
  *
  * See also [RobolectricTest].
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [30], manifest = Config.NONE)
+@Config(application = EmptyApplication::class, sdk = [30], manifest = Config.NONE)
 abstract class K9RobolectricTest : AutoCloseKoinTest()

@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.fsck.k9.Account.QuoteStyle;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.activity.misc.Attachment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.BodyPart;
@@ -49,9 +50,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MessageBuilderTest {
+public class MessageBuilderTest extends RobolectricTest {
     private static final String TEST_MESSAGE_TEXT = "soviet message\r\ntext ☭";
     private static final String TEST_ATTACHMENT_TEXT = "text data in attachment";
     private static final String TEST_SUBJECT = "test_subject";

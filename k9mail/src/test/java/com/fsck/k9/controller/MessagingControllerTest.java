@@ -36,9 +36,7 @@ import static org.mockito.Mockito.*;
 
 
 @SuppressWarnings("unchecked")
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MessagingControllerTest {
+public class MessagingControllerTest extends RobolectricTest {
     private static final String FOLDER_NAME = "Folder";
     private static final String SENT_FOLDER_NAME = "Sent";
     private static final int MAXIMUM_SMALL_MESSAGE_SIZE = 1000;

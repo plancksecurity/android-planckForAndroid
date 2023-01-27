@@ -1,11 +1,16 @@
 package com.fsck.k9.mailstore;
 
 
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.BodyPart;
 import com.fsck.k9.mail.Multipart;
 import com.fsck.k9.mail.Part;
@@ -13,22 +18,15 @@ import com.fsck.k9.mail.internet.MimeBodyPart;
 import com.fsck.k9.mail.internet.MimeHeader;
 import com.fsck.k9.mail.internet.MimeMultipart;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.Map;
 
 
 @SuppressWarnings("unchecked")
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class AttachmentResolverTest {
+public class AttachmentResolverTest extends RobolectricTest {
     public static final Uri ATTACHMENT_TEST_URI_1 = Uri.parse("uri://test/1");
     public static final Uri ATTACHMENT_TEST_URI_2 = Uri.parse("uri://test/2");
 

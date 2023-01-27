@@ -5,6 +5,7 @@ import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.LooperMode
 
 /**
  * A Robolectric test that does not create an instance of our [Application] class [K9].
@@ -13,6 +14,7 @@ import org.robolectric.annotation.Config
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(application = EmptyApplication::class, sdk = [30], manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 abstract class RobolectricTest
 
 class EmptyApplication : Application()

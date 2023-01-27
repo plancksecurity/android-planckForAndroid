@@ -1,23 +1,25 @@
 package com.fsck.k9.helper;
 
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
-import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.internet.MimeMessage;
-
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
@@ -27,11 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-
-@RunWith(K9RobolectricTestRunner.class)
-public class IdentityHelperTest {
+public class IdentityHelperTest extends RobolectricTest {
 
     private Account account;
     private MimeMessage msg;

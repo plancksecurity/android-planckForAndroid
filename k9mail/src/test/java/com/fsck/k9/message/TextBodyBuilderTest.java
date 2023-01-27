@@ -1,22 +1,17 @@
 package com.fsck.k9.message;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.fsck.k9.Account.QuoteStyle;
-import com.fsck.k9.mail.internet.TextBody;
-import com.fsck.k9.message.quote.InsertableHtmlContent;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class TextBodyBuilderTest {
+import com.fsck.k9.Account.QuoteStyle;
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.mail.internet.TextBody;
+import com.fsck.k9.message.quote.InsertableHtmlContent;
+
+import org.junit.Test;
+
+public class TextBodyBuilderTest extends RobolectricTest {
 
     @Test
     public void runBuildTextTests() {
