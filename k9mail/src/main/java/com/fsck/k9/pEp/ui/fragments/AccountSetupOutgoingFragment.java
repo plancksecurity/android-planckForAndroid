@@ -56,7 +56,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
-    private static String EXTRA_BACK = "back";
     private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
     private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
     private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
@@ -87,7 +86,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
-    private boolean mBack;
     private androidx.appcompat.app.AlertDialog errorDialog;
     private int errorDialogTitle;
     private String errorDialogMessage;
@@ -121,15 +119,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         return fragment;
     }
 
-    public static AccountSetupOutgoingFragment intentBackToOutgoingSettings(String accountUuid) {
-        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_ACCOUNT, accountUuid);
-        bundle.putBoolean(EXTRA_BACK, true);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -140,7 +129,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
-        mBack = getArguments().getBoolean(EXTRA_BACK);
         mAccount = getAccountFromPreferences(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
@@ -153,19 +141,19 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         }
 
 
-        mUsernameView = (EditText)rootView.findViewById(R.id.account_username);
-        mPasswordView = (EditText)rootView.findViewById(R.id.account_password);
-        mClientCertificateSpinner = (ClientCertificateSpinner)rootView.findViewById(R.id.account_client_certificate_spinner);
-        mClientCertificateLabelView = (TextView)rootView.findViewById(R.id.account_client_certificate_label);
-        mPasswordLabelView = (TextView)rootView.findViewById(R.id.account_password_label);
-        mServerView = (EditText)rootView.findViewById(R.id.account_server);
-        mPortView = (EditText)rootView.findViewById(R.id.account_port);
-        mRequireLoginView = (CheckBox)rootView.findViewById(R.id.account_require_login);
-        mRequireLoginSettingsView = (ViewGroup)rootView.findViewById(R.id.account_require_login_settings);
-        mSecurityTypeView = (Spinner)rootView.findViewById(R.id.account_security_type);
-        mAuthTypeView = (Spinner)rootView.findViewById(R.id.account_auth_type);
-        mNextButton = (Button)rootView.findViewById(R.id.next);
-        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
+        mUsernameView = rootView.findViewById(R.id.account_username);
+        mPasswordView = rootView.findViewById(R.id.account_password);
+        mClientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner);
+        mClientCertificateLabelView = rootView.findViewById(R.id.account_client_certificate_label);
+        mPasswordLabelView = rootView.findViewById(R.id.account_password_label);
+        mServerView = rootView.findViewById(R.id.account_server);
+        mPortView = rootView.findViewById(R.id.account_port);
+        mRequireLoginView = rootView.findViewById(R.id.account_require_login);
+        mRequireLoginSettingsView = rootView.findViewById(R.id.account_require_login_settings);
+        mSecurityTypeView = rootView.findViewById(R.id.account_security_type);
+        mAuthTypeView = rootView.findViewById(R.id.account_auth_type);
+        mNextButton = rootView.findViewById(R.id.next);
+        nextProgressBar = rootView.findViewById(R.id.next_progressbar);
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,9 +252,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         validateFields();
         if (mEdit) {
             mNextButton.setText(R.string.done_action);
-        }
-        if (mBack) {
-            ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
         if(savedInstanceState != null) {
             restoreErrorDialogState(savedInstanceState);
