@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
@@ -116,16 +117,16 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 ft.addToBackStack("AccountSetupIncomingFragment");
                 String accountUuid = getIntent().getStringExtra(EXTRA_ACCOUNT);
                 ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentBackToOutgoingSettings(accountUuid)).commit();
+            } else if (BuildConfig.IS_ENTERPRISE) {
+                accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack("AccountSetupBasicsFragment");
+                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
             } else {
                 accountSetupChooseOAuthFragment = new AccountSetupChooseOAuthFragment();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.addToBackStack("AccountSetupChooseOAuthFragment");
                 ft.replace(R.id.account_setup_container, accountSetupChooseOAuthFragment).commit();
-
-                //accountSetupBasicsFragment = new AccountSetupBasicsFragment();
-                //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                //ft.addToBackStack("AccountSetupBasicsFragment");
-                //ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
             }
         }
         permissionRequester.requestBatteryOptimizationPermission();
