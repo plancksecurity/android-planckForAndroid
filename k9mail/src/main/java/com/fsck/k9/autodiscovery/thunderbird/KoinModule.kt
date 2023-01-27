@@ -12,6 +12,5 @@ val autodiscoveryThunderbirdModule = applicationContext {
         urlProvider = get(),
         fetcher = get(),
         parser = get(),
-        oAuthConfigurationProvider = get()
     ) }
 }

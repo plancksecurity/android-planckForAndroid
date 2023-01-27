@@ -9,14 +9,12 @@ import com.fsck.k9.helper.EmailHelper
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
-import com.fsck.k9.oauth.OAuthConfigurationProvider
 import org.xmlpull.v1.XmlPullParser
 import timber.log.Timber
 
 class ProvidersXmlDiscovery(
     private val xmlProvider: ProvidersXmlProvider,
-    oAuthConfigurationProvider: OAuthConfigurationProvider
-) : ConnectionSettingsDiscovery(oAuthConfigurationProvider) {
+) : ConnectionSettingsDiscovery {
 
     override fun discover(email: String): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null

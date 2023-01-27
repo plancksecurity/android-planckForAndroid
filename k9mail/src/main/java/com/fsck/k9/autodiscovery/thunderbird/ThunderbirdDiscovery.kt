@@ -3,14 +3,12 @@ package com.fsck.k9.autodiscovery.thunderbird
 import com.fsck.k9.autodiscovery.api.ConnectionSettingsDiscovery
 import com.fsck.k9.autodiscovery.api.DiscoveryResults
 import com.fsck.k9.mail.ServerSettings
-import com.fsck.k9.oauth.OAuthConfigurationProvider
 
 class ThunderbirdDiscovery(
     private val urlProvider: ThunderbirdAutoconfigUrlProvider,
     private val fetcher: ThunderbirdAutoconfigFetcher,
     private val parser: ThunderbirdAutoconfigParser,
-    oAuthConfigurationProvider: OAuthConfigurationProvider
-) : ConnectionSettingsDiscovery(oAuthConfigurationProvider) {
+) : ConnectionSettingsDiscovery {
 
     override fun discover(email: String): DiscoveryResults? {
         val autoconfigUrls = urlProvider.getAutoconfigUrls(email)
