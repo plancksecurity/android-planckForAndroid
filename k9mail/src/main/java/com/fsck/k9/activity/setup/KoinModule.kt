@@ -8,5 +8,5 @@ val authModule = applicationContext {
 }
 
 val accountSetupModule = applicationContext {
-    viewModel { AccountSetupBasicsViewModel(mailSettingsDiscovery = get()) }
+    viewModel { AccountSetupBasicsViewModel(mailSettingsDiscovery = get(), get()) }
 }

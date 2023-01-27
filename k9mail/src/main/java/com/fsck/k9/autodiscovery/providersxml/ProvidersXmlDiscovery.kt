@@ -16,10 +16,25 @@ class ProvidersXmlDiscovery(
     private val xmlProvider: ProvidersXmlProvider,
 ) : ConnectionSettingsDiscovery {
 
+    private var provisionedProvider: Provider? = null
+    fun setProvisionedSettings(
+        incomingUriTemplate: String,
+        incomingUsername: String,
+        outgoingUriTemplate: String,
+        outgoingUsername: String
+    ) {
+        provisionedProvider = Provider(
+            incomingUriTemplate = incomingUriTemplate,
+            incomingUsernameTemplate = incomingUsername,
+            outgoingUriTemplate = outgoingUriTemplate,
+            outgoingUsernameTemplate = outgoingUsername
+        )
+    }
+
     override fun discover(email: String): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
-        val provider = findProviderForDomain(domain) ?: return null
+        val provider = provisionedProvider ?: findProviderForDomain(domain) ?: return null
 
         val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
         val outgoingSettings = provider.toOutgoingServerSettings(email) ?: return null
@@ -103,12 +118,6 @@ class ProvidersXmlDiscovery(
             uri.port
         }
 
-        //val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.getConfiguration(host) != null) {
-        //    AuthType.XOAUTH2
-        //} else {
-        //    AuthType.PLAIN
-        //}
-
         return DiscoveredServerSettings(ServerSettings.Type.IMAP.toString(), host, port, security, AuthType.PLAIN, username)
     }
 
@@ -131,12 +140,6 @@ class ProvidersXmlDiscovery(
         } else {
             uri.port
         }
-
-        //val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.getConfiguration(host) != null) {
-        //    AuthType.XOAUTH2
-        //} else {
-        //    AuthType.PLAIN
-        //}
 
         return DiscoveredServerSettings(ServerSettings.Type.SMTP.toString(), host, port, security, AuthType.PLAIN, username)
     }

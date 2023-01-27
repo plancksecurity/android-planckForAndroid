@@ -12,6 +12,19 @@ class AdvancedSettingsDiscovery(
     private val advanced: Boolean = true,
 ) : ConnectionSettingsDiscovery {
 
+    fun setProvisionedSettings(
+        incomingUriTemplate: String,
+        incomingUsername: String,
+        outgoingUriTemplate: String,
+        outgoingUsername: String
+    ) {
+        providersXmlDiscovery.setProvisionedSettings(
+            incomingUriTemplate,
+            incomingUsername,
+            outgoingUriTemplate,
+            outgoingUsername
+        )
+    }
     @WorkerThread
     override fun discover(email: String): DiscoveryResults? {
         return providersXmlDiscovery.discover(email) ?: let {
