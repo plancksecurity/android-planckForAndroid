@@ -272,7 +272,7 @@ android {
 
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
-        if ((names.contains('enterprise') || names.contains('democorp')) && names.contains('fDroid')) {
+        if ((names.contains('enterprise') || names.contains('demoCorp')) && names.contains('fDroid')) {
             println("names: $names")
             variant.setIgnore(true)
         }
