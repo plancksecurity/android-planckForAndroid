@@ -129,6 +129,7 @@ dependencies {
     androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
+    testImplementation "org.apache.ant:ant:${versions.ant}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
     testImplementation "org.mockito:mockito-inline:${versions.mockito}"
@@ -356,6 +357,12 @@ android {
         androidTest {
             manifest.srcFile "src/androidTest/AndroidManifest.xml"
             assets.srcDirs = ['src/androidTest/assets']
+        }
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
         }
     }
 
