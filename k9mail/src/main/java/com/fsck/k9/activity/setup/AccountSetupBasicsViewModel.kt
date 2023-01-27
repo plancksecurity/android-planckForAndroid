@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.K9
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.advanced.AdvancedSettingsDiscovery
 import com.fsck.k9.oauth.OAuthConfigurationProvider
@@ -17,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.provisioning.ProvisioningSettings
-import security.pEp.provisioning.SimpleMailSettings
 
 class AccountSetupBasicsViewModel(
     private val mailSettingsDiscovery: AdvancedSettingsDiscovery,
@@ -43,9 +41,9 @@ class AccountSetupBasicsViewModel(
     ): ConnectionSettings? = withContext(Dispatchers.IO) {
         provisioningSettings.provisionedMailSettings?.let { mailSettings ->
             mailSettingsDiscovery.setProvisionedSettings(
-                incomingUriTemplate = getServerUriTemplate(mailSettings.incoming, CheckDirection.INCOMING),
+                incomingUriTemplate = mailSettings.incoming.toSeverUriTemplate(outgoing = false),
                 incomingUsername = mailSettings.incoming.userName!!,
-                outgoingUriTemplate = getServerUriTemplate(mailSettings.outgoing, CheckDirection.OUTGOING),
+                outgoingUriTemplate = mailSettings.outgoing.toSeverUriTemplate(outgoing = true),
                 outgoingUsername = mailSettings.outgoing.userName!!
             )
         }
@@ -64,23 +62,5 @@ class AccountSetupBasicsViewModel(
             discoveryResults.outgoing.first().toServerSettings() ?: return@withContext null
 
         return@withContext ConnectionSettings(incomingServerSettings, outgoingServerSettings)
-    }
-
-    private fun getServerUriTemplate(
-        settings: SimpleMailSettings,
-        direction: CheckDirection
-    ): String {
-        val protocol = when (direction) {
-            CheckDirection.INCOMING -> "imap"
-            CheckDirection.OUTGOING -> "smtp"
-        }
-        return (protocol +
-                "+" +
-                settings.getConnectionSecurityString() +
-                "+" +
-                "://" +
-                settings.server +
-                ":" +
-                settings.port)
     }
 }

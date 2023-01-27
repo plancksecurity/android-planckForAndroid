@@ -1,9 +1,7 @@
 package security.pEp.provisioning
 
 import com.fsck.k9.mail.ConnectionSecurity
-import com.fsck.k9.mail.ServerSettings
 import security.pEp.mdm.AuthType
-import security.pEp.mdm.toMdmAuthType
 import security.pEp.network.UrlChecker
 
 data class AccountMailSettingsProvision(
@@ -33,4 +31,16 @@ data class SimpleMailSettings(
                 && connectionSecurity != null
                 && !userName.isNullOrBlank()
                 && authType != null
+
+    fun toSeverUriTemplate(outgoing: Boolean): String {
+        val protocol = if (outgoing) "smtp" else "imap"
+        return (protocol +
+                "+" +
+                getConnectionSecurityString() +
+                "+" +
+                "://" +
+                server +
+                ":" +
+                port)
+    }
 }
