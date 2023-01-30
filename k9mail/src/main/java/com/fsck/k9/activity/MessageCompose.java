@@ -124,6 +124,7 @@ import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
@@ -264,7 +265,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PermissionRequester permissionRequester;
     @Inject
     PermissionChecker permissionChecker;
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
     @Inject
     ResourcesProvider resourcesProvider;
@@ -319,6 +319,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         } else {
             bindViews(R.layout.message_compose);
         }
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
 
         startToolbar();
 

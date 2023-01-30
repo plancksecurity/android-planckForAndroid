@@ -41,6 +41,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 
 public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
@@ -115,6 +116,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         super.onCreate(savedInstanceState);
         loadPepRating();
         setContentView(R.layout.pep_status);
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         ButterKnife.bind(PEpStatus.this);
         initPep();
         final Intent intent = getIntent();

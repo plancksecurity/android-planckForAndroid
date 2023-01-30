@@ -11,7 +11,9 @@ import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.appcompat.widget.ActionMenuView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
+import com.fsck.k9.R
 import com.fsck.k9.databinding.ComposeAccountItemBinding
 import com.fsck.k9.databinding.ToolbarBinding
 import com.fsck.k9.pEp.PEpColorUtils
@@ -36,7 +38,7 @@ interface ToolBarCustomizer {
 }
 
 class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
-    private var binding = ToolbarBinding.inflate(activity.layoutInflater)
+    private val toolbar : Toolbar = this.activity.findViewById<Toolbar>(R.id.toolbar) as Toolbar
 
     override fun setStatusBarPepColor(pEpRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -62,7 +64,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
         uiScope.launch {
             val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating)
-            binding.toolbar.setBackgroundColor(color)
+            toolbar.setBackgroundColor(color)
         }
 
     }
@@ -71,7 +73,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            binding.toolbar.setBackgroundColor(colorReference)
+            toolbar.setBackgroundColor(colorReference)
         }
     }
 
@@ -82,27 +84,25 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
             val colorFilter = PorterDuffColorFilter(colorReference, PorterDuff.Mode.MULTIPLY)
 
-            binding.toolbar.children.forEach { v ->
+            toolbar.children.forEach { v ->
                 if(v is ImageButton)
                         v.drawable.mutate().colorFilter = colorFilter
             }
-            binding.toolbar.overflowIcon?.colorFilter = colorFilter
+            toolbar.overflowIcon?.colorFilter = colorFilter
         }
     }
 
     private fun setColor(color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            val window = activity.window
-            // clear FLAG_TRANSLUCENT_STATUS flag:
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        val window = activity.window
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
 
-            // finally change the color
-            window.statusBarColor = getDarkerColor(color)
-        }
+        // finally change the color
+        window.statusBarColor = getDarkerColor(color)
     }
 
     private fun getDarkerColor(@ColorInt color: Int): Int {

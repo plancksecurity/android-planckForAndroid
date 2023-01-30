@@ -77,6 +77,7 @@ import security.pEp.print.Print;
 import security.pEp.print.PrintMessage;
 import security.pEp.ui.message_compose.PEpFabMenu;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -171,7 +172,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     PermissionRequester permissionRequester;
     @Inject
     PermissionChecker permissionChecker;
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
     @Inject
     @MessageView
@@ -202,6 +202,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         // This fragments adds options to the action bar
         setHasOptionsMenu(true);
 
+        toolBarCustomizer = new PEpToolbarCustomizer(this.getActivity());
 
         Context context = getActivity().getApplicationContext();
         mController = MessagingController.getInstance(context);

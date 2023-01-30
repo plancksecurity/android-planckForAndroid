@@ -81,6 +81,7 @@ import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
 import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -97,7 +98,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     NotificationChannelManager channelUtils;
     @Inject
     PermissionRequester permissionRequester;
-    @Inject
+
     ToolBarCustomizer toolBarCustomizer;
     @Inject
     Preferences preferences;
@@ -352,6 +353,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             mViewSwitcher.setSecondOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_left));
             mViewSwitcher.setOnSwitchCompleteListener(this);
         }
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         initializeActionBar();
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         drawerLayoutView.initDrawerView(MessageList.this, getToolbar(), drawerLayout, this);

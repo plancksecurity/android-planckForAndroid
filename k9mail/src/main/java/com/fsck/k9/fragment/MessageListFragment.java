@@ -116,6 +116,7 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 
 import security.pEp.ui.resources.ResourcesProvider;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -306,7 +307,6 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     private SelectedItemActionModeCallback selectedMessageActionModeCallback = new SelectedItemActionModeCallback();
     @Inject
     ContactPictureLoader contactsPictureLoader;
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
     @Inject
     ResourcesProvider resourcesProvider;
@@ -594,6 +594,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
         initializeLayout();
         listView.setVerticalFadingEdgeEnabled(false);
+
         return rootView;
     }
 
@@ -608,6 +609,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         super.onActivityCreated(savedInstanceState);
 
         messageHelper = MessageHelper.getInstance(getContext().getApplicationContext());
+        toolBarCustomizer = new PEpToolbarCustomizer(this.getActivity());
 
         initializeMessageList();
 

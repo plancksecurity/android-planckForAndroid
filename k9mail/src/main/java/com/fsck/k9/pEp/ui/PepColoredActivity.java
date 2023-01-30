@@ -27,12 +27,11 @@ public abstract class PepColoredActivity extends K9Activity {
     private PEpProvider pEp;
     private PEpComponent pEpComponent;
 
-    ToolBarCustomizer toolBarCustomizer;
+    protected ToolBarCustomizer toolBarCustomizer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        toolBarCustomizer = new PEpToolbarCustomizer(this);
         initializeInjector(getApplicationComponent());
         inject();
     }

@@ -4,6 +4,7 @@ package com.fsck.k9.activity.setup;
 import android.content.Context;
 import android.os.Bundle;
 
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 import android.view.MenuItem;
@@ -51,7 +52,6 @@ public class AccountSetupAccountType extends PepActivity implements OnClickListe
     private Account mAccount;
     private boolean mMakeDefault;
 
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
 
     public static ChooseAccountTypeFragment actionSelectAccountType(Context context, Account account, boolean makeDefault) {
@@ -68,6 +68,7 @@ public class AccountSetupAccountType extends PepActivity implements OnClickListe
         super.onCreate(savedInstanceState);
         bindViews(R.layout.account_setup_account_type);
 
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         initializeToolbar(true, R.string.account_setup_account_type_title);
         toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.white));
 

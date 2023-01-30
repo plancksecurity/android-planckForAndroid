@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
 import com.fsck.k9.databinding.FolderNavigationListItemBinding
 import com.fsck.k9.pEp.models.FolderModel

@@ -38,6 +38,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 import javax.inject.Inject;
 
 import security.pEp.mdm.ConfigurationManager;
+import security.pEp.ui.toolbar.PEpToolbarCustomizer;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
@@ -55,7 +56,6 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
     private PePUIArtefactCache pePUIArtefactCache;
     private NonConfigurationInstance nonConfigurationInstance;
 
-    @Inject
     ToolBarCustomizer toolBarCustomizer;
 
     @Override
@@ -81,6 +81,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         bindViews(R.layout.account_setup_names);
 
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         initializeToolbar(true, R.string.account_setup_names_title);
         toolBarCustomizer.setStatusBarPepColor(
                 ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
