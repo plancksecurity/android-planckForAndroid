@@ -37,7 +37,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     private AppCompatDelegate mDelegate;
     private Toolbar toolbar;
 
-    ToolBarCustomizer toolBarCustomizer;
+    protected ToolBarCustomizer toolBarCustomizer;
     private Dialog dialog;
     private String currentScreenKey;
 
@@ -53,7 +53,6 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
         if (icicle != null) {
             currentScreenKey = icicle.getString(CURRENT_SCREEN_KEY);
         }
-        toolBarCustomizer = new PEpToolbarCustomizer(this);
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(State.CREATED);
     }
@@ -114,6 +113,7 @@ public abstract class K9PreferenceActivity extends PreferenceActivity implements
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         LinearLayout bar = startLinearLayout();
+        toolBarCustomizer = new PEpToolbarCustomizer(this);
         this.toolbar = (Toolbar) bar.getChildAt(0);
         getDelegate().setSupportActionBar(toolbar);
         this.toolbar.setNavigationOnClickListener(v -> onBackPressed());
