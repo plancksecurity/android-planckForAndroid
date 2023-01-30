@@ -6,3 +6,10 @@ include ':pEpJNIAdapter'
 project(':pEpJNIAdapter').projectDir = file("../pEpJNIAdapter/android")
 include ':foldableFolders'
 project(':foldableFolders').projectDir = file("../foldable-folder-list/library")
+include ':autodiscovery:api'
+include ':autodiscovery:providersxml'
+include ':autodiscovery:advanced'
+include ':autodiscovery:thunderbird'
+include ':autodiscovery:dnsrecords'
+include ':core'
+include ':testing'

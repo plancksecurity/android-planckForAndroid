@@ -9,7 +9,6 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
-import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
@@ -209,10 +208,10 @@ class ConfiguredSettingsUpdater(
                     restriction,
                     accepted = { newValue ->
                         newValue.isNotBlank() &&
-                                newValue in OAuthProviderType.values().map { it.toString() }
+                                newValue in com.fsck.k9.auth.OAuthProviderType.values().map { it.toString() }
                     },
                 ) {
-                    provisioningSettings.oAuthType = OAuthProviderType.valueOf(it)
+                    provisioningSettings.oAuthType = com.fsck.k9.auth.OAuthProviderType.valueOf(it)
                 }
 
                 updateAccountString(
@@ -220,17 +219,17 @@ class ConfiguredSettingsUpdater(
                     restriction,
                     accepted = { newValue ->
                         !newValue.isNullOrBlank() &&
-                                newValue in OAuthProviderType.values().map { it.toString() }
+                                newValue in com.fsck.k9.auth.OAuthProviderType.values().map { it.toString() }
                     },
                 ) { account, newValue ->
                     newValue?.let {
-                        account.mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
+                        account.mandatoryOAuthProviderType = com.fsck.k9.auth.OAuthProviderType.valueOf(newValue)
                     }
                 }
             }
     }
 
-    private fun getCurrentOAuthProvider(): OAuthProviderType? =
+    private fun getCurrentOAuthProvider(): com.fsck.k9.auth.OAuthProviderType? =
         preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType ?: provisioningSettings.oAuthType
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
@@ -259,7 +258,7 @@ class ConfiguredSettingsUpdater(
     private fun saveAccountMailSettings(
         restrictions: Bundle?,
         entry: RestrictionEntry,
-        oAuthProviderType: OAuthProviderType?,
+        oAuthProviderType: com.fsck.k9.auth.OAuthProviderType?,
         email: String?,
         incoming: Boolean
     ): SimpleMailSettings {
@@ -270,7 +269,7 @@ class ConfiguredSettingsUpdater(
         val bundle = restrictions?.getBundle(entry.key)
         updateAuthType(entry, bundle, simpleSettings, incoming)
         if (simpleSettings.authType == AuthType.XOAUTH2
-            && oAuthProviderType == OAuthProviderType.GOOGLE
+            && oAuthProviderType == com.fsck.k9.auth.OAuthProviderType.GOOGLE
             && email != null
         ) {
             simpleSettings =

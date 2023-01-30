@@ -9,7 +9,6 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
-import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
@@ -974,7 +973,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -997,7 +996,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1007,7 +1006,7 @@ class ConfiguredSettingsUpdaterTest {
         every { preferences.accounts }.returns(emptyList())
 
         val restrictions = getMailSettingsBundle(
-            oAuthProvider = OAuthProviderType.GOOGLE,
+            oAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
             authType = AuthType.XOAUTH2
         )
         val entry = getMailRestrictionEntry()
@@ -1025,7 +1024,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
             expectedUserName = NEW_EMAIL,
             expectedAuthType = security.pEp.mdm.AuthType.XOAUTH2,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1035,7 +1034,7 @@ class ConfiguredSettingsUpdaterTest {
         stubAccountSettersAndGetters()
 
         val restrictions = getMailSettingsBundle(
-            oAuthProvider = OAuthProviderType.GOOGLE,
+            oAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
             authType = AuthType.XOAUTH2
         )
         val entry = getMailRestrictionEntry()
@@ -1053,7 +1052,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
             expectedUserName = NEW_EMAIL,
             expectedAuthType = AuthType.XOAUTH2,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1076,7 +1075,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.EXTERNAL,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1099,7 +1098,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = AuthType.EXTERNAL,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1122,7 +1121,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.CRAM_MD5,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1145,7 +1144,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = AuthType.CRAM_MD5,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1220,7 +1219,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = null,
             expectedUserName = null,
             expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1249,7 +1248,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = OLD_SECURITY_TYPE,
             expectedUserName = OLD_USER_NAME,
             expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1273,7 +1272,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1297,7 +1296,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1320,7 +1319,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE
         )
     }
 
@@ -1343,7 +1342,7 @@ class ConfiguredSettingsUpdaterTest {
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
             expectedAuthType = AuthType.PLAIN,
-            expectedOAuthProvider = OAuthProviderType.GOOGLE,
+            expectedOAuthProvider = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         )
     }
 
@@ -1400,7 +1399,7 @@ class ConfiguredSettingsUpdaterTest {
     }
 
     private fun stubAccountSettersAndGetters() {
-        val oAuthProviderSlot = slot<OAuthProviderType>()
+        val oAuthProviderSlot = slot<com.fsck.k9.auth.OAuthProviderType>()
         every { account.mandatoryOAuthProviderType = capture(oAuthProviderSlot) }.answers {
             every { account.mandatoryOAuthProviderType }.returns(oAuthProviderSlot.captured)
         }
@@ -1419,7 +1418,7 @@ class ConfiguredSettingsUpdaterTest {
         expectedConnectionSecurity: ConnectionSecurity?,
         expectedUserName: String?,
         expectedAuthType: security.pEp.mdm.AuthType,
-        expectedOAuthProvider: OAuthProviderType?
+        expectedOAuthProvider: com.fsck.k9.auth.OAuthProviderType?
     ) {
         val slot = slot<AccountMailSettingsProvision>()
         verify {
@@ -1452,7 +1451,7 @@ class ConfiguredSettingsUpdaterTest {
         expectedConnectionSecurity: ConnectionSecurity,
         expectedUserName: String?,
         expectedAuthType: AuthType,
-        expectedOAuthProvider: OAuthProviderType?
+        expectedOAuthProvider: com.fsck.k9.auth.OAuthProviderType?
     ) {
         val incomingSettingsSlot = slot<ServerSettings>()
         val outgoingSettingsSlot = slot<ServerSettings>()
@@ -1493,7 +1492,7 @@ class ConfiguredSettingsUpdaterTest {
     private fun getMailSettingsBundle(
         email: String? = NEW_EMAIL,
         authType: AuthType = AuthType.PLAIN,
-        oAuthProvider: OAuthProviderType = OAuthProviderType.GOOGLE,
+        oAuthProvider: com.fsck.k9.auth.OAuthProviderType = com.fsck.k9.auth.OAuthProviderType.GOOGLE,
         server: String? = NEW_SERVER,
         username: String? = NEW_USER_NAME,
         security: String? = NEW_SECURITY_TYPE_STRING,
@@ -1611,7 +1610,7 @@ class ConfiguredSettingsUpdaterTest {
         OLD_CERTIFICATE_ALIAS
     )
 
-    private fun stubInitialServerSettings(previousOAuthProviderType: OAuthProviderType? = null) {
+    private fun stubInitialServerSettings(previousOAuthProviderType: com.fsck.k9.auth.OAuthProviderType? = null) {
         val incomingSettings = getInitialIncomingSettings()
         val outgoingSettings = getInitialOutgoingSettings()
 
@@ -1646,7 +1645,7 @@ class ConfiguredSettingsUpdaterTest {
         private val DEFAULT_SECURITY_TYPE = ConnectionSecurity.STARTTLS_REQUIRED
         private const val DEFAULT_USER_NAME = "usernameDefault"
         private const val DEFAULT_EMAIL = "email@default.ch"
-        private val DEFAULT_OAUTH_PROVIDER = OAuthProviderType.MICROSOFT
+        private val DEFAULT_OAUTH_PROVIDER = com.fsck.k9.auth.OAuthProviderType.MICROSOFT
         private val DEFAULT_AUTH_TYPE = AuthType.PLAIN
 
         private const val NEW_EMAIL = "email@mail.ch"

@@ -1,0 +1,20 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.fsck.k9.autodiscovery.dnsrecords'
+}
+
+dependencies {
+    implementation project(':autodiscovery:api')
+
+    implementation 'org.minidns:minidns-hla:1.0.4'
+    implementation "org.koin:koin-android-architecture:${versions.koin}"
+    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+
+    testImplementation "junit:junit:${versions.junit}"
+    testImplementation "io.mockk:mockk:${versions.mockk}"
+}

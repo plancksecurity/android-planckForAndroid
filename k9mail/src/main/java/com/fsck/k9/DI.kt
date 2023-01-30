@@ -6,10 +6,7 @@ import com.fsck.k9.activity.setup.accountSetupModule
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autocrypt.autocryptModule
-import com.fsck.k9.autodiscovery.advanced.autodiscoveryAdvancedModule
-import com.fsck.k9.autodiscovery.dnsrecords.dnsRecordsResolverModule
-import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
-import com.fsck.k9.autodiscovery.thunderbird.autodiscoveryThunderbirdModule
+import com.fsck.k9.autodiscovery.advanced.autodiscoveryAdvancedModules
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.crypto.openPgpModule
 import com.fsck.k9.mail.TransportProvider
@@ -23,6 +20,7 @@ import org.koin.KoinContext
 import org.koin.android.ext.koin.with
 import org.koin.android.logger.AndroidLogger
 import org.koin.core.parameter.Parameters
+import org.koin.dsl.module.Module
 import org.koin.dsl.module.applicationContext
 import org.koin.log.EmptyLogger
 import org.koin.standalone.StandAloneContext
@@ -39,7 +37,7 @@ object DI {
         factory { EmailAddressValidator() }
     }
 
-    val appModules = listOf(
+    val appModules = listOf<Module>(
             mainModule,
             settingsUiModule,
             //unreadWidgetModule,
@@ -49,11 +47,7 @@ object DI {
             mailStoreModule,
             authModule,
             accountSetupModule,
-            autodiscoveryProvidersXmlModule,
-            autodiscoveryAdvancedModule,
-            autodiscoveryThunderbirdModule,
-            dnsRecordsResolverModule,
-    )
+    ) + autodiscoveryAdvancedModules
 
     @JvmStatic fun start(application: Application) {
         @Suppress("ConstantConditionIf")

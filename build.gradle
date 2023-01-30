@@ -1,8 +1,10 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+
 buildscript {
     ext {
         buildConfig = [
                 'compileSdk'           : 33,
-                'targetSdk'            : 33,
+                'targetSdk'            : 31,
                 'minSdk'               : 21,
         ]
 
@@ -59,7 +61,7 @@ buildscript {
 
 
                 'androidXjunit'      : '1.1.3',
-                'androidXcoreTest'   : '1.1.0',
+                'androidXcoreTest'   : '1.5.0',
                 'junit'              : '4.12',
                 'robolectric'        : '4.5.1',
                 'ant'                : '1.10.13',
@@ -80,6 +82,7 @@ buildscript {
                 'x86'        : 3,
                 'x86_64'     : 4
         ]
+        javaVersion = JavaVersion.VERSION_1_8
     }
 
     repositories {
@@ -112,5 +115,81 @@ subprojects {
     repositories {
         jcenter()
         google()
+    }
+}
+
+allprojects {
+    //configurations.all {
+    //    resolutionStrategy.dependencySubstitution {
+    //        substitute module("androidx.core:core") using module("androidx.core:core:${versions.androidxCore}")
+    //        substitute module("androidx.activity:activity") using module("androidx.activity:activity:${versions.androidxActivity}")
+    //        substitute module("androidx.activity:activity-ktx") using module("androidx.activity:activity-ktx:${versions.androidxActivity}")
+    //        substitute module("androidx.fragment:fragment") using module("androidx.fragment:fragment:${versions.androidxFragment}")
+    //        substitute module("androidx.fragment:fragment-ktx") using module("androidx.fragment:fragment-ktx:${versions.androidxFragment}")
+    //        substitute module("androidx.appcompat:appcompat") using module("androidx.appcompat:appcompat:${versions.androidxAppCompat}")
+    //        substitute module("androidx.preference:preference") using module("androidx.preference:preference:${versions.androidxPreference}")
+    //        substitute module("androidx.recyclerview:recyclerview") using module("androidx.recyclerview:recyclerview:${versions.androidxRecyclerView}")
+    //        substitute module("androidx.constraintlayout:constraintlayout") using module("androidx.constraintlayout:constraintlayout:${versions.androidxConstraintLayout}")
+    //        substitute module("androidx.drawerlayout:drawerlayout") using module("androidx.drawerlayout:drawerlayout:${versions.androidxDrawerLayout}")
+    //        substitute module("androidx.lifecycle:lifecycle-livedata") using module("androidx.lifecycle:lifecycle-livedata:${versions.androidxLifecycle}")
+    //        substitute module("androidx.transition:transition") using module("androidx.transition:transition:${versions.androidxTransition}")
+    //        substitute module("org.jetbrains:annotations") using module("org.jetbrains:annotations:${versions.jetbrainsAnnotations}")
+    //        substitute module("org.jetbrains.kotlin:kotlin-stdlib") using module("org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}")
+    //        substitute module("org.jetbrains.kotlin:kotlin-stdlib-jdk7") using module("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}")
+    //        substitute module("org.jetbrains.kotlin:kotlin-stdlib-jdk8") using module("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}")
+    //        substitute module("org.jetbrains.kotlinx:kotlinx-coroutines-android") using module("org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinCoroutines}")
+    //    }
+    //}
+
+    plugins.withType(com.android.build.gradle.BasePlugin).configureEach {
+        project.android {
+            compileSdk buildConfig.compileSdk
+
+            defaultConfig {
+                minSdk buildConfig.minSdk
+                targetSdk buildConfig.targetSdk
+
+                vectorDrawables.useSupportLibrary = true
+                testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            }
+
+            compileOptions {
+                sourceCompatibility javaVersion
+                targetCompatibility javaVersion
+            }
+
+            lintOptions {
+                abortOnError false
+                lintConfig file("$rootProject.projectDir/config/lint/lint.xml")
+            }
+
+            testOptions {
+                unitTests {
+                    includeAndroidResources = true
+                }
+            }
+        }
+    }
+
+    plugins.withType(JavaPlugin).configureEach {
+        project.java {
+            sourceCompatibility = javaVersion
+            targetCompatibility = javaVersion
+        }
+    }
+
+    tasks.withType(Test) {
+        testLogging {
+            exceptionFormat "full"
+            showCauses true
+            showExceptions true
+            showStackTraces true
+        }
+    }
+
+    tasks.withType(KotlinCompile) {
+        kotlinOptions {
+            jvmTarget = javaVersion
+        }
     }
 }

@@ -55,6 +55,11 @@ dependencies {
     implementation project(':plugins:HoloColorPicker')
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
     implementation project(':foldableFolders')
+    implementation project(':autodiscovery:advanced')
+    implementation project(':autodiscovery:api')
+    implementation project(':core')
+
+    testImplementation project(':testing')
 
     implementation 'net.openid:appauth:0.11.1'
     implementation "com.squareup.okio:okio:${versions.okio}"
@@ -93,8 +98,6 @@ dependencies {
     implementation "androidx.security:security-crypto:${versions.crypto}"
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
 
-    implementation 'org.minidns:minidns-hla:1.0.4'
-
     // Arch dependencies
     kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
     implementation "com.google.dagger:dagger:${versions.dagger}"
@@ -118,7 +121,6 @@ dependencies {
     implementation "androidx.multidex:multidex:${versions.multidex}"
 
     implementation "net.sf.biweekly:biweekly:${versions.biweekly}"
-    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
 
     androidTestImplementation "androidx.test.espresso:espresso-intents:${versions.espresso}"
     androidTestImplementation ("androidx.test.espresso:espresso-core:${versions.espresso}") {
@@ -128,7 +130,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
     androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
-    testImplementation "org.robolectric:robolectric:${versions.robolectric}"
     testImplementation "org.apache.ant:ant:${versions.ant}"
     testImplementation "junit:junit:${versions.junit}"
     testImplementation "org.mockito:mockito-core:${versions.mockito}"
@@ -186,23 +187,18 @@ dependencies {
 }
 
 android {
-    compileSdkVersion buildConfig.compileSdk
 
     defaultConfig {
         applicationId "${appId}"
         versionCode 501
-        minSdkVersion buildConfig.minSdk
-        targetSdkVersion buildConfig.targetSdk
 
         setProperty("archivesBaseName", "${gitVersionName}-${versionCode}")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
         testApplicationId "com.fsck.k9.pEp.ui.activities.test"
         testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
-        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
-        vectorDrawables.useSupportLibrary = true
 
         buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
         buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"

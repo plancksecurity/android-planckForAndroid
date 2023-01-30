@@ -1,0 +1,25 @@
+plugins {
+
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.fsck.k9.autodiscovery.thunderbird'
+}
+
+dependencies {
+    implementation project(':autodiscovery:api')
+    implementation project(':autodiscovery:dnsrecords')
+    implementation project(':k9mail-library')
+
+    testImplementation project(':testing')
+
+    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+    implementation "org.koin:koin-android-architecture:${versions.koin}"
+    implementation "com.jakewharton.timber:timber:${versions.timber}"
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "io.mockk:mockk:${versions.mockk}"
+    testImplementation "com.google.truth:truth:${versions.truth}"
+}

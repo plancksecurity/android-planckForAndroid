@@ -11,19 +11,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.setup.ServerNameSuggester;
-
-import com.fsck.k9.helper.EmailHelper;
-import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;

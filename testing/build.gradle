@@ -1,0 +1,13 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.fsck.k9.testing'
+}
+
+dependencies {
+    api "org.robolectric:robolectric:${versions.robolectric}"
+    implementation 'junit:junit:4.12'
+}
