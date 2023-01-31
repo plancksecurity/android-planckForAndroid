@@ -186,8 +186,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
                         getOnHandshakeResultListener(),
                         myself
                 );
-        ListAdapteeCollection<PEpIdentity> adapteeCollection = new ListAdapteeCollection<>(pEpIdentities);
-        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, adapteeCollection);
+        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, pEpIdentities );
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
