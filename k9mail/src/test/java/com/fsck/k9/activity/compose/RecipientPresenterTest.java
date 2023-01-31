@@ -26,6 +26,7 @@ import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import java.util.Arrays;
@@ -42,9 +43,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.annotation.LooperMode.Mode.LEGACY;
 
 @RunWith(AndroidJUnit4.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LEGACY)
 //@Config(shadows = { ShadowOpenPgpAsyncTask.class })
 public class RecipientPresenterTest {
     private static final ReplyToParser.ReplyToAddresses TO_ADDRESSES = new ReplyToParser.ReplyToAddresses(Address.parse("to@example.org"));
