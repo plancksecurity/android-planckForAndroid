@@ -1,24 +1,25 @@
 package security.pEp.provisioning
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.*
+import org.junit.After
 import org.junit.Assume.assumeFalse
-import org.junit.runner.RunWith
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
-class NonProvisioningManagerTest {
+class NonProvisioningManagerTest : RobolectricTest() {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
 
