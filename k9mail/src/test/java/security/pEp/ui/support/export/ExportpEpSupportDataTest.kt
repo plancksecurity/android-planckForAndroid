@@ -2,7 +2,7 @@ package security.pEp.ui.support.export
 
 
 import android.content.Context
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
@@ -18,13 +18,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 import security.pEp.file.PEpSystemFileLocator
 import java.io.File
 
 @ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
-class ExportpEpSupportDataTest {
+class ExportpEpSupportDataTest : RobolectricTest() {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
     private val context: Context = mockk()
