@@ -211,7 +211,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun showMDMDialog(title: CharSequence): Boolean {
+    private fun showMDMDialog(title: CharSequence?): Boolean {
         if (mdmDialog == null) {
             mdmDialog = AlertDialog.Builder(view?.context,
                     ThemeManager.getAttributeResource(requireContext(), R.attr.syncDisableDialogStyle))
