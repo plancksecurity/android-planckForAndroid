@@ -2682,17 +2682,14 @@ public class TestUtils {
     public static void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             waitForIdle();
-            Espresso.onIdle();
             while (!viewIsDisplayed(R.id.toolbar)) {
                 waitForIdle();
             }
             waitForIdle();
-            waitUntilIdle();
             onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
             waitForIdle();
-            waitUntilIdle();
-            Espresso.onIdle();
-        }}
+        }
+    }
 
     private void checkUpperToolbar (int color){
         int colorFromResource = PEpColorUtils.makeColorTransparent(
