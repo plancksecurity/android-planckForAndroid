@@ -1,8 +1,6 @@
 package com.fsck.k9.ui.messageview;
 
 
-import static android.app.Activity.RESULT_CANCELED;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
