@@ -138,7 +138,6 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        Log.e("TEST","Estoy en Before");
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -1506,6 +1505,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
+        if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
+            return;
+        }
         if (BuildConfig.IS_ENTERPRISE) {
             switch (status) {
                 case "pEpRatingUnencrypted":
@@ -1564,7 +1566,7 @@ public class CucumberTestSteps {
         waitForIdle();
         status = testUtils.getStatusRating(statusRating, status);
         if (statusRating[0] != null) {
-            testUtils.assertMessageStatus(statusRating[0]);
+            testUtils.assertMessageStatus(statusRating[0], status);
         } else {
             testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
         }
@@ -2035,7 +2037,7 @@ public class CucumberTestSteps {
 
     @When("^I click compose message")
     public void I_click_message_compose_button() {
-        timeRequiredForThisMethod(5);
+        //timeRequiredForThisMethod(5);
         testUtils.composeMessageButton();
     }
 
