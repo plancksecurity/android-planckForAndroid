@@ -93,6 +93,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.PEpUIUtils;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
@@ -1170,7 +1171,7 @@ public class TestUtils {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             waitForIdle();
-            scroll.swipe(Direction.UP, 1.0f);
+            scroll.swipe(Direction.UP, 0.9f);
             waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeUp");
@@ -2222,11 +2223,11 @@ public class TestUtils {
         goBack(false);
     }
 
-    void checkStatus(Rating rating) {
-        assertMessageStatus(rating);
+    void checkStatus(Rating rating, String status) {
+        assertMessageStatus(rating, status);
     }
 
-    public void assertMessageStatus(Rating status){
+    public void assertMessageStatus(Rating rating, String status){
         int statusColor;
         clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
@@ -2237,16 +2238,19 @@ public class TestUtils {
             waitForIdle();
         }*/
         waitForToolbar();
-        statusColor = getSecurityStatusDrawableColor(status);
+        statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
             }
         } else {
-            if (R.id.securityStatusIcon != statusColor) {
-                assertFailWithMessage("Wrong Status color");
-            }
-            assertSecurityStatusText(status);
+            int value = rating.value;
+            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+
+            //int color = R.color.compose_unsecure_delivery_warning;
+            assertsIconColor("securityStatusIcon", color);
+            viewIsDisplayed(R.id.securityStatusIcon);
+            assertSecurityStatusText(rating);
         }
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -2460,6 +2464,29 @@ public class TestUtils {
         }
     }
 
+    public void assertsIconColor (String colorId, int color) {
+        BySelector selector = By.clazz("android.widget.ImageView");
+        waitForIdle();
+        Rating [] statusRating = new Rating[1];
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
+                waitForIdle();
+                int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                String hexColor = String.format("#%06X", (0xFFFFFF & iconColor));
+                //int i = R.color.compose_unsecure_delivery_warning;
+
+                color = ContextCompat.getColor(context, color);
+                //String hexColor2 = String.format("#%06X", (0xFFFFFF & R.color.compose_unsecure_delivery_warning));
+                //getStatusRating(statusRating, status);
+                //int statusColor = getSecurityStatusIconColor(statusRating[0]);
+                if (iconColor != color) {
+                        assertFailWithMessage("");
+                    break;
+                }
+            }
+        }
+    }
+
     public void summonThreads () {
         clickStatus();
         pressBack();
@@ -2560,11 +2587,7 @@ public class TestUtils {
                             currentMessage++;
                         }
                         else {
-                            View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
-                            currentViewActivity.setDrawingCacheEnabled(true);
-                            Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
-                            int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                            currentViewActivity.setDrawingCacheEnabled(false);
+                            int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
                             if (pixel != resources.getColor(statusColor)) {
                                 assertFailWithMessage("Badge status colors are different");
                             }
@@ -2583,7 +2606,9 @@ public class TestUtils {
         View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
         currentViewActivity.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
-        return bitmap.getPixel(x, y);
+        int pixel = bitmap.getPixel(x, y);
+        currentViewActivity.setDrawingCacheEnabled(false);
+        return pixel;
     }
 
     public int getNextHorizontalColoredXPixelToTheRight(int X, int Y) {
