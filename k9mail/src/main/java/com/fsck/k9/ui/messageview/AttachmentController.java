@@ -9,7 +9,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
+
+import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import timber.log.Timber;
 import android.view.View;
@@ -29,6 +32,8 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
 import com.fsck.k9.mailstore.MessageViewInfo;
+import com.fsck.k9.pEp.MediaStoreUtilsKt;
+import com.fsck.k9.pEp.UriUtilsKt;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
 
@@ -145,11 +150,18 @@ public class AttachmentController {
 
     private File saveAttachmentWithUniqueFileName(File directory) throws IOException {
         String filename = FileHelper.sanitizeFilename(attachment.displayName);
-        File file = FileHelper.createUniqueFile(directory, filename);
+        File file;
 
-        writeAttachmentToStorage(file);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            file = writeAttachmentToMediaStoreDownloads(filename);
+        } else {
+            file = FileHelper.createUniqueFile(directory, filename);
+            writeAttachmentToStorage(file);
+        }
 
-        addSavedAttachmentToDownloadsDatabase(file);
+        if (file != null) {
+            addSavedAttachmentToDownloadsDatabase(file);
+        }
 
         return file;
     }
@@ -167,6 +179,18 @@ public class AttachmentController {
         } finally {
             in.close();
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private File writeAttachmentToMediaStoreDownloads(String filename) throws IOException {
+        InputStream in = context.getContentResolver().openInputStream(attachment.internalUri);
+        Uri mediaStoreUri = MediaStoreUtilsKt.saveToDownloads(
+                in, context, attachment.mimeType, filename, null);
+        if (mediaStoreUri != null) {
+            String absolutePath =
+                    UriUtilsKt.getMediaStoreAbsoluteFilePathOrNull(mediaStoreUri, context);
+            return absolutePath != null ? new File(absolutePath) : null;
+        } else return null;
     }
 
     private void addSavedAttachmentToDownloadsDatabase(File file) {
