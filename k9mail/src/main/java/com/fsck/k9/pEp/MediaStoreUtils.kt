@@ -11,6 +11,8 @@ import androidx.annotation.RequiresApi
 import timber.log.Timber
 import java.io.*
 
+private const val BYTEARRAY_SIZE = 4 * 1024
+
 @RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
 fun InputStream.saveToDocuments(
@@ -85,10 +87,10 @@ private fun InputStream.saveToMediaStore(
 
         try {
             val pfd = context.contentResolver.openFileDescriptor(uri, "w")
-                ?: error("Error: parcel file descriptor is null!!")
+                ?: throw IOException("Error: parcel file descriptor is null!!")
 
             val out = FileOutputStream(pfd.fileDescriptor)
-            val buffer = ByteArray(4 * 1024)
+            val buffer = ByteArray(BYTEARRAY_SIZE)
             var length: Int
             while (inputStream.read(buffer).also { length = it } > 0) {
                 out.write(buffer, 0, length)
