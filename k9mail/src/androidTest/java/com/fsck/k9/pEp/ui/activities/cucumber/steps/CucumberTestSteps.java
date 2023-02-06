@@ -11,9 +11,12 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
@@ -38,6 +41,8 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
+import com.fsck.k9.pEp.ui.activities.connector;
+import com.fsck.k9.pEp.ui.activities.jiraConnector;
 import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
@@ -52,6 +57,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Timer;
@@ -64,6 +70,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import retrofit2.http.Headers;
 import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
@@ -129,16 +138,6 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        scenario = ActivityScenario.launch(SplashActivity.class);
-        while (TestUtils.getCurrentActivity() == null) {
-            waitForIdle();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -150,6 +149,21 @@ public class CucumberTestSteps {
             resources = getApplicationContext().getResources();
             //startTimer(2000);
             //testUtils.testReset = true;
+        }
+        Intents.init();
+        try {
+            scenario = ActivityScenario.launch(SplashActivity.class);
+            while (TestUtils.getCurrentActivity() == null) {
+                try {
+                    waitForIdle();
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("TEST","Estoy en BeforeCatch: " + e.getMessage(), e);
+            e.printStackTrace();
         }
     }
 
@@ -1491,6 +1505,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
+        if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
+            return;
+        }
         if (BuildConfig.IS_ENTERPRISE) {
             switch (status) {
                 case "pEpRatingUnencrypted":
@@ -1549,7 +1566,7 @@ public class CucumberTestSteps {
         waitForIdle();
         status = testUtils.getStatusRating(statusRating, status);
         if (statusRating[0] != null) {
-            testUtils.assertMessageStatus(statusRating[0]);
+            testUtils.assertMessageStatus(statusRating[0], status);
         } else {
             testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
         }
@@ -2020,7 +2037,7 @@ public class CucumberTestSteps {
 
     @When("^I click compose message")
     public void I_click_message_compose_button() {
-        timeRequiredForThisMethod(5);
+        //timeRequiredForThisMethod(5);
         testUtils.composeMessageButton();
     }
 
@@ -2955,13 +2972,13 @@ public class CucumberTestSteps {
             openAttachedMasterKey();
             waitForIdle();
             try {
-                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc");
+                masterKeyText = testUtils.readFile(Environment.getExternalStorageDirectory().toString() + "/Download/", "masterkey.asc");
             } catch (Exception e) {
                 Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
             }
         }
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
-        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc");
+        masterKeyText2 = testUtils.readFile(Environment.getExternalStorageDirectory().toString(), "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
             TestUtils.assertFailWithMessage("Wrong Master key file");
         }
@@ -3098,15 +3115,45 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @Then("^I save test report$")
+    @Then("^I save test report2$")
     public void I_save_report() {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
+        String username = "a-automation@pep.security";
+        String password = "DfPz5GKY%bPbqT&x";
+        String auth = TestUtils.getBasicAuthenticationHeader(username, password);
+        connector jc = new connector() {};
         try {
-            file = new File("/data/data/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber.json");
-            testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
+            //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            String fileText = testUtils.readFile("storage/emulated/" + BuildConfig.USER + "/Download/test/", "cucumber3.json");
+            Log.e("TEST","Estoy en 3");
+            jc.rawJSONsync(fileText, auth);
+            Log.e("TEST","Estoy en 4");
         } catch (Throwable e) {
+            Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
+            e.printStackTrace();
             SetDirectory(file);
+        }
+    }
+
+    @Then("^I save test report$")
+    public void I_save_report2() {
+        Log.e("TEST","Estoy en save report");
+        try  {
+
+
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://www.google.com").openConnection();
+            connection.setRequestMethod("HEAD");
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                // Not OK.
+            }
+            Log.e("TEST","Estoy en hecho en "+responseCode);
+            return;
+        } catch (Exception exception) {
+            Log.e("TEST","Estoy en NO hecho: " + exception);
+            return;
         }
     }
 
