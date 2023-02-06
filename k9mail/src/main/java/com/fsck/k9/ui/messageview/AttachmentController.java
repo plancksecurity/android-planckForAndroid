@@ -18,6 +18,7 @@ import timber.log.Timber;
 import android.view.View;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -381,7 +382,7 @@ public class AttachmentController {
             try {
                 File directory = params[0];
                 return saveAttachmentWithUniqueFileName(directory);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Timber.e(e, "Error saving attachment");
                 return null;
             }
