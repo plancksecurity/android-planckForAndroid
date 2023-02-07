@@ -253,7 +253,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
         }
 
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_END_USER) {
             registerForContextMenu(accountsList)
         }
 
@@ -989,8 +989,8 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO || account is SearchAccount) {
-                holder.folders!!.visibility = View.GONE
+            if (!BuildConfig.IS_END_USER || account is SearchAccount) {
+                holder.folders?.visibility = View.GONE
             } else {
                 holder.folders?.let {
                     it.visibility = View.VISIBLE

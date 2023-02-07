@@ -1,7 +1,6 @@
 package security.pEp.provisioning
 
 import android.util.Log
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
@@ -24,7 +23,7 @@ class ProvisioningManager @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
 ) {
     private var provisionState: ProvisionState =
-        if (BuildConfig.IS_ENTERPRISE) ProvisionState.WaitingForProvisioning
+        if (k9.isRunningOnWorkProfile()) ProvisionState.WaitingForProvisioning
         else ProvisionState.Initializing()
 
     private val listeners = mutableListOf<ProvisioningStateListener>()
@@ -52,7 +51,7 @@ class ProvisioningManager @Inject constructor(
 
     private suspend fun performProvisioningIfNeeded(): Result<Unit> {
         return when {
-            !BuildConfig.IS_ENTERPRISE -> {
+            !k9.isRunningOnWorkProfile -> {
                 finalizeSetup()
             }
             else -> {
@@ -71,7 +70,7 @@ class ProvisioningManager @Inject constructor(
     }
 
     fun performInitializedEngineProvisioning() = runBlocking<Unit> {
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (k9.isRunningOnWorkProfile) {
             configurationManagerFactory.create(k9)
                 .loadConfigurationsSuspend(ProvisioningStage.InitializedEngine)
                 .onFailure { throw it }

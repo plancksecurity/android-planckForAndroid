@@ -279,7 +279,7 @@ public class FolderList extends K9ListActivity {
                 onOpenFolder(((FolderInfoHolder)mAdapter.getItem(position)).name);
             }
         });
-        if (!BuildConfig.IS_ENTERPRISE) {
+        if (BuildConfig.IS_END_USER) {
             registerForContextMenu(mListView);
         }
 

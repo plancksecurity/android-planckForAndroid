@@ -51,6 +51,7 @@ import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.mdm.MediaKey;
+import security.pEp.mdm.UserProfile;
 import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
@@ -113,6 +114,7 @@ public class K9 extends MultiDexApplication {
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
     private static boolean enableEchoProtocol = !BuildConfig.IS_DEMO;
     private static Set<MediaKey> mediaKeys;
+    private Boolean runningOnWorkProfile;
 
     public static K9JobManager jobManager;
 
@@ -122,6 +124,14 @@ public class K9 extends MultiDexApplication {
 
     public static void setMasterKeys(Set<String> keys) {
         pEpExtraKeys = keys;
+    }
+
+    public boolean isRunningOnWorkProfile() {
+        if (!BuildConfig.IS_ENTERPRISE) return false;
+        if (runningOnWorkProfile == null) {
+            runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
+        }
+        return runningOnWorkProfile;
     }
 
     public boolean isBatteryOptimizationAsked() {
@@ -1074,14 +1084,14 @@ public class K9 extends MultiDexApplication {
                         "pEpUseTrustwords",
                         ManageableSettingKt.encodeBooleanToString(
                                 new ManageableSetting<>(
-                                        !BuildConfig.IS_ENTERPRISE,
+                                        !((K9) app).isRunningOnWorkProfile(),
                                         true
                                 )
                         )
                 )
         );
-        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
-        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_DEMO);
+        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !((K9) app).isRunningOnWorkProfile());
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", BuildConfig.IS_END_USER || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);

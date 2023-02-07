@@ -239,7 +239,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             if(manualSetup) {
                 account.setOptionsOnInstall();
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
                 ((K9) mContext.getApplicationContext()).getComponent()
                         .configurationManagerFactory().create(mContext)
                         .loadConfigurationsBlocking();
