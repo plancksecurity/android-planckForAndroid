@@ -86,7 +86,7 @@ class ExportpEpSupportDataTest: RobolectricTest() {
     }
 
     @Test
-    fun `export() returns false if an exception is thrown`() {
+    fun `export() returns Result_failure if an exception is thrown`() {
         runBlocking {
             every { systemFileLocator.pEpFolder }.throws(RuntimeException())
 
