@@ -112,7 +112,7 @@ public class K9 extends MultiDexApplication {
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
-    private static boolean enableEchoProtocol = !BuildConfig.IS_DEMO;
+    private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
     private Boolean runningOnWorkProfile;
 
