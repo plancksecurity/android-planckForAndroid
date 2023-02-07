@@ -67,7 +67,7 @@ class ExportpEpSupportData @Inject constructor(
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             fromFolder.listFiles()?.forEach { file ->
-                file.inputStream().saveToDocuments(
+                FileUtils.openInputStream(file).saveToDocuments(
                     context,
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
                     file.name,
