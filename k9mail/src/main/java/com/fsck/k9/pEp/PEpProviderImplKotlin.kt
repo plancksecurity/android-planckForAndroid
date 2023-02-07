@@ -93,9 +93,8 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
 //        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        engine.config_enable_echo_protocol(false)
-        engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
-        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
+        engine.config_enable_echo_protocol(true)
+        //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
         //if (!BuildConfig.IS_DEMO) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
         //    engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
        // }
@@ -717,7 +716,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    @WorkerThread
     override fun myself(myId: Identity?): Identity? = runBlocking {
         myselfSuspend(myId)
     }
@@ -986,6 +984,7 @@ class PEpProviderImplKotlin @Inject constructor(
         ioScope.launch {
             try {
                 Timber.i("%s %s", TAG, "Trying to start sync thread Engine.startSync()")
+                createEngineInstanceIfNeeded()
                 engine.startSync()
             } catch (exception: pEpException) {
                 Timber.e("%s %s", TAG, "Could not Engine.startSync()", exception)
