@@ -4,11 +4,7 @@ import android.content.RestrictionEntry
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.fsck.k9.Account
-import com.fsck.k9.K9
-import com.fsck.k9.Preferences
-import com.fsck.k9.R
+import com.fsck.k9.*
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.ConnectionSecurity
@@ -27,13 +23,11 @@ import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import security.pEp.network.UrlChecker
 import security.pEp.provisioning.*
 import java.util.*
 
-@RunWith(AndroidJUnit4::class)
-class ConfiguredSettingsUpdaterTest {
+class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     private val k9: K9 = mockk(relaxed = true)
     private val preferences: Preferences = mockk()
     private val account: Account = mockk(relaxed = true)
