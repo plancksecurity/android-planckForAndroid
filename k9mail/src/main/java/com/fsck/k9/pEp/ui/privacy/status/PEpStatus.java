@@ -258,10 +258,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
             case R.id.dialog_reset_partner_key_confirmation:
                 try {
                     presenter.resetpEpData(pEpIdentity);
+
+                    showDialogFragment(R.id.dialog_reset_partner_key_success, null);
                 } catch (Exception e) {
                     showDialogFragment(R.id.dialog_reset_partner_key_error, null);
-                } finally {
-                    showDialogFragment(R.id.dialog_reset_partner_key_success, null);
                 }
                 break;
             case R.id.dialog_reset_partner_key_error:
