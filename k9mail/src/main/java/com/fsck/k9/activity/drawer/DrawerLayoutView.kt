@@ -383,7 +383,7 @@ class DrawerLayoutView @Inject constructor(
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
 
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as List<Account>)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection)
         navigationAccounts.adapter = accountAdapter
     }
 

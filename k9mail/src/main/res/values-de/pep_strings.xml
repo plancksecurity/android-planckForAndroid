@@ -142,7 +142,16 @@
     <string name="key_reset_identity_feedback">Alle p≡p Daten dieses Kommunikationspartners wurden zurückgesetzt.</string>
     <string name="key_reset_for_identity_context_title">Alle p≡p Daten für diesen Kommunikationspartner zurücksetzen:</string>
     <string name="reset_all">Alles zurücksetzen</string>
-    <string name="reset">Zurücksetzen</string>
+    <string name="reset">Partnerschlüssel zurücksetzen</string>
+
+    <string name="reset_partner_keys_confirmation_action">Ja, zurücksetzen</string>
+    <string name="reset_partner_keys_try_again_action">Wiederholen</string>
+    <string name="reset_partner_keys_close_action">Schließen</string>
+    <string name="reset_partner_keys_successful_result">Sie haben Ihren Partnerschlüssel erfolgreich zurückgesetzt.</string>
+    <string name="reset_partner_keys_failure">Beim Zurücksetzen des Partnerschlüssels ist ein Fehler aufgetreten.\n\nVersuchen Sie es erneut, oder wenn das Problem weiterhin besteht, brechen Sie ab, und wenden Sie sich an ein IT-Mitglied.</string>
+    <string name="reset_partner_keys_title">Partnerschlüssel zurücksetzen</string>
+    <string name="reset_partner_keys_description">Durch das Zurücksetzen des öffentlichen Schlüssels eines Empfängers wird die Verknüpfung zwischen diesem Schlüssel und dem Schlüssel des Empfängers aus Ihrer Datenbank gelöscht.\n\nNach dem Zurücksetzen und sobald Sie mit dem Verfassen einer E-Mail an den Empfänger beginnen, erhält p≡p automatisch den richtigen öffentlichen Schlüssel. Sind Sie sicher, dass Sie zurücksetzen möchten?</string>
+
     <string name="key_import_success">Privater Schlüssel erfolgreich importiert.</string>
     <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüssels ein.</string>
     <string name="key_import_failure">Es gab einen Fehler, Es wurde kein Key importiert.</string>
