@@ -253,7 +253,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             }
         }
 
-        if (BuildConfig.IS_END_USER) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             registerForContextMenu(accountsList)
         }
 
@@ -276,7 +276,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun setupAvailableAccounts() {
-        if (!BuildConfig.IS_END_USER) {
+        if (BuildConfig.IS_ENTERPRISE) {
             accountsList?.visibility = View.GONE
             findViewById<View>(R.id.available_accounts_title)?.visibility = View.GONE
         }
@@ -309,11 +309,10 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
 
-        if (BuildConfig.IS_END_USER) {
-            addAccountButton?.setOnClickListener { onAddNewAccount() }
-        } else {
-            //It meant to be BuildConfig.IS_ENTERPRISE and BuildConfig.IS_DEMO only
+        if (BuildConfig.IS_ENTERPRISE) {
             addAccountButton?.visibility = View.GONE
+        } else {
+            addAccountButton?.setOnClickListener { onAddNewAccount() }
         }
     }
 
@@ -989,7 +988,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (!BuildConfig.IS_END_USER || account is SearchAccount) {
+            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
                 holder.folders?.visibility = View.GONE
             } else {
                 holder.folders?.let {

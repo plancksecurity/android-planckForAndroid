@@ -161,7 +161,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (getK9().isRunningOnWorkProfile()) {
             updateUiFromProvisioningSettings();
         }
-        setHasOptionsMenu(BuildConfig.IS_END_USER);
+        setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
     }
 

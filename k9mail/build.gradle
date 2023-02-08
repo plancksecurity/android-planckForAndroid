@@ -232,7 +232,6 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
-            buildConfigField "boolean", "IS_END_USER", "false"
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
@@ -240,7 +239,6 @@ android {
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
-            buildConfigField "boolean", "IS_END_USER", "true"
             versionName "${gitVersionName}"
             dimension "type"
         }
