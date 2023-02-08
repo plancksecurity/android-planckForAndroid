@@ -9,7 +9,7 @@ RUN apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle
 
 RUN apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.49.0 -y
+RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
 
 # Install Java 11
 RUN apt-get update -yqq && \
@@ -53,7 +53,7 @@ RUN yes | sdkmanager --licenses | grep "All SDK package licenses accepted"
 RUN sdkmanager --package_file=packages.txt
 
 # ADD RUST TARGETS
-RUN rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+RUN rustup target add --toolchain 1.64.0 aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
 RUN echo " \n\
     [target.armv7-linux-androideabi] \n\
