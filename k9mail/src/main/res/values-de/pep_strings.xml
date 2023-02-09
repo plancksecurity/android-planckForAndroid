@@ -143,6 +143,7 @@
     <string name="key_reset_for_identity_context_title">Alle p≡p Daten für diesen Kommunikationspartner zurücksetzen:</string>
     <string name="reset_all">Alles zurücksetzen</string>
     <string name="reset">Zurücksetzen</string>
+
     <string name="key_import_success">Privater Schlüssel erfolgreich importiert.</string>
     <string name="key_import_from_fs_input_fpr">Bitte geben Sie die ID oder den Fingerabdruck des Schlüssels ein.</string>
     <string name="key_import_failure">Es gab einen Fehler, Es wurde kein Key importiert.</string>

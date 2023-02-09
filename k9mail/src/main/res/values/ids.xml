@@ -6,5 +6,8 @@
     <item type="id" name="dialog_confirm_spam"/>
     <item type="id" name="dialog_attachment_progress"/>
     <item type="id" name="dialog_account_setup_error"/>
+    <item type="id" name="dialog_reset_partner_key_confirmation"/>
+    <item type="id" name="dialog_reset_partner_key_success"/>
+    <item type="id" name="dialog_reset_partner_key_error"/>
 
 </resources>

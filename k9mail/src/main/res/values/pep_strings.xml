@@ -212,6 +212,15 @@
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
+
+    <string name="reset_partner_keys_confirmation_action">Yes, Reset</string>
+    <string name="reset_partner_keys_try_again_action">Try again</string>
+    <string name="reset_partner_keys_close_action">Close</string>
+    <string name="reset_partner_keys_successful_result">You have successfully reset your partner key.</string>
+    <string name="reset_partner_keys_failure">An error has occurred resetting the partner key.\n\nTry again or if the problem persist cancel and please contact with an IT Member.</string>
+    <string name="reset_partner_keys_title">Reset Partner Keys</string>
+    <string name="reset_partner_keys_description">Resetting the public key of a recipient will clear the link between that key and the recipient\'s key from your database.\n\nAfter resetting and as soon as you start composing an email to the recipient, p≡p will automatically get the correct public key. Are you sure you want to reset?</string>
+
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
     <!-- Welcome/Tutorial-->

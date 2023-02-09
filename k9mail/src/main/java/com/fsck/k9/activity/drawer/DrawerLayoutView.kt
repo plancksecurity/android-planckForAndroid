@@ -30,6 +30,7 @@ import com.fsck.k9.pEp.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView
+import com.pedrogomez.renderers.AdapteeCollection
 import com.pedrogomez.renderers.ListAdapteeCollection
 import com.pedrogomez.renderers.RVRendererAdapter
 import com.pedrogomez.renderers.RendererBuilder
@@ -383,7 +384,7 @@ class DrawerLayoutView @Inject constructor(
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
 
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as List<Account>)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as AdapteeCollection<Account>)
         navigationAccounts.adapter = accountAdapter
     }
 
