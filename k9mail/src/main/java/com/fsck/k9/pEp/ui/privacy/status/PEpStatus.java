@@ -30,6 +30,7 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.pedrogomez.renderers.AdapteeCollection;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -188,7 +189,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
                 getOnHandshakeResultListener(),
                 myself
         );
-        recipientsAdapter = new RVRendererAdapter<PEpIdentity>(rendererBuilder, new ListAdapteeCollection(pEpIdentities));
+        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -208,6 +209,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
 
     private void showDialogFragment(int dialogId, PEpIdentity identity) {
         if (isDestroyed()) return;
+
+        findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
 
         ConfirmationDialogFragment fragment;
         switch (dialogId) {
