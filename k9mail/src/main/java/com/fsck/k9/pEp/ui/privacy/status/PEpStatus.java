@@ -10,11 +10,13 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +35,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.pedrogomez.renderers.AdapteeCollection;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
+
 import org.jetbrains.annotations.NotNull;
 
 import foundation.pEp.jniadapter.Rating;
@@ -207,7 +210,8 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
         return identity -> showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
     }
 
-    private void showDialogFragment(int dialogId, PEpIdentity identity) {
+    @Override
+    public void showDialogFragment(int dialogId, PEpIdentity identity) {
         if (isDestroyed()) return;
 
         findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
@@ -259,13 +263,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
     public void doPositiveClick(int dialogId) {
         switch (dialogId) {
             case R.id.dialog_reset_partner_key_confirmation:
-                try {
-                    presenter.resetpEpData(pEpIdentity);
-
-                    showDialogFragment(R.id.dialog_reset_partner_key_success, null);
-                } catch (Exception e) {
-                    showDialogFragment(R.id.dialog_reset_partner_key_error, null);
-                }
+                presenter.resetpEpData(pEpIdentity);
                 break;
             case R.id.dialog_reset_partner_key_error:
                 rendererBuilder.getResetClickListener().keyReset(pEpIdentity);

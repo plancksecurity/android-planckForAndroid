@@ -30,4 +30,6 @@ public interface PEpStatusView {
     void showItsOnlyOwnMsg();
 
     void updateToolbarColor(Rating rating);
+
+    void showDialogFragment(int dialogId, PEpIdentity identity);
 }
