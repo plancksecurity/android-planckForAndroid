@@ -383,7 +383,7 @@ class DrawerLayoutView @Inject constructor(
         accountRenderer.setOnAccountClickListenerListener { account -> onAccountClick(account) }
 
         navigationAccounts.layoutManager = getDrawerLayoutManager()
-        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection)
+        accountAdapter = RVRendererAdapter(rendererAccountBuilder, collection as List<Account>)
         navigationAccounts.adapter = accountAdapter
     }
 
@@ -405,9 +405,15 @@ class DrawerLayoutView @Inject constructor(
             drawerLayout.closeDrawers()
             messageListView.editAccount()
         }
-        addAccountContainer.setOnClickListener {
-            drawerLayout.closeDrawers()
-            AccountSetupBasics.actionNewAccount(context)
+
+        if (BuildConfig.IS_END_USER) {
+            addAccountContainer.setOnClickListener {
+                drawerLayout.closeDrawers()
+                AccountSetupBasics.actionNewAccount(context)
+            }
+        } else {
+            //It meant to be BuildConfig.IS_ENTERPRISE and BuildConfig.IS_DEMO only
+            addAccountContainer.visibility = View.GONE
         }
     }
 

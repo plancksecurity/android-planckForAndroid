@@ -30,17 +30,9 @@
 
     </PreferenceScreen>
 
-
-    <PreferenceScreen
-        android:icon="?attr/iconpEpShield"
-        android:key="pep_global"
-        android:title="@string/privacy_preferences">
-
-            <Preference
-                android:key="pep_key_reset"
-                android:summary="@string/pep_key_reset_all_own_ids_summary"
-                android:title="@string/reset" />
-
-    </PreferenceScreen>
+    <Preference
+        android:key="pep_key_reset"
+        android:summary="@string/pep_key_reset_all_own_ids_summary"
+        android:title="@string/reset" />
 
 </PreferenceScreen>

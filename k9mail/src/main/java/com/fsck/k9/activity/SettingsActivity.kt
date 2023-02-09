@@ -272,6 +272,14 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
 
         setupAddAccountButton()
+        setupAvailableAccounts()
+    }
+
+    private fun setupAvailableAccounts() {
+        if (!BuildConfig.IS_END_USER) {
+            accountsList?.visibility = View.GONE
+            findViewById<View>(R.id.available_accounts_title)?.visibility = View.GONE
+        }
     }
 
     fun startOnBoarding() {
@@ -300,7 +308,13 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
     private fun setupAddAccountButton() {
         addAccountButton = findViewById(R.id.add_account_container)
-        addAccountButton!!.setOnClickListener { onAddNewAccount() }
+
+        if (BuildConfig.IS_END_USER) {
+            addAccountButton?.setOnClickListener { onAddNewAccount() }
+        } else {
+            //It meant to be BuildConfig.IS_ENTERPRISE and BuildConfig.IS_DEMO only
+            addAccountButton?.visibility = View.GONE
+        }
     }
 
     private fun initializeActionBar() {
@@ -409,11 +423,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         adapter = AccountListAdapter(accounts,
                 indexedFolderClickListener { position ->
-                    val account = accountsList!!.getItemAtPosition(position) as BaseAccount
+                    val account = accountsList?.getItemAtPosition(position) as BaseAccount
                     onEditAccount(account as Account)
                 }
         )
-        accountsList!!.adapter = adapter
+        accountsList?.adapter = adapter
 
         val folders = ArrayList<BaseAccount>(SPECIAL_ACCOUNTS_COUNT)
 
@@ -480,7 +494,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun openSearchAccount(searchAccount: SearchAccount?) {
-        MessageList.actionDisplaySearch(this, searchAccount!!.relatedSearch, false, false)
+        MessageList.actionDisplaySearch(this, searchAccount?.relatedSearch, false, false)
     }
 
     private fun accountWasOpenable(realAccount: Account): Boolean {
@@ -543,7 +557,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 } else ConfirmationDialog.create(
                         this, id, R.string.account_delete_dlg_title,
                         getString(R.string.account_delete_dlg_instructions_fmt,
-                        selectedContextAccount!!.description),
+                        selectedContextAccount?.description),
                         R.string.okay_action,
                         R.string.cancel_action, this@SettingsActivity::deleteAccountWork)
 
@@ -975,7 +989,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
             fontSizes.setViewTextSize(holder.description, fontSizes.accountName)
             fontSizes.setViewTextSize(holder.email, fontSizes.accountDescription)
 
-            if (BuildConfig.IS_ENTERPRISE || account is SearchAccount) {
+            if (BuildConfig.IS_ENTERPRISE || BuildConfig.IS_DEMO || account is SearchAccount) {
                 holder.folders!!.visibility = View.GONE
             } else {
                 holder.folders?.let {
