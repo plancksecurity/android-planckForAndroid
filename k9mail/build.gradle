@@ -35,9 +35,8 @@ if (rootProject.testCoverage) {
 }
 
 repositories {
-    mavenCentral()
+    jcenter()
     google()
-    maven { url 'https://maven.google.com' }
 }
 
 dependencies {
@@ -60,7 +59,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
     implementation "androidx.vectordrawable:vectordrawable:${versions.vectordrawable}"
     implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
-    //implementation "org.apache.ant:com.springsource.org.apache.tools.ant:${versions.apacheTools}"
+    implementation "org.apache.ant:com.springsource.org.apache.tools.ant:${versions.apacheTools}"
 
     implementation "com.squareup.moshi:moshi:${versions.moshi}"
     implementation "com.splitwise:tokenautocomplete:${versions.tokenAutoComplete}"

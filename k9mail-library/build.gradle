@@ -10,7 +10,7 @@ if (rootProject.testCoverage) {
 
 repositories {
     google()
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
