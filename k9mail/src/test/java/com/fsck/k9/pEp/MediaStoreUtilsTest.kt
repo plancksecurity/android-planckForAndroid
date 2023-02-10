@@ -11,10 +11,14 @@ import android.provider.MediaStore
 import com.nhaarman.mockito_kotlin.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
+import org.apache.commons.io.IOUtils
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.MockedStatic
+import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.FileDescriptor
@@ -33,12 +37,20 @@ class MediaStoreUtilsTest {
     private val uri: Uri = mock()
     private val pfd: ParcelFileDescriptor = mock()
     private val outputStream: OutputStream = mock()
+    private lateinit var ioUtilsMock: MockedStatic<IOUtils>
 
 
     @Before
     fun setUp() {
         doReturn(contentResolver).`when`(context).contentResolver
         doReturn(mock<FileDescriptor>()).`when`(pfd).fileDescriptor
+
+        ioUtilsMock = Mockito.mockStatic(IOUtils::class.java)
+    }
+
+    @After
+    fun tearDown() {
+        ioUtilsMock.close()
     }
 
     @Test
@@ -52,6 +64,19 @@ class MediaStoreUtilsTest {
 
 
         verifyInsertedInFilesCollection(DISPLAY_NAME, MIME_TYPE, null)
+    }
+
+    @Test
+    fun `saveToDocuments() uses IOUtils to write files to device storage`() {
+        doReturn(uri).`when`(contentResolver).insert(any(), any())
+        doReturn(pfd).`when`(contentResolver).openFileDescriptor(uri, "w")
+        doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
+
+
+        inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, null)
+
+
+        ioUtilsMock.verify { IOUtils.copy(eq(inputStream), any<OutputStream>()) }
     }
 
     @Test
