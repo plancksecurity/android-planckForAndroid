@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import timber.log.Timber
@@ -67,12 +68,7 @@ private fun InputStream.saveToMediaStore(
     if (!subFolder.isNullOrBlank()) {
         relativeLocation += File.separator + subFolder
     }
-    val contentValues = ContentValues()
-    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
-    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
-    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativeLocation)
-    contentValues.put(MediaStore.MediaColumns.TITLE, displayName)
-    contentValues.put(MediaStore.MediaColumns.DATE_MODIFIED, System.currentTimeMillis())
+    val contentValues = getContentValues(displayName, mimeType, relativeLocation)
     val resolver: ContentResolver = context.contentResolver
 
     var outputStream: OutputStream? = null
@@ -85,23 +81,7 @@ private fun InputStream.saveToMediaStore(
         }
         Timber.d("inserted uri in $mediaType collection is $uri")
 
-        try {
-            val pfd = context.contentResolver.openFileDescriptor(uri, "w")
-                ?: throw IOException("Error: parcel file descriptor is null!!")
-
-            val out = FileOutputStream(pfd.fileDescriptor)
-            val buffer = ByteArray(BYTEARRAY_SIZE)
-            var length: Int
-            while (inputStream.read(buffer).also { length = it } > 0) {
-                out.write(buffer, 0, length)
-            }
-            out.close()
-            inputStream.close()
-            pfd.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        }
+        writeFileToMediaStore(context, uri, inputStream)
         outputStream = resolver.openOutputStream(uri)
         if (outputStream == null) {
             throw IOException("Failed to get output stream.")
@@ -116,6 +96,49 @@ private fun InputStream.saveToMediaStore(
     } finally {
         outputStream?.close()
     }
+}
+
+private fun writeFileToMediaStore(
+    context: Context,
+    uri: Uri,
+    inputStream: InputStream
+) {
+    var out: OutputStream? = null
+    var pfd: ParcelFileDescriptor? = null
+    try {
+        pfd = context.contentResolver.openFileDescriptor(uri, "w")
+            ?: throw IOException("Error: parcel file descriptor is null!!")
+
+        out = FileOutputStream(pfd.fileDescriptor)
+
+        val buffer = ByteArray(BYTEARRAY_SIZE)
+        var length: Int
+        while (inputStream.read(buffer).also { length = it } > 0) {
+            out.write(buffer, 0, length)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        throw e
+    } finally {
+        out?.close()
+        inputStream.close()
+        pfd?.close()
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.Q)
+private fun getContentValues(
+    displayName: String,
+    mimeType: String,
+    relativeLocation: String?
+): ContentValues {
+    val contentValues = ContentValues()
+    contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName)
+    contentValues.put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
+    contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativeLocation)
+    contentValues.put(MediaStore.MediaColumns.TITLE, displayName)
+    contentValues.put(MediaStore.MediaColumns.DATE_MODIFIED, System.currentTimeMillis())
+    return contentValues
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)
