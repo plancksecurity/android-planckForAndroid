@@ -9,6 +9,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import androidx.annotation.WorkerThread
 import org.apache.commons.io.IOUtils
 import timber.log.Timber
 import java.io.*
@@ -51,6 +52,7 @@ fun InputStream.saveToDownloads(
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
+@WorkerThread
 private fun InputStream.saveToMediaStore(
     context: Context,
     mimeType: String,
