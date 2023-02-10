@@ -11,15 +11,15 @@ buildscript {
 
                 'supportLibrary'     : '28.0.0',
                 'preferencesFix'     : '1.1.0',
-                'appCompat'          : '1.2.0',
-                'androidXcore'       : '1.3.2',
+                'appCompat'          : '1.6.0',
+                'androidXcore'       : '1.9.0',
                 'legacySupport'      : '1.0.0',
                 'cardView'           : '1.0.0',
-                'material'           : '1.3.0',
-                'recyclerview'       : '1.1.0',
+                'material'           : '1.5.0',
+                'recyclerview'       : '1.2.1',
                 'vectordrawable'     : '1.1.0',
                 'preference'         : '1.1.1',
-                'constraintLayout'   : '2.0.4',
+                'constraintLayout'   : '2.1.4',
                 'lifecycleExtensions': '2.2.0',
                 'androidxLifecycle'  : '2.5.1',
                 'lifecycleViewModel' : '2.5.1',
@@ -43,7 +43,7 @@ buildscript {
                 'swipeLayout'        : '1.2.0',
                 'dexter'             : '6.0.1',
                 'workRuntime'        : '2.7.1',
-                'crypto'             : '1.1.0-alpha03',
+                'crypto'             : '1.1.0-alpha04',
                 'jcipAnnotations'    : '1.0',
                 'jdom'               : '2.0.6',
                 'dagger'             : '2.41',
@@ -58,16 +58,16 @@ buildscript {
 
 
 
-                'androidXjunit'      : '1.1.3',
-                'androidXcoreTest'   : '1.1.0',
-                'junit'              : '4.12',
-                'robolectric'        : '4.7.3',
-                'runner_rules'       : '1.4.0',
+                'androidXjunit'      : '1.1.5',
+                'androidXcoreTest'   : '1.5.0',
+                'junit'              : '4.13.2',
+                'robolectric'        : '4.3.1',
+                'runner_rules'       : '1.5.2',
                 'mockito'            : '3.9.0',
                 'mockitoKotlin'      : '1.5.0',
                 'mockk'              : '1.12.4',
                 'truth'              : '1.1',
-                'espresso'           : '3.4.0',
+                'espresso'           : '3.5.1',
                 'uiAutomator'        : '2.2.0',
                 'cucumber'           : '4.8.3',
                 'cucumber_pico'      : '4.8.1',
@@ -82,7 +82,7 @@ buildscript {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
         maven { url 'https://maven.google.com' }
         google()
     }
@@ -97,8 +97,8 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
-        jcenter()
+        mavenCentral()
+        jcenter() // used for ancient libs such as koin-android-architecture:0.9.1, relinker:1.2.1, anko-coroutines:0.10.4, groupie-kotlin-android-extensions:2.1.0, etc.
         maven { url 'https://jitpack.io' }
     }
 }
@@ -109,7 +109,7 @@ project.ext {
 
 subprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
 }
