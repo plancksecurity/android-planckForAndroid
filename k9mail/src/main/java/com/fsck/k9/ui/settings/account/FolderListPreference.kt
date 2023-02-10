@@ -50,7 +50,7 @@ constructor(
         // summary view being hidden. Once folders are loaded the summary updates and the list height changes. This
         // adds quite a bit of visual clutter. We avoid that by always returning a non-empty summary value.
         val summary = super.getSummary()
-        return if (summary.isEmpty()) PLACEHOLDER_SUMMARY else summary
+        return summary?.let { it.ifEmpty { PLACEHOLDER_SUMMARY } } ?: PLACEHOLDER_SUMMARY
     }
 
 
