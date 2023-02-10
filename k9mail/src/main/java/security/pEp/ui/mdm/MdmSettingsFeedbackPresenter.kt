@@ -10,6 +10,7 @@ import javax.inject.Inject
 
 class MdmSettingsFeedbackPresenter @Inject constructor(
     private val preferences: Preferences,
+    private val k9: K9,
 ) {
     private lateinit var view: MdmSettingsFeedbackView
 
@@ -31,6 +32,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
         }.onFailure { Timber.e(it) }.getOrNull()
 
         return """
+            <p><b>MDM enabled:</b> ${k9.isRunningOnWorkProfile}</p>
             <p><b>p≡p privacy protection:</b> ${account.ispEpPrivacyProtected()}</p>
             <br/>
             <b>Extra keys:</b><p> 
