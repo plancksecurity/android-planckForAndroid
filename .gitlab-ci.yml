@@ -15,17 +15,19 @@ workflow:
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
-  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter/raw/tag/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O - https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpEngine Version = ${pEpEngine}"
   - echo "libpEpAdapter Version = ${libpEpAdapter}"
-  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpEngine/raw/tag/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - echo "libpEpCxx11 Version = ${libpEpCxx11}"
+  - wget -q -O - https://gitea.pep.foundation/pEp.foundation/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
-  - echo "Sequoia Version = ${sequoia}"
+  - echo "libpEpTransport Version = ${libpEpTransport}"
+  - echo "pEpEngineSequoiaBackend Version = ${pEpEngineSequoiaBackend}"
 
 stages:
   - toolchain
@@ -75,6 +77,8 @@ base image:
       --build-arg ENGINE_VERSION=${pEpEngine}
       --build-arg JNI_ADAPTER_VERSION=${pEpJNIAdapter}
       --build-arg LIBPEPADAPTER_VERSION=${libpEpAdapter}
+      --build-arg LIBPEPCXX_VERSION=${libpEpCxx11}
+      --build-arg LIBPEPTRANSPORT_VERSION=${libpEpTransport}
       --build-arg FOLDABLE_FOLDER_VERSION=${foldableFolderList}
       --build-arg TOOLCHAIN_IMAGE_NAME=${IMAGE_NAME}/toolchain
       --build-arg YML2_VERSION=${yml2}
@@ -99,7 +103,7 @@ build:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
@@ -123,7 +127,7 @@ test:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..

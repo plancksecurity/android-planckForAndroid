@@ -262,6 +262,8 @@ public interface PEpProvider extends AutoCloseable {
 
     void disableSyncForAllIdentites();
 
+    void updateSyncAccountsConfig();
+
     class KeyDetail {
         private final Address address;
         private final String fpr;
