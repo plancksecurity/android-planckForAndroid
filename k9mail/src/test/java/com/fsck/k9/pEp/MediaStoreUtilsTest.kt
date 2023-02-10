@@ -48,10 +48,10 @@ class MediaStoreUtilsTest {
         doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
 
 
-        inputStream.saveToDocuments(context, "mimeType", "name", null)
+        inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, null)
 
 
-        verifyInsertedInFilesCollection("name", "mimeType", null)
+        verifyInsertedInFilesCollection(DISPLAY_NAME, MIME_TYPE, null)
     }
 
     @Test
@@ -61,10 +61,10 @@ class MediaStoreUtilsTest {
         doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
 
 
-        inputStream.saveToDownloads(context, "mimeType", "name", null)
+        inputStream.saveToDownloads(context, MIME_TYPE, DISPLAY_NAME, null)
 
 
-        verifyInsertedInDownloadsCollection("name", "mimeType", null)
+        verifyInsertedInDownloadsCollection(DISPLAY_NAME, MIME_TYPE, null)
     }
 
     @Test
@@ -74,10 +74,10 @@ class MediaStoreUtilsTest {
         doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
 
 
-        inputStream.saveToDocuments(context, "mimeType", "name", "subFolder")
+        inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, SUBFOLDER)
 
 
-        verifyInsertedInFilesCollection("name", "mimeType", "subFolder")
+        verifyInsertedInFilesCollection(DISPLAY_NAME, MIME_TYPE, SUBFOLDER)
     }
 
     @Test
@@ -87,7 +87,7 @@ class MediaStoreUtilsTest {
         doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
 
 
-        val result = inputStream.saveToDocuments(context, "mimeType", "name", null)
+        val result = inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, null)
 
 
         assertEquals(uri, result)
@@ -100,7 +100,7 @@ class MediaStoreUtilsTest {
         doReturn(outputStream).`when`(contentResolver).openOutputStream(uri)
 
 
-        inputStream.saveToDocuments(context, "mimeType", "name", "subFolder")
+        inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, SUBFOLDER)
 
 
         verify(contentResolver).openFileDescriptor(uri, "w")
@@ -118,7 +118,7 @@ class MediaStoreUtilsTest {
 
 
         val exception = Assert.assertThrows(IOException::class.java) {
-            inputStream.saveToDocuments(context, "mimeType", "name", null)
+            inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, null)
         }
 
 
@@ -133,7 +133,7 @@ class MediaStoreUtilsTest {
 
 
         val exception = Assert.assertThrows(IOException::class.java) {
-            inputStream.saveToDocuments(context, "mimeType", "name", null)
+            inputStream.saveToDocuments(context, MIME_TYPE, DISPLAY_NAME, null)
         }
 
 
@@ -190,9 +190,15 @@ class MediaStoreUtilsTest {
             contentValues.getAsString(MediaStore.MediaColumns.MIME_TYPE)
         )
         assertEquals(
-            mediaRoot + (subFolder?.let { "/subFolder" } ?: ""),
+            mediaRoot + (subFolder?.let { "/$SUBFOLDER" } ?: ""),
             contentValues.getAsString(MediaStore.MediaColumns.RELATIVE_PATH)
         )
         assertTrue(contentValues.getAsLong(MediaStore.MediaColumns.DATE_MODIFIED) > 0L)
+    }
+    
+    companion object {
+        private const val MIME_TYPE = "mimeType"
+        private const val DISPLAY_NAME = "name"
+        private const val SUBFOLDER = "subFolder"
     }
 }
