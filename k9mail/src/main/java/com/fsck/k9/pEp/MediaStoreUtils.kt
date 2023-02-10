@@ -9,10 +9,9 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
+import org.apache.commons.io.IOUtils
 import timber.log.Timber
 import java.io.*
-
-private const val BYTEARRAY_SIZE = 4 * 1024
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
@@ -111,11 +110,8 @@ private fun writeFileToMediaStore(
 
         out = FileOutputStream(pfd.fileDescriptor)
 
-        val buffer = ByteArray(BYTEARRAY_SIZE)
-        var length: Int
-        while (inputStream.read(buffer).also { length = it } > 0) {
-            out.write(buffer, 0, length)
-        }
+        IOUtils.copy(inputStream, out)
+        out.flush()
     } catch (e: Exception) {
         e.printStackTrace()
         throw e
