@@ -3107,9 +3107,7 @@ public class CucumberTestSteps {
     public void I_save_report() {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
-        String username = "a-automation@pep.security";
-        String password = "DfPz5GKY%bPbqT&x";
-        String auth = TestUtils.getBasicAuthenticationHeader(username, password);
+        //String auth = TestUtils.getBasicAuthenticationHeader(username, password);
 /*        connector jc = new connector() {};
         try {
             file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
