@@ -41,8 +41,8 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
-import com.fsck.k9.pEp.ui.activities.connector;
-import com.fsck.k9.pEp.ui.activities.jiraConnector;
+//import com.fsck.k9.pEp.ui.activities.connector;
+//import com.fsck.k9.pEp.ui.activities.jiraConnector;
 import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
@@ -2037,7 +2037,7 @@ public class CucumberTestSteps {
 
     @When("^I click compose message")
     public void I_click_message_compose_button() {
-        //timeRequiredForThisMethod(5);
+        timeRequiredForThisMethod(5);
         testUtils.composeMessageButton();
     }
 
@@ -2285,7 +2285,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (!BuildConfig.IS_END_USER) {
+        if (BuildConfig.IS_END_USER) {
             testUtils.selectAccount(folder, accountToStart);
         }
     }
@@ -3122,7 +3122,7 @@ public class CucumberTestSteps {
         String username = "a-automation@pep.security";
         String password = "DfPz5GKY%bPbqT&x";
         String auth = TestUtils.getBasicAuthenticationHeader(username, password);
-        connector jc = new connector() {};
+/*        connector jc = new connector() {};
         try {
             file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
             //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
@@ -3134,7 +3134,7 @@ public class CucumberTestSteps {
             Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
             e.printStackTrace();
             SetDirectory(file);
-        }
+        }*/
     }
 
     @Then("^I save test report$")
