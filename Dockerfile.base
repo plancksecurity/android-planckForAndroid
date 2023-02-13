@@ -35,7 +35,7 @@ COPY . /root/code/pEp
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
 # TODO PEMA-103 move this to chuck all files into a local include
-RUN echo "PREFIX=$HOME/code/pEpEngine/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "PREFIX=$HOME/code/pEpEngine/build-android" >> $HOME/code/pEpJNIAdapter/local.conf
 RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
 
 
@@ -52,8 +52,8 @@ RUN cat $HOME/.gradle/gradle.properties
 
 # BUILD DEPENDENCIES
 WORKDIR /root/code/pEp
-
-RUN ./gradlew -q externalNativeBuildDebug
+# TODO PEMA-103 return this to -q
+RUN ./gradlew --info externalNativeBuildDebug
 RUN du -hs $HOME && \
     du -hs $HOME/* && \
     du -hs $HOME/code/* && \
