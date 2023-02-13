@@ -68,6 +68,17 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
+    fun `startProvisioning() starts provisioning app if running on work profile`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
+        manager.startProvisioning()
+
+
+        coVerify { configurationManager.loadConfigurationsSuspend(ProvisioningStage.Startup(true)) }
+    }
+
+    @Test
     @Ignore("provisioning url disabled")
     fun `startProvisioning() provisions app using PEpProviderImplKotlin`() {
         manager.startProvisioning()
@@ -80,6 +91,9 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `when device has no network connectivity, resulting state is error`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
         coEvery { Utility.hasConnectivity(any()) }.returns(false)
 
 
@@ -181,6 +195,9 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `if there are no accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup true`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
         manager.startProvisioning()
 
 
@@ -192,6 +209,9 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `if there are any accounts setup, configurationManager_loadConfigurationsSuspend is called with parameter Startup and firsStartup false`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
         coEvery { preferences.accounts }.returns(listOf(mockk()))
 
 
@@ -206,6 +226,9 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `performInitializedEngineProvisioning() calls configurationManager_loadConfigurationsSuspend with parameter InitializedEngine`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
         manager.performInitializedEngineProvisioning()
 
 
@@ -213,7 +236,25 @@ class ProvisioningManagerTest: RobolectricTest() {
     }
 
     @Test
+    fun `startProvisioning() does not provision app if not running on work profile`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(false)
+
+
+        manager.startProvisioning()
+
+
+        coVerify { PEpProviderImplKotlin.wasNot(called) }
+        coVerify { k9.finalizeSetup() }
+        assertListenerProvisionChangedWithState { state ->
+            assertEquals(ProvisionState.Initialized, state)
+        }
+    }
+
+    @Test
     fun `if ConfigurationManager_loadConfigurationSuspend fails, resulting state is error`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
+
+
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.failure(RuntimeException("fail")))
 
@@ -222,7 +263,8 @@ class ProvisioningManagerTest: RobolectricTest() {
 
 
         assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.wasNot(called) }
+            coVerify { k9.isRunningOnWorkProfile }
+            confirmVerified(k9)
             assertTrue(state is ProvisionState.Error)
             val throwable = (state as ProvisionState.Error).throwable
             assertTrue(throwable is RuntimeException)
@@ -232,6 +274,7 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @Test
     fun `if mail settings are not valid, resulting state is error`() {
+        coEvery { k9.isRunningOnWorkProfile }.returns(true)
         coEvery { provisioningSettings.hasValidMailSettings(any()) }.returns(false)
 
 
@@ -239,7 +282,8 @@ class ProvisioningManagerTest: RobolectricTest() {
 
 
         assertListenerProvisionChangedWithState { state ->
-            coVerify { k9.wasNot(called) }
+            coVerify { k9.isRunningOnWorkProfile }
+            confirmVerified(k9)
             assertTrue(state is ProvisionState.Error)
             val throwable = (state as ProvisionState.Error).throwable
             assertTrue(throwable is ProvisioningFailedException)
