@@ -131,7 +131,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
             boolean isMessageIncoming = intent.getBooleanExtra(MESSAGE_DIRECTION, false);
             boolean forceUnencrypted = intent.getBooleanExtra(FORCE_UNENCRYPTED, false);
             boolean alwaysSecure = intent.getBooleanExtra(ALWAYS_SECURE, false);
-            presenter.initialize(this, getUiCache(), getpEp(), displayHtml, isMessageIncoming,
+            presenter.initialize(this, getUiCache(), getpEp(),displayHtml, isMessageIncoming,
                     new Address(sender), forceUnencrypted, alwaysSecure);
             presenter.loadMessage(messageReference);
         }
@@ -204,11 +204,10 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
     private PEpIdentity pEpIdentity;
 
     private PEpStatusRendererBuilder.ResetClickListener showResetDialog() {
-        return identity -> showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
+        return this::showResetPartnerKeyRequestDialog;
     }
 
-    @Override
-    public void showDialogFragment(int dialogId, PEpIdentity identity) {
+    private void showDialogFragment(int dialogId, PEpIdentity identity) {
         if (isDestroyed()) return;
 
         findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
@@ -260,13 +259,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
     public void doPositiveClick(int dialogId) {
         switch (dialogId) {
             case R.id.dialog_reset_partner_key_confirmation:
-                try {
-                    presenter.resetpEpData(pEpIdentity);
-
-                    showDialogFragment(R.id.dialog_reset_partner_key_success, null);
-                } catch (Exception e) {
-                    showDialogFragment(R.id.dialog_reset_partner_key_error, null);
-                }
+                presenter.resetpEpData(pEpIdentity);
                 break;
             case R.id.dialog_reset_partner_key_error:
                 rendererBuilder.getResetClickListener().keyReset(pEpIdentity);
@@ -451,6 +444,21 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
     @Override
     public void updateToolbarColor(Rating rating) {
         colorActionBar(rating);
+    }
+
+    @Override
+    public void showResetPartnerKeyErrorFeedback() {
+        showDialogFragment(R.id.dialog_reset_partner_key_error, null);
+    }
+
+    @Override
+    public void showResetPartnerKeySuccessFeedback() {
+        showDialogFragment(R.id.dialog_reset_partner_key_success, null);
+    }
+
+    @Override
+    public void showResetPartnerKeyRequestDialog(PEpIdentity identity) {
+        showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
     }
 
 }

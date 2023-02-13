@@ -31,5 +31,7 @@ public interface PEpStatusView {
 
     void updateToolbarColor(Rating rating);
 
-    void showDialogFragment(int dialogId, PEpIdentity identity);
+    void showResetPartnerKeyErrorFeedback();
+    void showResetPartnerKeySuccessFeedback();
+    void showResetPartnerKeyRequestDialog(PEpIdentity identity);
 }

@@ -204,13 +204,12 @@ public class PEpStatusPresenter {
                 public void onLoaded(Rating rating) {
                     onRatingChanged(rating);
                     onTrustReset(currentRating, id);
-                    view.showResetpEpDataFeedback();
                 }
             });
 
-            view.showDialogFragment(R.id.dialog_reset_partner_key_success, null);
+            view.showResetPartnerKeySuccessFeedback();
         } catch (Exception e) {
-            view.showDialogFragment(R.id.dialog_reset_partner_key_error, null);
+            view.showResetPartnerKeyErrorFeedback();
         }
 
     }
