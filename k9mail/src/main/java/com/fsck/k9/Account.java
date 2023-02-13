@@ -118,9 +118,9 @@ public class Account implements BaseAccount, StoreConfig {
 
     @NonNull
     public static FolderMode getDefaultFolderDisplayMode() {
-        return BuildConfig.IS_END_USER
-                ? FolderMode.NOT_SECOND_CLASS
-                : FolderMode.ALL;
+        return BuildConfig.IS_ENTERPRISE
+                ? FolderMode.ALL
+                : FolderMode.NOT_SECOND_CLASS;
     }
 
     public enum Expunge {
@@ -172,12 +172,12 @@ public class Account implements BaseAccount, StoreConfig {
     public static final MessageFormat DEFAULT_MESSAGE_FORMAT = MessageFormat.HTML;
     public static final boolean DEFAULT_MESSAGE_FORMAT_AUTO = false;
     public static final QuoteStyle DEFAULT_QUOTE_STYLE =
-            BuildConfig.IS_END_USER ? QuoteStyle.PREFIX : QuoteStyle.HEADER;
+            BuildConfig.IS_ENTERPRISE ? QuoteStyle.HEADER : QuoteStyle.PREFIX;
     public static final String DEFAULT_QUOTE_PREFIX = ">";
     public static final boolean DEFAULT_QUOTED_TEXT_SHOWN = true;
     public static final boolean DEFAULT_REPLY_AFTER_QUOTE = false;
     public static final boolean DEFAULT_STRIP_SIGNATURE = true;
-    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = BuildConfig.IS_END_USER? 25 : 50;
+    public static final int DEFAULT_REMOTE_SEARCH_NUM_RESULTS = BuildConfig.IS_ENTERPRISE ? 50 : 25;
 
     public static final String ACCOUNT_DESCRIPTION_KEY = "description";
     public static final String STORE_URI_KEY = "storeUri";
@@ -421,7 +421,7 @@ public class Account implements BaseAccount, StoreConfig {
         pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
         pEpPrivacyProtected = new ManageableSetting<>(
                 DEFAULT_PEP_PRIVACY_PROTECTED,
-                !BuildConfig.IS_END_USER
+                BuildConfig.IS_ENTERPRISE
         );
         pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
