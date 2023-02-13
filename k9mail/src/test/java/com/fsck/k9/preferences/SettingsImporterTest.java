@@ -1,16 +1,14 @@
 package com.fsck.k9.preferences;
 
 
-import android.app.Application;
-import android.content.res.Resources;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.R;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
@@ -18,25 +16,17 @@ import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class SettingsImporterTest {
+public class SettingsImporterTest extends RobolectricTest {
 
 
     @Before
@@ -161,7 +151,6 @@ public class SettingsImporterTest {
     @Test
     public void importSettings_disablesAccountsNeedingPasswords() throws SettingsImportExportException {
         MockedStatic<PEpUtils> pEpUtilsMock = Mockito.mockStatic(PEpUtils.class);
-        stubApplication();
         String validUUID = UUID.randomUUID().toString();
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
                 "<accounts><account uuid=\"" + validUUID + "\"><name>Account</name>" +
@@ -194,44 +183,6 @@ public class SettingsImporterTest {
         assertFalse(Preferences.getPreferences(ApplicationProvider.getApplicationContext())
                 .getAccount(validUUID).isEnabled());
         pEpUtilsMock.close();
-    }
-
-    private void stubApplication() {
-
-        Application mockApp = Mockito.mock(Application.class);
-        Mockito.doReturn(mockApp).when(mockApp).getApplicationContext();
-        Mockito.doReturn("org.robolectric.default").when(mockApp).getPackageName();
-        Resources resources = Mockito.mock(Resources.class);
-        Mockito.doReturn(resources).when(mockApp).getResources();
-        K9.app = mockApp;
-        Mockito.doReturn(new String[]{"-1", "1",
-        "5", "10", "15", "30", "60", "120", "180", "360", "720", "1440"}).when(resources)
-                .getStringArray(R.array.check_frequency_values);
-        Mockito.doReturn(new String[]{
-                "10", "25", "50", "100", "250", "500", "1000", "2500",
-                "5000", "10000", "0"
-        }).when(resources).getStringArray(R.array.display_count_values);
-        Mockito.doReturn(new String[]{
-                "EXPUNGE_IMMEDIATELY", "EXPUNGE_ON_POLL", "EXPUNGE_MANUALLY"
-        }).when(resources).getStringArray(R.array.expunge_policy_values);
-        Mockito.doReturn(new String[]{
-                "24", "36", "48", "60"
-        }).when(resources).getStringArray(R.array.idle_refresh_period_values);
-        Mockito.doReturn(new String[]{
-                "24", "36", "48", "60"
-        }).when(resources).getStringArray(R.array.autodownload_message_size_values);
-        Mockito.doReturn(new String[]{
-                "-1", "0", "1", "2", "7", "14", "21", "28", "56", "84", "168", "365"
-        }).when(resources).getStringArray(R.array.message_age_values);
-        Mockito.doReturn(new String[]{
-                "0", "1", "2", "3", "4", "5"
-        }).when(resources).getStringArray(R.array.vibrate_pattern_values);
-        Mockito.doReturn(new String[]{
-                "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
-        }).when(resources).getStringArray(R.array.vibrate_times_label);
-        Mockito.doReturn(new String[]{
-                "10", "25", "50", "100", "250", "500", "1000", "0"
-        }).when(resources).getStringArray(R.array.remote_search_num_results_values);
     }
 
     @Test

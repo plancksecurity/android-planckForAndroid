@@ -1,31 +1,28 @@
 package com.fsck.k9.helper;
 
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import android.net.Uri;
-
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.helper.MailTo.CaseInsensitiveParamWrapper;
-import com.fsck.k9.mail.Address;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import android.net.Uri;
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MailToTest {
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.helper.MailTo.CaseInsensitiveParamWrapper;
+import com.fsck.k9.mail.Address;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+
+public class MailToTest extends RobolectricTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 

@@ -158,10 +158,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mEmailView.setText(email);
             mPasswordView.setText(password);
         }
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (getK9().isRunningOnWorkProfile()) {
             updateUiFromProvisioningSettings();
         }
-        setHasOptionsMenu(BuildConfig.IS_END_USER);
+        setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE);
         return rootView;
     }
 
@@ -283,7 +283,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void updateViewVisibility(boolean usingCertificates, boolean usingXoauth) {
         if (usingCertificates) {
             mClientCertificateSpinner.setVisibility(View.VISIBLE);
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (getK9().isRunningOnWorkProfile()) {
                 passwordLayout.setVisibility(View.GONE);
             }
         } else if (usingXoauth) {
@@ -346,7 +346,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private String getOwnerName() {
         String name = null;
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (getK9().isRunningOnWorkProfile()) {
             if (provisioningSettings.getSenderName() != null) {
                 name = provisioningSettings.getSenderName();
             }
@@ -448,10 +448,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
             initializeAccount();
             mAccount.setEmail(email);
             mAccount.setName(getOwnerName());
-            if (BuildConfig.IS_ENTERPRISE && mAccount.getName() == null) {
+            if (getK9().isRunningOnWorkProfile() && mAccount.getName() == null) {
                 mAccount.setName(mAccount.getEmail());
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (getK9().isRunningOnWorkProfile()) {
                 mAccount.setDescription(
                         !Utility.isNullOrBlank(provisioningSettings.getAccountDescription())
                             ? provisioningSettings.getAccountDescription()

@@ -14,11 +14,11 @@ public class AuthTypeAdapter extends ArrayAdapter<AuthTypeHolder> {
 
     public static AuthTypeAdapter get(Context context) {
         AuthType[] authTypes =
-                BuildConfig.IS_END_USER
+                BuildConfig.IS_ENTERPRISE
                         ? new AuthType[]{AuthType.PLAIN, AuthType.CRAM_MD5, AuthType.XOAUTH2,
-                        AuthType.EXTERNAL, AuthType.EXTERNAL_PLAIN}
-                : new AuthType[]{AuthType.PLAIN, AuthType.CRAM_MD5, AuthType.XOAUTH2,
-                        AuthType.EXTERNAL};
+                        AuthType.EXTERNAL}
+                        : new AuthType[]{AuthType.PLAIN, AuthType.CRAM_MD5, AuthType.XOAUTH2,
+                        AuthType.EXTERNAL, AuthType.EXTERNAL_PLAIN};
         AuthTypeHolder[] holders = new AuthTypeHolder[authTypes.length];
         for (int i = 0; i < authTypes.length; i++) {
             holders[i] = new AuthTypeHolder(authTypes[i], context.getResources());

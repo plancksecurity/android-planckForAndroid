@@ -38,10 +38,6 @@ public abstract class PepActivity extends K9Activity {
         return getK9().getComponent();
     }
 
-    public K9 getK9() {
-        return (K9) getApplication();
-    }
-
     private void initializeInjector(ApplicationComponent applicationComponent) {
         applicationComponent.inject(this);
         pEpComponent = DaggerPEpComponent.builder()

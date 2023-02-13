@@ -3,6 +3,7 @@ package security.pEp.ui.permissions
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 
 import androidx.core.content.ContextCompat
 
@@ -15,11 +16,13 @@ class PEpPermissionChecker(private val context: Context) : PermissionChecker {
     }
 
     override fun hasWriteExternalPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return true
         val res = getExternalStoragePermission()
         return arePermissionsGranted(res)
     }
 
     override fun doesntHaveWriteExternalPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return false
         val res = getExternalStoragePermission()
         return arePermissionsDenied(res)
     }

@@ -70,6 +70,8 @@ public interface ApplicationComponent {
     @Named("AppContext")
     Context getContext();
 
+    K9 getK9();
+
     // TODO: 05/05/2020 check if this belongs here.
     void inject(MessageHeader messageHeader);
 

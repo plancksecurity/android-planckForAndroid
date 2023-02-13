@@ -1,27 +1,23 @@
 package com.fsck.k9.helper;
 
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.text.SpannableString;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import com.fsck.k9.K9RobolectricTestRunner;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.Address;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class MessageHelperTest {
+public class MessageHelperTest extends RobolectricTest {
     private Contacts contacts;
     private Contacts mockContacts;
 
