@@ -1,24 +1,24 @@
 package com.fsck.k9.pEp.ui.keysync;
 
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fsck.k9.Account;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.pEp.PEpProvider;
-import foundation.pEp.jniadapter.Identity;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import foundation.pEp.jniadapter.Identity;
 
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class AddDevicePresenterTest {
+public class AddDevicePresenterTest extends RobolectricTest {
     private static final String PARTNER_USER_ID = "partner_user_id";
     private static final String PARTNER_ADDRESS = "partner@address";
     private AddDevicePresenter addDevicePresenter;

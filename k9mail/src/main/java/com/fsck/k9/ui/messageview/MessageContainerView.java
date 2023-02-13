@@ -1,12 +1,17 @@
 package com.fsck.k9.ui.messageview;
 
 
+import static android.app.DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+
 import android.animation.LayoutTransition;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -201,8 +206,7 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                                 if (inlineImage) {
                                     attachmentCallback.onSaveAttachment(attachmentViewInfo);
                                 } else {
-                                    //TODO: Use download manager
-                                    new DownloadImageTask(getContext()).execute(uri.toString());
+                                    downloadImage(uri);
                                 }
                                 break;
                             }
@@ -329,6 +333,18 @@ public class MessageContainerView extends LinearLayout implements OnLayoutChange
                 break;
             }
         }
+    }
+
+    private void downloadImage(Uri uri) {
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            String filename = uri.getLastPathSegment();
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+        }
+        request.setNotificationVisibility(VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+
+        DownloadManager downloadManager = (DownloadManager) getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
     }
 
     private AttachmentViewInfo getAttachmentViewInfoIfCidUri(Uri uri) {

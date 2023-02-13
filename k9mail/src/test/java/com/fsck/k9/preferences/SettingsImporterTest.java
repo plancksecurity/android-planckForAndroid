@@ -1,16 +1,19 @@
 package com.fsck.k9.preferences;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import android.app.Application;
 import android.content.res.Resources;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
@@ -18,25 +21,17 @@ import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-
-@RunWith(AndroidJUnit4.class)
-@Config(manifest = Config.NONE)
-public class SettingsImporterTest {
+public class SettingsImporterTest extends RobolectricTest {
 
 
     @Before

@@ -352,6 +352,12 @@ android {
         }
     }
 
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
 }
 
 private static void defineOAuthConfigs(variant) {

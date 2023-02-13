@@ -1,17 +1,6 @@
 package com.fsck.k9.notification;
 
 
-import java.util.List;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.activity.MessageReference;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -19,10 +8,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fsck.k9.Account;
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.activity.MessageReference;
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class NotificationDataTest {
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+
+
+public class NotificationDataTest extends RobolectricTest {
     private static final String ACCOUNT_UUID = "1-2-3";
     private static final int ACCOUNT_NUMBER = 23;
     private static final String FOLDER_NAME = "INBOX";
