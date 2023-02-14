@@ -59,6 +59,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:${versions.recyclerview}"
     implementation "androidx.vectordrawable:vectordrawable:${versions.vectordrawable}"
     implementation "net.jcip:jcip-annotations:${versions.jcipAnnotations}"
+    testImplementation "org.apache.ant:ant:${versions.ant}"
 
     implementation "com.squareup.moshi:moshi:${versions.moshi}"
     implementation "com.splitwise:tokenautocomplete:${versions.tokenAutoComplete}"
