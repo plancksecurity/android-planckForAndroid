@@ -35,7 +35,7 @@ COPY . /root/code/pEp
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
 # TODO PEMA-103 move this to chuck all files into a local include
-RUN echo "ENGINE_INC_PATH=$HOME/code/pEpEngine/build-android/include/" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "PREFIX=$HOME/code/pEpEngine/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
 RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
 
 
