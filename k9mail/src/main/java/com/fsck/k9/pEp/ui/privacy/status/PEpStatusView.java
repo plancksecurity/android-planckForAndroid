@@ -30,4 +30,8 @@ public interface PEpStatusView {
     void showItsOnlyOwnMsg();
 
     void updateToolbarColor(Rating rating);
+
+    void showResetPartnerKeyErrorFeedback();
+    void showResetPartnerKeySuccessFeedback();
+    void showResetPartnerKeyRequestDialog(PEpIdentity identity);
 }

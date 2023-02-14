@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.infrastructure.MessageView;
@@ -29,22 +30,22 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.pedrogomez.renderers.AdapteeCollection;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
-import com.pedrogomez.renderers.RendererBuilder;
-
 import org.jetbrains.annotations.NotNull;
 
 import foundation.pEp.jniadapter.Rating;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PEpStatus extends PepColoredActivity implements PEpStatusView {
+public class PEpStatus extends PepColoredActivity implements PEpStatusView, ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
 
     private static final String ACTION_SHOW_PEP_STATUS = "com.fsck.k9.intent.action.SHOW_PEP_STATUS";
     private static final String SENDER = "isComposedKey";
@@ -54,9 +55,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     private static final String MESSAGE_DIRECTION = "messageDirection";
     public static final int REQUEST_STATUS = 5; // Do not use a value below 5 because it would collide with other constants in RecipientPresenter.
 
-    @Inject PEpStatusPresenter presenter;
+    @Inject
+    PEpStatusPresenter presenter;
 
-    @Inject PEpStatusRendererBuilder rendererBuilder;
+    @Inject
+    PEpStatusRendererBuilder rendererBuilder;
 
     @Inject
     @MessageView
@@ -91,7 +94,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
             Boolean isMessageIncoming, String myself, boolean forceUnencrypted, boolean alwaysSecure) {
         Intent i = new Intent(context, PEpStatus.class);
         i.setAction(ACTION_SHOW_PEP_STATUS);
-        String ratingName = forceUnencrypted?Rating.pEpRatingUnencrypted.toString():currentRating.toString();
+        String ratingName = forceUnencrypted ? Rating.pEpRatingUnencrypted.toString() : currentRating.toString();
         i.putExtra(CURRENT_RATING, ratingName);
         i.putExtra(SENDER, sender);
         i.putExtra(MYSELF, myself);
@@ -108,7 +111,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     public static void actionShowStatus(Activity context, Rating currentRating, String sender,
                                         MessageReference messageReference, Boolean isMessageIncoming, String myself) {
-        Intent intent  = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, false, false);
+        Intent intent = createShowStatusIntent(context, currentRating, sender, messageReference, isMessageIncoming, myself, false, false);
         context.startActivityForResult(intent, REQUEST_STATUS);
     }
 
@@ -182,11 +185,11 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
         ((LinearLayoutManager) recipientsLayoutManager).setOrientation(LinearLayoutManager.VERTICAL);
         recipientsView.setLayoutManager(recipientsLayoutManager);
         rendererBuilder.setUp(
-                        getOnResetClickListener(),
-                        getOnHandshakeResultListener(),
-                        myself
-                );
-        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, pEpIdentities );
+                getOnResetClickListener(),
+                getOnHandshakeResultListener(),
+                myself
+        );
+        recipientsAdapter = new RVRendererAdapter<>(rendererBuilder, pEpIdentities);
         recipientsView.setAdapter(recipientsAdapter);
         recipientsView.setVisibility(View.VISIBLE);
         recipientsView.addItemDecoration(new SimpleDividerItemDecoration(this));
@@ -195,7 +198,85 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @NonNull
     private PEpStatusRendererBuilder.ResetClickListener getOnResetClickListener() {
-        return identity -> presenter.resetpEpData(identity);
+        return showResetDialog();
+    }
+
+    private PEpIdentity pEpIdentity;
+
+    private PEpStatusRendererBuilder.ResetClickListener showResetDialog() {
+        return this::showResetPartnerKeyRequestDialog;
+    }
+
+    private void showDialogFragment(int dialogId, PEpIdentity identity) {
+        if (isDestroyed()) return;
+
+        findViewById(R.id.resetDataLayout).setVisibility(identity == null ? View.GONE : View.VISIBLE);
+
+        ConfirmationDialogFragment fragment;
+        switch (dialogId) {
+            case R.id.dialog_reset_partner_key_confirmation:
+                pEpIdentity = identity;
+                fragment = ConfirmationDialogFragment.newInstance(
+                        dialogId,
+                        getString(R.string.reset_partner_keys_title),
+                        getString(R.string.reset_partner_keys_description),
+                        getString(R.string.reset_partner_keys_confirmation_action),
+                        getString(R.string.pep_dialog_confirm_forward_weaker_trust_level_cancel_button)
+                );
+                fragment.setCancelable(false);
+                break;
+            case R.id.dialog_reset_partner_key_success:
+                fragment = ConfirmationDialogFragment.newInstance(
+                        dialogId,
+                        getString(R.string.reset_partner_keys_title),
+                        getString(R.string.reset_partner_keys_successful_result),
+                        getString(R.string.reset_partner_keys_close_action)
+                );
+                break;
+            case R.id.dialog_reset_partner_key_error:
+                fragment = ConfirmationDialogFragment.newInstance(
+                        dialogId,
+                        getString(R.string.reset_partner_keys_title),
+                        getString(R.string.reset_partner_keys_failure),
+                        getString(R.string.reset_partner_keys_try_again_action),
+                        getString(R.string.reset_partner_keys_close_action)
+                );
+                break;
+            default:
+                return;
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .add(fragment, getDialogTag(dialogId))
+                .commitAllowingStateLoss();
+    }
+
+    private String getDialogTag(int dialogId) {
+        return String.format(Locale.US, "dialog-%d", dialogId);
+    }
+
+    @Override
+    public void doPositiveClick(int dialogId) {
+        switch (dialogId) {
+            case R.id.dialog_reset_partner_key_confirmation:
+                presenter.resetpEpData(pEpIdentity);
+                break;
+            case R.id.dialog_reset_partner_key_error:
+                rendererBuilder.getResetClickListener().keyReset(pEpIdentity);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void doNegativeClick(int dialogId) {
+
+    }
+
+    @Override
+    public void dialogCancelled(int dialogId) {
+
     }
 
     @NonNull
@@ -226,17 +307,17 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
 
     @Override
     public void showDataLoadError() {
-        FeedbackTools.showLongFeedback(getRootView() ,getResources().getString(R.string.status_loading_error));
+        FeedbackTools.showLongFeedback(getRootView(), getResources().getString(R.string.status_loading_error));
     }
 
     @Override
     public void showResetpEpDataFeedback() {
-        FeedbackTools.showLongFeedback(getRootView(),getString(R.string.key_reset_identity_feedback));
+        FeedbackTools.showLongFeedback(getRootView(), getString(R.string.key_reset_identity_feedback));
     }
 
     @Override
     public void showUndoTrust(String username) {
-       showUndo(getString(R.string.trust_identity_feedback, username));
+        showUndo(getString(R.string.trust_identity_feedback, username));
     }
 
     @Override
@@ -287,7 +368,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean isIncoming = getIntent().getBooleanExtra(MESSAGE_DIRECTION, false);
-        if(isIncoming) return false;
+        if (isIncoming) return false;
 
         getMenuInflater().inflate(R.menu.menu_pep_status, menu);
         menu.findItem(R.id.force_unencrypted).setTitle(presenter.isForceUnencrypted()
@@ -331,13 +412,13 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     }
 
     private void showExplanationDialog() {
-         new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.pep_explanation)
                 .setMessage(getUiCache().getExplanation(getpEpRating()))
                 .setPositiveButton(R.string.okay_action,
                         (dialog, which) -> dialog.dismiss())
                 .create()
-                 .show();
+                .show();
 
     }
 
@@ -363,6 +444,21 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView {
     @Override
     public void updateToolbarColor(Rating rating) {
         colorActionBar(rating);
+    }
+
+    @Override
+    public void showResetPartnerKeyErrorFeedback() {
+        showDialogFragment(R.id.dialog_reset_partner_key_error, null);
+    }
+
+    @Override
+    public void showResetPartnerKeySuccessFeedback() {
+        showDialogFragment(R.id.dialog_reset_partner_key_success, null);
+    }
+
+    @Override
+    public void showResetPartnerKeyRequestDialog(PEpIdentity identity) {
+        showDialogFragment(R.id.dialog_reset_partner_key_confirmation, identity);
     }
 
 }
