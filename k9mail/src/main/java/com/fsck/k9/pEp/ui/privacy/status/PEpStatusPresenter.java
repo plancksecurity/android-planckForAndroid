@@ -8,6 +8,7 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
+import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageLoaderHelper;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.mail.Address;
@@ -196,15 +197,21 @@ public class PEpStatusPresenter {
     }
 
     public void resetpEpData(Identity id) {
-        pEpProvider.keyResetIdentity(id, null);
-        refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                onRatingChanged(rating);
-                onTrustReset(currentRating, id);
-                view.showResetpEpDataFeedback();
-            }
-        });
+        try {
+            pEpProvider.keyResetIdentity(id, null);
+            refreshRating(new PEpProvider.SimpleResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    onRatingChanged(rating);
+                    onTrustReset(currentRating, id);
+                }
+            });
+
+            view.showResetPartnerKeySuccessFeedback();
+        } catch (Exception e) {
+            view.showResetPartnerKeyErrorFeedback();
+        }
+
     }
 
     private void refreshRating(PEpProvider.ResultCallback<Rating> callback) {
