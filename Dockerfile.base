@@ -26,7 +26,7 @@ ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch pEp for Android First-Party Dependencies
 RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
-RUN git clone --depth=1 https://gitea.pep.foundation/TSaschabc/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
+RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
 RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpAdapter.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
 RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
 RUN git clone --depth=1 https://gitea.pep.foundation/pEp.foundation/libpEpTransport.git $HOME/code/libpEpTransport; cd $HOME/code/libpEpTransport ; git checkout ${LIBPEPTRANSPORT_VERSION} ; cd -
