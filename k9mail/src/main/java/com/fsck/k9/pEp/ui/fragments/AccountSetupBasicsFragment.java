@@ -638,7 +638,7 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void goForward() {
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         } catch (URISyntaxException e) {
             Timber.e(e);
         }
