@@ -26,7 +26,6 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.ContentLoadingProgressBar;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
@@ -94,7 +93,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private EmailAddressValidator mEmailValidator = new EmailAddressValidator();
 
     private boolean mCheckedIncoming = false;
-    private ContentLoadingProgressBar nextProgressBar;
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
     private PePUIArtefactCache pEpUIArtefactCache;
@@ -118,7 +116,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         mClientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner);
         mOAuth2CheckBox = rootView.findViewById(R.id.account_oauth2);
         mNextButton = rootView.findViewById(R.id.next);
-        nextProgressBar = rootView.findViewById(R.id.next_progressbar);
         mManualSetupButton = rootView.findViewById(R.id.manual_setup);
         mNextButton.setOnClickListener(this);
         mManualSetupButton.setOnClickListener(this);
@@ -583,7 +580,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void resetView(String feedback) {
         FeedbackTools.showLongFeedback(getView(), feedback);
-        nextProgressBar.hide();
         mNextButton.setVisibility(View.VISIBLE);
     }
 

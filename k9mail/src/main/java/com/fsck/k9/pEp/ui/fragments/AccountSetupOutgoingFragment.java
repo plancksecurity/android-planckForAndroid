@@ -19,7 +19,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.core.widget.ContentLoadingProgressBar;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -80,8 +79,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject Preferences preferences;
-    
-    private ContentLoadingProgressBar nextProgressBar;
+
     private AccountSetupNavigator accountSetupNavigator;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
@@ -145,7 +143,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         mSecurityTypeView = (Spinner)rootView.findViewById(R.id.account_security_type);
         mAuthTypeView = (Spinner)rootView.findViewById(R.id.account_auth_type);
         mNextButton = (Button)rootView.findViewById(R.id.next);
-        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override

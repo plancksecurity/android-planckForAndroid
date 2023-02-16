@@ -23,8 +23,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.core.widget.ContentLoadingProgressBar;
-
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -100,7 +98,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private AuthTypeAdapter mAuthTypeAdapter;
     private ConnectionSecurity[] mConnectionSecurityChoices = ConnectionSecurity.values();
     private View rootView;
-    private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
 
@@ -158,7 +155,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mWebdavAuthPathView = (EditText)rootView.findViewById(R.id.webdav_auth_path);
         mWebdavMailboxPathView = (EditText)rootView.findViewById(R.id.webdav_mailbox_path);
         mNextButton = (Button)rootView.findViewById(R.id.next);
-        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
         mCompressionMobile = (CheckBox)rootView.findViewById(R.id.compression_mobile);
         mCompressionWifi = (CheckBox)rootView.findViewById(R.id.compression_wifi);
         mCompressionOther = (CheckBox)rootView.findViewById(R.id.compression_other);
