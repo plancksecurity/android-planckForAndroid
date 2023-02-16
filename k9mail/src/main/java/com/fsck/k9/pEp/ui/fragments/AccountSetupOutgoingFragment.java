@@ -55,7 +55,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
-    private static final String WAS_LOADING = "wasLoading";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -84,7 +83,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
-    private boolean wasLoading;
 
     public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
@@ -247,9 +245,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         if (mEdit) {
             mNextButton.setText(R.string.done_action);
         }
-        if(savedInstanceState != null) {
-            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
-        }
         return rootView;
     }
 
@@ -267,19 +262,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
                 requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING);
-        showLoading(false);
-    }
-
-    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                enableViewGroup(enable, ((ViewGroup) child));
-            } else {
-                child.setEnabled(enable);
-            }
-        }
-
     }
 
     @Override
@@ -400,7 +382,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
-        outState.putBoolean(WAS_LOADING, wasLoading);
     }
 
     /**
@@ -547,7 +528,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            showLoading(true);
             if (mEdit) {
                 mAccount.save(preferences);
                 goForward();
@@ -558,7 +538,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     }
 
     private void goForward() {
-        showLoading(false);
         if (mEdit) {
             if (getActivity() != null)  {
                 getActivity().finish();
@@ -568,22 +547,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         }
     }
 
-    private void showLoading(boolean loading) {
-        if (loading) {
-            nextProgressBar.show();
-            mNextButton.setVisibility(View.INVISIBLE);
-        } else {
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-
-        }
-        accountSetupNavigator.setLoading(loading);
-        enableViewGroup(!loading, (ViewGroup) rootView);
-    }
-
     protected void onNext() {
-        showLoading(true);
-        enableViewGroup(false, (ViewGroup) rootView);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
         String username = null;
@@ -656,26 +620,5 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
-        restoreViewsEnabledState();
-    }
-
-    private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
-        enableViewGroup(!wasLoading, (ViewGroup)rootView);
-
-        if(wasLoading) {
-            nextProgressBar.setVisibility(View.VISIBLE);
-            nextProgressBar.show();
-            wasLoading = false;
-        }
-        else {
-            nextProgressBar.hide();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
     }
 }

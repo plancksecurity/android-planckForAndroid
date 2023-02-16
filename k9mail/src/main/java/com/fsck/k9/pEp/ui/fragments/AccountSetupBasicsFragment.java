@@ -77,7 +77,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             "com.fsck.k9.AccountSetupBasics.provider";
     private final static String STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming";
-    private static final String WAS_LOADING = "wasLoading";
     private static final int REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1;
     private static final String GMAIL_DOMAIN = "gmail.com";
 
@@ -99,7 +98,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
     private PePUIArtefactCache pEpUIArtefactCache;
-    private boolean wasLoading;
 
     @Inject
     PEpSettingsChecker pEpSettingsChecker;
@@ -190,7 +188,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             outState.putSerializable(STATE_KEY_PROVIDER, mProvider);
         }
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming);
-        outState.putBoolean(WAS_LOADING, wasLoading);
     }
 
     @Override
@@ -209,7 +206,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING);
 
             updateViewVisibility(mClientCertificateCheckBox.isChecked(), mOAuth2CheckBox.isChecked());
-            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
         }
     }
 
@@ -461,7 +457,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     private void startOAuthFlow() {
         Intent intent = OAuthFlowActivity.Companion.buildLaunchIntent(requireContext(), mAccount.getUuid());
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH);
-        showLoading(false);
     }
 
     private void checkSettings() {
@@ -470,21 +465,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
 
     private void checkSettings(CheckDirection direction) {
         AccountSetupCheckSettings.actionCheckSettings(requireActivity(), mAccount, direction);
-        showLoading(false);
-    }
-
-    private void showLoading(boolean loading) {
-        if (loading) {
-            nextProgressBar.show();
-            mNextButton.setVisibility(View.GONE);
-        } else {
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-
-        }
-        accountSetupNavigator.setLoading(loading);
-        enableViewGroup(!loading, (ViewGroup) rootView);
-        mManualSetupButton.setEnabled(!loading);
     }
 
     private void saveCredentialsInPreferences() {
@@ -497,17 +477,9 @@ public class AccountSetupBasicsFragment extends PEpFragment
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount);
         validateFields();
-        restoreViewsEnabledState();
-    }
-
-    private void restoreViewsEnabledState() {
-        showLoading(wasLoading);
-        wasLoading = false;
     }
 
     private void onNext() {
-        showLoading(true);
-
         String email = mEmailView.getText().toString().trim();
         // TODO: 9/8/22 REVIEW/RENAME THIS METHOD ISAVALIDADDRESS
         if (isAValidAddress(email)) return;
@@ -613,7 +585,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         FeedbackTools.showLongFeedback(getView(), feedback);
         nextProgressBar.hide();
         mNextButton.setVisibility(View.VISIBLE);
-        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     @NonNull
@@ -626,17 +597,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             }
         }
         return false;
-    }
-
-    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                enableViewGroup(enable, ((ViewGroup) child));
-            } else {
-                child.setEnabled(enable);
-            }
-        }
     }
 
     @Override
@@ -661,7 +621,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (mAccount == null) {
             throw new IllegalStateException("Account instance missing");
         }
-        showLoading(true);
         if (!mCheckedIncoming) {
             // We've successfully checked incoming. Now check outgoing.
             mCheckedIncoming = true;
@@ -670,7 +629,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
             // We've successfully checked outgoing as well.
             AccountSetupNames.actionSetNames(requireActivity(), mAccount, false);
         }
-        showLoading(false);
     }
 
     private void handleSignInResult(int resultCode) {
@@ -678,12 +636,10 @@ public class AccountSetupBasicsFragment extends PEpFragment
         if (mAccount == null) {
             throw new IllegalStateException("Account instance missing");
         }
-        showLoading(true);
         checkSettings();
     }
 
     private void goForward() {
-        showLoading(false);
         try {
             setupAccountType.setupStoreAndSmtpTransport(mAccount, IMAP, "imap+ssl+");
             accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
@@ -848,13 +804,6 @@ public class AccountSetupBasicsFragment extends PEpFragment
     @Override
     protected void inject() {
         getpEpComponent().inject(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
-        nextProgressBar.hide();
     }
 
     static class Provider implements Serializable {

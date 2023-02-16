@@ -67,7 +67,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
-    private static final String WAS_LOADING = "wasLoading";
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
 
@@ -104,7 +103,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private ContentLoadingProgressBar nextProgressBar;
     private AccountSetupNavigator accountSetupNavigator;
     private boolean editSettings;
-    private boolean wasLoading;
 
 
     private final K9JobManager jobManager = K9.jobManager;
@@ -346,9 +344,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         if (editSettings) {
             mNextButton.setText(R.string.done_action);
         }
-        if(savedInstanceState != null) {
-            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
-        }
         return rootView;
     }
 
@@ -440,7 +435,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
-        outState.putBoolean(WAS_LOADING, wasLoading);
     }
 
     /**
@@ -581,7 +575,6 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            showLoading(true);
             if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
                 boolean isPushCapable = false;
                 try {
@@ -634,11 +627,9 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
                 requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
-        showLoading(false);
     }
 
     private void goForward() {
-        showLoading(false);
         if (editSettings) {
             if (getActivity() != null) {
                 getActivity().finish();
@@ -649,23 +640,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     }
 
     protected void onNext() {
-        showLoading(true);
-        enableViewGroup(false, (ViewGroup) rootView);
         updateAccountSettings();
         checkSettings();
-    }
-
-    private void showLoading(boolean loading) {
-        if (loading) {
-            nextProgressBar.show();
-            mNextButton.setVisibility(View.INVISIBLE);
-        } else {
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-
-        }
-        accountSetupNavigator.setLoading(loading);
-        enableViewGroup(!loading, (ViewGroup) rootView);
     }
 
     private void fail(Exception use) {
@@ -799,38 +775,5 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.INCOMING, mAccount);
-        restoreViewsEnabledState();
-    }
-
-    private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
-        enableViewGroup(!wasLoading, (ViewGroup)rootView);
-
-        if(wasLoading) {
-            nextProgressBar.setVisibility(View.VISIBLE);
-            nextProgressBar.show();
-            wasLoading = false;
-        }
-        else {
-            nextProgressBar.hide();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
-    }
-
-    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                enableViewGroup(enable, ((ViewGroup) child));
-            } else {
-                child.setEnabled(enable);
-            }
-        }
-
     }
 }
