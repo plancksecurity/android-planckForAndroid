@@ -109,7 +109,7 @@ public class AccountSetupNavigator {
             loading = false;
             return;
         }
-        if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditing) {
+        if (fragmentManager.getBackStackEntryCount() > 1) {
             fragmentManager.popBackStack();
         } else {
             activity.finish();
