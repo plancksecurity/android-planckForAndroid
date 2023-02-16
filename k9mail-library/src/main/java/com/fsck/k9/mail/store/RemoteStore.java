@@ -33,9 +33,10 @@ public abstract class RemoteStore extends Store {
     private static Map<String, Store> sStores = new HashMap<String, Store>();
 
 
-    public RemoteStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory) {
+    public RemoteStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory, OAuth2TokenProvider oauthTokenProvider) {
         mStoreConfig = storeConfig;
         mTrustedSocketFactory = trustedSocketFactory;
+        this.oauthTokenProvider = oauthTokenProvider;
     }
 
     /**
@@ -58,9 +59,9 @@ public abstract class RemoteStore extends Store {
                         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
                         oAuth2TokenProvider);
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context));
+                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context), oAuth2TokenProvider);
             } else if (uri.startsWith("webdav")) {
-                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory());
+                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory(), oAuth2TokenProvider);
             }
 
             if (store != null) {
@@ -139,4 +140,8 @@ public abstract class RemoteStore extends Store {
     }
 
     public abstract String getPathDelimiter();
+
+    public OAuth2TokenProvider getOauthTokenProvider() {
+        return oauthTokenProvider;
+    }
 }
