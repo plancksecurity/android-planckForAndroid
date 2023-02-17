@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fsck.k9.activity.SettingsActivity"
+    tools:context="com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment"
     android:background="@drawable/background_startup">
 
     <LinearLayout
