@@ -701,6 +701,7 @@ Feature: Test
     When I select account <account>
     And I click compose message
     And I enter myself in the messageTo field
+    Then I remove the 1 address clicking X button
     And I enter 3 unreliable recipients in the messageTo field
     Then I remove the 3 address clicking X button
     Then I remove the 2 address clicking X button
