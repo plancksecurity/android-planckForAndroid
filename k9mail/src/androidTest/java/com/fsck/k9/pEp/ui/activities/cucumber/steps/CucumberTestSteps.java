@@ -41,8 +41,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.EspressoTestingIdlingResource;
 import com.fsck.k9.pEp.ui.activities.SplashActivity;
 import com.fsck.k9.pEp.ui.activities.TestUtils;
-import com.fsck.k9.pEp.ui.activities.connector;
-import com.fsck.k9.pEp.ui.activities.jiraConnector;
 import com.fsck.k9.pEp.ui.activities.test.RestrictionsManager;
 
 import org.json.JSONArray;
@@ -120,7 +118,7 @@ public class CucumberTestSteps {
     private String[] bot;
     private final int accounts = 3;
     private int accountSelected = 0;
-    public String b = "";
+    private boolean pep_enable_privacy_protection = true;
 
     private String fileName = "";
 
@@ -672,6 +670,9 @@ public class CucumberTestSteps {
         if (value.equals("true") || value.equals("false")) {
             boolean valueB = value.equals("true");
             RestrictionsManager.setBooleanRestrictions(setting, valueB);
+            if (setting.equals("pep_enable_privacy_protection")) {
+                pep_enable_privacy_protection = valueB;
+            }
         } else {
             RestrictionsManager.setStringRestrictions(setting, value);
         }
@@ -1528,7 +1529,11 @@ public class CucumberTestSteps {
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
                         assertFailWithMessage("Not showing Unsecure status");
                     }
-                    I_check_toolBar_color_is("pep_gray");
+                    if (pep_enable_privacy_protection) {
+                        I_check_toolBar_color_is("pep_red");
+                    } else {
+                        I_check_toolBar_color_is("pep_gray");
+                    }
                     return;
             }
         }
@@ -2285,7 +2290,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             testUtils.selectAccount(folder, accountToStart);
         }
     }
@@ -3122,7 +3127,7 @@ public class CucumberTestSteps {
         String username = "a-automation@pep.security";
         String password = "DfPz5GKY%bPbqT&x";
         String auth = TestUtils.getBasicAuthenticationHeader(username, password);
-        connector jc = new connector() {};
+/*        connector jc = new connector() {};
         try {
             file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
             //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
@@ -3134,7 +3139,7 @@ public class CucumberTestSteps {
             Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
             e.printStackTrace();
             SetDirectory(file);
-        }
+        }*/
     }
 
     @Then("^I save test report$")
