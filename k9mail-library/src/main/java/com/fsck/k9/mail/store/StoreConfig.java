@@ -1,6 +1,7 @@
 package com.fsck.k9.mail.store;
 
 
+import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 
@@ -8,7 +9,7 @@ public interface StoreConfig {
     String getStoreUri();
     String getTransportUri();
 
-    OAuth2TokenProvider getOAuth2TokenProvider();
+    OAuth2TokenProvider getOAuth2TokenProvider() throws MessagingException;
 
     boolean subscribedFoldersOnly();
     boolean useCompression(NetworkType type);
