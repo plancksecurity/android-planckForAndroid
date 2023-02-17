@@ -1547,8 +1547,13 @@ public class TestUtils {
                 boxBottom = multiTextView.getVisibleBounds().bottom;
                 int rightX = multiTextView.getVisibleBounds().right;
                 int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
-                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                while (
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green()
+                        ) {
+                    rightX--;
+                }
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() ||
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() ||
                         0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
@@ -1557,14 +1562,9 @@ public class TestUtils {
                         0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
-                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() ||
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() ||
                         0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
                 device.click(rightX, centerY);
