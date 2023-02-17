@@ -17,17 +17,16 @@ import android.text.TextUtils;
 
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.auth.OAuthProviderType;
-import com.fsck.k9.backends.RealOAuth2TokenProvider;
+import com.fsck.k9.backends.RealOAuthTokenProviderFactory;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.mail.AuthType;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
-import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
@@ -967,8 +966,8 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     @Override
-    public OAuth2TokenProvider getOAuth2TokenProvider() {
-        return new RealOAuth2TokenProvider(K9.app, Preferences.getPreferences(K9.app), this);
+    public OAuth2TokenProvider getOAuth2TokenProvider() throws MessagingException {
+        return getRemoteStore().getOauthTokenProvider();
     }
 
     public synchronized void setTransportUri(String transportUri) {
@@ -1381,11 +1380,11 @@ public class Account implements BaseAccount, StoreConfig {
     }
 
     public RemoteStore getRemoteStore() throws MessagingException {
-        ServerSettings settings = RemoteStore.decodeStoreUri(storeUri);
-        OAuth2TokenProvider oAuth2TokenProvider = settings.authenticationType == AuthType.XOAUTH2
-                ? new RealOAuth2TokenProvider(K9.app, ((K9)K9.app).getComponent().preferences(), this)
-                : null;
-        return RemoteStore.getInstance(K9.app, this, oAuth2TokenProvider);
+        return RemoteStore.getInstance(K9.app, this, getOAuthTokenProviderFactory());
+    }
+
+    private OAuthTokenProviderFactory getOAuthTokenProviderFactory() {
+        return new RealOAuthTokenProviderFactory(K9.app, ((K9) K9.app).getComponent().preferences());
     }
 
     // It'd be great if this actually went into the store implementation

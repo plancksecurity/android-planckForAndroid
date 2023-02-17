@@ -3012,8 +3012,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Timber.i("Scanning folder '%s' (%d) for messages to send",
                     account.getOutboxFolderName(), localFolder.getId());
 
-            Transport transport = transportProvider
-                    .getTransport(K9.app, account, account.getOAuth2TokenProvider());
+            Transport transport = transportProvider.getTransport(K9.app, account);
 
             for (LocalMessage message : localMessages) {
                 if (message.isSet(Flag.DELETED)) {
@@ -4676,8 +4675,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void checkOutgoingServerSettings(Account account) throws MessagingException {
-        Transport transport = TransportProvider.getInstance()
-                .getTransport(K9.app, account, account.getOAuth2TokenProvider());
+        Transport transport = TransportProvider.getInstance().getTransport(K9.app, account);
         transport.close();
         try {
             transport.open();
@@ -4849,8 +4847,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private synchronized void sendpEpSyncMessage(Account account, Message message) throws MessagingException {
         Timber.e("%s %s", "pEpEngine", "Start SMTP send: " + message.getMessageId());
-        Transport transport = transportProvider.getTransport(
-                K9.app, account, account.getOAuth2TokenProvider());
+        Transport transport = transportProvider.getTransport(K9.app, account);
         sendMessage(transport, message);
         Timber.e("%s %s", "pEpEngine", "Finish SMTP send: " + message.getMessageId());
     }
