@@ -12,6 +12,7 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.imap.ImapStore;
@@ -42,7 +43,7 @@ public abstract class RemoteStore extends Store {
     /**
      * Get an instance of a remote mail store.
      */
-    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
+    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuthTokenProviderFactory oAuthTokenProviderFactory) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -57,11 +58,11 @@ public abstract class RemoteStore extends Store {
                         storeConfig,
                         new DefaultTrustedSocketFactory(context),
                         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
-                        oAuth2TokenProvider);
+                        oAuthTokenProviderFactory.create(storeConfig));
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context), oAuth2TokenProvider);
+                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context), oAuthTokenProviderFactory.create(storeConfig));
             } else if (uri.startsWith("webdav")) {
-                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory(), oAuth2TokenProvider);
+                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory(), oAuthTokenProviderFactory.create(storeConfig));
             }
 
             if (store != null) {
