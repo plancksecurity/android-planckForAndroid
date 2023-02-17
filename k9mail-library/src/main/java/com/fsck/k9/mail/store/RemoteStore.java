@@ -31,10 +31,14 @@ public abstract class RemoteStore extends Store {
     /**
      * Remote stores indexed by Uri.
      */
-    private static Map<String, Store> sStores = new HashMap<String, Store>();
+    private static final Map<String, Store> sStores = new HashMap<>();
 
 
-    public RemoteStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory, OAuth2TokenProvider oauthTokenProvider) {
+    public RemoteStore(
+            StoreConfig storeConfig,
+            TrustedSocketFactory trustedSocketFactory,
+            OAuth2TokenProvider oauthTokenProvider
+    ) {
         mStoreConfig = storeConfig;
         mTrustedSocketFactory = trustedSocketFactory;
         this.oauthTokenProvider = oauthTokenProvider;
@@ -43,7 +47,11 @@ public abstract class RemoteStore extends Store {
     /**
      * Get an instance of a remote mail store.
      */
-    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuthTokenProviderFactory oAuthTokenProviderFactory) throws MessagingException {
+    public static synchronized RemoteStore getInstance(
+            Context context,
+            StoreConfig storeConfig,
+            OAuthTokenProviderFactory oAuthTokenProviderFactory
+    ) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -60,9 +68,17 @@ public abstract class RemoteStore extends Store {
                         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
                         oAuthTokenProviderFactory.create(storeConfig));
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context), oAuthTokenProviderFactory.create(storeConfig));
+                store = new Pop3Store(
+                        storeConfig,
+                        new DefaultTrustedSocketFactory(context),
+                        oAuthTokenProviderFactory.create(storeConfig)
+                );
             } else if (uri.startsWith("webdav")) {
-                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory(), oAuthTokenProviderFactory.create(storeConfig));
+                store = new WebDavStore(
+                        storeConfig,
+                        new WebDavHttpClient.WebDavHttpClientFactory(),
+                        oAuthTokenProviderFactory.create(storeConfig)
+                );
             }
 
             if (store != null) {
