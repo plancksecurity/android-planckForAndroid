@@ -2,41 +2,169 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:layout_width="@dimen/key_import_floating_width"
-    tools:layout_height="@dimen/key_import_floating_height"
-    tools:layout_gravity="center"
+    android:layout_height="wrap_content"
     android:background="?attr/defaultDialogBackground"
     android:clipChildren="false"
     android:clipToPadding="false"
-    tools:context="com.fsck.k9.pEp.manualsync.ImportWizardFrompEp"
-    tools:layout_editor_absoluteX="16dp"
-    tools:layout_editor_absoluteY="16dp"
     android:paddingStart="@dimen/key_import_floating_horizontal_margin"
     android:paddingLeft="@dimen/key_import_floating_horizontal_margin"
     android:paddingEnd="@dimen/key_import_floating_horizontal_margin"
     android:paddingRight="@dimen/key_import_floating_horizontal_margin"
-    android:paddingTop="@dimen/key_import_floating_vertical_margin"
     android:paddingBottom="@dimen/key_import_floating_vertical_margin"
-    android:id="@+id/main_container">
+    tools:context="com.fsck.k9.pEp.manualsync.ImportWizardFrompEp"
+    tools:layout_editor_absoluteX="16dp"
+    tools:layout_editor_absoluteY="16dp"
+    tools:layout_gravity="center"
+    android:minHeight="@dimen/key_import_floating_height"
+    tools:layout_width="@dimen/key_import_floating_width">
 
     <include
         android:id="@+id/include"
         layout="@layout/handshake_toolbar_layout" />
 
-
     <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
         tools:text="A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?" />
+
+    <LinearLayout
+        android:id="@+id/trustwordsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="gone">
+
+        <TextView
+            android:id="@+id/trustwords_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/trustwords_title"
+            android:textStyle="bold"
+            tools:text="@string/trustwords_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/trustwords"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:breakStrategy="simple"
+                android:ellipsize="none"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|bottom">
+
+                <ImageView
+                    android:id="@+id/show_long_trustwords"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_message_background"
+                    android:paddingStart="8dp"
+                    android:src="@drawable/ic_show_long_trustwords"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fpr_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:paddingBottom="64dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trustwordsContainer"
+        tools:visibility="gone">
+
+        <TextView
+            android:id="@+id/fpr_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/fpr_title"
+            android:textStyle="bold"
+            tools:text="Fingerprints" />
+
+        <TextView
+            android:id="@+id/fpr_current_device_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/fpr_actual_title"
+            android:textStyle="bold"
+            tools:text="This device" />
+
+        <TextView
+            android:id="@+id/fpr_current_device_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+
+        <TextView
+            android:id="@+id/fpr_new_device_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/fpr_new_device_title"
+            android:textStyle="bold"
+            tools:text="New device" />
+
+        <TextView
+            android:id="@+id/fpr_new_device_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="32dp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_value"
+            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/loading"
@@ -49,7 +177,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
+        app:layout_constraintTop_toBottomOf="@+id/fpr_container" />
 
     <ImageView
         android:id="@+id/currentState"
@@ -57,45 +185,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        tools:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
-    <LinearLayout
-        android:id="@+id/trustwordsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:visibility="visible"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:padding="8dp"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
-
-        <ImageView
-            android:id="@+id/show_long_trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selectable_message_background"
-            android:src="@drawable/ic_show_long_trustwords" />
-    </LinearLayout>
-
+        app:layout_constraintTop_toBottomOf="@+id/fpr_container"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/afirmativeActionButton"
@@ -103,11 +198,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_next"
-        tools:text="next"
         android:textColor="?attr/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/dissmissActionButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dissmissActionButton" />
+        app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
+        tools:text="next" />
 
     <Button
         android:id="@+id/negativeActionButton"
@@ -115,14 +210,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/key_import_reject"
+        android:textColor="@color/pep_red"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
         app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
         app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
         app:layout_constraintVertical_bias="1.0"
-        android:textColor="@color/pep_red"
-        tools:text="Reject"
-        android:visibility="gone"/>
+        tools:text="Reject" />
 
     <Button
         android:id="@+id/dissmissActionButton"
@@ -132,13 +227,10 @@
         android:text="@string/keysync_wizard_action_cancel"
         android:textColor="?attr/defaultColorOnBackground"
         android:visibility="visible"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
-
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="cancel" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
