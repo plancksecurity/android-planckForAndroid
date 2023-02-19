@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:layout_width="@dimen/key_import_floating_width"
-    tools:layout_height="@dimen/key_import_floating_height"
+    tools:layout_height="wrap_content"
     tools:layout_gravity="center"
     android:background="?attr/defaultDialogBackground"
     android:clipChildren="false"
@@ -38,6 +38,56 @@
         app:layout_constraintTop_toBottomOf="@+id/include"
         tools:text="A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?" />
 
+    <TextView
+        android:id="@+id/fpr_current_device_title"
+        android:layout_width="0dp"
+        android:text="@string/fpr_actual_title"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description"/>
+
+    <TextView
+        android:id="@+id/fpr_current_device_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_title"
+        tools:text="The current device PGP fingerprint value" />
+
+    <TextView
+        android:id="@+id/fpr_new_device_title"
+        android:layout_width="0dp"
+        android:text="@string/fpr_new_device_title"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_value" />
+
+    <TextView
+        android:id="@+id/fpr_new_device_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_title"
+        tools:text="The new device PGP fingerprint value" />
+
+
+
     <ProgressBar
         android:id="@+id/loading"
         style="?android:attr/progressBarStyle"
@@ -49,7 +99,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
+        app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_value" />
 
     <ImageView
         android:id="@+id/currentState"
@@ -62,19 +112,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
+        app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_value" />
     <LinearLayout
         android:id="@+id/trustwordsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:visibility="visible"
+        android:layout_marginBottom="16dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description"
+        app:layout_constraintTop_toBottomOf="@+id/fpr_new_device_value"
         app:layout_constraintVertical_bias="0.0">
 
         <TextView

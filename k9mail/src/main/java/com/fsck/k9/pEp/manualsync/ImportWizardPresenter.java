@@ -122,6 +122,8 @@ public class ImportWizardPresenter {
                 trustWords = newTrustwords;
             }
         });
+
+        this.view.setFingerPrintTexts(this.myself.fpr, this.partner.fpr);
     }
 
     private void fixUnsupportedLanguage() {

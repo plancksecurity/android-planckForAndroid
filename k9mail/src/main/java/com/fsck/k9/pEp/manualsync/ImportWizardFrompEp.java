@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.K9;
@@ -67,6 +68,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     TextView tvTrustwords;
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
+
+    @Bind(R.id.fpr_current_device_value)
+    TextView tvFprCurrentDevice;
+
+    @Bind(R.id.fpr_new_device_value)
+    TextView tvFprNewDevice;
 
 
     private SyncDialogReceiver receiver;
@@ -354,6 +361,13 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     public boolean onTrustwordsLongClick() {
         presenter.switchTrustwordsLength();
         return true;
+    }
+
+    @Override
+    public void setFingerPrintTexts(@NonNull String myselfFprText, @NonNull String partnerFprText) {
+        tvFprCurrentDevice.setText(myselfFprText);
+        tvFprNewDevice.setText(partnerFprText);
+
     }
 
     public static class SyncDialogReceiver extends BroadcastReceiver {
