@@ -34,8 +34,6 @@ import security.pEp.permissions.PermissionRequester;
  */
 public class AccountSetupBasics extends PEpImporterActivity {
 
-    private static final int ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 1;
-    private static final int DIALOG_NO_FILE_MANAGER = 4;
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
     private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
