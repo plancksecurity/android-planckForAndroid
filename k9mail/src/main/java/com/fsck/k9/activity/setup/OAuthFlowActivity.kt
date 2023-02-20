@@ -94,7 +94,11 @@ class OAuthFlowActivity : K9Activity() {
                 }
             }
             AuthFlowState.Canceled -> {
-                displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                if (authViewModel.automaticLoginDone) {
+                    finish()
+                } else {
+                    displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                }
             }
             is AuthFlowState.Failed -> {
                 displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_failed, state)
