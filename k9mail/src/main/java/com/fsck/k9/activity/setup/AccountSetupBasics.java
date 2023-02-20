@@ -37,9 +37,9 @@ public class AccountSetupBasics extends PEpImporterActivity {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
     private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
-    public boolean isManualSetupRequired;
-    public boolean isEditingIncomingSettings;
-    public boolean isEditingOutgoingSettings;
+    private boolean isManualSetupRequired;
+    private boolean isEditingIncomingSettings;
+    private boolean isEditingOutgoingSettings;
     @Inject
     AccountSetupNavigator accountSetupNavigator;
     private boolean isGoingBack = false;
