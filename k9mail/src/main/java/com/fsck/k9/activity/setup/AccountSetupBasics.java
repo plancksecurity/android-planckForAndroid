@@ -37,7 +37,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
     private static final String EXTRA_EDIT_OUTGOING = "extra_edit_outgoing";
-    private AccountSetupBasicsFragment accountSetupBasicsFragment;
     public boolean isManualSetupRequired;
     public boolean isEditingIncomingSettings;
     public boolean isEditingOutgoingSettings;
@@ -95,7 +94,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
                 accountSetupNavigator.setIsEditing(true);
             } else {
-                accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                AccountSetupBasicsFragment accountSetupBasicsFragment = new AccountSetupBasicsFragment();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.addToBackStack("AccountSetupBasicsFragment");
                 ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
