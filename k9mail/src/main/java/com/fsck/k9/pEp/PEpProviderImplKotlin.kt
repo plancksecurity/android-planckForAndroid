@@ -79,18 +79,13 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setMessageToSendCallback(MessagingController.getInstance(context))
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
-//        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        engine.config_enable_echo_protocol(true)
-        //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
-        //if (!BuildConfig.IS_DEMO) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
-        //    engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
-       // }
+        engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
+        engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
     }
 
     @get:Throws(pEpException::class)
     private val newEngineSession: Engine
         get() {
-            Log.d("boss", "suspend init engine objc at "+Thread.currentThread().id)
             val engine = Engine()
             initEngineConfig(engine)
             return engine
@@ -260,19 +255,16 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun setSubjectProtection(isProtected: Boolean) {
-        Log.d(TAG, "boss setSubjectProtection at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         engine.get()?.config_unencrypted_subject(!isProtected)
     }
 
     override fun configPassphrase(passphrase: String) {
-        Log.d(TAG, "boss at configPassphrase "+Thread.currentThread().id)
         createEngineInstanceIfNeeded()
         engine.get()?.config_passphrase(passphrase)
     }
 
     override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {
-        Log.d(TAG, "boss at configPassphraseForNewKeys "+Thread.currentThread().id)
         createEngineInstanceIfNeeded()
         engine.get()?.config_passphrase_for_new_keys(enable, passphrase)
     }
@@ -300,8 +292,6 @@ class PEpProviderImplKotlin @Inject constructor(
                 Address(account.email, account.name), context
             )
             // TODO: 04/08/2020 Move to PepProvider.
-            Log.d("updateSyncAccounts", "boss myselfSuspend at " + Thread.currentThread().id)
-            Log.d("updateSyncAccounts", "boss myselfSuspend at " + Thread.currentThread().id)
             id = myself(id)
             setIdentityFlag(id, account.isPepSyncEnabled)
         }
@@ -367,7 +357,6 @@ class PEpProviderImplKotlin @Inject constructor(
     @Deprecated("not needed with KeySync")
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
-            Log.d(TAG, "boss at generatePrivateKeyMessage on thread " +Thread.currentThread().id);
             createEngineInstanceIfNeeded()
             val containerMsg = PEpMessageBuilder(message).createMessage(context)
             containerMsg.dir = Message.Direction.Outgoing
@@ -379,7 +368,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun isSyncRunning(): Boolean {
-        Log.d(TAG, "boss isSyncRunning at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         return engine.get()?.isSyncRunning!!
     }
@@ -408,7 +396,6 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun encryptMessage(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> {
         // TODO: 06/12/16 add unencrypted for some
         Timber.d("%s %s", TAG, "encryptMessage() enter")
-        Log.d(TAG, "boss at encryptMessageSuspend on thread " +Thread.currentThread().id);
         val resultMessages: MutableList<MimeMessage> = ArrayList()
         val message = PEpMessageBuilder(source).createMessage(context)
         return try {
@@ -445,7 +432,6 @@ class PEpProviderImplKotlin @Inject constructor(
         if (source == null) {
             return null
         }
-        Log.d(TAG, "boss at encryptMessageToSelfSuspend on thread " +Thread.currentThread().id);
         createEngineInstanceIfNeeded()
         var message: Message? = null
         return try {
@@ -538,7 +524,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun canEncryptSuspend(address: String): Boolean = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss at canEncryptSuspend "+Thread.currentThread().id)
         createEngineInstanceIfNeeded()
 
         val msg = Message()
@@ -570,7 +555,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun decryptMessageSuspend(source: MimeMessage, receivedBy: String): DecryptResult = withContext(Dispatchers.IO) {
         var srcMsg: Message? = null
-        Log.d(TAG, "boss at decryptMessageSuspend on thread " +Thread.currentThread().id);
         var decReturn: decrypt_message_Return? = null
         try {
             createEngineInstanceIfNeeded()
@@ -685,14 +669,12 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun importKey(key: ByteArray): Vector<Identity> {
-        Log.d(TAG, "boss importKey at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         return engine.get()?.importKey(key)!!
     }
 
     @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
-        Log.d(TAG, "boss setOwnIdentity at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         return try {
             val sanitizedFpr = PEpUtils.sanitizeFpr(fpr)
@@ -708,7 +690,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun myselfSuspend(myId: Identity?): Identity? = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss myselfSuspend at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
@@ -828,7 +809,6 @@ class PEpProviderImplKotlin @Inject constructor(
                                          toAddresses: List<Address>,
                                          ccAddresses: List<Address>,
                                          bccAddresses: List<Address>): Rating = withContext(Dispatchers.IO) {
-        Log.d(TAG, "Boss at 824 getRatingSuspend "+Thread.currentThread().id)
         if (bccAddresses.isNotEmpty()) return@withContext Rating.pEpRatingUnencrypted
 
         val recipientsSize = toAddresses.size + ccAddresses.size + bccAddresses.size
@@ -885,7 +865,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     private suspend fun getRatingSuspend(message: Message): Rating = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "boss at 881 getRatingSuspend "+Thread.currentThread().id)
             createEngineInstanceIfNeeded()
             engine.get()?.outgoing_message_rating(message)
         } catch (e: pEpException) {
@@ -925,7 +904,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun getRatingSuspend(identity: Identity): Rating = withContext(Dispatchers.IO) {
-        Log.d(TAG, "Boss at 921 getRatingSuspend "+Thread.currentThread().id)
         createEngineInstanceIfNeeded()
         try {
             engine.get()?.identity_rating(identity)
@@ -954,7 +932,6 @@ class PEpProviderImplKotlin @Inject constructor(
     private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
         var engine: Engine? = null
         try {
-            Log.d("boss", "init engine objc at "+Thread.currentThread().id)
             engine = Engine()
             val rating = engine.identity_rating(identity)
             notifyLoaded(rating, callback)
@@ -981,7 +958,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun stopSync() {
-        Log.d(TAG, "boss stopSync at "+Thread.currentThread().name)
         Timber.d("%s %s", TAG, "stopSync")
         createEngineInstanceIfNeeded()
         engine.get()?.stopSync()
@@ -1070,7 +1046,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss trustPersonaKeySuspend at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.get()?.trustPersonalKey(id)
@@ -1084,7 +1059,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun trustOwnKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss trustOwnKeySuspend at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         Timber.i("%s %s", TAG, "Calling trust own key")
         engine.get()?.trustOwnKey(id)
@@ -1098,7 +1072,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun keyMistrustedSuspend(id: Identity) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss keyMistrustedSuspend at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         engine.get()?.keyMistrusted(id)
     }
@@ -1111,14 +1084,12 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun resetTrustSuspend(id: Identity) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss resetTrustSuspend at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         engine.get()?.keyResetTrust(id)
     }
 
     @WorkerThread
     override fun keyResetIdentity(ident: Identity, fpr: String?) {
-        Log.d(TAG, "boss keyResetIdentity at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         val identity = updateIdentity(ident)
         try {
@@ -1132,7 +1103,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun keyResetUser(userId: String, fpr: String?) {
-        Log.d(TAG, "boss keyResetUser at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         try {
             engine.get()?.key_reset_user(userId, fpr)
@@ -1145,7 +1115,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun keyResetAllOwnKeys() {
-        Log.d(TAG, "boss keyResetAllOwnKeys at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         try {
             engine.get()?.key_reset_all_own_keys()
@@ -1159,14 +1128,12 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
     override fun leaveDeviceGroup() {
-        Log.d(TAG, "boss leaveDeviceGroup at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         engine.get()?.leave_device_group()
     }
 
     @WorkerThread
     override fun updateIdentity(id: Identity): Identity {
-        Log.d(TAG, "boss leaveDeviceGroup at "+Thread.currentThread().name)
         createEngineInstanceIfNeeded()
         return engine.get()?.updateIdentity(id)!!
     }
@@ -1228,7 +1195,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) = withContext(Dispatchers.IO) {
-        Log.d(TAG, "boss loadOwnIdentitiesSuspend at "+Thread.currentThread().name)
         var engine: Engine? = null
         try {
             engine = newEngineSession
