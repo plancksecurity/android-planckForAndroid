@@ -46,18 +46,18 @@ import javax.inject.Inject
 
 class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatcher,
     CompoundButton.OnCheckedChangeListener, OnClientCertificateChangedListener {
-    private lateinit var mEmailView: EditText
-    private lateinit var mPasswordView: EditText
-    private lateinit var mClientCertificateCheckBox: CheckBox
-    private lateinit var mClientCertificateSpinner: ClientCertificateSpinner
-    private lateinit var mOAuth2CheckBox: CheckBox
-    private lateinit var mNextButton: Button
-    private lateinit var mManualSetupButton: Button
+    private lateinit var emailView: EditText
+    private lateinit var passwordView: EditText
+    private lateinit var clientCertificateCheckBox: CheckBox
+    private lateinit var clientCertificateSpinner: ClientCertificateSpinner
+    private lateinit var oAuth2CheckBox: CheckBox
+    private lateinit var nextButton: Button
+    private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private var mAccount: Account? = null
-    private var mProvider: Provider? = null
-    private val mEmailValidator = EmailAddressValidator()
-    private var mCheckedIncoming = false
+    private var account: Account? = null
+    private var provider: Provider? = null
+    private val emailValidator = EmailAddressValidator()
+    private var checkedIncoming = false
     private lateinit var rootView: View
     private lateinit var accountSetupNavigator: AccountSetupNavigator
     private lateinit var pEpUIArtefactCache: PePUIArtefactCache
@@ -79,15 +79,15 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         setupPEpFragmentToolbar()
         rootView = inflater.inflate(R.layout.fragment_account_login, container, false)
         setupToolbar()
-        mEmailView = rootView.findViewById(R.id.account_email)
-        mPasswordView = rootView.findViewById(R.id.account_password)
-        mClientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate)
-        mClientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner)
-        mOAuth2CheckBox = rootView.findViewById(R.id.account_oauth2)
-        mNextButton = rootView.findViewById(R.id.next)
-        mManualSetupButton = rootView.findViewById(R.id.manual_setup)
-        mNextButton.setOnClickListener(this)
-        mManualSetupButton.setOnClickListener(this)
+        emailView = rootView.findViewById(R.id.account_email)
+        passwordView = rootView.findViewById(R.id.account_password)
+        clientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate)
+        clientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner)
+        oAuth2CheckBox = rootView.findViewById(R.id.account_oauth2)
+        nextButton = rootView.findViewById(R.id.next)
+        manualSetupButton = rootView.findViewById(R.id.manual_setup)
+        nextButton.setOnClickListener(this)
+        manualSetupButton.setOnClickListener(this)
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
         initializeViewListeners()
         validateFields()
@@ -95,8 +95,8 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         val email = pEpUIArtefactCache.emailInPreferences
         val password = pEpUIArtefactCache.passwordInPreferences
         if (email != null && password != null) {
-            mEmailView.setText(email)
-            mPasswordView.setText(password)
+            emailView.setText(email)
+            passwordView.setText(password)
         }
         if (k9.isRunningOnWorkProfile) {
             updateUiFromProvisioningSettings()
@@ -106,16 +106,16 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
     }
 
     private fun updateUiFromProvisioningSettings() {
-        mEmailView.setText(provisioningSettings.email)
-        mEmailView.isFocusable = false
+        emailView.setText(provisioningSettings.email)
+        emailView.isFocusable = false
         val provisionSettings = provisioningSettings.provisionedMailSettings
         if (provisionSettings != null) {
             val isOAuth = (provisionSettings.incoming.authType === security.pEp.mdm.AuthType.XOAUTH2
                     && provisioningSettings.oAuthType != null)
-            mOAuth2CheckBox.isChecked = isOAuth
+            oAuth2CheckBox.isChecked = isOAuth
             val isExternalAuth =
                 provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
-            mClientCertificateCheckBox.isChecked = isExternalAuth
+            clientCertificateCheckBox.isChecked = isExternalAuth
         }
     }
 
@@ -132,23 +132,23 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
     }
 
     private fun initializeViewListeners() {
-        mEmailView.addTextChangedListener(this)
-        mPasswordView.addTextChangedListener(this)
-        mClientCertificateCheckBox.setOnCheckedChangeListener(this)
-        mClientCertificateSpinner.setOnClientCertificateChangedListener(this)
-        mClientCertificateSpinner.setOnClientCertificateChangedListener(this)
-        mOAuth2CheckBox.setOnCheckedChangeListener(this)
+        emailView.addTextChangedListener(this)
+        passwordView.addTextChangedListener(this)
+        clientCertificateCheckBox.setOnCheckedChangeListener(this)
+        clientCertificateSpinner.setOnClientCertificateChangedListener(this)
+        clientCertificateSpinner.setOnClientCertificateChangedListener(this)
+        oAuth2CheckBox.setOnCheckedChangeListener(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (mAccount != null) {
-            outState.putString(EXTRA_ACCOUNT, mAccount!!.uuid)
+        if (account != null) {
+            outState.putString(EXTRA_ACCOUNT, account!!.uuid)
         }
-        if (mProvider != null) {
-            outState.putSerializable(STATE_KEY_PROVIDER, mProvider)
+        if (provider != null) {
+            outState.putSerializable(STATE_KEY_PROVIDER, provider)
         }
-        outState.putBoolean(STATE_KEY_CHECKED_INCOMING, mCheckedIncoming)
+        outState.putBoolean(STATE_KEY_CHECKED_INCOMING, checkedIncoming)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -156,16 +156,16 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(EXTRA_ACCOUNT)) {
                 val accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT)
-                mAccount =
+                account =
                     Preferences.getPreferences(activity).getAccountAllowingIncomplete(accountUuid)
             }
             if (savedInstanceState.containsKey(STATE_KEY_PROVIDER)) {
-                mProvider = savedInstanceState.getSerializable(STATE_KEY_PROVIDER) as Provider?
+                provider = savedInstanceState.getSerializable(STATE_KEY_PROVIDER) as Provider?
             }
-            mCheckedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING)
+            checkedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING)
             updateViewVisibility(
-                mClientCertificateCheckBox.isChecked,
-                mOAuth2CheckBox.isChecked
+                clientCertificateCheckBox.isChecked,
+                oAuth2CheckBox.isChecked
             )
         }
     }
@@ -184,45 +184,45 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
      * Called when checking the client certificate CheckBox
      */
     override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        updateViewVisibility(mClientCertificateCheckBox.isChecked, mOAuth2CheckBox.isChecked)
+        updateViewVisibility(clientCertificateCheckBox.isChecked, oAuth2CheckBox.isChecked)
         validateFields()
 
         // Have the user select (or confirm) the client certificate
-        if (buttonView == mClientCertificateCheckBox && isChecked) {
-            mOAuth2CheckBox.isChecked = false
-            mClientCertificateSpinner.chooseCertificate()
-        } else if (buttonView == mOAuth2CheckBox && isChecked) {
-            mClientCertificateCheckBox.isChecked = false
+        if (buttonView == clientCertificateCheckBox && isChecked) {
+            oAuth2CheckBox.isChecked = false
+            clientCertificateSpinner.chooseCertificate()
+        } else if (buttonView == oAuth2CheckBox && isChecked) {
+            clientCertificateCheckBox.isChecked = false
         }
     }
 
     private fun updateViewVisibility(usingCertificates: Boolean, usingXoauth: Boolean) {
         if (usingCertificates) {
-            mClientCertificateSpinner.visibility = View.VISIBLE
+            clientCertificateSpinner.visibility = View.VISIBLE
             if (k9.isRunningOnWorkProfile) {
                 passwordLayout.visibility = View.GONE
             }
         } else if (usingXoauth) {
-            mClientCertificateSpinner.visibility = View.GONE
-            mEmailView.visibility = View.VISIBLE
+            clientCertificateSpinner.visibility = View.GONE
+            emailView.visibility = View.VISIBLE
             passwordLayout.visibility = View.GONE
         } else {
             // show username & password fields, hide client certificate spinner
-            mEmailView.visibility = View.VISIBLE
+            emailView.visibility = View.VISIBLE
             passwordLayout.visibility = View.VISIBLE
-            mClientCertificateSpinner.visibility = View.GONE
-            mClientCertificateCheckBox.isEnabled = true
+            clientCertificateSpinner.visibility = View.GONE
+            clientCertificateCheckBox.isEnabled = true
         }
     }
 
     private fun validateFields() {
-        val clientCertificateAlias = mClientCertificateSpinner.alias
-        val email = mEmailView.text.toString().trim()
-        val clientCertificateChecked = mClientCertificateCheckBox.isChecked
-        val oauth2Checked = mOAuth2CheckBox.isChecked
+        val clientCertificateAlias = clientCertificateSpinner.alias
+        val email = emailView.text.toString().trim()
+        val clientCertificateChecked = clientCertificateCheckBox.isChecked
+        val oauth2Checked = oAuth2CheckBox.isChecked
         val emailValid =
-            Utility.requiredFieldValid(mEmailView) && mEmailValidator.isValidAddressOnly(email)
-        val passwordValid = Utility.requiredFieldValid(mPasswordView)
+            Utility.requiredFieldValid(emailView) && emailValidator.isValidAddressOnly(email)
+        val passwordValid = Utility.requiredFieldValid(passwordView)
         val oauth2 = oauth2Checked &&
                 emailValid
         val certificateAuth =
@@ -233,13 +233,13 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
                 && emailValid
                 && passwordValid)
         val valid = oauth2 || certificateAuth || emailPasswordAuth
-        mNextButton.isEnabled = valid
-        mManualSetupButton.isEnabled = valid
+        nextButton.isEnabled = valid
+        manualSetupButton.isEnabled = valid
         /*
          * Dim the next button's icon to 50% if the button is disabled.
          * TODO this can probably be done with a stateful drawable. Check into it.
          * android:state_enabled
-         */Utility.setCompoundDrawablesAlpha(mNextButton, if (mNextButton.isEnabled) 255 else 128)
+         */Utility.setCompoundDrawablesAlpha(nextButton, if (nextButton.isEnabled) 255 else 128)
     }
 
     @OnTextChanged(R.id.account_email)
@@ -283,9 +283,9 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
 
     private fun onCreateDialog(id: Int): Dialog? {
         if (id == DIALOG_NOTE) {
-            if (mProvider != null && mProvider!!.note != null) {
+            if (provider != null && provider!!.note != null) {
                 return AlertDialog.Builder(requireActivity())
-                    .setMessage(mProvider!!.note)
+                    .setMessage(provider!!.note)
                     .setPositiveButton(
                         getString(R.string.okay_action)
                     ) { _, _ -> finishAutoSetup() }
@@ -300,8 +300,8 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
     }
 
     private fun finishAutoSetup() {
-        val email = mEmailView.text.toString().trim()
-        val password = mPasswordView.text.toString()
+        val email = emailView.text.toString().trim()
+        val password = passwordView.text.toString()
         val emailParts = splitEmail(email)
         val user = emailParts[0]
         val domain = emailParts[1]
@@ -309,11 +309,11 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         try {
             val userEnc = UrlEncodingHelper.encodeUtf8(user)
             val passwordEnc = UrlEncodingHelper.encodeUtf8(password)
-            var incomingUsername = mProvider!!.incomingUsernameTemplate
+            var incomingUsername = provider!!.incomingUsernameTemplate
             incomingUsername = incomingUsername!!.replace("\\\$email".toRegex(), email)
             incomingUsername = incomingUsername.replace("\\\$user".toRegex(), userEnc)
             incomingUsername = incomingUsername.replace("\\\$domain".toRegex(), domain!!)
-            val incomingUriTemplate = mProvider!!.incomingUriTemplate
+            val incomingUriTemplate = provider!!.incomingUriTemplate
             var port = RemoteStore.decodeStoreUri(incomingUriTemplate.toString()).port
             var incomingUserInfo = "$incomingUsername:$passwordEnc"
             if (usingXOAuth2) incomingUserInfo =
@@ -323,8 +323,8 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
                 incomingUriTemplate.host, port,
                 null, null, null
             )
-            var outgoingUsername = mProvider!!.outgoingUsernameTemplate
-            val outgoingUriTemplate = mProvider!!.outgoingUriTemplate
+            var outgoingUsername = provider!!.outgoingUsernameTemplate
+            val outgoingUriTemplate = provider!!.outgoingUriTemplate
             port = Transport.decodeTransportUri(outgoingUriTemplate.toString()).port
             val outgoingUri: URI
             if (outgoingUsername != null) {
@@ -348,23 +348,23 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
                 )
             }
             initializeAccount()
-            mAccount!!.email = email
-            mAccount!!.name = ownerName
-            if (k9.isRunningOnWorkProfile && mAccount!!.name == null) {
-                mAccount!!.name = mAccount!!.email
+            account!!.email = email
+            account!!.name = ownerName
+            if (k9.isRunningOnWorkProfile && account!!.name == null) {
+                account!!.name = account!!.email
             }
             if (k9.isRunningOnWorkProfile) {
-                mAccount!!.description =
+                account!!.description =
                     if (!Utility.isNullOrBlank(provisioningSettings.accountDescription))
                         provisioningSettings.accountDescription
-                    else mAccount!!.email
+                    else account!!.email
             }
-            mAccount!!.storeUri = incomingUri.toString()
-            mAccount!!.transportUri = outgoingUri.toString()
+            account!!.storeUri = incomingUri.toString()
+            account!!.transportUri = outgoingUri.toString()
             setupFolderNames(incomingUriTemplate.host.lowercase())
             val incomingSettings = RemoteStore.decodeStoreUri(incomingUri.toString())
             val outgoingSettings = Transport.decodeTransportUri(outgoingUri.toString())
-            mAccount!!.deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingSettings!!.type)
+            account!!.deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingSettings!!.type)
             saveCredentialsInPreferences()
             if (incomingSettings.authenticationType == AuthType.XOAUTH2 && outgoingSettings.authenticationType == AuthType.XOAUTH2) {
                 startOAuthFlow()
@@ -383,34 +383,34 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
     }
 
     private fun isOAuth(domain: String?): Boolean {
-        return mOAuth2CheckBox.isChecked || domain.equals(GMAIL_DOMAIN, ignoreCase = true)
+        return oAuth2CheckBox.isChecked || domain.equals(GMAIL_DOMAIN, ignoreCase = true)
     }
 
     private fun startOAuthFlow() {
-        val intent = buildLaunchIntent(requireContext(), mAccount!!.uuid)
+        val intent = buildLaunchIntent(requireContext(), account!!.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
 
     private fun checkSettings(direction: CheckDirection = CheckDirection.INCOMING) {
-        actionCheckSettings(requireActivity(), mAccount!!, direction)
+        actionCheckSettings(requireActivity(), account!!, direction)
     }
 
     private fun saveCredentialsInPreferences() {
         pEpUIArtefactCache.saveCredentialsInPreferences(
-            mEmailView.text.toString(),
-            mPasswordView.text.toString()
+            emailView.text.toString(),
+            passwordView.text.toString()
         )
     }
 
     override fun onResume() {
         super.onResume()
         accountSetupNavigator = (activity as AccountSetupBasics?)!!.accountSetupNavigator
-        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, mAccount)
+        accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, account)
         validateFields()
     }
 
     private fun onNext() {
-        val email = mEmailView.text.toString().trim()
+        val email = emailView.text.toString().trim()
         // TODO: 9/8/22 REVIEW/RENAME THIS METHOD ISAVALIDADDRESS
         if (isAValidAddress(email)) return
         setup(email)
@@ -474,15 +474,15 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
     }
 
     private fun setup(email: String) {
-        if (mClientCertificateCheckBox.isChecked) {
+        if (clientCertificateCheckBox.isChecked) {
             // Auto-setup doesn't support client certificates.
             onManualSetup()
             return
         }
         val emailParts = splitEmail(email)
         val domain = emailParts[1]
-        mProvider = findProviderForDomain(domain)
-        if (mProvider == null) {
+        provider = findProviderForDomain(domain)
+        if (provider == null) {
             /*
              * We don't have default settings for this account, start the manual
              * setup process.
@@ -491,7 +491,7 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
             return
         }
         Log.i(K9.LOG_TAG, "Provider found, using automatic set-up")
-        if (mProvider!!.note != null) {
+        if (provider!!.note != null) {
             onCreateDialog(DIALOG_NOTE)
         } else {
             finishAutoSetup()
@@ -508,7 +508,7 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
 
     private fun resetView(feedback: String) {
         FeedbackTools.showLongFeedback(view, feedback)
-        mNextButton.visibility = View.VISIBLE
+        nextButton.visibility = View.VISIBLE
     }
 
     private fun accountAlreadyExists(email: String): Boolean {
@@ -541,31 +541,31 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
 
     private fun handleCheckSettingsResult(resultCode: Int) {
         if (resultCode != Activity.RESULT_OK) return
-        checkNotNull(mAccount) { "Account instance missing" }
-        if (!mCheckedIncoming) {
+        checkNotNull(account) { "Account instance missing" }
+        if (!checkedIncoming) {
             // We've successfully checked incoming. Now check outgoing.
-            mCheckedIncoming = true
+            checkedIncoming = true
             checkSettings(CheckDirection.OUTGOING)
         } else {
             // We've successfully checked outgoing as well.
-            AccountSetupNames.actionSetNames(requireActivity(), mAccount, false)
+            AccountSetupNames.actionSetNames(requireActivity(), account, false)
         }
     }
 
     private fun handleSignInResult(resultCode: Int) {
         if (resultCode != Activity.RESULT_OK) return
-        checkNotNull(mAccount) { "Account instance missing" }
+        checkNotNull(account) { "Account instance missing" }
         checkSettings()
     }
 
     private fun goForward() {
         try {
             setupAccountType.setupStoreAndSmtpTransport(
-                mAccount,
+                account,
                 ServerSettings.Type.IMAP,
                 "imap+ssl+"
             )
-            accountSetupNavigator.goForward(parentFragmentManager, mAccount)
+            accountSetupNavigator.goForward(parentFragmentManager, account)
         } catch (e: URISyntaxException) {
             Timber.e(e)
         }
@@ -573,7 +573,7 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
 
     private fun onManualSetup() {
         (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
-        val email = mEmailView.text.toString().trim()
+        val email = emailView.text.toString().trim()
         if (isAValidAddress(email)) return
         val emailParts = splitEmail(email)
         val domain = emailParts[1]
@@ -582,25 +582,25 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         val authenticationType: AuthType
         var imapHost = "mail.$domain"
         var smtpHost = "mail.$domain"
-        if (mClientCertificateCheckBox.isChecked) {
-            if (mPasswordView.text.toString().trim().isEmpty()) {
+        if (clientCertificateCheckBox.isChecked) {
+            if (passwordView.text.toString().trim().isEmpty()) {
                 authenticationType = AuthType.EXTERNAL
             } else {
                 authenticationType = AuthType.EXTERNAL_PLAIN
-                password = mPasswordView.text.toString()
+                password = passwordView.text.toString()
             }
-            clientCertificateAlias = mClientCertificateSpinner.alias
-        } else if (mOAuth2CheckBox.isChecked) {
+            clientCertificateAlias = clientCertificateSpinner.alias
+        } else if (oAuth2CheckBox.isChecked) {
             authenticationType = AuthType.XOAUTH2
             imapHost = "imap.gmail.com"
             smtpHost = "smtp.gmail.com"
         } else {
             authenticationType = AuthType.PLAIN
-            password = mPasswordView.text.toString()
+            password = passwordView.text.toString()
         }
         initializeAccount()
-        mAccount!!.name = ownerName
-        mAccount!!.email = email
+        account!!.name = ownerName
+        account!!.email = email
 
         // set default uris
         // NOTE: they will be changed again in AccountSetupAccountType!
@@ -626,24 +626,24 @@ class AccountSetupBasicsFragment : PEpFragment(), View.OnClickListener, TextWatc
         )
         val storeUri = RemoteStore.createStoreUri(storeServer)
         val transportUri = Transport.createTransportUri(transportServer)
-        mAccount!!.storeUri = storeUri
-        mAccount!!.transportUri = transportUri
+        account!!.storeUri = storeUri
+        account!!.transportUri = transportUri
         setupFolderNames(domain)
         saveCredentialsInPreferences()
         goForward()
     }
 
     private fun initializeAccount() {
-        if (mAccount == null || Preferences.getPreferences(activity).getAccountAllowingIncomplete(
-                mAccount!!.uuid
+        if (account == null || Preferences.getPreferences(activity).getAccountAllowingIncomplete(
+                account!!.uuid
             ) == null
         ) {
-            mAccount = Preferences.getPreferences(activity).newAccount()
+            account = Preferences.getPreferences(activity).newAccount()
         }
     }
 
     private fun setupFolderNames(domain: String?) {
-        mAccount?.let { account ->
+        account?.let { account ->
             account.draftsFolderName = getString(R.string.special_mailbox_name_drafts)
             account.trashFolderName = getString(R.string.special_mailbox_name_trash)
             account.sentFolderName = getString(R.string.special_mailbox_name_sent)
