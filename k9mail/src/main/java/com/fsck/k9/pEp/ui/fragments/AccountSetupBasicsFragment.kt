@@ -51,7 +51,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var clientCertificateCheckBox: CheckBox
     private lateinit var clientCertificateSpinner: ClientCertificateSpinner
     private lateinit var advancedOptionsContainer: View
-    private lateinit var oAuth2CheckBox: CheckBox
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
@@ -83,7 +82,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         passwordView = rootView.findViewById(R.id.account_password)
         clientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate)
         clientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner)
-        oAuth2CheckBox = rootView.findViewById(R.id.account_oauth2)
         advancedOptionsContainer = rootView.findViewById(R.id.foldable_advanced_options)
         nextButton = rootView.findViewById(R.id.next)
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
@@ -125,9 +123,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         emailView.isFocusable = false
         val provisionSettings = provisioningSettings.provisionedMailSettings
         if (provisionSettings != null) {
-            val isOAuth = (provisionSettings.incoming.authType === security.pEp.mdm.AuthType.XOAUTH2
-                    && provisioningSettings.oAuthType != null)
-            oAuth2CheckBox.isChecked = isOAuth
             val isExternalAuth =
                 provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
             clientCertificateCheckBox.isChecked = isExternalAuth
