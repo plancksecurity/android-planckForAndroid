@@ -571,7 +571,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
         Log.e(K9.LOG_TAG, "Failure", use);
         String toastText = getString(R.string.account_setup_bad_uri, use.getMessage());
 
-        FeedbackTools.showLongFeedback(rootView, toastText);
+        FeedbackTools.showLongFeedback(requireActivity().findViewById(android.R.id.content), toastText);
     }
 
     /*
