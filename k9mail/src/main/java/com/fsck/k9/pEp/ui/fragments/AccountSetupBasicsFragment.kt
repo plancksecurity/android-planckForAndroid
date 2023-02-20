@@ -28,7 +28,6 @@ import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.pEp.PePUIArtefactCache
 import com.fsck.k9.pEp.ui.ConnectionSettings
-import com.fsck.k9.pEp.ui.settings.ExtraAccountDiscovery
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.SetupAccountType
@@ -235,12 +234,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         val email = emailView.text?.toString() ?: error("Email missing")
         if (accountWasAlreadySet(email)) return
 
-        val extraConnectionSettings = ExtraAccountDiscovery.discover(email)
-        if (extraConnectionSettings != null) {
-            finishAutoSetup(extraConnectionSettings)
-            return
-        }
-
         val connectionSettings = providersXmlDiscoveryDiscover(email)
 
         if (connectionSettings != null &&
@@ -294,12 +287,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         if (clientCertificateCheckBox.isChecked) {
             // Auto-setup doesn't support client certificates.
             onManualSetup()
-            return
-        }
-
-        val extraConnectionSettings = ExtraAccountDiscovery.discover(email)
-        if (extraConnectionSettings != null) {
-            finishAutoSetup(extraConnectionSettings)
             return
         }
 
