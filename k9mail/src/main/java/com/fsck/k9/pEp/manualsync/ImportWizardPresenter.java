@@ -119,7 +119,8 @@ public class ImportWizardPresenter {
             }
         });
 
-        this.view.setFingerPrintTexts(view.getString(R.string.fpr_actual_title) + this.myself.fpr, view.getString(R.string.fpr_new_device_title) + this.partner.fpr);
+        this.view.setFingerPrintTexts(view.getString(R.string.fpr_actual_title) + PEpUtils.formatFpr(this.myself.fpr),
+                view.getString(R.string.fpr_new_device_title) + PEpUtils.formatFpr(this.partner.fpr));
     }
 
     private void fixUnsupportedLanguage() {
