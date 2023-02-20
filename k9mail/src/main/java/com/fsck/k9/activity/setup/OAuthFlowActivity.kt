@@ -59,9 +59,6 @@ class OAuthFlowActivity : K9Activity() {
             findViewById(R.id.oauth_sign_in_button)
         }
 
-        signInButton.isVisible = true
-        signInButton.setOnClickListener { startOAuthFlow(account) }
-
         savedInstanceState?.let {
             val signInRunning = it.getBoolean(STATE_PROGRESS)
             signInButton.isVisible = !signInRunning
@@ -72,6 +69,14 @@ class OAuthFlowActivity : K9Activity() {
 
         authViewModel.uiState.observe(this) { state ->
             handleUiUpdates(state)
+        }
+
+        when {
+            account.oAuthProviderType == null || isTokenRevoked -> {
+                signInButton.isVisible = true
+                signInButton.setOnClickListener { startOAuthFlow(account) }
+            }
+            else -> startOAuthFlow(account, automatic = true) // start directly on AccountSetup flow
         }
     }
 
@@ -111,12 +116,14 @@ class OAuthFlowActivity : K9Activity() {
         errorText.text = getString(errorTextResId, *args)
     }
 
-    private fun startOAuthFlow(account: Account) {
-        signInButton.isVisible = false
-        signInProgress.isVisible = true
-        errorText.text = ""
+    private fun startOAuthFlow(account: Account, automatic: Boolean = false) {
+        if (!authViewModel.automaticLoginDone) {
+            signInButton.isVisible = false
+            signInProgress.isVisible = true
+            errorText.text = ""
 
-        authViewModel.login(account)
+            authViewModel.login(account, automatic)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

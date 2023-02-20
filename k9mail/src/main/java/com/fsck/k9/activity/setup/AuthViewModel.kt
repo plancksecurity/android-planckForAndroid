@@ -45,6 +45,9 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
 
+    var automaticLoginDone = false
+        private set
+
     @Synchronized
     private fun getAuthService(): AuthorizationService {
         return authService ?: AuthorizationService(getApplication<Application>()).also { authService = it }
@@ -78,21 +81,29 @@ class AuthViewModel(
         }
     }
 
-    fun login(account: Account) {
+    fun login(account: Account, automatic: Boolean = false) {
         this.account = account
 
         viewModelScope.launch {
-            val config = findOAuthConfiguration(account)
-            if (config == null) {
-                _uiState.value = AuthFlowState.NotSupported
-                return@launch
+            if (automatic) {
+                if (automaticLoginDone) return@launch
+                else automaticLoginDone = true
             }
+            loginSuspend(account)
+        }
+    }
 
-            try {
-                startLogin(account, config)
-            } catch (e: ActivityNotFoundException) {
-                _uiState.value = AuthFlowState.BrowserNotFound
-            }
+    private suspend fun loginSuspend(account: Account) {
+        val config = findOAuthConfiguration(account)
+        if (config == null) {
+            _uiState.value = AuthFlowState.NotSupported
+            return
+        }
+
+        try {
+            startLogin(account, config)
+        } catch (e: ActivityNotFoundException) {
+            _uiState.value = AuthFlowState.BrowserNotFound
         }
     }
 
