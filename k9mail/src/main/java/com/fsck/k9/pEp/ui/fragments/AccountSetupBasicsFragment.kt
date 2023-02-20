@@ -233,7 +233,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun attemptAutoSetupUsingOnlyEmailAddress() {
         val email = emailView.text?.toString() ?: error("Email missing")
-        if (avoidAddingAlreadyExistingAccount(email)) return
+        if (accountWasAlreadySet(email)) return
 
         val extraConnectionSettings = ExtraAccountDiscovery.discover(email)
         if (extraConnectionSettings != null) {
@@ -289,7 +289,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun attemptAutoSetup() {
         val email = emailView.text?.toString() ?: error("Email missing")
-        if (avoidAddingAlreadyExistingAccount(email)) return
+        if (accountWasAlreadySet(email)) return
 
         if (clientCertificateCheckBox.isChecked) {
             // Auto-setup doesn't support client certificates.
@@ -366,17 +366,16 @@ class AccountSetupBasicsFragment : PEpFragment() {
             preferences.defaultAccount?.name ?: ""
         }
 
-    private fun avoidAddingAlreadyExistingAccount(email: String): Boolean {
+    private fun accountWasAlreadySet(email: String): Boolean {
         if (accountAlreadyExists(email)) {
-            resetView(getString(R.string.account_already_exists))
+            showFeedback(getString(R.string.account_already_exists))
             return true
         }
         return false
     }
 
-    private fun resetView(feedback: String) {
+    private fun showFeedback(feedback: String) {
         FeedbackTools.showLongFeedback(view, feedback)
-        nextButton.visibility = View.VISIBLE
     }
 
     private fun accountAlreadyExists(email: String): Boolean {
@@ -454,7 +453,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private fun onManualSetup() {
         (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
         val email = emailView.text?.toString() ?: error("Email missing")
-        if (avoidAddingAlreadyExistingAccount(email)) {
+        if (accountWasAlreadySet(email)) {
             return
         }
         var password: String? = null
