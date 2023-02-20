@@ -18,6 +18,7 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity.Companion.buildLaunchIntent
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
@@ -53,7 +54,9 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private var uiState = UiState.EMAIL_ADDRESS_ONLY
+    private lateinit var googleButton: Button
+    private lateinit var microsoftButton: Button
+    private var uiState = UiState.PASSWORD_FLOW
     private var account: Account? = null
     private var checkedIncoming = false
     private lateinit var rootView: View
@@ -85,7 +88,12 @@ class AccountSetupBasicsFragment : PEpFragment() {
         nextButton = rootView.findViewById(R.id.next)
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
+        googleButton = rootView.findViewById(R.id.google_sign_in_button)
+        microsoftButton = rootView.findViewById(R.id.microsoft_sign_in_button)
         manualSetupButton.setOnClickListener { onManualSetup() }
+        googleButton.setOnClickListener { startGoogleFlow() }
+        microsoftButton.setOnClickListener { startMicrosoftFlow() }
+
         initializeViewListeners()
         validateFields()
         pEpUIArtefactCache = PePUIArtefactCache.getInstance(requireContext().applicationContext)
@@ -171,7 +179,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             UiState.EMAIL_ADDRESS_ONLY -> {
                 passwordLayout.isVisible = false
                 advancedOptionsContainer.isVisible = false
-                nextButton.setOnClickListener { attemptAutoSetupUsingOnlyEmailAddress() }
             }
             UiState.PASSWORD_FLOW -> {
                 passwordLayout.isVisible = true
@@ -230,24 +237,18 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 clientCertificateChecked && clientCertificateAlias != null
     }
 
-    private fun attemptAutoSetupUsingOnlyEmailAddress() {
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) return
-
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
-
-        if (connectionSettings != null &&
-            connectionSettings.incoming.authenticationType == AuthType.XOAUTH2 &&
-            connectionSettings.outgoing.authenticationType == AuthType.XOAUTH2
-        ) {
-            startOAuthFlow(connectionSettings)
-        } else {
-            startPasswordFlow()
-        }
+    private fun startGoogleFlow() {
+        initAccount()
+        startOAuthFlow(OAuthProviderType.GOOGLE)
     }
 
-    private fun startOAuthFlow(connectionSettings: ConnectionSettings) {
-        val account = createAccount(connectionSettings)
+    private fun startMicrosoftFlow() {
+        initAccount()
+        startOAuthFlow(OAuthProviderType.MICROSOFT)
+    }
+
+    private fun startOAuthFlow(oAuthProviderType: OAuthProviderType?) {
+        val account = account!!.also { it.oAuthProviderType = oAuthProviderType }
 
         val intent = buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
@@ -326,7 +327,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         return account
     }
 
-    private fun initAccount(email: String): Account {
+    private fun initAccount(email: String? = null): Account {
         val account = this.account?.let { currentAccount ->
             preferences.getAccountAllowingIncomplete(currentAccount.uuid)
         } ?: createAccount()
