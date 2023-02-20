@@ -13,6 +13,7 @@ import androidx.lifecycle.*
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.auth.JwtTokenDecoder
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
@@ -68,8 +69,12 @@ class AuthViewModel(
     }
 
     fun isUsingGoogle(account: Account): Boolean {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.isGoogle(incomingSettings.host!!)
+        return if (account.oAuthProviderType != null) {
+            account.oAuthProviderType == OAuthProviderType.GOOGLE
+        } else {
+            val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
+            incomingSettings.host?.let { oAuthConfigurationProvider.isGoogle(it) } ?: false
+        }
     }
 
     private fun getOrCreateAuthState(account: Account): AuthState {
@@ -140,8 +145,14 @@ class AuthViewModel(
     }
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
+        val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
+        return when (account.oAuthProviderType) {
+            null -> oAuthConfigurationProvider.getConfiguration(
+                incomingSettings?.host ?: error("account not initialized here!")
+            )
+            OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
+            OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
+        }
     }
 
     private fun onLoginResult(authorizationResult: AuthorizationResult?) {

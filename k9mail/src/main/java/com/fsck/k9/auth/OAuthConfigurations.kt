@@ -15,17 +15,29 @@ fun createOAuthConfigurationProvider(): OAuthConfigurationProvider {
         redirectUri = redirectUriSlash
     )
 
+    val microsoftConfig = OAuthConfiguration(
+        clientId = BuildConfig.OAUTH_MICROSOFT_CLIENT_ID,
+        scopes = listOf(
+            "https://outlook.office.com/IMAP.AccessAsUser.All",
+            "https://outlook.office.com/SMTP.Send",
+            "offline_access"
+        ),
+        authorizationEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+        tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+        redirectUri = BuildConfig.OAUTH_MICROSOFT_REDIRECT_URI
+    )
+
     return OAuthConfigurationProvider(
         configurations = mapOf(
-            listOf("imap.gmail.com", "imap.googlemail.com", "smtp.gmail.com", "smtp.googlemail.com") to googleConfig,
-            listOf("outlook.office365.com", "smtp.office365.com") to OAuthConfiguration(
-                clientId = BuildConfig.OAUTH_MICROSOFT_CLIENT_ID,
-                scopes = listOf("https://outlook.office.com/IMAP.AccessAsUser.All", "https://outlook.office.com/SMTP.Send", "offline_access"),
-                authorizationEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
-                tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token",
-                redirectUri = BuildConfig.OAUTH_MICROSOFT_REDIRECT_URI
-            ),
+            listOf(
+                "imap.gmail.com",
+                "imap.googlemail.com",
+                "smtp.gmail.com",
+                "smtp.googlemail.com"
+            ) to googleConfig,
+            listOf("outlook.office365.com", "smtp.office365.com") to microsoftConfig,
         ),
-        googleConfiguration = googleConfig
+        googleConfiguration = googleConfig,
+        microsoftConfiguration = microsoftConfig
     )
 }
