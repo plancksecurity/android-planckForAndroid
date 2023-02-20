@@ -1,16 +1,12 @@
 package com.fsck.k9.pEp.manualsync;
 
-
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
-
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.SyncState;
@@ -70,7 +66,6 @@ public class ImportWizardPresenter {
                     view.prepareGroupCreationLoading();
                 } else {
                     view.prepareGroupJoiningLoading();
-
                 }
                 view.showWaitingForSync();
                 break;
@@ -171,16 +166,16 @@ public class ImportWizardPresenter {
         refreshTrustWords();
     }
 
-    private void refreshTrustWords(){
+    private void refreshTrustWords() {
         pEp.trustwords(myself, partner, trustwordsLanguage, showingShort, new PEpProvider.SimpleResultCallback<String>() {
             @Override
             public void onLoaded(String newTrustwords) {
                 trustWords = newTrustwords;
                 view.showHandshake(trustWords);
-
             }
         });
     }
+
     public void acceptHandshake() {
         pEp.acceptSync();
         next();
