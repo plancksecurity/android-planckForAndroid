@@ -327,7 +327,10 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun initAccount(email: String): Account {
-        val account = this.account ?: createAccount().also { this.account = it }
+        val account = this.account?.let { currentAccount ->
+            preferences.getAccountAllowingIncomplete(currentAccount.uuid)
+        } ?: createAccount()
+        this.account = account
 
         account.name = ownerName
         account.email = email
