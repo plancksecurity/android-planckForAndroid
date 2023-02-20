@@ -383,7 +383,6 @@ public class PEpUtils {
     public static void pEpGenerateAccountKeys(Context context, Account account) {
         PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
         foundation.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
-        Log.d("pEpGenerateAccountKeys", "boss myselfSuspend at "+Thread.currentThread().getId());
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
         pEp.close();
@@ -508,7 +507,6 @@ public class PEpUtils {
         result = new foundation.pEp.jniadapter.Message();
         Address address = new Address(account.getEmail());
         Identity identity = createIdentity(address, context);
-        Log.d("generateKeyImpt", "boss myselfSuspend at "+Thread.currentThread().getId());
         identity = pEp.myself(identity);
         result.setFrom(identity);
         result.setTo(new Vector<>(Collections.singletonList(identity)));
@@ -604,8 +602,6 @@ public class PEpUtils {
             Identity id = createIdentity(
                     new Address(account.getEmail(), account.getName()), context);
             // TODO: 04/08/2020 Move to PepProvider.
-            Log.d("updateSyncAccounts", "boss myselfSuspend at "+Thread.currentThread().getId());
-            Log.d("updateSyncAccounts", "boss myselfSuspend at "+Thread.currentThread().getId());
             id = pEp.myself(id);
             pEp.setIdentityFlag(id, account.isPepSyncEnabled());
         }

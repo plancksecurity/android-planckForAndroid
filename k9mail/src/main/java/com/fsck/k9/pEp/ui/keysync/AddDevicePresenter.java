@@ -207,7 +207,6 @@ public class AddDevicePresenter {
 
         @Override
         void acceptHandshake(Identity partner) {
-            Log.d("acceptHandshake", "boss myselfSuspend at "+Thread.currentThread().getId());
             Log.e("pEpEngine", String.format("acceptSync: myself(%s), partner(%s)", pEpProvider.myself(partner), partner) );
             pEpProvider.acceptSync();
         }
