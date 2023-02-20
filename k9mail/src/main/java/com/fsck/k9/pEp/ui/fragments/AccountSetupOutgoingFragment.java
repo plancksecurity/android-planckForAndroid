@@ -1,13 +1,9 @@
 package com.fsck.k9.pEp.ui.fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import androidx.appcompat.app.AlertDialog.Builder;
-import androidx.core.widget.ContentLoadingProgressBar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
@@ -23,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -31,53 +28,30 @@ import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
-import com.fsck.k9.activity.setup.AccountSetupOptions;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
 import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
 import com.fsck.k9.activity.setup.ConnectionSecurityHolder;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.mail.CertificateValidationException;
 import com.fsck.k9.mail.ConnectionSecurity;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Transport;
-import com.fsck.k9.mail.filter.Hex;
-import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpCertificateException;
-import com.fsck.k9.pEp.ui.infrastructure.exceptions.PEpSetupException;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.ClientCertificateSpinner;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.List;
 
 import javax.inject.Inject;
 
-
-import static android.app.Activity.RESULT_OK;
-
-public class AccountSetupOutgoingFragment extends PEpFragment
-        implements AccountSetupBasics.AccountSetupSettingsCheckerFragment {
+public class AccountSetupOutgoingFragment extends PEpFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
-
-    private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String EXTRA_EDIT = "edit";
-    private static String EXTRA_BACK = "back";
-    private static final String ERROR_DIALOG_SHOWING_KEY = "errorDialogShowing";
-    private static final String ERROR_DIALOG_TITLE = "errorDialogTitle";
-    private static final String ERROR_DIALOG_MESSAGE = "errorDialogMessage";
-    private static final String WAS_LOADING = "wasLoading";
 
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -96,28 +70,19 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private AuthTypeAdapter mAuthTypeAdapter;
     private Button mNextButton;
     private Account mAccount;
-    private boolean mMakeDefault;
 
     private View rootView;
     private boolean mEdit;
 
     @Inject PEpSettingsChecker pEpSettingsChecker;
     @Inject Preferences preferences;
-    
-    private ContentLoadingProgressBar nextProgressBar;
-    private AccountSetupNavigator accountSetupNavigator;
-    private boolean mBack;
-    private androidx.appcompat.app.AlertDialog errorDialog;
-    private int errorDialogTitle;
-    private String errorDialogMessage;
-    private boolean errorDialogWasShowing;
-    private boolean wasLoading;
 
-    public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account, boolean makeDefault) {
+    private AccountSetupNavigator accountSetupNavigator;
+
+    public static AccountSetupOutgoingFragment actionOutgoingSettings(Account account) {
         AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
-        bundle.putBoolean(EXTRA_MAKE_DEFAULT, makeDefault);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -140,15 +105,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         return fragment;
     }
 
-    public static AccountSetupOutgoingFragment intentBackToOutgoingSettings(String accountUuid) {
-        AccountSetupOutgoingFragment fragment = new AccountSetupOutgoingFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString(EXTRA_ACCOUNT, accountUuid);
-        bundle.putBoolean(EXTRA_BACK, true);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -159,7 +115,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
 
         String accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mEdit = getArguments().getBoolean(EXTRA_EDIT);
-        mBack = getArguments().getBoolean(EXTRA_BACK);
         mAccount = getAccountFromPreferences(accountUuid);
         try {
             if (new URI(mAccount.getStoreUri()).getScheme().startsWith("webdav")) {
@@ -184,7 +139,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         mSecurityTypeView = (Spinner)rootView.findViewById(R.id.account_security_type);
         mAuthTypeView = (Spinner)rootView.findViewById(R.id.account_auth_type);
         mNextButton = (Button)rootView.findViewById(R.id.next);
-        nextProgressBar = (ContentLoadingProgressBar) rootView.findViewById(R.id.next_progressbar);
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,7 +160,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         //FIXME: get Account object again?
         accountUuid = getArguments().getString(EXTRA_ACCOUNT);
         mAccount = getAccountFromPreferences(accountUuid);
-        mMakeDefault = getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false);
 
         /*
          * If we're being reloaded we override the original account with the one
@@ -284,13 +237,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         if (mEdit) {
             mNextButton.setText(R.string.done_action);
         }
-        if (mBack) {
-            ((K9Activity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        }
-        if(savedInstanceState != null) {
-            restoreErrorDialogState(savedInstanceState);
-            wasLoading = savedInstanceState.getBoolean(WAS_LOADING);
-        }
         return rootView;
     }
 
@@ -298,12 +244,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
          return mEdit
                 ? preferences.getAccount(accountUuid)
                 : preferences.getAccountAllowingIncomplete(accountUuid);
-    }
-
-    private void restoreErrorDialogState(Bundle savedInstanceState) {
-        errorDialogWasShowing = savedInstanceState.getBoolean(ERROR_DIALOG_SHOWING_KEY);
-        errorDialogTitle = savedInstanceState.getInt(ERROR_DIALOG_TITLE);
-        errorDialogMessage = savedInstanceState.getString(ERROR_DIALOG_MESSAGE);
     }
 
     @Override
@@ -314,32 +254,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
                 requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING);
-        showLoading(false);
-    }
-
-    private void enableViewGroup(boolean enable, ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            if (child instanceof ViewGroup) {
-                enableViewGroup(enable, ((ViewGroup) child));
-            } else {
-                child.setEnabled(enable);
-            }
-        }
-
-    }
-
-    private void handleErrorCheckingSettings(PEpSetupException exception) {
-        if (exception.isCertificateAcceptanceNeeded()) {
-            handleCertificateValidationException(exception);
-        } else {
-            showErrorDialog(
-                    exception.getTitleResource(),
-                    exception.getMessage() == null ? "" : exception.getMessage());
-        }
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
-        enableViewGroup(true, (ViewGroup) rootView);
     }
 
     @Override
@@ -460,14 +374,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         }
         outState.putInt(STATE_SECURITY_TYPE_POSITION, mCurrentSecurityTypeViewPosition);
         outState.putInt(STATE_AUTH_TYPE_POSITION, mCurrentAuthTypeViewPosition);
-        saveErrorDialogState(outState);
-        outState.putBoolean(WAS_LOADING, wasLoading);
-    }
-
-    private void saveErrorDialogState(Bundle outState) {
-        outState.putBoolean(ERROR_DIALOG_SHOWING_KEY, errorDialogWasShowing);
-        outState.putInt(ERROR_DIALOG_TITLE, errorDialogTitle);
-        outState.putString(ERROR_DIALOG_MESSAGE, errorDialogMessage);
     }
 
     /**
@@ -614,7 +520,6 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            showLoading(true);
             if (mEdit) {
                 mAccount.save(preferences);
                 goForward();
@@ -625,32 +530,16 @@ public class AccountSetupOutgoingFragment extends PEpFragment
     }
 
     private void goForward() {
-        showLoading(false);
         if (mEdit) {
             if (getActivity() != null)  {
                 getActivity().finish();
             }
         } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount, false);
+            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
         }
-    }
-
-    private void showLoading(boolean loading) {
-        if (loading) {
-            nextProgressBar.show();
-            mNextButton.setVisibility(View.INVISIBLE);
-        } else {
-            nextProgressBar.hide();
-            mNextButton.setVisibility(View.VISIBLE);
-
-        }
-        accountSetupNavigator.setLoading(loading);
-        enableViewGroup(!loading, (ViewGroup) rootView);
     }
 
     protected void onNext() {
-        showLoading(true);
-        enableViewGroup(false, (ViewGroup) rootView);
         ConnectionSecurity securityType = getSelectedSecurity();
         String uri;
         String username = null;
@@ -723,264 +612,5 @@ public class AccountSetupOutgoingFragment extends PEpFragment
         super.onResume();
         accountSetupNavigator = ((AccountSetupBasics) getActivity()).getAccountSetupNavigator();
         accountSetupNavigator.setCurrentStep(AccountSetupNavigator.Step.OUTGOING, mAccount);
-        restoreErrorDialogIfNeeded();
-        restoreViewsEnabledState();
-    }
-
-    private void restoreViewsEnabledState() {
-        mNextButton.setVisibility(wasLoading ? View.INVISIBLE : View.VISIBLE);
-        enableViewGroup(!wasLoading, (ViewGroup)rootView);
-
-        if(wasLoading) {
-            nextProgressBar.setVisibility(View.VISIBLE);
-            nextProgressBar.show();
-            wasLoading = false;
-        }
-        else {
-            nextProgressBar.hide();
-        }
-    }
-
-    private void restoreErrorDialogIfNeeded() {
-        if(errorDialogWasShowing) {
-            showErrorDialog(errorDialogTitle, errorDialogMessage);
-            errorDialogWasShowing = false;
-        }
-    }
-
-    private void handleCertificateValidationException(PEpSetupException cve) {
-        PEpCertificateException certificateException = (PEpCertificateException) cve;
-        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", certificateException.getOriginalException());
-
-        // Avoid NullPointerException in acceptKeyDialog()
-        if (certificateException.hasCertChain()) {
-            acceptKeyDialog(
-                    R.string.account_setup_failed_dlg_certificate_message_fmt,
-                    certificateException.getOriginalException());
-        } else {
-            showErrorDialog(
-                    R.string.account_setup_failed_dlg_server_message_fmt,
-                    errorMessageForCertificateException(certificateException.getOriginalException()));
-        }
-    }
-
-    private void showErrorDialog(int stringResource, String message) {
-        errorDialogTitle = stringResource;
-        errorDialogMessage = message;
-        errorDialog = new Builder(getActivity())
-                .setTitle(getResources().getString(stringResource))
-                .setMessage(message)
-                .show();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismissErrorDialogIfNeeded();
-        wasLoading = mNextButton.getVisibility() != View.VISIBLE;
-    }
-
-    private void dismissErrorDialogIfNeeded() {
-        if(errorDialog != null && errorDialog.isShowing()) {
-            errorDialog.dismiss();
-            errorDialog = null;
-            errorDialogWasShowing = true;
-        }
-    }
-
-    private void handleCertificateValidationException(CertificateValidationException cve) {
-        Log.e(K9.LOG_TAG, "Error while testing settings (cve)", cve);
-
-        X509Certificate[] chain = cve.getCertChain();
-        // Avoid NullPointerException in acceptKeyDialog()
-        if (chain != null) {
-            acceptKeyDialog(
-                    R.string.account_setup_failed_dlg_certificate_message_fmt,
-                    cve);
-        } else {
-            showErrorDialog(
-                    R.string.account_setup_failed_dlg_server_message_fmt,
-                    errorMessageForCertificateException(cve));
-        }
-    }
-
-    private String errorMessageForCertificateException(CertificateValidationException e) {
-        switch (e.getReason()) {
-            case Expired: return getString(R.string.client_certificate_expired, e.getAlias(), e.getMessage());
-            case MissingCapability: return getString(R.string.auth_external_error);
-            case RetrievalFailure: return getString(R.string.client_certificate_retrieval_failure, e.getAlias());
-            case UseMessage: return e.getMessage();
-            case Unknown:
-            default: return "";
-        }
-    }
-
-    private void acceptKeyDialog(final int msgResId, final CertificateValidationException ex) {
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            public void run() {
-                String exMessage = "Unknown Error";
-
-                if (ex != null) {
-                    if (ex.getCause() != null) {
-                        if (ex.getCause().getCause() != null) {
-                            exMessage = ex.getCause().getCause().getMessage();
-
-                        } else {
-                            exMessage = ex.getCause().getMessage();
-                        }
-                    } else {
-                        exMessage = ex.getMessage();
-                    }
-                }
-
-                StringBuilder chainInfo = new StringBuilder(100);
-                MessageDigest sha1 = null;
-                try {
-                    sha1 = MessageDigest.getInstance("SHA-1");
-                } catch (NoSuchAlgorithmException e) {
-                    Log.e(K9.LOG_TAG, "Error while initializing MessageDigest", e);
-                }
-
-                final X509Certificate[] chain = ex.getCertChain();
-                // We already know chain != null (tested before calling this method)
-                for (int i = 0; i < chain.length; i++) {
-                    // display certificate chain information
-                    //TODO: localize this strings
-                    chainInfo.append("Certificate chain[").append(i).append("]:\n");
-                    chainInfo.append("Subject: ").append(chain[i].getSubjectDN().toString()).append("\n");
-
-                    // display SubjectAltNames too
-                    // (the user may be mislead into mistrusting a certificate
-                    //  by a subjectDN not matching the server even though a
-                    //  SubjectAltName matches)
-                    try {
-                        final Collection< List<? >> subjectAlternativeNames = chain[i].getSubjectAlternativeNames();
-                        if (subjectAlternativeNames != null) {
-                            // The list of SubjectAltNames may be very long
-                            //TODO: localize this string
-                            StringBuilder altNamesText = new StringBuilder();
-                            altNamesText.append("Subject has ").append(subjectAlternativeNames.size()).append(" alternative names\n");
-
-                            // we need these for matching
-                            String storeURIHost = (Uri.parse(mAccount.getStoreUri())).getHost();
-                            String transportURIHost = (Uri.parse(mAccount.getTransportUri())).getHost();
-
-                            for (List<?> subjectAlternativeName : subjectAlternativeNames) {
-                                Integer type = (Integer)subjectAlternativeName.get(0);
-                                Object value = subjectAlternativeName.get(1);
-                                String name;
-                                switch (type.intValue()) {
-                                    case 0:
-                                        Log.w(K9.LOG_TAG, "SubjectAltName of type OtherName not supported.");
-                                        continue;
-                                    case 1: // RFC822Name
-                                        name = (String)value;
-                                        break;
-                                    case 2:  // DNSName
-                                        name = (String)value;
-                                        break;
-                                    case 3:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type x400Address");
-                                        continue;
-                                    case 4:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type directoryName");
-                                        continue;
-                                    case 5:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of type ediPartyName");
-                                        continue;
-                                    case 6:  // Uri
-                                        name = (String)value;
-                                        break;
-                                    case 7: // ip-address
-                                        name = (String)value;
-                                        break;
-                                    default:
-                                        Log.w(K9.LOG_TAG, "unsupported SubjectAltName of unknown type");
-                                        continue;
-                                }
-
-                                // if some of the SubjectAltNames match the store or transport -host,
-                                // display them
-                                if (name.equalsIgnoreCase(storeURIHost) || name.equalsIgnoreCase(transportURIHost)) {
-                                    //TODO: localize this string
-                                    altNamesText.append("Subject(alt): ").append(name).append(",...\n");
-                                } else if (name.startsWith("*.") && (
-                                        storeURIHost.endsWith(name.substring(2)) ||
-                                                transportURIHost.endsWith(name.substring(2)))) {
-                                    //TODO: localize this string
-                                    altNamesText.append("Subject(alt): ").append(name).append(",...\n");
-                                }
-                            }
-                            chainInfo.append(altNamesText);
-                        }
-                    } catch (Exception e1) {
-                        // don't fail just because of subjectAltNames
-                        Log.w(K9.LOG_TAG, "cannot display SubjectAltNames in dialog", e1);
-                    }
-
-                    chainInfo.append("Issuer: ").append(chain[i].getIssuerDN().toString()).append("\n");
-                    if (sha1 != null) {
-                        sha1.reset();
-                        try {
-                            String sha1sum = Hex.encodeHex(sha1.digest(chain[i].getEncoded()));
-                            chainInfo.append("Fingerprint (SHA-1): ").append(sha1sum).append("\n");
-                        } catch (CertificateEncodingException e) {
-                            Log.e(K9.LOG_TAG, "Error while encoding certificate", e);
-                        }
-                    }
-                }
-
-                // TODO: refactor with DialogFragment.
-                // This is difficult because we need to pass through chain[0] for onClick()
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(getString(R.string.account_setup_failed_dlg_invalid_certificate_title))
-                        //.setMessage(getString(R.string.account_setup_failed_dlg_invalid_certificate)
-                        .setMessage(getString(msgResId, exMessage)
-                                + " " + chainInfo.toString()
-                        )
-                        .setCancelable(true)
-                        .setPositiveButton(
-                                getString(R.string.account_setup_failed_dlg_invalid_certificate_accept),
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        acceptCertificate(chain[0]);
-                                    }
-                                })
-                        .setNegativeButton(
-                                getString(R.string.account_setup_failed_dlg_invalid_certificate_reject),
-                                null
-                        )
-                        .show();
-            }
-        });
-    }
-
-    private void acceptCertificate(X509Certificate certificate) {
-        try {
-            mAccount.addCertificate(AccountSetupCheckSettings.CheckDirection.OUTGOING, certificate);
-        } catch (CertificateException e) {
-            showErrorDialog(
-                    R.string.account_setup_failed_dlg_certificate_message_fmt,
-                    e.getMessage() == null ? "" : e.getMessage());
-        }
-        goForward();
-    }
-
-    @Override
-    public void onSettingsCheckError(PEpSetupException exception) {
-        handleErrorCheckingSettings(exception);
-    }
-
-    @Override
-    public void onSettingsChecked(PEpSettingsChecker.Redirection redirection) {
-        goForward();
-    }
-
-    @Override
-    public void onSettingsCheckCancelled() {
-        nextProgressBar.hide();
-        mNextButton.setVisibility(View.VISIBLE);
-        enableViewGroup(true, (ViewGroup) rootView);
     }
 }
