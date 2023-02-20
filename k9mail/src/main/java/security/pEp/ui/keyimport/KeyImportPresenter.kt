@@ -53,7 +53,6 @@ class KeyImportPresenter @Inject constructor(
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PEpUtils.createIdentity(Address(address), context)
             withContext(Dispatchers.IO) {
-                Log.d("initialize", "boss myselfSuspend at "+Thread.currentThread().name)
                 currentFpr = pEp.myself(accountIdentity).fpr
             }
         }
@@ -105,7 +104,6 @@ class KeyImportPresenter @Inject constructor(
                         pEp.setOwnIdentity(accountIdentity, currentFpr)
                         false
                     } else {
-                        Log.d("onKeyImportConfirmed", "boss myselfSuspend at "+Thread.currentThread().name)
                         pEp.myself(id)
                         true
                     }
