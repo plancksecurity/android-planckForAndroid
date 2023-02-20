@@ -197,10 +197,6 @@ public class AccountSetupBasics extends PEpImporterActivity {
         // TODO: 07/07/2020 Review all Account deletion logic in AccountSetup workflow after we delay Account creation to AccountSetupNames.
     }
 
-    public boolean isManualSetupRequired() {
-        return isManualSetupRequired;
-    }
-
     public void setManualSetupRequired(boolean manualSetupRequired) {
         isManualSetupRequired = manualSetupRequired;
     }
