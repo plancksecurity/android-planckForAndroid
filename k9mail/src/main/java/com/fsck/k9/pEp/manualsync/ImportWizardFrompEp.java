@@ -222,6 +222,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         trustwordsContainer.setVisibility(View.VISIBLE);
         tvTrustwords.setText(trustwords);
         currentState.setVisibility(View.GONE);
+        tvFprCurrentDevice.setVisibility(View.GONE);
+        tvFprNewDevice.setVisibility(View.GONE);
         reject.setVisibility(View.VISIBLE);
         reject.setOnClickListener( v -> presenter.rejectHandshake());
 
