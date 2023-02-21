@@ -4,7 +4,6 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch

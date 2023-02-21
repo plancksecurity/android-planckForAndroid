@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.blacklist;
+package com.fsck.k9.pEp.ui.keys;
 
 /**
  * Created by huss on 15/09/16.

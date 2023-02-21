@@ -1,7 +1,5 @@
 package com.fsck.k9.pEp.ui.keys;
 
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
-
 /**
  * Created by arturo on 9/03/17.
  */

@@ -5,7 +5,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.pEp.ui.HandshakeData;
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
+import com.fsck.k9.pEp.ui.keys.KeyListItem;
 
 import java.util.List;
 import java.util.Map;
@@ -193,12 +193,6 @@ public interface PEpProvider extends AutoCloseable {
     void configPassphraseForNewKeys(boolean enable, String passphrase);
 
     List<KeyListItem> getMasterKeysInfo();
-
-    void addToBlacklist(String fpr);
-
-    void deleteFromBlacklist(String fpr);
-
-    //com.fsck.k9.mail.Message getMimeMessage(Message message);
 
     void acceptSync();
 

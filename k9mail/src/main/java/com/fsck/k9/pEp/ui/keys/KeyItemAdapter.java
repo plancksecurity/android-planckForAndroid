@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
 import java.util.Comparator;
 import java.util.List;

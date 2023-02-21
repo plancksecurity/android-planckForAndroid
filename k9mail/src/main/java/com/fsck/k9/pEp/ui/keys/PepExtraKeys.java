@@ -8,17 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 

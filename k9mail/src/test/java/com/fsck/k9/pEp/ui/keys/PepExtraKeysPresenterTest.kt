@@ -4,7 +4,6 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import com.fsck.k9.preferences.Storage
 import com.fsck.k9.preferences.StorageEditor
 import io.mockk.*

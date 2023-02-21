@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
@@ -24,7 +23,7 @@ import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
 import com.fsck.k9.pEp.ui.HandshakeData
-import com.fsck.k9.pEp.ui.blacklist.KeyListItem
+import com.fsck.k9.pEp.ui.keys.KeyListItem
 import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
@@ -1093,16 +1092,6 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     override fun updateIdentity(id: Identity): Identity {
         return engine.get()?.updateIdentity(id)!!
-    }
-
-    @WorkerThread
-    override fun addToBlacklist(fpr: String) {
-      //  engine.blacklist_add(fpr)
-    }
-
-    @WorkerThread
-    override fun deleteFromBlacklist(fpr: String) {
-    //    engine.blacklist_delete(fpr)
     }
 
     @WorkerThread
