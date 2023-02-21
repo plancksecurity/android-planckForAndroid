@@ -118,8 +118,9 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun setupToolbar() {
-        (activity as AccountSetupBasics?)!!.initializeToolbar(
-            !requireActivity().isTaskRoot,
+        (requireActivity() as AccountSetupBasics).initializeToolbar(
+            !requireActivity().isTaskRoot
+                    || parentFragmentManager.backStackEntryCount > 1,
             R.string.account_setup_basics_title
         )
     }
