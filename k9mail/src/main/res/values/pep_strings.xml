@@ -214,8 +214,9 @@
     <string name="ellipsized_text" translatable="false">%s  …</string>
 
     <!-- FPR -->
-    <string name="fpr_actual_title">Myself:&#160;%s</string>
-    <string name="fpr_new_device_title">Partner:&#160;%s</string>
+    <string name="fpr_title">Fingerprints</string>
+    <string name="fpr_actual_title">This device</string>
+    <string name="fpr_new_device_title">New device</string>
 
     <!-- Reset Partners Key-->
     <string name="reset_partner_keys_confirmation_action">Yes, Reset</string>
