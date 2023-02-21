@@ -24,6 +24,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
 import javax.net.ssl.SSLException;
@@ -91,9 +92,9 @@ public class WebDavStore extends RemoteStore {
     private Folder sendFolder = null;
     private Map<String, WebDavFolder> folderList = new HashMap<>();
 
-    public WebDavStore(StoreConfig storeConfig, WebDavHttpClient.WebDavHttpClientFactory clientFactory)
+    public WebDavStore(StoreConfig storeConfig, WebDavHttpClient.WebDavHttpClientFactory clientFactory, OAuth2TokenProvider oAuth2TokenProvider)
             throws MessagingException {
-        super(storeConfig, null);
+        super(storeConfig, null, oAuth2TokenProvider);
         httpClientFactory = clientFactory;
 
         WebDavStoreSettings settings;

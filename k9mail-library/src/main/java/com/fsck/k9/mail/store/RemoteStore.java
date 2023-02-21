@@ -12,6 +12,7 @@ import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.ServerSettings.Type;
 import com.fsck.k9.mail.Store;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
+import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
 import com.fsck.k9.mail.ssl.DefaultTrustedSocketFactory;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.imap.ImapStore;
@@ -30,18 +31,27 @@ public abstract class RemoteStore extends Store {
     /**
      * Remote stores indexed by Uri.
      */
-    private static Map<String, Store> sStores = new HashMap<String, Store>();
+    private static final Map<String, Store> sStores = new HashMap<>();
 
 
-    public RemoteStore(StoreConfig storeConfig, TrustedSocketFactory trustedSocketFactory) {
+    public RemoteStore(
+            StoreConfig storeConfig,
+            TrustedSocketFactory trustedSocketFactory,
+            OAuth2TokenProvider oauthTokenProvider
+    ) {
         mStoreConfig = storeConfig;
         mTrustedSocketFactory = trustedSocketFactory;
+        this.oauthTokenProvider = oauthTokenProvider;
     }
 
     /**
      * Get an instance of a remote mail store.
      */
-    public static synchronized RemoteStore getInstance(Context context, StoreConfig storeConfig, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
+    public static synchronized RemoteStore getInstance(
+            Context context,
+            StoreConfig storeConfig,
+            OAuthTokenProviderFactory oAuthTokenProviderFactory
+    ) throws MessagingException {
         String uri = storeConfig.getStoreUri();
 
         if (uri.startsWith("local")) {
@@ -56,11 +66,19 @@ public abstract class RemoteStore extends Store {
                         storeConfig,
                         new DefaultTrustedSocketFactory(context),
                         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
-                        oAuth2TokenProvider);
+                        oAuthTokenProviderFactory.create(storeConfig));
             } else if (uri.startsWith("pop3")) {
-                store = new Pop3Store(storeConfig, new DefaultTrustedSocketFactory(context));
+                store = new Pop3Store(
+                        storeConfig,
+                        new DefaultTrustedSocketFactory(context),
+                        oAuthTokenProviderFactory.create(storeConfig)
+                );
             } else if (uri.startsWith("webdav")) {
-                store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory());
+                store = new WebDavStore(
+                        storeConfig,
+                        new WebDavHttpClient.WebDavHttpClientFactory(),
+                        oAuthTokenProviderFactory.create(storeConfig)
+                );
             }
 
             if (store != null) {
@@ -139,4 +157,8 @@ public abstract class RemoteStore extends Store {
     }
 
     public abstract String getPathDelimiter();
+
+    public OAuth2TokenProvider getOauthTokenProvider() {
+        return oauthTokenProvider;
+    }
 }
