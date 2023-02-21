@@ -581,37 +581,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
                 mAccount.save(preferences);
                 getActivity().finish();
             } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
-                /*
-                 * Set the username and password for the outgoing settings to the username and
-                 * password the user just set for incoming.
-                 */
-                try {
-                    String username = mUsernameView.getText().toString();
-
-                    String password = null;
-                    String clientCertificateAlias = null;
-                    AuthType authType = getSelectedAuthType();
-                    if (AuthType.EXTERNAL == authType) {
-                        clientCertificateAlias = mClientCertificateSpinner.getAlias();
-                    } else if (AuthType.EXTERNAL_PLAIN == authType) {
-                        clientCertificateAlias = mClientCertificateSpinner.getAlias();
-                        password = mPasswordView.getText().toString();
-                    } else {
-                        password = mPasswordView.getText().toString();
-                    }
-
-                    URI oldUri = new URI(mAccount.getTransportUri());
-                    ServerSettings transportServer = new ServerSettings(ServerSettings.Type.SMTP, oldUri.getHost(), oldUri.getPort(),
-                            ConnectionSecurity.SSL_TLS_REQUIRED, authType, username, password, clientCertificateAlias);
-                    String transportUri = Transport.createTransportUri(transportServer);
-                    mAccount.setTransportUri(transportUri);
-                    goForward();
-                } catch (URISyntaxException use) {
-                    /*
-                     * If we can't set up the URL we just continue. It's only for
-                     * convenience.
-                     */
-                }
+                goForward();
             }
         }
     }
@@ -706,6 +676,42 @@ public class AccountSetupIncomingFragment extends PEpFragment {
         mAccount.setCompression(NetworkType.MOBILE, mCompressionMobile.isChecked());
         mAccount.setCompression(NetworkType.WIFI, mCompressionWifi.isChecked());
         mAccount.setCompression(NetworkType.OTHER, mCompressionOther.isChecked());
+        if (!editSettings) {
+            setOutgoingSettingsSameAsIncomingSettings();
+        }
+    }
+
+    private void setOutgoingSettingsSameAsIncomingSettings() {
+        /*
+         * Set the username and password for the outgoing settings to the username and
+         * password the user just set for incoming.
+         */
+        try {
+            String username = mUsernameView.getText().toString();
+
+            String password = null;
+            String clientCertificateAlias = null;
+            AuthType authType = getSelectedAuthType();
+            if (AuthType.EXTERNAL == authType) {
+                clientCertificateAlias = mClientCertificateSpinner.getAlias();
+            } else if (AuthType.EXTERNAL_PLAIN == authType) {
+                clientCertificateAlias = mClientCertificateSpinner.getAlias();
+                password = mPasswordView.getText().toString();
+            } else {
+                password = mPasswordView.getText().toString();
+            }
+
+            URI oldUri = new URI(mAccount.getTransportUri());
+            ServerSettings transportServer = new ServerSettings(ServerSettings.Type.SMTP, oldUri.getHost(), oldUri.getPort(),
+                    ConnectionSecurity.SSL_TLS_REQUIRED, authType, username, password, clientCertificateAlias);
+            String transportUri = Transport.createTransportUri(transportServer);
+            mAccount.setTransportUri(transportUri);
+        } catch (URISyntaxException use) {
+            /*
+             * If we can't set up the URL we just continue. It's only for
+             * convenience.
+             */
+        }
     }
 
     public void onClick(View v) {
