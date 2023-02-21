@@ -16,9 +16,9 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
 
 import javax.inject.Inject;
@@ -94,10 +94,10 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
                 accountSetupNavigator.setIsEditing(true);
             } else {
-                AccountSetupBasicsFragment accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                AccountSetupSelectAuthFragment fragment = new AccountSetupSelectAuthFragment();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.addToBackStack("AccountSetupBasicsFragment");
-                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+                ft.addToBackStack("AccountSetupSelectAuthFragment");
+                ft.replace(R.id.account_setup_container, fragment).commit();
             }
         }
         permissionRequester.requestBatteryOptimizationPermission();
