@@ -51,6 +51,7 @@ import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import security.pEp.mdm.ManageableSetting;
 import security.pEp.mdm.ManageableSettingKt;
 import security.pEp.mdm.MediaKey;
+import security.pEp.mdm.UserProfile;
 import security.pEp.network.ConnectionMonitor;
 import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
@@ -111,8 +112,9 @@ public class K9 extends MultiDexApplication {
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
     private boolean pEpSyncEnvironmentInitialized;
     private static boolean allowpEpSyncNewDevices = !BuildConfig.IS_ENTERPRISE;
-    private static boolean enableEchoProtocol = !BuildConfig.IS_DEMO;
+    private static boolean enableEchoProtocol = false;
     private static Set<MediaKey> mediaKeys;
+    private Boolean runningOnWorkProfile;
 
     public static K9JobManager jobManager;
 
@@ -122,6 +124,14 @@ public class K9 extends MultiDexApplication {
 
     public static void setMasterKeys(Set<String> keys) {
         pEpExtraKeys = keys;
+    }
+
+    public boolean isRunningOnWorkProfile() {
+        if (!BuildConfig.IS_ENTERPRISE) return false;
+        if (runningOnWorkProfile == null) {
+            runningOnWorkProfile = new UserProfile().isRunningOnWorkProfile(this);
+        }
+        return runningOnWorkProfile;
     }
 
     public boolean isBatteryOptimizationAsked() {
@@ -306,8 +316,8 @@ public class K9 extends MultiDexApplication {
     private static int mMessageListPreviewLines = 2;
 
     private static boolean mShowCorrespondentNames = true;
-    private static boolean mMessageListSenderAboveSubject = !BuildConfig.IS_END_USER;
-    private static boolean mShowContactName = !BuildConfig.IS_END_USER;
+    private static boolean mMessageListSenderAboveSubject = BuildConfig.IS_ENTERPRISE;
+    private static boolean mShowContactName = BuildConfig.IS_ENTERPRISE;
     private static boolean mChangeContactNameColor = false;
     private static int mContactNameColor = DEFAULT_CONTACT_NAME_COLOR;
     private static boolean sShowContactPicture = true;
@@ -348,8 +358,7 @@ public class K9 extends MultiDexApplication {
     //private static boolean pEpUseKeyserver = false;
     private static boolean pEpPassiveMode = false;
     private static boolean pEpSubjectProtection = true;
-    private static boolean pEpForwardWarningEnabled =
-            !BuildConfig.IS_END_USER;
+    private static boolean pEpForwardWarningEnabled = BuildConfig.IS_ENTERPRISE;
     private static boolean pEpSyncEnabled = true;
     private static boolean shallRequestPermissions = true;
     private static boolean usingpEpSyncFolder = true;
@@ -387,7 +396,7 @@ public class K9 extends MultiDexApplication {
      * on each new folder and can be incremented with "Load more messages..." by the
      * VISIBLE_LIMIT_INCREMENT
      */
-    public static final int DEFAULT_VISIBLE_LIMIT = BuildConfig.IS_END_USER ? 100 : 250;
+    public static final int DEFAULT_VISIBLE_LIMIT = BuildConfig.IS_ENTERPRISE ? 250 : 100;
 
     /**
      * The maximum size of an attachment we're willing to download (either View or Save)
@@ -953,7 +962,7 @@ public class K9 extends MultiDexApplication {
         mCountSearchMessages = storage.getBoolean("countSearchMessages", true);
         mMessageListSenderAboveSubject = storage.getBoolean(
                 "messageListSenderAboveSubject",
-                !BuildConfig.IS_END_USER
+                BuildConfig.IS_ENTERPRISE
         );
         mMessageListCheckboxes = storage.getBoolean("messageListCheckboxes", false);
         mMessageListStars = storage.getBoolean("messageListStars", true);
@@ -967,7 +976,7 @@ public class K9 extends MultiDexApplication {
         mQuietTimeEnds = storage.getString("quietTimeEnds", "7:00");
 
         mShowCorrespondentNames = storage.getBoolean("showCorrespondentNames", true);
-        mShowContactName = storage.getBoolean("showContactName", !BuildConfig.IS_END_USER);
+        mShowContactName = storage.getBoolean("showContactName", BuildConfig.IS_ENTERPRISE);
         sShowContactPicture = storage.getBoolean("showContactPicture", true);
         mChangeContactNameColor = storage.getBoolean("changeRegisteredNameColor", false);
         mContactNameColor = storage.getInt("registeredNameColor", DEFAULT_CONTACT_NAME_COLOR);
@@ -1025,7 +1034,7 @@ public class K9 extends MultiDexApplication {
         pEpPassiveMode = storage.getBoolean("pEpPassiveMode", false);
         pEpSubjectProtection = getValuePEpSubjectProtection(storage);
         pEpForwardWarningEnabled = storage.getBoolean(
-                "pEpForwardWarningEnabled", !BuildConfig.IS_END_USER);
+                "pEpForwardWarningEnabled", BuildConfig.IS_ENTERPRISE);
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
@@ -1073,14 +1082,14 @@ public class K9 extends MultiDexApplication {
                         "pEpUseTrustwords",
                         ManageableSettingKt.encodeBooleanToString(
                                 new ManageableSetting<>(
-                                        !BuildConfig.IS_ENTERPRISE,
+                                        !((K9) app).isRunningOnWorkProfile(),
                                         true
                                 )
                         )
                 )
         );
-        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !BuildConfig.IS_ENTERPRISE);
-        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_DEMO);
+        allowpEpSyncNewDevices = storage.getBoolean("allowpEpSyncNewDevices", !((K9) app).isRunningOnWorkProfile());
+        enableEchoProtocol = storage.getBoolean("enableEchoProtocol", !BuildConfig.IS_ENTERPRISE || ((K9) app).isRunningOnWorkProfile());
         mediaKeys = parseMediaKeys(storage.getString("mediaKeys", null));
         pEpExtraKeys = parseExtraKeys(storage.getString("extraKeys", null));
         new Handler(Looper.getMainLooper()).post(ThemeManager::updateAppTheme);

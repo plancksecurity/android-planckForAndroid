@@ -237,7 +237,7 @@ public class AccountSettings {
                 new V(45, new BooleanSetting(true)),
                 new V(52, new StringSetting(
                         ManageableSettingKt.encodeBooleanToString(
-                                new ManageableSetting<>(true, !BuildConfig.IS_END_USER)
+                                new ManageableSetting<>(true, BuildConfig.IS_ENTERPRISE)
                         ))
                 )
         ));

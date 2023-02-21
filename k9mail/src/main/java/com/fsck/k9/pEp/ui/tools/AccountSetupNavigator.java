@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 public class AccountSetupNavigator {
 
     private Boolean isEditing = false;
-    private boolean loading;
 
     public enum Step {
         BASICS,
@@ -40,57 +39,43 @@ public class AccountSetupNavigator {
         context.startActivity(addAccountIntent);
     }
 
-    public void goForward(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
-        loading = false;
+    public void goForward(FragmentManager fragmentManager, Account account) {
         if (currentStep.equals(Step.BASICS)) {
-            goFromChooseAccountTypeToIncomingSettings(fragmentManager, account, makeDefault);
+            goFromChooseAccountTypeToIncomingSettings(fragmentManager, account);
         } else if(currentStep.equals(Step.INCOMING)) {
-            goFromIncomingSettingsToOutgoingSettings(fragmentManager, account, makeDefault);
+            goFromIncomingSettingsToOutgoingSettings(fragmentManager, account);
         } else if(currentStep.equals(Step.OUTGOING)) {
-            goFromOutgoingSettingsToAccountSetupOptions(fragmentManager, account, makeDefault);
+            goFromOutgoingSettingsToAccountSetupOptions(fragmentManager, account);
         }
     }
 
-    private void goFromOutgoingSettingsToAccountSetupOptions(FragmentManager fragmentManager, Account account, Boolean makeDefault) {
-        if (makeDefault != null) {
-            AccountSetupOptionsFragment accountSetupOptionsFragment = AccountSetupOptionsFragment.actionOptions(account, makeDefault);
-            fragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupOptionsFragment, "accountSetupOptionsFragment")
-                    .addToBackStack(null)
-                    .commit();
-        }
+    private void goFromOutgoingSettingsToAccountSetupOptions(FragmentManager fragmentManager, Account account) {
+        AccountSetupOptionsFragment accountSetupOptionsFragment = AccountSetupOptionsFragment.actionOptions(account);
+        fragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, accountSetupOptionsFragment, "accountSetupOptionsFragment")
+                .addToBackStack(null)
+                .commit();
     }
 
-    private void goFromIncomingSettingsToOutgoingSettings(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
-        if (makeDefault != null) {
-            AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(account, makeDefault);
-            fragmentManager
-                    .beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
-                    .addToBackStack(null)
-                    .commit();
-        }
+    private void goFromIncomingSettingsToOutgoingSettings(FragmentManager fragmentManager, Account account) {
+        AccountSetupOutgoingFragment accountSetupOutgoingFragment = AccountSetupOutgoingFragment.actionOutgoingSettings(account);
+        fragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, accountSetupOutgoingFragment, "accountSetupOutgoingFragment")
+                .addToBackStack(null)
+                .commit();
     }
 
-    private void goFromChooseAccountTypeToIncomingSettings(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
-        if (makeDefault != null) {
-            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(account, makeDefault);
-            fragmentManager.beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
-                    .addToBackStack(null)
-                    .commit();
-        } else {
-            AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionEditIncomingSettings(account);
-            fragmentManager.beginTransaction()
-                    .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
-                    .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
-                    .addToBackStack(null)
-                    .commit();
-        }
+    private void goFromChooseAccountTypeToIncomingSettings(FragmentManager fragmentManager, Account account) {
+        AccountSetupIncomingFragment accountSetupIncomingFragment = AccountSetupIncomingFragment.actionIncomingSettings(account);
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, accountSetupIncomingFragment, "accountSetupIncomingFragment")
+                .addToBackStack(null)
+                .commit();
     }
 
     private void goFromBasicsToChooseAccountTypesSettings(FragmentManager fragmentManager, Account account, @Nullable Boolean makeDefault) {
@@ -105,11 +90,7 @@ public class AccountSetupNavigator {
     }
 
     public void goBack(Activity activity, FragmentManager fragmentManager) {
-        if(loading) {
-            loading = false;
-            return;
-        }
-        if (currentStep != null && !currentStep.equals(Step.BASICS) && !isEditing) {
+        if (fragmentManager.getBackStackEntryCount() > 1) {
             fragmentManager.popBackStack();
         } else {
             activity.finish();
@@ -121,7 +102,7 @@ public class AccountSetupNavigator {
     }
 
     public Boolean shouldDeleteAccount() {
-        return currentStep.equals(Step.INCOMING) && !loading; // TODO review this
+        return currentStep.equals(Step.INCOMING); // TODO review this
     }
 
     public void setCurrentStep(Step currentStep, Account account) {
@@ -139,13 +120,5 @@ public class AccountSetupNavigator {
 
     public Step getCurrentStep() {
         return currentStep;
-    }
-
-    public void setLoading(boolean loading) {
-        this.loading = loading;
-    }
-
-    public boolean isLoading() {
-        return loading;
     }
 }

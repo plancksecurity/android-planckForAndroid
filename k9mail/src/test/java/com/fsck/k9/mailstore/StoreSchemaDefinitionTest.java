@@ -1,6 +1,15 @@
 package com.fsck.k9.mailstore;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,15 +23,13 @@ import com.fsck.k9.Account;
 import com.fsck.k9.BuildConfig;
 import com.fsck.k9.GlobalsHelper;
 import com.fsck.k9.K9;
-import com.fsck.k9.K9RobolectricTestRunner;
 import com.fsck.k9.R;
+import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.MessagingException;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
@@ -30,18 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class StoreSchemaDefinitionTest {
+public class StoreSchemaDefinitionTest extends RobolectricTest {
     private StoreSchemaDefinition storeSchemaDefinition;
 
 

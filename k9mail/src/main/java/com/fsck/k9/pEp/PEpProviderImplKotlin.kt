@@ -80,7 +80,9 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+        if ((context.applicationContext as K9).isRunningOnWorkProfile) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
+            engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+        }
     }
 
     @get:Throws(pEpException::class)
@@ -489,7 +491,8 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @Throws(pEpException::class, MessagingException::class)
-    private fun getEncryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> = runBlocking {
+    @WorkerThread
+    private fun getEncryptedCopies(source: MimeMessage, extraKeys: Array<String>): List<MimeMessage> {
         val messagesToEncrypt: MutableList<Message> = ArrayList()
         val toEncryptMessage = stripUnencryptedRecipients(source)
         messagesToEncrypt.add(toEncryptMessage)
@@ -500,7 +503,7 @@ class PEpProviderImplKotlin @Inject constructor(
         val result: List<MimeMessage> = ArrayList(encryptMessages(source, extraKeys, messagesToEncrypt))
         messagesToEncrypt.forEach { message -> message.close() }
 
-        result
+        return result
     }
 
     override fun acceptSync() {
@@ -519,15 +522,11 @@ class PEpProviderImplKotlin @Inject constructor(
         engine.get()?.deliverHandshakeResult(syncResult, Vector())
     }
 
-    override fun canEncrypt(address: String): Boolean = runBlocking {
-        canEncryptSuspend(address)
-    }
-
-    private suspend fun canEncryptSuspend(address: String): Boolean = withContext(Dispatchers.IO) {
+    override fun canEncrypt(address: String): Boolean {
         createEngineInstanceIfNeeded()
 
         val msg = Message()
-        val id = myselfSuspend(PEpUtils.createIdentity(Address(address), context))
+        val id = myself(PEpUtils.createIdentity(Address(address), context))
         msg.from = id
 
         val to = Vector<Identity>()
@@ -542,21 +541,17 @@ class PEpProviderImplKotlin @Inject constructor(
             engine.get()?.encrypt_message(msg, null, Message.EncFormat.PEP)
         } catch (e: pEpException) {
             Timber.e(e)
-            return@withContext false
+            return false
         }
-        return@withContext true
+        return true
     }
 
     @WorkerThread
-    override fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult = runBlocking {
+    override fun decryptMessage(source: MimeMessage, receivedBy: String): DecryptResult {
         Timber.d("%s %s", TAG, "decryptMessage() enter")
-        decryptMessageSuspend(source, receivedBy)
-    }
-
-    private suspend fun decryptMessageSuspend(source: MimeMessage, receivedBy: String): DecryptResult = withContext(Dispatchers.IO) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
-        try {
+        return try {
             createEngineInstanceIfNeeded()
 
             srcMsg = NotRemovingTransientFilespEpMessageBuilder(source).createMessage(context)
@@ -685,17 +680,14 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun myself(myId: Identity?): Identity? = runBlocking {
-        myselfSuspend(myId)
-    }
-
-    private suspend fun myselfSuspend(myId: Identity?): Identity? = withContext(Dispatchers.IO) {
+    @WorkerThread
+    override fun myself(myId: Identity?): Identity? {
         createEngineInstanceIfNeeded()
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
-        try {
-            engine.get()?.myself(myId)
+        return try {
+            engine.myself(myId)
         } catch (exception: pEpException) {
             Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
             myId
@@ -744,14 +736,22 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread
-    override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking {
-        incomingMessageRatingSuspend(message)!!
+    override fun incomingMessageRating(message: MimeMessage): Rating {
+        return try {
+            val pEpMessage = PEpMessageBuilder(message).createMessage(context)
+            engine.re_evaluate_message_rating(pEpMessage)
+        } catch (e: pEpException) {
+            Timber.e(e)
+            Rating.pEpRatingUndefined
+        }
     }
 
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-            val result = incomingMessageRatingSuspend(message)
+            val result = withContext(Dispatchers.IO) {
+                incomingMessageRatingSuspend(message)
+            }
             callback.onLoaded(result)
         }
     }
@@ -801,33 +801,26 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun getRating(from: Address?,
                            toAddresses: List<Address>,
                            ccAddresses: List<Address>,
-                           bccAddresses: List<Address>): Rating = runBlocking {
-        getRatingSuspend(from, toAddresses, ccAddresses, bccAddresses)
-    }
-
-    private suspend fun getRatingSuspend(from: Address?,
-                                         toAddresses: List<Address>,
-                                         ccAddresses: List<Address>,
-                                         bccAddresses: List<Address>): Rating = withContext(Dispatchers.IO) {
-        if (bccAddresses.isNotEmpty()) return@withContext Rating.pEpRatingUnencrypted
+                           bccAddresses: List<Address>): Rating {
+        if (bccAddresses.isNotEmpty()) return Rating.pEpRatingUnencrypted
 
         val recipientsSize = toAddresses.size + ccAddresses.size + bccAddresses.size
-        if (from == null || recipientsSize == 0) return@withContext Rating.pEpRatingUndefined
+        if (from == null || recipientsSize == 0) return Rating.pEpRatingUndefined
 
         var message: Message? = null
         try {
             createEngineInstanceIfNeeded()
             message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
 
-            val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
+            val result = getRatingOnBackground(message) // stupid way to be able to patch the value in debugger
             Timber.i("%s %s", TAG, "getRating " + result.name)
-            return@withContext result
+            return result
         } catch (e: Throwable) {
             Timber.e(e, "%s %s", TAG, "during color test:")
         } finally {
             message?.close()
         }
-        return@withContext Rating.pEpRatingUndefined
+        return Rating.pEpRatingUndefined
     }
 
     private suspend fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
@@ -847,7 +840,7 @@ class PEpProviderImplKotlin @Inject constructor(
                     if (from == null || areRecipientsEmpty) notifyLoaded(Rating.pEpRatingUndefined, callback)
 
                     message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
-                    val result = getRatingSuspend(message) // stupid way to be able to patch the value in debugger
+                    val result = getRatingOnBackground(message) // stupid way to be able to patch the value in debugger
                     Timber.i("%s %s", TAG, "getRating " + result.name)
                     notifyLoaded(result, callback)
                 } catch (e: Throwable) {
@@ -863,8 +856,9 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    private suspend fun getRatingSuspend(message: Message): Rating = withContext(Dispatchers.IO) {
-        try {
+    @WorkerThread
+    private fun getRatingOnBackground(message: Message): Rating {
+        return try {
             createEngineInstanceIfNeeded()
             engine.get()?.outgoing_message_rating(message)
         } catch (e: pEpException) {
@@ -893,20 +887,16 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread //Already done
-    override fun getRating(address: Address): Rating = runBlocking {
+    override fun getRating(address: Address): Rating {
         val identity = PEpUtils.createIdentity(address, context)
-        getRatingSuspend(identity)
+        return getRating(identity)
     }
 
     @WorkerThread //already done
-    override fun getRating(identity: Identity): Rating = runBlocking {
-        getRatingSuspend(identity)
-    }
-
-    private suspend fun getRatingSuspend(identity: Identity): Rating = withContext(Dispatchers.IO) {
+    override fun getRating(identity: Identity): Rating {
         createEngineInstanceIfNeeded()
-        try {
-            engine.get()?.identity_rating(identity)
+        return try {
+            engine.identity_rating(identity)
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "getRating: ")
             Rating.pEpRatingUndefined
@@ -969,14 +959,12 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread
-    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? = runBlocking {
-        withContext(Dispatchers.IO) {
-            try {
-                engine.get()?.get_trustwords(myself, partner, lang, !isShort)
-            } catch (e: pEpException) {
-                Timber.e(e, "%s %s", TAG, "trustwords: ")
-                null
-            }
+    override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? {
+        return try {
+            engine.get_trustwords(myself, partner, lang, !isShort)
+        } catch (e: pEpException) {
+            Timber.e(e, "%s %s", TAG, "trustwords: ")
+            null
         }
     }
 

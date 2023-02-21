@@ -88,7 +88,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
         mDescription = (EditText)findViewById(R.id.account_description);
         mName = (EditText)findViewById(R.id.account_name);
         pepSyncAccount = findViewById(R.id.pep_enable_sync_account);
-        pepSyncAccount.setVisibility(BuildConfig.IS_END_USER ? View.VISIBLE : View.GONE);
+        pepSyncAccount.setVisibility(BuildConfig.IS_ENTERPRISE ? View.GONE : View.VISIBLE);
         mDoneButton = (Button)findViewById(R.id.done);
         mDoneButton.setOnClickListener(this);
 
@@ -239,7 +239,7 @@ public class AccountSetupNames extends PepActivity implements OnClickListener {
             if(manualSetup) {
                 account.setOptionsOnInstall();
             }
-            if (BuildConfig.IS_ENTERPRISE) {
+            if (((K9) mContext.getApplicationContext()).isRunningOnWorkProfile()) {
                 ((K9) mContext.getApplicationContext()).getComponent()
                         .configurationManagerFactory().create(mContext)
                         .loadConfigurationsBlocking();

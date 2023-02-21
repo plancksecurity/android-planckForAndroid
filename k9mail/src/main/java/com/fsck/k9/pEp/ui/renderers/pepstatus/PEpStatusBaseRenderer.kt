@@ -44,6 +44,8 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
     @Nullable @Bind(R.id.button_identity_key_reset)
     lateinit var resetDataButton: Button
 
+    @Nullable @Bind(R.id.resetDataLayout)
+    lateinit var resetDataLayout: View
 
     override fun onCreate(content: PEpIdentity?, layoutInflater: LayoutInflater?, parent: ViewGroup?) {
         super.onCreate(content, layoutInflater, parent)
@@ -74,6 +76,12 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
         val artefactCache = PePUIArtefactCache.getInstance(context)
         ratingStatusTV.text = artefactCache.getTitle(rating)
         if (::statusExplanationTV.isInitialized) statusExplanationTV.text = artefactCache.getSuggestion(rating)
+
+        if (rating == Rating.pEpRatingCannotDecrypt || rating == Rating.pEpRatingHaveNoKey) {
+            resetDataLayout.visibility = View.GONE
+        } else {
+            resetDataLayout.visibility = View.VISIBLE
+        }
     }
 
     private fun renderBadge(identity: PEpIdentity) {

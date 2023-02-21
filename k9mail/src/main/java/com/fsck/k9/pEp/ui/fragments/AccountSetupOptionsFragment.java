@@ -29,8 +29,6 @@ import timber.log.Timber;
 public class AccountSetupOptionsFragment extends PEpFragment {
     private static final String EXTRA_ACCOUNT = "account";
 
-    private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
-
     private Spinner mCheckFrequencyView;
 
     private Spinner mDisplayCountView;
@@ -45,11 +43,10 @@ public class AccountSetupOptionsFragment extends PEpFragment {
     private View rootView;
     private AccountSetupNavigator accountSetupNavigator;
 
-    public static AccountSetupOptionsFragment actionOptions(Account account, boolean makeDefault) {
+    public static AccountSetupOptionsFragment actionOptions(Account account) {
         AccountSetupOptionsFragment fragment = new AccountSetupOptionsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_ACCOUNT, account.getUuid());
-        bundle.putBoolean(EXTRA_MAKE_DEFAULT, makeDefault);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -169,8 +166,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
 
         mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
-        if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount()) ||
-                getArguments().getBoolean(EXTRA_MAKE_DEFAULT, false)) {
+        if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount())) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);
         }
         AccountSetupNames.actionSetNames(getActivity(), mAccount, true);

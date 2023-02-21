@@ -1,31 +1,32 @@
 package com.fsck.k9.notification;
 
 
-import android.app.Notification;
-import androidx.core.app.NotificationManagerCompat;
-
-import com.fsck.k9.Account;
-import com.fsck.k9.K9;
-import com.fsck.k9.K9.NotificationHideSubject;
-import com.fsck.k9.K9RobolectricTestRunner;
-import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.mailstore.LocalMessage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
-
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Notification;
 
-@RunWith(K9RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
-public class NewMailNotificationsTest {
+import androidx.core.app.NotificationManagerCompat;
+
+import com.fsck.k9.Account;
+import com.fsck.k9.K9;
+import com.fsck.k9.K9.NotificationHideSubject;
+import com.fsck.k9.RobolectricTest;
+import com.fsck.k9.activity.MessageReference;
+import com.fsck.k9.mailstore.LocalMessage;
+
+import org.junit.Before;
+import org.junit.Test;
+
+
+public class NewMailNotificationsTest extends RobolectricTest {
     private static final int ACCOUNT_NUMBER = 23;
 
     private Account account;

@@ -8,6 +8,7 @@ import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.filter.Hex;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mail.ServerSettings.Type;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.RemoteStore;
 import com.fsck.k9.mail.store.StoreConfig;
@@ -218,8 +219,8 @@ public class Pop3Store extends RemoteStore {
     private boolean mTopNotSupported;
 
 
-    public Pop3Store(StoreConfig storeConfig, TrustedSocketFactory socketFactory) throws MessagingException {
-        super(storeConfig, socketFactory);
+    public Pop3Store(StoreConfig storeConfig, TrustedSocketFactory socketFactory, OAuth2TokenProvider oAuth2TokenProvider) throws MessagingException {
+        super(storeConfig, socketFactory, oAuth2TokenProvider);
 
         ServerSettings settings;
         try {

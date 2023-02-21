@@ -107,7 +107,7 @@ build:
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
-    - ./gradlew --build-cache assembleDemoCorpPlayStoreDebug
+    - ./gradlew --build-cache assembleEnterprisePlayStoreDebug
     - mkdir -p packages
     - mv k9mail/build/outputs/apk/* packages/
     - du -h packages

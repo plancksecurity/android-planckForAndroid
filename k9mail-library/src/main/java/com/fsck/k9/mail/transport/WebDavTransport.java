@@ -43,7 +43,7 @@ public class WebDavTransport extends Transport {
     private WebDavStore store;
 
     public WebDavTransport(StoreConfig storeConfig) throws MessagingException {
-        store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory());
+        store = new WebDavStore(storeConfig, new WebDavHttpClient.WebDavHttpClientFactory(), storeConfig.getOAuth2TokenProvider());
 
         if (K9MailLib.isDebug())
             Timber.d(">>> New WebDavTransport creation complete");

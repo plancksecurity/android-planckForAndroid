@@ -21,26 +21,14 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <RelativeLayout
+        <Button
+            android:id="@+id/next"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-            <Button
-                android:id="@+id/next"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/selectable_item_background"
-                android:text="@string/next_action" />
-
-            <androidx.core.widget.ContentLoadingProgressBar
-                android:id="@+id/next_progressbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                tools:visibility="visible"
-                style="?android:attr/progressBarStyle"/>
-        </RelativeLayout>
+            android:layout_weight="1"
+            android:background="@drawable/selectable_item_background"
+            android:text="@string/next_action" />
     </LinearLayout>
 
 </merge>

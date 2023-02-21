@@ -6,21 +6,17 @@ package com.fsck.k9.pEp.ui.passphrase
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.PEpProvider
 import com.nhaarman.mockito_kotlin.mock
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.verify
-import org.robolectric.annotation.Config
 import security.pEp.ui.passphrase.PassphraseInputView
 import security.pEp.ui.passphrase.PassphrasePresenter
 import security.pEp.ui.passphrase.PassphraseRequirementType
 
-@RunWith(AndroidJUnit4::class)
-@Config(manifest = Config.NONE)
-class PassphrasePresenterTest {
+class PassphrasePresenterTest: RobolectricTest() {
     lateinit var  context: Context
     private val view: PassphraseInputView = mock()
     lateinit var presenter: PassphrasePresenter

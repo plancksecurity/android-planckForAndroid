@@ -141,7 +141,9 @@ public class FileBrowserHelper {
             intent.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
             intent.putExtra(FilePickerActivity.EXTRA_START_PATH, externalStoragePath);
 
-            c.startActivityForResult(intent, FILE_CODE);
+            if (c.isAdded()) {
+                c.requireActivity().startActivityForResult(intent, FILE_CODE);
+            }
             success = false;
         //}
 

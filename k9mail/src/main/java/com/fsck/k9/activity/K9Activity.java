@@ -136,6 +136,10 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         this.onCloseSearchClickListener = onCloseSearchClickListener;
     }
 
+    public K9 getK9() {
+        return (K9) getApplication();
+    }
+
     public Toolbar getToolbar() {
         return toolbar;
     }
@@ -261,7 +265,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onResume() {
         super.onResume();
         mBase.registerPassphraseReceiver();
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (getK9().isRunningOnWorkProfile()) {
             mBase.registerConfigurationManager();
         }
         mBase.registerOAuthTokenRevokedReceiver();
@@ -284,7 +288,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onPause() {
         super.onPause();
         mBase.unregisterPassphraseReceiver();
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (getK9().isRunningOnWorkProfile()) {
             mBase.unregisterConfigurationManager();
         }
         mBase.unregisterOAuthTokenRevokedReceiver();

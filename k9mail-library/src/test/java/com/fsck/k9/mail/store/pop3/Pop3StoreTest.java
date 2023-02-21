@@ -12,6 +12,7 @@ import com.fsck.k9.mail.Folder;
 import com.fsck.k9.mail.Folder.FolderType;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.filter.Base64;
+import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.ssl.TrustedSocketFactory;
 import com.fsck.k9.mail.store.StoreConfig;
 import org.junit.Before;
@@ -53,6 +54,7 @@ public class Pop3StoreTest {
     private TrustedSocketFactory mockTrustedSocketFactory = mock(TrustedSocketFactory.class);
     private Socket mockSocket = mock(Socket.class);
     private OutputStream mockOutputStream = mock(OutputStream.class);
+    private OAuth2TokenProvider mockOAuthProvider = mock(OAuth2TokenProvider.class);
 
 
     @Before
@@ -65,7 +67,7 @@ public class Pop3StoreTest {
         when(mockSocket.isClosed()).thenReturn(false);
 
         when(mockSocket.getOutputStream()).thenReturn(mockOutputStream);
-        store = new Pop3Store(mockStoreConfig, mockTrustedSocketFactory);
+        store = new Pop3Store(mockStoreConfig, mockTrustedSocketFactory, mockOAuthProvider);
     }
 
     @Test
