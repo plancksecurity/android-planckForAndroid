@@ -44,10 +44,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description"
-        tools:text="The current device PGP fingerprint value" />
+        tools:visibility="visible"
+        tools:text="Myself: A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
 
     <TextView
         android:id="@+id/fpr_new_device_value"
@@ -56,10 +58,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_value"
-        tools:text="The new device PGP fingerprint value" />
+        tools:visibility="visible"
+        tools:text="Partner: A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
 
     <ProgressBar
         android:id="@+id/loading"
