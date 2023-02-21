@@ -1096,21 +1096,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     @WorkerThread
-    override fun getBlacklistInfo(): List<KeyListItem>? {
-        try {
-            val identities: MutableList<KeyListItem> = ArrayList()
-            val keys = engine.get()?.OpenPGP_list_keyinfo("")
-            keys?.forEach { key ->
-      //          identities.add(KeyListItem(key.first, key.second, engine.blacklist_is_listed(key.first)))
-            }
-            return identities
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
-        }
-        return null
-    }
-
-    @WorkerThread
     override fun addToBlacklist(fpr: String) {
       //  engine.blacklist_add(fpr)
     }

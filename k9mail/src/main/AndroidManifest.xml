@@ -498,10 +498,6 @@
             android:name=".pEp.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status" />
         <activity
-            android:name=".pEp.ui.blacklist.PepBlacklist"
-            android:label="@string/blacklist_title"
-            android:theme="@style/Theme.K9.DayNight" />
-        <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"

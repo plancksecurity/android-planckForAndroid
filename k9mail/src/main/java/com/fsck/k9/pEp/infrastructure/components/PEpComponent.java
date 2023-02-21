@@ -17,7 +17,6 @@ import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 import security.pEp.ui.calendar.CalendarInviteLayout;
 import security.pEp.ui.about.AboutActivity;
 import security.pEp.ui.about.LicenseActivity;
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
@@ -57,8 +56,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(PermissionsActivity activity);
 
     void inject(PepExtraKeys activity);
-
-    void inject(PepBlacklist activity);
 
     void inject(AccountSetupNames activity);
 
