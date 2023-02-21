@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.manualsync;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.R;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import java.util.List;
@@ -119,8 +118,7 @@ public class ImportWizardPresenter {
             }
         });
 
-        this.view.setFingerPrintTexts(view.getString(R.string.fpr_actual_title) + PEpUtils.formatFpr(this.myself.fpr),
-                view.getString(R.string.fpr_new_device_title) + PEpUtils.formatFpr(this.partner.fpr));
+        this.view.setFingerPrintTexts(PEpUtils.formatFpr(this.myself.fpr), PEpUtils.formatFpr(this.partner.fpr));
     }
 
     private void fixUnsupportedLanguage() {

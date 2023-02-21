@@ -367,9 +367,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void setFingerPrintTexts(@NonNull String myselfFprText, @NonNull String partnerFprText) {
-        tvFprCurrentDevice.setText(myselfFprText);
-        tvFprNewDevice.setText(partnerFprText);
-
+        tvFprCurrentDevice.setText(getString(R.string.fpr_actual_title, myselfFprText));
+        tvFprNewDevice.setText(getString(R.string.fpr_new_device_title, partnerFprText));
     }
 
     public static class SyncDialogReceiver extends BroadcastReceiver {
