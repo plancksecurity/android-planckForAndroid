@@ -120,7 +120,7 @@ class AuthViewModel(
         resultObserver.login(authRequestIntent)
     }
 
-    private fun createAuthorizationRequestIntent(email: String, config: OAuthConfiguration): Intent {
+    private fun createAuthorizationRequestIntent(email: String?, config: OAuthConfiguration): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
             config.authorizationEndpoint.toUri(),
             config.tokenEndpoint.toUri()
