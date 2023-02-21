@@ -53,6 +53,8 @@ class OAuthFlowActivity : K9Activity() {
                 R.string.account_setup_oauth_description_retry_login,
                 account.email
             )
+        } else if (account.mandatoryOAuthProviderType != null) {
+            explanationText.text = ""
         }
         signInButton = if (authViewModel.isUsingGoogle(account)) {
             findViewById(R.id.google_sign_in_button)
