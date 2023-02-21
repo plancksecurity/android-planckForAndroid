@@ -31,6 +31,8 @@ import net.openid.appauth.ResponseTypeValues
 import timber.log.Timber
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
+private const val SCOPE_OPENID = "openid"
+private const val SCOPE_EMAIL = "email"
 
 class AuthViewModel(
     application: Application,
@@ -121,7 +123,7 @@ class AuthViewModel(
 
         val scopeString = config.scopes.joinToString(separator = " ")
         val authRequest = authRequestBuilder
-            .setScope(scopeString)
+            .setScopes(scopeString, SCOPE_OPENID, SCOPE_EMAIL)
             .setLoginHint(email)
             .build()
 
