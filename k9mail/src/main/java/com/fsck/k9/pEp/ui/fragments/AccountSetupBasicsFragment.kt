@@ -17,8 +17,6 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.RESULT_CODE_MANUAL_SETUP_NEEDED
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
-import com.fsck.k9.activity.setup.OAuthFlowActivity.Companion.buildLaunchIntent
-import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -52,8 +50,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private lateinit var googleButton: Button
-    private lateinit var microsoftButton: Button
     private var uiState = UiState.PASSWORD_FLOW
     private var account: Account? = null
     private var checkedIncoming = false
@@ -86,11 +82,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         nextButton = rootView.findViewById(R.id.next)
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
-        googleButton = rootView.findViewById(R.id.google_sign_in_button)
-        microsoftButton = rootView.findViewById(R.id.microsoft_sign_in_button)
         manualSetupButton.setOnClickListener { onManualSetup(true) }
-        googleButton.setOnClickListener { startGoogleFlow() }
-        microsoftButton.setOnClickListener { startMicrosoftFlow() }
 
         initializeViewListeners()
         validateFields()
@@ -235,23 +227,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 clientCertificateChecked && clientCertificateAlias != null
     }
 
-    private fun startGoogleFlow() {
-        initAccount()
-        startOAuthFlow(OAuthProviderType.GOOGLE)
-    }
-
-    private fun startMicrosoftFlow() {
-        initAccount()
-        startOAuthFlow(OAuthProviderType.MICROSOFT)
-    }
-
-    private fun startOAuthFlow(oAuthProviderType: OAuthProviderType?) {
-        val account = account!!.also { it.mandatoryOAuthProviderType = oAuthProviderType }
-
-        val intent = buildLaunchIntent(requireContext(), account.uuid)
-        requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
-    }
-
     private fun checkSettings(direction: CheckDirection = CheckDirection.INCOMING) {
         actionCheckSettings(requireActivity(), account!!, direction, true)
     }
@@ -377,8 +352,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             }
         } else if (requestCode == REQUEST_CODE_CHECK_SETTINGS) {
             handleCheckSettingsResult(resultCode)
-        } else if (requestCode == REQUEST_CODE_OAUTH) {
-            handleSignInResult(resultCode)
         }
     }
 
@@ -397,12 +370,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             // We've successfully checked outgoing as well.
             AccountSetupNames.actionSetNames(requireActivity(), account, false)
         }
-    }
-
-    private fun handleSignInResult(resultCode: Int) {
-        if (resultCode != Activity.RESULT_OK) return
-        checkNotNull(account) { "Account instance missing" }
-        checkSettings()
     }
 
     private fun goForward() {
@@ -523,7 +490,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         private const val STATE_KEY_UI_STATE = "com.fsck.k9.AccountSetupBasics.uiState"
         private const val STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
-        private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
         private const val REQUEST_CODE_CHECK_SETTINGS = AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
     }
 }
