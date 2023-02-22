@@ -54,6 +54,8 @@ class AuthViewModel(
     var automaticLoginDone = false
         private set
 
+    var needsMailSettingsDiscovery = false
+
     private val _connectionSettings =
         MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
     val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> =
@@ -255,6 +257,7 @@ class AuthViewModel(
             newEmail?.let {
                 if (account?.email != newEmail) {
                     account?.email = newEmail
+                    needsMailSettingsDiscovery = true
                 }
             } ?: let {
                 error = "Could not retrieve email address from login response"

@@ -77,7 +77,11 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                     return@observe
                 }
                 AuthFlowState.Success -> {
-                    startCheckServerSettings()
+                    if (authViewModel.needsMailSettingsDiscovery) {
+                        discoverMailSettings()
+                    } else {
+                        startCheckServerSettings()
+                    }
                 }
                 AuthFlowState.Canceled -> {
                     showErrorDialog(R.string.account_setup_failed_dlg_oauth_flow_canceled)
@@ -111,7 +115,13 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             ?: error("Missing CheckDirection")
 
         if (savedInstanceState == null) {
-            discoverMailSettings()
+            authViewModel.needsMailSettingsDiscovery =
+                direction == CheckDirection.INCOMING && account.oAuthProviderType == null
+            if (authViewModel.needsMailSettingsDiscovery) {
+                discoverMailSettings()
+            } else {
+                startLoginOrSettingsCheck()
+            }
         }
     }
 
@@ -126,15 +136,20 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                         setResult(RESULT_CODE_MANUAL_SETUP_NEEDED)
                         finish()
                     } else {
+                        authViewModel.needsMailSettingsDiscovery = false
                         account.setMailSettings(this, connectionSettings)
-                        if (needsAuthorization()) {
-                            login()
-                        } else {
-                            startCheckServerSettings()
-                        }
+                        startLoginOrSettingsCheck()
                     }
                 }
             }
+        }
+    }
+
+    private fun startLoginOrSettingsCheck() {
+        if (needsAuthorization()) {
+            login()
+        } else {
+            startCheckServerSettings()
         }
     }
 
