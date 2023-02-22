@@ -88,7 +88,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
         googleButton = rootView.findViewById(R.id.google_sign_in_button)
         microsoftButton = rootView.findViewById(R.id.microsoft_sign_in_button)
-        manualSetupButton.setOnClickListener { onManualSetup() }
+        manualSetupButton.setOnClickListener { onManualSetup(true) }
         googleButton.setOnClickListener { startGoogleFlow() }
         microsoftButton.setOnClickListener { startMicrosoftFlow() }
 
@@ -276,7 +276,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
         if (clientCertificateCheckBox.isChecked) {
             // Auto-setup doesn't support client certificates.
-            onManualSetup()
+            onManualSetup(true)
             return
         }
 
@@ -323,6 +323,12 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 else email
         }
         return account
+    }
+
+    private fun retrieveAccount(): Account? {
+        return this.account?.let { currentAccount ->
+            preferences.getAccountAllowingIncomplete(currentAccount.uuid)
+        }
     }
 
     private fun createAccount(): Account {
@@ -378,7 +384,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun handleCheckSettingsResult(resultCode: Int) {
         if (resultCode == RESULT_CODE_MANUAL_SETUP_NEEDED) {
-            onManualSetup()
+            onManualSetup(false)
             return
         } else if (resultCode != Activity.RESULT_OK) return
 
@@ -412,22 +418,29 @@ class AccountSetupBasicsFragment : PEpFragment() {
         }
     }
 
-    private fun onManualSetup() {
+    private fun onManualSetup(fromUser: Boolean) {
         (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) {
-            return
+        if (fromUser) {
+            val email = emailView.text?.toString() ?: error("Email missing")
+            if (accountWasAlreadySet(email)) {
+                return
+            }
+            val account = initAccount(email)
+            setDefaultSettingsForManualSetup(account)
+        } else {
+            val account = retrieveAccount() ?: error("Account is null!!")
+            if (account.storeUri == null || account.transportUri == null) {
+                setDefaultSettingsForManualSetup(account)
+            }
         }
+        saveCredentialsInPreferences()
+        goForward()
+    }
+
+    private fun setDefaultSettingsForManualSetup(account: Account) {
         var password: String? = null
         var clientCertificateAlias: String? = null
         val authenticationType: AuthType
-
-        val account = initAccount(email)
-
-        val emailParts = splitEmail(email)
-        val domain = emailParts[1]
-        val imapHost = "mail.$domain"
-        val smtpHost = "mail.$domain"
         if (clientCertificateCheckBox.isChecked) {
             if (passwordView.text.toString().trim().isEmpty()) {
                 authenticationType = AuthType.EXTERNAL
@@ -440,34 +453,14 @@ class AccountSetupBasicsFragment : PEpFragment() {
             authenticationType = AuthType.PLAIN
             password = passwordView.text.toString()
         }
-        account.name = ownerName
-        account.email = email
-
-        // set default uris
-        // NOTE: they will be changed again in AccountSetupAccountType!
-        val storeServer = ServerSettings(
-            ServerSettings.Type.IMAP,
-            imapHost,
-            -1,
-            ConnectionSecurity.SSL_TLS_REQUIRED,
-            authenticationType,
-            email,
-            password,
-            clientCertificateAlias
-        )
-        val transportServer = ServerSettings(
-            ServerSettings.Type.SMTP,
-            smtpHost,
-            -1,
-            ConnectionSecurity.SSL_TLS_REQUIRED,
-            authenticationType,
-            email,
-            password,
-            clientCertificateAlias
-        )
-        account.setMailSettings(requireContext(), ConnectionSettings(storeServer, transportServer))
-        saveCredentialsInPreferences()
-        goForward()
+        val connectionSettings =
+            defaultConnectionSettings(
+                account.email,
+                password,
+                clientCertificateAlias,
+                authenticationType
+            )
+        account.setMailSettings(requireContext(), connectionSettings)
     }
 
     private fun defaultConnectionSettings(
