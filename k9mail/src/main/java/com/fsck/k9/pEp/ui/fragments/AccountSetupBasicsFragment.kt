@@ -88,6 +88,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AccountSetupBasics).configurePasswordFlowScreen()
         navigator.setCurrentStep(AccountSetupNavigator.Step.BASICS, account)
 
         restoreScreenState(savedInstanceState)

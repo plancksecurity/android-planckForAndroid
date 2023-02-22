@@ -7,7 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import com.fsck.k9.Account
+import com.fsck.k9.R
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
@@ -47,6 +52,30 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navigator.setCurrentStep(AccountSetupNavigator.Step.SELECT_AUTH, null)
+        configureSelectAuthScreen()
+    }
+
+    private fun configureSelectAuthScreen() {
+        setWelcomeBackground()
+        hideNavigationBar()
+    }
+
+    private fun hideNavigationBar() {
+        WindowCompat.getInsetsController(
+            requireActivity().window,
+            requireActivity().window.decorView
+        ).apply {
+            hide(WindowInsetsCompat.Type.navigationBars())
+        }
+    }
+
+    private fun setWelcomeBackground() {
+        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
+        requireView().background =
+            ContextCompat.getDrawable(requireContext(), R.drawable.background_startup)
+        requireActivity().window.statusBarColor =
+            ContextCompat.getColor(requireContext(), R.color.startup_gradient_start)
+        requireActivity().findViewById<View>(R.id.toolbar).isVisible = false
     }
 
     private fun startGoogleFlow() {

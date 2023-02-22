@@ -131,6 +131,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ((AccountSetupBasics) requireActivity()).configurePasswordFlowScreen();
         setupPEpFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 

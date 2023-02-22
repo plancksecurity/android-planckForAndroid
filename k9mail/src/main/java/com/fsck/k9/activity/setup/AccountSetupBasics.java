@@ -7,7 +7,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -20,6 +24,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
@@ -101,6 +106,20 @@ public class AccountSetupBasics extends PEpImporterActivity {
             }
         }
         permissionRequester.requestBatteryOptimizationPermission();
+    }
+
+    public void configurePasswordFlowScreen() {
+        getWindow().setBackgroundDrawableResource(
+                ThemeManager.getAttributeResource(this, android.R.attr.windowBackground));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
+        showNavigationBar();
+    }
+
+    private void showNavigationBar() {
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        controller.show(WindowInsetsCompat.Type.navigationBars());
     }
 
     @Override
