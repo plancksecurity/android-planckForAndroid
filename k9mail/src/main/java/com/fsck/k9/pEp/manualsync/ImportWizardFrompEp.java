@@ -71,9 +71,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Bind(R.id.fpr_current_device_value)
     TextView tvFprCurrentDevice;
-
     @Bind(R.id.fpr_new_device_value)
     TextView tvFprNewDevice;
+    @Bind(R.id.fpr_container)
+    View vFprContainer;
+    @Bind(R.id.main_container)
+    View vMainContainer;
 
 
     private SyncDialogReceiver receiver;
@@ -219,13 +222,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         description.setText(getText(R.string.keysync_wizard_handshake_message));
         action.setText(R.string.key_import_accept);
         action.setOnClickListener(v -> presenter.acceptHandshake());
-        tvFprCurrentDevice.setVisibility(View.VISIBLE);
-        tvFprNewDevice.setVisibility(View.VISIBLE);
+        vFprContainer.setVisibility(View.VISIBLE);
         trustwordsContainer.setVisibility(View.VISIBLE);
         tvTrustwords.setText(trustwords);
         currentState.setVisibility(View.GONE);
         reject.setVisibility(View.VISIBLE);
-        reject.setOnClickListener( v -> presenter.rejectHandshake());
+        reject.setOnClickListener(v -> presenter.rejectHandshake());
 
     }
 
@@ -378,6 +380,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         public SyncDialogReceiver(ImportWizardFrompEp activity) {
             this.activity = activity;
         }
+
         public SyncDialogReceiver() {
         }
 

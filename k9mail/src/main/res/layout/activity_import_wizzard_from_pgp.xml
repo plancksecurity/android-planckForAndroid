@@ -10,7 +10,6 @@
     android:clipToPadding="false"
     android:paddingStart="@dimen/key_import_floating_horizontal_margin"
     android:paddingLeft="@dimen/key_import_floating_horizontal_margin"
-    android:paddingTop="@dimen/key_import_floating_vertical_margin"
     android:paddingEnd="@dimen/key_import_floating_horizontal_margin"
     android:paddingRight="@dimen/key_import_floating_horizontal_margin"
     android:paddingBottom="@dimen/key_import_floating_vertical_margin"
@@ -30,17 +29,80 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:paddingBottom="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include"
         tools:text="A second device was detected. We can form a device group to sync all your privacy on both devices. Shall we start synchronizing\?" />
 
     <LinearLayout
+        android:id="@+id/trustwordsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/trustwords_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/trustwords_title"
+            android:textStyle="bold"
+            tools:text="@string/trustwords_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/trustwords"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:breakStrategy="simple"
+                android:ellipsize="none"
+                android:padding="8dp"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|bottom">
+
+                <ImageView
+                    android:id="@+id/show_long_trustwords"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/selectable_message_background"
+                    android:paddingStart="8dp"
+                    android:src="@drawable/ic_show_long_trustwords"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/fpr_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:gravity="start"
         android:orientation="vertical"
         android:paddingBottom="64dp"
@@ -58,8 +120,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/fpr_title"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="Fingerprints" />
 
         <TextView
             android:id="@+id/fpr_current_device_title"
@@ -69,8 +131,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/fpr_actual_title"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="This device" />
 
         <TextView
             android:id="@+id/fpr_current_device_value"
@@ -78,7 +140,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/black"
             android:textStyle="bold"
             tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
 
@@ -90,8 +151,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text="@string/fpr_new_device_title"
-            android:textColor="@color/black"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="New device" />
 
         <TextView
             android:id="@+id/fpr_new_device_value"
@@ -99,7 +160,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/black"
+            android:layout_marginBottom="32dp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_value"
             tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
@@ -131,40 +192,6 @@
         app:layout_constraintTop_toBottomOf="@+id/fpr_container"
         tools:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/trustwordsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/description"
-        app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible">
-
-        <TextView
-            android:id="@+id/trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:breakStrategy="simple"
-            android:ellipsize="none"
-            android:padding="8dp"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
-
-        <ImageView
-            android:id="@+id/show_long_trustwords"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selectable_message_background"
-            android:src="@drawable/ic_show_long_trustwords" />
-    </LinearLayout>
-
     <Button
         android:id="@+id/afirmativeActionButton"
         style="?attr/buttonBarButtonStyle"
@@ -172,7 +199,7 @@
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_next"
         android:textColor="?attr/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/dissmissActionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
         tools:text="next" />
