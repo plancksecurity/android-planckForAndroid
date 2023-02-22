@@ -263,18 +263,18 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
                 return
             }
             val account = initAccount(email)
-            setDefaultSettingsForManualSetup(account, true)
+            setDefaultSettingsForManualSetup(account)
         } else {
             val account = retrieveAccount() ?: error("Account is null!!")
             if (account.storeUri == null || account.transportUri == null) {
-                setDefaultSettingsForManualSetup(account, false)
+                setDefaultSettingsForManualSetup(account)
             }
         }
         saveCredentialsInPreferences()
         goForward()
     }
 
-    private fun setDefaultSettingsForManualSetup(account: Account, fromUser: Boolean) {
+    private fun setDefaultSettingsForManualSetup(account: Account) {
         var password: String? = null
         var clientCertificateAlias: String? = null
         val authenticationType: AuthType
@@ -297,7 +297,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
                 clientCertificateAlias,
                 authenticationType
             )
-        account.setMailSettings(requireContext(), connectionSettings, !fromUser)
+        account.setMailSettings(requireContext(), connectionSettings, false)
     }
 
     override fun inject() {
