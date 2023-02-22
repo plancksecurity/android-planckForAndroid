@@ -19,7 +19,6 @@ import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionChec
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity.Companion.buildLaunchIntent
 import com.fsck.k9.auth.OAuthProviderType
-import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -42,7 +41,6 @@ import java.net.URISyntaxException
 import javax.inject.Inject
 
 class AccountSetupBasicsFragment : PEpFragment() {
-    private val providersXmlDiscovery: ProvidersXmlDiscovery by (this as ComponentCallbacks).inject()
     private val preferences: Preferences by (this as ComponentCallbacks).inject()
     private val emailValidator: EmailAddressValidator by (this as ComponentCallbacks).inject()
 
@@ -254,15 +252,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
 
-    private fun startPasswordFlow() {
-        uiState = UiState.PASSWORD_FLOW
-
-        updateUi()
-        validateFields()
-
-        passwordView.requestFocus()
-    }
-
     private fun checkSettings(direction: CheckDirection = CheckDirection.INCOMING) {
         actionCheckSettings(requireActivity(), account!!, direction)
     }
@@ -368,18 +357,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             }
         }
         return false
-    }
-
-    private fun providersXmlDiscoveryDiscover(email: String): ConnectionSettings? {
-        val discoveryResults = providersXmlDiscovery.discover(email)
-        if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
-            return null
-        }
-
-        val incomingServerSettings = discoveryResults.incoming.first().toServerSettings() ?: return null
-        val outgoingServerSettings = discoveryResults.outgoing.first().toServerSettings() ?: return null
-
-        return ConnectionSettings(incomingServerSettings, outgoingServerSettings)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
