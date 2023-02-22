@@ -125,6 +125,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.forceFail;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
@@ -887,7 +888,8 @@ public class TestUtils {
     }
 
     public static void assertFailWithMessage(String message) {
-        Assume.assumeTrue(message, false);
+        //Assume.assumeTrue(message, false);
+        onView(withId(R.id.toolbar)).check(matches(forceFail(message)));
     }
 
     public void readBotList() {
@@ -2680,17 +2682,20 @@ public class TestUtils {
     public void typeTextToForceRatingCalculation(int view) {
         waitForIdle();
         try {
-        onView(withId(view)).perform(click(), closeSoftKeyboard());
-        onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
-        waitForIdle();
-        if (getTextFromView(onView(withId(view))).contains(" ")) {
-            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        }
-        waitForIdle();
+            onView(withId(view)).perform(click());
+            onView(withId(view)).perform(click(), closeSoftKeyboard());
+            onView(withId(view)).perform(click());
+            onView(withId(view)).perform(click(), closeSoftKeyboard());
+            onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
+            waitForIdle();
+            if (getTextFromView(onView(withId(view))).contains(" ")) {
+                device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            }
+            waitForIdle();
 
-    } catch (Exception ex) {
-        Timber.i("Toolbar is not closed yet");
-    }
+        } catch (Exception ex) {
+            Timber.i("Toolbar is not closed yet");
+        }
     }
 
     public static void waitForToolbar() {
@@ -3193,9 +3198,9 @@ public class TestUtils {
         while (!backToMessageCompose){
             goBack(false);
             waitForIdle();
-            waitForToolbar();
             if (exists(onView(withId(android.R.id.list)))) {
                 clickFolder(resources.getString(stringToID("special_mailbox_name_inbox")));
+                return;
             }
             waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
@@ -3317,38 +3322,46 @@ public class TestUtils {
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
-                while (!object.getText().contains(messageText)) {
+                while (!exists(onView(withId(R.id.message_content)))) {
+                    waitForIdle();
                     try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                try {
+                    while (!object.getText().contains(messageText)) {
                         waitForIdle();
                         object.click();
                         String finalMessageText = messageText;
-                        waitForIdle();
-                        waitForIdle();
                         for (int i = 0; i < repetitionsOfTheText; i++) {
+                            finalMessageText = finalMessageText + messageText;
+                        }
+                        waitForIdle();
+                        String finalMessageTextTemp = finalMessageText;
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setClipboard(finalMessageTextTemp);
+                            }
+                        });
+                        //for (int i = 0; i < repetitionsOfTheText; i++) {
                             waitForIdle();
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setClipboard(finalMessageText);
-                                }
-                            });
-                            waitForIdle();
-                            Thread.sleep(2000);
                             pasteClipboard();
                             waitForIdle();
                             Thread.sleep(2000);
-                            scroll.swipe(Direction.DOWN, 1f);
-                            scroll.swipe(Direction.DOWN, 1f);
+                            //scroll.swipe(Direction.DOWN, 1f);
                             waitForIdle();
-                        }
+                        //}
                         object.click();
-                    } catch (Exception ex) {
-                        Timber.i("Cannot fill long text: " + ex.getMessage());
                     }
+                } catch (Exception ex) {
+                    Timber.i("Cannot fill long text: " + ex.getMessage());
                 }
             }
         }
-        for (int i = 0; i < repetitionsOfTheText/4; i++) {
+        for (int i = 0; i < repetitionsOfTheText / 4; i++) {
             scroll.swipe(Direction.DOWN, 1f);
         }
         waitForIdle();
