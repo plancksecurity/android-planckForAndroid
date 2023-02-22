@@ -127,7 +127,10 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun handleSignInResult(resultCode: Int) {
-        if (resultCode != Activity.RESULT_OK) return
+        if (resultCode == Activity.RESULT_CANCELED) {
+            deleteAccount()
+            return
+        }
         checkNotNull(account) { "Account instance missing" }
         checkSettings()
     }

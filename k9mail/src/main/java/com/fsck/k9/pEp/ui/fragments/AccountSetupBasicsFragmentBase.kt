@@ -14,6 +14,10 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
 import com.fsck.k9.pEp.ui.tools.SetupAccountType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import security.pEp.provisioning.ProvisioningSettings
 import timber.log.Timber
 import java.net.URISyntaxException
@@ -45,7 +49,10 @@ abstract class AccountSetupBasicsFragmentBase : PEpFragment() {
         if (resultCode == AccountSetupCheckSettings.RESULT_CODE_MANUAL_SETUP_NEEDED) {
             onManualSetup(false)
             return
-        } else if (resultCode != Activity.RESULT_OK) return
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            deleteAccount()
+            return
+        }
 
         checkNotNull(account) { "Account instance missing" }
         if (!checkedIncoming) {
@@ -161,6 +168,12 @@ abstract class AccountSetupBasicsFragmentBase : PEpFragment() {
 
     private fun createAccount(): Account {
         return preferences.newAccount().also { navigator.setCurrentStep(navigator.currentStep, it) }
+    }
+
+    protected fun deleteAccount() = CoroutineScope(Dispatchers.Main).launch {
+        withContext(Dispatchers.IO) {
+            retrieveAccount()?.let { preferences.deleteAccount(it) }
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
