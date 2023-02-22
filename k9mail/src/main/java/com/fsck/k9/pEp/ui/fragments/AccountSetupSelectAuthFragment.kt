@@ -8,22 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import com.fsck.k9.Account
-import com.fsck.k9.Preferences
 import com.fsck.k9.activity.setup.AccountSetupBasics
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings
-import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
-import com.fsck.k9.mail.ConnectionSecurity
-import com.fsck.k9.mail.ServerSettings
-import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
-import security.pEp.provisioning.ProvisioningSettings
-import javax.inject.Inject
 
-class AccountSetupSelectAuthFragment : PEpFragment() {
+class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
 
     private var _binding: FragmentAccountSelectAuthBinding? = null
     private val binding get() = _binding!!
@@ -32,24 +24,11 @@ class AccountSetupSelectAuthFragment : PEpFragment() {
     private lateinit var microsoftButton: Button
     private lateinit var passwordFlowButton: Button
 
-    private var account: Account? = null
-    private var checkedIncoming = false
-
-    @Inject
-    lateinit var navigator: AccountSetupNavigator
-
-    @Inject
-    lateinit var preferences: Preferences
-
-    @Inject
-    lateinit var provisioningSettings: ProvisioningSettings
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        restoreDataState(savedInstanceState)
         _binding = FragmentAccountSelectAuthBinding.inflate(inflater, container, false)
         setupViews()
         return binding.root
@@ -88,23 +67,18 @@ class AccountSetupSelectAuthFragment : PEpFragment() {
         navigator.goToAccountSetupBasicsFragment(parentFragmentManager)
     }
 
-    private fun onManualSetup() {
+    override fun onManualSetup(fromUser: Boolean) {
         (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
         val account = retrieveAccount() ?: error("Account is null!!")
         if (account.storeUri == null || account.transportUri == null) {
             setDefaultSettingsForManualSetup(account)
         }
-    }
-
-    private fun retrieveAccount(): Account? {
-        return this.account?.let { currentAccount ->
-            preferences.getAccountAllowingIncomplete(currentAccount.uuid)
-        }
+        goForward()
     }
 
     private fun setDefaultSettingsForManualSetup(account: Account) {
         val email = account.email ?: let {
-            account.email = "mail@example.com"
+            account.email = DEFAULT_EMAIL
             account.email
         }
         val connectionSettings =
@@ -112,76 +86,14 @@ class AccountSetupSelectAuthFragment : PEpFragment() {
         account.setMailSettings(requireContext(), connectionSettings, false)
     }
 
-    private fun defaultConnectionSettings(
-        email: String,
-        password: String?,
-        alias: String?,
-        authType: AuthType
-    ): ConnectionSettings {
-
-        val emailParts = splitEmail(email)
-        val domain = emailParts[1]
-        val imapHost = "mail.$domain"
-        val smtpHost = "mail.$domain"
-        //val email = account.email
-        // set default uris
-        // NOTE: they will be changed again in AccountSetupAccountType!
-        val storeServer = ServerSettings(
-            ServerSettings.Type.IMAP,
-            imapHost,
-            -1,
-            ConnectionSecurity.SSL_TLS_REQUIRED,
-            authType,
-            email,
-            password,
-            alias
-        )
-        val transportServer = ServerSettings(
-            ServerSettings.Type.SMTP,
-            smtpHost,
-            -1,
-            ConnectionSecurity.SSL_TLS_REQUIRED,
-            authType,
-            email,
-            password,
-            alias
-        )
-        return ConnectionSettings(storeServer, transportServer)
-    }
-
-    private fun splitEmail(email: String): Array<String?> {
-        val retParts = arrayOfNulls<String>(2)
-        val emailParts = email.split("@").toTypedArray()
-        retParts[0] = if (emailParts.isNotEmpty()) emailParts[0] else ""
-        retParts[1] = if (emailParts.size > 1) emailParts[1] else ""
-        return retParts
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (!isAdded) {
             return
         }
-        if (requestCode == REQUEST_CODE_CHECK_SETTINGS) {
-            handleCheckSettingsResult(resultCode)
-        } else if (requestCode == REQUEST_CODE_OAUTH) {
+        if (requestCode == REQUEST_CODE_OAUTH) {
             handleSignInResult(resultCode)
-        }
-    }
-
-    private fun handleCheckSettingsResult(resultCode: Int) {
-        if (resultCode == AccountSetupCheckSettings.RESULT_CODE_MANUAL_SETUP_NEEDED) {
-            onManualSetup()
-            return
-        } else if (resultCode != Activity.RESULT_OK) return
-
-        checkNotNull(account) { "Account instance missing" }
-        if (!checkedIncoming) {
-            // We've successfully checked incoming. Now check outgoing.
-            checkedIncoming = true
-            checkSettings(AccountSetupCheckSettings.CheckDirection.OUTGOING)
         } else {
-            // We've successfully checked outgoing as well.
-            AccountSetupNames.actionSetNames(requireActivity(), account, false)
+            super.onActivityResult(requestCode, resultCode, data)
         }
     }
 
@@ -190,56 +102,6 @@ class AccountSetupSelectAuthFragment : PEpFragment() {
         checkNotNull(account) { "Account instance missing" }
         checkSettings()
     }
-
-    private fun checkSettings(direction: AccountSetupCheckSettings.CheckDirection = AccountSetupCheckSettings.CheckDirection.INCOMING) {
-        AccountSetupCheckSettings.actionCheckSettings(requireActivity(), account!!, direction, true)
-    }
-
-    private fun initAccount(email: String? = null): Account {
-        val account = this.account?.let { currentAccount ->
-            preferences.getAccountAllowingIncomplete(currentAccount.uuid)
-        } ?: createAccount()
-        this.account = account
-
-        account.name = ownerName
-        account.email = email
-        return account
-    }
-
-    private val ownerName: String
-        get() {
-            var name = ""
-            if (k9.isRunningOnWorkProfile) {
-                provisioningSettings.senderName?.let {
-                    name = it
-                }
-            } else {
-                name = preferences.defaultAccount?.name.orEmpty()
-            }
-            return name
-        }
-
-    private fun createAccount(): Account {
-        return preferences.newAccount()
-    }
-
-    private fun restoreDataState(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null) {
-            savedInstanceState.getString(EXTRA_ACCOUNT)?.let { accountUuid ->
-                account = preferences.getAccountAllowingIncomplete(accountUuid)
-            }
-
-            checkedIncoming = savedInstanceState.getBoolean(STATE_KEY_CHECKED_INCOMING)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putString(EXTRA_ACCOUNT, account?.uuid)
-        outState.putBoolean(STATE_KEY_CHECKED_INCOMING, checkedIncoming)
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -251,11 +113,7 @@ class AccountSetupSelectAuthFragment : PEpFragment() {
     }
 
     companion object {
-        private const val EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account"
-        private const val STATE_KEY_CHECKED_INCOMING =
-            "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_OAUTH = Activity.RESULT_FIRST_USER + 1
-        private const val REQUEST_CODE_CHECK_SETTINGS =
-            AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
+        private const val DEFAULT_EMAIL = "mail@example.com"
     }
 }
