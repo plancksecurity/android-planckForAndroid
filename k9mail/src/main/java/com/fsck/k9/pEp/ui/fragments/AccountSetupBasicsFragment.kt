@@ -291,13 +291,10 @@ class AccountSetupBasicsFragment : PEpFragment() {
             return
         }
 
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
-        if (connectionSettings != null) {
-            finishAutoSetup(connectionSettings)
-        } else {
-            // We don't have default settings for this account, start the manual setup process.
-            onManualSetup()
-        }
+        val initialSettings = defaultConnectionSettings(
+            email, passwordView.text?.toString(), null, AuthType.PLAIN)
+
+        finishAutoSetup(initialSettings)
     }
 
     private fun finishAutoSetup(connectionSettings: ConnectionSettings) {
@@ -310,19 +307,12 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun createAccount(connectionSettings: ConnectionSettings): Account {
         val email = emailView.text?.toString() ?: error("Email missing")
-        val password = passwordView.text?.toString()
 
         val account = initAccount(email)
 
-        val incomingServerSettings = connectionSettings.incoming.newPassword(password)
-        account.storeUri = RemoteStore.createStoreUri(incomingServerSettings)
+        account.storeUri = RemoteStore.createStoreUri(connectionSettings.incoming)
 
-        val outgoingServerSettings = connectionSettings.outgoing.newPassword(password)
-        account.transportUri = Transport.createTransportUri(outgoingServerSettings)
-        account.deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type)
-
-
-        setupFolderNames(incomingServerSettings.host.lowercase())
+        account.transportUri = Transport.createTransportUri(connectionSettings.outgoing)
 
         return account
     }
@@ -501,6 +491,43 @@ class AccountSetupBasicsFragment : PEpFragment() {
         setupFolderNames(domain)
         saveCredentialsInPreferences()
         goForward()
+    }
+
+    private fun defaultConnectionSettings(
+        email: String,
+        password: String?,
+        alias: String?,
+        authType: AuthType
+    ): ConnectionSettings {
+
+        val emailParts = splitEmail(email)
+        val domain = emailParts[1]
+        val imapHost = "mail.$domain"
+        val smtpHost = "mail.$domain"
+        //val email = account.email
+        // set default uris
+        // NOTE: they will be changed again in AccountSetupAccountType!
+        val storeServer = ServerSettings(
+            ServerSettings.Type.IMAP,
+            imapHost,
+            -1,
+            ConnectionSecurity.SSL_TLS_REQUIRED,
+            authType,
+            email,
+            password,
+            alias
+        )
+        val transportServer = ServerSettings(
+            ServerSettings.Type.SMTP,
+            smtpHost,
+            -1,
+            ConnectionSecurity.SSL_TLS_REQUIRED,
+            authType,
+            email,
+            password,
+            alias
+        )
+        return ConnectionSettings(storeServer, transportServer)
     }
 
     private fun setupFolderNames(domain: String?) {
