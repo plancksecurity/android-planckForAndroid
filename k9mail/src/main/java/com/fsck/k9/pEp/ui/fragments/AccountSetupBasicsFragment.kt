@@ -11,6 +11,8 @@ import android.widget.EditText
 import androidx.core.view.isVisible
 import com.fsck.k9.*
 import com.fsck.k9.activity.setup.AccountSetupBasics
+import com.fsck.k9.databinding.FragmentAccountLoginBinding
+import com.fsck.k9.databinding.WizardSetupBinding
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -25,6 +27,11 @@ import javax.inject.Inject
 
 class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
 
+    private var _binding: FragmentAccountLoginBinding? = null
+    private val binding get() = _binding!!
+    private var _wizardSetupBinding: WizardSetupBinding? = null
+    private val wizardSetupBinding get() = _wizardSetupBinding!!
+
     private lateinit var emailView: EditText
     private lateinit var passwordView: EditText
     private lateinit var clientCertificateCheckBox: CheckBox
@@ -33,7 +40,6 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private lateinit var rootView: View
     private lateinit var pEpUIArtefactCache: PePUIArtefactCache
 
     @Inject
@@ -45,18 +51,10 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         savedInstanceState: Bundle?
     ): View {
         setupPEpFragmentToolbar()
-        rootView = inflater.inflate(R.layout.fragment_account_login, container, false)
+        _binding = FragmentAccountLoginBinding.inflate(inflater, container, false)
+        _wizardSetupBinding = WizardSetupBinding.bind(binding.root)
+        setupViews()
         setupToolbar()
-        emailView = rootView.findViewById(R.id.account_email)
-        passwordView = rootView.findViewById(R.id.account_password)
-        clientCertificateCheckBox = rootView.findViewById(R.id.account_client_certificate)
-        clientCertificateSpinner = rootView.findViewById(R.id.account_client_certificate_spinner)
-        advancedOptionsContainer = rootView.findViewById(R.id.foldable_advanced_options)
-        nextButton = rootView.findViewById(R.id.next)
-        manualSetupButton = rootView.findViewById(R.id.manual_setup)
-        passwordLayout = rootView.findViewById(R.id.account_password_layout)
-        manualSetupButton.setOnClickListener { onManualSetup(true) }
-        nextButton.setOnClickListener { attemptAutoSetup() }
 
         initializeViewListeners()
         validateFields()
@@ -71,7 +69,21 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
             updateUiFromProvisioningSettings()
         }
         setHasOptionsMenu(!BuildConfig.IS_ENTERPRISE)
-        return rootView
+        return binding.root
+    }
+
+    private fun setupViews() {
+        emailView = binding.accountEmail
+        passwordView = binding.accountPassword
+        clientCertificateCheckBox = binding.accountClientCertificate
+        clientCertificateSpinner = binding.accountClientCertificateSpinner
+        advancedOptionsContainer = binding.foldableAdvancedOptions
+        nextButton = wizardSetupBinding.next
+        manualSetupButton = wizardSetupBinding.manualSetup
+        passwordLayout = binding.accountPasswordLayout
+
+        manualSetupButton.setOnClickListener { onManualSetup(true) }
+        nextButton.setOnClickListener { attemptAutoSetup() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -298,6 +310,12 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
                 authenticationType
             )
         account.setMailSettings(requireContext(), connectionSettings, false)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        _wizardSetupBinding = null
     }
 
     override fun inject() {
