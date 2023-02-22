@@ -29,8 +29,6 @@ import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.SetupAccountType
-import com.fsck.k9.ui.getEnum
-import com.fsck.k9.ui.putEnum
 import com.fsck.k9.view.ClientCertificateSpinner
 import org.koin.android.ext.android.inject
 import security.pEp.provisioning.ProvisioningSettings
@@ -50,7 +48,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private var uiState = UiState.PASSWORD_FLOW
     private var account: Account? = null
     private var checkedIncoming = false
     private lateinit var rootView: View
@@ -83,6 +80,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
         manualSetupButton.setOnClickListener { onManualSetup(true) }
+        nextButton.setOnClickListener { attemptAutoSetup() }
 
         initializeViewListeners()
         validateFields()
@@ -111,8 +109,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
          */
         initializeViewListeners()
         validateFields()
-
-        updateUi()
     }
 
     private fun updateUiFromProvisioningSettings() {
@@ -141,8 +137,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private fun initializeViewListeners() {
         val textWatcher = object : SimpleTextWatcher() {
             override fun afterTextChanged(s: Editable) {
-                val checkPassword = uiState == UiState.PASSWORD_FLOW
-                validateFields(checkPassword)
+                validateFields()
             }
         }
 
@@ -164,31 +159,15 @@ class AccountSetupBasicsFragment : PEpFragment() {
         }
     }
 
-    private fun updateUi() {
-        when (uiState) {
-            UiState.EMAIL_ADDRESS_ONLY -> {
-                passwordLayout.isVisible = false
-                advancedOptionsContainer.isVisible = false
-            }
-            UiState.PASSWORD_FLOW -> {
-                passwordLayout.isVisible = true
-                advancedOptionsContainer.isVisible = true
-                nextButton.setOnClickListener { attemptAutoSetup() }
-            }
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putEnum(STATE_KEY_UI_STATE, uiState)
         outState.putString(EXTRA_ACCOUNT, account?.uuid)
         outState.putBoolean(STATE_KEY_CHECKED_INCOMING, checkedIncoming)
     }
 
     private fun restoreScreenState(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
-            uiState = savedInstanceState.getEnum(STATE_KEY_UI_STATE, UiState.EMAIL_ADDRESS_ONLY)
 
             val accountUuid = savedInstanceState.getString(EXTRA_ACCOUNT)
             if (accountUuid != null) {
@@ -209,10 +188,10 @@ class AccountSetupBasicsFragment : PEpFragment() {
         }
     }
 
-    private fun validateFields(checkPassword: Boolean = true) {
+    private fun validateFields() {
         val email = emailView.text?.toString().orEmpty()
         val valid = Utility.requiredFieldValid(emailView) && emailValidator.isValidAddressOnly(email) &&
-                (!checkPassword || isPasswordFieldValid())
+                isPasswordFieldValid()
 
         nextButton.isEnabled = valid
         nextButton.isFocusable = valid
@@ -479,15 +458,9 @@ class AccountSetupBasicsFragment : PEpFragment() {
         getpEpComponent().inject(this)
     }
 
-    private enum class UiState {
-        EMAIL_ADDRESS_ONLY,
-        PASSWORD_FLOW
-    }
-
     companion object {
         private const val ACTIVITY_REQUEST_PICK_SETTINGS_FILE = 0
         private const val EXTRA_ACCOUNT = "com.fsck.k9.AccountSetupBasics.account"
-        private const val STATE_KEY_UI_STATE = "com.fsck.k9.AccountSetupBasics.uiState"
         private const val STATE_KEY_CHECKED_INCOMING =
             "com.fsck.k9.AccountSetupBasics.checkedIncoming"
         private const val REQUEST_CODE_CHECK_SETTINGS = AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE
