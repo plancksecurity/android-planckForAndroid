@@ -461,11 +461,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
             password,
             clientCertificateAlias
         )
-        val storeUri = RemoteStore.createStoreUri(storeServer)
-        val transportUri = Transport.createTransportUri(transportServer)
-        account.storeUri = storeUri
-        account.transportUri = transportUri
-        setupFolderNames(domain)
+        account.setMailSettings(requireContext(), ConnectionSettings(storeServer, transportServer))
         saveCredentialsInPreferences()
         goForward()
     }
@@ -505,22 +501,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             alias
         )
         return ConnectionSettings(storeServer, transportServer)
-    }
-
-    private fun setupFolderNames(domain: String?) {
-        account?.let { account ->
-            account.draftsFolderName = getString(R.string.special_mailbox_name_drafts)
-            account.trashFolderName = getString(R.string.special_mailbox_name_trash)
-            account.sentFolderName = getString(R.string.special_mailbox_name_sent)
-            account.archiveFolderName = getString(R.string.special_mailbox_name_archive)
-
-            // Yahoo! has a special folder for Spam, called "Bulk Mail".
-            if (domain?.endsWith(".yahoo.com") == true) {
-                account.spamFolderName = "Bulk Mail"
-            } else {
-                account.spamFolderName = getString(R.string.special_mailbox_name_spam)
-            }
-        }
     }
 
     private fun splitEmail(email: String): Array<String?> {
