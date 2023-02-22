@@ -618,7 +618,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
-                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING);
+                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false);
     }
 
     private void goForward() {

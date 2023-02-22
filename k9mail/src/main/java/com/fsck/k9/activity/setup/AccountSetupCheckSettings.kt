@@ -69,6 +69,9 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         setSupportActionBar(toolbar)
 
+        val mailSettingsDiscoveryRequired = intent.getBooleanExtra(
+            EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, false)
+
         authViewModel.init(activityResultRegistry, lifecycle)
 
         authViewModel.uiState.observe(this) { state ->
@@ -77,7 +80,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                     return@observe
                 }
                 AuthFlowState.Success -> {
-                    if (authViewModel.needsMailSettingsDiscovery) {
+                    if (authViewModel.needsMailSettingsDiscovery && mailSettingsDiscoveryRequired) { // ONLY CASE OF PASSWORD FLOW THAT ACTUALLY NEEDS OAUTH (GOOGLE)
                         discoverMailSettings()
                     } else {
                         startCheckServerSettings()
@@ -117,7 +120,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         if (savedInstanceState == null) {
             authViewModel.needsMailSettingsDiscovery =
                 direction == CheckDirection.INCOMING && account.oAuthProviderType == null
-            if (authViewModel.needsMailSettingsDiscovery) {
+            if (mailSettingsDiscoveryRequired) {
                 discoverMailSettings()
             } else {
                 startLoginOrSettingsCheck()
@@ -350,7 +353,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             )
         }
 
-        actionCheckSettings(this@AccountSetupCheckSettings, account, direction)
+        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false)
     }
 
     override fun onActivityResult(reqCode: Int, resCode: Int, data: Intent?) {
@@ -553,12 +556,19 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"
+        private const val EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED = "mailSettingsDiscoveryRequired"
 
         @JvmStatic
-        fun actionCheckSettings(context: Activity, account: Account, direction: CheckDirection) {
+        fun actionCheckSettings(
+            context: Activity,
+            account: Account,
+            direction: CheckDirection,
+            mailSettingsDiscoveryRequired: Boolean,
+        ) {
             val intent = Intent(context, AccountSetupCheckSettings::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account.uuid)
                 putExtra(EXTRA_CHECK_DIRECTION, direction)
+                putExtra(EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, mailSettingsDiscoveryRequired)
                 addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 

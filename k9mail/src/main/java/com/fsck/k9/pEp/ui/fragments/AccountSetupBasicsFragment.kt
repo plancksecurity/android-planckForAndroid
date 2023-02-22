@@ -253,7 +253,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun checkSettings(direction: CheckDirection = CheckDirection.INCOMING) {
-        actionCheckSettings(requireActivity(), account!!, direction)
+        actionCheckSettings(requireActivity(), account!!, direction, true)
     }
 
     private fun saveCredentialsInPreferences() {
