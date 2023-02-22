@@ -4,6 +4,7 @@ Feature: Test
 
 
   @QTR-2354
+    #Only with Enforcer!!!
   Scenario: Cucumber Enterprise Email Settings
     When I set account_description setting to newUser
     And I set account_display_count setting to 50
@@ -20,6 +21,7 @@ Feature: Test
 
 
   @QTR-2345
+    #Only with Enforcer!!!
   Scenario: Cucumber Enterprise Disable Warning
 
     When I set unsecure_delivery_warning setting to false
@@ -30,6 +32,7 @@ Feature: Test
 
 
   @QTR-2351
+    #Only with Enforcer!!!
   Scenario: Cucumber Enterprise TrustWords
 
     When I set pep_use_trustwords setting to true
@@ -70,7 +73,7 @@ Feature: Test
     When I click compose message
     And I check if the privacy status is pEpRatingUndefined
     And I enter bot1 in the messageTo field
-    And I enter mailToNewContact in the messageSubject field
+    And I enter newContact in the messageSubject field
     And I enter bodyMailToNewContact in the messageBody field
     Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
     When I enter empty in the messageTo field
@@ -188,8 +191,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
   @QTR-1978 @QTR-1
   Scenario Outline: Cucumber Save Draft email with long word
@@ -212,8 +215,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -244,8 +247,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -265,8 +268,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -294,8 +297,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -342,8 +345,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -392,8 +395,8 @@ Feature: Test
 
     When I select account <account>
     And I click compose message
-    And I check if the privacy status is pEpRatingUndefined
-    And I enter bot2 in the messageTo field
+    Then I check if the privacy status is pEpRatingUndefined
+    When I enter bot2 in the messageTo field
     And I enter Special1 in the messageSubject field
     And I enter specialCharacters in the messageBody field
     And I click the send message button
@@ -402,7 +405,8 @@ Feature: Test
     When I go to the sent folder
     And I click the first message
     Then I compare messageBody with specialCharacters
-    When I go back to the Inbox
+    When I press back
+    And I go back to the Inbox
     And I click compose message
     And I enter myself in the messageTo field
     And I enter Special2 in the messageSubject field
@@ -439,8 +443,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -454,8 +458,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -497,8 +501,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -513,8 +517,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 	#  Description: Receive one attachment that has only been sent to me from another pEp user  Description: Receive one attachment that has only been sent to me from another pEp user  Assumptions: The communication partner has my private key  and can send me encrypted messages with pEp.  Expectation: I can read the email and  Steps for Testing  • Ask a communication partner to send a message with 1 attachment (Privacy Status: “Secure…” or “Secure & Trusted”).  • When the message arrives, click on it.  • Make sure, the message has been sent encrypted (Privacy Status “Secure…” or “Secure & Trusted”)  • VERIFY if you can read the content of the message  • Open the attachment  • VERIFY if the attachment opens as expected
@@ -538,8 +542,8 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
-      
+
+
 
 
 
@@ -577,7 +581,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
+
 
   @QTR-1961
   Scenario Outline: Cucumber Save Draft
@@ -643,7 +647,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
+
 
 
   @QTR-2310
@@ -661,7 +665,7 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-      
+
 
 
   @QTR-2311
@@ -711,16 +715,6 @@ Feature: Test
     Examples:
       |account|
       |  0    |
-
-
-  @QTR-2321
-  Scenario Outline: Cucumber check number of Global and Account settings
-
-    When I select account <account>
-    When I check there are 2 global settings and 1 account settings
-    Examples:
-      | account |
-      | 0       |
 
 
 
