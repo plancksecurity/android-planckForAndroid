@@ -3,10 +3,7 @@ package com.fsck.k9.activity.setup
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -54,6 +51,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     private lateinit var account: Account
     private lateinit var direction: CheckDirection
+    private var errorResultCode = RESULT_CANCELED
 
     @Volatile
     private var canceled = false
@@ -63,6 +61,9 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            errorResultCode = savedInstanceState.getInt(STATE_ERROR_RESULT_CODE, RESULT_CANCELED)
+        }
         setContentView(R.layout.account_setup_check_settings)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
             ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
@@ -136,8 +137,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                 if (!event.hasBeenHandled) {
                     val connectionSettings = event.getContent()
                     if (connectionSettings == null) {
-                        setResult(RESULT_CODE_MANUAL_SETUP_NEEDED)
-                        finish()
+                        errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
+                        showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
                     } else {
                         authViewModel.needsMailSettingsDiscovery = false
                         account.setMailSettings(this, connectionSettings, true)
@@ -416,6 +417,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     override fun doNegativeClick(dialogId: Int) {
         if (dialogId == R.id.dialog_account_setup_error) {
             canceled = false
+            setResult(errorResultCode)
             finish()
         }
     }
@@ -546,6 +548,11 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_ERROR_RESULT_CODE, errorResultCode)
+    }
+
     enum class CheckDirection {
         INCOMING, OUTGOING;
     }
@@ -557,6 +564,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"
         private const val EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED = "mailSettingsDiscoveryRequired"
+        private const val STATE_ERROR_RESULT_CODE = "errorResultCode"
 
         @JvmStatic
         fun actionCheckSettings(
