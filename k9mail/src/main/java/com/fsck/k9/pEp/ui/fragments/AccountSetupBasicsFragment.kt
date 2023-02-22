@@ -11,10 +11,10 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.core.view.isVisible
 import com.fsck.k9.*
-import com.fsck.k9.account.AccountCreator
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.RESULT_CODE_MANUAL_SETUP_NEEDED
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity.Companion.buildLaunchIntent
@@ -377,7 +377,11 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun handleCheckSettingsResult(resultCode: Int) {
-        if (resultCode != Activity.RESULT_OK) return
+        if (resultCode == RESULT_CODE_MANUAL_SETUP_NEEDED) {
+            onManualSetup()
+            return
+        } else if (resultCode != Activity.RESULT_OK) return
+
         checkNotNull(account) { "Account instance missing" }
         if (!checkedIncoming) {
             // We've successfully checked incoming. Now check outgoing.
