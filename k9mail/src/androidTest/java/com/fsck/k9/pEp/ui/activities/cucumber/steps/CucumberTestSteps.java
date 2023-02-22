@@ -653,7 +653,7 @@ public class CucumberTestSteps {
         device.pressBack();
         waitForIdle();
         if (!viewIsDisplayed(calendarButton)) {
-            assertFailWithMessage("Calendar Button!!!");
+            assertFailWithMessage("Calendar Button???");
         }
     }
 
@@ -2695,7 +2695,7 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             while (!exists(onView(withId(R.id.available_accounts_title)))) {
                 testUtils.pressBack();
                 waitForIdle();
@@ -2881,6 +2881,14 @@ public class CucumberTestSteps {
             Timber.i("Cannot find subject field");
         }
         for (int i = 0; i < 500; i++) {
+            waitForIdle();
+        }
+        while (!exists(onView(withId(R.id.toolbar_container)))) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             waitForIdle();
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
