@@ -140,7 +140,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                         finish()
                     } else {
                         authViewModel.needsMailSettingsDiscovery = false
-                        account.setMailSettings(this, connectionSettings)
+                        account.setMailSettings(this, connectionSettings, true)
                         startLoginOrSettingsCheck()
                     }
                 }

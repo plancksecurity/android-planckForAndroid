@@ -426,18 +426,18 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 return
             }
             val account = initAccount(email)
-            setDefaultSettingsForManualSetup(account)
+            setDefaultSettingsForManualSetup(account, true)
         } else {
             val account = retrieveAccount() ?: error("Account is null!!")
             if (account.storeUri == null || account.transportUri == null) {
-                setDefaultSettingsForManualSetup(account)
+                setDefaultSettingsForManualSetup(account, false)
             }
         }
         saveCredentialsInPreferences()
         goForward()
     }
 
-    private fun setDefaultSettingsForManualSetup(account: Account) {
+    private fun setDefaultSettingsForManualSetup(account: Account, fromUser: Boolean) {
         var password: String? = null
         var clientCertificateAlias: String? = null
         val authenticationType: AuthType
@@ -460,7 +460,7 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 clientCertificateAlias,
                 authenticationType
             )
-        account.setMailSettings(requireContext(), connectionSettings)
+        account.setMailSettings(requireContext(), connectionSettings, !fromUser)
     }
 
     private fun defaultConnectionSettings(

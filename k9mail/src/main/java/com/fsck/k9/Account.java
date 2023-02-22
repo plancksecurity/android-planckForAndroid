@@ -107,18 +107,27 @@ public class Account implements BaseAccount, StoreConfig {
         pEpPrivacyProtected = config;
     }
 
-    public void setMailSettings(Context context, ConnectionSettings connectionSettings) {
-        String incomingPassword = null;
-        String outgoingPassword = null;
-        if (storeUri != null) {
-            incomingPassword = RemoteStore.decodeStoreUri(storeUri).password;
+    public void setMailSettings(
+            Context context,
+            ConnectionSettings connectionSettings,
+            boolean keepPasswords
+    ) {
+        ServerSettings incomingServerSettings = connectionSettings.getIncoming();
+        ServerSettings outgoingServerSettings = connectionSettings.getOutgoing();
+
+        if (keepPasswords) {
+            String incomingPassword = null;
+            String outgoingPassword = null;
+            if (storeUri != null) {
+                incomingPassword = RemoteStore.decodeStoreUri(storeUri).password;
+            }
+            if (transportUri != null) {
+                outgoingPassword = Transport.decodeTransportUri(transportUri).password;
+            }
+            incomingServerSettings = incomingServerSettings.newPassword(incomingPassword);
+            outgoingServerSettings = outgoingServerSettings.newPassword(outgoingPassword);
         }
-        if (transportUri != null) {
-            outgoingPassword = Transport.decodeTransportUri(transportUri).password;
-        }
-        ServerSettings incomingServerSettings = connectionSettings.getIncoming().newPassword(incomingPassword);
         storeUri = RemoteStore.createStoreUri(incomingServerSettings);
-        ServerSettings outgoingServerSettings = connectionSettings.getOutgoing().newPassword(outgoingPassword);
         transportUri = Transport.createTransportUri(outgoingServerSettings);
         deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type);
         setupFolderNames(context, incomingServerSettings.host.toLowerCase());
