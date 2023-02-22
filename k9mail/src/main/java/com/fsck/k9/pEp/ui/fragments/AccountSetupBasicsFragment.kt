@@ -1,7 +1,6 @@
 package com.fsck.k9.pEp.ui.fragments
 
 import android.app.Activity
-import android.content.ComponentCallbacks
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -22,11 +21,9 @@ import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.view.ClientCertificateSpinner
-import org.koin.android.ext.android.inject
+import javax.inject.Inject
 
 class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
-
-    private val emailValidator: EmailAddressValidator by (this as ComponentCallbacks).inject()
 
     private lateinit var emailView: EditText
     private lateinit var passwordView: EditText
@@ -38,6 +35,9 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private lateinit var passwordLayout: View
     private lateinit var rootView: View
     private lateinit var pEpUIArtefactCache: PePUIArtefactCache
+
+    @Inject
+    lateinit var emailValidator: EmailAddressValidator
 
     override fun onCreateView(
         inflater: LayoutInflater,
