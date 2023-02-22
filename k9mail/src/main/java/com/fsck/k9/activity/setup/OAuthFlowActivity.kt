@@ -35,7 +35,8 @@ class OAuthFlowActivity : K9Activity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
             ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
-        setSupportActionBar(toolbar)
+        setUpToolbar(true)
+
         val title =
             if(isTokenRevoked) R.string.account_setup_oauth_title_retry_login
             else R.string.account_setup_basics_title
@@ -90,8 +91,8 @@ class OAuthFlowActivity : K9Activity() {
                     SettingsActivity.actionBasicStart(this)
                 } else {
                     setResult(RESULT_OK)
-                    finish()
                 }
+                finish()
             }
             AuthFlowState.Canceled -> {
                 if (authViewModel.automaticLoginDone) {
