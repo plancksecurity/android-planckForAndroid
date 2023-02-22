@@ -56,7 +56,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif"
             android:text="@string/trustwords_title"
+            android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="@string/trustwords_title" />
 
@@ -71,8 +73,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                android:breakStrategy="simple"
-                android:ellipsize="none"
+                android:fontFamily="sans-serif"
                 android:padding="8dp"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -106,6 +107,8 @@
         android:gravity="start"
         android:orientation="vertical"
         android:paddingBottom="64dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,10 +119,10 @@
             android:id="@+id/fpr_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif"
             android:text="@string/fpr_title"
+            android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="Fingerprints" />
 
@@ -127,10 +130,10 @@
             android:id="@+id/fpr_current_device_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif"
             android:text="@string/fpr_actual_title"
+            android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="This device" />
 
@@ -138,19 +141,19 @@
             android:id="@+id/fpr_current_device_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:breakStrategy="simple"
+            android:ellipsize="none"
             android:textStyle="bold"
-            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
 
         <TextView
             android:id="@+id/fpr_new_device_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:fontFamily="sans-serif"
             android:text="@string/fpr_new_device_title"
+            android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="New device" />
 
@@ -158,12 +161,11 @@
             android:id="@+id/fpr_new_device_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="32dp"
+            android:breakStrategy="simple"
+            android:ellipsize="none"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/fpr_current_device_value"
-            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
     </LinearLayout>
 
     <ProgressBar
