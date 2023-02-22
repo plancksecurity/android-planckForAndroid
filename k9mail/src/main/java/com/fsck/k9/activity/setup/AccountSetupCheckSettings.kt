@@ -96,6 +96,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             authViewModel.authResultConsumed()
         }
 
+        observeMailSettingsDiscoverResult()
+
         messageView = findViewById(R.id.message)
         progressBar = findViewById(R.id.progress)
         findViewById<View>(R.id.cancel).setOnClickListener { onCancel() }
@@ -109,13 +111,42 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             ?: error("Missing CheckDirection")
 
         if (savedInstanceState == null) {
-            if (needsAuthorization()) {
-                setMessage(R.string.account_setup_check_settings_authenticate)
-                authViewModel.login(account)
-            } else {
-                startCheckServerSettings()
+            discoverMailSettings()
+        }
+    }
+
+    private fun observeMailSettingsDiscoverResult() {
+        authViewModel.connectionSettings.observe(this) { pair ->
+            val ready = pair.second
+            val event = pair.first
+            if (ready) {
+                if (!event.hasBeenHandled) {
+                    val connectionSettings = event.getContent()
+                    if (connectionSettings == null) {
+                        setResult(RESULT_CODE_MANUAL_SETUP_NEEDED)
+                        finish()
+                    } else {
+                        account.setMailSettings(this, connectionSettings)
+                        if (needsAuthorization()) {
+                            login()
+                        } else {
+                            startCheckServerSettings()
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private fun discoverMailSettings() {
+        setMessage(R.string.account_setup_check_settings_retr_info_msg)
+        progressBar.isIndeterminate = true
+        authViewModel.discoverMailSettingsAsync(account.email, account.oAuthProviderType)
+    }
+
+    private fun login() {
+        setMessage(R.string.account_setup_check_settings_authenticate)
+        authViewModel.login(account)
     }
 
     private fun needsAuthorization(): Boolean {
@@ -501,6 +532,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     companion object {
         const val ACTIVITY_REQUEST_CODE = 1
+        const val RESULT_CODE_MANUAL_SETUP_NEEDED = 9
 
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"

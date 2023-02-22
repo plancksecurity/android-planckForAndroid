@@ -11,7 +11,8 @@ val authModule = applicationContext {
             application = get(),
             accountManager = get(),
             oAuthConfigurationProvider = get(),
-            jwtTokenDecoder = get()
+            jwtTokenDecoder = get(),
+            mailSettingsDiscovery = get()
         )
     }
 }
