@@ -108,8 +108,8 @@ class AuthViewModel(
     }
 
     fun isUsingGoogle(account: Account): Boolean {
-        return if (account.oAuthProviderType != null) {
-            account.oAuthProviderType == OAuthProviderType.GOOGLE
+        return if (account.mandatoryOAuthProviderType != null) {
+            account.mandatoryOAuthProviderType == OAuthProviderType.GOOGLE
         } else {
             val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
             incomingSettings.host?.let { oAuthConfigurationProvider.isGoogle(it) } ?: false
@@ -185,7 +185,7 @@ class AuthViewModel(
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
         val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
-        return when (account.oAuthProviderType) {
+        return when (account.mandatoryOAuthProviderType) {
             null -> oAuthConfigurationProvider.getConfiguration(
                 incomingSettings?.host ?: error("account not initialized here!")
             )

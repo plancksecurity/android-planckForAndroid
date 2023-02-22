@@ -224,14 +224,14 @@ class ConfiguredSettingsUpdater(
                     },
                 ) { account, newValue ->
                     newValue?.let {
-                        account.oAuthProviderType = OAuthProviderType.valueOf(newValue)
+                        account.mandatoryOAuthProviderType = OAuthProviderType.valueOf(newValue)
                     }
                 }
             }
     }
 
     private fun getCurrentOAuthProvider(): OAuthProviderType? =
-        preferences.accounts.firstOrNull()?.oAuthProviderType ?: provisioningSettings.oAuthType
+        preferences.accounts.firstOrNull()?.mandatoryOAuthProviderType ?: provisioningSettings.oAuthType
 
     private fun saveAccountEmailAddress(restrictions: Bundle?, entry: RestrictionEntry) {
         updateNullableString(

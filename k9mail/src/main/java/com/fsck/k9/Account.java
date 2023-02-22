@@ -77,14 +77,22 @@ public class Account implements BaseAccount, StoreConfig {
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
     private String oAuthState;
-    private OAuthProviderType oAuthProviderType;
+    private OAuthProviderType mandatoryOAuthProviderType;
 
-    public OAuthProviderType getOAuthProviderType() {
-        return oAuthProviderType;
+    public OAuthProviderType getMandatoryOAuthProviderType() {
+        return mandatoryOAuthProviderType;
     }
 
-    public void setOAuthProviderType(OAuthProviderType oAuthProviderType) {
-        this.oAuthProviderType = oAuthProviderType;
+    /**
+     * Only to be done when the OAuth type is set as mandatory. This can be:
+     * - when the user chooses this type of provider at the beginning of the account setup
+     * - when the IT Manager sets this value via MDM
+     * NOT to be used when the OAuth type is guessed from mail settings (case of Google)
+     *
+     * @param oAuthProviderType [OAuthProviderType] to be set as mandatory.
+     */
+    public void setMandatoryOAuthProviderType(OAuthProviderType oAuthProviderType) {
+        this.mandatoryOAuthProviderType = oAuthProviderType;
     }
 
     public synchronized String getOAuthState() {
@@ -614,7 +622,7 @@ public class Account implements BaseAccount, StoreConfig {
         }
         oAuthState = storage.getString(accountUuid + ".oAuthState", null);
         String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
-        oAuthProviderType = oAuthProvider != null
+        mandatoryOAuthProviderType = oAuthProvider != null
                 ? OAuthProviderType.valueOf(oAuthProvider)
                 : null;
     }
@@ -904,7 +912,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".oAuthState", oAuthState);
         editor.putString(
                 accountUuid + ".oAuthProviderType",
-                oAuthProviderType != null ? oAuthProviderType.toString() : null
+                mandatoryOAuthProviderType != null ? mandatoryOAuthProviderType.toString() : null
         );
 
         for (NetworkType type : NetworkType.values()) {

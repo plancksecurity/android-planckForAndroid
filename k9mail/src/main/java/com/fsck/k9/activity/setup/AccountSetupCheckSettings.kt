@@ -119,7 +119,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         if (savedInstanceState == null) {
             authViewModel.needsMailSettingsDiscovery =
-                direction == CheckDirection.INCOMING && account.oAuthProviderType == null
+                direction == CheckDirection.INCOMING && account.mandatoryOAuthProviderType == null
             if (mailSettingsDiscoveryRequired) {
                 discoverMailSettings()
             } else {
@@ -159,7 +159,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     private fun discoverMailSettings() {
         setMessage(R.string.account_setup_check_settings_retr_info_msg)
         progressBar.isIndeterminate = true
-        authViewModel.discoverMailSettingsAsync(account.email, account.oAuthProviderType)
+        authViewModel.discoverMailSettingsAsync(account.email, account.mandatoryOAuthProviderType)
     }
 
     private fun login() {
@@ -169,7 +169,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     private fun needsAuthorization(): Boolean {
         return (
-                account.oAuthProviderType != null ||
+                account.mandatoryOAuthProviderType != null ||
                 (account.storeUri != null
                         && RemoteStore.decodeStoreUri(account.storeUri).authenticationType == AuthType.XOAUTH2
                         && account.transportUri != null

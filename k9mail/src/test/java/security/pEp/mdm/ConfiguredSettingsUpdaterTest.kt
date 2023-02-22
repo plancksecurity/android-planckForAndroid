@@ -1395,8 +1395,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     private fun stubAccountSettersAndGetters() {
         val oAuthProviderSlot = slot<OAuthProviderType>()
-        every { account.oAuthProviderType = capture(oAuthProviderSlot) }.answers {
-            every { account.oAuthProviderType }.returns(oAuthProviderSlot.captured)
+        every { account.mandatoryOAuthProviderType = capture(oAuthProviderSlot) }.answers {
+            every { account.mandatoryOAuthProviderType }.returns(oAuthProviderSlot.captured)
         }
         val emailSlot = slot<String>()
         every { account.email = capture(emailSlot) }.answers {
@@ -1462,7 +1462,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
             account.storeUri = "incomingUri"
             account.transportUri = "outgoingUri"
-            account.oAuthProviderType = expectedOAuthProvider
+            account.mandatoryOAuthProviderType = expectedOAuthProvider
         }
 
         assertEquals(expectedEmail, account.email)
@@ -1616,7 +1616,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         every { account.storeUri }.returns("storeUri")
         every { account.transportUri }.returns("transportUri")
         every { account.email }.returns("old.email@example.ch")
-        every { account.oAuthProviderType }.returns(previousOAuthProviderType)
+        every { account.mandatoryOAuthProviderType }.returns(previousOAuthProviderType)
     }
 
     private fun ConnectionSecurity.toMdmName(): String = when (this) {
