@@ -314,6 +314,21 @@ public class UtilsPackage {
             }
         };
     }
+    static Matcher<View> forceFail(String failMessage) {
+
+        return new TypeSafeMatcher<View>() {
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Failed Test: " + failMessage);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return false;
+            }
+        };
+    }
 
     public static Matcher<View> containsText(final String firstValue, final String secondValue) {
 

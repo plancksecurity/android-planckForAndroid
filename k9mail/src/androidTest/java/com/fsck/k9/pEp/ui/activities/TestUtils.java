@@ -86,11 +86,13 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.ui.PEpUIUtils;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
@@ -124,7 +126,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 import static androidx.test.runner.lifecycle.Stage.RESUMED;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.appendTextInTextView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getElementsInRecycler;
+import static com.fsck.k9.pEp.ui.activities.UtilsPackage.forceFail;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.hasValueEqualTo;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
@@ -252,13 +254,13 @@ public class TestUtils {
             waitForIdle();
         }
         try {
-            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
+            UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/alertTitle"));
             while (uiObject.getText() != null) {
                 pressBack();
                 waitForIdle();
                 onView(withId(R.id.next)).perform(click());
                 waitForIdle();
-                uiObject = device.findObject(By.res("security.pEp.debug:id/alertTitle"));
+                uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/alertTitle"));
             }
         } catch (Exception ex) {
             Timber.i("Doesn't exist popup alert message");
@@ -439,11 +441,14 @@ public class TestUtils {
     }
 
     public void moveFile(File file, File dir) throws IOException {
+        File file2 = null;
+        file2 = new File("/storage/emulated/0/Download/test/cucumber.json");
+        Uri uri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID+".provider", file);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         File newFile = new File(dir, file.getName());
-        Files.move(file.toPath(), newFile.toPath(), REPLACE_EXISTING);
+        Files.move(newFile.toPath(), file2.toPath(), REPLACE_EXISTING);
     }
 
     public void readConfigFile() {
@@ -887,7 +892,8 @@ public class TestUtils {
     }
 
     public static void assertFailWithMessage(String message) {
-        Assume.assumeTrue(message, false);
+        //Assume.assumeTrue(message, false);
+        onView(withId(R.id.toolbar)).check(matches(forceFail(message)));
     }
 
     public void readBotList() {
@@ -1034,7 +1040,7 @@ public class TestUtils {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.FrameLayout");
         for (UiObject2 frameLayout : device.findObjects(selector)) {
-            if (frameLayout.getResourceName() != null && frameLayout.getResourceName().equals("security.pEp.debug:id/message_container")) {
+            if (frameLayout.getResourceName() != null && frameLayout.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/message_container")) {
                 message = frameLayout.getChildren().get(0).getChildren().get(0).getChildren().get(0).getChildren().get(0).getText();
                 message = message.substring(0, message.indexOf("\n"));
                 break;
@@ -1046,6 +1052,10 @@ public class TestUtils {
     public void createNAccounts(int n, boolean isKeySync, boolean isThirdSync) {
         try {
             for (; account < n; account++) {
+                if (testConfig.getMail(account) == null || testConfig.getMail(account).equals("")) {
+                    Timber.e("Is not possible to create more accounts, email address is empty");
+                    return;
+                }
                 waitForIdle();
                 while (exists(onView(withId(R.id.message_list)))) {
                     openOptionsMenu();
@@ -1161,7 +1171,7 @@ public class TestUtils {
         try {
             UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
             waitForIdle();
-            scroll.swipe(Direction.UP, 1.0f);
+            scroll.swipe(Direction.UP, 0.9f);
             waitForIdle();
         } catch (Exception swipe) {
             Timber.i("Cannot do swipeUp");
@@ -1543,8 +1553,13 @@ public class TestUtils {
                 boxBottom = multiTextView.getVisibleBounds().bottom;
                 int rightX = multiTextView.getVisibleBounds().right;
                 int centerY = (multiTextView.getVisibleBounds().bottom - multiTextView.getVisibleBounds().top) * address / (address + 1) + multiTextView.getVisibleBounds().top;
-                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                while (
+                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green()
+                        ) {
+                    rightX--;
+                }
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() ||
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() ||
                         0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
@@ -1553,14 +1568,9 @@ public class TestUtils {
                         0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
-                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
+                while (0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).red() ||
+                        0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).green() ||
                         0.9 >= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
-                    rightX--;
-                }
-                while (0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).red() &&
-                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).green() &&
-                        0.9 <= Color.valueOf(getPixelColor(rightX, centerY)).blue()) {
                     rightX--;
                 }
                 device.click(rightX, centerY);
@@ -1812,32 +1822,27 @@ public class TestUtils {
 
     public String readFile (String folder, String fileName) {
         StringBuilder text = new StringBuilder();
-        File directory = new File(Environment.getExternalStorageDirectory().toString() + folder);
-        if (folder.equals("")) {
-            directory = new File("/storage/emulated/0/Android/data/security.pEp.debug/files/");
-        }
-        File[] files = directory.listFiles();
-        for (File fileOpen : files) {
-            if (fileOpen.getName().equals(fileName)) {
-                File file = new File(Environment.getExternalStorageDirectory().toString() + folder + fileOpen.getName());
-                waitForIdle();
-                try {
-                    FileInputStream fin = new FileInputStream(fileOpen);
-                    InputStreamReader inputStreamReader = new InputStreamReader(fin);
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    String receiveString;
-                    while ((receiveString = bufferedReader.readLine()) != null) {
-                        text.append(receiveString);
-                    }
-                    fin.close();
-                } catch (Exception e) {
-                    Timber.i("Error reading " + fileName + ", trying again");
-                } finally {
-                    file.delete();
-                }
+        File file = new File(folder);
+        try {
+            FileInputStream fin = new FileInputStream(file + "/" + fileName);
+            InputStreamReader inputStreamReader = new InputStreamReader(fin);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            while ((receiveString = bufferedReader.readLine()) != null) {
+                text.append(receiveString);
             }
+            fin.close();
+        } catch (Exception e) {
+            Timber.e("Error reading " + fileName + ", trying again");
+        } finally {
+            file.delete();
         }
         return text.toString();
+    }
+
+    public static final String getBasicAuthenticationHeader(String username, String password) {
+        String valueToEncode = username + ":" + password;
+        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
     private Intent insertFileIntoIntentAsData(int id) {
@@ -2111,7 +2116,7 @@ public class TestUtils {
             while (size == 0) {
                 size = device.findObjects(selector).size();
             }
-            UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/attachment"));
+            UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/attachment"));
             position = -1;
             for (UiObject2 frameLayout : device.findObjects(selector)) {
                 waitForIdle();
@@ -2218,11 +2223,11 @@ public class TestUtils {
         goBack(false);
     }
 
-    void checkStatus(Rating rating) {
-        assertMessageStatus(rating);
+    void checkStatus(Rating rating, String status) {
+        assertMessageStatus(rating, status);
     }
 
-    public void assertMessageStatus(Rating status){
+    public void assertMessageStatus(Rating rating, String status){
         int statusColor;
         clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
@@ -2233,16 +2238,19 @@ public class TestUtils {
             waitForIdle();
         }*/
         waitForToolbar();
-        statusColor = getSecurityStatusDrawableColor(status);
+        statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
                 assertFailWithMessage("Wrong Status, it should be empty");
             }
         } else {
-            if (R.id.securityStatusIcon != statusColor) {
-                assertFailWithMessage("Wrong Status color");
-            }
-            assertSecurityStatusText(status);
+            int value = rating.value;
+            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+
+            //int color = R.color.compose_unsecure_delivery_warning;
+            assertsIconColor("securityStatusIcon", color);
+            viewIsDisplayed(R.id.securityStatusIcon);
+            assertSecurityStatusText(rating);
         }
         if (!exists(onView(withId(R.id.send)))) {
             goBack(false);
@@ -2456,6 +2464,29 @@ public class TestUtils {
         }
     }
 
+    public void assertsIconColor (String colorId, int color) {
+        BySelector selector = By.clazz("android.widget.ImageView");
+        waitForIdle();
+        Rating [] statusRating = new Rating[1];
+        for (UiObject2 object : device.findObjects(selector)) {
+            if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
+                waitForIdle();
+                int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
+                String hexColor = String.format("#%06X", (0xFFFFFF & iconColor));
+                //int i = R.color.compose_unsecure_delivery_warning;
+
+                color = ContextCompat.getColor(context, color);
+                //String hexColor2 = String.format("#%06X", (0xFFFFFF & R.color.compose_unsecure_delivery_warning));
+                //getStatusRating(statusRating, status);
+                //int statusColor = getSecurityStatusIconColor(statusRating[0]);
+                if (iconColor != color) {
+                        assertFailWithMessage("");
+                    break;
+                }
+            }
+        }
+    }
+
     public void summonThreads () {
         clickStatus();
         pressBack();
@@ -2551,16 +2582,12 @@ public class TestUtils {
         while (!assertedBadgeColor) {
             for (UiObject2 object : device.findObjects(selector)) {
                 try {
-                    if (object.getResourceName().equals("security.pEp.debug:id/privacyBadge")) {
+                    if (object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/privacyBadge")) {
                         if (currentMessage != messageFromList) {
                             currentMessage++;
                         }
                         else {
-                            View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
-                            currentViewActivity.setDrawingCacheEnabled(true);
-                            Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
-                            int pixel = bitmap.getPixel(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                            currentViewActivity.setDrawingCacheEnabled(false);
+                            int pixel = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
                             if (pixel != resources.getColor(statusColor)) {
                                 assertFailWithMessage("Badge status colors are different");
                             }
@@ -2579,7 +2606,9 @@ public class TestUtils {
         View currentViewActivity = getCurrentActivity().getWindow().getDecorView().getRootView();
         currentViewActivity.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(currentViewActivity.getDrawingCache());
-        return bitmap.getPixel(x, y);
+        int pixel = bitmap.getPixel(x, y);
+        currentViewActivity.setDrawingCacheEnabled(false);
+        return pixel;
     }
 
     public int getNextHorizontalColoredXPixelToTheRight(int X, int Y) {
@@ -2662,33 +2691,33 @@ public class TestUtils {
     public void typeTextToForceRatingCalculation(int view) {
         waitForIdle();
         try {
-        onView(withId(view)).perform(click(), closeSoftKeyboard());
-        onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
-        waitForIdle();
-        if (getTextFromView(onView(withId(view))).contains(" ")) {
-            device.pressKeyCode(KeyEvent.KEYCODE_DEL);
-        }
-        waitForIdle();
+            onView(withId(view)).perform(click());
+            onView(withId(view)).perform(click(), closeSoftKeyboard());
+            onView(withId(view)).perform(click());
+            onView(withId(view)).perform(click(), closeSoftKeyboard());
+            onView(withId(view)).perform(typeText(" "), closeSoftKeyboard());
+            waitForIdle();
+            if (getTextFromView(onView(withId(view))).contains(" ")) {
+                device.pressKeyCode(KeyEvent.KEYCODE_DEL);
+            }
+            waitForIdle();
 
-    } catch (Exception ex) {
-        Timber.i("Toolbar is not closed yet");
-    }
+        } catch (Exception ex) {
+            Timber.i("Toolbar is not closed yet");
+        }
     }
 
     public static void waitForToolbar() {
         for (int waitLoop = 0; waitLoop < 1000; waitLoop++) {
             waitForIdle();
-            Espresso.onIdle();
             while (!viewIsDisplayed(R.id.toolbar)) {
                 waitForIdle();
             }
             waitForIdle();
-            waitUntilIdle();
             onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
             waitForIdle();
-            waitUntilIdle();
-            Espresso.onIdle();
-        }}
+        }
+    }
 
     private void checkUpperToolbar (int color){
         int colorFromResource = PEpColorUtils.makeColorTransparent(
@@ -3178,9 +3207,9 @@ public class TestUtils {
         while (!backToMessageCompose){
             goBack(false);
             waitForIdle();
-            waitForToolbar();
             if (exists(onView(withId(android.R.id.list)))) {
                 clickFolder(resources.getString(stringToID("special_mailbox_name_inbox")));
+                return;
             }
             waitForIdle();
             if (viewIsDisplayed(R.id.fab_button_compose_message)){
@@ -3298,42 +3327,50 @@ public class TestUtils {
     public void  insertTextNTimes (String messageText, int repetitionsOfTheText) {
         waitForIdle();
         BySelector selector = By.clazz("android.widget.EditText");
-        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/message_content"));
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
-                while (!object.getText().contains(messageText)) {
+                while (!exists(onView(withId(R.id.message_content)))) {
+                    waitForIdle();
                     try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                try {
+                    while (!object.getText().contains(messageText)) {
                         waitForIdle();
                         object.click();
                         String finalMessageText = messageText;
-                        waitForIdle();
-                        waitForIdle();
                         for (int i = 0; i < repetitionsOfTheText; i++) {
+                            finalMessageText = finalMessageText + messageText;
+                        }
+                        waitForIdle();
+                        String finalMessageTextTemp = finalMessageText;
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setClipboard(finalMessageTextTemp);
+                            }
+                        });
+                        //for (int i = 0; i < repetitionsOfTheText; i++) {
                             waitForIdle();
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    setClipboard(finalMessageText);
-                                }
-                            });
-                            waitForIdle();
-                            Thread.sleep(2000);
                             pasteClipboard();
                             waitForIdle();
                             Thread.sleep(2000);
-                            scroll.swipe(Direction.DOWN, 1f);
-                            scroll.swipe(Direction.DOWN, 1f);
+                            //scroll.swipe(Direction.DOWN, 1f);
                             waitForIdle();
-                        }
+                        //}
                         object.click();
-                    } catch (Exception ex) {
-                        Timber.i("Cannot fill long text: " + ex.getMessage());
                     }
+                } catch (Exception ex) {
+                    Timber.i("Cannot fill long text: " + ex.getMessage());
                 }
             }
         }
-        for (int i = 0; i < repetitionsOfTheText/4; i++) {
+        for (int i = 0; i < repetitionsOfTheText / 4; i++) {
             scroll.swipe(Direction.DOWN, 1f);
         }
         waitForIdle();
@@ -3823,7 +3860,7 @@ public class TestUtils {
         swipeUpScreen();
         waitUntilIdle();
         BySelector selector = By.clazz("android.widget.EditText");
-        UiObject2 uiObject = device.findObject(By.res("security.pEp.debug:id/message_content"));
+        UiObject2 uiObject = device.findObject(By.res(BuildConfig.APPLICATION_ID + ":id/message_content"));
         for (UiObject2 object : device.findObjects(selector)) {
             if (object.getResourceName().equals(uiObject.getResourceName())) {
                 waitForIdle();
@@ -4105,7 +4142,7 @@ public class TestUtils {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
-                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                            || listView.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != boxChecked) {
                             listView.getChildren().get(item).click();
                         } else {
@@ -4138,7 +4175,7 @@ public class TestUtils {
             for (UiObject2 listView : device.findObjects(selector)) {
                 try {
                     if (listView.getResourceName().equals("android:id/select_dialog_listview")
-                            || listView.getResourceName().equals("security.pEp.debug:id/select_dialog_listview")) {
+                            || listView.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/select_dialog_listview")) {
                         if (listView.getChildren().get(item).isChecked() != isSelected) {
                             itemSelected = false;
                         } else {
@@ -4160,7 +4197,7 @@ public class TestUtils {
         while (true) {
             for (UiObject2 clock : device.findObjects(selector)) {
                 try {
-                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                    if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         clock.getChildren().get(hour).click();
                         return;
                     }
@@ -4178,7 +4215,7 @@ public class TestUtils {
         while (!timeAssertDone) {
             for (UiObject2 time : device.findObjects(selector)) {
                 try {
-                    if (time.getResourceName().equals("security.pEp.debug:id/time_header")) {
+                    if (time.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/time_header")) {
                         if (!time.getChildren().get(0).getText().contains((String.valueOf(hour)))){
                             assertFailWithMessage("Time is " + time.getText() + " and it should be " + hour);
                         }
@@ -4195,7 +4232,7 @@ public class TestUtils {
         while (true) {
             for (UiObject2 clock : device.findObjects(selector)) {
                 try {
-                    if (clock.getResourceName().equals("security.pEp.debug:id/radial_picker")) {
+                    if (clock.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/radial_picker")) {
                         if (!clock.getChildren().get(hour).isSelected()) {
                             assertFailWithMessage("Wrong time selected");
                         }

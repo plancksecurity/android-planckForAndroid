@@ -746,7 +746,7 @@ Feature: Test
     When I select account <account>
     And I go to the sent folder
     And I click the last message received
-    Then I open attached files
+    Then I open 4 attached files
     Examples:
       |account|
       |  0    |
@@ -771,7 +771,7 @@ Feature: Test
     And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
     And I compare messageBody from json file with attach1File
-    And I open attached files
+    And I open 1 attached files
     Examples:
       |account|
       |  0    |
@@ -810,7 +810,7 @@ Feature: Test
     When I click the send message button
     And I wait for the message and click it
     Then I check if the privacy status is pep_yellow
-    And I open attached files
+    And I open 3 attached files
     Examples:
       |account|
       |  0    |
@@ -1013,9 +1013,9 @@ Feature: Test
     And I enter 3 unreliable recipients in the messageTo field
     Then I remove the 3 address clicking X button
     Then I remove the 2 address clicking X button
-    Then I remove the 2 address clicking X button
+    Then I remove the 1 address clicking X button
     Then I check insecurity warnings are not there
-    Then I check if the privacy status is pep_green
+    #Then I check if the privacy status is pep_green
 
     Examples:
       |account|

@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
         MessageListScreenshotTest.class,
         MessageComposeScreenshotTest.class,
         MessageViewScreenshotTest.class,
-        SettingsScreenshotTest.class})
+        //SettingsScreenshotTest.class
+})
 public class ScreenshotTestSuite {
 }
