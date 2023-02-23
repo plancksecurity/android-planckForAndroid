@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.PEpProviderImplKotlin
 import com.fsck.k9.pEp.PEpUtils
+import foundation.pEp.jniadapter.AndroidHelper.TAG
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
@@ -49,7 +52,10 @@ class KeyImportPresenter @Inject constructor(
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PEpUtils.createIdentity(Address(address), context)
-            withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
+            withContext(Dispatchers.IO) {
+                Log.d("initialize", "boss myselfSuspend at "+Thread.currentThread().name)
+                currentFpr = pEp.myself(accountIdentity).fpr
+            }
         }
     }
 
@@ -99,6 +105,7 @@ class KeyImportPresenter @Inject constructor(
                         pEp.setOwnIdentity(accountIdentity, currentFpr)
                         false
                     } else {
+                        Log.d("onKeyImportConfirmed", "boss myselfSuspend at "+Thread.currentThread().name)
                         pEp.myself(id)
                         true
                     }

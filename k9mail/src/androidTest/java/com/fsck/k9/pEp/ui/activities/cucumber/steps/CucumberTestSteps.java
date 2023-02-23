@@ -11,9 +11,12 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.RemoteException;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
@@ -52,6 +55,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.*;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Timer;
@@ -64,6 +68,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+import retrofit2.http.Headers;
 import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
@@ -109,9 +116,9 @@ public class CucumberTestSteps {
     private boolean syncThirdDevice = false;
 
     private String[] bot;
-    private int accounts = 3;
+    private final int accounts = 3;
     private int accountSelected = 0;
-    public String b = "";
+    private boolean pep_enable_privacy_protection = true;
 
     private String fileName = "";
 
@@ -129,16 +136,6 @@ public class CucumberTestSteps {
 
     @Before
     public void setup() {
-        scenario = ActivityScenario.launch(SplashActivity.class);
-        while (TestUtils.getCurrentActivity() == null) {
-            waitForIdle();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        Intents.init();
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -151,6 +148,21 @@ public class CucumberTestSteps {
             //startTimer(2000);
             //testUtils.testReset = true;
         }
+        Intents.init();
+        try {
+            scenario = ActivityScenario.launch(SplashActivity.class);
+            while (TestUtils.getCurrentActivity() == null) {
+                try {
+                    waitForIdle();
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("TEST","Estoy en BeforeCatch: " + e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
     @After
@@ -162,7 +174,7 @@ public class CucumberTestSteps {
         }
         try {
             if (exists(onView(withId(R.id.actionbar_title_first)))) {
-                while (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
+                if (getTextFromView(onView(withId(R.id.actionbar_title_first))).equals(resources.getString(R.string.search_results))) {
                     testUtils.pressBack();
                     waitForIdle();
                 }
@@ -198,8 +210,15 @@ public class CucumberTestSteps {
         if (BuildConfig.IS_ENTERPRISE) {
             testUtils.clearAllRecentApps();
         }
-        Intents.release();
-        RestrictionsManager.resetSettings();
+        try {
+            testUtils.clearAllRecentApps();
+            Intents.release();
+        } catch (Exception exception) {
+            Timber.i("Intents.init was not called before Intents.release");
+        }
+        if (BuildConfig.IS_ENTERPRISE) {
+            RestrictionsManager.resetSettings();
+        }
     }
 
     @When(value = "^I created an account$")
@@ -329,7 +348,7 @@ public class CucumberTestSteps {
                 BySelector selector;
                 selector = By.clazz("android.widget.EditText");
                 for (UiObject2 textView : device.findObjects(selector)) {
-                    if (textView.getResourceName().equals("security.pEp.debug:id/subject")) {
+                    if (textView.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/subject")) {
                         textView.click();
                         waitForIdle();
                         textView.setText(" ");
@@ -376,7 +395,7 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to_label)).perform(click());
             waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(String.valueOf(loop) + "of" + String.valueOf(recipients) + recipient));
+            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + recipient));
             waitForIdle();
         }
     }
@@ -395,11 +414,13 @@ public class CucumberTestSteps {
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
         loopText = "";
-        for (int loop = 1; loop < recipients; loop++) {
+        for (int loop = 1; loop < recipients + 1; loop++) {
             waitForIdle();
             loopText = loopText + loop + "of" + recipients + recipient + "; ";
+            waitForIdle();
         }
         testUtils.typeTextInField("", R.id.to, "to");
+        testUtils.typeTextInField(BuildConfig.APPLICATION_ID, R.id.subject, "subject");
         waitForIdle();
         onView(withId(R.id.to)).perform(typeText(loopText));
         testUtils.typeTextToForceRatingCalculation(R.id.subject);
@@ -413,7 +434,7 @@ public class CucumberTestSteps {
         timeRequiredForThisMethod(1);
         String recipient = "filling@email.pep";
         for (int loop = 0; loop < recipients; loop++) {
-            I_enter_text_in_field(String.valueOf(recipients) + recipient, field);
+            I_enter_text_in_field(recipients + recipient, field);
         }
     }
 
@@ -605,7 +626,7 @@ public class CucumberTestSteps {
         BySelector selector = By.clazz("android.webkit.WebView");
         for (UiObject2 webv : device.findObjects(selector)) {
             if (webv.getParent().getResourceName() != null &&
-                    webv.getParent().getResourceName().equals("security.pEp.debug:id/calendarInviteLayout") &&
+                    webv.getParent().getResourceName().equals(BuildConfig.APPLICATION_ID+":id/calendarInviteLayout") &&
                     !webv.getChildren().get(0).getChildren().get(0).getText().contains(bodyText)) {
                 assertFailWithMessage("Wrong message body");
             }
@@ -632,7 +653,7 @@ public class CucumberTestSteps {
         device.pressBack();
         waitForIdle();
         if (!viewIsDisplayed(calendarButton)) {
-            assertFailWithMessage("Calendar Button!!!");
+            assertFailWithMessage("Calendar Button???");
         }
     }
 
@@ -647,11 +668,11 @@ public class CucumberTestSteps {
     public void I_set_string_setting(String setting, String value) {
         waitForIdle();
         if (value.equals("true") || value.equals("false")) {
-            boolean valueB = false;
-            if (value.equals("true")) {
-                valueB = true;
-            }
+            boolean valueB = value.equals("true");
             RestrictionsManager.setBooleanRestrictions(setting, valueB);
+            if (setting.equals("pep_enable_privacy_protection")) {
+                pep_enable_privacy_protection = valueB;
+            }
         } else {
             RestrictionsManager.setStringRestrictions(setting, value);
         }
@@ -827,7 +848,7 @@ public class CucumberTestSteps {
         if (json.toString().contains(textToCompare)) {
             return;
         }
-        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json.toString() + " ***TEXT*** : " + textToCompare);
+        TestUtils.assertFailWithMessage("json file doesn't contain the text: " + json + " ***TEXT*** : " + textToCompare);
     }
 
     private void assertText(String text, String textToCompare) {
@@ -1284,10 +1305,10 @@ public class CucumberTestSteps {
         }
         testUtils.getMessageListSize();
         if (!ignoreThisTest && totalMessages >= getTotalMessagesSize()) {
-            testUtils.assertFailWithMessage("There are more sync messages before sync than after sync");
+            assertFailWithMessage("There are more sync messages before sync than after sync");
         }
         if (inboxMessages != 0 && inboxMessages != testUtils.getListSize()) {
-            testUtils.assertFailWithMessage("Sync messages went to wrong folder");
+            assertFailWithMessage("Sync messages went to wrong folder");
         }
         testUtils.getMessageListSize();
     }
@@ -1485,6 +1506,9 @@ public class CucumberTestSteps {
     }
 
     private void checkPrivacyStatus(String status) {
+        if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
+            return;
+        }
         if (BuildConfig.IS_ENTERPRISE) {
             switch (status) {
                 case "pEpRatingUnencrypted":
@@ -1505,7 +1529,11 @@ public class CucumberTestSteps {
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
                         assertFailWithMessage("Not showing Unsecure status");
                     }
-                    I_check_toolBar_color_is("pep_gray");
+                    if (pep_enable_privacy_protection) {
+                        I_check_toolBar_color_is("pep_red");
+                    } else {
+                        I_check_toolBar_color_is("pep_gray");
+                    }
                     return;
             }
         }
@@ -1543,7 +1571,7 @@ public class CucumberTestSteps {
         waitForIdle();
         status = testUtils.getStatusRating(statusRating, status);
         if (statusRating[0] != null) {
-            testUtils.assertMessageStatus(statusRating[0]);
+            testUtils.assertMessageStatus(statusRating[0], status);
         } else {
             testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
         }
@@ -1857,7 +1885,7 @@ public class CucumberTestSteps {
         while (!endOfLoop) {
             for (UiObject2 editText : device.findObjects(selector)) {
                 try {
-                    if (editText.getResourceName().equals("security.pEp.debug:id/incoming_server_password")) {
+                    if (editText.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/incoming_server_password")) {
                         editText.setText(testUtils.getAccountPassword());
                         endOfLoop = true;
                         break;
@@ -2014,7 +2042,7 @@ public class CucumberTestSteps {
 
     @When("^I click compose message")
     public void I_click_message_compose_button() {
-        timeRequiredForThisMethod(5);
+        //timeRequiredForThisMethod(5);
         testUtils.composeMessageButton();
     }
 
@@ -2099,8 +2127,40 @@ public class CucumberTestSteps {
         testUtils.rotateDevice();
     }
 
-    @When("^I select (\\S+) folder of account (\\S+)$")
-    public void I_select_folder_account(String folder, String account) {
+
+    @When("^I select (\\S+) folder from hamburger menu$")
+    public void I_select_folder_from_hamburger_menu(String folder) {
+        int folderID = 0;
+        testUtils.openHamburgerMenu();
+        switch (folder){
+            case "Inbox":
+                folderID = R.string.special_mailbox_name_inbox;
+                break;
+            case "Outbox":
+                folderID = R.string.special_mailbox_name_outbox;
+                break;
+            case "Drafts":
+                folderID = R.string.special_mailbox_name_drafts;
+                break;
+            case "Trash":
+                folderID = R.string.special_mailbox_name_trash;
+                break;
+            case "Sent":
+                folderID = R.string.special_mailbox_name_sent;
+                break;
+            case "Archive":
+                folderID = R.string.special_mailbox_name_archive;
+                break;
+            case "Spam":
+                folderID = R.string.special_mailbox_name_spam;
+                break;
+            default:
+                assertFailWithMessage("Folder " + folder + " doesn't exist");
+        }
+        testUtils.selectFromScreen(folderID);
+    }
+        @When("^I select (\\S+) folder of account (\\S+)$")
+        public void I_select_folder_account(String folder, String account) {
         accountSelected = Integer.parseInt(account);
         while (testUtils.getTotalAccounts() == -1) {
             testUtils.readConfigFile();
@@ -2230,7 +2290,7 @@ public class CucumberTestSteps {
 
     public void startTest(String folder, int accountToStart) {
         getBotsList();
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             testUtils.selectAccount(folder, accountToStart);
         }
     }
@@ -2275,7 +2335,7 @@ public class CucumberTestSteps {
         waitForIdle();
         testUtils.getMessageListSize();
         if (testUtils.getListSize() <= 101) {
-            testUtils.assertFailWithMessage("Is not loading more messages");
+            assertFailWithMessage("Is not loading more messages");
         }
         waitForIdle();
     }
@@ -2316,7 +2376,7 @@ public class CucumberTestSteps {
         testUtils.clickLastMessage();
         //I_click_reply_message();
         waitForIdle();
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         onView(withId(R.id.message_content)).perform(click());
         int[] firstLetterCentralThickness = new int[2];
         int[] firstLetterTopThickness = new int[2];
@@ -2339,21 +2399,21 @@ public class CucumberTestSteps {
                 switch (viewView.getText()) {
                     case "Testing Header":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top <= textBoxHeight + 2) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not Header");
+                            assertFailWithMessage(viewView.getText() + " is not Header");
                         }
                         break;
                     case "Testing Blue":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not BLUE");
+                            assertFailWithMessage(viewView.getText() + " is not BLUE");
                         }
                         break;
                     case "Testing Red":
                         if (Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).red() != 1.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).blue() != 0.0
                                 || Color.valueOf(testUtils.getPixelColor(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().centerY())).green() != 0.0) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not RED");
+                            assertFailWithMessage(viewView.getText() + " is not RED");
                         }
                         break;
                     case "Testing Italic\n":
@@ -2361,41 +2421,41 @@ public class CucumberTestSteps {
                         int italicCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(italicCentralXStart, viewView.getVisibleBounds().centerY());
                         if ((firstLetterCentralThickness[1] - firstLetterCentralThickness[0] + 1 < italicCentralXEnd - italicCentralXStart)
                                 || (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] - 1 > italicCentralXEnd - italicCentralXStart)) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
                         firstLetterTopYPixel = testUtils.getNextVerticalColoredYPixelToTheBottom(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().top + 1);
                         int italicTopStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         int italicTopEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0], firstLetterTopYPixel + 1);
                         if (firstLetterTopThickness[0] == italicTopStart || firstLetterTopThickness[1] == italicTopEnd) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not ITALIC");
+                            assertFailWithMessage(viewView.getText() + " is not ITALIC");
                         }
                         if ((firstLetterTopThickness[1] - firstLetterTopThickness[0] - 2 > italicTopEnd - italicTopStart) || (firstLetterTopThickness[1] - firstLetterTopThickness[0] + 2 < italicTopEnd - italicTopStart)) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
+                            assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
                         break;
                     case "Testing Bold\n":
                         int boldCentralXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int boldCentralXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(boldCentralXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] - firstLetterCentralThickness[0] >= boldCentralXEnd - boldCentralXStart) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not BOLD");
+                            assertFailWithMessage(viewView.getText() + " is not BOLD");
                         }
                         break;
                     case "Testing Underline":
                         int underlineFirstLetterXStart = testUtils.getNextHorizontalColoredXPixelToTheRight(viewView.getVisibleBounds().left, viewView.getVisibleBounds().centerY());
                         int underlineFirstLetterXEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(underlineFirstLetterXStart, viewView.getVisibleBounds().centerY());
                         if (firstLetterCentralThickness[1] != underlineFirstLetterXEnd || firstLetterCentralThickness[0] != underlineFirstLetterXStart) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not the same size");
+                            assertFailWithMessage(viewView.getText() + " is not the same size");
                         }
                         int bottomUnderline = testUtils.getNextVerticalColoredYPixelToTheTop(firstLetterCentralThickness[0] + 1, viewView.getVisibleBounds().bottom) - 1;
                         int underlineYStart = testUtils.getNextHorizontalWhiteXPixelToTheLeft(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         int underlineYEnd = testUtils.getNextHorizontalWhiteXPixelToTheRight(firstLetterCentralThickness[0] + 1, bottomUnderline);
                         if (underlineYEnd - underlineYStart < 30) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " is not Underlined");
+                            assertFailWithMessage(viewView.getText() + " is not Underlined");
                         }
                         break;
                     case "Testing No Format":
                         if (viewView.getVisibleBounds().bottom - viewView.getVisibleBounds().top >= textBoxHeight - 2) {
-                            testUtils.assertFailWithMessage(viewView.getText() + " has format");
+                            assertFailWithMessage(viewView.getText() + " has format");
                         }
                         break;
                 }
@@ -2413,7 +2473,7 @@ public class CucumberTestSteps {
         testUtils.goBackToMessageList();
         testUtils.clickLastMessage();
         waitForIdle();
-        testUtils.swipeUpScreen();
+        TestUtils.swipeUpScreen();
         waitForIdle();
         images = device.findObjects(By.clazz("android.widget.Image"));
         int newPic0 = testUtils.getPixelColor(images.get(0).getVisibleBounds().centerX(),
@@ -2423,7 +2483,7 @@ public class CucumberTestSteps {
         int newPic2 = testUtils.getPixelColor(images.get(2).getVisibleBounds().centerX(),
                 images.get(2).getVisibleBounds().centerY());
         if (pic0 == newPic0 || pic1 == newPic1 || pic2 == newPic2) {
-            testUtils.assertFailWithMessage("Cannot show images or were shown before");
+            assertFailWithMessage("Cannot show images or were shown before");
         }
         testUtils.pressBack();
         switch (testUtils.test_number()) {
@@ -2612,7 +2672,7 @@ public class CucumberTestSteps {
     public void I_send_and_remove_N_messages(int totalMessages, String botName, String subject, String body) {
         for (int i = 0; i < totalMessages; i++) {
             testUtils.getMessageListSize();
-            I_send_message_to_address(1, botName, subject, body + ". Message to remove " + Integer.toString(i + 1) + " of " + Integer.toString(totalMessages));
+            I_send_message_to_address(1, botName, subject, body + ". Message to remove " + (i + 1) + " of " + totalMessages);
             testUtils.clickLastMessage();
             testUtils.clickView(R.id.delete);
             testUtils.goBackToMessageList();
@@ -2635,7 +2695,7 @@ public class CucumberTestSteps {
             }
             waitForIdle();
         }
-        if (BuildConfig.IS_ENTERPRISE) {
+        if (!BuildConfig.IS_ENTERPRISE) {
             while (!exists(onView(withId(R.id.available_accounts_title)))) {
                 testUtils.pressBack();
                 waitForIdle();
@@ -2657,7 +2717,7 @@ public class CucumberTestSteps {
         for (int i = 0; i < 500; i++) {
             I_select_account(account);
             I_wait_seconds(5);
-            I_send_and_remove_N_messages(3, "bot1", "stability", "TestingStability of message " + String.valueOf(i));
+            I_send_and_remove_N_messages(3, "bot1", "stability", "TestingStability of message " + i);
             I_go_back_to_the_Inbox();
             testUtils.getMessageListSize();
             I_wait_seconds(5);
@@ -2823,6 +2883,14 @@ public class CucumberTestSteps {
         for (int i = 0; i < 500; i++) {
             waitForIdle();
         }
+        while (!exists(onView(withId(R.id.toolbar_container)))) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            waitForIdle();
+        }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
         checkPrivacyStatus(color);
@@ -2845,10 +2913,10 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @And("^I open attached files$")
-    public void I_open_attached_files() {
+    @And("^I open (\\d+) attached files$")
+    public void I_open_attached_files(int attachments) {
         testUtils.emptyFolder("Download");
-        openAttached();
+        openAttached(attachments);
         waitForIdle();
         File directory = new File(Environment.getExternalStorageDirectory().toString() + "/Download/");
         File[] files = directory.listFiles();
@@ -2917,13 +2985,13 @@ public class CucumberTestSteps {
             openAttachedMasterKey();
             waitForIdle();
             try {
-                masterKeyText = testUtils.readFile("/Download/", "masterkey.asc");
+                masterKeyText = testUtils.readFile(Environment.getExternalStorageDirectory().toString() + "/Download/", "masterkey.asc");
             } catch (Exception e) {
                 Timber.i("Trying to read masterkey.asc file: " + e.getMessage());
             }
         }
         TestUtils.createFile("masterkeyfile.asc", R.raw.masterkeypro);
-        masterKeyText2 = testUtils.readFile("", "masterkeyfile.asc");
+        masterKeyText2 = testUtils.readFile(Environment.getExternalStorageDirectory().toString(), "masterkeyfile.asc");
         if (!masterKeyText.equals(masterKeyText2)) {
             TestUtils.assertFailWithMessage("Wrong Master key file");
         }
@@ -2931,33 +2999,47 @@ public class CucumberTestSteps {
         testUtils.emptyFolder("");
     }
 
-    private void openAttached() {
+    private void openAttached(int numberOfAttachments) {
+        int attachments = -1;
         while (true) {
             try {
-                while (!exists(onView(withId(R.id.attachments)))) {
+                if (!exists(onView(withId(R.id.attachments)))) {
                     TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                while (!viewIsDisplayed(R.id.attachments)) {
+                if (!viewIsDisplayed(R.id.attachments)) {
                     TestUtils.swipeUpScreen();
                 }
                 TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 onView(withId(R.id.attachments)).check(matches(isCompletelyDisplayed()));
+                if (attachments == 0) {
+                    assertFailWithMessage("There are no attachments");
+                }
+                attachments = 0;
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments")) {
                         int size = object.getChildren().size();
                         for (int attachment = 0; attachment < size; attachment++) {
                             if (!object.getChildren().get(attachment).getChildren().get(2).getText().contains("results.json")) {
+                                attachments ++;
                                 object.getChildren().get(attachment).getChildren().get(0).click();
                             }
                         }
-                        Timber.i("");
+                        if (attachments != numberOfAttachments) {
+                            assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                        }
                         return;
                     }
                 }
             } catch (Exception ex) {
                 Timber.i("Message Error: " + ex.getMessage());
+                if (attachments == 0) {
+                    assertFailWithMessage("There are no attachments");
+                }
+                if (attachments != numberOfAttachments) {
+                    assertFailWithMessage("There are " + attachments + " attachments and there should be " + numberOfAttachments);
+                }
             }
         }
     }
@@ -2970,7 +3052,7 @@ public class CucumberTestSteps {
                 TestUtils.swipeUpScreen();
                 BySelector layout = By.clazz("android.widget.LinearLayout");
                 for (UiObject2 object : device.findObjects(layout)) {
-                    if (object.getResourceName() != null && object.getResourceName().equals("security.pEp.debug:id/attachments") && object.getChildren().get(0).getChildren().get(2).getText().contains("masterkey")) {
+                    if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID+":id/attachments") && object.getChildren().get(0).getChildren().get(2).getText().contains("masterkey")) {
                         object.getChildren().get(0).getChildren().get(0).click();
                         return;
                     }
@@ -3046,15 +3128,45 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @Then("^I save test report$")
+    @Then("^I save test report2$")
     public void I_save_report() {
         //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
         File file = null;
+        String username = "a-automation@pep.security";
+        String password = "DfPz5GKY%bPbqT&x";
+        String auth = TestUtils.getBasicAuthenticationHeader(username, password);
+/*        connector jc = new connector() {};
         try {
-            file = new File("/data/data/security.pEp.debug/cucumber-reports/", "cucumber.json");
-            testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
+            //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
+            String fileText = testUtils.readFile("storage/emulated/" + BuildConfig.USER + "/Download/test/", "cucumber3.json");
+            Log.e("TEST","Estoy en 3");
+            jc.rawJSONsync(fileText, auth);
+            Log.e("TEST","Estoy en 4");
         } catch (Throwable e) {
+            Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
+            e.printStackTrace();
             SetDirectory(file);
+        }*/
+    }
+
+    @Then("^I save test report$")
+    public void I_save_report2() {
+        Log.e("TEST","Estoy en save report");
+        try  {
+
+
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://www.google.com").openConnection();
+            connection.setRequestMethod("HEAD");
+            int responseCode = connection.getResponseCode();
+            if (responseCode != 200) {
+                // Not OK.
+            }
+            Log.e("TEST","Estoy en hecho en "+responseCode);
+            return;
+        } catch (Exception exception) {
+            Log.e("TEST","Estoy en NO hecho: " + exception);
+            return;
         }
     }
 

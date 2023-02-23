@@ -415,18 +415,21 @@ public class MessageHeader extends LinearLayout implements OnClickListener, OnLo
 
     private void loadpEpRating(Address from, boolean isPrivacyProtected) {
         PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
-        pEp.getRating(from, new PEpProvider.ResultCallback<Rating>() {
-            @Override
-            public void onLoaded(Rating rating) {
-                pEpRating = rating;
-            }
+        if(pEp!=null){
+            pEp.getRating(from, new PEpProvider.ResultCallback<Rating>() {
+                @Override
+                public void onLoaded(Rating rating) {
+                    pEpRating = rating;
+                }
 
-            @Override
-            public void onError(Throwable throwable) {
-                Timber.e(throwable);
-                pEpRating = Rating.pEpRatingUndefined;
-            }
-        });
+                @Override
+                public void onError(Throwable throwable) {
+                    Timber.e(throwable);
+                    pEpRating = Rating.pEpRatingUndefined;
+                }
+            });
+
+        }
     }
     private void loadpEpRating(Message message, boolean isPrivacyProtected) {
         PEpProvider pEp = ((K9) getContext().getApplicationContext()).getpEpProvider();
