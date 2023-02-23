@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.auth.JwtTokenDecoder
 import com.fsck.k9.auth.OAuthProviderType
@@ -253,18 +254,26 @@ class AuthViewModel(
 
     private fun updateEmailAddressFromOAuthToken(token: String): String? {
         var error: String? = null
+        val userError = "Could not retrieve email address from login response"
         jwtTokenDecoder.getEmail(token).onSuccess { newEmail ->
             newEmail?.let {
                 if (account?.email != newEmail) {
-                    account?.email = newEmail
-                    needsMailSettingsDiscovery = true
+                    if (getApplication<K9>().isRunningOnWorkProfile) {
+                        error = "Wrong email address was used for OAuth"
+                    } else {
+                        account?.email = newEmail
+                        needsMailSettingsDiscovery = true
+                    }
                 }
             } ?: let {
-                error = "Could not retrieve email address from login response"
+                error = userError
             }
-        }.onFailure {throwable ->
+        }.onFailure { throwable ->
             Timber.e(throwable)
-            error = throwable.message
+            error = userError
+            if (K9.isDebug()) {
+                error += "\n" + throwable.stackTraceToString()
+            }
         }
         return error
     }
