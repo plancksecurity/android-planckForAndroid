@@ -253,7 +253,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
-                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING);
+                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false);
     }
 
     @Override

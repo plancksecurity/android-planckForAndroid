@@ -7,7 +7,7 @@
     tools:context="com.fsck.k9.activity.SettingsActivity">
 
     <ScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingLeft="16dp"
@@ -22,6 +22,22 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal|center_vertical"
             android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/microsoft_sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/account_setup_choose_auth_sign_in_with_microsoft"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="64dp"/>
+
+            <Button
+                android:id="@+id/google_sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/account_setup_oauth_sign_in_with_google"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="64dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -84,10 +100,6 @@
 
             </com.fsck.k9.view.FoldableLinearLayout>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="0dip"
-                android:layout_weight="1" />
         </LinearLayout>
     </ScrollView>
 
