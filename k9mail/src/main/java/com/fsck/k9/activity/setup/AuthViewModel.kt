@@ -13,9 +13,14 @@ import androidx.lifecycle.*
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.auth.JwtTokenDecoder
+import com.fsck.k9.auth.OAuthProviderType
+import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
+import com.fsck.k9.pEp.infrastructure.livedata.Event
+import com.fsck.k9.pEp.ui.ConnectionSettings
+import com.fsck.k9.pEp.ui.fragments.toServerSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +39,7 @@ class AuthViewModel(
     private val accountManager: Preferences,
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
     private val jwtTokenDecoder: JwtTokenDecoder,
+    private val mailSettingsDiscovery: ProvidersXmlDiscovery,
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
     private val authState = AuthState()
@@ -44,6 +50,43 @@ class AuthViewModel(
 
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
+
+    var automaticLoginDone = false
+        private set
+
+    var needsMailSettingsDiscovery = false
+
+    private val _connectionSettings =
+        MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
+    val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> =
+        _connectionSettings
+
+    fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
+        viewModelScope.launch {
+            discoverMailSettings(email, oAuthProviderType)
+                .also { _connectionSettings.value = Pair(Event(it), true) }
+        }
+    }
+
+    private suspend fun discoverMailSettings(
+        email: String,
+        oAuthProviderType: OAuthProviderType? = null
+    ): ConnectionSettings? = withContext(Dispatchers.IO) {
+        val discoveryResults = mailSettingsDiscovery.discover(
+            email,
+            oAuthProviderType
+        )
+        if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
+            return@withContext null
+        }
+
+        val incomingServerSettings =
+            discoveryResults.incoming.first().toServerSettings() ?: return@withContext null
+        val outgoingServerSettings =
+            discoveryResults.outgoing.first().toServerSettings() ?: return@withContext null
+
+        return@withContext ConnectionSettings(incomingServerSettings, outgoingServerSettings)
+    }
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
@@ -65,8 +108,12 @@ class AuthViewModel(
     }
 
     fun isUsingGoogle(account: Account): Boolean {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.isGoogle(incomingSettings.host!!)
+        return if (account.mandatoryOAuthProviderType != null) {
+            account.mandatoryOAuthProviderType == OAuthProviderType.GOOGLE
+        } else {
+            val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
+            incomingSettings.host?.let { oAuthConfigurationProvider.isGoogle(it) } ?: false
+        }
     }
 
     private fun getOrCreateAuthState(account: Account): AuthState {
@@ -78,21 +125,29 @@ class AuthViewModel(
         }
     }
 
-    fun login(account: Account) {
+    fun login(account: Account, automatic: Boolean = false) {
         this.account = account
 
         viewModelScope.launch {
-            val config = findOAuthConfiguration(account)
-            if (config == null) {
-                _uiState.value = AuthFlowState.NotSupported
-                return@launch
+            if (automatic) {
+                if (automaticLoginDone) return@launch
+                else automaticLoginDone = true
             }
+            loginSuspend(account)
+        }
+    }
 
-            try {
-                startLogin(account, config)
-            } catch (e: ActivityNotFoundException) {
-                _uiState.value = AuthFlowState.BrowserNotFound
-            }
+    private suspend fun loginSuspend(account: Account) {
+        val config = findOAuthConfiguration(account)
+        if (config == null) {
+            _uiState.value = AuthFlowState.NotSupported
+            return
+        }
+
+        try {
+            startLogin(account, config)
+        } catch (e: ActivityNotFoundException) {
+            _uiState.value = AuthFlowState.BrowserNotFound
         }
     }
 
@@ -104,7 +159,7 @@ class AuthViewModel(
         resultObserver.login(authRequestIntent)
     }
 
-    private fun createAuthorizationRequestIntent(email: String, config: OAuthConfiguration): Intent {
+    private fun createAuthorizationRequestIntent(email: String?, config: OAuthConfiguration): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
             config.authorizationEndpoint.toUri(),
             config.tokenEndpoint.toUri()
@@ -129,8 +184,14 @@ class AuthViewModel(
     }
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
+        val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
+        return when (account.mandatoryOAuthProviderType) {
+            null -> oAuthConfigurationProvider.getConfiguration(
+                incomingSettings?.host ?: error("account not initialized here!")
+            )
+            OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
+            OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
+        }
     }
 
     private fun onLoginResult(authorizationResult: AuthorizationResult?) {
@@ -196,6 +257,7 @@ class AuthViewModel(
             newEmail?.let {
                 if (account?.email != newEmail) {
                     account?.email = newEmail
+                    needsMailSettingsDiscovery = true
                 }
             } ?: let {
                 error = "Could not retrieve email address from login response"

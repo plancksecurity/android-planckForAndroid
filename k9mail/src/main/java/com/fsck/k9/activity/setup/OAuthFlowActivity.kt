@@ -35,7 +35,8 @@ class OAuthFlowActivity : K9Activity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
             ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
-        setSupportActionBar(toolbar)
+        setUpToolbar(true)
+
         val title =
             if(isTokenRevoked) R.string.account_setup_oauth_title_retry_login
             else R.string.account_setup_basics_title
@@ -59,9 +60,6 @@ class OAuthFlowActivity : K9Activity() {
             findViewById(R.id.oauth_sign_in_button)
         }
 
-        signInButton.isVisible = true
-        signInButton.setOnClickListener { startOAuthFlow(account) }
-
         savedInstanceState?.let {
             val signInRunning = it.getBoolean(STATE_PROGRESS)
             signInButton.isVisible = !signInRunning
@@ -72,6 +70,14 @@ class OAuthFlowActivity : K9Activity() {
 
         authViewModel.uiState.observe(this) { state ->
             handleUiUpdates(state)
+        }
+
+        when {
+            account.mandatoryOAuthProviderType == null || isTokenRevoked -> {
+                signInButton.isVisible = true
+                signInButton.setOnClickListener { startOAuthFlow(account) }
+            }
+            else -> startOAuthFlow(account, automatic = true) // start directly on AccountSetup flow
         }
     }
 
@@ -85,11 +91,15 @@ class OAuthFlowActivity : K9Activity() {
                     SettingsActivity.actionBasicStart(this)
                 } else {
                     setResult(RESULT_OK)
-                    finish()
                 }
+                finish()
             }
             AuthFlowState.Canceled -> {
-                displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                if (authViewModel.automaticLoginDone) {
+                    finish()
+                } else {
+                    displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                }
             }
             is AuthFlowState.Failed -> {
                 displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_failed, state)
@@ -111,12 +121,14 @@ class OAuthFlowActivity : K9Activity() {
         errorText.text = getString(errorTextResId, *args)
     }
 
-    private fun startOAuthFlow(account: Account) {
-        signInButton.isVisible = false
-        signInProgress.isVisible = true
-        errorText.text = ""
+    private fun startOAuthFlow(account: Account, automatic: Boolean = false) {
+        if (!authViewModel.automaticLoginDone) {
+            signInButton.isVisible = false
+            signInProgress.isVisible = true
+            errorText.text = ""
 
-        authViewModel.login(account)
+            authViewModel.login(account, automatic)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

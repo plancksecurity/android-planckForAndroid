@@ -2,6 +2,7 @@ package com.fsck.k9.autodiscovery.providersxml
 
 import android.content.res.XmlResourceParser
 import android.net.Uri
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.autodiscovery.api.ConnectionSettingsDiscovery
 import com.fsck.k9.autodiscovery.api.DiscoveredServerSettings
 import com.fsck.k9.autodiscovery.api.DiscoveryResults
@@ -18,7 +19,7 @@ class ProvidersXmlDiscovery(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider
 ) : ConnectionSettingsDiscovery {
 
-    override fun discover(email: String): DiscoveryResults? {
+    override fun discover(email: String, oAuthProviderType: OAuthProviderType?): DiscoveryResults? {
         val domain = EmailHelper.getDomainFromEmailAddress(email) ?: return null
 
         val provider = findProviderForDomain(domain) ?: return null
@@ -26,6 +27,7 @@ class ProvidersXmlDiscovery(
         val incomingSettings = provider.toIncomingServerSettings(email) ?: return null
         val outgoingSettings = provider.toOutgoingServerSettings(email) ?: return null
         return DiscoveryResults(listOf(incomingSettings), listOf(outgoingSettings))
+            .addOAuthIfPossible(oAuthProviderType)
     }
 
     private fun findProviderForDomain(domain: String): Provider? {
@@ -105,13 +107,7 @@ class ProvidersXmlDiscovery(
             uri.port
         }
 
-        val authType = if (oAuthConfigurationProvider.getConfiguration(host) != null) {
-            AuthType.XOAUTH2
-        } else {
-            AuthType.PLAIN
-        }
-
-        return DiscoveredServerSettings(ServerSettings.Type.IMAP, host, port, security, authType, username)
+        return DiscoveredServerSettings(ServerSettings.Type.IMAP, host, port, security, AuthType.PLAIN, username)
     }
 
     private fun Provider.toOutgoingServerSettings(email: String): DiscoveredServerSettings? {
@@ -134,17 +130,31 @@ class ProvidersXmlDiscovery(
             uri.port
         }
 
-        val authType = if (oAuthConfigurationProvider.getConfiguration(host) != null) {
-            AuthType.XOAUTH2
-        } else {
-            AuthType.PLAIN
-        }
-
-        return DiscoveredServerSettings(ServerSettings.Type.SMTP, host, port, security, authType, username)
+        return DiscoveredServerSettings(ServerSettings.Type.SMTP, host, port, security, AuthType.PLAIN, username)
     }
 
     private fun String.fillInUsernameTemplate(email: String, user: String, domain: String): String {
         return this.replace("\$email", email).replace("\$user", user).replace("\$domain", domain)
+    }
+
+    private fun DiscoveryResults.addOAuthIfPossible(
+        oAuthProviderType: OAuthProviderType?,
+    ): DiscoveryResults {
+        return DiscoveryResults(
+            this.incoming.map { it.addOAuthIfPossible(oAuthProviderType) },
+            this.outgoing.map { it.addOAuthIfPossible(oAuthProviderType) }
+        )
+    }
+
+    private fun DiscoveredServerSettings.addOAuthIfPossible(
+        oAuthProviderType: OAuthProviderType?,
+    ): DiscoveredServerSettings {
+        val authType = if (oAuthProviderType != null || oAuthConfigurationProvider.isGoogle(host)) {
+            AuthType.XOAUTH2
+        } else {
+            AuthType.PLAIN
+        }
+        return this.copy(authType = authType)
     }
 
     internal data class Provider(

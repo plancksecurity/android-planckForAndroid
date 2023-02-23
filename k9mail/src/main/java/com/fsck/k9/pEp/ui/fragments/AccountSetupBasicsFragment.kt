@@ -11,14 +11,14 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.core.view.isVisible
 import com.fsck.k9.*
-import com.fsck.k9.account.AccountCreator
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.RESULT_CODE_MANUAL_SETUP_NEEDED
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.Companion.actionCheckSettings
 import com.fsck.k9.activity.setup.AccountSetupNames
 import com.fsck.k9.activity.setup.OAuthFlowActivity.Companion.buildLaunchIntent
-import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
+import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.helper.SimpleTextWatcher
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
@@ -41,7 +41,6 @@ import java.net.URISyntaxException
 import javax.inject.Inject
 
 class AccountSetupBasicsFragment : PEpFragment() {
-    private val providersXmlDiscovery: ProvidersXmlDiscovery by (this as ComponentCallbacks).inject()
     private val preferences: Preferences by (this as ComponentCallbacks).inject()
     private val emailValidator: EmailAddressValidator by (this as ComponentCallbacks).inject()
 
@@ -53,7 +52,9 @@ class AccountSetupBasicsFragment : PEpFragment() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private var uiState = UiState.EMAIL_ADDRESS_ONLY
+    private lateinit var googleButton: Button
+    private lateinit var microsoftButton: Button
+    private var uiState = UiState.PASSWORD_FLOW
     private var account: Account? = null
     private var checkedIncoming = false
     private lateinit var rootView: View
@@ -85,7 +86,12 @@ class AccountSetupBasicsFragment : PEpFragment() {
         nextButton = rootView.findViewById(R.id.next)
         manualSetupButton = rootView.findViewById(R.id.manual_setup)
         passwordLayout = rootView.findViewById(R.id.account_password_layout)
-        manualSetupButton.setOnClickListener { onManualSetup() }
+        googleButton = rootView.findViewById(R.id.google_sign_in_button)
+        microsoftButton = rootView.findViewById(R.id.microsoft_sign_in_button)
+        manualSetupButton.setOnClickListener { onManualSetup(true) }
+        googleButton.setOnClickListener { startGoogleFlow() }
+        microsoftButton.setOnClickListener { startMicrosoftFlow() }
+
         initializeViewListeners()
         validateFields()
         pEpUIArtefactCache = PePUIArtefactCache.getInstance(requireContext().applicationContext)
@@ -171,7 +177,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
             UiState.EMAIL_ADDRESS_ONLY -> {
                 passwordLayout.isVisible = false
                 advancedOptionsContainer.isVisible = false
-                nextButton.setOnClickListener { attemptAutoSetupUsingOnlyEmailAddress() }
             }
             UiState.PASSWORD_FLOW -> {
                 passwordLayout.isVisible = true
@@ -230,40 +235,25 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 clientCertificateChecked && clientCertificateAlias != null
     }
 
-    private fun attemptAutoSetupUsingOnlyEmailAddress() {
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) return
-
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
-
-        if (connectionSettings != null &&
-            connectionSettings.incoming.authenticationType == AuthType.XOAUTH2 &&
-            connectionSettings.outgoing.authenticationType == AuthType.XOAUTH2
-        ) {
-            startOAuthFlow(connectionSettings)
-        } else {
-            startPasswordFlow()
-        }
+    private fun startGoogleFlow() {
+        initAccount()
+        startOAuthFlow(OAuthProviderType.GOOGLE)
     }
 
-    private fun startOAuthFlow(connectionSettings: ConnectionSettings) {
-        val account = createAccount(connectionSettings)
+    private fun startMicrosoftFlow() {
+        initAccount()
+        startOAuthFlow(OAuthProviderType.MICROSOFT)
+    }
+
+    private fun startOAuthFlow(oAuthProviderType: OAuthProviderType?) {
+        val account = account!!.also { it.mandatoryOAuthProviderType = oAuthProviderType }
 
         val intent = buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
 
-    private fun startPasswordFlow() {
-        uiState = UiState.PASSWORD_FLOW
-
-        updateUi()
-        validateFields()
-
-        passwordView.requestFocus()
-    }
-
     private fun checkSettings(direction: CheckDirection = CheckDirection.INCOMING) {
-        actionCheckSettings(requireActivity(), account!!, direction)
+        actionCheckSettings(requireActivity(), account!!, direction, true)
     }
 
     private fun saveCredentialsInPreferences() {
@@ -286,17 +276,14 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
         if (clientCertificateCheckBox.isChecked) {
             // Auto-setup doesn't support client certificates.
-            onManualSetup()
+            onManualSetup(true)
             return
         }
 
-        val connectionSettings = providersXmlDiscoveryDiscover(email)
-        if (connectionSettings != null) {
-            finishAutoSetup(connectionSettings)
-        } else {
-            // We don't have default settings for this account, start the manual setup process.
-            onManualSetup()
-        }
+        val initialSettings = defaultConnectionSettings(
+            email, passwordView.text?.toString(), null, AuthType.PLAIN)
+
+        finishAutoSetup(initialSettings)
     }
 
     private fun finishAutoSetup(connectionSettings: ConnectionSettings) {
@@ -309,24 +296,17 @@ class AccountSetupBasicsFragment : PEpFragment() {
 
     private fun createAccount(connectionSettings: ConnectionSettings): Account {
         val email = emailView.text?.toString() ?: error("Email missing")
-        val password = passwordView.text?.toString()
 
         val account = initAccount(email)
 
-        val incomingServerSettings = connectionSettings.incoming.newPassword(password)
-        account.storeUri = RemoteStore.createStoreUri(incomingServerSettings)
+        account.storeUri = RemoteStore.createStoreUri(connectionSettings.incoming)
 
-        val outgoingServerSettings = connectionSettings.outgoing.newPassword(password)
-        account.transportUri = Transport.createTransportUri(outgoingServerSettings)
-        account.deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type)
-
-
-        setupFolderNames(incomingServerSettings.host.lowercase())
+        account.transportUri = Transport.createTransportUri(connectionSettings.outgoing)
 
         return account
     }
 
-    private fun initAccount(email: String): Account {
+    private fun initAccount(email: String? = null): Account {
         val account = this.account?.let { currentAccount ->
             preferences.getAccountAllowingIncomplete(currentAccount.uuid)
         } ?: createAccount()
@@ -343,6 +323,12 @@ class AccountSetupBasicsFragment : PEpFragment() {
                 else email
         }
         return account
+    }
+
+    private fun retrieveAccount(): Account? {
+        return this.account?.let { currentAccount ->
+            preferences.getAccountAllowingIncomplete(currentAccount.uuid)
+        }
     }
 
     private fun createAccount(): Account {
@@ -379,18 +365,6 @@ class AccountSetupBasicsFragment : PEpFragment() {
         return false
     }
 
-    private fun providersXmlDiscoveryDiscover(email: String): ConnectionSettings? {
-        val discoveryResults = providersXmlDiscovery.discover(email)
-        if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
-            return null
-        }
-
-        val incomingServerSettings = discoveryResults.incoming.first().toServerSettings() ?: return null
-        val outgoingServerSettings = discoveryResults.outgoing.first().toServerSettings() ?: return null
-
-        return ConnectionSettings(incomingServerSettings, outgoingServerSettings)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (!isAdded) {
             return
@@ -409,7 +383,11 @@ class AccountSetupBasicsFragment : PEpFragment() {
     }
 
     private fun handleCheckSettingsResult(resultCode: Int) {
-        if (resultCode != Activity.RESULT_OK) return
+        if (resultCode == RESULT_CODE_MANUAL_SETUP_NEEDED) {
+            onManualSetup(false)
+            return
+        } else if (resultCode != Activity.RESULT_OK) return
+
         checkNotNull(account) { "Account instance missing" }
         if (!checkedIncoming) {
             // We've successfully checked incoming. Now check outgoing.
@@ -440,22 +418,29 @@ class AccountSetupBasicsFragment : PEpFragment() {
         }
     }
 
-    private fun onManualSetup() {
+    private fun onManualSetup(fromUser: Boolean) {
         (requireActivity() as AccountSetupBasics).setManualSetupRequired(true)
-        val email = emailView.text?.toString() ?: error("Email missing")
-        if (accountWasAlreadySet(email)) {
-            return
+        if (fromUser) {
+            val email = emailView.text?.toString() ?: error("Email missing")
+            if (accountWasAlreadySet(email)) {
+                return
+            }
+            val account = initAccount(email)
+            setDefaultSettingsForManualSetup(account, true)
+        } else {
+            val account = retrieveAccount() ?: error("Account is null!!")
+            if (account.storeUri == null || account.transportUri == null) {
+                setDefaultSettingsForManualSetup(account, false)
+            }
         }
+        saveCredentialsInPreferences()
+        goForward()
+    }
+
+    private fun setDefaultSettingsForManualSetup(account: Account, fromUser: Boolean) {
         var password: String? = null
         var clientCertificateAlias: String? = null
         val authenticationType: AuthType
-
-        val account = initAccount(email)
-
-        val emailParts = splitEmail(email)
-        val domain = emailParts[1]
-        val imapHost = "mail.$domain"
-        val smtpHost = "mail.$domain"
         if (clientCertificateCheckBox.isChecked) {
             if (passwordView.text.toString().trim().isEmpty()) {
                 authenticationType = AuthType.EXTERNAL
@@ -468,9 +453,28 @@ class AccountSetupBasicsFragment : PEpFragment() {
             authenticationType = AuthType.PLAIN
             password = passwordView.text.toString()
         }
-        account.name = ownerName
-        account.email = email
+        val connectionSettings =
+            defaultConnectionSettings(
+                account.email,
+                password,
+                clientCertificateAlias,
+                authenticationType
+            )
+        account.setMailSettings(requireContext(), connectionSettings, !fromUser)
+    }
 
+    private fun defaultConnectionSettings(
+        email: String,
+        password: String?,
+        alias: String?,
+        authType: AuthType
+    ): ConnectionSettings {
+
+        val emailParts = splitEmail(email)
+        val domain = emailParts[1]
+        val imapHost = "mail.$domain"
+        val smtpHost = "mail.$domain"
+        //val email = account.email
         // set default uris
         // NOTE: they will be changed again in AccountSetupAccountType!
         val storeServer = ServerSettings(
@@ -478,44 +482,22 @@ class AccountSetupBasicsFragment : PEpFragment() {
             imapHost,
             -1,
             ConnectionSecurity.SSL_TLS_REQUIRED,
-            authenticationType,
+            authType,
             email,
             password,
-            clientCertificateAlias
+            alias
         )
         val transportServer = ServerSettings(
             ServerSettings.Type.SMTP,
             smtpHost,
             -1,
             ConnectionSecurity.SSL_TLS_REQUIRED,
-            authenticationType,
+            authType,
             email,
             password,
-            clientCertificateAlias
+            alias
         )
-        val storeUri = RemoteStore.createStoreUri(storeServer)
-        val transportUri = Transport.createTransportUri(transportServer)
-        account.storeUri = storeUri
-        account.transportUri = transportUri
-        setupFolderNames(domain)
-        saveCredentialsInPreferences()
-        goForward()
-    }
-
-    private fun setupFolderNames(domain: String?) {
-        account?.let { account ->
-            account.draftsFolderName = getString(R.string.special_mailbox_name_drafts)
-            account.trashFolderName = getString(R.string.special_mailbox_name_trash)
-            account.sentFolderName = getString(R.string.special_mailbox_name_sent)
-            account.archiveFolderName = getString(R.string.special_mailbox_name_archive)
-
-            // Yahoo! has a special folder for Spam, called "Bulk Mail".
-            if (domain?.endsWith(".yahoo.com") == true) {
-                account.spamFolderName = "Bulk Mail"
-            } else {
-                account.spamFolderName = getString(R.string.special_mailbox_name_spam)
-            }
-        }
+        return ConnectionSettings(storeServer, transportServer)
     }
 
     private fun splitEmail(email: String): Array<String?> {
