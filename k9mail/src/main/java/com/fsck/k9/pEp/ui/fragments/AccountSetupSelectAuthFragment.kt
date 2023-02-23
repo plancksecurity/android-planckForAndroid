@@ -95,7 +95,8 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun startOAuthFlow(oAuthProviderType: OAuthProviderType) {
-        val account = initAccount().also { it.mandatoryOAuthProviderType = oAuthProviderType }
+        val email = if (k9.isRunningOnWorkProfile) provisioningSettings.email else null
+        val account = initAccount(email).also { it.mandatoryOAuthProviderType = oAuthProviderType }
         val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
