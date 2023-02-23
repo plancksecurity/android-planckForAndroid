@@ -359,6 +359,7 @@
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in">Sign in</string>
     <string name="account_setup_choose_auth_sign_in_with_microsoft">Sign in with Microsoft</string>
+    <string name="account_setup_choose_auth_sign_in_with_password">Sign in with password</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in_with_google">Sign in with Google</string>
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Authorization canceled</string>

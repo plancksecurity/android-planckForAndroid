@@ -345,6 +345,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 private static void defineOAuthConfigs(variant) {

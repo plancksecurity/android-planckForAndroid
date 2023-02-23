@@ -7,7 +7,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -16,10 +20,11 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
+import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
@@ -94,13 +99,27 @@ public class AccountSetupBasics extends PEpImporterActivity {
                 ft.replace(R.id.account_setup_container, AccountSetupOutgoingFragment.intentActionEditOutgoingSettings(accountUuid)).commit();
                 accountSetupNavigator.setIsEditing(true);
             } else {
-                AccountSetupBasicsFragment accountSetupBasicsFragment = new AccountSetupBasicsFragment();
+                AccountSetupSelectAuthFragment fragment = new AccountSetupSelectAuthFragment();
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.addToBackStack("AccountSetupBasicsFragment");
-                ft.replace(R.id.account_setup_container, accountSetupBasicsFragment).commit();
+                ft.addToBackStack("AccountSetupSelectAuthFragment");
+                ft.replace(R.id.account_setup_container, fragment).commit();
             }
         }
         permissionRequester.requestBatteryOptimizationPermission();
+    }
+
+    public void configurePasswordFlowScreen() {
+        getWindow().setBackgroundDrawableResource(
+                ThemeManager.getAttributeResource(this, android.R.attr.windowBackground));
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        findViewById(R.id.toolbar).setVisibility(View.VISIBLE);
+        showNavigationBar();
+    }
+
+    private void showNavigationBar() {
+        WindowInsetsControllerCompat controller =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        controller.show(WindowInsetsCompat.Type.navigationBars());
     }
 
     @Override
