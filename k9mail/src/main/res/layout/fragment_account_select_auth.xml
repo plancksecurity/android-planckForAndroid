@@ -1,14 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background_startup"
+    style="@style/AccountSelectAuthScreen"
     android:orientation="vertical"
-    android:paddingBottom="32dp"
-    android:paddingStart="32dp"
-    android:paddingTop="48dp"
-    android:paddingEnd="32dp"
     tools:context="com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment">
 
     <ScrollView
@@ -115,12 +109,6 @@
 
     <TextView
         android:id="@+id/terms_and_conditions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:textColor="@color/white"
-        android:textColorLink="@color/white"
+        style="@style/SelectAuthScreenTermsAndConditions"
         tools:text="Terms and Conditions" />
 </LinearLayout>
