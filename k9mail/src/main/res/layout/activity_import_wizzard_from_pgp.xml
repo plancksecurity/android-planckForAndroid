@@ -17,7 +17,7 @@
     tools:layout_editor_absoluteX="16dp"
     tools:layout_editor_absoluteY="16dp"
     tools:layout_gravity="center"
-    tools:layout_height="wrap_content"
+    android:minHeight="@dimen/key_import_floating_height"
     tools:layout_width="@dimen/key_import_floating_width">
 
     <include
@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description"
         app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/trustwords_title"
@@ -113,7 +113,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trustwordsContainer"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/fpr_title"
@@ -192,7 +192,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fpr_container"
-        tools:visibility="gone" />
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/afirmativeActionButton"
