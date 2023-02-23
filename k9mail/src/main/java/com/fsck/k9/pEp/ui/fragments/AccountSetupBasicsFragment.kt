@@ -159,7 +159,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private fun updateViewVisibility(usingCertificates: Boolean) {
         clientCertificateSpinner.isVisible = usingCertificates
         if (usingCertificates) {
-            if (k9.isRunningOnWorkProfile) {
+            if (BuildConfig.IS_ENTERPRISE) {
                 passwordLayout.visibility = View.GONE
             }
         }
