@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -28,6 +30,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     private lateinit var googleButton: Button
     private lateinit var microsoftButton: Button
     private lateinit var passwordFlowButton: Button
+    private lateinit var termsAndConditionTextView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +46,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         googleButton = binding.googleSignInButton
         microsoftButton = binding.microsoftSignInButton
         passwordFlowButton = binding.otherMethodSignInButton
+        termsAndConditionTextView = binding.termsAndConditions
 
         googleButton.setOnClickListener { startGoogleFlow() }
         microsoftButton.setOnClickListener { startMicrosoftFlow() }
@@ -67,6 +71,10 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         ).apply {
             hide(WindowInsetsCompat.Type.navigationBars())
         }
+        termsAndConditionTextView.text = HtmlCompat.fromHtml(
+            "<a href=\"#\">Terms and Conditions</a>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
     }
 
     private fun setWelcomeBackground() {

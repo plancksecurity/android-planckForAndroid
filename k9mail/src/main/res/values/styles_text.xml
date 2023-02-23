@@ -102,6 +102,16 @@
         <item name="android:autoLink">all</item>
     </style>
 
+    <style name="SelectAuthScreenWelcomeTo">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/white_transparent_70</item>
+    </style>
+
+    <style name="SelectAuthScreenPleaseChoose">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/white_transparent_90</item>
+    </style>
+
 
 </resources>
 
