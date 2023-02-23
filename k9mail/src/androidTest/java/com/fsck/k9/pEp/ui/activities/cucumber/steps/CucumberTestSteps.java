@@ -10,14 +10,9 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.RemoteException;
-import android.os.UserManager;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
@@ -68,9 +63,6 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
-import kotlin.Unit;
-import kotlin.coroutines.Continuation;
-import retrofit2.http.Headers;
 import security.pEp.mdm.MailSettings;
 import timber.log.Timber;
 
@@ -98,13 +90,11 @@ import static com.fsck.k9.pEp.ui.activities.TestUtils.waitForIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.containstText;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getTextFromView;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.getViewColorHSV;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.viewIsDisplayed;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.waitUntilIdle;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withBackgroundColor;
 import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withTextColor;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.anything;
 
@@ -3126,28 +3116,6 @@ public class CucumberTestSteps {
         trustWords = getTextFromView(onView(withId(R.id.trustwords)));
         testUtils.pressBack();
         waitForIdle();
-    }
-
-    @Then("^I save test report2$")
-    public void I_save_report() {
-        //IMPORTANT!!!!!!!!!!!!!!!!   Go to CucumberTestCase.java and modify plugin line before creating save_report.apk
-        File file = null;
-        String username = "a-automation@pep.security";
-        String password = "DfPz5GKY%bPbqT&x";
-        String auth = TestUtils.getBasicAuthenticationHeader(username, password);
-/*        connector jc = new connector() {};
-        try {
-            file = new File("/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/", "cucumber3.json");
-            //testUtils.moveFile(file, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/test/"));
-            String fileText = testUtils.readFile("storage/emulated/" + BuildConfig.USER + "/Download/test/", "cucumber3.json");
-            Log.e("TEST","Estoy en 3");
-            jc.rawJSONsync(fileText, auth);
-            Log.e("TEST","Estoy en 4");
-        } catch (Throwable e) {
-            Log.e("TEST","Estoy en SaveReportCatch: " + e.getMessage(), e);
-            e.printStackTrace();
-            SetDirectory(file);
-        }*/
     }
 
     @Then("^I save test report$")
