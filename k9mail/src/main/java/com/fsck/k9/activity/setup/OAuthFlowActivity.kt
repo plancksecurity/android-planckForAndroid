@@ -38,7 +38,7 @@ class OAuthFlowActivity : K9Activity() {
 
         val title =
             if(isTokenRevoked) R.string.account_setup_oauth_title_retry_login
-            else R.string.account_setup_basics_title
+            else R.string.account_setup_oauth_sign_in
         setTitle(title)
 
         val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
