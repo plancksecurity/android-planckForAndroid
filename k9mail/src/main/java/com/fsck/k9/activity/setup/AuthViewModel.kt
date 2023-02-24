@@ -131,8 +131,7 @@ class AuthViewModel(
 
         viewModelScope.launch {
             if (automatic) {
-                if (automaticLoginDone) return@launch
-                else automaticLoginDone = true
+                automaticLoginDone = true
             }
             loginSuspend(account)
         }

@@ -33,8 +33,6 @@ class OAuthFlowActivity : K9Activity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.account_setup_oauth)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-            ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
         setUpToolbar(true)
 
@@ -63,6 +61,9 @@ class OAuthFlowActivity : K9Activity() {
             findViewById(R.id.oauth_sign_in_button)
         }
 
+        signInButton.setOnClickListener { startOAuthFlow(account) }
+
+
         savedInstanceState?.let {
             val signInRunning = it.getBoolean(STATE_PROGRESS)
             signInButton.isVisible = !signInRunning
@@ -78,9 +79,9 @@ class OAuthFlowActivity : K9Activity() {
         when {
             account.mandatoryOAuthProviderType == null || isTokenRevoked -> {
                 signInButton.isVisible = true
-                signInButton.setOnClickListener { startOAuthFlow(account) }
             }
-            else -> startOAuthFlow(account, automatic = true) // start directly on AccountSetup flow
+            savedInstanceState == null ->
+                startOAuthFlow(account, automatic = true) // start directly on AccountSetup flow
         }
     }
 
@@ -125,13 +126,11 @@ class OAuthFlowActivity : K9Activity() {
     }
 
     private fun startOAuthFlow(account: Account, automatic: Boolean = false) {
-        if (!authViewModel.automaticLoginDone) {
-            signInButton.isVisible = false
-            signInProgress.isVisible = true
-            errorText.text = ""
+        signInButton.isVisible = false
+        signInProgress.isVisible = true
+        errorText.text = ""
 
-            authViewModel.login(account, automatic)
-        }
+        authViewModel.login(account, automatic)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
