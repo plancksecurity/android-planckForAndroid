@@ -110,6 +110,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
                 provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
             clientCertificateCheckBox.isChecked = isExternalAuth
         }
+        manualSetupButton.visibility = View.INVISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
