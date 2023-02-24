@@ -144,7 +144,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         }
 
         setUpToolbar(false);
-        setUpFloatingWindow(R.dimen.wizard_floating_height_handshake_wizard);
+        setUpFloatingWindowWrapHeight();
 
     }
 
