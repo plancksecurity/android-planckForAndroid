@@ -282,11 +282,11 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         }
     }
 
-    fun startOnBoarding() {
-        if (K9.isUsingTrustwords()) {
-            startWelcomeMessage()
-        } else {
+    private fun startOnBoarding() {
+        if (BuildConfig.IS_ENTERPRISE) {
             startOnBoarding(this)
+        } else {
+            startWelcomeMessage()
         }
     }
     private fun initializeSyncEnvironmentOnStartup() {

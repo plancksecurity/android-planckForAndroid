@@ -1244,7 +1244,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         flaggedCheckbox = menu.findItem(R.id.flag);
 
         menu.findItem(R.id.tutorial).setVisible(
-                !BuildConfig.IS_ENTERPRISE || K9.isUsingTrustwords()
+                !BuildConfig.IS_ENTERPRISE
         );
         return true;
     }

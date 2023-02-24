@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.R;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
@@ -23,6 +24,7 @@ public class AccountSetupNavigator {
     private Boolean isEditing = false;
 
     public enum Step {
+        SELECT_AUTH,
         BASICS,
         INCOMING,
         OUTGOING,
@@ -40,13 +42,22 @@ public class AccountSetupNavigator {
     }
 
     public void goForward(FragmentManager fragmentManager, Account account) {
-        if (currentStep.equals(Step.BASICS)) {
+        if (currentStep.equals(Step.BASICS) || currentStep.equals(Step.SELECT_AUTH)) {
             goFromChooseAccountTypeToIncomingSettings(fragmentManager, account);
         } else if(currentStep.equals(Step.INCOMING)) {
             goFromIncomingSettingsToOutgoingSettings(fragmentManager, account);
         } else if(currentStep.equals(Step.OUTGOING)) {
             goFromOutgoingSettingsToAccountSetupOptions(fragmentManager, account);
         }
+    }
+
+    public void goToAccountSetupBasicsFragment(FragmentManager fragmentManager) {
+        AccountSetupBasicsFragment fragment = new AccountSetupBasicsFragment();
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(R.animator.fade_in_left, R.animator.fade_out_right)
+                .replace(R.id.account_setup_container, fragment, "accountSetupBasicFragment")
+                .addToBackStack(null)
+                .commit();
     }
 
     private void goFromOutgoingSettingsToAccountSetupOptions(FragmentManager fragmentManager, Account account) {

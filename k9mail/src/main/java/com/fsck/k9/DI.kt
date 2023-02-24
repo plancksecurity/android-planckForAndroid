@@ -32,7 +32,6 @@ object DI {
         bean { StorageManager.getInstance(get()) }
         bean { FolderNameFormatter(get()) }
         bean { createOAuthConfigurationProvider() }
-        factory { EmailAddressValidator() }
     }
 
     val appModules = listOf(
