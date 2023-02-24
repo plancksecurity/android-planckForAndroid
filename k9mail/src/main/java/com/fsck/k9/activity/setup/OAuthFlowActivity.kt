@@ -42,7 +42,12 @@ class OAuthFlowActivity : K9Activity() {
         setTitle(title)
 
         val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
-        val account = accountManager.getAccountAllowingIncomplete(accountUUid) ?: error("Account not found")
+        val account =
+            if (isTokenRevoked) {
+                accountManager.getAccount(accountUUid)
+            } else {
+                accountManager.getAccountAllowingIncomplete(accountUUid)
+            }  ?: error("Account not found")
 
         errorText = findViewById(R.id.error_text)
         signInProgress = findViewById(R.id.sign_in_progress)
