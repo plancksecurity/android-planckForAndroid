@@ -3,6 +3,7 @@ package com.fsck.k9.activity.setup
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -144,6 +145,15 @@ class OAuthFlowActivity : K9Activity() {
         val currentAccountUuid = intent.getStringExtra(EXTRA_ACCOUNT_UUID)
         if (currentAccountUuid != null && currentAccountUuid != accountUuid) {
             super.onTokenRevoked(accountUuid)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == android.R.id.home) {
+            finish()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
         }
     }
 
