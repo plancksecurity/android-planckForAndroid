@@ -6,7 +6,7 @@ import butterknife.Bind
 import butterknife.OnClick
 import com.fsck.k9.R
 import com.fsck.k9.pEp.models.PEpIdentity
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPGPIdentityView
+import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 
 class PEpStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader: ContactPictureLoader)
-    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusPGPIdentityView {
+    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
     //FIXME Abstract between this and PEPStatusSecureRenderer

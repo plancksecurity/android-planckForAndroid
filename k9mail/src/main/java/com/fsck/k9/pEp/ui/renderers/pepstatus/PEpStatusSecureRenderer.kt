@@ -15,8 +15,7 @@ import javax.inject.Inject
 
 
 class PEpStatusSecureRenderer  @Inject constructor(contactsPictureLoader: ContactPictureLoader)
-    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusPEpIdentityView,
-    PEpStatusPGPIdentityView {
+    : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusPEpIdentityView {
 
     override fun getLayout() = R.layout.pep_recipient_row_with_trustwords
 
