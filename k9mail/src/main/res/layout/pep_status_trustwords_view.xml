@@ -68,9 +68,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/fpr_title"
@@ -89,7 +87,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
-            android:text="@string/fpr_actual_title"
             android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="outlook@pep.security" />
@@ -109,7 +106,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
-            android:text="@string/fpr_new_device_title"
             android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             tools:text="your_account@pep.security" />
