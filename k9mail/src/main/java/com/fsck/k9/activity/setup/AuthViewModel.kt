@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.auth.JwtTokenDecoder
 import com.fsck.k9.auth.OAuthProviderType
@@ -51,10 +52,8 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
 
-    var automaticLoginDone = false
-        private set
-
     var needsMailSettingsDiscovery = false
+        private set
 
     private val _connectionSettings =
         MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
@@ -66,6 +65,10 @@ class AuthViewModel(
             discoverMailSettings(email, oAuthProviderType)
                 .also { _connectionSettings.value = Pair(Event(it), true) }
         }
+    }
+
+    fun discoverMailSettingsSuccess() {
+        needsMailSettingsDiscovery = false
     }
 
     private suspend fun discoverMailSettings(
@@ -125,29 +128,21 @@ class AuthViewModel(
         }
     }
 
-    fun login(account: Account, automatic: Boolean = false) {
+    fun login(account: Account) {
         this.account = account
 
         viewModelScope.launch {
-            if (automatic) {
-                if (automaticLoginDone) return@launch
-                else automaticLoginDone = true
+            val config = findOAuthConfiguration(account)
+            if (config == null) {
+                _uiState.value = AuthFlowState.NotSupported
+                return@launch
             }
-            loginSuspend(account)
-        }
-    }
 
-    private suspend fun loginSuspend(account: Account) {
-        val config = findOAuthConfiguration(account)
-        if (config == null) {
-            _uiState.value = AuthFlowState.NotSupported
-            return
-        }
-
-        try {
-            startLogin(account, config)
-        } catch (e: ActivityNotFoundException) {
-            _uiState.value = AuthFlowState.BrowserNotFound
+            try {
+                startLogin(account, config)
+            } catch (e: ActivityNotFoundException) {
+                _uiState.value = AuthFlowState.BrowserNotFound
+            }
         }
     }
 
@@ -253,18 +248,26 @@ class AuthViewModel(
 
     private fun updateEmailAddressFromOAuthToken(token: String): String? {
         var error: String? = null
+        val userError = "Could not retrieve email address from login response"
         jwtTokenDecoder.getEmail(token).onSuccess { newEmail ->
             newEmail?.let {
                 if (account?.email != newEmail) {
-                    account?.email = newEmail
-                    needsMailSettingsDiscovery = true
+                    if (getApplication<K9>().isRunningOnWorkProfile) {
+                        error = "Wrong email address was used for OAuth"
+                    } else {
+                        account?.email = newEmail
+                        needsMailSettingsDiscovery = true
+                    }
                 }
             } ?: let {
-                error = "Could not retrieve email address from login response"
+                error = userError
             }
-        }.onFailure {throwable ->
+        }.onFailure { throwable ->
             Timber.e(throwable)
-            error = throwable.message
+            error = userError
+            if (K9.isDebug()) {
+                error += "\n" + throwable.stackTraceToString()
+            }
         }
         return error
     }

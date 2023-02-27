@@ -3,6 +3,7 @@ package security.pEp.mdm
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
@@ -15,11 +16,14 @@ class UserProfileTest {
     private val userProfile = UserProfile()
     private val devicePolicyManager: DevicePolicyManager = mockk()
     private val componentName: ComponentName = mockk()
+    private val packageManager: PackageManager = mockk()
 
     @Before
     fun setUp() {
         mockkStatic(ContextCompat::class)
         every { componentName.packageName }.returns("")
+        every { context.packageManager }.returns(packageManager)
+        every { packageManager.hasSystemFeature(PackageManager.FEATURE_DEVICE_ADMIN) }.returns(true)
     }
 
     @Test
@@ -80,6 +84,20 @@ class UserProfileTest {
         verify { ContextCompat.getSystemService(context, DevicePolicyManager::class.java) }
         verify { devicePolicyManager.activeAdmins }
         verify { devicePolicyManager.isProfileOwnerApp(any()) }
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun `isRunningOnWorkProfile returns false if PackageManager has not required feature`() {
+        every { packageManager.hasSystemFeature(PackageManager.FEATURE_DEVICE_ADMIN) }.returns(false)
+
+
+        val result = userProfile.isRunningOnWorkProfile(context)
+
+
+        verify { packageManager.hasSystemFeature(PackageManager.FEATURE_DEVICE_ADMIN) }
+        verify(exactly = 0) { ContextCompat.getSystemService(context, DevicePolicyManager::class.java) }
+        verify { devicePolicyManager.wasNot(called) }
         assertEquals(false, result)
     }
 

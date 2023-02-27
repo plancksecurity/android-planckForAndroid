@@ -21,6 +21,7 @@ import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
+import security.pEp.provisioning.AccountMailSettingsProvision
 
 class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
 
@@ -30,6 +31,9 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     private lateinit var googleButton: Button
     private lateinit var microsoftButton: Button
     private lateinit var passwordFlowButton: Button
+    private lateinit var googleButtonCard: View
+    private lateinit var microsoftButtonCard: View
+    private lateinit var passwordFlowButtonCard: View
     private lateinit var termsAndConditionTextView: TextView
 
     override fun onCreateView(
@@ -39,6 +43,9 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     ): View {
         _binding = FragmentAccountSelectAuthBinding.inflate(inflater, container, false)
         setupViews()
+        if (k9.isRunningOnWorkProfile) {
+            updateUiFromProvisioningSettings()
+        }
         return binding.root
     }
 
@@ -46,11 +53,42 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         googleButton = binding.googleSignInButton
         microsoftButton = binding.microsoftSignInButton
         passwordFlowButton = binding.otherMethodSignInButton
+        googleButtonCard = binding.googleSignInButtonCard
+        microsoftButtonCard = binding.microsoftSignInButtonCard
+        passwordFlowButtonCard = binding.otherMethodSignInButtonCard
         termsAndConditionTextView = binding.termsAndConditions
 
         googleButton.setOnClickListener { startGoogleFlow() }
         microsoftButton.setOnClickListener { startMicrosoftFlow() }
         passwordFlowButton.setOnClickListener { startPasswordFlow() }
+    }
+
+    private fun updateUiFromProvisioningSettings() {
+        provisioningSettings.provisionedMailSettings?.let { mailSettings ->
+            binding.pleaseChooseSignInOption.isVisible = false
+            val buttonsToHide = getButtonsToHide(mailSettings, provisioningSettings.oAuthType)
+            hideViews(*buttonsToHide)
+        }
+    }
+
+    private fun getButtonsToHide(
+        mailSettings: AccountMailSettingsProvision,
+        oAuthType: OAuthProviderType?
+    ): Array<View> {
+        return when (mailSettings.incoming.authType) {
+            security.pEp.mdm.AuthType.XOAUTH2 ->
+                arrayOf(
+                    passwordFlowButtonCard,
+                    if (oAuthType == OAuthProviderType.GOOGLE) microsoftButtonCard
+                    else googleButtonCard
+                )
+            else ->
+                arrayOf(googleButtonCard, microsoftButtonCard)
+        }
+    }
+
+    private fun hideViews(vararg views: View) {
+        views.forEach { it.isVisible = false }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -95,7 +133,8 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
     }
 
     private fun startOAuthFlow(oAuthProviderType: OAuthProviderType) {
-        val account = initAccount().also { it.mandatoryOAuthProviderType = oAuthProviderType }
+        val email = if (k9.isRunningOnWorkProfile) provisioningSettings.email else null
+        val account = initAccount(email).also { it.mandatoryOAuthProviderType = oAuthProviderType }
         val intent = OAuthFlowActivity.buildLaunchIntent(requireContext(), account.uuid)
         requireActivity().startActivityForResult(intent, REQUEST_CODE_OAUTH)
     }
