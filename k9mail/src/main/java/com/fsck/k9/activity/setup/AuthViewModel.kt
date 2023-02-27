@@ -53,6 +53,7 @@ class AuthViewModel(
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
 
     var needsMailSettingsDiscovery = false
+        private set
 
     private val _connectionSettings =
         MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
@@ -64,6 +65,10 @@ class AuthViewModel(
             discoverMailSettings(email, oAuthProviderType)
                 .also { _connectionSettings.value = Pair(Event(it), true) }
         }
+    }
+
+    fun discoverMailSettingsSuccess() {
+        needsMailSettingsDiscovery = false
     }
 
     private suspend fun discoverMailSettings(
