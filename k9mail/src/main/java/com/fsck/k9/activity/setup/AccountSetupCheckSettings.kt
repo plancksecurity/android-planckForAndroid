@@ -119,8 +119,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             ?: error("Missing CheckDirection")
 
         if (savedInstanceState == null) {
-            authViewModel.needsMailSettingsDiscovery =
-                direction == CheckDirection.INCOMING && account.mandatoryOAuthProviderType == null
             if (mailSettingsDiscoveryRequired) {
                 discoverMailSettings()
             } else {
