@@ -30,4 +30,6 @@ interface ImportWizardFromPGPView {
     void prepareGroupCreationLoading();
 
     void prepareGroupJoiningLoading();
+
+    void setFingerPrintTexts(String myselfFprText, String partnerFprText);
 }
