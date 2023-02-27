@@ -213,6 +213,12 @@
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
 
+    <!-- FPR -->
+    <string name="trustwords_title">Trustwords</string>
+    <string name="fpr_title">Fingerprints</string>
+    <string name="fpr_actual_title">This device</string>
+    <string name="fpr_new_device_title">New device</string>
+
     <!-- Reset Partners Key-->
     <string name="reset_partner_keys_confirmation_action">Yes, Reset</string>
     <string name="reset_partner_keys_try_again_action">Try again</string>
