@@ -144,7 +144,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         }
 
         setUpToolbar(false);
-        setUpFloatingWindowWrapHeight();
+        setUpFloatingWindow();
 
     }
 

@@ -11,36 +11,23 @@ import com.fsck.k9.pEp.PepActivity;
 
 public abstract class WizardActivity extends PepActivity {
 
-    protected void setUpFloatingWindow(@DimenRes int widthDimen, @DimenRes int heightDimen) {
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        int width = getResources().getDimensionPixelSize(widthDimen);
-        int height = getResources().getDimensionPixelSize(heightDimen);
-        setUpFloatingWindowInternal(width, height);
-    }
-
-    protected void setUpFloatingWindowInternal(int width, int height) {
+    public void setUpFloatingWindow(@DimenRes int widthDimen, @DimenRes int heightDimen) {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.width = width;
-        params.height = height;
+        params.width = getResources().getDimensionPixelSize(widthDimen);
+        params.height = getResources().getDimensionPixelSize(heightDimen);
         params.alpha = 1;
         params.dimAmount = 0.6f;
         params.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         getWindow().setAttributes(params);
     }
 
-    protected void setUpFloatingWindow() {
-        setUpFloatingWindow(R.dimen.key_import_floating_width, R.dimen.key_import_floating_height);
+    public void setUpFloatingWindow() {
+        setUpFloatingWindow(R.dimen.key_import_floating_width, R.dimen.wizard_floating_height_full);
     }
 
-    protected void setUpFloatingWindow(@DimenRes int heightDimen) {
+    public void setUpFloatingWindow(@DimenRes int heightDimen) {
         setUpFloatingWindow(R.dimen.key_import_floating_width, heightDimen);
-    }
-
-    protected void setUpFloatingWindowWrapHeight() {
-        int height = WindowManager.LayoutParams.WRAP_CONTENT;
-        int width = getResources().getDimensionPixelSize(R.dimen.key_import_floating_width);
-        setUpFloatingWindowInternal(width, height);
     }
 
 }
