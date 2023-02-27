@@ -52,9 +52,6 @@ class AuthViewModel(
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
 
-    var automaticLoginDone = false
-        private set
-
     var needsMailSettingsDiscovery = false
 
     private val _connectionSettings =
@@ -126,28 +123,21 @@ class AuthViewModel(
         }
     }
 
-    fun login(account: Account, automatic: Boolean = false) {
+    fun login(account: Account) {
         this.account = account
 
         viewModelScope.launch {
-            if (automatic) {
-                automaticLoginDone = true
+            val config = findOAuthConfiguration(account)
+            if (config == null) {
+                _uiState.value = AuthFlowState.NotSupported
+                return@launch
             }
-            loginSuspend(account)
-        }
-    }
 
-    private suspend fun loginSuspend(account: Account) {
-        val config = findOAuthConfiguration(account)
-        if (config == null) {
-            _uiState.value = AuthFlowState.NotSupported
-            return
-        }
-
-        try {
-            startLogin(account, config)
-        } catch (e: ActivityNotFoundException) {
-            _uiState.value = AuthFlowState.BrowserNotFound
+            try {
+                startLogin(account, config)
+            } catch (e: ActivityNotFoundException) {
+                _uiState.value = AuthFlowState.BrowserNotFound
+            }
         }
     }
 

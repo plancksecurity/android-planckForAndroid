@@ -30,6 +30,16 @@ class OAuthFlowActivity : K9Activity() {
     private val isTokenRevoked: Boolean
         get() = intent.getBooleanExtra(EXTRA_TOKEN_REVOKED, false)
 
+    private val account: Account
+        get() {
+            val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
+            return if (isTokenRevoked) {
+                accountManager.getAccount(accountUUid)
+            } else {
+                accountManager.getAccountAllowingIncomplete(accountUUid)
+            }  ?: error("Account not found")
+        }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.account_setup_oauth)
@@ -41,13 +51,7 @@ class OAuthFlowActivity : K9Activity() {
             else R.string.account_setup_oauth_sign_in
         setTitle(title)
 
-        val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
-        val account =
-            if (isTokenRevoked) {
-                accountManager.getAccount(accountUUid)
-            } else {
-                accountManager.getAccountAllowingIncomplete(accountUUid)
-            }  ?: error("Account not found")
+        val account = this.account
 
         errorText = findViewById(R.id.error_text)
         signInProgress = findViewById(R.id.sign_in_progress)
@@ -82,11 +86,11 @@ class OAuthFlowActivity : K9Activity() {
         }
 
         when {
-            account.mandatoryOAuthProviderType == null || isTokenRevoked -> {
+            !account.automaticOAuthMode || isTokenRevoked -> {
                 signInButton.isVisible = true
             }
             savedInstanceState == null ->
-                startOAuthFlow(account, automatic = true) // start directly on AccountSetup flow
+                startOAuthFlow(account) // start directly on AccountSetup flow
         }
     }
 
@@ -104,7 +108,7 @@ class OAuthFlowActivity : K9Activity() {
                 finish()
             }
             AuthFlowState.Canceled -> {
-                if (authViewModel.automaticLoginDone) {
+                if (account.automaticOAuthMode) {
                     finish()
                 } else {
                     displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
@@ -124,18 +128,21 @@ class OAuthFlowActivity : K9Activity() {
         authViewModel.authResultConsumed()
     }
 
+    private val Account.automaticOAuthMode: Boolean
+        get() = mandatoryOAuthProviderType != null
+
     private fun displayErrorText(errorTextResId: Int, vararg args: Any?) {
         signInProgress.isVisible = false
         signInButton.isVisible = true
         errorText.text = getString(errorTextResId, *args)
     }
 
-    private fun startOAuthFlow(account: Account, automatic: Boolean = false) {
+    private fun startOAuthFlow(account: Account) {
         signInButton.isVisible = false
         signInProgress.isVisible = true
         errorText.text = ""
 
-        authViewModel.login(account, automatic)
+        authViewModel.login(account)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
