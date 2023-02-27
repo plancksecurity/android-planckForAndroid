@@ -7,7 +7,7 @@
     <dimen name="floating_height">380dp</dimen>
 
     <dimen name="key_import_floating_width">320dp</dimen>
-    <dimen name="wizard_floating_height_handshake_wizard">448dp</dimen>
+    <dimen name="wizard_floating_height_full">448dp</dimen>
     <dimen name="key_import_floating_height">330dp</dimen>
 
     <dimen name="key_import_floating_horizontal_margin">8dp</dimen>
