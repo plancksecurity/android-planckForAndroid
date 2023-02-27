@@ -62,8 +62,10 @@
     <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
+    <string name="pep_partner_simplified_format">%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Myself\n%1$s</string>
+    <string name="pep_myself_simplified_format">%1$s</string>
     <string name="pep_force_unprotected">Disable protection</string>
     <string name="pep_force_protected">Enable protection</string>
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
