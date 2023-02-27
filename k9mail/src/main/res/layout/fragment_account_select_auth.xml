@@ -19,8 +19,6 @@
             <TextView
                 android:id="@+id/welcome_to"
                 style="@style/SelectAuthScreenWelcomeTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="@string/account_select_auth_welcome_to"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -28,23 +26,15 @@
 
             <ImageView
                 android:id="@+id/pep_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="64dp"
-                android:layout_marginTop="24dp"
+                style="@style/AccountSelectAuthScreen.peplogo"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/welcome_to"
-                app:srcCompat="@drawable/ic_peplogo"
-                app:tint="@color/white_transparent_70"
                 tools:ignore="ContentDescription" />
 
             <TextView
                 android:id="@+id/please_choose_sign_in_option"
                 style="@style/SelectAuthScreenPleaseChoose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
                 android:text="@string/account_select_auth_please_select_the_option_to_sign_in"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
