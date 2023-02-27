@@ -23,7 +23,7 @@ public abstract class WizardActivity extends PepActivity {
     }
 
     public void setUpFloatingWindow() {
-        setUpFloatingWindow(R.dimen.key_import_floating_width, R.dimen.wizard_floating_height_full);
+        setUpFloatingWindow(R.dimen.key_import_floating_width, R.dimen.key_import_floating_height);
     }
 
     public void setUpFloatingWindow(@DimenRes int heightDimen) {

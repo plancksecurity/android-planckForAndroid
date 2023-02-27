@@ -62,10 +62,8 @@
     <string name="pep_ask_trustwords">Ask your partner in person or over the phone: What are your Trustwords\? Then compare to the correct answer shown below.</string>
     <string name="pep_complete_partner_format">Partner\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_partner_format">Partner\n%1$s</string>
-    <string name="pep_partner_simplified_format">%1$s</string>
     <string name="pep_complete_myself_format">Myself\n%1$s &lt;%2$s&gt;</string>
     <string name="pep_myself_format">Myself\n%1$s</string>
-    <string name="pep_myself_simplified_format">%1$s</string>
     <string name="pep_force_unprotected">Disable protection</string>
     <string name="pep_force_protected">Enable protection</string>
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
@@ -214,12 +212,6 @@
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
-
-    <!-- FPR -->
-    <string name="trustwords_title">Trustwords</string>
-    <string name="fpr_title">Fingerprints</string>
-    <string name="fpr_actual_title">This device</string>
-    <string name="fpr_new_device_title">New device</string>
 
     <!-- Reset Partners Key-->
     <string name="reset_partner_keys_confirmation_action">Yes, Reset</string>

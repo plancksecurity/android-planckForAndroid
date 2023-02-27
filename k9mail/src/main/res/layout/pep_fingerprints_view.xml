@@ -1,79 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/fingerprintLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:padding="8dp"
-        android:text="@string/fpr_title"
-        android:textColor="?android:attr/textColorPrimary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        tools:text="Fingerprints" />
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:orientation="vertical">
 
         <TextView
-            android:id="@+id/partnerLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            tools:text="Partner:" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Partner:"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:id="@+id/partnerLabel"/>
 
         <TextView
-            android:id="@+id/partnerFpr"
-            android:layout_width="340dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:fontFamily="@font/monospace_font_family"
-            android:gravity="start"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="20sp"
-            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D" />
+                android:layout_width="340dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D"
+                android:id="@+id/partnerFpr"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:fontFamily="@font/monospace_font_family" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:padding="8dp"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:layout_gravity="center_vertical">
 
         <TextView
-            android:id="@+id/myselfLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="14sp"
+            tools:text="Myself:"
             android:textStyle="bold"
-            tools:text="Myself:" />
+            android:textSize="14sp"
+            android:id="@+id/myselfLabel"/>
 
         <TextView
-            android:id="@+id/myselfFpr"
             android:layout_width="340dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:fontFamily="@font/monospace_font_family"
-            android:gravity="start"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D "
+            android:id="@+id/myselfFpr"
             android:textSize="20sp"
-            tools:text="A629 F620 F9C4 9310 39B2 7356 FACC 6EF3 3BD4 771D " />
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/monospace_font_family" />
     </LinearLayout>
 
 </LinearLayout>
