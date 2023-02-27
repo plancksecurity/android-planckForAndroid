@@ -70,8 +70,11 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         setSupportActionBar(toolbar)
 
+        direction = intent.getSerializableExtra(EXTRA_CHECK_DIRECTION) as CheckDirection?
+            ?: error("Missing CheckDirection")
         val mailSettingsDiscoveryRequired = intent.getBooleanExtra(
             EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, false)
+                && direction == CheckDirection.INCOMING
 
         authViewModel.init(activityResultRegistry, lifecycle)
 
@@ -115,12 +118,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         val accountUuid = intent.getStringExtra(EXTRA_ACCOUNT) ?: error("Missing account UUID")
         account = preferences.getAccountAllowingIncomplete(accountUuid) ?: error("Could not find account")
-        direction = intent.getSerializableExtra(EXTRA_CHECK_DIRECTION) as CheckDirection?
-            ?: error("Missing CheckDirection")
 
         if (savedInstanceState == null) {
-            authViewModel.needsMailSettingsDiscovery =
-                direction == CheckDirection.INCOMING && account.mandatoryOAuthProviderType == null
             if (mailSettingsDiscoveryRequired) {
                 discoverMailSettings()
             } else {
@@ -140,7 +139,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                         errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
                         showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
                     } else {
-                        authViewModel.needsMailSettingsDiscovery = false
+                        authViewModel.discoverMailSettingsSuccess()
                         account.setMailSettings(this, connectionSettings, true)
                         startLoginOrSettingsCheck()
                     }

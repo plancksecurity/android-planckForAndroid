@@ -110,6 +110,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
                 provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
             clientCertificateCheckBox.isChecked = isExternalAuth
         }
+        manualSetupButton.visibility = View.INVISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -159,7 +160,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private fun updateViewVisibility(usingCertificates: Boolean) {
         clientCertificateSpinner.isVisible = usingCertificates
         if (usingCertificates) {
-            if (k9.isRunningOnWorkProfile) {
+            if (BuildConfig.IS_ENTERPRISE) {
                 passwordLayout.visibility = View.GONE
             }
         }
