@@ -93,7 +93,7 @@ class PEpStatusTrustwordsPresenter(
             }
             identityView.enableButtons(true)
         }
-        if(identityView is PEpStatusPGPIdentityView) {
+        else if(identityView is PEpStatusPGPIdentityView) {
             myself = handshakeData.myself
             val partner = handshakeData.partner
             val contacts = if (permissionChecker.hasContactsPermission() &&
@@ -103,14 +103,14 @@ class PEpStatusTrustwordsPresenter(
 
             identityView.setLabelTexts(
                     if(myselfLabelText == myself.address) {
-                        String.format(context.getString(R.string.pep_myself_simplified_format), myself.address)
+                        String.format(context.getString(R.string.pep_myself_format), myself.address)
                     }
                     else {
                         String.format(context.getString(R.string.pep_complete_myself_format), myselfLabelText, myself.address)
                     },
 
                     if(partnerLabelText == partner.address) {
-                        String.format(context.getString(R.string.pep_partner_simplified_format), partner.address)
+                        String.format(context.getString(R.string.pep_myself_format), partner.address)
                     }
                     else {
                         String.format(context.getString(R.string.pep_complete_partner_format), partnerLabelText, partner.address)
