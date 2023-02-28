@@ -117,6 +117,7 @@
         <attr name="dialogBodyDefaultTextColor" format="reference|color"/>
         <attr name="intenseColorOnBackground" format="reference|color"/>
         <attr name="removeRecipientButtonColor" format="reference|color"/>
+        <attr name="selectAuthKeyIconColor" format="reference|color"/>
     </declare-styleable>
 
     <declare-styleable name="SliderPreference">

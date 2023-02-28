@@ -1,114 +1,87 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/AccountSelectAuthScreen"
-    android:orientation="vertical"
     tools:context="com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment">
 
-    <ScrollView
+    <TextView
+        android:id="@+id/welcome_to"
+        style="@style/SelectAuthScreenWelcomeTo"
+        android:text="@string/account_select_auth_welcome_to"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/pep_logo"
+        style="@style/AccountSelectAuthScreen.peplogo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/welcome_to"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/please_choose_sign_in_option"
+        style="@style/SelectAuthScreenPleaseChoose"
+        android:text="@string/account_select_auth_please_select_the_option_to_sign_in"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pep_logo" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/microsoft_sign_in_button_card"
+        style="@style/SelectAuthScreenCardViews"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true"
-        tools:context="com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/google_sign_in_button_card"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/microsoft_sign_in_button"
+            style="@style/SelectAuthScreenButtons"
+            android:drawableStart="@drawable/ico_windows"
+            android:text="@string/account_setup_choose_auth_sign_in_with_microsoft" />
 
-            <TextView
-                android:id="@+id/welcome_to"
-                style="@style/SelectAuthScreenWelcomeTo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/account_select_auth_welcome_to"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    </androidx.cardview.widget.CardView>
 
-            <ImageView
-                android:id="@+id/pep_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="64dp"
-                android:layout_marginTop="24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/welcome_to"
-                app:srcCompat="@drawable/ic_peplogo"
-                app:tint="@color/white_transparent_70"
-                tools:ignore="ContentDescription" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/google_sign_in_button_card"
+        style="@style/SelectAuthScreenCardViews"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/other_method_sign_in_button_card"
+        app:layout_constraintTop_toBottomOf="@id/microsoft_sign_in_button_card">
 
-            <TextView
-                android:id="@+id/please_choose_sign_in_option"
-                style="@style/SelectAuthScreenPleaseChoose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="@string/account_select_auth_please_select_the_option_to_sign_in"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pep_logo" />
+        <Button
+            android:id="@+id/google_sign_in_button"
+            style="@style/SelectAuthScreenButtons"
+            android:drawableStart="@drawable/ico_google"
+            android:text="@string/account_setup_oauth_sign_in_with_google" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/microsoft_sign_in_button_card"
-                style="@style/SelectAuthScreenCardViews"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/google_sign_in_button_card"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed">
+    </androidx.cardview.widget.CardView>
 
-                <Button
-                    android:id="@+id/microsoft_sign_in_button"
-                    style="@style/SelectAuthScreenButtons"
-                    android:drawableStart="@drawable/ico_windows"
-                    android:text="@string/account_setup_choose_auth_sign_in_with_microsoft" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/other_method_sign_in_button_card"
+        style="@style/SelectAuthScreenCardViews"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/google_sign_in_button_card">
 
-            </androidx.cardview.widget.CardView>
+        <Button
+            android:id="@+id/other_method_sign_in_button"
+            style="@style/SelectAuthScreenButtons"
+            android:drawableStart="@drawable/ico_key"
+            android:text="@string/account_setup_choose_auth_sign_in_with_password" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/google_sign_in_button_card"
-                style="@style/SelectAuthScreenCardViews"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toTopOf="@id/other_method_sign_in_button_card"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/microsoft_sign_in_button_card">
-
-                <Button
-                    android:id="@+id/google_sign_in_button"
-                    style="@style/SelectAuthScreenButtons"
-                    android:drawableStart="@drawable/ico_google"
-                    android:text="@string/account_setup_oauth_sign_in_with_google" />
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/other_method_sign_in_button_card"
-                style="@style/SelectAuthScreenCardViews"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/google_sign_in_button_card">
-
-                <Button
-                    android:id="@+id/other_method_sign_in_button"
-                    style="@style/SelectAuthScreenButtons"
-                    android:drawableStart="@drawable/ico_key"
-                    android:text="@string/account_setup_choose_auth_sign_in_with_password" />
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/terms_and_conditions"
         style="@style/SelectAuthScreenTermsAndConditions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:text="Terms and Conditions" />
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
