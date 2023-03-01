@@ -26,7 +26,10 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 public class MessageWebView extends RigidWebView {
 
-    private static final String NEW_BODY_START = "<body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
+    private String NEW_BODY_START = "<head><style type=\"text/css\">body{color: " +
+            getWebviewTextColor() +
+            ";}</style></head><body style=\"overflow-wrap: break-word; word-wrap: break-word;\">";
+
     private OnHtmlSetListener onHtmlSetListener;
 
     public MessageWebView(Context context) {
@@ -154,6 +157,21 @@ public class MessageWebView extends RigidWebView {
     private String forceBreakWordsHeader(String htmlText) {
         //change body start tag
         return htmlText.replace("<body>", NEW_BODY_START);
+    }
+
+    @NonNull
+    private String getWebviewTextColor() {
+        //There is no straightforward method to just set the text color in a webview
+        //as it can be done with the background color.
+        //There is a way to replace HEAD Style for making the webview apply a text color
+        return ThemeManager.isDarkTheme() ?
+                getHexColorByResourceId(R.color.dark_theme_text_color_primary) :
+                getHexColorByResourceId(R.color.text_for_white_background);
+    }
+
+    @NonNull
+    private String getHexColorByResourceId(int color) {
+        return String.format("#%06X", (0xFFFFFF & getResources().getColor(color)));
     }
 
     private void setHtmlContent(@NonNull String htmlText) {
