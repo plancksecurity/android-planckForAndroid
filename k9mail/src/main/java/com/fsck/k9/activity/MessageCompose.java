@@ -380,6 +380,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         unsafeDeliveryWarning = findViewById(R.id.unsecure_recipients_warning);
         unsafeDeliveryWarningSeparator = findViewById(R.id.unsecure_recipients_warning_separator);
+        unsafeDeliveryWarning.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);

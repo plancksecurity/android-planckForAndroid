@@ -150,6 +150,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         return recipientMvpView.getBccAddresses();
     }
 
+    public void clearUnsecureRecipients() {
+        recipientMvpView.clearUnsecureRecipients();
+    }
+
     private List<Recipient> getAllRecipients() {
         ArrayList<Recipient> result = new ArrayList<>();
 
@@ -918,11 +922,11 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 public void onLoaded(Rating rating) {
                     if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
                         showDefaultStatus();
-                        recipientMvpView.handleUnsecureDeliveryWarning(false);
+                        recipientMvpView.handleUnsecureDeliveryWarning(0);
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
-                        handleUnsecureDeliveryWarning(rating);
+                        handleUnsecureDeliveryWarning();
                     }
                     recipientMvpView.messageRatingLoaded();
                 }
@@ -931,19 +935,25 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 public void onError(Throwable throwable) {
                     showDefaultStatus();
                     recipientMvpView.messageRatingLoaded();
-                    handleUnsecureDeliveryWarning(Rating.pEpRatingUndefined);
+                    handleUnsecureDeliveryWarning();
                 }
             });
         }
         recipientMvpView.messageRatingLoaded();
     }
 
-    private void handleUnsecureDeliveryWarning(Rating rating) {
-        recipientMvpView.handleUnsecureDeliveryWarning(
-                K9.ispEpForwardWarningEnabled()
-                        && account.ispEpPrivacyProtected()
-                        && PEpUtils.isRatingUnsecure(rating)
-        );
+    private void handleUnsecureDeliveryWarning() {
+        int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
+                && account.ispEpPrivacyProtected()
+                ? getUnsecureRecipientsCount()
+                : 0;
+        recipientMvpView.handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    private int getUnsecureRecipientsCount() {
+        return recipientMvpView.getToUnsecureRecipientCount() +
+                recipientMvpView.getCcUnsecureRecipientCount() +
+                recipientMvpView.getBccUnsecureRecipientCount();
     }
 
     private void showDefaultStatus() {

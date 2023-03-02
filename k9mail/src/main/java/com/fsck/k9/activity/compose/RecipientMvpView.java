@@ -304,6 +304,24 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         return bccView.getObjects();
     }
 
+    public int getToUnsecureRecipientCount() {
+        return toView.getUnsecureRecipientCount();
+    }
+
+    public int getCcUnsecureRecipientCount() {
+        return ccView.getUnsecureRecipientCount();
+    }
+
+    public int getBccUnsecureRecipientCount() {
+        return bccView.getUnsecureRecipientCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        toView.clearUnsecureRecipients();
+        ccView.clearUnsecureRecipients();
+        bccView.clearUnsecureRecipients();
+    }
+
     public boolean recipientToHasUncompletedText() {
         return toView.hasUncompletedText();
     }
@@ -506,9 +524,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    public void handleUnsecureDeliveryWarning(boolean unsecure) {
-        if (unsecure) {
-            activity.showUnsecureDeliveryWarning();
+    public void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (unsecureRecipientsCount > 0) {
+            activity.showUnsecureDeliveryWarning(unsecureRecipientsCount);
         } else {
             activity.hideUnsecureDeliveryWarning();
         }
