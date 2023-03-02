@@ -18,6 +18,9 @@ class UnsecureAddressHelper @Inject constructor(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private lateinit var view: RecipientSelectViewContract
 
+    val unsecureAddressChannelCount: Int
+        get() = unsecureAddresses.size
+
     fun initialize(view: RecipientSelectViewContract) {
         this.view = view
     }
@@ -106,6 +109,10 @@ class UnsecureAddressHelper @Inject constructor(
 
     fun isUnsecureChannel(): Boolean {
         return unsecureAddresses.isNotEmpty()
+    }
+
+    fun isUnsecure(address: Address): Boolean {
+        return unsecureAddresses.contains(address)
     }
 
     fun hasHiddenUnsecureAddressChannel(

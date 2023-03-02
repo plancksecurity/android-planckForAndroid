@@ -571,6 +571,18 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return address;
     }
 
+    public int getUnsecureRecipientCount() {
+        return unsecureAddressHelper.getUnsecureAddressChannelCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        for (Recipient recipient : getObjects()) {
+            if (unsecureAddressHelper.isUnsecure(recipient.getAddress())) {
+                removeObject(recipient);
+            }
+        }
+    }
+
     public void emptyAddresses() {
         for (Recipient recipient : getObjects()) {
             removeObject(recipient);
