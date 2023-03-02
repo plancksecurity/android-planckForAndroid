@@ -165,17 +165,20 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     fun resetpEpData(id: Identity) {
-        try {
-            pEpProvider.keyResetIdentity(id, null)
-            refreshRating(object : SimpleResultCallback<Rating>() {
-                override fun onLoaded(rating: Rating) {
-                    onRatingChanged(rating)
-                    onTrustReset(rating, id)
-                }
-            })
-            view.showResetPartnerKeySuccessFeedback()
-        } catch (e: Exception) {
-            view.showResetPartnerKeyErrorFeedback()
+        uiScope.launch {
+            withContext(Dispatchers.IO) {
+                kotlin.runCatching { pEpProvider.keyResetIdentity(id, null) }
+            }.onSuccess {
+                refreshRating(object : SimpleResultCallback<Rating>() {
+                    override fun onLoaded(rating: Rating) {
+                        onRatingChanged(rating)
+                        onTrustReset(rating, id)
+                    }
+                })
+                view.showResetPartnerKeySuccessFeedback()
+            }.onFailure {
+                view.showResetPartnerKeyErrorFeedback()
+            }
         }
     }
 
