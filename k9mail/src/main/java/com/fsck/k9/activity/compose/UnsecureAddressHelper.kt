@@ -107,10 +107,6 @@ class UnsecureAddressHelper @Inject constructor(
         unsecureAddresses.remove(address)
     }
 
-    fun isUnsecureChannel(): Boolean {
-        return unsecureAddresses.isNotEmpty()
-    }
-
     fun isUnsecure(address: Address): Boolean {
         return unsecureAddresses.contains(address)
     }
