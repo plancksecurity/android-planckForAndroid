@@ -172,8 +172,7 @@ public class MessageWebView extends RigidWebView {
 
     @NonNull
     private String getHexColorByResourceId(int color) {
-        Settings.ColorSetting colorSetting = new Settings.ColorSetting(0);
-        return colorSetting.toPrettyString(getResources().getColor(color));
+        return Settings.ColorSetting.formatColor(getResources().getColor(color));
     }
 
     private void setHtmlContent(@NonNull String htmlText) {
