@@ -926,7 +926,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
-                        handleUnsecureDeliveryWarning();
                     }
                     recipientMvpView.messageRatingLoaded();
                 }
@@ -935,14 +934,13 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 public void onError(Throwable throwable) {
                     showDefaultStatus();
                     recipientMvpView.messageRatingLoaded();
-                    handleUnsecureDeliveryWarning();
                 }
             });
         }
         recipientMvpView.messageRatingLoaded();
     }
 
-    private void handleUnsecureDeliveryWarning() {
+    public void handleUnsecureDeliveryWarning() {
         int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
                 && account.ispEpPrivacyProtected()
                 ? getUnsecureRecipientsCount()

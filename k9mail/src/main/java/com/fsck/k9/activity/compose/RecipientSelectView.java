@@ -153,6 +153,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             public void onTokenRemoved(Recipient token) {
                 if (listener != null) {
                     unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
+                    listener.handleUnsecureTokenWarning();
                     listener.onTokenRemoved(token);
                 }
             }
@@ -204,6 +205,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
@@ -211,6 +215,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
             @Override
             public void onError(Throwable throwable) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
@@ -901,6 +908,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
+        void handleUnsecureTokenWarning();
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {
