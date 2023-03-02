@@ -75,6 +75,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     public static final String STATE_RATING = "rating";
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
+    private static final int ZERO_RECIPIENTS = 0;
 
 
     // transient state, which is either obtained during construction and initialization, or cached
@@ -922,7 +923,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 public void onLoaded(Rating rating) {
                     if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
                         showDefaultStatus();
-                        recipientMvpView.handleUnsecureDeliveryWarning(0);
+                        recipientMvpView.handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
@@ -944,7 +945,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
                 && account.ispEpPrivacyProtected()
                 ? getUnsecureRecipientsCount()
-                : 0;
+                : ZERO_RECIPIENTS;
         recipientMvpView.handleUnsecureDeliveryWarning(unsecureRecipientsCount);
     }
 
