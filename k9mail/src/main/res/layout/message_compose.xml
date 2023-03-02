@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar_layout" />
+    <TextView
+        android:id="@+id/unsecure_recipients_warning"
+        style="@style/UnsecureRecipientsWarning"
+        tools:visibility="visible"
+        tools:text="1 unsecure recipient. Tap here to remove it."/>
+
+    <View
+        android:id="@+id/unsecure_recipients_warning_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 
     <ScrollView
         android:layout_width="match_parent"
