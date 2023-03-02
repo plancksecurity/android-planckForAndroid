@@ -3,8 +3,6 @@ package com.fsck.k9.pEp.ui.privacy.status
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks
 import com.fsck.k9.activity.MessageReference
 import com.fsck.k9.mail.Address
@@ -20,6 +18,7 @@ import com.fsck.k9.pEp.models.mappers.PEpIdentityMapper
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.Rating
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class PEpStatusPresenter @Inject internal constructor(
@@ -39,17 +38,7 @@ class PEpStatusPresenter @Inject internal constructor(
     private var isAlwaysSecure = false
     private lateinit var displayHtml: DisplayHtml
 
-    private val mainThreadHandler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            val newIdentities = msg.obj as List<PEpIdentity>
-            when (msg.what) {
-                ON_TRUST_RESET -> trustWasReset(newIdentities, Rating.getByInt(msg.arg1))
-                UPDATE_IDENTITIES -> identitiesUpdated(newIdentities)
-                LOAD_RECIPIENTS -> recipientsLoaded(newIdentities)
-            }
-        }
-    }
+    private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     fun initialize(
         pEpStatusView: PEpStatusView, uiCache: PePUIArtefactCache, pEpProvider: PEpProvider,
@@ -78,8 +67,10 @@ class PEpStatusPresenter @Inject internal constructor(
 
     fun loadRecipients() {
         val recipients: List<Identity> = cache.recipients
-        val workerThread = WorkerThread(recipients, LOAD_RECIPIENTS)
-        workerThread.start()
+        uiScope.launch {
+            val newIdentities = mapRecipients(recipients)
+            recipientsLoaded(newIdentities)
+        }
     }
 
     private fun recipientsLoaded(newIdentities: List<PEpIdentity>) {
@@ -116,9 +107,11 @@ class PEpStatusPresenter @Inject internal constructor(
             })
     }
 
-    private fun onTrustReset(rating: Rating?, id: Identity) {
-        val workerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
-        workerThread.start()
+    private fun onTrustReset(rating: Rating, id: Identity) {
+        uiScope.launch {
+            val newIdentities = mapRecipients(identities)
+            trustWasReset(newIdentities, rating)
+        }
     }
 
     private fun trustWasReset(newIdentities: List<PEpIdentity>, rating: Rating) {
@@ -186,7 +179,7 @@ class PEpStatusPresenter @Inject internal constructor(
         }
     }
 
-    private fun refreshRating(callback: PEpProvider.ResultCallback<Rating?>) {
+    private fun refreshRating(callback: PEpProvider.ResultCallback<Rating>) {
         if (isMessageIncoming) {
             pEpProvider.incomingMessageRating(localMessage, callback)
         } else {
@@ -197,8 +190,10 @@ class PEpStatusPresenter @Inject internal constructor(
 
     private fun updateIdentities() {
         val recipients = cache.recipients
-        val workerThread = WorkerThread(recipients, UPDATE_IDENTITIES)
-        workerThread.start()
+        uiScope.launch {
+            val newIdentities = mapRecipients(recipients)
+            identitiesUpdated(newIdentities)
+        }
     }
 
     private fun identitiesUpdated(newIdentities: List<PEpIdentity>) {
@@ -275,39 +270,12 @@ class PEpStatusPresenter @Inject internal constructor(
         view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure)
     }
 
-    private inner class WorkerThread : Thread {
-        private var identities: List<Identity>
-        private var what: Int
-        private var rating: Rating? = null
-
-        constructor(identities: List<Identity>, what: Int) {
-            this.identities = identities
-            this.what = what
-        }
-
-        constructor(identities: List<PEpIdentity>, what: Int, rating: Rating?) {
-            this.identities = ArrayList<Identity>(identities)
-            this.what = what
-            this.rating = rating
-        }
-
-        override fun run() {
-            val updatedIdentities = pEpIdentityMapper.mapRecipients(identities)
-            val childThreadMessage = Message()
-            childThreadMessage.what = what
-            childThreadMessage.obj = updatedIdentities
-            if (rating != null) {
-                childThreadMessage.arg1 = rating!!.value
-            }
-            mainThreadHandler.sendMessage(childThreadMessage)
-        }
+    private suspend fun mapRecipients(recipients: List<Identity>) = withContext(Dispatchers.IO) {
+        pEpIdentityMapper.mapRecipients(recipients)
     }
 
     companion object {
         private const val STATE_FORCE_UNENCRYPTED = "forceUnencrypted"
         private const val STATE_ALWAYS_SECURE = "alwaysSecure"
-        private const val LOAD_RECIPIENTS = 1
-        private const val ON_TRUST_RESET = 2
-        private const val UPDATE_IDENTITIES = 3
     }
 }
