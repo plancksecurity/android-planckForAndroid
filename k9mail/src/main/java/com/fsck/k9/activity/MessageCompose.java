@@ -39,7 +39,6 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -277,7 +276,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PEpProvider pEp;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
-    private FeedbackTools.Feedback unsafeDeliveryWarning;
+    private TextView unsafeDeliveryWarning;
+    private View unsafeDeliveryWarningSeparator;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -377,6 +377,9 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
+
+        unsafeDeliveryWarning = findViewById(R.id.unsecure_recipients_warning);
+        unsafeDeliveryWarningSeparator = findViewById(R.id.unsecure_recipients_warning_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -2043,27 +2046,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         pEpSecurityStatusLayout.setRating(rating, forceHide);
     }
 
-    public void showUnsecureDeliveryWarning() {
-        if (unsafeDeliveryWarning == null) {
-            unsafeDeliveryWarning = FeedbackTools.createIndefiniteFeedback(
-                    getRootView(),
-                    getString(R.string.compose_unsecure_delivery_warning),
-                    ContextCompat.getColor(
-                            this, R.color.compose_unsecure_delivery_warning),
-                    ContextCompat.getColor(
-                            this, R.color.compose_unsecure_delivery_warning_text)
-            );
-        }
-        if (unsafeDeliveryWarning != null && !unsafeDeliveryWarning.isShown()) {
-            unsafeDeliveryWarning.show();
-        }
+    public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        unsafeDeliveryWarning.setText(getResources().getQuantityString(
+                R.plurals.compose_unsecure_delivery_warning,
+                unsecureRecipientsCount,
+                unsecureRecipientsCount
+        ));
+        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
+        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
     }
 
     public void hideUnsecureDeliveryWarning() {
-        if (unsafeDeliveryWarning != null) {
-            unsafeDeliveryWarning.dismiss();
-            unsafeDeliveryWarning = null;
-        }
+        unsafeDeliveryWarning.setVisibility(View.GONE);
+        unsafeDeliveryWarningSeparator.setVisibility(View.GONE);
     }
 
     private Handler internalMessageHandler = new Handler() {
