@@ -7,7 +7,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +25,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.test.core.app.ApplicationProvider;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.mail.Address;
@@ -31,6 +35,7 @@ import com.fsck.k9.pEp.PEpProvider;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.openintents.openpgp.IOpenPgpService2;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -282,6 +287,76 @@ public class RecipientPresenterTest extends RobolectricTest {
     public void onBccTokenRemoved_notifiesListenerOfRecipientChange() {
         recipientPresenter.onBccTokenRemoved();
         verify(listener).onRecipientsChanged();
+    }
+
+    @Test
+    public void clearUnsecureRecipients_callsViewMethod() {
+        recipientPresenter.clearUnsecureRecipients();
+
+        verify(recipientMvpView).clearUnsecureRecipients();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_usesViewToHandleWarning() {
+        doReturn(true).when(account).ispEpPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(true);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView).getToUnsecureRecipientCount();
+            verify(recipientMvpView).getCcUnsecureRecipientCount();
+            verify(recipientMvpView).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).handleUnsecureDeliveryWarning(6);
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfPEpIsDisabledForAccount() {
+        doReturn(false).when(account).ispEpPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(true);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).handleUnsecureDeliveryWarning(0);
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfWarningSettingNotEnabled() {
+        doReturn(true).when(account).ispEpPrivacyProtected();
+        doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
+        doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
+        try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
+            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(false);
+
+
+            recipientPresenter.handleUnsecureDeliveryWarning();
+
+
+            verify(recipientMvpView, never()).getToUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
+            verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
+            verify(recipientMvpView).handleUnsecureDeliveryWarning(0);
+        }
     }
 
     private void setupCryptoProvider() throws android.os.RemoteException {

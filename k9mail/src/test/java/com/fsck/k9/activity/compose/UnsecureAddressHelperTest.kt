@@ -98,7 +98,7 @@ class UnsecureAddressHelperTest {
 
 
         verify { callback.onLoaded(Rating.pEpRatingUndefined) }
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, presenter.unsecureAddressChannelCount)
     }
 
     @Test
@@ -115,7 +115,7 @@ class UnsecureAddressHelperTest {
         presenter.getRecipientRating(recipient, false, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, presenter.unsecureAddressChannelCount)
     }
 
     @Test
@@ -169,7 +169,7 @@ class UnsecureAddressHelperTest {
         presenter.getRecipientRating(recipient, false, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, presenter.unsecureAddressChannelCount)
     }
 
     @Test
@@ -317,6 +317,6 @@ class UnsecureAddressHelperTest {
         presenter.getRecipientRating(recipient, true, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, presenter.unsecureAddressChannelCount)
     }
 }
