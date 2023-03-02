@@ -22,6 +22,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.preferences.Settings;
 
 
 public class MessageWebView extends RigidWebView {
@@ -171,7 +172,8 @@ public class MessageWebView extends RigidWebView {
 
     @NonNull
     private String getHexColorByResourceId(int color) {
-        return String.format("#%06X", (0xFFFFFF & getResources().getColor(color)));
+        Settings.ColorSetting colorSetting = new Settings.ColorSetting(0);
+        return colorSetting.toPrettyString(getResources().getColor(color));
     }
 
     private void setHtmlContent(@NonNull String htmlText) {

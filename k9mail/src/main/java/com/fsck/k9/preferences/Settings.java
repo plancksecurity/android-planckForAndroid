@@ -403,8 +403,8 @@ public class Settings {
         }
     }
 
-    static class ColorSetting extends SettingsDescription<Integer> {
-        ColorSetting(int defaultValue) {
+    public static class ColorSetting extends SettingsDescription<Integer> {
+        public ColorSetting(int defaultValue) {
             super(defaultValue);
         }
 
