@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.auth.OAuthProviderType;
 import com.fsck.k9.backends.RealOAuthTokenProviderFactory;
@@ -23,7 +24,9 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Folder.FolderClass;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.NetworkType;
+import com.fsck.k9.mail.ServerSettings;
 import com.fsck.k9.mail.Store;
+import com.fsck.k9.mail.Transport;
 import com.fsck.k9.mail.filter.Base64;
 import com.fsck.k9.mail.oauth.OAuth2TokenProvider;
 import com.fsck.k9.mail.oauth.OAuthTokenProviderFactory;
@@ -33,6 +36,7 @@ import com.fsck.k9.mail.store.StoreConfig;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.mailstore.StorageManager.StorageProvider;
+import com.fsck.k9.pEp.ui.ConnectionSettings;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -73,14 +77,22 @@ public class Account implements BaseAccount, StoreConfig {
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
     private boolean pEpSyncEnabled;
     private String oAuthState;
-    private OAuthProviderType oAuthProviderType;
+    private OAuthProviderType mandatoryOAuthProviderType;
 
-    public OAuthProviderType getOAuthProviderType() {
-        return oAuthProviderType;
+    public OAuthProviderType getMandatoryOAuthProviderType() {
+        return mandatoryOAuthProviderType;
     }
 
-    public void setOAuthProviderType(OAuthProviderType oAuthProviderType) {
-        this.oAuthProviderType = oAuthProviderType;
+    /**
+     * Only to be done when the OAuth type is set as mandatory. This can be:
+     * - when the user chooses this type of provider at the beginning of the account setup
+     * - when the IT Manager sets this value via MDM
+     * NOT to be used when the OAuth type is guessed from mail settings (case of Google)
+     *
+     * @param oAuthProviderType [OAuthProviderType] to be set as mandatory.
+     */
+    public void setMandatoryOAuthProviderType(OAuthProviderType oAuthProviderType) {
+        this.mandatoryOAuthProviderType = oAuthProviderType;
     }
 
     public synchronized String getOAuthState() {
@@ -101,6 +113,46 @@ public class Account implements BaseAccount, StoreConfig {
 
     public void setpEpPrivacyProtection(ManageableSetting<Boolean> config) {
         pEpPrivacyProtected = config;
+    }
+
+    public void setMailSettings(
+            Context context,
+            ConnectionSettings connectionSettings,
+            boolean keepPasswords
+    ) {
+        ServerSettings incomingServerSettings = connectionSettings.getIncoming();
+        ServerSettings outgoingServerSettings = connectionSettings.getOutgoing();
+
+        if (keepPasswords) {
+            String incomingPassword = null;
+            String outgoingPassword = null;
+            if (storeUri != null) {
+                incomingPassword = RemoteStore.decodeStoreUri(storeUri).password;
+            }
+            if (transportUri != null) {
+                outgoingPassword = Transport.decodeTransportUri(transportUri).password;
+            }
+            incomingServerSettings = incomingServerSettings.newPassword(incomingPassword);
+            outgoingServerSettings = outgoingServerSettings.newPassword(outgoingPassword);
+        }
+        storeUri = RemoteStore.createStoreUri(incomingServerSettings);
+        transportUri = Transport.createTransportUri(outgoingServerSettings);
+        deletePolicy = AccountCreator.getDefaultDeletePolicy(incomingServerSettings.type);
+        setupFolderNames(context, incomingServerSettings.host.toLowerCase());
+    }
+
+    private void setupFolderNames(Context context, String domain) {
+        draftsFolderName = context.getString(R.string.special_mailbox_name_drafts);
+        trashFolderName = context.getString(R.string.special_mailbox_name_trash);
+        sentFolderName = context.getString(R.string.special_mailbox_name_sent);
+        archiveFolderName = context.getString(R.string.special_mailbox_name_archive);
+
+        // Yahoo! has a special folder for Spam, called "Bulk Mail".
+        if (domain != null && domain.endsWith(".yahoo.com")) {
+            spamFolderName = "Bulk Mail";
+        } else {
+            spamFolderName = context.getString(R.string.special_mailbox_name_spam);
+        }
     }
 
     public void setpEpPrivacyProtection(boolean privacyProtection) {
@@ -570,7 +622,7 @@ public class Account implements BaseAccount, StoreConfig {
         }
         oAuthState = storage.getString(accountUuid + ".oAuthState", null);
         String oAuthProvider = storage.getString(accountUuid + ".oAuthProviderType", null);
-        oAuthProviderType = oAuthProvider != null
+        mandatoryOAuthProviderType = oAuthProvider != null
                 ? OAuthProviderType.valueOf(oAuthProvider)
                 : null;
     }
@@ -860,7 +912,7 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".oAuthState", oAuthState);
         editor.putString(
                 accountUuid + ".oAuthProviderType",
-                oAuthProviderType != null ? oAuthProviderType.toString() : null
+                mandatoryOAuthProviderType != null ? mandatoryOAuthProviderType.toString() : null
         );
 
         for (NetworkType type : NetworkType.values()) {

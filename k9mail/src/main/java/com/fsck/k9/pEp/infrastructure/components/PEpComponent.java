@@ -22,6 +22,7 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOptionsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
 import security.pEp.ui.keyimport.KeyImportActivity;
@@ -105,4 +106,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(CalendarInviteLayout layout);
 
     void inject(MdmSettingsFeedbackActivity activity);
+
+    void inject(AccountSetupSelectAuthFragment fragment);
 }

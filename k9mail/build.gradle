@@ -49,7 +49,8 @@ dependencies {
     implementation project(':plugins:openpgp-api-lib:openpgp-api')
     implementation project(':foldableFolders')
 
-    implementation 'net.openid:appauth:0.11.1'
+    implementation "net.openid:appauth:${versions.appauth}"
+    implementation "com.auth0.android:jwtdecode:${versions.jwtDecode}"
     implementation "com.squareup.okio:okio:${versions.okio}"
     implementation "commons-io:commons-io:${versions.commonsIo}"
     implementation "androidx.legacy:legacy-support-v4:${versions.legacySupport}"
@@ -116,8 +117,8 @@ dependencies {
         exclude module: 'support-annotations'
     }
     //implementation "androidx.annotation:annotation:1.1.0"
-    androidTestImplementation 'androidx.test:rules:1.4.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.4.0'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.5.1'
     androidTestImplementation "androidx.test.uiautomator:uiautomator:${versions.uiAutomator}"
 
     testImplementation "org.robolectric:robolectric:${versions.robolectric}"
@@ -342,6 +343,10 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
 }

@@ -11,31 +11,36 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toUri
 import androidx.lifecycle.*
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.auth.JwtTokenDecoder
+import com.fsck.k9.auth.OAuthProviderType
+import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
+import com.fsck.k9.pEp.infrastructure.livedata.Event
+import com.fsck.k9.pEp.ui.ConnectionSettings
+import com.fsck.k9.pEp.ui.fragments.toServerSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationException
-import net.openid.appauth.AuthorizationRequest
-import net.openid.appauth.AuthorizationResponse
-import net.openid.appauth.AuthorizationService
-import net.openid.appauth.AuthorizationServiceConfiguration
-import net.openid.appauth.ResponseTypeValues
+import net.openid.appauth.*
 import timber.log.Timber
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
+private const val SCOPE_OPENID = "openid"
+private const val SCOPE_EMAIL = "email"
 
 class AuthViewModel(
     application: Application,
     private val accountManager: Preferences,
-    private val oAuthConfigurationProvider: OAuthConfigurationProvider
+    private val oAuthConfigurationProvider: OAuthConfigurationProvider,
+    private val jwtTokenDecoder: JwtTokenDecoder,
+    private val mailSettingsDiscovery: ProvidersXmlDiscovery,
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
     private val authState = AuthState()
@@ -46,6 +51,45 @@ class AuthViewModel(
 
     private val _uiState = MutableStateFlow<AuthFlowState>(AuthFlowState.Idle)
     val uiState: StateFlow<AuthFlowState> = _uiState.asStateFlow()
+
+    var needsMailSettingsDiscovery = false
+        private set
+
+    private val _connectionSettings =
+        MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
+    val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> =
+        _connectionSettings
+
+    fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
+        viewModelScope.launch {
+            discoverMailSettings(email, oAuthProviderType)
+                .also { _connectionSettings.value = Pair(Event(it), true) }
+        }
+    }
+
+    fun discoverMailSettingsSuccess() {
+        needsMailSettingsDiscovery = false
+    }
+
+    private suspend fun discoverMailSettings(
+        email: String,
+        oAuthProviderType: OAuthProviderType? = null
+    ): ConnectionSettings? = withContext(Dispatchers.IO) {
+        val discoveryResults = mailSettingsDiscovery.discover(
+            email,
+            oAuthProviderType
+        )
+        if (discoveryResults == null || discoveryResults.incoming.isEmpty() || discoveryResults.outgoing.isEmpty()) {
+            return@withContext null
+        }
+
+        val incomingServerSettings =
+            discoveryResults.incoming.first().toServerSettings() ?: return@withContext null
+        val outgoingServerSettings =
+            discoveryResults.outgoing.first().toServerSettings() ?: return@withContext null
+
+        return@withContext ConnectionSettings(incomingServerSettings, outgoingServerSettings)
+    }
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
@@ -67,8 +111,12 @@ class AuthViewModel(
     }
 
     fun isUsingGoogle(account: Account): Boolean {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.isGoogle(incomingSettings.host!!)
+        return if (account.mandatoryOAuthProviderType != null) {
+            account.mandatoryOAuthProviderType == OAuthProviderType.GOOGLE
+        } else {
+            val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
+            incomingSettings.host?.let { oAuthConfigurationProvider.isGoogle(it) } ?: false
+        }
     }
 
     private fun getOrCreateAuthState(account: Account): AuthState {
@@ -106,7 +154,7 @@ class AuthViewModel(
         resultObserver.login(authRequestIntent)
     }
 
-    private fun createAuthorizationRequestIntent(email: String, config: OAuthConfiguration): Intent {
+    private fun createAuthorizationRequestIntent(email: String?, config: OAuthConfiguration): Intent {
         val serviceConfig = AuthorizationServiceConfiguration(
             config.authorizationEndpoint.toUri(),
             config.tokenEndpoint.toUri()
@@ -121,7 +169,7 @@ class AuthViewModel(
 
         val scopeString = config.scopes.joinToString(separator = " ")
         val authRequest = authRequestBuilder
-            .setScope(scopeString)
+            .setScopes(scopeString, SCOPE_OPENID, SCOPE_EMAIL)
             .setLoginHint(email)
             .build()
 
@@ -131,8 +179,14 @@ class AuthViewModel(
     }
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
-        val incomingSettings = RemoteStore.decodeStoreUri(account.storeUri)
-        return oAuthConfigurationProvider.getConfiguration(incomingSettings.host!!)
+        val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
+        return when (account.mandatoryOAuthProviderType) {
+            null -> oAuthConfigurationProvider.getConfiguration(
+                incomingSettings?.host ?: error("account not initialized here!")
+            )
+            OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
+            OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
+        }
     }
 
     private fun onLoginResult(authorizationResult: AuthorizationResult?) {
@@ -163,6 +217,10 @@ class AuthViewModel(
                 authState.update(tokenResponse, authorizationException)
 
                 val account = account!!
+                var failureUpdatingEmail: String? = null
+                tokenResponse?.idToken?.let {
+                    failureUpdatingEmail = updateEmailAddressFromOAuthToken(it)
+                }
                 account.oAuthState = authState.jsonSerializeString()
 
                 if (account.setupState == Account.SetupState.READY) {
@@ -176,11 +234,42 @@ class AuthViewModel(
                         errorCode = authorizationException.error,
                         errorMessage = authorizationException.errorDescription
                     )
+                } else if (failureUpdatingEmail != null) {
+                    _uiState.value = AuthFlowState.Failed(
+                        errorCode = "Cannot continue",
+                        errorMessage = failureUpdatingEmail
+                    )
                 } else {
                     _uiState.value = AuthFlowState.Success
                 }
             }
         }
+    }
+
+    private fun updateEmailAddressFromOAuthToken(token: String): String? {
+        var error: String? = null
+        val userError = "Could not retrieve email address from login response"
+        jwtTokenDecoder.getEmail(token).onSuccess { newEmail ->
+            newEmail?.let {
+                if (account?.email != newEmail) {
+                    if (getApplication<K9>().isRunningOnWorkProfile) {
+                        error = "Wrong email address was used for OAuth"
+                    } else {
+                        account?.email = newEmail
+                        needsMailSettingsDiscovery = true
+                    }
+                }
+            } ?: let {
+                error = userError
+            }
+        }.onFailure { throwable ->
+            Timber.e(throwable)
+            error = userError
+            if (K9.isDebug()) {
+                error += "\n" + throwable.stackTraceToString()
+            }
+        }
+        return error
     }
 
     @Synchronized

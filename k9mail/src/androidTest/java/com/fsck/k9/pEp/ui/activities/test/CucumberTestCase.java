@@ -33,7 +33,7 @@ import io.cucumber.junit.CucumberOptions;
                  // the following path here and in the build.gradle: /data/data/com.neoranga55.cleanguitestarchitecture/cucumber-reports/
          }*/
         //,plugin = {"json:target/cucumber.json"}
-        ,plugin = {"pretty", "json:/data/user/" + BuildConfig.USER + "/" + BuildConfig.APPLICATION_ID + "/cucumber-reports/cucumber.json"
+        ,plugin = {"pretty", "json:/storage/emulated/" + BuildConfig.USER + "/Download/cucumber-reports/cucumber.json"
         //, "html:/data/data/security.pEp.debug/cucumber-reports/"
         //, "de.monochromata.cucumber.report.PrettyReports:/data/data/security.pEp.debug/cucumber-reports/pretty-cucumber"  //IMPORTANT!!!!!!!!!!!!!!!!!!!!!!!!!!!: Change the cucumber.json name file to create save_report.apk file
         //,plugin = {"pretty", "json:/mnt/sdcard/files/cucumber.json"
@@ -60,10 +60,10 @@ public class CucumberTestCase extends CucumberAndroidJUnitRunner {
                         CucumberAndroidJUnitArguments.Args.USE_DEFAULT_ANDROID_RUNNER,
                         String.valueOf(!useCucumber)
                 );
-                String filterClassName = useCucumber
+                /*String filterClassName = useCucumber
                         ? CucumberTestFilter.class.getName()
                         : NonCucumberTestFilter.class.getName();
-                args.putString(ARG_FILTER, filterClassName);
+                args.putString(ARG_FILTER, filterClassName);*/
 
                 super.onCreate(args);
         }

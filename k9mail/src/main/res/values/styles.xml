@@ -291,5 +291,22 @@
         <item name="android:paddingEnd">16dp</item>
         <item name="android:paddingTop">8dp</item>
     </style>
+
+    <style name="AccountSelectAuthScreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/background_startup</item>
+        <item name="android:paddingStart">32dp</item>
+        <item name="android:paddingEnd">32dp</item>
+    </style>
+
+    <style name="AccountSelectAuthScreen.peplogo" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="srcCompat">@drawable/ic_peplogo</item>
+        <item name="tint">@color/white_transparent_70</item>
+    </style>
+
 </resources>
 

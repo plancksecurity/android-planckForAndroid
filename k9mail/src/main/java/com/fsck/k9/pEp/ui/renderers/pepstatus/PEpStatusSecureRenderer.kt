@@ -8,10 +8,7 @@ import butterknife.OnClick
 import butterknife.OnLongClick
 import com.fsck.k9.R
 import com.fsck.k9.pEp.models.PEpIdentity
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusIdentityView
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusPEpIdentityView
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatusTrustwordsPresenter
+import com.fsck.k9.pEp.ui.privacy.status.*
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import javax.inject.Inject
@@ -31,6 +28,21 @@ class PEpStatusSecureRenderer  @Inject constructor(contactsPictureLoader: Contac
 
     @Bind(R.id.change_language)
     lateinit var changeLanguageImage: ImageView
+
+    @Bind(R.id.fpr_container)
+    lateinit var fingerPrintContainer: View
+
+    @Bind(R.id.fpr_partner_account_title)
+    lateinit var fingerPrintPartnerAccountTitle: TextView
+
+    @Bind(R.id.fpr_partner_account_value)
+    lateinit var fingerPrintPartnerAccountValue: TextView
+
+    @Bind(R.id.fpr_current_account_title)
+    lateinit var fingerPrintCurrentAccountTitle: TextView
+
+    @Bind(R.id.fpr_current_account_value)
+    lateinit var fingerPrintCurrentAccountValue: TextView
 
     @Bind(R.id.rejectHandshake)
     lateinit var rejectTrustwordsButton: Button
@@ -112,6 +124,16 @@ class PEpStatusSecureRenderer  @Inject constructor(contactsPictureLoader: Contac
 
     override fun setShortTrustwords(newTrustwords: String) {
         trustwordsTv.setText(context.getString(R.string.ellipsized_text, newTrustwords))
+    }
+
+    override fun setLabelTexts(myselfLabelText: String, partnerLabelText: String) {
+        fingerPrintPartnerAccountTitle.text = partnerLabelText
+        fingerPrintCurrentAccountTitle.text = myselfLabelText
+    }
+
+    override fun setFingerPrintTexts(myselfFprText: String, partnerFprText: String) {
+        fingerPrintPartnerAccountValue.text = partnerFprText
+        fingerPrintCurrentAccountValue.text = myselfFprText
     }
 
     override fun reportError(errorMessage: String?) {

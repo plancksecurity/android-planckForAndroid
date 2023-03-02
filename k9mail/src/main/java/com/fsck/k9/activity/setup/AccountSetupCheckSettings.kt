@@ -3,10 +3,7 @@ package com.fsck.k9.activity.setup
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.AsyncTask
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -54,6 +51,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     private lateinit var account: Account
     private lateinit var direction: CheckDirection
+    private var errorResultCode = RESULT_CANCELED
 
     @Volatile
     private var canceled = false
@@ -63,11 +61,20 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            errorResultCode = savedInstanceState.getInt(STATE_ERROR_RESULT_CODE, RESULT_CANCELED)
+        }
         setContentView(R.layout.account_setup_check_settings)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
             ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
         setSupportActionBar(toolbar)
+
+        direction = intent.getSerializableExtra(EXTRA_CHECK_DIRECTION) as CheckDirection?
+            ?: error("Missing CheckDirection")
+        val mailSettingsDiscoveryRequired = intent.getBooleanExtra(
+            EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, false)
+                && direction == CheckDirection.INCOMING
 
         authViewModel.init(activityResultRegistry, lifecycle)
 
@@ -77,7 +84,11 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                     return@observe
                 }
                 AuthFlowState.Success -> {
-                    startCheckServerSettings()
+                    if (authViewModel.needsMailSettingsDiscovery && mailSettingsDiscoveryRequired) { // ONLY CASE OF PASSWORD FLOW THAT ACTUALLY NEEDS OAUTH (GOOGLE)
+                        discoverMailSettings()
+                    } else {
+                        startCheckServerSettings()
+                    }
                 }
                 AuthFlowState.Canceled -> {
                     showErrorDialog(R.string.account_setup_failed_dlg_oauth_flow_canceled)
@@ -96,6 +107,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             authViewModel.authResultConsumed()
         }
 
+        observeMailSettingsDiscoverResult()
+
         messageView = findViewById(R.id.message)
         progressBar = findViewById(R.id.progress)
         findViewById<View>(R.id.cancel).setOnClickListener { onCancel() }
@@ -105,24 +118,62 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
         val accountUuid = intent.getStringExtra(EXTRA_ACCOUNT) ?: error("Missing account UUID")
         account = preferences.getAccountAllowingIncomplete(accountUuid) ?: error("Could not find account")
-        direction = intent.getSerializableExtra(EXTRA_CHECK_DIRECTION) as CheckDirection?
-            ?: error("Missing CheckDirection")
 
         if (savedInstanceState == null) {
-            if (needsAuthorization()) {
-                setMessage(R.string.account_setup_check_settings_authenticate)
-                authViewModel.login(account)
+            if (mailSettingsDiscoveryRequired) {
+                discoverMailSettings()
             } else {
-                startCheckServerSettings()
+                startLoginOrSettingsCheck()
             }
         }
     }
 
+    private fun observeMailSettingsDiscoverResult() {
+        authViewModel.connectionSettings.observe(this) { pair ->
+            val ready = pair.second
+            val event = pair.first
+            if (ready) {
+                if (!event.hasBeenHandled) {
+                    val connectionSettings = event.getContent()
+                    if (connectionSettings == null) {
+                        errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
+                        showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
+                    } else {
+                        authViewModel.discoverMailSettingsSuccess()
+                        account.setMailSettings(this, connectionSettings, true)
+                        startLoginOrSettingsCheck()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startLoginOrSettingsCheck() {
+        if (needsAuthorization()) {
+            login()
+        } else {
+            startCheckServerSettings()
+        }
+    }
+
+    private fun discoverMailSettings() {
+        setMessage(R.string.account_setup_check_settings_retr_info_msg)
+        progressBar.isIndeterminate = true
+        authViewModel.discoverMailSettingsAsync(account.email, account.mandatoryOAuthProviderType)
+    }
+
+    private fun login() {
+        setMessage(R.string.account_setup_check_settings_authenticate)
+        authViewModel.login(account)
+    }
+
     private fun needsAuthorization(): Boolean {
         return (
-                RemoteStore.decodeStoreUri(account.storeUri).authenticationType == AuthType.XOAUTH2
-                        && Transport.decodeTransportUri(account.transportUri)
-                    .authenticationType == AuthType.XOAUTH2
+                account.mandatoryOAuthProviderType != null ||
+                (account.storeUri != null
+                        && RemoteStore.decodeStoreUri(account.storeUri).authenticationType == AuthType.XOAUTH2
+                        && account.transportUri != null
+                        && Transport.decodeTransportUri(account.transportUri).authenticationType == AuthType.XOAUTH2)
                 ) && !authViewModel.isAuthorized(account)
     }
 
@@ -302,7 +353,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             )
         }
 
-        actionCheckSettings(this@AccountSetupCheckSettings, account, direction)
+        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false)
     }
 
     override fun onActivityResult(reqCode: Int, resCode: Int, data: Intent?) {
@@ -365,6 +416,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     override fun doNegativeClick(dialogId: Int) {
         if (dialogId == R.id.dialog_account_setup_error) {
             canceled = false
+            setResult(errorResultCode)
             finish()
         }
     }
@@ -495,21 +547,35 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(STATE_ERROR_RESULT_CODE, errorResultCode)
+    }
+
     enum class CheckDirection {
         INCOMING, OUTGOING;
     }
 
     companion object {
         const val ACTIVITY_REQUEST_CODE = 1
+        const val RESULT_CODE_MANUAL_SETUP_NEEDED = 9
 
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"
+        private const val EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED = "mailSettingsDiscoveryRequired"
+        private const val STATE_ERROR_RESULT_CODE = "errorResultCode"
 
         @JvmStatic
-        fun actionCheckSettings(context: Activity, account: Account, direction: CheckDirection) {
+        fun actionCheckSettings(
+            context: Activity,
+            account: Account,
+            direction: CheckDirection,
+            mailSettingsDiscoveryRequired: Boolean,
+        ) {
             val intent = Intent(context, AccountSetupCheckSettings::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account.uuid)
                 putExtra(EXTRA_CHECK_DIRECTION, direction)
+                putExtra(EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, mailSettingsDiscoveryRequired)
                 addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 

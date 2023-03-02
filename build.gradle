@@ -27,6 +27,8 @@ buildscript {
                 'timber'             : '4.5.1',
                 'koin'               : '0.9.1',
                 'commonsIo'          : '2.4',
+                'appauth'            : '0.11.1',
+                'jwtDecode'          : '2.0.2',
 
                 'apacheCommons'      : '2.4',
                 'jsoup'              : '1.13.1',
@@ -64,7 +66,7 @@ buildscript {
                 'mockitoKotlin'      : '1.5.0',
                 'mockk'              : '1.12.4',
                 'truth'              : '1.1',
-                'espresso'           : '3.4.0',
+                'espresso'           : '3.5.1',
                 'uiAutomator'        : '2.2.0',
                 'cucumber'           : '4.8.3',
                 'cucumber_pico'      : '4.8.1',

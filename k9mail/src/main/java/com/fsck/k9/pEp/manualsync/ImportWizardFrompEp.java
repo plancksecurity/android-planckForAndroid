@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.K9;
@@ -67,6 +68,15 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     TextView tvTrustwords;
     @Bind(R.id.show_long_trustwords)
     ImageView showLongTrustwords;
+
+    @Bind(R.id.fpr_current_device_value)
+    TextView tvFprCurrentDevice;
+    @Bind(R.id.fpr_new_device_value)
+    TextView tvFprNewDevice;
+    @Bind(R.id.fpr_container)
+    View vFprContainer;
+    @Bind(R.id.main_container)
+    View vMainContainer;
 
 
     private SyncDialogReceiver receiver;
@@ -134,7 +144,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         }
 
         setUpToolbar(false);
-        setUpFloatingWindow();
+        setUpFloatingWindowWrapHeight();
 
     }
 
@@ -212,11 +222,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         description.setText(getText(R.string.keysync_wizard_handshake_message));
         action.setText(R.string.key_import_accept);
         action.setOnClickListener(v -> presenter.acceptHandshake());
+        vFprContainer.setVisibility(View.VISIBLE);
         trustwordsContainer.setVisibility(View.VISIBLE);
         tvTrustwords.setText(trustwords);
         currentState.setVisibility(View.GONE);
         reject.setVisibility(View.VISIBLE);
-        reject.setOnClickListener( v -> presenter.rejectHandshake());
+        reject.setOnClickListener(v -> presenter.rejectHandshake());
 
     }
 
@@ -356,6 +367,12 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         return true;
     }
 
+    @Override
+    public void setFingerPrintTexts(@NonNull String myselfFprText, @NonNull String partnerFprText) {
+        tvFprCurrentDevice.setText(myselfFprText);
+        tvFprNewDevice.setText(partnerFprText);
+    }
+
     public static class SyncDialogReceiver extends BroadcastReceiver {
 
         private ImportWizardFrompEp activity;
@@ -363,6 +380,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
         public SyncDialogReceiver(ImportWizardFrompEp activity) {
             this.activity = activity;
         }
+
         public SyncDialogReceiver() {
         }
 

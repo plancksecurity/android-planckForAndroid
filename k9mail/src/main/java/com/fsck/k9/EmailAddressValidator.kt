@@ -1,8 +1,9 @@
 package com.fsck.k9
 
 import java.util.regex.Pattern
+import javax.inject.Inject
 
-class EmailAddressValidator {
+class EmailAddressValidator @Inject constructor() {
 
     fun isValidAddressOnly(text: CharSequence): Boolean = EMAIL_ADDRESS_PATTERN.matcher(text).matches()
 

@@ -1244,7 +1244,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         flaggedCheckbox = menu.findItem(R.id.flag);
 
         menu.findItem(R.id.tutorial).setVisible(
-                !BuildConfig.IS_ENTERPRISE || K9.isUsingTrustwords()
+                !BuildConfig.IS_ENTERPRISE
         );
         return true;
     }
@@ -1936,7 +1936,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
         if (mMessageViewFragment != null) {
             mMessageViewFragment.onActivityResult(requestCode, resultCode, data);
-            mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
+
+            if (mMessageViewFragment != null) {
+                // There are some cases when onActivityResult
+                // is gonna remove the fragment so we don't have to handle it
+                mMessageViewFragment.onPendingIntentResult(requestCode, resultCode, data);
+            }
         }
     }
 

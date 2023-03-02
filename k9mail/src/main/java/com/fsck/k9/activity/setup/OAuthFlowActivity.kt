@@ -3,6 +3,7 @@ package com.fsck.k9.activity.setup
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -29,20 +30,28 @@ class OAuthFlowActivity : K9Activity() {
     private val isTokenRevoked: Boolean
         get() = intent.getBooleanExtra(EXTRA_TOKEN_REVOKED, false)
 
+    private val account: Account
+        get() {
+            val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
+            return if (isTokenRevoked) {
+                accountManager.getAccount(accountUUid)
+            } else {
+                accountManager.getAccountAllowingIncomplete(accountUUid)
+            }  ?: error("Account not found")
+        }
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.account_setup_oauth)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-            ?: error("K9 layouts must provide a toolbar with id='toolbar'.")
 
-        setSupportActionBar(toolbar)
+        setUpToolbar(true)
+
         val title =
             if(isTokenRevoked) R.string.account_setup_oauth_title_retry_login
-            else R.string.account_setup_basics_title
+            else R.string.account_setup_oauth_sign_in
         setTitle(title)
 
-        val accountUUid = intent.getStringExtra(EXTRA_ACCOUNT_UUID) ?: error("Missing account UUID")
-        val account = accountManager.getAccountAllowingIncomplete(accountUUid) ?: error("Account not found")
+        val account = this.account
 
         errorText = findViewById(R.id.error_text)
         signInProgress = findViewById(R.id.sign_in_progress)
@@ -52,6 +61,8 @@ class OAuthFlowActivity : K9Activity() {
                 R.string.account_setup_oauth_description_retry_login,
                 account.email
             )
+        } else if (account.mandatoryOAuthProviderType != null) {
+            explanationText.text = ""
         }
         signInButton = if (authViewModel.isUsingGoogle(account)) {
             findViewById(R.id.google_sign_in_button)
@@ -59,8 +70,8 @@ class OAuthFlowActivity : K9Activity() {
             findViewById(R.id.oauth_sign_in_button)
         }
 
-        signInButton.isVisible = true
         signInButton.setOnClickListener { startOAuthFlow(account) }
+
 
         savedInstanceState?.let {
             val signInRunning = it.getBoolean(STATE_PROGRESS)
@@ -72,6 +83,14 @@ class OAuthFlowActivity : K9Activity() {
 
         authViewModel.uiState.observe(this) { state ->
             handleUiUpdates(state)
+        }
+
+        when {
+            !account.automaticOAuthMode || isTokenRevoked -> {
+                signInButton.isVisible = true
+            }
+            savedInstanceState == null ->
+                startOAuthFlow(account) // start directly on AccountSetup flow
         }
     }
 
@@ -85,11 +104,15 @@ class OAuthFlowActivity : K9Activity() {
                     SettingsActivity.actionBasicStart(this)
                 } else {
                     setResult(RESULT_OK)
-                    finish()
                 }
+                finish()
             }
             AuthFlowState.Canceled -> {
-                displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                if (account.automaticOAuthMode) {
+                    finish()
+                } else {
+                    displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_canceled)
+                }
             }
             is AuthFlowState.Failed -> {
                 displayErrorText(R.string.account_setup_failed_dlg_oauth_flow_failed, state)
@@ -104,6 +127,9 @@ class OAuthFlowActivity : K9Activity() {
 
         authViewModel.authResultConsumed()
     }
+
+    private val Account.automaticOAuthMode: Boolean
+        get() = mandatoryOAuthProviderType != null
 
     private fun displayErrorText(errorTextResId: Int, vararg args: Any?) {
         signInProgress.isVisible = false
@@ -130,6 +156,15 @@ class OAuthFlowActivity : K9Activity() {
         val currentAccountUuid = intent.getStringExtra(EXTRA_ACCOUNT_UUID)
         if (currentAccountUuid != null && currentAccountUuid != accountUuid) {
             super.onTokenRevoked(accountUuid)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == android.R.id.home) {
+            finish()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
         }
     }
 
