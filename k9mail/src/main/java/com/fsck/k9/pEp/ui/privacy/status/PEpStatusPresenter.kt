@@ -26,18 +26,19 @@ class PEpStatusPresenter @Inject internal constructor(
     private val simpleMessageLoaderHelper: SimpleMessageLoaderHelper,
     private val pEpIdentityMapper: PEpIdentityMapper
 ) {
-    private var view: PEpStatusView? = null
-    private var cache: PePUIArtefactCache? = null
-    private var pEpProvider: PEpProvider? = null
-    private var identities: List<PEpIdentity>? = null
+    private lateinit var view: PEpStatusView
+    private lateinit var cache: PePUIArtefactCache
+    private lateinit var pEpProvider: PEpProvider
+    private var identities: List<PEpIdentity> = emptyList()
     private var localMessage: LocalMessage? = null
     private var isMessageIncoming = false
-    private var senderAddress: Address? = null
+    private lateinit var senderAddress: Address
     private var currentRating: Rating? = null
     private var latestHandshakeId: Identity? = null
     private var forceUnencrypted = false
     private var isAlwaysSecure = false
-    private var displayHtml: DisplayHtml? = null
+    private lateinit var displayHtml: DisplayHtml
+
     private val mainThreadHandler: Handler = object : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
@@ -51,8 +52,8 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     fun initialize(
-        pEpStatusView: PEpStatusView?, uiCache: PePUIArtefactCache?, pEpProvider: PEpProvider?,
-        displayHtml: DisplayHtml?, isMessageIncoming: Boolean, senderAddress: Address?,
+        pEpStatusView: PEpStatusView, uiCache: PePUIArtefactCache, pEpProvider: PEpProvider,
+        displayHtml: DisplayHtml, isMessageIncoming: Boolean, senderAddress: Address,
         forceUnencrypted: Boolean, alwaysSecure: Boolean
     ) {
         view = pEpStatusView
@@ -76,17 +77,17 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     fun loadRecipients() {
-        val recipients: List<Identity> = cache!!.recipients
-        val workerThread: WorkerThread = WorkerThread(recipients, LOAD_RECIPIENTS)
+        val recipients: List<Identity> = cache.recipients
+        val workerThread = WorkerThread(recipients, LOAD_RECIPIENTS)
         workerThread.start()
     }
 
     private fun recipientsLoaded(newIdentities: List<PEpIdentity>) {
         identities = newIdentities
-        if (!identities!!.isEmpty()) {
-            view!!.setupRecipients(identities)
+        if (identities.isNotEmpty()) {
+            view.setupRecipients(identities)
         } else {
-            view!!.showItsOnlyOwnMsg()
+            view.showItsOnlyOwnMsg()
         }
     }
 
@@ -100,13 +101,13 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     private fun resetOutgoingMessageTrust(id: Identity, addresses: List<Address>) {
-        pEpProvider!!.loadOutgoingMessageRatingAfterResetTrust(
+        pEpProvider.loadOutgoingMessageRatingAfterResetTrust(
             id,
             senderAddress,
             addresses,
             emptyList(),
             emptyList(),
-            object : PEpProvider.ResultCallback<Rating?> {
+            object : PEpProvider.ResultCallback<Rating> {
                 override fun onLoaded(rating: Rating) {
                     onTrustReset(rating, id)
                 }
@@ -116,21 +117,21 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     private fun onTrustReset(rating: Rating?, id: Identity) {
-        val workerThread: WorkerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
+        val workerThread = WorkerThread(identities, ON_TRUST_RESET, rating)
         workerThread.start()
     }
 
     private fun trustWasReset(newIdentities: List<PEpIdentity>, rating: Rating) {
         onRatingChanged(rating)
-        view!!.updateIdentities(newIdentities)
+        view.updateIdentities(newIdentities)
     }
 
     private fun resetIncomingMessageTrust(id: Identity) {
-        pEpProvider!!.loadMessageRatingAfterResetTrust(
+        pEpProvider.loadMessageRatingAfterResetTrust(
             localMessage,
             isMessageIncoming,
             id,
-            object : PEpProvider.ResultCallback<Rating?> {
+            object : PEpProvider.ResultCallback<Rating> {
                 override fun onLoaded(result: Rating) {
                     onTrustReset(result, id)
                 }
@@ -141,38 +142,29 @@ class PEpStatusPresenter @Inject internal constructor(
 
     private fun setupOutgoingMessageRating(callback: PEpProvider.ResultCallback<Rating>) {
         val addresses = recipientAddresses
-        pEpProvider!!.getRating(senderAddress, addresses, emptyList(), emptyList(), callback)
+        pEpProvider.getRating(senderAddress, addresses, emptyList(), emptyList(), callback)
     }
 
-    val recipientAddresses: List<Address>
-        get() {
-            val addresses: MutableList<Address> = ArrayList(
-                identities!!.size
-            )
-            for (identity in identities!!) {
-                addresses.add(Address(identity.address))
-            }
-            return addresses
-        }
+    private val recipientAddresses: List<Address>
+        get() = identities.map {Address(it.address) }
 
-    private fun onRatingChanged(rating: Rating) {
+    private fun onRatingChanged(rating: Rating?) {
         currentRating = rating
-        if (localMessage != null) {
-            localMessage!!.setpEpRating(rating)
-        }
-        view!!.setRating(rating)
-        view!!.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
+        localMessage?.setpEpRating(rating)
+        view.setRating(rating)
+        view.setupBackIntent(rating, forceUnencrypted, isAlwaysSecure)
     }
 
     fun onHandshakeResult(id: Identity?, trust: Boolean) {
         latestHandshakeId = id
-        refreshRating(object : SimpleResultCallback<Rating?>() {
-            override fun onLoaded(rating: Rating) {
+        refreshRating(object : SimpleResultCallback<Rating>() {
+            override fun onLoaded(rating: Rating?) {
                 onRatingChanged(rating)
                 if (trust) {
                     showUndoAction(TrustAction.TRUST)
                 } else {
-                    view!!.showMistrustFeedback(latestHandshakeId!!.username)
+                    latestHandshakeId?.let {  }
+                    view.showMistrustFeedback(latestHandshakeId?.username)
                 }
                 updateIdentities()
             }
@@ -181,42 +173,44 @@ class PEpStatusPresenter @Inject internal constructor(
 
     fun resetpEpData(id: Identity) {
         try {
-            pEpProvider!!.keyResetIdentity(id, null)
-            refreshRating(object : SimpleResultCallback<Rating?>() {
+            pEpProvider.keyResetIdentity(id, null)
+            refreshRating(object : SimpleResultCallback<Rating>() {
                 override fun onLoaded(rating: Rating) {
                     onRatingChanged(rating)
-                    onTrustReset(currentRating, id)
+                    onTrustReset(rating, id)
                 }
             })
-            view!!.showResetPartnerKeySuccessFeedback()
+            view.showResetPartnerKeySuccessFeedback()
         } catch (e: Exception) {
-            view!!.showResetPartnerKeyErrorFeedback()
+            view.showResetPartnerKeyErrorFeedback()
         }
     }
 
-    private fun refreshRating(callback: PEpProvider.ResultCallback<Rating>) {
+    private fun refreshRating(callback: PEpProvider.ResultCallback<Rating?>) {
         if (isMessageIncoming) {
-            pEpProvider!!.incomingMessageRating(localMessage, callback)
+            pEpProvider.incomingMessageRating(localMessage, callback)
         } else {
             setupOutgoingMessageRating(callback)
         }
     }
 
+
     private fun updateIdentities() {
-        val recipients = cache!!.recipients
-        val workerThread: WorkerThread = WorkerThread(recipients, UPDATE_IDENTITIES)
+        val recipients = cache.recipients
+        val workerThread = WorkerThread(recipients, UPDATE_IDENTITIES)
         workerThread.start()
     }
 
     private fun identitiesUpdated(newIdentities: List<PEpIdentity>) {
         identities = newIdentities
-        view!!.updateIdentities(identities)
+        view.updateIdentities(identities)
     }
 
+    @Suppress("SameParameterValue")
     private fun showUndoAction(trustAction: TrustAction) {
         when (trustAction) {
-            TrustAction.TRUST -> view!!.showUndoTrust(latestHandshakeId!!.username)
-            TrustAction.MISTRUST -> view!!.showUndoMistrust(latestHandshakeId!!.username)
+            TrustAction.TRUST -> view.showUndoTrust(latestHandshakeId?.username)
+            TrustAction.MISTRUST -> view.showUndoMistrust(latestHandshakeId?.username)
         }
     }
 
@@ -224,11 +218,11 @@ class PEpStatusPresenter @Inject internal constructor(
         return object : MessageLoaderCallbacks {
             override fun onMessageDataLoadFinished(message: LocalMessage) {
                 localMessage = message
-                currentRating = localMessage!!.getpEpRating()
+                currentRating = message.getpEpRating()
             }
 
             override fun onMessageDataLoadFailed() {
-                view!!.showDataLoadError()
+                view.showDataLoadError()
             }
 
             override fun onMessageViewInfoLoadFinished(messageViewInfo: MessageViewInfo) {}
@@ -245,9 +239,7 @@ class PEpStatusPresenter @Inject internal constructor(
     }
 
     fun undoTrust() {
-        if (latestHandshakeId != null) {
-            resetTrust(latestHandshakeId!!)
-        }
+        latestHandshakeId?.let { resetTrust(it) }
     }
 
     fun saveInstanceState(outState: Bundle) {
@@ -268,10 +260,10 @@ class PEpStatusPresenter @Inject internal constructor(
 
     fun setForceUnencrypted(forceUnencrypted: Boolean) {
         this.forceUnencrypted = forceUnencrypted
-        view!!.updateToolbarColor(
+        view.updateToolbarColor(
             if (forceUnencrypted) Rating.getByInt(Rating.pEpRatingUnencrypted.value) else currentRating
         )
-        view!!.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure)
+        view.setupBackIntent(currentRating, forceUnencrypted, isAlwaysSecure)
     }
 
     fun isAlwaysSecure(): Boolean {
@@ -280,7 +272,7 @@ class PEpStatusPresenter @Inject internal constructor(
 
     fun setAlwaysSecure(alwaysSecure: Boolean) {
         isAlwaysSecure = alwaysSecure
-        view!!.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure)
+        view.setupBackIntent(currentRating, forceUnencrypted, alwaysSecure)
     }
 
     private inner class WorkerThread : Thread {
@@ -293,7 +285,7 @@ class PEpStatusPresenter @Inject internal constructor(
             this.what = what
         }
 
-        constructor(identities: List<PEpIdentity>?, what: Int, rating: Rating?) {
+        constructor(identities: List<PEpIdentity>, what: Int, rating: Rating?) {
             this.identities = ArrayList<Identity>(identities)
             this.what = what
             this.rating = rating
