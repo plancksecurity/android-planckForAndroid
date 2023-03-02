@@ -350,7 +350,11 @@
     <string name="organizer_tag">Organizer</string>
     <string name="compose_message_attachments_too_big">The files you are trying to send exceed the %1$d MB limit.</string>
 
-    <string name="compose_unsecure_delivery_warning">Unable to establish secure message delivery. Please consider removing highlighted recipients to guarantee a safe transmission of this email.</string>
+    <plurals name="compose_unsecure_delivery_warning">
+        <item quantity="one">%1$d unsecure recipient. Tap here to remove it.</item>
+        <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
+    </plurals>
+
     <string name="enterprise_unsecure">Unsecure</string>
     <string name="use_trustwords_setting_title">Use trustwords</string>
     <string name="use_trustwords_setting_description">Use trustwords to stablish trust with a partner</string>
