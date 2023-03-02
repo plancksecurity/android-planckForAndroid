@@ -687,7 +687,7 @@ class PEpProviderImplKotlin @Inject constructor(
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
         return try {
-            engine.myself(myId)
+            engine.get()!!.myself(myId)
         } catch (exception: pEpException) {
             Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
             myId
@@ -739,7 +739,7 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun incomingMessageRating(message: MimeMessage): Rating {
         return try {
             val pEpMessage = PEpMessageBuilder(message).createMessage(context)
-            engine.re_evaluate_message_rating(pEpMessage)
+            engine.get()!!.re_evaluate_message_rating(pEpMessage)
         } catch (e: pEpException) {
             Timber.e(e)
             Rating.pEpRatingUndefined
@@ -896,7 +896,7 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun getRating(identity: Identity): Rating {
         createEngineInstanceIfNeeded()
         return try {
-            engine.identity_rating(identity)
+            engine.get()!!.identity_rating(identity)
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "getRating: ")
             Rating.pEpRatingUndefined
@@ -961,7 +961,7 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean): String? {
         return try {
-            engine.get_trustwords(myself, partner, lang, !isShort)
+            engine.get()!!.get_trustwords(myself, partner, lang, !isShort)
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "trustwords: ")
             null
