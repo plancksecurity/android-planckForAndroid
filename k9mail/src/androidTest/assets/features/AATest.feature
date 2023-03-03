@@ -529,7 +529,7 @@ Feature: Test
     Then I check the badge color of the first message is pEpRatingMistrust
     When I click the last message received
     Then I check if the privacy status is pep_red
-    When I reset handshake
+    When I reset partner key
     And I go back to the Inbox
     And I click compose message
     And I send 1 message to bot4 with subject TM-18B and body cucumberStopTrustingReseted
@@ -587,7 +587,7 @@ Feature: Test
     And I click the last message received
     And I click stop trusting words
     Then I check if the privacy status is pep_red
-    When I reset handshake
+    When I reset partner key
     Then I check if the privacy status is pep_yellow
     Examples:
       |account|
@@ -603,7 +603,7 @@ Feature: Test
     And I click the last message received
     And I click confirm trust words
     Then I check if the privacy status is pep_green
-    When I reset handshake
+    When I reset partner key
     Then I check if the privacy status is pep_yellow
     Examples:
       |account|
@@ -620,7 +620,7 @@ Feature: Test
     And I click confirm trust words
     Then I check if the privacy status is pep_green
     When I click reply message
-    And I reset handshake
+    And I reset partner key
     Then I check if the privacy status is pep_no_color
     When I send 1 messages to bot2 with subject handshake2nd and body ThisWillBeGrey
     And I select the inbox
@@ -641,7 +641,7 @@ Feature: Test
     And I click stop trusting words
     Then I check if the privacy status is pep_red
     When I click reply message
-    And I reset handshake
+    And I reset partner key
     Then I check if the privacy status is pep_no_color
     Examples:
       |account|
