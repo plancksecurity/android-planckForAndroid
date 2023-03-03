@@ -2,6 +2,16 @@ Feature: Test
   Background:
     Given I created an account
 
+  @QTR
+  Scenario Outline: Cucumber Reset Partner Key
+    When I select account <account>
+    And I send 1 messages to bot2 with subject ResetKey and body IWillResetTheKeyManyTimes
+    And I click the last message received
+    Then I reset partner key
+    Examples:
+      |account|
+      |  0    |
+
 
   @QTR-2354
     #Only with Enforcer!!!
