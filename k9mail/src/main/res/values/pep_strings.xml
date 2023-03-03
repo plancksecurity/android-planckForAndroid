@@ -383,5 +383,6 @@
     <string name="account_setup_failed_dlg_could_not_discover_mail_settings">Could not discover mail settings. Please contact your IT support to get the custom mail settings needed for this account.</string>
     <string name="account_select_auth_welcome_to">Welcome to</string>
     <string name="account_select_auth_please_select_the_option_to_sign_in">Please select the option to sign in</string>
+    <string name="error_happened_restart_app">An error happened, please restart app.</string>
 
 </resources>

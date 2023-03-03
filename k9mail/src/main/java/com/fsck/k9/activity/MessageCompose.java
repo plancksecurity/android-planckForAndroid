@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -104,6 +105,7 @@ import com.fsck.k9.ui.EolConvertingEditText;
 import com.fsck.k9.ui.compose.QuotedMessageMvpView;
 import com.fsck.k9.ui.compose.QuotedMessagePresenter;
 
+import org.jetbrains.annotations.NotNull;
 import org.openintents.openpgp.OpenPgpApiManager;
 
 import java.util.Date;
@@ -167,6 +169,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private static final String STATE_REFERENCES = "com.fsck.k9.activity.MessageCompose.references";
     private static final String STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE = "com.fsck.k9.activity.MessageCompose.changesMadeSinceLastSave";
     private static final String STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT = "alreadyNotifiedUserOfEmptySubject";
+    private static final String STATE_LAST_ERROR = "lastError";
 
     private static final String FRAGMENT_WAITING_FOR_ATTACHMENT = "waitingForAttachment";
 
@@ -278,6 +281,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
     private TextView unsafeDeliveryWarning;
     private View unsafeDeliveryWarningSeparator;
+    private String lastError;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -380,7 +384,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         unsafeDeliveryWarning = findViewById(R.id.unsecure_recipients_warning);
         unsafeDeliveryWarningSeparator = findViewById(R.id.unsecure_recipients_warning_separator);
-        unsafeDeliveryWarning.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -722,6 +725,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
+        outState.putString(STATE_LAST_ERROR, lastError);
         // TODO: trigger pep?
 
     }
@@ -791,6 +795,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         updateMessageFormat();
         restoreMessageComposeConfigurationInstance();
+        lastError = savedInstanceState.getString(STATE_LAST_ERROR);
+        if (lastError != null) {
+            showError(lastError);
+        }
     }
 
     private void setTitle() {
@@ -2048,18 +2056,35 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (lastError != null) return; // do not hide errors
         unsafeDeliveryWarning.setText(getResources().getQuantityString(
                 R.plurals.compose_unsecure_delivery_warning,
                 unsecureRecipientsCount,
                 unsecureRecipientsCount
         ));
+        unsafeDeliveryWarning.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
         unsafeDeliveryWarning.setVisibility(View.VISIBLE);
         unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
     }
 
     public void hideUnsecureDeliveryWarning() {
+        if (lastError != null) return; // do not hide errors
         unsafeDeliveryWarning.setVisibility(View.GONE);
         unsafeDeliveryWarningSeparator.setVisibility(View.GONE);
+    }
+
+    public void setAndShowError(@NotNull Throwable throwable) {
+        lastError = BuildConfig.DEBUG
+                ? Log.getStackTraceString(throwable)
+                : getString(R.string.error_happened_restart_app);
+        showError(lastError);
+    }
+
+    private void showError(@NotNull String error) {
+        unsafeDeliveryWarning.setText(error);
+        unsafeDeliveryWarning.setOnClickListener(null);
+        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
+        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
     }
 
     private Handler internalMessageHandler = new Handler() {
