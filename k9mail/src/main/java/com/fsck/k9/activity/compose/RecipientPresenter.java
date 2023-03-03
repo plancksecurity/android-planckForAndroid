@@ -36,7 +36,6 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -75,6 +74,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     public static final String STATE_RATING = "rating";
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
+    private static final int ZERO_RECIPIENTS = 0;
 
 
     // transient state, which is either obtained during construction and initialization, or cached
@@ -150,6 +150,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         return recipientMvpView.getBccAddresses();
     }
 
+    public void clearUnsecureRecipients() {
+        recipientMvpView.clearUnsecureRecipients();
+    }
+
     private List<Recipient> getAllRecipients() {
         ArrayList<Recipient> result = new ArrayList<>();
 
@@ -180,7 +184,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             return true;
         }
 
-        if (getToAddresses().isEmpty() && getCcAddresses().isEmpty() && getBccAddresses().isEmpty()) {
+        if (addressesAreEmpty(getToAddresses(), getCcAddresses(), getBccAddresses())) {
             recipientMvpView.showNoRecipientsError();
             return true;
         }
@@ -916,34 +920,51 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
                 public void onLoaded(Rating rating) {
-                    if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+                    if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                         showDefaultStatus();
-                        recipientMvpView.handleUnsecureDeliveryWarning(false);
+                        handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
-                        handleUnsecureDeliveryWarning(rating);
                     }
                     recipientMvpView.messageRatingLoaded();
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
+                    recipientMvpView.showError(throwable);
                     showDefaultStatus();
                     recipientMvpView.messageRatingLoaded();
-                    handleUnsecureDeliveryWarning(Rating.pEpRatingUndefined);
                 }
             });
         }
         recipientMvpView.messageRatingLoaded();
     }
 
-    private void handleUnsecureDeliveryWarning(Rating rating) {
-        recipientMvpView.handleUnsecureDeliveryWarning(
-                K9.ispEpForwardWarningEnabled()
-                        && account.ispEpPrivacyProtected()
-                        && PEpUtils.isRatingUnsecure(rating)
-        );
+    private boolean addressesAreEmpty(List<Address> newToAdresses, List<Address> newCcAdresses, List<Address> newBccAdresses) {
+        return newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty();
+    }
+
+    public void handleUnsecureDeliveryWarning() {
+        int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
+                && account.ispEpPrivacyProtected()
+                ? getUnsecureRecipientsCount()
+                : ZERO_RECIPIENTS;
+        handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    private void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (unsecureRecipientsCount > ZERO_RECIPIENTS) {
+            recipientMvpView.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+        } else {
+            recipientMvpView.hideUnsecureDeliveryWarning();
+        }
+    }
+
+    private int getUnsecureRecipientsCount() {
+        return recipientMvpView.getToUnsecureRecipientCount() +
+                recipientMvpView.getCcUnsecureRecipientCount() +
+                recipientMvpView.getBccUnsecureRecipientCount();
     }
 
     private void showDefaultStatus() {

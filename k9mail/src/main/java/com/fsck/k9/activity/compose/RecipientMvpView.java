@@ -167,6 +167,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onToTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
+            }
         });
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
@@ -184,6 +194,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void onTokenChanged(Recipient recipient) {
                 presenter.onCcTokenChanged();
             }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
+            }
         });
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
@@ -200,6 +220,16 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             @Override
             public void onTokenChanged(Recipient recipient) {
                 presenter.onBccTokenChanged();
+            }
+
+            @Override
+            public void handleUnsecureTokenWarning() {
+                presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
             }
         });
     }
@@ -302,6 +332,24 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public List<Recipient> getBccRecipients() {
         return bccView.getObjects();
+    }
+
+    public int getToUnsecureRecipientCount() {
+        return toView.getUnsecureRecipientCount();
+    }
+
+    public int getCcUnsecureRecipientCount() {
+        return ccView.getUnsecureRecipientCount();
+    }
+
+    public int getBccUnsecureRecipientCount() {
+        return bccView.getUnsecureRecipientCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        toView.clearUnsecureRecipients();
+        ccView.clearUnsecureRecipients();
+        bccView.clearUnsecureRecipients();
     }
 
     public boolean recipientToHasUncompletedText() {
@@ -506,12 +554,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    public void handleUnsecureDeliveryWarning(boolean unsecure) {
-        if (unsecure) {
-            activity.showUnsecureDeliveryWarning();
-        } else {
-            activity.hideUnsecureDeliveryWarning();
-        }
+    public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        activity.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        activity.hideUnsecureDeliveryWarning();
     }
 
     public void refreshRecipients() {
@@ -573,6 +621,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public void updateRecipientsFromEcho(String echoSender) {
         toView.updateRecipientsFromEcho(echoSender);
         ccView.updateRecipientsFromEcho(echoSender);
+    }
+
+    public void showError(Throwable throwable) {
+        activity.setAndShowError(throwable);
     }
 
     public enum CryptoStatusDisplayType {

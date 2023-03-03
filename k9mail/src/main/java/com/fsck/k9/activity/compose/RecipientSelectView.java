@@ -153,6 +153,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             public void onTokenRemoved(Recipient token) {
                 if (listener != null) {
                     unsecureAddressHelper.removeUnsecureAddressChannel(token.getAddress());
+                    listener.handleUnsecureTokenWarning();
                     listener.onTokenRemoved(token);
                 }
             }
@@ -204,6 +205,9 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(rating);
                 postInvalidateDelayed(100);
@@ -211,6 +215,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
             @Override
             public void onError(Throwable throwable) {
+                if (listener != null) {
+                    listener.handleUnsecureTokenWarning();
+                    listener.onError(throwable);
+                }
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
                 postInvalidateDelayed(100);
@@ -571,6 +579,18 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         return address;
     }
 
+    public int getUnsecureRecipientCount() {
+        return unsecureAddressHelper.getUnsecureAddressChannelCount();
+    }
+
+    public void clearUnsecureRecipients() {
+        for (Recipient recipient : getObjects()) {
+            if (unsecureAddressHelper.isUnsecure(recipient.getAddress())) {
+                removeObject(recipient);
+            }
+        }
+    }
+
     public void emptyAddresses() {
         for (Recipient recipient : getObjects()) {
             removeObject(recipient);
@@ -889,6 +909,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
+        void handleUnsecureTokenWarning();
+        void onError(Throwable throwable);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {
