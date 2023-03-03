@@ -217,6 +217,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             public void onError(Throwable throwable) {
                 if (listener != null) {
                     listener.handleUnsecureTokenWarning();
+                    listener.onError(throwable);
                 }
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
@@ -909,6 +910,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     public interface TokenListener<T> extends TokenCompleteTextView.TokenListener<T> {
         void onTokenChanged(T token);
         void handleUnsecureTokenWarning();
+        void onError(Throwable throwable);
     }
 
     private class RecipientTokenSpan extends TokenImageSpan {

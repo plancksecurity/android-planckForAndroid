@@ -172,6 +172,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void handleUnsecureTokenWarning() {
                 presenter.handleUnsecureDeliveryWarning();
             }
+
+            @Override
+            public void onError(Throwable throwable) {
+                activity.setAndShowError(throwable);
+            }
         });
 
         ccView.setTokenListener(new TokenListener<Recipient>() {
@@ -194,6 +199,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             public void handleUnsecureTokenWarning() {
                 presenter.handleUnsecureDeliveryWarning();
             }
+
+            @Override
+            public void onError(Throwable throwable) {
+                activity.setAndShowError(throwable);
+            }
         });
 
         bccView.setTokenListener(new TokenListener<Recipient>() {
@@ -215,6 +225,11 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
             @Override
             public void handleUnsecureTokenWarning() {
                 presenter.handleUnsecureDeliveryWarning();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                activity.setAndShowError(throwable);
             }
         });
     }
