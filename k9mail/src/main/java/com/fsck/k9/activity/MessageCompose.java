@@ -98,6 +98,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.PepActivity;
 import com.fsck.k9.pEp.infrastructure.ComposeView;
+import com.fsck.k9.pEp.infrastructure.extensions.ThrowableKt;
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -182,6 +183,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private static final int REQUEST_MASK_LOADER_HELPER = (1 << 9);
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
+    private static final int DEBUG_STACK_TRACE_DEPTH = 1;
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -2075,7 +2077,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void setAndShowError(@NotNull Throwable throwable) {
         lastError = BuildConfig.DEBUG
-                ? Log.getStackTraceString(throwable)
+                ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
                 : getString(R.string.error_happened_restart_app);
         showError(lastError);
     }
