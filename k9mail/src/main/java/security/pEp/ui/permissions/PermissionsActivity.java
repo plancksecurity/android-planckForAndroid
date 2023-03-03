@@ -2,7 +2,9 @@ package security.pEp.ui.permissions;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
@@ -30,6 +32,8 @@ public class PermissionsActivity extends PepActivity {
     PEpPermissionView contactsPermissionView;
     @Bind(R.id.permission_storage)
     PEpPermissionView storagePermissionView;
+    @Bind(R.id.permission_post_notifications)
+    PEpPermissionView postNotificationsPermissionView;
     @Bind(R.id.permission_battery)
     PEpPermissionView batteryPermissionView;
 
@@ -46,16 +50,47 @@ public class PermissionsActivity extends PepActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permissions);
         ButterKnife.bind(this);
-        contactsPermissionView.initialize(getResources().getString(R.string.read_permission_rationale_title),
-                getResources().getString(R.string.read_permission_first_explanation)
-        );
-        storagePermissionView.initialize(getResources().getString(R.string.download_permission_rationale_title),
-                getResources().getString(R.string.download_snackbar_permission_rationale)
-        );
-        batteryPermissionView.initialize(getResources().getString(R.string.battery_optimization_rationale_title),
+
+        initializeContactsPermissionView();
+        initializeStoragePermissionView();
+        initializePostNotificationsPermissionView();
+        initializeBatteryPermissionView();
+    }
+
+    private void initializeBatteryPermissionView() {
+        batteryPermissionView.initialize(
+                getResources().getString(R.string.battery_optimization_rationale_title),
                 getResources().getString(R.string.battery_optimiazation_explanation)
         );
+    }
 
+    private void initializePostNotificationsPermissionView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            postNotificationsPermissionView.initialize(
+                    getString(R.string.post_notifications_permission_rationale_title),
+                    getString(R.string.post_notifications_snackbar_permission_rationale)
+            );
+        } else {
+            postNotificationsPermissionView.setVisibility(View.GONE);
+        }
+    }
+
+    private void initializeStoragePermissionView() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            storagePermissionView.initialize(
+                    getString(R.string.download_permission_rationale_title),
+                    getString(R.string.download_snackbar_permission_rationale)
+            );
+        } else {
+            storagePermissionView.setVisibility(View.GONE);
+        }
+    }
+
+    private void initializeContactsPermissionView() {
+        contactsPermissionView.initialize(
+                getResources().getString(R.string.read_permission_rationale_title),
+                getResources().getString(R.string.read_permission_first_explanation)
+        );
     }
 
     @Override
