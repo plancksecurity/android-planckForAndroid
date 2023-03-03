@@ -41,6 +41,11 @@
             android:layout_height="wrap_content" />
 
         <com.fsck.k9.pEp.ui.PEpPermissionView
+            android:id="@+id/permission_post_notifications"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.fsck.k9.pEp.ui.PEpPermissionView
             android:id="@+id/permission_battery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
