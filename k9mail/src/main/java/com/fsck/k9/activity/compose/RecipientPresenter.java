@@ -933,6 +933,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
                 @Override
                 public void onError(Throwable throwable) {
+                    recipientMvpView.showError(throwable);
                     showDefaultStatus();
                     recipientMvpView.messageRatingLoaded();
                 }

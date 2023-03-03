@@ -175,7 +175,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onError(Throwable throwable) {
-                activity.setAndShowError(throwable);
+                showError(throwable);
             }
         });
 
@@ -202,7 +202,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onError(Throwable throwable) {
-                activity.setAndShowError(throwable);
+                showError(throwable);
             }
         });
 
@@ -229,7 +229,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onError(Throwable throwable) {
-                activity.setAndShowError(throwable);
+                showError(throwable);
             }
         });
     }
@@ -621,6 +621,10 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     public void updateRecipientsFromEcho(String echoSender) {
         toView.updateRecipientsFromEcho(echoSender);
         ccView.updateRecipientsFromEcho(echoSender);
+    }
+
+    public void showError(Throwable throwable) {
+        activity.setAndShowError(throwable);
     }
 
     public enum CryptoStatusDisplayType {
