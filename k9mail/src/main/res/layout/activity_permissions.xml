@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="16dp"
-            android:text="NEEDS YOUR PERMISSION TO WORK" />
+            android:text="@string/needs_your_permission_to_work" />
 
         <com.fsck.k9.pEp.ui.PEpPermissionView
             android:id="@+id/permission_contacts"
