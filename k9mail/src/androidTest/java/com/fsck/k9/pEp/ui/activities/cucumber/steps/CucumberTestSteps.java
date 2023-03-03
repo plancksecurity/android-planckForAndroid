@@ -2741,6 +2741,16 @@ public class CucumberTestSteps {
         testUtils.goToSentFolder();
     }
 
+    @And("^I select the inbox from the menu$")
+    public void I_select_the_inbox_from_the_menu() {
+        timeRequiredForThisMethod(25);
+        waitForIdle();
+        testUtils.openHamburgerMenu();
+        waitForIdle();
+        testUtils.clickFolder(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")));
+    }
+
+
     @And("^I select the inbox$")
     public void I_select_the_inbox() {
         timeRequiredForThisMethod(25);
