@@ -554,12 +554,12 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         }
     }
 
-    public void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
-        if (unsecureRecipientsCount > 0) {
-            activity.showUnsecureDeliveryWarning(unsecureRecipientsCount);
-        } else {
-            activity.hideUnsecureDeliveryWarning();
-        }
+    public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        activity.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    public void hideUnsecureDeliveryWarning() {
+        activity.hideUnsecureDeliveryWarning();
     }
 
     public void refreshRecipients() {

@@ -36,7 +36,6 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -185,7 +184,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             return true;
         }
 
-        if (getToAddresses().isEmpty() && getCcAddresses().isEmpty() && getBccAddresses().isEmpty()) {
+        if (addressesAreEmpty(getToAddresses(), getCcAddresses(), getBccAddresses())) {
             recipientMvpView.showNoRecipientsError();
             return true;
         }
@@ -921,9 +920,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
                 @Override
                 public void onLoaded(Rating rating) {
-                    if (newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
+                    if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                         showDefaultStatus();
-                        recipientMvpView.handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
+                        handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
                     } else {
                         privacyState = rating;
                         showRatingFeedback(rating);
@@ -942,12 +941,24 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         recipientMvpView.messageRatingLoaded();
     }
 
+    private boolean addressesAreEmpty(List<Address> newToAdresses, List<Address> newCcAdresses, List<Address> newBccAdresses) {
+        return newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty();
+    }
+
     public void handleUnsecureDeliveryWarning() {
         int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
                 && account.ispEpPrivacyProtected()
                 ? getUnsecureRecipientsCount()
                 : ZERO_RECIPIENTS;
-        recipientMvpView.handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+        handleUnsecureDeliveryWarning(unsecureRecipientsCount);
+    }
+
+    private void handleUnsecureDeliveryWarning(int unsecureRecipientsCount) {
+        if (unsecureRecipientsCount > ZERO_RECIPIENTS) {
+            recipientMvpView.showUnsecureDeliveryWarning(unsecureRecipientsCount);
+        } else {
+            recipientMvpView.hideUnsecureDeliveryWarning();
+        }
     }
 
     private int getUnsecureRecipientsCount() {

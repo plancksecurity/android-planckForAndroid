@@ -313,7 +313,7 @@ public class RecipientPresenterTest extends RobolectricTest {
             verify(recipientMvpView).getToUnsecureRecipientCount();
             verify(recipientMvpView).getCcUnsecureRecipientCount();
             verify(recipientMvpView).getBccUnsecureRecipientCount();
-            verify(recipientMvpView).handleUnsecureDeliveryWarning(6);
+            verify(recipientMvpView).showUnsecureDeliveryWarning(6);
         }
     }
 
@@ -334,7 +334,7 @@ public class RecipientPresenterTest extends RobolectricTest {
             verify(recipientMvpView, never()).getToUnsecureRecipientCount();
             verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
             verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
-            verify(recipientMvpView).handleUnsecureDeliveryWarning(0);
+            verify(recipientMvpView).hideUnsecureDeliveryWarning();
         }
     }
 
@@ -355,7 +355,7 @@ public class RecipientPresenterTest extends RobolectricTest {
             verify(recipientMvpView, never()).getToUnsecureRecipientCount();
             verify(recipientMvpView, never()).getCcUnsecureRecipientCount();
             verify(recipientMvpView, never()).getBccUnsecureRecipientCount();
-            verify(recipientMvpView).handleUnsecureDeliveryWarning(0);
+            verify(recipientMvpView).hideUnsecureDeliveryWarning();
         }
     }
 
