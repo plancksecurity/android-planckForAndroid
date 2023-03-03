@@ -283,7 +283,7 @@ public class TestUtils {
     }
 
     private void gmailAccount() {
-        onView(withId(R.id.account_oauth2)).perform(click());
+        //onView(withId(R.id.account_oauth2)).perform(click());
         onView(withId(R.id.next)).perform(click());
         onView(withId(R.id.next)).perform(click());
         waitForIdle();
