@@ -104,6 +104,9 @@
     <string name="download_snackbar_permission_rationale">p≡p needs permission to save attachments from your emails.</string>
     <string name="download_snackbar_permission_permanently_denied">Not granting us permission to download files might cause unexpected behavior</string>
     <string name="download_permission_rationale_title">Download files</string>
+    <string name="post_notifications_first_explanation">p≡p needs permission to display notifications on your device</string>
+    <string name="post_notifications_snackbar_permission_rationale">p≡p needs permission to display notifications of new emails and other events.</string>
+    <string name="post_notifications_permission_rationale_title">Display notifications</string>
     <string name="add_fpr">Add fingerprint</string>
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
     <string name="is_always_secure">Store protected on server</string>
