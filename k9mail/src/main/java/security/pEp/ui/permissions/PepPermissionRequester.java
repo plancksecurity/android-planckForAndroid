@@ -11,6 +11,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import com.fsck.k9.K9;
@@ -67,6 +68,17 @@ public class PepPermissionRequester implements PermissionRequester {
                 Manifest.permission.WRITE_CONTACTS);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Override
+    public void requestPostNotificationsPermission(@NotNull View view, PermissionListener listener) {
+        String explanation = activity.getString(R.string.post_notifications_first_explanation);
+        startDexterActivity(
+                view,
+                explanation,
+                listener,
+                Manifest.permission.POST_NOTIFICATIONS);
+    }
+
     @Override
     public void requestStoragePermission(@NotNull View view) {
         requestStoragePermission(view, null);
@@ -75,6 +87,12 @@ public class PepPermissionRequester implements PermissionRequester {
     @Override
     public void requestContactsPermission(@NotNull View view) {
         requestContactsPermission(view, null);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Override
+    public void requestPostNotificationsPermission(@NotNull View view) {
+        requestPostNotificationsPermission(view, null);
     }
 
     private void startDexterActivity(@NotNull View view, @NotNull String explanation, PermissionListener listener, String... permissions) {
