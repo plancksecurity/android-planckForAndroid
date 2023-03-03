@@ -931,9 +931,22 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void showContactPicker(int requestCode) {
+        requestContactsPermissionIfNeeded();
+        if (permissionChecker.hasContactsPermission()) {
+            showContactPickerWithPermission(requestCode);
+        }
+    }
+
+    private void showContactPickerWithPermission(int requestCode) {
         requestCode |= REQUEST_MASK_RECIPIENT_PRESENTER;
         isInSubActivity = true;
         startActivityForResult(contacts.contactPickerIntent(), requestCode);
+    }
+
+    private void requestContactsPermissionIfNeeded() {
+        if (permissionChecker.doesntHaveContactsPermission()) {
+            permissionRequester.requestContactsPermission(rootView);
+        }
     }
 
     @Override
