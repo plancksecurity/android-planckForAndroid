@@ -2993,11 +2993,11 @@ public class CucumberTestSteps {
         int attachments = -1;
         while (true) {
             try {
-                if (!exists(onView(withId(R.id.attachments)))) {
+                while (!exists(onView(withId(R.id.attachments)))) {
                     TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                if (!viewIsDisplayed(R.id.attachments)) {
+                while (!viewIsDisplayed(R.id.attachments)) {
                     TestUtils.swipeUpScreen();
                 }
                 TestUtils.swipeUpScreen();

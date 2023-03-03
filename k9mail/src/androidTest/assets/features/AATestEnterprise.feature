@@ -402,11 +402,13 @@ Feature: Test
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with specialCharacters
-    When I go to the sent folder
+    When I compare messageBody with specialCharacters
+    And I press back
+    And I go to the sent folder
     And I click the first message
     Then I compare messageBody with specialCharacters
     When I press back
-    And I go back to the Inbox
+    And I select the inbox from the menu
     And I click compose message
     And I enter myself in the messageTo field
     And I enter Special2 in the messageSubject field
