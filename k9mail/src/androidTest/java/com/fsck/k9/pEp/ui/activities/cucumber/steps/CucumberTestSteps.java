@@ -140,8 +140,9 @@ public class CucumberTestSteps {
         }
         Intents.init();
         try {
+            waitForIdle();
             scenario = ActivityScenario.launch(SplashActivity.class);
-            while (TestUtils.getCurrentActivity() == null) {
+            while (TestUtils.getCurrentActivity() == null || scenario == null) {
                 try {
                     waitForIdle();
                     Thread.sleep(500);
@@ -218,14 +219,14 @@ public class CucumberTestSteps {
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
             }
-            I_set_string_setting("pep_enable_sync_account", "true");
-            I_set_string_setting("account_description", "ThisIsUserName");
-            I_set_string_setting("account_display_count", "50");
-            I_set_string_setting("max_push_folders", "50");
-            I_set_string_setting("account_remote_search_num_results", "50");
-            I_set_string_setting("account_email_address", account);
-            I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
-            I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
+            //I_set_string_setting("pep_enable_sync_account", "true");
+            //I_set_string_setting("account_description", "ThisIsUserName");
+            //I_set_string_setting("account_display_count", "50");
+            //I_set_string_setting("max_push_folders", "50");
+            //I_set_string_setting("account_remote_search_num_results", "50");
+            //I_set_string_setting("account_email_address", account);
+            //I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
+            //I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
         }
         waitForIdle();
         try {
@@ -739,15 +740,24 @@ public class CucumberTestSteps {
         testUtils.pressBack();
     }
 
-    @When("^I reset handshake$")
-    public void I_reset_handshake() {
-        timeRequiredForThisMethod(10);
-        testUtils.selectFromMenu(R.string.pep_title_activity_privacy_status);
+    @When("^I reset partner key$")
+    public void I_reset_partner_key() {
+        waitForIdle();
+        onView(withId(R.id.securityText)).perform(click());
+        waitForIdle();
         while (!exists(onView(withId(R.id.button_identity_key_reset)))) {
             waitForIdle();
         }
         onView(withId(R.id.button_identity_key_reset)).perform(click());
         waitForIdle();
+        testUtils.pressOKButtonInDialog();
+        waitForIdle();
+        if (exists(onView(withId(R.id.rejectHandshake))) || exists(onView(withId(R.id.confirmHandshake)))) {
+
+        }
+        if (!exists(onView(withId(R.id.status_explanation_text)))) {
+
+        }
         testUtils.pressBack();
     }
 
@@ -1152,7 +1162,7 @@ public class CucumberTestSteps {
                     I_click_confirm_trust_words();
                     I_check_toolBar_color_is("pep_green");
                     I_click_reply_message();
-                    I_reset_handshake();
+                    I_reset_partner_key();
                     I_check_toolBar_color_is("pep_no_color");
                     I_discard_the_message();
                     testUtils.pressBack();
