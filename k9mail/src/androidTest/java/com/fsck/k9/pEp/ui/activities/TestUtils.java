@@ -913,6 +913,7 @@ public class TestUtils {
 
     private void createNewAccountWithPermissions() {
         testReset = false;
+        boolean selectOptionDisplayed = false;
         try {
             if (exists(onView(withId(R.id.next)))) {
                 onView(withId(R.id.next)).perform(click());
@@ -945,6 +946,26 @@ public class TestUtils {
                     Timber.i("Ignored", "Ignored exception");
                 }
             }
+            waitForIdle();
+            if (exists(onView(withId(R.id.other_method_sign_in_button)))) {
+                onView(withId(R.id.other_method_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }
+            /*if (exists(onView(withId(R.id.microsoft_sign_in_button)))) {
+                onView(withId(R.id.microsoft_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }
+            if (exists(onView(withId(R.id.google_sign_in_button)))) {
+                onView(withId(R.id.google_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }*/
+            if (!selectOptionDisplayed) {
+                fail("No sign in options to choose");
+            }
+            waitForIdle();
             switch (test_number()) {
                 case "0":
                     createNAccounts(getTotalAccounts(), false, false);
@@ -1447,7 +1468,7 @@ public class TestUtils {
         do {
             allowPermissions(2);
             allowPermissions(1);
-        } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
+        } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)) && !viewIsDisplayed((R.id.terms_and_conditions)));
     }
 
     public void allowPermissions(int index) {
