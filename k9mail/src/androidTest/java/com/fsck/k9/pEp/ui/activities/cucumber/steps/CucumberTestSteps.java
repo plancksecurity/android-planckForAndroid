@@ -214,20 +214,20 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        if (BuildConfig.IS_ENTERPRISE) {
+        /*if (BuildConfig.IS_ENTERPRISE) {
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
             }
-            //I_set_string_setting("pep_enable_sync_account", "true");
-            //I_set_string_setting("account_description", "ThisIsUserName");
-            //I_set_string_setting("account_display_count", "50");
-            //I_set_string_setting("max_push_folders", "50");
-            //I_set_string_setting("account_remote_search_num_results", "50");
-            //I_set_string_setting("account_email_address", account);
-            //I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
-            //I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
-        }
+            I_set_string_setting("pep_enable_sync_account", "true");
+            I_set_string_setting("account_description", "ThisIsUserName");
+            I_set_string_setting("account_display_count", "50");
+            I_set_string_setting("max_push_folders", "50");
+            I_set_string_setting("account_remote_search_num_results", "50");
+            I_set_string_setting("account_email_address", account);
+            I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
+            I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
+        }*/
         waitForIdle();
         try {
             if (!exists(onView(withId(R.id.message_list)))) {
