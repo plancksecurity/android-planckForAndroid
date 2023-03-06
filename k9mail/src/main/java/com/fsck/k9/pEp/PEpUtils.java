@@ -594,19 +594,5 @@ public class PEpUtils {
     public static boolean isRatingUnsecure(Rating rating){
         return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingUnreliable.value; // TODO: change this to the media key rating when implemented on engine side.
     }
-
-    public static void updateSyncAccountsConfig(Context context) {
-        try (PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context)) {
-            pEp.disableSyncForAllIdentites();
-
-            for (Account account : Preferences.getPreferences(context).getAccounts()) {
-                Identity id = createIdentity(
-                        new Address(account.getEmail(), account.getName()), context);
-                // TODO: 04/08/2020 Move to PepProvider.
-                id = pEp.myself(id);
-                pEp.setIdentityFlag(id, account.isPepSyncEnabled());
-            }
-        }
-    }
 }
 

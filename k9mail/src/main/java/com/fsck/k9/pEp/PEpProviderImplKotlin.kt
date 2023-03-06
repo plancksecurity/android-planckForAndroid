@@ -7,6 +7,7 @@ import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
@@ -284,6 +285,17 @@ class PEpProviderImplKotlin @Inject constructor(
     override fun disableSyncForAllIdentites() {
         createEngineInstanceIfNeeded()
         engine.get()?.disable_all_sync_channels()
+    }
+    @WorkerThread
+    override fun updateSyncAccountsConfig() {
+        disableSyncForAllIdentites()
+        for (account in Preferences.getPreferences(context).accounts) {
+            var id = PEpUtils.createIdentity(
+                Address(account.email, account.name), context
+            )
+            id = myself(id)
+            setIdentityFlag(id, account.isPepSyncEnabled)
+        }
     }
 
     override fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback) {
