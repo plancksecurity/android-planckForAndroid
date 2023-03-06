@@ -32,9 +32,11 @@ class CheckSettingsViewModel(
         account: Account,
         direction: AccountSetupCheckSettings.CheckDirection,
     ) {
-        viewModelScope.launch {
-            this@CheckSettingsViewModel.account = account
-            startCheckServerSettings(context, direction)
+        if (!::account.isInitialized) { // check if start() was already called
+            this.account = account
+            viewModelScope.launch {
+                startCheckServerSettings(context, direction)
+            }
         }
     }
 
