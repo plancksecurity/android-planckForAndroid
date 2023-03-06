@@ -42,7 +42,6 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
-import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
@@ -875,11 +874,10 @@ public class K9 extends MultiDexApplication {
 
     private void initSync() {
 
-        PEpUtils.updateSyncAccountsConfig(this);
+        pEpProvider.updateSyncAccountsConfig();
         if (!pEpSyncProvider.isSyncRunning()) {
             pEpSyncProvider.startSync();
         }
-//        }
     }
 
     private void goToAddDevice(Identity myself, Identity partner, SyncHandshakeSignal signal, boolean formingGroup) {
