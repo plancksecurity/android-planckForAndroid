@@ -2508,6 +2508,10 @@ public class TestUtils {
         return resources.getIdentifier(text, "string", BuildConfig.APPLICATION_ID);
     }
 
+    public int pluralsStringToID(String text){
+        return resources.getIdentifier(text, "plurals", BuildConfig.APPLICATION_ID);
+    }
+
     public int intToID(String text){
         return resources.getIdentifier(text, "id", BuildConfig.APPLICATION_ID);
     }
