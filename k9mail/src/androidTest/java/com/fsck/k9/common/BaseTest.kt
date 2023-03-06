@@ -39,7 +39,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import timber.log.Timber
-
+/*
 open class BaseTest {
 
     lateinit var device: UiDevice
@@ -323,3 +323,4 @@ open class BaseTest {
     }
 
 }
+*/

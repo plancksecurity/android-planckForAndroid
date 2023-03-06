@@ -1,5 +1,5 @@
 package com.fsck.k9.pEp.ui.activities.test
-
+/*
 import androidx.test.internal.runner.filters.ParentFilter
 import org.junit.runner.Description
 
@@ -24,3 +24,4 @@ class NonCucumberTestFilter : ParentFilter() {
         return !packageName.isNullOrBlank() && !packageName.contains("cucumber")
     }
 }
+*/

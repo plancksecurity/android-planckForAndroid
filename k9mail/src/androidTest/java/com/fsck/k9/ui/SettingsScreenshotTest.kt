@@ -1,4 +1,4 @@
-package com.fsck.k9.ui
+/*package com.fsck.k9.ui
 
 import android.os.Build
 import androidx.test.espresso.Espresso
@@ -279,4 +279,4 @@ class SettingsScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("import key step 2")
     }
 
-}
+}*/

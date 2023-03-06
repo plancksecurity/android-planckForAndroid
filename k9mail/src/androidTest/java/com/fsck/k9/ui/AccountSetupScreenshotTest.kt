@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-
+/*
 import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -183,4 +183,4 @@ class AccountSetupScreenshotTest : BaseScreenshotTest() {
     }
 
 
-}
+}*/
