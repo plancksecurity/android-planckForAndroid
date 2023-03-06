@@ -15,4 +15,9 @@ val authModule = applicationContext {
             mailSettingsDiscovery = get()
         )
     }
+    viewModel {
+        CheckSettingsViewModel(
+            controller = get()
+        )
+    }
 }
