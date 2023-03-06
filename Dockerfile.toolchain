@@ -8,8 +8,9 @@ RUN apt-get install -yqq apt-utils git clang libclang-dev make pkg-config nettle
     ant gettext unzip vim bash-completion autoconf automake cargo android-sdk* locales
 
 RUN apt-get install -yqq python3 python3-lxml-dbg python3-lxml python3-distutils-extra
+RUN apt-get install -yqq asn1c
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1
-RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.49.0 -y
+RUN curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain 1.64.0 -y
 
 # Install Java 11
 RUN apt-get update -yqq && \
