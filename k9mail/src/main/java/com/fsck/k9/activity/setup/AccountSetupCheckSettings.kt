@@ -57,9 +57,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     private var errorResultCode = RESULT_CANCELED
 
     @Volatile
-    private var canceled = false
-
-    @Volatile
     private var destroyed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -253,7 +250,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         super.onDestroy()
 
         destroyed = true
-        canceled = true
     }
 
     private fun setMessage(resId: Int) {
@@ -419,8 +415,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     }
 
     private fun onCancel() {
-        canceled = true
         setMessage(R.string.account_setup_check_settings_canceling_msg)
+        checkSettingsViewModel.cancel()
 
         setResult(RESULT_CANCELED)
         finish()
@@ -464,7 +460,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     override fun doNegativeClick(dialogId: Int) {
         if (dialogId == R.id.dialog_account_setup_error) {
-            canceled = false
             setResult(errorResultCode)
             finish()
         }

@@ -13,9 +13,7 @@ import com.fsck.k9.mail.CertificateValidationException
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.pEp.infrastructure.exceptions.DeviceOfflineException
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 
 class CheckSettingsViewModel(
@@ -26,6 +24,7 @@ class CheckSettingsViewModel(
 
     private val _state = MutableLiveData<CheckSettingsState>(CheckSettingsState.Idle)
     val state: LiveData<CheckSettingsState> = _state
+    private var job: Job? = null
 
     fun start(
         context: Context,
@@ -34,10 +33,14 @@ class CheckSettingsViewModel(
     ) {
         if (!::account.isInitialized) { // check if start() was already called
             this.account = account
-            viewModelScope.launch {
+            job = viewModelScope.launch {
                 startCheckServerSettings(context, direction)
             }
         }
+    }
+
+    fun cancel() {
+        job?.cancel()
     }
 
     private suspend fun startCheckServerSettings(
