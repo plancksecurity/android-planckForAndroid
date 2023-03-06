@@ -108,7 +108,6 @@
     <color name="remove_recipient_button_dark">#B6B6B6</color>
 
     <color name="compose_unsecure_delivery_warning">#D70000</color>
-    <color name="compose_unsecure_delivery_warning_text">@color/white</color>
 
     <color name="startup_gradient_start">#4CAF50</color>
     <color name="startup_gradient_end">#0F7F23</color>

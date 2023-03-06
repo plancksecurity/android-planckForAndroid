@@ -22,7 +22,7 @@ class UnsecureAddressHelperTest {
     private val ratedListener: RatedRecipientsReadyListener = mockk(relaxed = true)
     private val view: RecipientSelectViewContract = mockk()
 
-    private val presenter = UnsecureAddressHelper(pEp)
+    private val helper = UnsecureAddressHelper(pEp)
 
     @Before
     fun setup() {
@@ -30,7 +30,7 @@ class UnsecureAddressHelperTest {
         every { view.isAlwaysUnsecure }.returns(false)
         mockkStatic(K9::class)
         every { K9.ispEpForwardWarningEnabled() }.returns(true)
-        presenter.initialize(view)
+        helper.initialize(view)
     }
 
     @Test
@@ -41,7 +41,7 @@ class UnsecureAddressHelperTest {
         val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { pEp.getRating(address, any()) }
@@ -58,7 +58,7 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { callback.onLoaded(Rating.pEpRatingReliable) }
@@ -75,11 +75,11 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { callback.onLoaded(Rating.pEpRatingUndefined) }
-        assertTrue(presenter.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
+        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
     }
 
     @Test
@@ -94,11 +94,11 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { callback.onLoaded(Rating.pEpRatingUndefined) }
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, helper.unsecureAddressChannelCount)
     }
 
     @Test
@@ -112,10 +112,10 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
 
 
-        presenter.getRecipientRating(recipient, false, callback)
+        helper.getRecipientRating(recipient, false, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, helper.unsecureAddressChannelCount)
     }
 
     @Test
@@ -130,7 +130,7 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onError(testException) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { callback.onError(testException) }
@@ -148,10 +148,10 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onError(RuntimeException()) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
-        assertTrue(presenter.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
+        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
     }
 
     @Test
@@ -166,10 +166,10 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onError(RuntimeException()) }
 
 
-        presenter.getRecipientRating(recipient, false, callback)
+        helper.getRecipientRating(recipient, false, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, helper.unsecureAddressChannelCount)
     }
 
     @Test
@@ -180,7 +180,7 @@ class UnsecureAddressHelperTest {
         val recipient2 = Recipient(address2)
 
 
-        presenter.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
 
 
         coVerify { pEp.getRating(address1) }
@@ -197,7 +197,7 @@ class UnsecureAddressHelperTest {
         val recipient2 = Recipient(address2)
 
 
-        presenter.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
 
 
         val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
@@ -226,7 +226,7 @@ class UnsecureAddressHelperTest {
         val trustedRecipient = Recipient(trustedAddress)
 
 
-        presenter.sortRecipientsByRating(
+        helper.sortRecipientsByRating(
             arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
             listener
         )
@@ -250,7 +250,7 @@ class UnsecureAddressHelperTest {
         val trustedRecipient = Recipient(trustedAddress)
 
 
-        presenter.sortRecipientsByRating(
+        helper.sortRecipientsByRating(
             arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
             listener
         )
@@ -277,7 +277,7 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
         verify { callback.onLoaded(Rating.pEpRatingUndefined) }
@@ -295,10 +295,10 @@ class UnsecureAddressHelperTest {
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
-        assertTrue(presenter.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
+        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
     }
 
     @Test
@@ -314,9 +314,9 @@ class UnsecureAddressHelperTest {
         every { K9.ispEpForwardWarningEnabled() }.returns(false)
 
 
-        presenter.getRecipientRating(recipient, true, callback)
+        helper.getRecipientRating(recipient, true, callback)
 
 
-        assertFalse(presenter.isUnsecureChannel())
+        assertEquals(0, helper.unsecureAddressChannelCount)
     }
 }
