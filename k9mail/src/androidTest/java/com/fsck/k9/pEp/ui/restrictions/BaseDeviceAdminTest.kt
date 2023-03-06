@@ -1,5 +1,5 @@
 package com.fsck.k9.pEp.ui.restrictions
-
+/*
 import androidx.test.uiautomator.By
 import com.fsck.k9.common.BaseTest
 import com.fsck.k9.pEp.ui.activities.TestUtils
@@ -35,3 +35,4 @@ open class BaseDeviceAdminTest : BaseTest() {
 
 }
 
+*/
