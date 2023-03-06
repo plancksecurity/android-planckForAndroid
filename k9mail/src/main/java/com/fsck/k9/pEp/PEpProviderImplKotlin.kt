@@ -401,7 +401,7 @@ class PEpProviderImplKotlin constructor(
             }
             if (currentEnc == null) currentEnc = message
             Timber.d("%s %s", TAG, "encryptMessage() after encrypt to self")
-            getMimeMessage(source, currentEnc)
+            getMimeMessage(source, currentEnc!!)
         } catch (e: Exception) {
             Timber.e(e, "%s %s", TAG, "encryptMessageToSelf: ")
             source
@@ -520,7 +520,7 @@ class PEpProviderImplKotlin constructor(
             }
             Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt")
 
-            Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
+            Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn!!.dst.shortmsg)
             val message = decReturn.dst
             val decMsg = getMimeMessage(source, message)
             if (decMsg.subject.contains(ECHO_PROTOCOL_MESSAGE_SUBJECT)) {
@@ -814,7 +814,7 @@ class PEpProviderImplKotlin constructor(
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "during getRating:")
             Rating.pEpRatingUndefined
-        }
+        }!!
     }
 
     private fun createMessageForRating(from: Address?,
@@ -849,7 +849,7 @@ class PEpProviderImplKotlin constructor(
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "getRating: ")
             Rating.pEpRatingUndefined
-        }
+        }!!
     }
 
     override fun getRating(address: Address, callback: ResultCallback<Rating>) {
