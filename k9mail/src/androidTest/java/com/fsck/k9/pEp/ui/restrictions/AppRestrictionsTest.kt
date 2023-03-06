@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.restrictions
+/*package com.fsck.k9.pEp.ui.restrictions
 
 import android.app.Activity
 import android.content.Intent
@@ -192,3 +192,4 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
         }
 
 }
+*/

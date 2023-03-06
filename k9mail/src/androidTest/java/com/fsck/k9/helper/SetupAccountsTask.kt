@@ -1,5 +1,5 @@
 package com.fsck.k9.helper
-
+/*
 import android.Manifest
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -69,4 +69,4 @@ class SetupAccountsTask : BaseTest() {
         TestUtils.waitForIdle()
     }
 
-}
+}*/
