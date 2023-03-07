@@ -847,7 +847,7 @@ public class K9 extends MultiDexApplication {
     public void pEpInitSyncEnvironment() {
         pEpSyncEnvironmentInitialized = true;
         if (pEpSyncProvider == null) {
-            pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+            pEpSyncProvider = PEpProviderFactory.createProvider(this);
         }
 //        for (Account account : prefs.getAccounts()) {
 //            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
@@ -1818,7 +1818,7 @@ public class K9 extends MultiDexApplication {
             if (!(activity instanceof SplashScreen)) {
                 if (activityCount == 0) {
 //                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
-                    pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
+                    pEpProvider = PEpProviderFactory.createProvider(getApplicationContext());
                     //pEpInitSyncEnvironment();
                 }
                 ++activityCount;
@@ -1855,7 +1855,7 @@ public class K9 extends MultiDexApplication {
             if (!(activity instanceof SplashScreen)) {
                 --activityCount;
                 if (activityCount == 0) {
-                    PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
+                    PEpProvider provider = PEpProviderFactory.createProvider(K9.this);
                     KeySyncCleaner.queueAutoConsumeMessages();
                     if (provider.isSyncRunning()) provider.stopSync();
                     provider.close();

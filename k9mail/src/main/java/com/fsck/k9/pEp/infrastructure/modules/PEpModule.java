@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpProviderFactory;
@@ -51,7 +50,7 @@ public class PEpModule {
     @Provides
     @Named("NewInstance")
     public PEpProvider providepEpProviderNewInstance() {
-        return (PEpProviderFactory.createAndSetupProvider(context));
+        return (PEpProviderFactory.createProvider(context));
     }
 
     @Provides
