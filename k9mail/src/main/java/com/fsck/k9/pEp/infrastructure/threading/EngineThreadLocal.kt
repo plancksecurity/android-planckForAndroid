@@ -1,6 +1,5 @@
 package com.fsck.k9.pEp.infrastructure.threading
 
-import android.content.Context
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import foundation.pEp.jniadapter.Engine
@@ -8,7 +7,7 @@ import foundation.pEp.jniadapter.exceptions.pEpException
 import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
 
-class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
+class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<Engine>() {
 
     override fun get(): Engine {
         if(super.get()==null){
@@ -31,17 +30,29 @@ class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
         engine.config_passive_mode(K9.getPEpPassiveMode())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
         engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
-        engine.setMessageToSendCallback(MessagingController.getInstance(context))
-        engine.setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
-        engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(context))
+        engine.setMessageToSendCallback(MessagingController.getInstance(k9))
+        engine.setNotifyHandshakeCallback(k9.notifyHandshakeCallback)
+        engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-        if ((context.applicationContext as K9).isRunningOnWorkProfile) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
+        if (k9.isRunningOnWorkProfile) {
             engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
         }
     }
 
     companion object {
         private const val TAG = "pEpEngine-ThreadLocal-provider"
+
+        private lateinit var instance: EngineThreadLocal
+
+        @JvmStatic
+        fun getInstance(k9: K9): EngineThreadLocal {
+            synchronized(this) {
+                if (!::instance.isInitialized) {
+                    instance = EngineThreadLocal(k9)
+                }
+            }
+            return instance
+        }
     }
 
 }

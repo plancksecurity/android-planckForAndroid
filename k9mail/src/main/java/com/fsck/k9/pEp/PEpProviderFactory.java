@@ -2,6 +2,7 @@ package com.fsck.k9.pEp;
 
 import android.content.Context;
 
+import com.fsck.k9.K9;
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
 import com.fsck.k9.pEp.infrastructure.threading.EngineThreadLocal;
@@ -15,7 +16,7 @@ public class PEpProviderFactory {
 
     static public PEpProvider createProvider(Context context) {
         PostExecutionThread postExecutionThread = new UIThread();
-        EngineThreadLocal engineThreadLocal = new EngineThreadLocal(context);
+        EngineThreadLocal engineThreadLocal = EngineThreadLocal.getInstance((K9) context.getApplicationContext());
         return new PEpProviderImplKotlin(postExecutionThread, context, engineThreadLocal);
     }
 }
