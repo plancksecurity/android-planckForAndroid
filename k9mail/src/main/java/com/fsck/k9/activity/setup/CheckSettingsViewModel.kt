@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
+import com.fsck.k9.K9
+import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthenticationFailedException
@@ -13,7 +15,10 @@ import com.fsck.k9.mail.CertificateValidationException
 import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.pEp.infrastructure.exceptions.DeviceOfflineException
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class CheckSettingsViewModel(
@@ -30,11 +35,12 @@ class CheckSettingsViewModel(
         context: Context,
         account: Account,
         direction: AccountSetupCheckSettings.CheckDirection,
+        edit: Boolean
     ) {
         if (!::account.isInitialized) { // check if start() was already called
             this.account = account
             job = viewModelScope.launch {
-                startCheckServerSettings(context, direction)
+                startCheckServerSettings(context, direction, edit)
             }
         }
     }
@@ -46,10 +52,15 @@ class CheckSettingsViewModel(
     private suspend fun startCheckServerSettings(
         context: Context,
         direction: AccountSetupCheckSettings.CheckDirection,
+        edit: Boolean
     ) = withContext(Dispatchers.IO) {
         kotlin.runCatching {
             clearCertificateErrorNotifications(direction)
             checkServerSettings(direction)
+            if (edit) {
+                account.save(Preferences.getPreferences(context))
+                K9.setServicesEnabled(context)
+            }
         }.mapError { throwable ->
             when {
                 throwable is AuthenticationFailedException ||

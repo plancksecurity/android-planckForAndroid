@@ -568,28 +568,13 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (Intent.ACTION_EDIT.equals(getActivity().getIntent().getAction())) {
-                boolean isPushCapable = false;
-                try {
-                    Store store = mAccount.getRemoteStore();
-                    isPushCapable = store.isPushCapable();
-                } catch (Exception e) {
-                    Log.e(K9.LOG_TAG, "Could not get remote store", e);
-                }
-                if (isPushCapable && mAccount.getFolderPushMode() != Account.FolderMode.NONE) {
-                    jobManager.schedulePusherRefresh();
-                }
-                mAccount.save(preferences);
-                getActivity().finish();
-            } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
-                goForward();
-            }
+            goForward();
         }
     }
 
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
-                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false);
+                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.INCOMING, false, editSettings);
     }
 
     private void goForward() {

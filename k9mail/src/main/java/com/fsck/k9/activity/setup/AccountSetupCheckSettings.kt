@@ -55,6 +55,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     private lateinit var account: Account
     private lateinit var direction: CheckDirection
     private var errorResultCode = RESULT_CANCELED
+    private var edit = false
 
     @Volatile
     private var destroyed = false
@@ -75,6 +76,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         val mailSettingsDiscoveryRequired = intent.getBooleanExtra(
             EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, false)
                 && direction == CheckDirection.INCOMING
+        edit = intent.getBooleanExtra(EXTRA_EDIT, false)
 
         observeCheckSettingsViewModel()
 
@@ -224,7 +226,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     }
 
     private fun startCheckServerSettings() {
-        checkSettingsViewModel.start(applicationContext, account, direction)
+        checkSettingsViewModel.start(applicationContext, account, direction, edit)
     }
 
     private fun handleCertificateValidationException(exception: CertificateValidationException) {
@@ -398,7 +400,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             )
         }
 
-        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false)
+        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false, edit)
     }
 
     override fun onActivityResult(reqCode: Int, resCode: Int, data: Intent?) {
@@ -503,19 +505,23 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"
         private const val EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED = "mailSettingsDiscoveryRequired"
+        private const val EXTRA_EDIT = "edit"
         private const val STATE_ERROR_RESULT_CODE = "errorResultCode"
 
         @JvmStatic
+        @JvmOverloads
         fun actionCheckSettings(
             context: Activity,
             account: Account,
             direction: CheckDirection,
             mailSettingsDiscoveryRequired: Boolean,
+            edit: Boolean = false
         ) {
             val intent = Intent(context, AccountSetupCheckSettings::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account.uuid)
                 putExtra(EXTRA_CHECK_DIRECTION, direction)
                 putExtra(EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, mailSettingsDiscoveryRequired)
+                putExtra(EXTRA_EDIT, edit)
                 addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 

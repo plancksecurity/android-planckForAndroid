@@ -253,7 +253,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     private void checkSettings() {
         AccountSetupCheckSettings.actionCheckSettings(
-                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false);
+                requireActivity(), mAccount, AccountSetupCheckSettings.CheckDirection.OUTGOING, false, mEdit);
     }
 
     @Override
@@ -520,10 +520,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            if (mEdit) {
-                mAccount.save(preferences);
-                goForward();
-            } else if (requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
+            if (mEdit || requestCode == AccountSetupCheckSettings.ACTIVITY_REQUEST_CODE) {
                 goForward();
             }
         }
