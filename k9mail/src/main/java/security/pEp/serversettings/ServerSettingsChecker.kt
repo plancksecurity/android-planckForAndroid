@@ -5,7 +5,7 @@ import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings
+import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthenticationFailedException
@@ -25,7 +25,7 @@ class ServerSettingsChecker(
     fun checkServerSettings(
         context: Context,
         account: Account,
-        direction: AccountSetupCheckSettings.CheckDirection,
+        direction: CheckDirection,
         edit: Boolean
     ): Result<Unit> = kotlin.runCatching {
         this.account = account
@@ -59,15 +59,15 @@ class ServerSettingsChecker(
     }
 
     private fun clearCertificateErrorNotifications(
-        direction: AccountSetupCheckSettings.CheckDirection
+        direction: CheckDirection
     ) {
         controller.clearCertificateErrorNotifications(account, direction)
     }
 
-    private fun checkServerSettings(direction: AccountSetupCheckSettings.CheckDirection) {
+    private fun checkServerSettings(direction: CheckDirection) {
         when (direction) {
-            AccountSetupCheckSettings.CheckDirection.INCOMING -> checkIncoming()
-            AccountSetupCheckSettings.CheckDirection.OUTGOING -> checkOutgoing()
+            CheckDirection.INCOMING -> checkIncoming()
+            CheckDirection.OUTGOING -> checkOutgoing()
         }
     }
 
