@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.pEp.infrastructure.threading.UIThread;
-import com.fsck.k9.pEp.threads.EngineThreadLocal;
+import com.fsck.k9.pEp.infrastructure.threading.EngineThreadLocal;
 
 /**
  * Factory for real providers
