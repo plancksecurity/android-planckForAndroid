@@ -48,6 +48,8 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         set(null)
     }
 
+    fun isEmpty(): Boolean = super.get() == null
+
     companion object {
         private const val TAG = "pEpEngine-ThreadLocal-provider"
 
