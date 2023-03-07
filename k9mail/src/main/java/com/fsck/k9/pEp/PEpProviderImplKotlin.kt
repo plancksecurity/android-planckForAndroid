@@ -5,10 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.annotation.WorkerThread
 import com.fsck.k9.Account
-import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mail.Flag
 import com.fsck.k9.mail.MessagingException
@@ -22,8 +20,7 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
-import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor
-import com.fsck.k9.pEp.threads.EngineThreadLocal
+import com.fsck.k9.pEp.infrastructure.threading.EngineThreadLocal
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -32,7 +29,6 @@ import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
 import security.pEp.echo.EchoMessageReceivedListener
 import security.pEp.provisioning.ProvisioningFailedException
-import security.pEp.ui.PassphraseProvider.getPassphraseRequiredCallback
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
