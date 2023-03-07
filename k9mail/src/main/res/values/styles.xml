@@ -308,5 +308,21 @@
         <item name="tint">@color/white_transparent_70</item>
     </style>
 
+    <style name="PermissionsScreen">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
+
+    <style name="PermissionsScreen.PEpLogo" parent="Widget.MaterialComponents.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="srcCompat">@drawable/ic_peplogo</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
 </resources>
 

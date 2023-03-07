@@ -10,4 +10,6 @@ interface PermissionChecker {
 
     fun doesntHaveContactsPermission(): Boolean
     fun hasContactsPermission(): Boolean
+
+    fun doesntHavePostNotificationsPermission(): Boolean
 }

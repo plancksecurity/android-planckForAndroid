@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 
 import androidx.core.content.ContextCompat
 
@@ -39,6 +40,12 @@ class PEpPermissionChecker(private val context: Context) : PermissionChecker {
         return arePermissionsGranted(readRes, writeRes)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun doesntHavePostNotificationsPermission(): Boolean {
+        val res = getPostNotificationsPermission()
+        return arePermissionsDenied(res)
+    }
+
     private fun arePermissionsGranted(vararg permissionsStatusResult: Int): Boolean {
         return permissionsStatusResult
                 .map { permissionStatus -> permissionStatus == PackageManager.PERMISSION_GRANTED }
@@ -61,5 +68,10 @@ class PEpPermissionChecker(private val context: Context) : PermissionChecker {
 
     private fun getExternalStoragePermission(): Int {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun getPostNotificationsPermission(): Int {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
     }
 }

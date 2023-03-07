@@ -332,6 +332,13 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
     }
 
+    private void askForNotificationsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                permissionChecker.doesntHavePostNotificationsPermission()) {
+            permissionRequester.requestPostNotificationsPermission(getRootView());
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -362,7 +369,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
         }
 
         permissionRequester.requestBatteryOptimizationPermission();
-        askForContactPermission();
+        if (savedInstanceState == null && !(this instanceof Search)) {
+            askForNotificationsPermission();
+            askForContactPermission();
+        }
         findFragments();
         initializeDisplayMode(savedInstanceState);
         initializeLayout();

@@ -14,6 +14,10 @@ interface PermissionRequester {
 
     fun requestContactsPermission(view: View)
 
+    fun requestPostNotificationsPermission(view: View, listener: PermissionListener)
+
+    fun requestPostNotificationsPermission(view: View)
+
     fun requestBatteryOptimizationPermission()
 
     fun requestAllPermissions(listener: PermissionListener)
