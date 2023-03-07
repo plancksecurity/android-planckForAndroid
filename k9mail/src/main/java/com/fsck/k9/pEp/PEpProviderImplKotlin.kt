@@ -41,9 +41,8 @@ import kotlin.coroutines.CoroutineContext
 class PEpProviderImplKotlin @Inject constructor(
     private val postExecutionThread: PostExecutionThread,
     private val context: Context,
+    private val engine: EngineThreadLocal,
 ) : PEpProvider {
-
-    private var engine = EngineThreadLocal(context = context)
 
     private val sendMessageSet = false
     private val showHandshakeSet = false
