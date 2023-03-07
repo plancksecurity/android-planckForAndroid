@@ -10,7 +10,7 @@ import timber.log.Timber
 class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<Engine>() {
 
     override fun get(): Engine {
-        if(super.get()==null){
+        if (super.get() == null) {
             createEngineInstanceIfNeeded()
         }
         return super.get()!!
@@ -25,11 +25,15 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
             Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
         }
     }
+
     private fun initEngineConfig(engine: Engine) {
 
         engine.config_passive_mode(K9.getPEpPassiveMode())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
-        engine.config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
+        engine.config_passphrase_for_new_keys(
+            K9.ispEpUsingPassphraseForNewKey(),
+            K9.getpEpNewKeysPassphrase()
+        )
         engine.setMessageToSendCallback(MessagingController.getInstance(k9))
         engine.setNotifyHandshakeCallback(k9.notifyHandshakeCallback)
         engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
