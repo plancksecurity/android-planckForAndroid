@@ -201,7 +201,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun close() {
-        engine.get().close()
+        engine.close()
     }
 
     override fun setPassiveModeEnabled(enable: Boolean) {
@@ -592,7 +592,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
-            engine.get().close()
+            engine.close()
             Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
     }
@@ -661,7 +661,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             notifyError(e, resultCallback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
     }
 
@@ -777,7 +777,7 @@ class PEpProviderImplKotlin @Inject constructor(
                     Timber.i("Counter of PEpProviderImpl  -1")
                     EspressoTestingIdlingResource.decrement()
                     message?.close()
-                    engine.get().close()
+                    engine.close()
                 }
             }
         }
@@ -851,7 +851,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: Exception) {
             notifyError(e, callback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
     }
 
@@ -939,7 +939,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: Exception) {
             notifyError(e, callback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
 
     }
@@ -1099,7 +1099,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (error: pEpException) {
             notifyError(error, callback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
     }
 
@@ -1118,7 +1118,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             notifyError(e, completedCallback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
 
     }
@@ -1138,7 +1138,7 @@ class PEpProviderImplKotlin @Inject constructor(
         } catch (e: pEpException) {
             notifyError(e, completedCallback)
         } finally {
-            engine.get().close()
+            engine.close()
         }
 
     }
