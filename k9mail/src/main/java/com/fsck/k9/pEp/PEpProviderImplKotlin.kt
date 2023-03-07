@@ -39,9 +39,9 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 class PEpProviderImplKotlin @Inject constructor(
-        private val threadExecutor: ThreadExecutor,
-        private val postExecutionThread: PostExecutionThread,
-        private val context: Context) : PEpProvider {
+    private val postExecutionThread: PostExecutionThread,
+    private val context: Context,
+) : PEpProvider {
 
     private var engine = EngineThreadLocal(context = context)
 
@@ -49,51 +49,9 @@ class PEpProviderImplKotlin @Inject constructor(
     private val showHandshakeSet = false
     private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
 
-    override fun setup() {
-        createEngineInstanceIfNeeded()
-    }
-
     override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
         echoMessageReceivedListener = listener
     }
-    private fun createEngineInstanceIfNeeded() {
-//        try {
-//            if(engine.get().get()==null){
-//                createEngineSession()
-//                initEngineConfig(engineInstance)
-//            }
-//        } catch (e: pEpException) {
-//            Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
-//        }
-    }
-
-    @Throws(pEpException::class)
-    private fun createEngineSession() {
-//        engine.get().set(Engine())
-    }
-
-    private fun initEngineConfig(engine: Engine) {
-
-//        engine.get().config_passive_mode(K9.getPEpPassiveMode())
-//        engine.get().config_unencrypted_subject(!K9.ispEpSubjectProtection())
-//        engine.get().config_passphrase_for_new_keys(K9.ispEpUsingPassphraseForNewKey(), K9.getpEpNewKeysPassphrase())
-//        engine.get().setMessageToSendCallback(MessagingController.getInstance(context))
-//        engine.get().setNotifyHandshakeCallback((context.applicationContext as K9).notifyHandshakeCallback)
-//        engine.get().setPassphraseRequiredCallback(getPassphraseRequiredCallback(context))
-//        engine.get().config_enable_echo_protocol(K9.isEchoProtocolEnabled())
-//        if ((context.applicationContext as K9).isRunningOnWorkProfile) { // avoid in demo PEMA-74 / https://gitea.pep.foundation/pEp.foundation/pEpEngine/issues/85
-//            engine.get().config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
-//        }
-    }
-
-    @get:Throws(pEpException::class)
-    private val newEngineSession: Engine
-        get() {
-            val engine = Engine()
-            initEngineConfig(engine)
-            return engine
-        }
-
 
     @Deprecated("unencrypted for some is not supported anymore")
     private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
@@ -252,39 +210,31 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun setPassiveModeEnabled(enable: Boolean) {
-        //TODO PEMA-103 not it
-        createEngineInstanceIfNeeded()
         engine.get().config_passive_mode(enable)
     }
 
     override fun setSubjectProtection(isProtected: Boolean) {
-        createEngineInstanceIfNeeded()
         engine.get().config_unencrypted_subject(!isProtected)
     }
 
     override fun configPassphrase(passphrase: String) {
-        createEngineInstanceIfNeeded()
         engine.get().config_passphrase(passphrase)
     }
 
     override fun configPassphraseForNewKeys(enable: Boolean, passphrase: String?) {
-        createEngineInstanceIfNeeded()
         engine.get().config_passphrase_for_new_keys(enable, passphrase)
     }
 
     override fun setSyncSendMessageCallback(callback: MessageToSendCallback) {
-        createEngineInstanceIfNeeded()
         engine.get().setMessageToSendCallback(callback)
     }
 
     override fun setSyncHandshakeCallback(activity: NotifyHandshakeCallback) {
-        createEngineInstanceIfNeeded()
         engine.get().setNotifyHandshakeCallback(activity)
     }
 
     @WorkerThread
     override fun disableSyncForAllIdentites() {
-        createEngineInstanceIfNeeded()
         engine.get().disable_all_sync_channels()
     }
     @WorkerThread
@@ -300,7 +250,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun setFastPollingCallback(needsFastPollCallback: NeedsFastPollCallback) {
-        createEngineInstanceIfNeeded()
         engine.get().setNeedsFastPollCallback(needsFastPollCallback)
     }
 
@@ -359,7 +308,6 @@ class PEpProviderImplKotlin @Inject constructor(
     @Deprecated("not needed with KeySync")
     override fun generatePrivateKeyMessage(message: MimeMessage, fpr: String): com.fsck.k9.mail.Message? {
         return try {
-            createEngineInstanceIfNeeded()
             val containerMsg = PEpMessageBuilder(message).createMessage(context)
             containerMsg.dir = Message.Direction.Outgoing
             getMimeMessage(engine.get().encrypt_message_and_add_priv_key(containerMsg, fpr))
@@ -370,7 +318,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun isSyncRunning(): Boolean {
-        createEngineInstanceIfNeeded()
         return engine.get().isSyncRunning
     }
 
@@ -401,7 +348,6 @@ class PEpProviderImplKotlin @Inject constructor(
         val resultMessages: MutableList<MimeMessage> = ArrayList()
         val message = PEpMessageBuilder(source).createMessage(context)
         return try {
-            createEngineInstanceIfNeeded()
             if (source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY).isNotEmpty()) {
                 val key = source.getHeader(MimeHeader.HEADER_PEP_KEY_IMPORT_LEGACY)[0]
                 var replyTo = message.replyTo
@@ -434,7 +380,6 @@ class PEpProviderImplKotlin @Inject constructor(
         if (source == null) {
             return null
         }
-        createEngineInstanceIfNeeded()
         var message: Message? = null
         return try {
             message = PEpMessageBuilder(source).createMessage(context)
@@ -469,7 +414,6 @@ class PEpProviderImplKotlin @Inject constructor(
     private fun getEncryptedCopy(source: MimeMessage,
                                  message: Message,
                                  extraKeys: Array<String>): MimeMessage {
-        createEngineInstanceIfNeeded()
         message.dir = Message.Direction.Outgoing
         Timber.d("%s %s", TAG, "encryptMessage() before encrypt")
         val from = message.from
@@ -523,7 +467,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun canEncrypt(address: String): Boolean {
-        createEngineInstanceIfNeeded()
 
         val msg = Message()
         val id = myself(PEpUtils.createIdentity(Address(address), context))
@@ -552,8 +495,6 @@ class PEpProviderImplKotlin @Inject constructor(
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         return try {
-            createEngineInstanceIfNeeded()
-
             srcMsg = NotRemovingTransientFilespEpMessageBuilder(source).createMessage(context)
             srcMsg.dir = Message.Direction.Incoming
             srcMsg.recvBy = PEpUtils.createIdentity(Address(receivedBy), context)
@@ -663,13 +604,11 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun importKey(key: ByteArray): Vector<Identity> {
-        createEngineInstanceIfNeeded()
         return engine.get().importKey(key)
     }
 
     @WorkerThread
     override fun setOwnIdentity(id: Identity, fpr: String): Identity? {
-        createEngineInstanceIfNeeded()
         return try {
             val sanitizedFpr = PEpUtils.sanitizeFpr(fpr)
             engine.get().setOwnKey(id, sanitizedFpr)
@@ -681,7 +620,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun myself(myId: Identity?): Identity? {
-        createEngineInstanceIfNeeded()
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
@@ -806,7 +744,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
         var message: Message? = null
         try {
-            createEngineInstanceIfNeeded()
             message = createMessageForRating(from, toAddresses, ccAddresses, bccAddresses)
 
             val result = getRatingOnBackground(message) // stupid way to be able to patch the value in debugger
@@ -854,7 +791,6 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     private fun getRatingOnBackground(message: Message): Rating {
         return try {
-            createEngineInstanceIfNeeded()
             engine.get().outgoing_message_rating(message)
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "during getRating:")
@@ -889,7 +825,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread //already done
     override fun getRating(identity: Identity): Rating {
-        createEngineInstanceIfNeeded()
         return try {
             engine.get().identity_rating(identity)
         } catch (e: pEpException) {
@@ -931,7 +866,6 @@ class PEpProviderImplKotlin @Inject constructor(
         ioScope.launch {
             try {
                 Timber.i("%s %s", TAG, "Trying to start sync thread engine.get().startSync()")
-                createEngineInstanceIfNeeded()
                 engine.get().startSync()
             } catch (exception: pEpException) {
                 Timber.e("%s %s", TAG, "Could not engine.get().startSync()", exception)
@@ -942,7 +876,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     override fun stopSync() {
         Timber.d("%s %s", TAG, "stopSync")
-        createEngineInstanceIfNeeded()
         engine.get().stopSync()
     }
 
@@ -1025,7 +958,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
-        createEngineInstanceIfNeeded()
         Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.get().trustPersonalKey(id)
     }
@@ -1038,7 +970,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun trustOwnKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
-        createEngineInstanceIfNeeded()
         Timber.i("%s %s", TAG, "Calling trust own key")
         engine.get().trustOwnKey(id)
     }
@@ -1051,7 +982,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun keyMistrustedSuspend(id: Identity) = withContext(Dispatchers.IO) {
-        createEngineInstanceIfNeeded()
         engine.get().keyMistrusted(id)
     }
 
@@ -1063,13 +993,11 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private suspend fun resetTrustSuspend(id: Identity) = withContext(Dispatchers.IO) {
-        createEngineInstanceIfNeeded()
         engine.get().keyResetTrust(id)
     }
 
     @WorkerThread
     override fun keyResetIdentity(ident: Identity, fpr: String?) {
-        createEngineInstanceIfNeeded()
         val identity = updateIdentity(ident)
         try {
             engine.get().key_reset_identity(identity, fpr)
@@ -1082,7 +1010,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun keyResetUser(userId: String, fpr: String?) {
-        createEngineInstanceIfNeeded()
         try {
             engine.get().key_reset_user(userId, fpr)
         } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
@@ -1094,7 +1021,6 @@ class PEpProviderImplKotlin @Inject constructor(
 
     @WorkerThread
     override fun keyResetAllOwnKeys() {
-        createEngineInstanceIfNeeded()
         try {
             engine.get().key_reset_all_own_keys()
         } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
@@ -1107,13 +1033,11 @@ class PEpProviderImplKotlin @Inject constructor(
     @WorkerThread
     @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
     override fun leaveDeviceGroup() {
-        createEngineInstanceIfNeeded()
         engine.get().leave_device_group()
     }
 
     @WorkerThread
     override fun updateIdentity(id: Identity): Identity {
-        createEngineInstanceIfNeeded()
         return engine.get().updateIdentity(id)
     }
 
