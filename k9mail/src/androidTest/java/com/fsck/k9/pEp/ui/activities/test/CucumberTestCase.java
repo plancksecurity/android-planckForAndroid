@@ -60,10 +60,10 @@ public class CucumberTestCase extends CucumberAndroidJUnitRunner {
                         CucumberAndroidJUnitArguments.Args.USE_DEFAULT_ANDROID_RUNNER,
                         String.valueOf(!useCucumber)
                 );
-                /*String filterClassName = useCucumber
+                String filterClassName = useCucumber
                         ? CucumberTestFilter.class.getName()
                         : NonCucumberTestFilter.class.getName();
-                args.putString(ARG_FILTER, filterClassName);*/
+                args.putString(ARG_FILTER, filterClassName);
 
                 super.onCreate(args);
         }
