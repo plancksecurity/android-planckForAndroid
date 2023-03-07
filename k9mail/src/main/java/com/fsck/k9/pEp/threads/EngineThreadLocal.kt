@@ -16,8 +16,8 @@ class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
         if(super.get()==null){
             createEngineInstanceIfNeeded()
         }
-        //TODO review this, in THEORY we never, EVER have it empty now.
-        return super.get() ?: throw IllegalStateException("ENGINE IS NOT INITIALIZED HERE!!!")
+        //TODO review this, in THEORY we never, EVER have it empty now. -> (Needed to avoid nullability anyway)
+        return super.get() ?: error("ENGINE IS NOT INITIALIZED HERE!!!")
     }
 
     private fun createEngineInstanceIfNeeded() {
