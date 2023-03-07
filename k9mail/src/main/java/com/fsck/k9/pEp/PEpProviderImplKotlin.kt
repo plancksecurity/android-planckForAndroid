@@ -937,7 +937,9 @@ class PEpProviderImplKotlin constructor(
                                   areKeysyncTrustwords: Boolean,
                                   callback: ResultCallback<HandshakeData>) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        Log.d("CONC", "Data "+Thread.currentThread().id);
         uiScope.launch {
+            Log.d("CONC", "Data "+Thread.currentThread().id);
             obtainTrustwordsSuspend(self, other, lang, areKeysyncTrustwords, callback)
         }
     }
@@ -945,6 +947,7 @@ class PEpProviderImplKotlin constructor(
     private suspend fun obtainTrustwordsSuspend(
             self: Identity, other: Identity, lang: String, areKeysyncTrustwords: Boolean,
             callback: ResultCallback<HandshakeData>) = withContext(Dispatchers.IO) {
+
         try {
             engine.use { engine ->
                 val myself: Identity

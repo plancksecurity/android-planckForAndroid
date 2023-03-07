@@ -1,6 +1,7 @@
 package com.fsck.k9.pEp.threads
 
 import android.content.Context
+import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.pEp.PEpProviderImplKotlin
@@ -19,7 +20,10 @@ class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
         //TODO review this, in THEORY we never, EVER have it empty now. -> (Needed to avoid nullability anyway)
         return super.get() ?: error("ENGINE IS NOT INITIALIZED HERE!!!")
     }
-
+    fun close(){
+        get().close()
+        set(null)
+    }
     private fun createEngineInstanceIfNeeded() {
         try {
             val engine = Engine()
