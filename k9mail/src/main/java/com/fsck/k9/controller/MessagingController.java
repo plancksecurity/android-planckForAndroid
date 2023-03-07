@@ -253,7 +253,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private void runInBackground() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         Timber.d("createIfNeeded messaging controller");
-        pEpProvider.setup();
+
         while (!stopped) {
             String commandDescription = null;
             try {
