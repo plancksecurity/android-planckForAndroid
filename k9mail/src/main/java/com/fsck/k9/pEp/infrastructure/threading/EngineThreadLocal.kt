@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.threads
+package com.fsck.k9.pEp.infrastructure.threading
 
 import android.content.Context
 import com.fsck.k9.K9
