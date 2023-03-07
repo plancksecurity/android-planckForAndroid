@@ -44,9 +44,6 @@ public interface PEpProvider extends AutoCloseable {
     String KEY_MISSING_ERROR_MESSAGE = "keyMissing";
     String KEY_COULD_NOT_DECRYPT_MESSAGE = "couldNotDecrypt";
 
-
-    void setup();
-
     void setEchoMessageReceivedListener(EchoMessageReceivedListener listener);
 
     /**
