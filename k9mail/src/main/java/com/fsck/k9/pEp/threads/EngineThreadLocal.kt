@@ -3,12 +3,10 @@ package com.fsck.k9.pEp.threads
 import android.content.Context
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
-import com.fsck.k9.pEp.PEpProviderImplKotlin
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.exceptions.pEpException
 import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
-import java.util.ArrayList
 
 class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
 
@@ -16,8 +14,7 @@ class EngineThreadLocal(val context: Context) : ThreadLocal<Engine>() {
         if(super.get()==null){
             createEngineInstanceIfNeeded()
         }
-        //TODO review this, in THEORY we never, EVER have it empty now.
-        return super.get() ?: throw IllegalStateException("ENGINE IS NOT INITIALIZED HERE!!!")
+        return super.get()!!
     }
 
     private fun createEngineInstanceIfNeeded() {
