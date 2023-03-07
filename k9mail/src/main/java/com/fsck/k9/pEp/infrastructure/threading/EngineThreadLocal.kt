@@ -39,6 +39,11 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         }
     }
 
+    fun close() {
+        super.get()?.close()
+        set(null)
+    }
+
     companion object {
         private const val TAG = "pEpEngine-ThreadLocal-provider"
 
