@@ -19,8 +19,8 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
-import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.pEp.infrastructure.threading.EngineThreadLocal
+import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -31,10 +31,9 @@ import security.pEp.echo.EchoMessageReceivedListener
 import security.pEp.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class PEpProviderImplKotlin @Inject constructor(
+class PEpProviderImplKotlin constructor(
     private val postExecutionThread: PostExecutionThread,
     private val context: Context,
     private val engine: EngineThreadLocal,
