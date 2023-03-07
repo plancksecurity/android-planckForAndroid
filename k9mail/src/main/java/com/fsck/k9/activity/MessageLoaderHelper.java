@@ -122,7 +122,7 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
-        this.pEpProvider = PEpProviderFactory.createAndSetupProvider(context);
+        this.pEpProvider = PEpProviderFactory.createProvider(context);
         this.messageViewInfoExtractor = new MessageViewInfoExtractor(context,
                 AttachmentInfoExtractor.getInstance(), displayHtml);
     }

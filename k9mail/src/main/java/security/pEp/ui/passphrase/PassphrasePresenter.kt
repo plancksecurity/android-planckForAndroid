@@ -86,7 +86,7 @@ class PassphrasePresenter @Inject constructor(
     fun cancelSync() {
         val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         ioScope.launch {
-            val provider = PEpProviderFactory.createAndSetupProvider(context)
+            val provider = PEpProviderFactory.createProvider(context)
             try {
                provider.stopSync()
             } catch (e: Exception) {
