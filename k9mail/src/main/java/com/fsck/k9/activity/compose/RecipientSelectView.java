@@ -589,6 +589,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                 removeObject(recipient);
             }
         }
+        resetCollapsedViewIfNeeded();
     }
 
     public void emptyAddresses() {
@@ -685,6 +686,10 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
     public void removeRecipient(Recipient recipient) {
         removeObject(recipient);
+        resetCollapsedViewIfNeeded();
+    }
+
+    private void resetCollapsedViewIfNeeded() {
         post(() -> {
             if (!hasFocus()) {
                 if (getTokenCount() == 1) {
