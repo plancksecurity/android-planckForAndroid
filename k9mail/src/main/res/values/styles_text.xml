@@ -141,6 +141,12 @@
         <item name="android:visibility">gone</item>
     </style>
 
+    <style name="PermissionsScreen.explanation">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
 
 </resources>
 
