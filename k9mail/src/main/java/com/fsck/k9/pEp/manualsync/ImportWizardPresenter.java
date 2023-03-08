@@ -5,7 +5,6 @@ import com.fsck.k9.pEp.PEpProvider;
 import com.fsck.k9.pEp.PEpUtils;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
 import security.pEp.sync.SyncState;
@@ -26,7 +25,7 @@ public class ImportWizardPresenter {
     private boolean showingShort = true;
 
     @Inject
-    public ImportWizardPresenter(@Named("Background") PEpProvider pEp) {
+    public ImportWizardPresenter(PEpProvider pEp) {
         this.pEp = pEp;
     }
 

@@ -265,7 +265,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
-        val pEpProvider = PEpProviderFactory.createProvider(context)
+        val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
         pEpProvider.keyResetAllOwnKeys()
     }
 
