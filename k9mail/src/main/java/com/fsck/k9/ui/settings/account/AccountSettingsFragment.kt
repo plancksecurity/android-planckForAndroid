@@ -304,8 +304,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", "pEpEngine", "Failed to reset identity")
             false
-        } finally {
-            pEpProvider.close()
         }
     }
 
