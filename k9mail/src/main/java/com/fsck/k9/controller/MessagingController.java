@@ -210,6 +210,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return inst;
     }
 
+    public Thread getThread() {
+        return controllerThread;
+    }
+
     private static void closeFolder(Folder f) {
         if (f != null) {
             f.close();
