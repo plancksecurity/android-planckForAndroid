@@ -3,7 +3,9 @@ package com.fsck.k9.activity.setup
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -14,12 +16,15 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.observe
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.fragment.ConfirmationDialogFragment
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener
-import com.fsck.k9.mail.*
+import com.fsck.k9.mail.AuthType
+import com.fsck.k9.mail.AuthenticationFailedException
+import com.fsck.k9.mail.CertificateValidationException
+import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.filter.Hex
 import com.fsck.k9.mail.store.RemoteStore
+import com.fsck.k9.pEp.infrastructure.exceptions.DeviceOfflineException
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber
@@ -29,7 +34,6 @@ import java.security.cert.CertificateEncodingException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.util.*
-import java.util.concurrent.Executors
 
 /**
  * Checks the given settings to make sure that they can be used to send and receive mail.
@@ -39,8 +43,7 @@ import java.util.concurrent.Executors
  */
 class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListener {
     private val authViewModel: AuthViewModel by viewModel()
-
-    private val messagingController: MessagingController by inject()
+    private val checkSettingsViewModel: CheckSettingsViewModel by viewModel()
     private val preferences: Preferences by inject()
     //private val localKeyStoreManager: LocalKeyStoreManager by inject()
 
@@ -52,9 +55,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     private lateinit var account: Account
     private lateinit var direction: CheckDirection
     private var errorResultCode = RESULT_CANCELED
-
-    @Volatile
-    private var canceled = false
+    private var edit = false
 
     @Volatile
     private var destroyed = false
@@ -75,6 +76,9 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         val mailSettingsDiscoveryRequired = intent.getBooleanExtra(
             EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, false)
                 && direction == CheckDirection.INCOMING
+        edit = intent.getBooleanExtra(EXTRA_EDIT, false)
+
+        observeCheckSettingsViewModel()
 
         authViewModel.init(activityResultRegistry, lifecycle)
 
@@ -124,6 +128,50 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                 discoverMailSettings()
             } else {
                 startLoginOrSettingsCheck()
+            }
+        }
+    }
+
+    private fun observeCheckSettingsViewModel() {
+        checkSettingsViewModel.state.observe(this) { checkSettingsState ->
+            when(checkSettingsState) {
+                CheckSettingsState.CheckingIncoming ->
+                    setMessage(R.string.account_setup_check_settings_check_incoming_msg)
+                CheckSettingsState.CheckingOutgoing ->
+                    setMessage(R.string.account_setup_check_settings_check_outgoing_msg)
+                CheckSettingsState.Success -> {
+                    setResult(RESULT_OK)
+                    finish()
+                }
+                is CheckSettingsState.Error -> {
+                    handleCheckSettingsError(checkSettingsState.throwable)
+                }
+                else -> {
+                    // NOP
+                }
+            }
+        }
+    }
+
+    private fun handleCheckSettingsError(throwable: Throwable) {
+        when (throwable) {
+            is AuthenticationFailedException -> {
+                showErrorDialog(
+                    R.string.account_setup_failed_dlg_auth_message_fmt,
+                    throwable.message.orEmpty()
+                )
+            }
+            is CertificateValidationException -> {
+                handleCertificateValidationException(throwable)
+            }
+            is DeviceOfflineException -> {
+                showErrorDialog(R.string.device_offline_warning)
+            }
+            else -> {
+                showErrorDialog(
+                    R.string.account_setup_failed_dlg_server_message_fmt,
+                    throwable.message.orEmpty()
+                )
             }
         }
     }
@@ -178,7 +226,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     }
 
     private fun startCheckServerSettings() {
-        CheckAccountTask(account).executeOnExecutor(Executors.newSingleThreadExecutor(), direction)
+        checkSettingsViewModel.start(applicationContext, account, direction, edit)
     }
 
     private fun handleCertificateValidationException(exception: CertificateValidationException) {
@@ -204,7 +252,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         super.onDestroy()
 
         destroyed = true
-        canceled = true
     }
 
     private fun setMessage(resId: Int) {
@@ -353,7 +400,7 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
             )
         }
 
-        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false)
+        actionCheckSettings(this@AccountSetupCheckSettings, account, direction, false, edit)
     }
 
     override fun onActivityResult(reqCode: Int, resCode: Int, data: Intent?) {
@@ -370,8 +417,8 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     }
 
     private fun onCancel() {
-        canceled = true
         setMessage(R.string.account_setup_check_settings_canceling_msg)
+        checkSettingsViewModel.cancel()
 
         setResult(RESULT_CANCELED)
         finish()
@@ -415,7 +462,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
 
     override fun doNegativeClick(dialogId: Int) {
         if (dialogId == R.id.dialog_account_setup_error) {
-            canceled = false
             setResult(errorResultCode)
             finish()
         }
@@ -443,110 +489,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         }
     }
 
-    /**
-     * FIXME: Don't use an AsyncTask to perform network operations.
-     * See also discussion in https://github.com/thundernest/k-9/pull/560
-     */
-    private inner class CheckAccountTask(private val account: Account) :
-        AsyncTask<CheckDirection, Int, Unit>() {
-        override fun doInBackground(vararg params: CheckDirection) {
-            val direction = params[0]
-            try {
-                /*
-                 * This task could be interrupted at any point, but network operations can block,
-                 * so relying on InterruptedException is not enough. Instead, check after
-                 * each potentially long-running operation.
-                 */
-                if (isCanceled()) {
-                    return
-                }
-
-                clearCertificateErrorNotifications(direction)
-
-                checkServerSettings(direction)
-
-                if (isCanceled()) {
-                    return
-                }
-
-                setResult(RESULT_OK)
-                finish()
-            } catch (e: AuthenticationFailedException) {
-                Timber.e(e, "Error while testing settings")
-                showErrorDialog(
-                    R.string.account_setup_failed_dlg_auth_message_fmt,
-                    e.message.orEmpty()
-                )
-            } catch (e: CertificateValidationException) {
-                handleCertificateValidationException(e)
-            } catch (e: Exception) {
-                Timber.e(e, "Error while testing settings")
-                showErrorDialog(
-                    R.string.account_setup_failed_dlg_server_message_fmt,
-                    e.message.orEmpty()
-                )
-            }
-        }
-
-        private fun clearCertificateErrorNotifications(direction: CheckDirection) {
-            messagingController.clearCertificateErrorNotifications(account, direction)
-        }
-
-        private fun isCanceled(): Boolean {
-            if (destroyed) return true
-
-            if (canceled) {
-                finish()
-                return true
-            }
-
-            return false
-        }
-
-        private fun checkServerSettings(direction: CheckDirection) {
-            when (direction) {
-                CheckDirection.INCOMING -> checkIncoming()
-                CheckDirection.OUTGOING -> checkOutgoing()
-            }
-        }
-
-        private fun checkOutgoing() {
-            if (!isWebDavAccount) {
-                publishProgress(R.string.account_setup_check_settings_check_outgoing_msg)
-            }
-
-            messagingController.checkOutgoingServerSettings(account)
-        }
-
-        private fun checkIncoming() {
-            if (isWebDavAccount) {
-                publishProgress(R.string.account_setup_check_settings_authenticate)
-            } else {
-                publishProgress(R.string.account_setup_check_settings_check_incoming_msg)
-            }
-
-            messagingController.checkIncomingServerSettings(account)
-
-            if (isWebDavAccount) {
-                publishProgress(R.string.account_setup_check_settings_fetch)
-            }
-
-//            messagingController.refreshFolderListSynchronous(account)
-//
-//            val inboxFolderId = account.inboxFolderName
-//            if (inboxFolderId != null) {
-//                messagingController.synchronizeMailbox(account, inboxFolderId, false, null)
-//            }
-        }
-
-        private val isWebDavAccount: Boolean
-            get() = RemoteStore.decodeStoreUri(account.storeUri).type == ServerSettings.Type.WebDAV
-
-        override fun onProgressUpdate(vararg values: Int?) {
-            setMessage(values[0]!!)
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(STATE_ERROR_RESULT_CODE, errorResultCode)
@@ -563,19 +505,23 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
         private const val EXTRA_ACCOUNT = "account"
         private const val EXTRA_CHECK_DIRECTION = "checkDirection"
         private const val EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED = "mailSettingsDiscoveryRequired"
+        private const val EXTRA_EDIT = "edit"
         private const val STATE_ERROR_RESULT_CODE = "errorResultCode"
 
         @JvmStatic
+        @JvmOverloads
         fun actionCheckSettings(
             context: Activity,
             account: Account,
             direction: CheckDirection,
             mailSettingsDiscoveryRequired: Boolean,
+            edit: Boolean = false
         ) {
             val intent = Intent(context, AccountSetupCheckSettings::class.java).apply {
                 putExtra(EXTRA_ACCOUNT, account.uuid)
                 putExtra(EXTRA_CHECK_DIRECTION, direction)
                 putExtra(EXTRA_MAIL_SETTINGS_DISCOVERY_REQUIRED, mailSettingsDiscoveryRequired)
+                putExtra(EXTRA_EDIT, edit)
                 addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
             }
 
