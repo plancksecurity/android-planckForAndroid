@@ -59,8 +59,7 @@ public interface ApplicationComponent {
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();
-    @Named("Background")
-    PEpProvider backgroundpEpProvider();
+    PEpProvider pEpProvider();
 
     @Component.Factory
     interface Factory {

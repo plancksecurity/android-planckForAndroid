@@ -7,7 +7,6 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.service.MailServiceLegacy
-import org.koin.dsl.module.applicationContext
 import java.util.concurrent.ExecutorService
 
 class AccountSettingsDataStore(
@@ -228,6 +227,6 @@ class AccountSettingsDataStore(
     private fun setSyncEnabled(value: Boolean) {
         account.setPEpSyncAccount(value)
         PEpUtils.updateSyncFlag(context, account,
-                (context.applicationContext as K9).pEpSyncProvider)
+                (context.applicationContext as K9).pEpProvider)
     }
 }
