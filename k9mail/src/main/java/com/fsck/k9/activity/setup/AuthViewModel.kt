@@ -217,7 +217,7 @@ class AuthViewModel(
                 authState.update(tokenResponse, authorizationException)
 
                 val account = account!!
-                var failureUpdatingEmail: String? = null
+                var failureUpdatingEmail: Throwable? = null
                 tokenResponse?.idToken?.let {
                     failureUpdatingEmail = updateEmailAddressFromOAuthToken(it)
                 }
@@ -235,10 +235,12 @@ class AuthViewModel(
                         errorMessage = authorizationException.errorDescription
                     )
                 } else if (failureUpdatingEmail != null) {
-                    _uiState.value = AuthFlowState.Failed(
-                        errorCode = "Cannot continue",
-                        errorMessage = failureUpdatingEmail
-                    )
+                    val error = failureUpdatingEmail!!
+                    if (error is WrongEmailAddressException) {
+                        _uiState.value = AuthFlowState.WrongEmailAddress(error)
+                    } else {
+                        _uiState.value = AuthFlowState.Failed(error)
+                    }
                 } else {
                     _uiState.value = AuthFlowState.Success
                 }
@@ -246,28 +248,25 @@ class AuthViewModel(
         }
     }
 
-    private fun updateEmailAddressFromOAuthToken(token: String): String? {
-        var error: String? = null
-        val userError = "Could not retrieve email address from login response"
+    private fun updateEmailAddressFromOAuthToken(token: String): Throwable? {
+        var error: Throwable? = null
         jwtTokenDecoder.getEmail(token).onSuccess { newEmail ->
             newEmail?.let {
-                if (account?.email != newEmail) {
+                val account = account!!
+                if (account.email != newEmail) {
                     if (getApplication<K9>().isRunningOnWorkProfile) {
-                        error = "Wrong email address was used for OAuth"
+                        error = WrongEmailAddressException(account.email, newEmail)
                     } else {
-                        account?.email = newEmail
+                        account.email = newEmail
                         needsMailSettingsDiscovery = true
                     }
                 }
             } ?: let {
-                error = userError
+                error = IllegalStateException("Could not retrieve email address from login response") // not localized, context is an application error, not user error
             }
         }.onFailure { throwable ->
             Timber.e(throwable)
-            error = userError
-            if (K9.isDebug()) {
-                error += "\n" + throwable.stackTraceToString()
-            }
+            error = throwable
         }
         return error
     }
@@ -347,8 +346,27 @@ sealed interface AuthFlowState {
     object Canceled : AuthFlowState
 
     data class Failed(val errorCode: String?, val errorMessage: String?) : AuthFlowState {
+
+        constructor(throwable: Throwable): this(
+            errorCode = null,
+            errorMessage = if (BuildConfig.DEBUG) throwable.stackTraceToString()
+            else throwable.message
+        )
+
         override fun toString(): String {
             return listOfNotNull(errorCode, errorMessage).joinToString(separator = " - ")
         }
     }
+
+    data class WrongEmailAddress(
+        val adminEmail: String,
+        val userWrongEmail: String
+        ): AuthFlowState {
+            constructor(exception: WrongEmailAddressException) : this(
+                exception.adminEmail,
+                exception.userWrongEmail
+            )
+        }
 }
+
+class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()

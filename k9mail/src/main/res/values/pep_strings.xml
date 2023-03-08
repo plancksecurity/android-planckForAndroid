@@ -388,5 +388,6 @@
     <string name="account_select_auth_please_select_the_option_to_sign_in">Please select the option to sign in</string>
     <string name="error_happened_restart_app">An error happened, please restart app.</string>
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
+    <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
 
 </resources>
