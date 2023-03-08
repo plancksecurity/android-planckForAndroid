@@ -403,7 +403,7 @@ public class Settings {
         }
     }
 
-    static class ColorSetting extends SettingsDescription<Integer> {
+    public static class ColorSetting extends SettingsDescription<Integer> {
         ColorSetting(int defaultValue) {
             super(defaultValue);
         }
@@ -419,8 +419,12 @@ public class Settings {
 
         @Override
         public String toPrettyString(Integer value) {
-            int color = PEpColorUtils.makeColorTransparent(value);
-            return String.format("#%06x", color);
+            return formatColor(value);
+        }
+
+        public static String formatColor(int color){
+            int transparentColor = PEpColorUtils.makeColorTransparent(color);
+            return String.format("#%06x", transparentColor);
         }
 
         @Override
