@@ -40,7 +40,7 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
         if (k9.isRunningOnWorkProfile) {
-            //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+            (engine as Engine).config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
         }
     }
 
