@@ -4,12 +4,13 @@ import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.exceptions.pEpException
+import foundation.pEp.jniadapter.interfaces.EngineInterface
 import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
 
-class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<Engine>(), AutoCloseable {
+class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<EngineInterface>(), AutoCloseable {
 
-    override fun get(): Engine {
+    override fun get(): EngineInterface {
         if (super.get() == null) {
             createEngineInstanceIfNeeded()
         }
@@ -18,7 +19,7 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
 
     private fun createEngineInstanceIfNeeded() {
         try {
-            val engine = Engine()
+            val engine: EngineInterface = Engine()
             initEngineConfig(engine)
             this.set(engine)
         } catch (e: pEpException) {
@@ -26,7 +27,7 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         }
     }
 
-    private fun initEngineConfig(engine: Engine) {
+    private fun initEngineConfig(engine: EngineInterface) {
 
         engine.config_passive_mode(K9.getPEpPassiveMode())
         engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
@@ -39,7 +40,7 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         engine.setPassphraseRequiredCallback(PassphraseProvider.getPassphraseRequiredCallback(k9))
         engine.config_enable_echo_protocol(K9.isEchoProtocolEnabled())
         if (k9.isRunningOnWorkProfile) {
-            engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
+            //engine.config_media_keys(K9.getMediaKeys()?.map { it.toPair() }?.let { ArrayList(it) })
         }
     }
 
