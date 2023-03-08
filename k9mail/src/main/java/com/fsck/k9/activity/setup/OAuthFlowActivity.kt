@@ -7,18 +7,19 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import com.fsck.k9.Account
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.observe
+import com.fsck.k9.fragment.ConfirmationDialogFragment
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 
-class OAuthFlowActivity : K9Activity() {
+class OAuthFlowActivity : K9Activity(), ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
     private val authViewModel: AuthViewModel by viewModel()
     private val accountManager: Preferences by inject()
 
@@ -123,6 +124,9 @@ class OAuthFlowActivity : K9Activity() {
             AuthFlowState.BrowserNotFound -> {
                 displayErrorText(R.string.account_setup_failed_dlg_browser_not_found)
             }
+            is AuthFlowState.WrongEmailAddress -> {
+                showWrongEmailErrorDialog(state.adminEmail, state.userWrongEmail)
+            }
         }
 
         authViewModel.authResultConsumed()
@@ -135,6 +139,22 @@ class OAuthFlowActivity : K9Activity() {
         signInProgress.isVisible = false
         signInButton.isVisible = true
         errorText.text = getString(errorTextResId, *args)
+    }
+
+    private fun showWrongEmailErrorDialog(adminEmail: String, userWrongEmail: String) {
+        signInProgress.isVisible = false
+        signInButton.isVisible = true
+        val fragment: DialogFragment =
+            ConfirmationDialogFragment.newInstance(
+                DIALOG_WRONG_EMAIL,
+                getString(R.string.account_setup_failed_dlg_title),
+                getString(R.string.account_setup_failed_dlg_oauth_wrong_email_address, userWrongEmail, adminEmail),
+                getString(R.string.close)
+            )
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(fragment, DIALOG_WRONG_EMAIL_TAG)
+        fragmentTransaction.commitAllowingStateLoss()
     }
 
     private fun startOAuthFlow(account: Account) {
@@ -173,6 +193,8 @@ class OAuthFlowActivity : K9Activity() {
         private const val EXTRA_TOKEN_REVOKED = "tokenRevoked"
 
         private const val STATE_PROGRESS = "signInProgress"
+        private const val DIALOG_WRONG_EMAIL = 1
+        private const val DIALOG_WRONG_EMAIL_TAG = "wrongEmailDialog"
 
         fun buildLaunchIntent(context: Context, accountUuid: String): Intent {
             return Intent(context, OAuthFlowActivity::class.java).apply {
@@ -186,5 +208,17 @@ class OAuthFlowActivity : K9Activity() {
                 putExtra(EXTRA_TOKEN_REVOKED, true)
             }.also { context.startActivity(it) }
         }
+    }
+
+    override fun doPositiveClick(dialogId: Int) {
+
+    }
+
+    override fun doNegativeClick(dialogId: Int) {
+        finish()
+    }
+
+    override fun dialogCancelled(dialogId: Int) {
+
     }
 }
