@@ -520,6 +520,7 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) {
+        createEngineInstanceIfNeeded()
         engineInstance.deliverHandshakeResult(syncResult, Vector())
     }
 
@@ -981,6 +982,7 @@ class PEpProviderImplKotlin @Inject constructor(
             myself: Identity, partner: Identity, lang: String, isShort: Boolean,
             callback: SimpleResultCallback<String>) = withContext(Dispatchers.IO) {
         try {
+            createEngineInstanceIfNeeded()
             val result = engineInstance.get_trustwords(myself, partner, lang, !isShort)
             notifyLoaded(result, callback)
         } catch (e: pEpException) {
