@@ -91,8 +91,6 @@ class PassphrasePresenter @Inject constructor(
                provider.stopSync()
             } catch (e: Exception) {
                 Timber.e(e, "pEpEngine")
-            } finally {
-                provider.close()
             }
 
         }
