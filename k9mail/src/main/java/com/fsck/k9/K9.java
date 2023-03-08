@@ -1858,9 +1858,6 @@ public class K9 extends MultiDexApplication {
                     PEpProvider provider = PEpProviderFactory.createProvider(K9.this);
                     KeySyncCleaner.queueAutoConsumeMessages();
                     if (provider.isSyncRunning()) provider.stopSync();
-                    provider.close();
-                    pEpProvider.close();
-                    provider = null;
                     pEpProvider = null;
                 }
             }
