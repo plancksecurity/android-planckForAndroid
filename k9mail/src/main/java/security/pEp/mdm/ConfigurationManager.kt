@@ -66,12 +66,12 @@ class ConfigurationManager(
                         .filterNot { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.InitializedEngine -> {
-                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    settingsUpdater.pEp = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                         .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.ProvisioningDone -> {
-                    settingsUpdater.pEp = k9.component.backgroundpEpProvider()
+                    settingsUpdater.pEp = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                 }
             }

@@ -1,6 +1,9 @@
 package com.fsck.k9.activity;
 
 
+import static com.fsck.k9.pEp.PEpProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
+import static com.fsck.k9.pEp.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -18,6 +21,7 @@ import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import com.fsck.k9.Account;
+import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.controller.MessagingListener;
@@ -35,7 +39,6 @@ import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.message.html.DisplayHtml;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;
@@ -45,9 +48,6 @@ import com.fsck.k9.ui.message.LocalMessageLoader;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 
 import timber.log.Timber;
-
-import static com.fsck.k9.pEp.PEpProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
-import static com.fsck.k9.pEp.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
 
 
 /** This class is responsible for loading a message start to finish, and
@@ -122,7 +122,7 @@ public class MessageLoaderHelper {
         this.loaderManager = loaderManager;
         this.fragmentManager = fragmentManager;
         this.callback = callback;
-        this.pEpProvider = PEpProviderFactory.createProvider(context);
+        this.pEpProvider = ((K9) context.getApplicationContext()).pEpProvider;
         this.messageViewInfoExtractor = new MessageViewInfoExtractor(context,
                 AttachmentInfoExtractor.getInstance(), displayHtml);
     }
