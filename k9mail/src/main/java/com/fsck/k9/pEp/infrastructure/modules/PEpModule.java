@@ -6,14 +6,8 @@ import android.content.Context;
 import androidx.fragment.app.FragmentManager;
 import androidx.loader.app.LoaderManager;
 
-import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.controller.MessagingController;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
-
-import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
@@ -40,18 +34,6 @@ public class PEpModule {
     @Provides
     public PermissionChecker providepEpPermissionChecker() {
         return new PEpPermissionChecker(context.getApplicationContext());
-    }
-
-    @Provides
-    @Named("MainUI")
-    public PEpProvider providepEpProvider() {
-        return ((K9) context.getApplicationContext()).getpEpProvider();
-    }
-
-    @Provides
-    @Named("NewInstance")
-    public PEpProvider providepEpProviderNewInstance() {
-        return (PEpProviderFactory.createAndSetupProvider(context));
     }
 
     @Provides

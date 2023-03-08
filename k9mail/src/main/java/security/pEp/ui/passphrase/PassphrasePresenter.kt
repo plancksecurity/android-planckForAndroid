@@ -1,10 +1,8 @@
 package security.pEp.ui.passphrase
 
-import android.content.Context
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.PEpProviderFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -12,11 +10,10 @@ import kotlinx.coroutines.launch
 import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Named
 
 class PassphrasePresenter @Inject constructor(
-        @Named("AppContext") private val context: Context,
-        @Named("NewInstance") private val pEp: PEpProvider
+        private val pEp: PEpProvider,
+        private val preferences: Preferences,
 ) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
@@ -65,7 +62,7 @@ class PassphrasePresenter @Inject constructor(
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 scope.launch {
                     K9.setpEpNewKeysPassphrase(passphrase)
-                    val editor = Preferences.getPreferences(context).storage.edit()
+                    val editor = preferences.storage.edit()
                     K9.save(editor)
                     editor.commit()
                     pEp.configPassphraseForNewKeys(true, passphrase)
@@ -86,13 +83,10 @@ class PassphrasePresenter @Inject constructor(
     fun cancelSync() {
         val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         ioScope.launch {
-            val provider = PEpProviderFactory.createAndSetupProvider(context)
             try {
-               provider.stopSync()
+               pEp.stopSync()
             } catch (e: Exception) {
                 Timber.e(e, "pEpEngine")
-            } finally {
-                provider.close()
             }
 
         }

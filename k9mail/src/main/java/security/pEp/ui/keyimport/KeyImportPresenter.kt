@@ -20,11 +20,10 @@ import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Named
 
 class KeyImportPresenter @Inject constructor(
     private val preferences: Preferences,
-    @Named("NewInstance") private val pEp: PEpProvider
+    private val pEp: PEpProvider
 ) {
 
     private lateinit var fingerprint: String
