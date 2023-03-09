@@ -53,10 +53,10 @@ class EngineThreadLocalTest {
             engineThreadLocal.get()
         }
         val engine1Again = withContext(singleThreadDispatcher1) {
-            engineThreadLocal.get().also { engineThreadLocal.close() }
+            engineThreadLocal.get().also { it.close() }
         }
         val engine2Again = withContext(singleThreadDispatcher2) {
-            engineThreadLocal.get().also { engineThreadLocal.close() }
+            engineThreadLocal.get().also { it.close() }
         }
 
 
@@ -76,7 +76,7 @@ class EngineThreadLocalTest {
             engineThreadLocal1.get()
         }
         val engine2 = withContext(singleThreadDispatcher) {
-            engineThreadLocal2.get().also { engineThreadLocal1.close() }
+            engineThreadLocal2.get().also { it.close() }
         }
 
 
@@ -91,26 +91,14 @@ class EngineThreadLocalTest {
 
 
         val engine1 = withContext(singleThreadDispatcher) {
-            engineThreadLocal.get().also { engineThreadLocal.close() }
+            engineThreadLocal.get().also { it.close() }
         }
 
         val engine2 = withContext(singleThreadDispatcher) {
-            engineThreadLocal.get().also { engineThreadLocal.close() }
+            engineThreadLocal.get().also { it.close() }
         }
 
 
         assertNotEquals(engine1, engine2)
-    }
-
-    @Test
-    fun close_removes_engine_instance() = runBlocking {
-        val engineThreadLocal = EngineThreadLocal.getInstance(app)
-        engineThreadLocal.get()
-
-        assertFalse(engineThreadLocal.isEmpty())
-
-        engineThreadLocal.close()
-
-        assertTrue(engineThreadLocal.isEmpty())
     }
 }

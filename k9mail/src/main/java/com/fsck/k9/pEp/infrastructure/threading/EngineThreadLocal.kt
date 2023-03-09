@@ -43,11 +43,6 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         }
     }
 
-    fun close() {
-        super.get()?.close()
-        set(null)
-    }
-
     fun isEmpty(): Boolean = super.get() == null
 
     companion object {
