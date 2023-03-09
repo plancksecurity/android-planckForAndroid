@@ -22,7 +22,7 @@ import timber.log.Timber;
 /**
  * Created by dietz on 01.07.15.
  */
-public interface PEpProvider extends AutoCloseable {
+public interface PEpProvider {
     /**
      * If is outgoing any copy of the message encrypted (yellow, green, and un secure for some) it will be putted in this position,
      * if not, all copies will be unencrypted.
@@ -133,11 +133,6 @@ public interface PEpProvider extends AutoCloseable {
 
     void obtainTrustwords(Identity myself, Identity partner, String lang, Boolean areKeysyncTrustwords,
                           ResultCallback<HandshakeData> callback);
-
-    /**
-     * Close the engine/session associated to the provider
-     */
-    void close();
 
     /**
      * Returns a identity with the attributes related to the given identity filler, like fpr if available.

@@ -200,9 +200,6 @@ class PEpProviderImplKotlin @Inject constructor(
         }
     }
 
-    override fun close() {
-    }
-
     override fun setPassiveModeEnabled(enable: Boolean) {
         engine.get().config_passive_mode(enable)
     }
