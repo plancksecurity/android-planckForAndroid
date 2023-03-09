@@ -20,7 +20,7 @@ class DisplayHtml @Inject constructor(private val settings: HtmlSettings) {
     }
 
     fun cssStyleTheme(): String {
-        return if (ThemeManager.isDarkTheme() && !ThemeManager.isWebViewDarkThemeSupported) {
+        return if (ThemeManager.isDarkTheme()) {
             "<style type=\"text/css\">" +
                 "* { background: #121212 ! important; color: #F3F3F3 !important }" +
                 ":link, :link * { color: #CCFF33 !important }" +
