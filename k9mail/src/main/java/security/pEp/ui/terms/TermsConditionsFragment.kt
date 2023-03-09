@@ -6,6 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.activity.OnBackPressedCallback
 import com.fsck.k9.R
 
 class TermsConditionsFragment : Fragment() {
@@ -15,11 +18,33 @@ class TermsConditionsFragment : Fragment() {
     }
 
     private lateinit var viewModel: TermsConditionsViewModel
+    private lateinit var webView: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(TermsConditionsViewModel::class.java)
-        viewModel.getTermsLink()
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (webView.canGoBack()) {
+                        webView.goBack()
+                    } else {
+                        if (isEnabled) {
+                            isEnabled = false
+                            requireActivity().finish()
+                        }
+                    }
+                }
+            }
+            )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        webView = view.findViewById(R.id.terms_webview)
+        webView.webViewClient = WebViewClient()
+        viewModel.getTermsLink().let { if (it.isNotEmpty()) {webView.loadUrl(it)} else requireActivity().finish() }
     }
 
     override fun onCreateView(

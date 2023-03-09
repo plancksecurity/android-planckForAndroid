@@ -552,6 +552,7 @@
             android:name="security.pEp.ui.terms.TermsConditionsActivity"
             android:label="@string/terms_conditions"
             android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation|screenSize"
             android:parentActivityName="com.fsck.k9.activity.setup.AccountSetupBasics">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
