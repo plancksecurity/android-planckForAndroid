@@ -10,19 +10,20 @@ import timber.log.Timber
 class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<Engine>() {
 
     override fun get(): Engine {
-        if (super.get() == null) {
-            createEngineInstanceIfNeeded()
-        }
-        return super.get()!!
+        return createEngineInstanceIfNeeded()
     }
 
-    private fun createEngineInstanceIfNeeded() {
-        try {
-            val engine = Engine()
-            initEngineConfig(engine)
-            this.set(engine)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
+    private fun createEngineInstanceIfNeeded(): Engine {
+        return super.get() ?: let {
+            return try {
+                val engine = Engine()
+                initEngineConfig(engine)
+                this.set(engine)
+                engine
+            } catch (e: pEpException) {
+                Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
+                throw e
+            }
         }
     }
 
