@@ -6,14 +6,16 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.GET_CONTENT" />
+
             <data android:mimeType="*/*" />
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="content"
-                  android:host="com.android.calendar"
-                  android:path="/events"
-            />
+
+            <data
+                android:host="com.android.calendar"
+                android:path="/events"
+                android:scheme="content" />
         </intent>
     </queries>
 
@@ -33,41 +35,36 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-
-    <!-- Needed to mark a contact as contacted -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" /> <!-- Needed to mark a contact as contacted -->
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
-
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
     <uses-permission
         android:name="android.permission.READ_PHONE_STATE"
-        tools:node="remove" />
-
-    <!-- Needed for Android 33+ -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <!-- Needed for Android 28+ compatibility -->
+        tools:node="remove" /> <!-- Needed for Android 33+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Needed for Android 28+ compatibility -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".K9"
         android:allowBackup="false"
         android:allowTaskReparenting="false"
-        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_pep_launcher"
-        android:roundIcon="@mipmap/ic_pep_launcher_round"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@mipmap/ic_pep_launcher_round"
         android:theme="@style/Theme.K9.Startup"
         tools:replace="android:allowBackup">
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -86,41 +83,39 @@
             android:resource="@xml/app_restrictions" />
         <meta-data
             android:name="android.app.default_searchable"
-            android:value="com.fsck.k9.activity.Search" />
-
-        <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
+            android:value="com.fsck.k9.activity.Search" /> <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
         <meta-data
             android:name="com.lge.support.SPLIT_WINDOW"
-            android:value="true"/>
+            android:value="true" />
+
         <uses-library
             android:name="com.sec.android.app.multiwindow"
-            android:required="false"/>
+            android:required="false" />
+
         <meta-data
             android:name="com.sec.android.support.multiwindow"
-            android:value="true"/>
+            android:value="true" />
         <meta-data
             android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
-            android:value="true"/>
+            android:value="true" />
 
         <activity
             android:name=".activity.SettingsActivity"
             android:configChanges="locale"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:exported="true">
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
 
                 <!-- TODO: Remove once minSdkVersion has been changed to 24+ -->
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER"/>
-                <category android:name="android.intent.category.PENWINDOW_LAUNCHER"/>
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+                <category android:name="android.intent.category.PENWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name="security.pEp.ui.intro.WelcomeMessage"
             android:configChanges="locale"
@@ -157,7 +152,7 @@
         <activity
             android:name=".activity.setup.AccountSetupNames"
             android:configChanges="locale"
-            android:label="@string/account_setup_names_title"/>
+            android:label="@string/account_setup_names_title" />
         <activity
             android:name=".activity.ChooseFolder"
             android:configChanges="locale"
@@ -183,7 +178,6 @@
             android:launchMode="singleTop"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
         <!--
              XXX Note: this activity is hacked to ignore config changes,
              since it doesn't currently handle them correctly in code.
@@ -191,13 +185,10 @@
         <activity
             android:name=".activity.setup.AccountSetupCheckSettings"
             android:configChanges="keyboardHidden|orientation|locale"
-            android:label="@string/account_setup_check_settings_title"/>
-
+            android:label="@string/account_setup_check_settings_title" />
         <activity
             android:name=".activity.setup.OAuthFlowActivity"
             android:label="@string/account_setup_basics_title" />
-
-
         <activity
             android:name=".activity.setup.FolderSettings"
             android:configChanges="locale"
@@ -205,14 +196,12 @@
         <activity
             android:name=".ui.endtoend.AutocryptKeyTransferActivity"
             android:configChanges="locale"
-            android:label="@string/ac_transfer_title"
-            />
-
+            android:label="@string/ac_transfer_title" />
         <activity
             android:name=".activity.FolderList"
             android:configChanges="locale"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:exported="true">
+            android:exported="true"
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
 
                 <!-- This action is only to allow an entry point for launcher shortcuts -->
@@ -222,9 +211,9 @@
         <activity
             android:name=".activity.MessageList"
             android:configChanges="locale"
+            android:exported="true"
             android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:exported="true">
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
 
                 <!-- This action is only to allow an entry point for launcher shortcuts -->
@@ -244,8 +233,8 @@
             android:name=".activity.MessageCompose"
             android:configChanges="locale"
             android:enabled="false"
-            android:label="@string/app_name"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
 
@@ -275,15 +264,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
-        </activity>
-
-        <!-- Search Activity - searchable -->
+        </activity> <!-- Search Activity - searchable -->
         <activity
             android:name=".activity.Search"
             android:configChanges="locale"
+            android:exported="false"
             android:label="@string/search_action"
-            android:uiOptions="splitActionBarWhenNarrow"
-            android:exported="false">
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 
@@ -297,15 +284,16 @@
         <activity
             android:name=".activity.LauncherShortcuts"
             android:configChanges="locale"
-            android:label="@string/shortcuts_title"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/shortcuts_title">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.UnreadWidgetConfiguration"
+        <activity
+            android:name=".activity.UnreadWidgetConfiguration"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
@@ -314,15 +302,12 @@
         <activity
             android:name=".activity.UpgradeDatabases"
             android:label="@string/upgrade_databases_title" />
-
         <activity
             android:name=".ui.settings.K9SettingsActivity"
             android:label="@string/prefs_title" />
-
         <activity
             android:name=".ui.settings.general.GeneralSettingsActivity"
             android:label="@string/general_settings_title" />
-
         <activity
             android:name=".ui.settings.account.AccountSettingsActivity"
             android:label="@string/account_settings_title_fmt" />
@@ -334,7 +319,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-            <!--intent-filter>
+            <!--
+            intent-filter>
                 <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
             </intent-filter>
             <intent-filter>
@@ -342,7 +328,8 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter-->
+            </intent-filter
+            -->
             <intent-filter>
                 <action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED" />
             </intent-filter>
@@ -353,8 +340,8 @@
         <receiver
             android:name=".service.RemoteControlReceiver"
             android:enabled="false"
-            android:permission="${applicationId}.permission.REMOTE_CONTROL"
-            android:exported="false">
+            android:exported="false"
+            android:permission="${applicationId}.permission.REMOTE_CONTROL">
             <intent-filter>
                 <action android:name="${applicationId}.K9RemoteControl.set" />
             </intent-filter>
@@ -389,9 +376,9 @@
         </receiver>
         <receiver
             android:name=".provider.UnreadWidgetProvider"
+            android:exported="false"
             android:icon="@mipmap/icon"
-            android:label="@string/unread_widget_label"
-            android:exported="false">
+            android:label="@string/unread_widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -402,9 +389,9 @@
         </receiver>
         <receiver
             android:name=".widget.list.MessageListWidgetProvider"
+            android:exported="false"
             android:icon="@drawable/message_list_widget_preview"
-            android:label="@string/mail_list_widget_text"
-            android:exported="false">
+            android:label="@string/mail_list_widget_text">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -490,10 +477,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <!-- Microsoft uses a special redirect URI format for Android apps -->
-                <data android:scheme="msauth" android:host="${applicationId}"/>
+                <data
+                    android:host="${applicationId}"
+                    android:scheme="msauth" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".pEp.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status" />
@@ -504,10 +492,10 @@
         <activity
             android:name=".pEp.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
+            android:exported="false"
             android:label="@string/pep_device_group"
             android:launchMode="singleInstance"
-            android:theme="@style/OverlayTheme"
-            android:exported="false">
+            android:theme="@style/OverlayTheme">
             <intent-filter>
                 <action android:name="com.fsck.k9.intent.action.SHOW_PEP_TRUSTWORDS" />
 
@@ -515,19 +503,22 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver"
+        <receiver
+            android:name=".activity.K9ActivityCommon$PassphraseRequestReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
+        <receiver
+            android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
+        <receiver
+            android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="PEP_SYNC_SIGNAL" />
@@ -536,9 +527,9 @@
 
         <activity
             android:name=".pEp.ui.activities.SplashActivity"
+            android:exported="true"
             android:launchMode="singleInstance"
-            android:theme="@style/SplashTheme"
-            android:exported="true">
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -549,24 +540,35 @@
         <activity
             android:name=".pEp.ui.activities.provisioning.ProvisioningActivity"
             android:launchMode="singleInstance"
-            android:theme="@style/SplashTheme"/>
+            android:theme="@style/SplashTheme" />
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
-        <activity android:name="security.pEp.ui.about.AboutActivity"
-            android:label="@string/about_action"/>
-        <activity android:name="security.pEp.ui.about.LicenseActivity"
-            android:label="@string/license"/>
+        <activity
+            android:name="security.pEp.ui.about.AboutActivity"
+            android:label="@string/about_action" />
+        <activity
+            android:name="security.pEp.ui.about.LicenseActivity"
+            android:label="@string/license" />
+        <activity
+            android:name="security.pEp.ui.terms.TermsConditionsActivity"
+            android:label="@string/terms_conditions"
+            android:windowSoftInputMode="adjustPan"
+            android:parentActivityName="com.fsck.k9.activity.setup.AccountSetupBasics">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fsck.k9.activity.setup.AccountSetupBasics"/>
+        </activity>
         <activity
             android:name="security.pEp.ui.mdm.MdmSettingsFeedbackActivity"
-            android:label="@string/mdm_settings_feedback_title"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/mdm_settings_feedback_title" />
         <activity
             android:name=".pEp.ui.keys.PepExtraKeys"
             android:label="Extra keys" />
         <activity android:name="security.pEp.ui.permissions.PermissionsActivity" />
         <activity
             android:name=".pEp.filepicker.FilePickerActivity"
-            android:label="@string/app_name"
-            android:exported="false">
+            android:exported="false"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT" />
 
@@ -575,20 +577,21 @@
         </activity>
         <activity
             android:name="security.pEp.ui.keyimport.KeyImportActivity"
-            android:theme="@style/OverlayTheme"/>
-        <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
-            android:theme="@style/OverlayTheme"
+            android:theme="@style/OverlayTheme" />
+        <activity
+            android:name=".pEp.manualsync.ImportWizardFrompEp"
+            android:excludeFromRecents="true"
             android:launchMode="singleInstance"
-            android:excludeFromRecents="true" />
-
-        <activity android:name="security.pEp.ui.passphrase.PassphraseActivity"
-            android:launchMode="singleTask"
+            android:theme="@style/OverlayTheme" />
+        <activity
+            android:name="security.pEp.ui.passphrase.PassphraseActivity"
             android:label="@string/passhphrase_title"
-            android:theme="@style/OverlayTheme"
-        />
-        <activity android:name="security.pEp.ui.support.export.ExportpEpSupportDataActivity"
             android:launchMode="singleTask"
+            android:theme="@style/OverlayTheme" />
+        <activity
+            android:name="security.pEp.ui.support.export.ExportpEpSupportDataActivity"
             android:label="@string/export_pep_support_data_dialog_title"
+            android:launchMode="singleTask"
             android:theme="@style/OverlayTheme" />
     </application>
 
