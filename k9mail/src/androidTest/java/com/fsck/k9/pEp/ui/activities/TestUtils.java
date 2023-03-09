@@ -1489,11 +1489,11 @@ public class TestUtils {
                 device.findObject(By.res(APP_ID, "message_content")).click();
                 waitForIdle();
                 onView(withId(R.id.subject)).perform(typeText(inputMessage.getSubject()), closeSoftKeyboard());
-                rotateDevice();
+                //rotateDevice();
                 waitForIdle();
                 onView(withId(R.id.message_content)).perform(click());
                 onView(withId(R.id.message_content)).perform(typeText(inputMessage.getMessage()), closeSoftKeyboard());
-                rotateDevice();
+                //rotateDevice();
                 waitForIdle();
             } catch (Exception ex) {
                 Timber.i("Could not fill message: " + ex);
@@ -1888,6 +1888,9 @@ public class TestUtils {
 
     public void setupAccountIfNeeded() {
         skipTutorialAndAllowPermissionsIfNeeded();
+        if (UtilsPackage.exists(Espresso.onView(withId(R.id.other_method_sign_in_button_card)))) {
+            Espresso.onView(withId(R.id.other_method_sign_in_button_card)).perform(ViewActions.click());
+        }
         if(exists(onView(withText(R.string.account_setup_basics_title)))) {
             setupAccountAutomatically(false);
         }
