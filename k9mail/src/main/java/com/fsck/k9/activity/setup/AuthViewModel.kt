@@ -34,6 +34,7 @@ import timber.log.Timber
 private const val KEY_AUTHORIZATION = "app.pep_auth"
 private const val SCOPE_OPENID = "openid"
 private const val SCOPE_EMAIL = "email"
+private const val ACCESS_DENIED_BY_USER = "access_denied"
 
 class AuthViewModel(
     application: Application,
@@ -201,10 +202,15 @@ class AuthViewModel(
         }
 
         authorizationResult.exception?.let { authorizationException ->
-            _uiState.value =  AuthFlowState.Failed(
-                errorCode = authorizationException.error,
-                errorMessage = authorizationException.errorDescription
-            )
+            val nextState = if (authorizationException.error == ACCESS_DENIED_BY_USER) {
+                AuthFlowState.Canceled
+            } else {
+                AuthFlowState.Failed(
+                    errorCode = authorizationException.error,
+                    errorMessage = authorizationException.errorDescription
+                )
+            }
+            _uiState.value =  nextState
         }
     }
 
