@@ -201,7 +201,6 @@ class PEpProviderImplKotlin @Inject constructor(
     }
 
     override fun close() {
-        engine.close()
     }
 
     override fun setPassiveModeEnabled(enable: Boolean) {
@@ -592,7 +591,6 @@ class PEpProviderImplKotlin @Inject constructor(
         } finally {
             srcMsg?.close()
             if (decReturn != null && decReturn.dst !== srcMsg) decReturn.dst.close()
-            engine.close()
             Timber.d("%s %s", TAG, "decryptMessage() exit")
         }
     }
@@ -660,8 +658,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyLoaded(rating, resultCallback)
         } catch (e: pEpException) {
             notifyError(e, resultCallback)
-        } finally {
-            engine.close()
         }
     }
 
@@ -777,7 +773,6 @@ class PEpProviderImplKotlin @Inject constructor(
                     Timber.i("Counter of PEpProviderImpl  -1")
                     EspressoTestingIdlingResource.decrement()
                     message?.close()
-                    engine.close()
                 }
             }
         }
@@ -850,8 +845,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyLoaded(rating, callback)
         } catch (e: Exception) {
             notifyError(e, callback)
-        } finally {
-            engine.close()
         }
     }
 
@@ -938,8 +931,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyLoaded(HandshakeData(longTrustwords, shortTrustwords, myself, another), callback)
         } catch (e: Exception) {
             notifyError(e, callback)
-        } finally {
-            engine.close()
         }
 
     }
@@ -1098,8 +1089,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyLoaded(identitiesVector, callback)
         } catch (error: pEpException) {
             notifyError(error, callback)
-        } finally {
-            engine.close()
         }
     }
 
@@ -1117,8 +1106,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyCompleted(completedCallback)
         } catch (e: pEpException) {
             notifyError(e, completedCallback)
-        } finally {
-            engine.close()
         }
 
     }
@@ -1137,8 +1124,6 @@ class PEpProviderImplKotlin @Inject constructor(
             notifyCompleted(completedCallback)
         } catch (e: pEpException) {
             notifyError(e, completedCallback)
-        } finally {
-            engine.close()
         }
 
     }
