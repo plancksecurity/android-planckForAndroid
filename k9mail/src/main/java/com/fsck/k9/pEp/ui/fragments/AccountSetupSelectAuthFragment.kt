@@ -20,8 +20,10 @@ import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
+import com.fsck.k9.pEp.launchIntent
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
 import security.pEp.provisioning.AccountMailSettingsProvision
+import security.pEp.ui.terms.TermsConditionsActivity
 
 class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
 
@@ -58,9 +60,14 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         passwordFlowButtonCard = binding.otherMethodSignInButtonCard
         termsAndConditionTextView = binding.termsAndConditions
 
+        termsAndConditionTextView.setOnClickListener { openTermsConditions() }
         googleButton.setOnClickListener { startGoogleFlow() }
         microsoftButton.setOnClickListener { startMicrosoftFlow() }
         passwordFlowButton.setOnClickListener { startPasswordFlow() }
+    }
+
+    private fun openTermsConditions() {
+        requireActivity().let { it.launchIntent(Intent(it, TermsConditionsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)) }
     }
 
     private fun updateUiFromProvisioningSettings() {
