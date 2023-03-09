@@ -6,7 +6,6 @@ import android.util.Pair;
 import androidx.annotation.WorkerThread;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -380,12 +378,11 @@ public class PEpUtils {
 
     @WorkerThread
     public static void pEpGenerateAccountKeys(Context context, Account account) {
-        PEpProvider pEp = PEpProviderFactory.createAndSetupProvider(context);
+        K9 app = (K9) context;
+        PEpProvider pEp = app.pEpProvider;
         foundation.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
-        pEp.close();
-        K9 app = (K9) context;
 
         // As global sync cannot be enabled if there is no enabled account, we disable it if we only
         // have one account an disabled sync on it

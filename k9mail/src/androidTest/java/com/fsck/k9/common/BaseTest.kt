@@ -87,8 +87,8 @@ open class BaseTest {
 
     private fun resetFocus() = runBlocking(Dispatchers.Main) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-            Iterables.getOnlyElement(activities)?.let { activity ->
+            val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+            activities.firstOrNull()?.let { activity ->
                 val content = (activity.window.decorView.rootView as ViewGroup).getChildAt(0)
                 val oldDefaultFocusHighlightEnabled = content.defaultFocusHighlightEnabled
                 content.isFocusable = true
@@ -130,8 +130,8 @@ open class BaseTest {
 
     fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
         waitForIdle()
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        return@runBlocking Iterables.getOnlyElement(activities)
+        val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+        return@runBlocking activities.firstOrNull()
     }
 
     fun click(resourceId: Int) {

@@ -88,7 +88,7 @@ open class SetupDevTestAccounts {
 
     private fun getCurrentActivity(): Activity? = runBlocking(Dispatchers.Main) {
         uiDevice.waitForIdle()
-        val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
-        return@runBlocking Iterables.getOnlyElement(activities)
+        val activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+        return@runBlocking activities.firstOrNull()
     }
 }

@@ -1,9 +1,9 @@
 package com.fsck.k9.pEp.ui.activities.test
-/*
-import androidx.test.internal.runner.filters.ParentFilter
+
+import androidx.test.filters.AbstractFilter
 import org.junit.runner.Description
 
-class CucumberTestFilter : ParentFilter() {
+class CucumberTestFilter : AbstractFilter() {
     override fun describe(): String {
         return "Filter Cucumber tests"
     }
@@ -14,7 +14,7 @@ class CucumberTestFilter : ParentFilter() {
     }
 }
 
-class NonCucumberTestFilter : ParentFilter() {
+class NonCucumberTestFilter : AbstractFilter() {
     override fun describe(): String {
         return "Filter out Cucumber tests"
     }
@@ -24,4 +24,3 @@ class NonCucumberTestFilter : ParentFilter() {
         return !packageName.isNullOrBlank() && !packageName.contains("cucumber")
     }
 }
-*/

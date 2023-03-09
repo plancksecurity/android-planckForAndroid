@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
-import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.pEp.DefaultDispatcherProvider;
 import com.fsck.k9.pEp.DispatcherProvider;
 import com.fsck.k9.pEp.PEpProvider;
@@ -67,7 +66,6 @@ public class ApplicationModule {
     }
 
     @Provides
-    @Named("MainUI")
     public PEpProvider providepEpProvider(K9 application) {
         return application.getpEpProvider();
     }
@@ -75,11 +73,5 @@ public class ApplicationModule {
     @Provides
     @Singleton
     public DispatcherProvider provideDispatcherProvider() { return new DefaultDispatcherProvider(); }
-
-    @Provides
-    @Named("Background")
-    public PEpProvider providepEpProviderBackground(@Named("AppContext") Context context) {
-        return MessagingController.getInstance(context).getpEpProvider();
-    }
 
 }
