@@ -31,10 +31,9 @@ import security.pEp.echo.EchoMessageReceivedListener
 import security.pEp.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class PEpProviderImplKotlin @Inject constructor(
+class PEpProviderImplKotlin(
     private val postExecutionThread: PostExecutionThread,
     private val context: Context,
     private val engine: EngineThreadLocal,
