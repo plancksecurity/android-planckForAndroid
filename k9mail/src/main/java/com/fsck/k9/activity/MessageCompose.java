@@ -1,6 +1,8 @@
 package com.fsck.k9.activity;
 
 
+import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +22,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -117,20 +118,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import foundation.pEp.jniadapter.Rating;
+import security.pEp.mdm.RestrictionsListener;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.mdm.RestrictionsListener;
 import security.pEp.ui.message_compose.ComposeAccountRecipient;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
-
-import static com.fsck.k9.mail.Flag.X_PEP_WASNT_ENCRYPTED;
 
 
 @SuppressWarnings("deprecation") // TODO get rid of activity dialogs and indeterminate progress bars
@@ -277,7 +275,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @ComposeView
     DisplayHtml displayHtml;
     @Inject
-    @Named("MainUI")
     PEpProvider pEp;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;

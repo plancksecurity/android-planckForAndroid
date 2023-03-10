@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 class PepExtraKeysPresenter @Inject constructor(
-    @Named("MainUI") private val pEp: PEpProvider,
+    private val pEp: PEpProvider,
     private val preferences: Preferences,
     private val dispatcherProvider: DispatcherProvider,
 ) {
