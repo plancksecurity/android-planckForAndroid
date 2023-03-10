@@ -12,6 +12,8 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import junit.framework.TestCase.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -44,12 +46,13 @@ class CheckSettingsViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `start() checks settings using ServerSettingsChecker`() {
+    fun `start() checks settings using ServerSettingsChecker`() = runTest {
         coEvery { serverSettingsChecker.checkServerSettings(context, account, any(), any()) }
             .returns(Result.success(Unit))
 
 
         viewModel.start(context, account, CheckDirection.INCOMING, true)
+        advanceUntilIdle()
 
 
         coVerify {
@@ -93,7 +96,7 @@ class CheckSettingsViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `start() sets state to Success if settings check is successful`() {
+    fun `start() sets state to Success if settings check is successful`() = runTest {
         coEvery { serverSettingsChecker.checkServerSettings(context, account, any(), any()) }
             .returns(Result.success(Unit))
 
@@ -102,6 +105,7 @@ class CheckSettingsViewModelTest : RobolectricTest() {
             context, account,
             CheckDirection.INCOMING, true
         )
+        advanceUntilIdle()
 
 
         assertEquals(
@@ -115,7 +119,7 @@ class CheckSettingsViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `start() sets state to Error if there was an error checking settings`() {
+    fun `start() sets state to Error if there was an error checking settings`() = runTest {
         coEvery { serverSettingsChecker.checkServerSettings(context, account, any(), any()) }
             .returns(Result.failure(TestException("test")))
 
@@ -124,6 +128,7 @@ class CheckSettingsViewModelTest : RobolectricTest() {
             context, account,
             CheckDirection.INCOMING, true
         )
+        advanceUntilIdle()
 
 
         assertEquals(
@@ -137,7 +142,7 @@ class CheckSettingsViewModelTest : RobolectricTest() {
     }
 
     @Test
-    fun `cancel() cancels start() operation`() {
+    fun `cancel() cancels start() operation`() = runTest {
         coEvery { serverSettingsChecker.checkServerSettings(context, account, any(), any()) }
             .coAnswers {
                 runBlocking {
@@ -147,13 +152,12 @@ class CheckSettingsViewModelTest : RobolectricTest() {
             }
 
 
-        CoroutineScope(Dispatchers.IO).launch {
-            viewModel.cancel()
-        }
         viewModel.start(
             context, account,
             CheckDirection.INCOMING, true
         )
+        viewModel.cancel()
+        advanceUntilIdle()
 
 
         assertNotFinished()
