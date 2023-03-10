@@ -58,6 +58,11 @@ class CheckSettingsViewModel(
     ): Result<Unit> = withContext(Dispatchers.IO) {
         serverSettingsChecker.checkServerSettings(context, account, direction, edit)
     }
+
+    public override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
 }
 
 sealed interface CheckSettingsState {
