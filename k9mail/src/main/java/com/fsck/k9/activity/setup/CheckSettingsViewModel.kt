@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.serversettings.ServerSettingsChecker
@@ -19,7 +19,6 @@ class CheckSettingsViewModel(
 
     private val _state = MutableLiveData<CheckSettingsState>(CheckSettingsState.Idle)
     val state: LiveData<CheckSettingsState> = _state
-    private var job: Job? = null
 
     fun start(
         context: Context,
@@ -29,7 +28,7 @@ class CheckSettingsViewModel(
     ) {
         if (_state.value == CheckSettingsState.Idle) { // check if start() was already called
             setStateForDirection(direction)
-            job = viewModelScope.launch {
+            viewModelScope.launch {
                 startCheckServerSettings(context, account, direction, edit).onFailure {
                     _state.value = CheckSettingsState.Error(it)
                 }.onSuccess {
@@ -40,7 +39,7 @@ class CheckSettingsViewModel(
     }
 
     fun cancel() {
-        job?.cancel()
+        viewModelScope.cancel()
     }
 
     private fun setStateForDirection(direction: CheckDirection) {
