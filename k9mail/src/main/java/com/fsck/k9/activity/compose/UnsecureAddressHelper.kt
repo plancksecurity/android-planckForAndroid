@@ -9,10 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 class UnsecureAddressHelper @Inject constructor(
-    @Named("MainUI") private val pEp: PEpProvider,
+    private val pEp: PEpProvider,
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)

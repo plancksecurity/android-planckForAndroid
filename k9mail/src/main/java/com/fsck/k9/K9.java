@@ -41,18 +41,10 @@ import com.fsck.k9.mail.ssl.LocalKeyStore;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpProviderFactory;
 import com.fsck.k9.pEp.infrastructure.Poller;
 import com.fsck.k9.pEp.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.pEp.infrastructure.components.DaggerApplicationComponent;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-
-import security.pEp.mdm.ManageableSetting;
-import security.pEp.mdm.ManageableSettingKt;
-import security.pEp.mdm.MediaKey;
-import security.pEp.mdm.UserProfile;
-import security.pEp.network.ConnectionMonitor;
-import com.fsck.k9.pEp.ui.activities.SplashScreen;
 import com.fsck.k9.pEp.ui.tools.AppTheme;
 import com.fsck.k9.pEp.ui.tools.Theme;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
@@ -89,6 +81,11 @@ import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
+import security.pEp.mdm.ManageableSetting;
+import security.pEp.mdm.ManageableSettingKt;
+import security.pEp.mdm.MediaKey;
+import security.pEp.mdm.UserProfile;
+import security.pEp.network.ConnectionMonitor;
 import security.pEp.sync.KeySyncCleaner;
 import security.pEp.ui.passphrase.PassphraseActivity;
 import security.pEp.ui.passphrase.PassphraseRequirementType;
@@ -105,7 +102,7 @@ public class K9 extends MultiDexApplication {
     private boolean isPollingMessages;
     private boolean showingKeyimportDialog = false;
     public static final boolean DEFAULT_COLORIZE_MISSING_CONTACT_PICTURE = false;
-    public PEpProvider pEpProvider, pEpSyncProvider;
+    public PEpProvider pEpProvider;
     private Account currentAccount;
     private ApplicationComponent component;
     private ConnectionMonitor connectivityMonitor = new ConnectionMonitor();
@@ -712,6 +709,7 @@ public class K9 extends MultiDexApplication {
         MessagingController messagingController = MessagingController.getInstance(this);
         // Perform engine provisioning just after its initialization in MessagingController
         component.provisioningManager().performInitializedEngineProvisioning();
+        pEpProvider = messagingController.getpEpProvider();
 
         initJobManager(prefs, messagingController);
 
@@ -846,8 +844,8 @@ public class K9 extends MultiDexApplication {
 
     public void pEpInitSyncEnvironment() {
         pEpSyncEnvironmentInitialized = true;
-        if (pEpSyncProvider == null) {
-            pEpSyncProvider = PEpProviderFactory.createAndSetupProvider(this);
+        if (pEpProvider == null) {
+            throw new IllegalStateException("pEpProvider SHOULD NOT BE NULL!!!");
         }
 //        for (Account account : prefs.getAccounts()) {
 //            pEpSyncProvider.myself(PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), this));
@@ -866,7 +864,7 @@ public class K9 extends MultiDexApplication {
 
     public PEpProvider getpEpSyncProvider() {
         if (pEpSyncEnabled) {
-            return pEpSyncProvider;
+            return pEpProvider;
         } else {
             return pEpProvider;
         }
@@ -875,8 +873,8 @@ public class K9 extends MultiDexApplication {
     private void initSync() {
 
         pEpProvider.updateSyncAccountsConfig();
-        if (!pEpSyncProvider.isSyncRunning()) {
-            pEpSyncProvider.startSync();
+        if (!pEpProvider.isSyncRunning()) {
+            pEpProvider.startSync();
         }
     }
 
@@ -1815,14 +1813,7 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void onActivityCreated(@NotNull Activity activity, Bundle savedInstanceState) {
-            if (!(activity instanceof SplashScreen)) {
-                if (activityCount == 0) {
-//                if (activity instanceof K9Activity) pEpSyncProvider.setSyncHandshakeCallback((Sync.showHandshakeCallback) activity);
-                    pEpProvider = PEpProviderFactory.createAndSetupProvider(getApplicationContext());
-                    //pEpInitSyncEnvironment();
-                }
-                ++activityCount;
-            }
+            ++activityCount;
         }
 
         @Override
@@ -1852,17 +1843,11 @@ public class K9 extends MultiDexApplication {
 
         @Override
         public void onActivityDestroyed(@NotNull Activity activity) {
-            if (!(activity instanceof SplashScreen)) {
-                --activityCount;
-                if (activityCount == 0) {
-                    PEpProvider provider = PEpProviderFactory.createAndSetupProvider(K9.this);
-                    KeySyncCleaner.queueAutoConsumeMessages();
-                    if (provider.isSyncRunning()) provider.stopSync();
-                    provider.close();
-                    pEpProvider.close();
-                    provider = null;
-                    pEpProvider = null;
-                }
+            --activityCount;
+            if (activityCount == 0) {
+                KeySyncCleaner.queueAutoConsumeMessages();
+                if (pEpProvider.isSyncRunning()) pEpProvider.stopSync();
+                pEpProvider.close();
             }
         }
     };
@@ -2022,7 +2007,7 @@ public class K9 extends MultiDexApplication {
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, false);
                         needsFastPoll = true;
                     } else {
-                        pEpSyncProvider.cancelSync();
+                        pEpProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyInitFormGroup:
@@ -2030,7 +2015,7 @@ public class K9 extends MultiDexApplication {
                         ImportWizardFrompEp.actionStartKeySync(getApplicationContext(), myself, partner, signal, true);
                         needsFastPoll = true;
                     } else {
-                        pEpSyncProvider.cancelSync();
+                        pEpProvider.cancelSync();
                     }
                     break;
                 case SyncNotifyTimeout:
@@ -2080,8 +2065,8 @@ public class K9 extends MultiDexApplication {
 
     public void leaveDeviceGroup() {
         grouped = false;
-        if (pEpSyncProvider.isSyncRunning()) {
-            pEpSyncProvider.leaveDeviceGroup();
+        if (pEpProvider.isSyncRunning()) {
+            pEpProvider.leaveDeviceGroup();
         }
         pEpSyncEnabled = false;
     }

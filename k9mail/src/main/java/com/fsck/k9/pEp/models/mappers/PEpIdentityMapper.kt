@@ -2,13 +2,10 @@ package com.fsck.k9.pEp.models.mappers
 
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.models.PEpIdentity
-
 import foundation.pEp.jniadapter.Identity
-
 import javax.inject.Inject
-import javax.inject.Named
 
-class PEpIdentityMapper @Inject constructor(@param:Named("NewInstance") private val pEpProvider: PEpProvider) {
+class PEpIdentityMapper @Inject constructor(private val pEpProvider: PEpProvider) {
 
     fun mapRecipients(recipients: List<Identity>): List<PEpIdentity> {
         return recipients.map { recipient -> mapRecipient(pEpProvider.updateIdentity(recipient)) }
