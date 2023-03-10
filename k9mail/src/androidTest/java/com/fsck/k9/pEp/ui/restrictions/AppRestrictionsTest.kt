@@ -185,9 +185,9 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
             intent.putExtra("generic", generic)
             intent.putExtra("key", key)
             intent.putExtra("value", value)
-            val activities: Collection<Activity> = ActivityLifecycleMonitorRegistry
-                .getInstance().getActivitiesInStage(Stage.RESUMED)
-            Iterables.getOnlyElement(activities)?.startActivity(intent)
+            val activities = ActivityLifecycleMonitorRegistry
+                .getInstance().getActivitiesInStage(Stage.RESUMED).toList()
+            activities.firstOrNull()?.startActivity(intent)
             forcedAppConfig = true
         }
 

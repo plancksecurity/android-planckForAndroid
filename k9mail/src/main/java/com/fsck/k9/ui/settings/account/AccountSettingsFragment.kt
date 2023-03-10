@@ -294,7 +294,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
-        val pEpProvider = PEpProviderFactory.createAndSetupProvider(context)
+        val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
         try {
             val address = Address(account.email, account.name)
             var id = PEpUtils.createIdentity(address, context)
@@ -304,8 +304,6 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", "pEpEngine", "Failed to reset identity")
             false
-        } finally {
-            pEpProvider.close()
         }
     }
 
