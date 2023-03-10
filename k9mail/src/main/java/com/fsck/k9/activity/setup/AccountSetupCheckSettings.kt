@@ -180,20 +180,16 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
     }
 
     private fun observeMailSettingsDiscoverResult() {
-        authViewModel.connectionSettings.observe(this) { pair ->
-            val ready = pair.second
-            val event = pair.first
-            if (ready) {
-                if (!event.hasBeenHandled) {
-                    val connectionSettings = event.getContent()
-                    if (connectionSettings == null) {
-                        errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
-                        showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
-                    } else {
-                        authViewModel.discoverMailSettingsSuccess()
-                        account.setMailSettings(this, connectionSettings, true)
-                        startLoginOrSettingsCheck()
-                    }
+        authViewModel.connectionSettings.observe(this) { event ->
+            if (event.isReady && !event.hasBeenHandled) {
+                val connectionSettings = event.getContent()
+                if (connectionSettings == null) {
+                    errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
+                    showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
+                } else {
+                    authViewModel.discoverMailSettingsSuccess()
+                    account.setMailSettings(this, connectionSettings, true)
+                    startLoginOrSettingsCheck()
                 }
             }
         }

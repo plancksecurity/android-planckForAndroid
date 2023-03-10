@@ -57,14 +57,14 @@ class AuthViewModel(
         private set
 
     private val _connectionSettings =
-        MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
-    val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> =
+        MutableLiveData<Event<ConnectionSettings?>>(Event(null, false))
+    val connectionSettings: LiveData<Event<ConnectionSettings?>> =
         _connectionSettings
 
     fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
         viewModelScope.launch {
             discoverMailSettings(email, oAuthProviderType)
-                .also { _connectionSettings.value = Pair(Event(it), true) }
+                .also { _connectionSettings.value = Event(it) }
         }
     }
 
