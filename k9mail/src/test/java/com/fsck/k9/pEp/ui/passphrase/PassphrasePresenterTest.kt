@@ -6,6 +6,7 @@ package com.fsck.k9.pEp.ui.passphrase
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.PEpProvider
 import com.nhaarman.mockito_kotlin.mock
@@ -21,11 +22,12 @@ class PassphrasePresenterTest: RobolectricTest() {
     private val view: PassphraseInputView = mock()
     lateinit var presenter: PassphrasePresenter
     private val pEpProvider: PEpProvider = mock()
+    private val preferences: Preferences = mock()
 
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext<Context>()
-        presenter = PassphrasePresenter(context, pEpProvider)
+        presenter = PassphrasePresenter(pEpProvider, preferences)
     }
     @Test
     fun `when initializing the present view is also initialized`() {
