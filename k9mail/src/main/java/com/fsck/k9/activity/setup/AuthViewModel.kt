@@ -19,6 +19,8 @@ import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
+import com.fsck.k9.pEp.DefaultDispatcherProvider
+import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.infrastructure.livedata.Event
 import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.fragments.toServerSettings
@@ -42,6 +44,7 @@ class AuthViewModel(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
     private val jwtTokenDecoder: JwtTokenDecoder,
     private val mailSettingsDiscovery: ProvidersXmlDiscovery,
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
     private val authState = AuthState()
@@ -80,7 +83,7 @@ class AuthViewModel(
     private suspend fun discoverMailSettings(
         email: String,
         oAuthProviderType: OAuthProviderType? = null
-    ): ConnectionSettings? = withContext(Dispatchers.IO) {
+    ): ConnectionSettings? = withContext(dispatcherProvider.io()) {
         val discoveryResults = mailSettingsDiscovery.discover(
             email,
             oAuthProviderType
