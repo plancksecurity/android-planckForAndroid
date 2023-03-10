@@ -7,14 +7,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
-import kotlinx.coroutines.Dispatchers
+import com.fsck.k9.pEp.DefaultDispatcherProvider
+import com.fsck.k9.pEp.DispatcherProvider
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import security.pEp.serversettings.ServerSettingsChecker
 
 class CheckSettingsViewModel(
-    private val serverSettingsChecker: ServerSettingsChecker
+    private val serverSettingsChecker: ServerSettingsChecker,
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider(),
 ) : ViewModel() {
 
     private val _state = MutableLiveData<CheckSettingsState>(CheckSettingsState.Idle)
@@ -55,7 +57,7 @@ class CheckSettingsViewModel(
         account: Account,
         direction: CheckDirection,
         edit: Boolean
-    ): Result<Unit> = withContext(Dispatchers.IO) {
+    ): Result<Unit> = withContext(dispatcherProvider.io()) {
         serverSettingsChecker.checkServerSettings(context, account, direction, edit)
     }
 
