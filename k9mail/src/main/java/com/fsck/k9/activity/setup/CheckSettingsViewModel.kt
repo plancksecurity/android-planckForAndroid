@@ -67,10 +67,14 @@ class CheckSettingsViewModel(
     }
 }
 
-sealed interface CheckSettingsState {
-    object Idle : CheckSettingsState
-    object CheckingIncoming : CheckSettingsState
-    object CheckingOutgoing : CheckSettingsState
-    data class Error(val throwable: Throwable) : CheckSettingsState
-    object Success : CheckSettingsState
+sealed class CheckSettingsState {
+    override fun toString(): String {
+        return javaClass.simpleName
+    }
+
+    object Idle : CheckSettingsState()
+    object CheckingIncoming : CheckSettingsState()
+    object CheckingOutgoing : CheckSettingsState()
+    data class Error(val throwable: Throwable) : CheckSettingsState()
+    object Success : CheckSettingsState()
 }
