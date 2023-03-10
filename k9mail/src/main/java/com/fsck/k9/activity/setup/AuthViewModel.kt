@@ -64,11 +64,16 @@ class AuthViewModel(
     fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
         viewModelScope.launch {
             discoverMailSettings(email, oAuthProviderType)
-                .also { _connectionSettings.value = Event(it) }
+                .also { settings ->
+                    if (settings != null) {
+                        discoverMailSettingsSuccess()
+                    }
+                    _connectionSettings.value = Event(settings)
+                }
         }
     }
 
-    fun discoverMailSettingsSuccess() {
+    private fun discoverMailSettingsSuccess() {
         needsMailSettingsDiscovery = false
     }
 

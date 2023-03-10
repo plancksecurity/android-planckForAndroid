@@ -187,7 +187,6 @@ class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListen
                     errorResultCode = RESULT_CODE_MANUAL_SETUP_NEEDED
                     showErrorDialog(R.string.account_setup_failed_dlg_could_not_discover_mail_settings)
                 } else {
-                    authViewModel.discoverMailSettingsSuccess()
                     account.setMailSettings(this, connectionSettings, true)
                     startLoginOrSettingsCheck()
                 }
