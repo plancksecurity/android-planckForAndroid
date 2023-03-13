@@ -65,6 +65,11 @@ class AuthViewModelTest : RobolectricTest() {
     private val discovery: ProvidersXmlDiscovery = mockk()
     private lateinit var activityResultRegistry: ActivityResultRegistry
     private var launcher: ActivityResultLauncher<Intent>? = null
+    private val lifecycle: LifecycleRegistry = spyk(LifecycleRegistry(mockk()))
+    private val authState: AuthState = mockk()
+    private val account: Account = mockk()
+    private val receivedDiscoveredSettings = mutableListOf<Event<ConnectionSettings?>>()
+    private val receivedUiStates = mutableListOf<AuthFlowState>()
 
     private val viewModel = AuthViewModel(
         app,
@@ -75,12 +80,73 @@ class AuthViewModelTest : RobolectricTest() {
         coroutinesTestRule.testDispatcherProvider,
     )
 
-    private val lifecycle: LifecycleRegistry = spyk(LifecycleRegistry(mockk()))
-    private val authState: AuthState = mockk()
-    private val account: Account = mockk()
+    private val testConnectionSettings: ConnectionSettings = ConnectionSettings(
+        incoming = ServerSettings(
+            ServerSettings.Type.IMAP,
+            "",
+            0,
+            ConnectionSecurity.NONE,
+            AuthType.PLAIN,
+            "",
+            null,
+            null
+        ),
+        outgoing = ServerSettings(
+            ServerSettings.Type.SMTP,
+            "",
+            0,
+            ConnectionSecurity.NONE,
+            AuthType.PLAIN,
+            "",
+            null,
+            null
+        )
+    )
 
-    private val receivedDiscoveredSettings = mutableListOf<Event<ConnectionSettings?>>()
-    private val receivedUiStates = mutableListOf<AuthFlowState>()
+    private val testOAuthConfig = OAuthConfiguration(
+        CLIENT_ID,
+        SCOPES,
+        AUTH_ENDPOINT,
+        TOKEN_ENDPOINT,
+        REDIRECT_URI
+    )
+
+    @Before
+    fun setUp() {
+        receivedDiscoveredSettings.clear()
+        receivedUiStates.clear()
+        stubAuthResultRegistry()
+        every { account.email }.returns(EMAIL)
+        observeViewModel(viewModel)
+        assertEquals(AuthFlowState.Idle, viewModel.uiState.value)
+        assertFalse(viewModel.needsMailSettingsDiscovery)
+        assertEquals(Event<ConnectionSettings?>(null, false), viewModel.connectionSettings.value)
+        mockkStatic(AuthState::class)
+        mockkStatic(RemoteStore::class)
+        mockkStatic(net.openid.appauth.browser.BrowserSelector::class)
+        stubBrowserAvailability()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(AuthState::class)
+        unmockkStatic(RemoteStore::class)
+        unmockkStatic(net.openid.appauth.browser.BrowserSelector::class)
+        launcher = null
+    }
+
+    private fun getTestServerSettings(
+        host: String? = ""
+    ) = ServerSettings(
+        ServerSettings.Type.IMAP,
+        host,
+        0,
+        ConnectionSecurity.NONE,
+        AuthType.PLAIN,
+        "",
+        null,
+        null
+    )
 
     private fun getTestDiscoveryResults(
         username: String? = "",
@@ -114,66 +180,6 @@ class AuthViewModelTest : RobolectricTest() {
         )
     }
 
-    private val testConnectionSettings: ConnectionSettings = ConnectionSettings(
-        incoming = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "",
-            0,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "",
-            null,
-            null
-        ),
-        outgoing = ServerSettings(
-            ServerSettings.Type.SMTP,
-            "",
-            0,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "",
-            null,
-            null
-        )
-    )
-
-    private val testOAuthConfig = OAuthConfiguration(
-        CLIENT_ID,
-        SCOPES,
-        AUTH_ENDPOINT,
-        TOKEN_ENDPOINT,
-        REDIRECT_URI
-    )
-
-    private fun getTestServerSettings(
-        host: String? = ""
-    ) = ServerSettings(
-        ServerSettings.Type.IMAP,
-        host,
-        0,
-        ConnectionSecurity.NONE,
-        AuthType.PLAIN,
-        "",
-        null,
-        null
-    )
-
-    @Before
-    fun setUp() {
-        receivedDiscoveredSettings.clear()
-        receivedUiStates.clear()
-        stubAuthResultRegistry()
-        every { account.email }.returns(EMAIL)
-        observeViewModel(viewModel)
-        assertEquals(AuthFlowState.Idle, viewModel.uiState.value)
-        assertFalse(viewModel.needsMailSettingsDiscovery)
-        assertEquals(Event<ConnectionSettings?>(null, false), viewModel.connectionSettings.value)
-        mockkStatic(AuthState::class)
-        mockkStatic(RemoteStore::class)
-        mockkStatic(net.openid.appauth.browser.BrowserSelector::class)
-        stubBrowserAvailability()
-    }
-
     private fun stubBrowserAvailability(
         descriptor: BrowserDescriptor? = BrowserDescriptor(
             PackageInfo().apply { signatures = emptyArray() },
@@ -183,12 +189,25 @@ class AuthViewModelTest : RobolectricTest() {
         every { BrowserSelector.select(any(), any()) }.returns(descriptor)
     }
 
-    @After
-    fun tearDown() {
-        unmockkStatic(AuthState::class)
-        unmockkStatic(RemoteStore::class)
-        unmockkStatic(net.openid.appauth.browser.BrowserSelector::class)
-        launcher = null
+    private fun stubAuthResultRegistry(
+        authResultCode: Int = Activity.RESULT_OK,
+        authResultData: Intent? = Intent().apply {
+            data = AUTH_INTENT_DATA.toUri()
+            putExtra(AuthorizationResponse.EXTRA_RESPONSE, AUTH_INTENT_RESPONSE)
+        }
+    ) {
+        val activityResultRegistry = object : ActivityResultRegistry() {
+            override fun <I : Any?, O : Any?> onLaunch(
+                requestCode: Int,
+                contract: ActivityResultContract<I, O>,
+                input: I,
+                options: ActivityOptionsCompat?
+            ) {
+                dispatchResult(requestCode, authResultCode, authResultData)
+            }
+        }
+        this.activityResultRegistry = spyk(activityResultRegistry)
+        stubActivityResultLauncher()
     }
 
     @Test
@@ -503,69 +522,6 @@ class AuthViewModelTest : RobolectricTest() {
             verify { launcher!!.launch(any()) }
         }
 
-    private fun stubOAuthConfigurationWithMandatoryOAuthProvider(
-        oAuthProviderType: OAuthProviderType,
-    ) {
-        every { account.mandatoryOAuthProviderType }.returns(oAuthProviderType)
-        when (oAuthProviderType) {
-            OAuthProviderType.GOOGLE ->
-                every { oAuthConfigurationProvider.googleConfiguration }
-                    .returns(testOAuthConfig)
-            OAuthProviderType.MICROSOFT ->
-                every { oAuthConfigurationProvider.microsoftConfiguration }
-                    .returns(testOAuthConfig)
-        }
-    }
-
-    private fun stubOAuthConfigurationWithoutMandatoryOAuthProvider(
-        accountStoreUri: String? = STORE_URI,
-        configurationFound: Boolean = true,
-        incomingSettingsHost: String? = ""
-    ) {
-        every { account.mandatoryOAuthProviderType }.returns(null)
-        every { account.storeUri }.returns(accountStoreUri)
-        every { RemoteStore.decodeStoreUri(any()) }
-            .returns(getTestServerSettings(host = incomingSettingsHost))
-        val foundConfiguration = if (configurationFound) testOAuthConfig else null
-        every { oAuthConfigurationProvider.getConfiguration(any()) }
-            .returns(foundConfiguration)
-    }
-
-    private fun verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(
-        oAuthProviderType: OAuthProviderType,
-    ) {
-        verify { account.mandatoryOAuthProviderType }
-        verify(exactly = 0) { account.storeUri }
-        verify(exactly = 0) { RemoteStore.decodeStoreUri(any()) }
-        verify(exactly = 0) {
-            oAuthConfigurationProvider.getConfiguration(getTestServerSettings().host)
-        }
-        if (oAuthProviderType == OAuthProviderType.GOOGLE) {
-            verify { oAuthConfigurationProvider.googleConfiguration }
-        } else {
-            verify { oAuthConfigurationProvider.microsoftConfiguration }
-        }
-    }
-
-    private fun verifyOAuthConfigurationRetrievalWithoutMandatoryOAuthProvider(
-        accountStoreUri: String? = STORE_URI,
-        incomingSettingsHost: String? = "",
-    ) {
-        verify { account.mandatoryOAuthProviderType }
-        verify { account.mandatoryOAuthProviderType }
-        verify { account.storeUri }
-        if (accountStoreUri != null) {
-            verify { RemoteStore.decodeStoreUri(STORE_URI) }
-            if (incomingSettingsHost != null) {
-                verify { oAuthConfigurationProvider.getConfiguration(incomingSettingsHost) }
-            } else {
-                verify { oAuthConfigurationProvider.wasNot(called) }
-            }
-        } else {
-            verify(exactly = 0) { RemoteStore.decodeStoreUri(STORE_URI) }
-        }
-    }
-
     @Test
     fun `login() sets state NotSupported if OAuth configuration for account cannot be found`() =
         runTest {
@@ -673,15 +629,6 @@ class AuthViewModelTest : RobolectricTest() {
         assertAuthorizationRequest(request)
     }
 
-    private fun assertAuthorizationRequest(request: AuthorizationRequest) {
-        assertEquals(REDIRECT_URI, request.redirectUri.toString())
-        assertEquals(EMAIL, request.loginHint)
-        assertEquals(SCOPES.joinToString(" ") + " openid email", request.scope)
-        assertEquals(CLIENT_ID, request.clientId)
-        assertEquals(AUTH_ENDPOINT, request.configuration.authorizationEndpoint.toString())
-        assertEquals(TOKEN_ENDPOINT, request.configuration.tokenEndpoint.toString())
-    }
-
     @Test
     fun `login() starts login success path`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
@@ -697,6 +644,78 @@ class AuthViewModelTest : RobolectricTest() {
         verify { account.email }
         verify { launcher!!.launch(any()) }
         verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
+    }
+
+    private fun assertAuthorizationRequest(request: AuthorizationRequest) {
+        assertEquals(REDIRECT_URI, request.redirectUri.toString())
+        assertEquals(EMAIL, request.loginHint)
+        assertEquals(SCOPES.joinToString(" ") + " openid email", request.scope)
+        assertEquals(CLIENT_ID, request.clientId)
+        assertEquals(AUTH_ENDPOINT, request.configuration.authorizationEndpoint.toString())
+        assertEquals(TOKEN_ENDPOINT, request.configuration.tokenEndpoint.toString())
+    }
+
+    private fun stubOAuthConfigurationWithMandatoryOAuthProvider(
+        oAuthProviderType: OAuthProviderType,
+    ) {
+        every { account.mandatoryOAuthProviderType }.returns(oAuthProviderType)
+        when (oAuthProviderType) {
+            OAuthProviderType.GOOGLE ->
+                every { oAuthConfigurationProvider.googleConfiguration }
+                    .returns(testOAuthConfig)
+            OAuthProviderType.MICROSOFT ->
+                every { oAuthConfigurationProvider.microsoftConfiguration }
+                    .returns(testOAuthConfig)
+        }
+    }
+
+    private fun stubOAuthConfigurationWithoutMandatoryOAuthProvider(
+        accountStoreUri: String? = STORE_URI,
+        configurationFound: Boolean = true,
+        incomingSettingsHost: String? = ""
+    ) {
+        every { account.mandatoryOAuthProviderType }.returns(null)
+        every { account.storeUri }.returns(accountStoreUri)
+        every { RemoteStore.decodeStoreUri(any()) }
+            .returns(getTestServerSettings(host = incomingSettingsHost))
+        val foundConfiguration = if (configurationFound) testOAuthConfig else null
+        every { oAuthConfigurationProvider.getConfiguration(any()) }
+            .returns(foundConfiguration)
+    }
+
+    private fun verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(
+        oAuthProviderType: OAuthProviderType,
+    ) {
+        verify { account.mandatoryOAuthProviderType }
+        verify(exactly = 0) { account.storeUri }
+        verify(exactly = 0) { RemoteStore.decodeStoreUri(any()) }
+        verify(exactly = 0) {
+            oAuthConfigurationProvider.getConfiguration(getTestServerSettings().host)
+        }
+        if (oAuthProviderType == OAuthProviderType.GOOGLE) {
+            verify { oAuthConfigurationProvider.googleConfiguration }
+        } else {
+            verify { oAuthConfigurationProvider.microsoftConfiguration }
+        }
+    }
+
+    private fun verifyOAuthConfigurationRetrievalWithoutMandatoryOAuthProvider(
+        accountStoreUri: String? = STORE_URI,
+        incomingSettingsHost: String? = "",
+    ) {
+        verify { account.mandatoryOAuthProviderType }
+        verify { account.mandatoryOAuthProviderType }
+        verify { account.storeUri }
+        if (accountStoreUri != null) {
+            verify { RemoteStore.decodeStoreUri(STORE_URI) }
+            if (incomingSettingsHost != null) {
+                verify { oAuthConfigurationProvider.getConfiguration(incomingSettingsHost) }
+            } else {
+                verify { oAuthConfigurationProvider.wasNot(called) }
+            }
+        } else {
+            verify(exactly = 0) { RemoteStore.decodeStoreUri(STORE_URI) }
+        }
     }
 
     private fun stubOnCreateEvent() {
@@ -733,27 +752,6 @@ class AuthViewModelTest : RobolectricTest() {
         assertEquals(expected.password, actual.password)
         assertEquals(expected.type, actual.type)
         assertEquals(expected.username, actual.username)
-    }
-
-    private fun stubAuthResultRegistry(
-        authResultCode: Int = Activity.RESULT_OK,
-        authResultData: Intent? = Intent().apply {
-            data = AUTH_INTENT_DATA.toUri()
-            putExtra(AuthorizationResponse.EXTRA_RESPONSE, AUTH_INTENT_RESPONSE)
-        }
-    ) {
-        val activityResultRegistry = object : ActivityResultRegistry() {
-            override fun <I : Any?, O : Any?> onLaunch(
-                requestCode: Int,
-                contract: ActivityResultContract<I, O>,
-                input: I,
-                options: ActivityOptionsCompat?
-            ) {
-                dispatchResult(requestCode, authResultCode, authResultData)
-            }
-        }
-        this.activityResultRegistry = spyk(activityResultRegistry)
-        stubActivityResultLauncher()
     }
 
     private fun observeViewModel(viewModel: AuthViewModel) {
