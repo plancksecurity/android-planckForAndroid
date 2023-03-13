@@ -42,10 +42,11 @@ class AuthViewModel(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
     private val jwtTokenDecoder: JwtTokenDecoder,
     private val mailSettingsDiscovery: ProvidersXmlDiscovery,
+    private val authServiceFactory: AuthServiceFactory = AuthServiceFactory(application),
+    private val authState: AuthState = AuthState(),
     private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
-    private val authState = AuthState()
 
     private var account: Account? = null
 
@@ -100,7 +101,7 @@ class AuthViewModel(
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
-        return authService ?: AuthorizationService(getApplication<Application>()).also { authService = it }
+        return authService ?: authServiceFactory.create().also { authService = it }
     }
 
     fun init(activityResultRegistry: ActivityResultRegistry, lifecycle: Lifecycle) {
@@ -384,3 +385,7 @@ sealed interface AuthFlowState {
 }
 
 class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
+
+class AuthServiceFactory(private val application: Application) {
+    fun create(): AuthorizationService = AuthorizationService(application)
+}
