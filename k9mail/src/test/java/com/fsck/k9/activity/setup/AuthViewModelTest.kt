@@ -1,9 +1,8 @@
 package com.fsck.k9.activity.setup
 
 import android.app.Activity
-import android.app.Application
+import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageInfo
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
@@ -15,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleRegistry
 import androidx.test.core.app.ApplicationProvider
 import com.fsck.k9.Account
+import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.auth.JwtTokenDecoder
@@ -39,10 +39,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.openid.appauth.AuthState
-import net.openid.appauth.AuthorizationRequest
-import net.openid.appauth.AuthorizationResponse
-import net.openid.appauth.browser.BrowserDescriptor
+import net.openid.appauth.*
+import net.openid.appauth.TokenRequest.GRANT_TYPE_PASSWORD
 import net.openid.appauth.browser.BrowserSelector
 import org.junit.After
 import org.junit.Before
@@ -58,16 +56,19 @@ class AuthViewModelTest : RobolectricTest() {
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
 
-    private val app: Application = ApplicationProvider.getApplicationContext()
+    private val app: K9 = spyk(ApplicationProvider.getApplicationContext())
     private val preferences: Preferences = mockk()
     private val oAuthConfigurationProvider = spyk(createOAuthConfigurationProvider())
     private val jwtTokenDecoder: JwtTokenDecoder = mockk()
     private val discovery: ProvidersXmlDiscovery = mockk()
+    private val authState: AuthState = mockk(relaxed = true)
+    private val authService: AuthorizationService = mockk(relaxed = true)
+    private val authServiceFactory: AuthServiceFactory = mockk()
     private lateinit var activityResultRegistry: ActivityResultRegistry
     private var launcher: ActivityResultLauncher<Intent>? = null
     private val lifecycle: LifecycleRegistry = spyk(LifecycleRegistry(mockk()))
-    private val authState: AuthState = mockk()
-    private val account: Account = mockk()
+    private val accountAuthState: AuthState = mockk()
+    private val account: Account = mockk(relaxed = true)
     private val receivedDiscoveredSettings = mutableListOf<Event<ConnectionSettings?>>()
     private val receivedUiStates = mutableListOf<AuthFlowState>()
 
@@ -77,6 +78,8 @@ class AuthViewModelTest : RobolectricTest() {
         oAuthConfigurationProvider,
         jwtTokenDecoder,
         discovery,
+        authServiceFactory,
+        authState,
         coroutinesTestRule.testDispatcherProvider,
     )
 
@@ -111,28 +114,96 @@ class AuthViewModelTest : RobolectricTest() {
         REDIRECT_URI
     )
 
+    private fun getTestAuthRequest(): AuthorizationRequest {
+        val config = AuthorizationServiceConfiguration(
+            AUTH_ENDPOINT.toUri(),
+            TOKEN_ENDPOINT.toUri()
+        )
+        return AuthorizationRequest.Builder(
+            config,
+            CLIENT_ID,
+            ResponseTypeValues.CODE,
+            REDIRECT_URI.toUri()
+        )
+            .setScope(SCOPES)
+            .setLoginHint(EMAIL)
+            .build()
+    }
+
+    private fun getTestTokenRequest(): TokenRequest {
+        val config = AuthorizationServiceConfiguration(
+            AUTH_ENDPOINT.toUri(),
+            TOKEN_ENDPOINT.toUri()
+        )
+        return TokenRequest.Builder(
+            config,
+            CLIENT_ID,
+        )
+            .setScope(SCOPES)
+            .setGrantType(GRANT_TYPE_PASSWORD)
+            .build()
+    }
+
     @Before
     fun setUp() {
+        every { authServiceFactory.create() }.returns(authService)
         receivedDiscoveredSettings.clear()
         receivedUiStates.clear()
-        stubAuthResultRegistry()
+        stubAuthResultRegistry() // simulates the test result arrives instantly
         every { account.email }.returns(EMAIL)
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.success(TOKEN_RESPONSE_EMAIL))
+        // call AuthState real methods because they help by enforcing that either response or exception need to be null
+        every {
+            authState.update(any<AuthorizationResponse>(), any())
+        }.answers { callOriginal() }
+        every { authState.update(any<TokenResponse>(), any()) }
+            .answers { callOriginal() }
         observeViewModel(viewModel)
         assertEquals(AuthFlowState.Idle, viewModel.uiState.value)
         assertFalse(viewModel.needsMailSettingsDiscovery)
-        assertEquals(Event<ConnectionSettings?>(null, false), viewModel.connectionSettings.value)
+        assertEquals(
+            Event<ConnectionSettings?>(null, false),
+            viewModel.connectionSettings.value
+        )
         mockkStatic(AuthState::class)
         mockkStatic(RemoteStore::class)
-        mockkStatic(net.openid.appauth.browser.BrowserSelector::class)
-        stubBrowserAvailability()
+        mockkStatic(AuthorizationResponse::class)
+        mockkStatic(AuthorizationException::class)
+        every { authService.getAuthorizationRequestIntent(any()) }.returns(mockk())
+        stubAuthResult() // stubs authorization request result
+        stubTokenRequest() // stubs token request result
     }
 
     @After
     fun tearDown() {
         unmockkStatic(AuthState::class)
         unmockkStatic(RemoteStore::class)
-        unmockkStatic(net.openid.appauth.browser.BrowserSelector::class)
+        unmockkStatic(BrowserSelector::class)
+        unmockkStatic(AuthorizationResponse::class)
+        unmockkStatic(AuthorizationException::class)
         launcher = null
+    }
+
+    private fun stubTokenRequest(
+        tokenResponse: TokenResponse? = TokenResponse.Builder(getTestTokenRequest())
+            .setIdToken(ID_TOKEN)
+            .build(),
+        authException: AuthorizationException? = null
+    ) {
+        val tokenRequestSlot = slot<TokenRequest>()
+        val tokenResponseCallbackSlot = slot<AuthorizationService.TokenResponseCallback>()
+        every {
+            authService.performTokenRequest(
+                capture(tokenRequestSlot),
+                capture(tokenResponseCallbackSlot)
+            )
+        }.answers {
+            tokenResponseCallbackSlot.captured.onTokenRequestCompleted(
+                tokenResponse,
+                authException
+            )
+        }
     }
 
     private fun getTestServerSettings(
@@ -180,22 +251,24 @@ class AuthViewModelTest : RobolectricTest() {
         )
     }
 
-    @Suppress("DEPRECATION")
-    private fun stubBrowserAvailability(
-        descriptor: BrowserDescriptor? = BrowserDescriptor(
-            PackageInfo().apply { signatures = emptyArray() },
-            false
-        )
+    private fun stubAuthResult(
+        response: AuthorizationResponse? = defaultAuthResponse,
+        authException: AuthorizationException? = null,
     ) {
-        every { BrowserSelector.select(any(), any()) }.returns(descriptor)
+        every { AuthorizationResponse.fromIntent(any()) }.returns(response)
+        every { AuthorizationException.fromIntent(any()) }.returns(authException)
     }
+
+    private val defaultAuthResponse: AuthorizationResponse =
+        spyk(
+            AuthorizationResponse.Builder(getTestAuthRequest())
+                .setAuthorizationCode(AUTH_CODE)
+                .build()
+        ).also { every { it.createTokenExchangeRequest() }.returns(getTestTokenRequest()) }
 
     private fun stubAuthResultRegistry(
         authResultCode: Int = Activity.RESULT_OK,
-        authResultData: Intent? = Intent().apply {
-            data = AUTH_INTENT_DATA.toUri()
-            putExtra(AuthorizationResponse.EXTRA_RESPONSE, AUTH_INTENT_RESPONSE)
-        }
+        authResultData: Intent? = Intent()
     ) {
         val activityResultRegistry = object : ActivityResultRegistry() {
             override fun <I : Any?, O : Any?> onLaunch(
@@ -211,10 +284,20 @@ class AuthViewModelTest : RobolectricTest() {
         stubActivityResultLauncher()
     }
 
+    private fun stubActivityResultLauncher() {
+        every {
+            activityResultRegistry.register(
+                any(),
+                any<ActivityResultContract<Intent, Any>>(),
+                any<ActivityResultCallback<Any>>()
+            )
+        }.answers { callOriginal().also { launcher = it } }
+    }
+
     @Test
     fun `isAuthorized returns false if Account's oAuthState is not authorized`() {
-        every { AuthState.jsonDeserialize(any<String>()) }.returns(authState)
-        every { authState.isAuthorized }.returns(false)
+        every { AuthState.jsonDeserialize(any<String>()) }.returns(accountAuthState)
+        every { accountAuthState.isAuthorized }.returns(false)
         every { account.oAuthState }.returns(AUTH_STATE)
 
 
@@ -227,8 +310,8 @@ class AuthViewModelTest : RobolectricTest() {
 
     @Test
     fun `isAuthorized returns true if Account's oAuthState is authorized`() {
-        every { AuthState.jsonDeserialize(any<String>()) }.returns(authState)
-        every { authState.isAuthorized }.returns(true)
+        every { AuthState.jsonDeserialize(any<String>()) }.returns(accountAuthState)
+        every { accountAuthState.isAuthorized }.returns(true)
         every { account.oAuthState }.returns(AUTH_STATE)
 
 
@@ -531,16 +614,6 @@ class AuthViewModelTest : RobolectricTest() {
             verify(exactly = 0) { activityResultRegistry.dispatchResult(any(), any(), any()) }
         }
 
-    private fun stubActivityResultLauncher() {
-        every {
-            activityResultRegistry.register(
-                any(),
-                any<ActivityResultContract<Intent, Any>>(),
-                any<ActivityResultCallback<Any>>()
-            )
-        }.answers { callOriginal().also { launcher = it } }
-    }
-
     @Test
     fun `login() starts OAuth login if Account's mandatoryOAuthProviderType is null and OAuth configuration for Account is found`() =
         runTest {
@@ -553,8 +626,7 @@ class AuthViewModelTest : RobolectricTest() {
             advanceUntilIdle()
 
 
-            verifyOAuthConfigurationRetrievalWithoutMandatoryOAuthProvider()
-            verify { account.email }
+            verify { authService.getAuthorizationRequestIntent(any()) }
             verify { launcher!!.launch(any()) }
             verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
         }
@@ -572,8 +644,7 @@ class AuthViewModelTest : RobolectricTest() {
             advanceUntilIdle()
 
 
-            verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.GOOGLE)
-            verify { account.email }
+            verify { authService.getAuthorizationRequestIntent(any()) }
             verify { launcher!!.launch(any()) }
             assertEquals(
                 listOf(AuthFlowState.Idle, AuthFlowState.Canceled),
@@ -582,7 +653,7 @@ class AuthViewModelTest : RobolectricTest() {
         }
 
     @Test
-    fun `login() starts login with expected intent`() = runTest {
+    fun `login() starts login with expected authorization request`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.GOOGLE)
         stubOnCreateEvent()
 
@@ -592,21 +663,118 @@ class AuthViewModelTest : RobolectricTest() {
         advanceUntilIdle()
 
 
-        verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.GOOGLE)
-        verify { account.email }
-        val intentSlot = slot<Intent>()
-        verify { launcher!!.launch(capture(intentSlot)) }
-        val intent = intentSlot.captured
-        val request = AuthorizationRequest.jsonDeserialize(
-            intent.getStringExtra(EXTRA_AUTH_REQUEST)!!
-        )
-        assertAuthorizationRequest(request)
+        val authRequestSlot = slot<AuthorizationRequest>()
+        verify { authService.getAuthorizationRequestIntent(capture(authRequestSlot)) }
+        verify { launcher!!.launch(any()) }
+        assertAuthorizationRequest(authRequestSlot.captured)
     }
 
     @Test
-    fun `login() sets state to BrowserNotFound if there is no available browser`() = runTest {
-        stubBrowserAvailability(null)
+    fun `login() starts login with intent created by AuthService`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.GOOGLE)
+        val mockAuthIntent: Intent = mockk()
+        every { authService.getAuthorizationRequestIntent(any()) }.returns(mockAuthIntent)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.getAuthorizationRequestIntent(any()) }
+        verify { launcher!!.launch(mockAuthIntent) }
+    }
+
+    @Test
+    fun `login() sets state to BrowserNotFound if AuthService_getAuthorizationRequestIntent cannot find a browser`() =
+        runTest {
+            every { authService.getAuthorizationRequestIntent(any()) }
+                .throws(ActivityNotFoundException())
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.getAuthorizationRequestIntent(any()) }
+            verify(exactly = 0) { launcher!!.launch(any()) }
+            verify(exactly = 0) { activityResultRegistry.dispatchResult(any(), any(), any()) }
+            assertEquals(
+                listOf(AuthFlowState.Idle, AuthFlowState.BrowserNotFound),
+                receivedUiStates
+            )
+        }
+
+    @Test
+    fun `login() updates AuthState with authorization response`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { launcher!!.launch(any()) }
+        verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
+        verify { authState.update(defaultAuthResponse, null) }
+    }
+
+    @Test
+    fun `login() performs token request when authorization request was successful`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authState.update(any<AuthorizationResponse>(), null) }
+        verify { authService.performTokenRequest(any(), any()) }
+    }
+
+    @Test
+    fun `login() sets state to Canceled if authorization fails because of user denial of access`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            val authException = createAuthException(
+                error = ACCESS_DENIED_BY_USER
+            )
+            stubAuthResult(
+                response = null,
+                authException = authException
+            )
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { launcher!!.launch(any()) }
+            verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
+            assertEquals(
+                listOf(AuthFlowState.Idle, AuthFlowState.Canceled),
+                receivedUiStates
+            )
+        }
+
+    @Test
+    fun `login() sets state to Failed if authorization fails`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        val authException = createAuthException()
+        stubAuthResult(
+            response = null,
+            authException = authException
+        )
         stubOnCreateEvent()
 
 
@@ -617,16 +785,63 @@ class AuthViewModelTest : RobolectricTest() {
 
         verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
         verify { account.email }
-        verify(exactly = 0) { launcher!!.launch(any()) }
-        verify(exactly = 0) { activityResultRegistry.dispatchResult(any(), any(), any()) }
+        verify { authServiceFactory.create() }
+        verify { authService.getAuthorizationRequestIntent(any()) }
+        verify { launcher!!.launch(any()) }
+        verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
+        verify(exactly = 0) { authState.update(any<AuthorizationResponse>(), any()) }
         assertEquals(
-            listOf(AuthFlowState.Idle, AuthFlowState.BrowserNotFound),
+            listOf(AuthFlowState.Idle, AuthFlowState.Failed(AUTH_ERROR, AUTH_ERROR_DESCRIPTION)),
             receivedUiStates
         )
     }
 
     @Test
-    fun `login() starts login success path`() = runTest {
+    fun `login() does not update AuthState with authorization response if authorization fails`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            val authException = createAuthException()
+            stubAuthResult(
+                response = null,
+                authException = authException
+            )
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify(exactly = 0) {
+                authState.update(
+                    any<AuthorizationResponse>(),
+                    any()
+                )
+            }
+        }
+
+    @Test
+    fun `login() does not perform token request if authorization fails`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        val authException = createAuthException()
+        stubAuthResult(
+            response = null,
+            authException = authException
+        )
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify(exactly = 0) { authService.performTokenRequest(any(), any()) }
+    }
+
+    @Test
+    fun `login() updates AuthState with token request result`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
         stubOnCreateEvent()
 
@@ -636,10 +851,249 @@ class AuthViewModelTest : RobolectricTest() {
         advanceUntilIdle()
 
 
-        verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
-        verify { account.email }
-        verify { launcher!!.launch(any()) }
-        verify { activityResultRegistry.dispatchResult(any(), any(), any()) }
+        verify { authState.update(any<AuthorizationResponse>(), null) }
+        verify { authService.performTokenRequest(any(), any()) }
+        verify { authState.update(any<TokenResponse>(), null) }
+    }
+
+    @Test
+    fun `login() updates AuthState with failed token request result`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        val authException = createAuthException()
+        stubTokenRequest(tokenResponse = null, authException = authException)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authState.update(any<AuthorizationResponse>(), null) }
+        verify { authService.performTokenRequest(any(), any()) }
+        verify { authState.update(null as TokenResponse?, authException) }
+    }
+
+    @Test
+    fun `login() uses JwtTokenDecoder to update Account email address from token response if new email is different`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.performTokenRequest(any(), any()) }
+            verify { jwtTokenDecoder.getEmail(ID_TOKEN) }
+            verify { account.email = TOKEN_RESPONSE_EMAIL }
+        }
+
+    @Test
+    fun `viewModel needs mail settings discovery after login() updates Account email address from token response`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.performTokenRequest(any(), any()) }
+            assertTrue(viewModel.needsMailSettingsDiscovery)
+        }
+
+    @Test
+    fun `login() does not update Account email address on token request result if request fails`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            val authException = createAuthException()
+            stubTokenRequest(tokenResponse = null, authException = authException)
+            stubOnCreateEvent()
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.performTokenRequest(any(), any()) }
+            assertFalse(viewModel.needsMailSettingsDiscovery)
+            verify { jwtTokenDecoder.wasNot(called) }
+            verify(exactly = 0) { account.email = any() }
+        }
+
+    @Test
+    fun `login() sets state to Failed on token request result if request fails`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        val authException = createAuthException()
+        stubTokenRequest(tokenResponse = null, authException = authException)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        assertFalse(viewModel.needsMailSettingsDiscovery)
+        assertEquals(
+            listOf(AuthFlowState.Idle, AuthFlowState.Failed(AUTH_ERROR, AUTH_ERROR_DESCRIPTION)),
+            receivedUiStates
+        )
+    }
+
+    @Test
+    fun `login() sets state to Failed if JwtTokenDecoder cannot not retrieve email`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.success(null))
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        verify(exactly = 0) { account.email = any() }
+        assertFalse(viewModel.needsMailSettingsDiscovery)
+
+        assertEquals(
+            listOf(
+                AuthFlowState.Idle,
+                AuthFlowState.Failed(
+                    IllegalStateException("Could not retrieve email address from login response")
+                )
+            ),
+            receivedUiStates
+        )
+    }
+
+    @Test
+    fun `login() sets state to Failed if JwtTokenDecoder returns Result_failure`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.failure(RuntimeException(TEST_EXCEPTION_MESSAGE)))
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        verify(exactly = 0) { account.email = any() }
+        assertFalse(viewModel.needsMailSettingsDiscovery)
+
+        assertEquals(
+            listOf(
+                AuthFlowState.Idle,
+                AuthFlowState.Failed(
+                    RuntimeException(TEST_EXCEPTION_MESSAGE)
+                )
+            ),
+            receivedUiStates
+        )
+    }
+
+    @Test
+    fun `login() sets state to WrongEmailAddress if JwtTokenDecoder returns Result_success and app is running under MDM`() =
+        runTest {
+            stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+            stubOnCreateEvent()
+            every { jwtTokenDecoder.getEmail(any()) }
+                .returns(Result.success(TOKEN_RESPONSE_EMAIL))
+            every { app.isRunningOnWorkProfile }.returns(true)
+
+
+            viewModel.init(activityResultRegistry, lifecycle)
+            viewModel.login(account)
+            advanceUntilIdle()
+
+
+            verify { authService.performTokenRequest(any(), any()) }
+            verify(exactly = 0) { account.email = any() }
+            assertFalse(viewModel.needsMailSettingsDiscovery)
+
+            assertEquals(
+                listOf(
+                    AuthFlowState.Idle,
+                    AuthFlowState.WrongEmailAddress(EMAIL, TOKEN_RESPONSE_EMAIL)
+                ),
+                receivedUiStates
+            )
+        }
+
+    @Test
+    fun `login() saves AuthState into Account on token response`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.success(TOKEN_RESPONSE_EMAIL))
+        every { authState.jsonSerializeString() }.returns(SERIALIZED_AUTH_STATE)
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        verify { account.oAuthState = SERIALIZED_AUTH_STATE }
+        verify { authState.jsonSerializeString() }
+    }
+
+    @Test
+    fun `login() saves Account on token response if Account is in READY setup state`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.success(TOKEN_RESPONSE_EMAIL))
+        every { authState.jsonSerializeString() }.returns(SERIALIZED_AUTH_STATE)
+        every { account.setupState }.returns(Account.SetupState.READY)
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        verify { account.save(preferences) }
+    }
+
+    @Test
+    fun `login() sets state to Success on token response if there is no error`() = runTest {
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+        every { jwtTokenDecoder.getEmail(any()) }
+            .returns(Result.success(TOKEN_RESPONSE_EMAIL))
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verify { authService.performTokenRequest(any(), any()) }
+        assertEquals(
+            listOf(AuthFlowState.Idle, AuthFlowState.Success),
+            receivedUiStates
+        )
+    }
+
+    private fun createAuthException(
+        error: String = AUTH_ERROR,
+    ): AuthorizationException {
+        return AuthorizationException(0, 0, error, AUTH_ERROR_DESCRIPTION, null, null)
     }
 
     private fun assertAuthorizationRequest(request: AuthorizationRequest) {
@@ -773,11 +1227,14 @@ class AuthViewModelTest : RobolectricTest() {
         private const val AUTH_ENDPOINT = "authEndpoint"
         private const val TOKEN_ENDPOINT = "tokenEndpoint"
         private const val REDIRECT_URI = "redirectUri"
-        private const val AUTH_INTENT_DATA =
-            "security.pep.debug:/oauth2redirect?state=hqZkZ0zfa2hV-vprWPvNNA&code=4/0AWtgzh71Xwhvk6W3EkDAeOvjSgsu9sxt7hoi-t1K1VsB-YQp07U4NPIEDvc_LR20NcgClg&scope=email%20https://mail.google.com/%20openid%20https://www.googleapis.com/auth/userinfo.email&authuser=0&prompt=consent"
-        private const val AUTH_INTENT_RESPONSE =
-            "{\"request\":{\"configuration\":{\"authorizationEndpoint\":\"https:\\/\\/accounts.google.com\\/o\\/oauth2\\/v2\\/auth\",\"tokenEndpoint\":\"https:\\/\\/oauth2.googleapis.com\\/token\"},\"clientId\":\"690214278127-jqoa776om9fq731beiqap4h52b1hu3bs.apps.googleusercontent.com\",\"responseType\":\"code\",\"redirectUri\":\"security.pEp.debug:\\/oauth2redirect\",\"scope\":\"https:\\/\\/mail.google.com\\/ openid email\",\"state\":\"t9DxRl_orZxifx3b10Eupg\",\"nonce\":\"ciS0Fun9G7SEArbh5rn5eA\",\"codeVerifier\":\"8pjq6JAYeApubQmFzx-X1uM2OuVrY3IrE5i4wd1RkXcItRuDks6cE_nDJsuKQSHy62QIPNFW7YmfVXr8eDkFzA\",\"codeVerifierChallenge\":\"Uqg821TVglCYP7Mp5wn5ciWyP9Q6ZT5gbOh9LcMDgRc\",\"codeVerifierChallengeMethod\":\"S256\",\"additionalParameters\":{}},\"state\":\"t9DxRl_orZxifx3b10Eupg\",\"code\":\"4\\/0AWtgzh6vLRIfdoxzKwGObXCp0mTf1VF97HztjjeIwgN8kNVAoBpZBKza4mABfSeyalRd6Q\",\"scope\":\"email https:\\/\\/mail.google.com\\/ openid https:\\/\\/www.googleapis.com\\/auth\\/userinfo.email\",\"additional_parameters\":{\"authuser\":\"0\",\"prompt\":\"consent\"}}"
-        private const val EXTRA_AUTH_REQUEST = "authRequest"
+        private const val ID_TOKEN = "idToken"
+        private const val TOKEN_RESPONSE_EMAIL = "tokenresponse@mail.es"
+        private const val SERIALIZED_AUTH_STATE = "serializedAuthState"
+        private const val TEST_EXCEPTION_MESSAGE = "test"
+        private const val ACCESS_DENIED_BY_USER = "access_denied"
+        private const val AUTH_ERROR = "authError"
+        private const val AUTH_ERROR_DESCRIPTION = "authErrorDescription"
+        private const val AUTH_CODE = "authCode"
     }
 
 }
