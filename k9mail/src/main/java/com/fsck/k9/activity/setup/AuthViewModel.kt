@@ -188,11 +188,13 @@ class AuthViewModel(
     }
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
-        val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
         return when (account.mandatoryOAuthProviderType) {
-            null -> oAuthConfigurationProvider.getConfiguration(
-                incomingSettings?.host ?: error("account not initialized here!")
-            )
+            null -> {
+                val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
+                oAuthConfigurationProvider.getConfiguration(
+                    incomingSettings?.host ?: error("account not initialized here!")
+                )
+            }
             OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
             OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
         }
