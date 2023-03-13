@@ -180,6 +180,7 @@ class AuthViewModelTest : RobolectricTest() {
         )
     }
 
+    @Suppress("DEPRECATION")
     private fun stubBrowserAvailability(
         descriptor: BrowserDescriptor? = BrowserDescriptor(
             PackageInfo().apply { signatures = emptyArray() },
