@@ -105,7 +105,7 @@ class AuthViewModelTest : RobolectricTest() {
 
     private val testOAuthConfig = OAuthConfiguration(
         CLIENT_ID,
-        SCOPES,
+        SCOPES.split(" "),
         AUTH_ENDPOINT,
         TOKEN_ENDPOINT,
         REDIRECT_URI
@@ -622,7 +622,7 @@ class AuthViewModelTest : RobolectricTest() {
     private fun assertAuthorizationRequest(request: AuthorizationRequest) {
         assertEquals(REDIRECT_URI, request.redirectUri.toString())
         assertEquals(EMAIL, request.loginHint)
-        assertEquals(SCOPES.joinToString(" ") + " openid email", request.scope)
+        assertEquals(SCOPES, request.scope)
         assertEquals(CLIENT_ID, request.clientId)
         assertEquals(AUTH_ENDPOINT, request.configuration.authorizationEndpoint.toString())
         assertEquals(TOKEN_ENDPOINT, request.configuration.tokenEndpoint.toString())
@@ -746,7 +746,7 @@ class AuthViewModelTest : RobolectricTest() {
         private const val TEST_PORT = 0
         private const val TEST_USERNAME = "testUsername"
         private const val CLIENT_ID = "clientId"
-        private val SCOPES = listOf("scope1", "scope2")
+        private const val SCOPES = "scope1 scope2 scope3 scope4"
         private const val AUTH_ENDPOINT = "authEndpoint"
         private const val TOKEN_ENDPOINT = "tokenEndpoint"
         private const val REDIRECT_URI = "redirectUri"
