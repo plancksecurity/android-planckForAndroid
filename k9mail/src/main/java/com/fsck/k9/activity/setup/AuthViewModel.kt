@@ -156,7 +156,7 @@ class AuthViewModel(
     }
 
     private suspend fun startLogin(account: Account, config: OAuthConfiguration) {
-        val authRequestIntent = withContext(Dispatchers.IO) {
+        val authRequestIntent = withContext(dispatcherProvider.io()) {
             createAuthorizationRequestIntent(account.email, config)
         }
 
@@ -223,7 +223,7 @@ class AuthViewModel(
     }
 
     private fun exchangeToken(response: AuthorizationResponse) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io()) {
             val authService = getAuthService()
 
             val tokenRequest = response.createTokenExchangeRequest()
