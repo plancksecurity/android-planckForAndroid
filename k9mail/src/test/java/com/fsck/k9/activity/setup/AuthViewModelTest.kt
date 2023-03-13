@@ -83,21 +83,21 @@ class AuthViewModelTest : RobolectricTest() {
     private val testConnectionSettings: ConnectionSettings = ConnectionSettings(
         incoming = ServerSettings(
             ServerSettings.Type.IMAP,
-            "",
-            0,
+            TEST_HOST,
+            TEST_PORT,
             ConnectionSecurity.NONE,
             AuthType.PLAIN,
-            "",
+            TEST_USERNAME,
             null,
             null
         ),
         outgoing = ServerSettings(
             ServerSettings.Type.SMTP,
-            "",
-            0,
+            TEST_HOST,
+            TEST_PORT,
             ConnectionSecurity.NONE,
             AuthType.PLAIN,
-            "",
+            TEST_USERNAME,
             null,
             null
         )
@@ -136,20 +136,20 @@ class AuthViewModelTest : RobolectricTest() {
     }
 
     private fun getTestServerSettings(
-        host: String? = ""
+        host: String? = TEST_HOST
     ) = ServerSettings(
         ServerSettings.Type.IMAP,
         host,
-        0,
+        TEST_PORT,
         ConnectionSecurity.NONE,
         AuthType.PLAIN,
-        "",
+        TEST_USERNAME,
         null,
         null
     )
 
     private fun getTestDiscoveryResults(
-        username: String? = "",
+        username: String? = TEST_USERNAME,
         authType: AuthType? = AuthType.PLAIN,
         incomingEmpty: Boolean = false,
         outgoingEmpty: Boolean = false,
@@ -159,8 +159,8 @@ class AuthViewModelTest : RobolectricTest() {
             else listOf(
                 DiscoveredServerSettings(
                     ServerSettings.Type.IMAP,
-                    "",
-                    0,
+                    TEST_HOST,
+                    TEST_PORT,
                     ConnectionSecurity.NONE,
                     authType,
                     username
@@ -170,8 +170,8 @@ class AuthViewModelTest : RobolectricTest() {
             else listOf(
                 DiscoveredServerSettings(
                     ServerSettings.Type.SMTP,
-                    "",
-                    0,
+                    TEST_HOST,
+                    TEST_PORT,
                     ConnectionSecurity.NONE,
                     authType,
                     username
@@ -268,16 +268,7 @@ class AuthViewModelTest : RobolectricTest() {
     fun `isUsingGoogle returns true if Account's mandatoryProviderType is null and server settings host is Google`() {
         every { account.mandatoryOAuthProviderType }.returns(null)
         every { account.storeUri }.returns(STORE_URI)
-        val settings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "testhost",
-            0,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "",
-            "",
-            ""
-        )
+        val settings = getTestServerSettings()
         every { RemoteStore.decodeStoreUri(STORE_URI) }.returns(settings)
         every { oAuthConfigurationProvider.isGoogle(settings.host) }.returns(true)
 
@@ -292,16 +283,7 @@ class AuthViewModelTest : RobolectricTest() {
     fun `isUsingGoogle returns false if Account's mandatoryProviderType is null and server settings host is not Google`() {
         every { account.mandatoryOAuthProviderType }.returns(null)
         every { account.storeUri }.returns(STORE_URI)
-        val settings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            "testhost",
-            0,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "",
-            "",
-            ""
-        )
+        val settings = getTestServerSettings()
         every { RemoteStore.decodeStoreUri(STORE_URI) }.returns(settings)
         every { oAuthConfigurationProvider.isGoogle(settings.host) }.returns(false)
 
@@ -316,16 +298,7 @@ class AuthViewModelTest : RobolectricTest() {
     fun `isUsingGoogle returns false if Account's mandatoryProviderType is null and server settings host is null`() {
         every { account.mandatoryOAuthProviderType }.returns(null)
         every { account.storeUri }.returns(STORE_URI)
-        val settings = ServerSettings(
-            ServerSettings.Type.IMAP,
-            null,
-            0,
-            ConnectionSecurity.NONE,
-            AuthType.PLAIN,
-            "",
-            "",
-            ""
-        )
+        val settings = getTestServerSettings(host = null)
         every { RemoteStore.decodeStoreUri(STORE_URI) }.returns(settings)
 
 
@@ -340,11 +313,11 @@ class AuthViewModelTest : RobolectricTest() {
         coEvery { discovery.discover(any(), any()) }.returns(null)
 
 
-        viewModel.discoverMailSettingsAsync("email", null)
+        viewModel.discoverMailSettingsAsync(EMAIL, null)
         advanceUntilIdle()
 
 
-        coVerify { discovery.discover("email", null) }
+        coVerify { discovery.discover(EMAIL, null) }
     }
 
     @Test
@@ -355,11 +328,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertReceivedDiscoveredSettings(
                 listOf(
                     Event(null, false),
@@ -379,11 +352,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertFalse(viewModel.needsMailSettingsDiscovery)
         }
 
@@ -392,11 +365,11 @@ class AuthViewModelTest : RobolectricTest() {
         coEvery { discovery.discover(any(), any()) }.returns(null)
 
 
-        viewModel.discoverMailSettingsAsync("email", null)
+        viewModel.discoverMailSettingsAsync(EMAIL, null)
         advanceUntilIdle()
 
 
-        coVerify { discovery.discover("email", null) }
+        coVerify { discovery.discover(EMAIL, null) }
         assertReceivedDiscoveredSettings(
             listOf(
                 Event(null, false),
@@ -413,11 +386,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertReceivedDiscoveredSettings(
                 listOf(
                     Event(null, false),
@@ -434,11 +407,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertReceivedDiscoveredSettings(
                 listOf(
                     Event(null, false),
@@ -455,11 +428,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertReceivedDiscoveredSettings(
                 listOf(
                     Event(null, false),
@@ -476,11 +449,11 @@ class AuthViewModelTest : RobolectricTest() {
             )
 
 
-            viewModel.discoverMailSettingsAsync("email", null)
+            viewModel.discoverMailSettingsAsync(EMAIL, null)
             advanceUntilIdle()
 
 
-            coVerify { discovery.discover("email", null) }
+            coVerify { discovery.discover(EMAIL, null) }
             assertReceivedDiscoveredSettings(
                 listOf(
                     Event(null, false),
@@ -769,6 +742,9 @@ class AuthViewModelTest : RobolectricTest() {
         private const val STORE_URI = "storeUri"
         private const val AUTH_STATE = "authstate"
         private const val EMAIL = "email@test.ch"
+        private const val TEST_HOST = "testhost"
+        private const val TEST_PORT = 0
+        private const val TEST_USERNAME = "testUsername"
         private const val CLIENT_ID = "clientId"
         private val SCOPES = listOf("scope1", "scope2")
         private const val AUTH_ENDPOINT = "authEndpoint"
