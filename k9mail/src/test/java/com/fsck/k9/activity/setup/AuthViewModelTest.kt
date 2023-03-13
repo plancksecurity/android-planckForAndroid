@@ -604,6 +604,28 @@ class AuthViewModelTest : RobolectricTest() {
     }
 
     @Test
+    fun `login() sets state to BrowserNotFound if there is no available browser`() = runTest {
+        stubBrowserAvailability(null)
+        stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        stubOnCreateEvent()
+
+
+        viewModel.init(activityResultRegistry, lifecycle)
+        viewModel.login(account)
+        advanceUntilIdle()
+
+
+        verifyOAuthConfigurationRetrievalWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
+        verify { account.email }
+        verify(exactly = 0) { launcher!!.launch(any()) }
+        verify(exactly = 0) { activityResultRegistry.dispatchResult(any(), any(), any()) }
+        assertEquals(
+            listOf(AuthFlowState.Idle, AuthFlowState.BrowserNotFound),
+            receivedUiStates
+        )
+    }
+
+    @Test
     fun `login() starts login success path`() = runTest {
         stubOAuthConfigurationWithMandatoryOAuthProvider(OAuthProviderType.MICROSOFT)
         stubOnCreateEvent()
