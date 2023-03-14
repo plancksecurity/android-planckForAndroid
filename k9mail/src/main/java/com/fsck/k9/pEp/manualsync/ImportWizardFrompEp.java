@@ -165,6 +165,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     protected void onResume() {
         super.onResume();
+        overridePendingTransition(0, 0);
     }
 
     @Override
