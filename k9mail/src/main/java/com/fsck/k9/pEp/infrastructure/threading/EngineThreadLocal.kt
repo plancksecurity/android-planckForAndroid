@@ -7,7 +7,9 @@ import foundation.pEp.jniadapter.exceptions.pEpException
 import security.pEp.ui.PassphraseProvider
 import timber.log.Timber
 
-class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<Engine>() {
+class EngineThreadLocal private constructor(
+    private val k9: K9
+) : ThreadLocal<Engine>(), AutoCloseable {
 
     override fun get(): Engine {
         return createEngineInstanceIfNeeded()
@@ -44,7 +46,7 @@ class EngineThreadLocal private constructor(private val k9: K9) : ThreadLocal<En
         }
     }
 
-    fun close() {
+    override fun close() {
         super.get()?.close()
         set(null)
     }
