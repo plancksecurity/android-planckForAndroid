@@ -26,6 +26,29 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getDrawableForRating(context: Context, rating: Rating?): Drawable? {
+        if(BuildConfig.IS_ENTERPRISE){
+            return when {
+                rating == null ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+                rating.value == Rating.pEpRatingCannotDecrypt.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_cannot_decrypt)
+                rating.value == Rating.pEpRatingMistrust.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_mistrusted)
+                rating.value == Rating.pEpRatingUnderAttack.value
+                        || rating.value == Rating.pEpRatingB0rken.value-> //-2 and under
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_under_attack)
+                rating.value == Rating.pEpRatingTrusted.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_trusted)
+                rating.value == Rating.pEpRatingReliable.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_green)
+                rating.value >= Rating.pEpRatingUnencrypted.value
+                        || rating.value == Rating.pEpRatingUnencryptedForSome.value
+                        || rating.value == Rating.pEpRatingUnreliable.value -> //3 to 5
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
+                else ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+            }
+        }
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
@@ -44,6 +67,28 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getDrawableForRatingBordered(context: Context, rating: Rating?): Drawable? {
+        if(BuildConfig.IS_ENTERPRISE) {
+            return when {
+                rating == null ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
+                rating.value == Rating.pEpRatingCannotDecrypt.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_cannot_decrypt_bordered)
+                rating.value == Rating.pEpRatingMistrust.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_mistrusted_bordered)
+                rating.value == Rating.pEpRatingUnderAttack.value || rating.value == Rating.pEpRatingB0rken.value -> //-2 and under
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_under_attack_bordered)
+                rating.value == Rating.pEpRatingTrusted.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_trusted_bordered)
+                rating.value == Rating.pEpRatingReliable.value ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_green_bordered)
+                rating.value >= Rating.pEpRatingUnencrypted.value
+                        || rating.value == Rating.pEpRatingUnencryptedForSome.value
+                        || rating.value == Rating.pEpRatingUnreliable.value -> //3 to 5
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_bordered)
+                else ->
+                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+            }
+        }
         return when {
             rating == null ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
@@ -80,6 +125,9 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getDrawableForToolbarRating(context: Context, rating: Rating?): Drawable? {
+        if(BuildConfig.IS_ENTERPRISE) {
+            return getDrawableForRating(context, rating)
+        }
         return when {
             rating == null ->
                 ColorDrawable(Color.TRANSPARENT)
@@ -102,6 +150,10 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getDrawableForMessageList(context: Context, rating: Rating?): Drawable? {
+        if(BuildConfig.IS_ENTERPRISE) {
+            return getDrawableForRating(context, rating)
+        }
+
         return when {
             rating == null ->
                 null
@@ -138,12 +190,13 @@ object PEpUIUtils {
                 View.GONE
             BuildConfig.IS_ENTERPRISE
                     && (
-                        rating == Rating.pEpRatingCannotDecrypt
-                                || rating == Rating.pEpRatingHaveNoKey
-                    ) -> View.GONE
+                    rating != Rating.pEpRatingUndefined
+                            && rating != Rating.pEpRatingHaveNoKey
+                            && rating != Rating.pEpRatingTrustedAndAnonymized
+                            && rating != Rating.pEpRatingFullyAnonymous
+                    ) -> View.VISIBLE
             isRatingUnsecure(rating) ->
-                if (BuildConfig.IS_ENTERPRISE) View.VISIBLE
-                else View.GONE
+                View.GONE
             !pEpEnabled ->
                 View.VISIBLE
             rating.value == Rating.pEpRatingMistrust.value || rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
@@ -163,15 +216,30 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getRatingColorRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
+        if(BuildConfig.IS_ENTERPRISE){
+            return when {
+                !pEpEnabled || rating == null ->
+                    R.color.pep_no_color
+                rating == Rating.pEpRatingReliable ||
+                        rating == Rating.pEpRatingTrusted ->
+                    R.color.pep_green
+                rating == Rating.pEpRatingUnencrypted ||
+                        rating == Rating.pEpRatingUnencryptedForSome ||
+                        rating == Rating.pEpRatingUnreliable ||
+                        rating == Rating.pEpRatingCannotDecrypt->
+                    R.color.pep_yellow
+                rating == Rating.pEpRatingMistrust ||
+                        rating == Rating.pEpRatingUnderAttack->
+                    R.color.pep_red
+                else ->
+                    R.color.pep_no_color
+            }
+        }
         return when {
             !pEpEnabled || rating == null ->
                 R.color.pep_no_color
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
                 R.color.pep_no_color
-            BuildConfig.IS_ENTERPRISE && rating == Rating.pEpRatingCannotDecrypt ->
-                R.color.pep_no_color
-            BuildConfig.IS_ENTERPRISE && isRatingUnsecure(rating) ->
-                R.color.compose_unsecure_delivery_warning
             rating.value < Rating.pEpRatingUndefined.value ->
                 R.color.pep_red
             rating.value < Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
