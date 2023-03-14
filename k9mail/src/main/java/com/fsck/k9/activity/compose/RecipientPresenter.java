@@ -100,11 +100,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     private boolean cryptoEnablePgpInline = false;
     private boolean forceUnencrypted = false;
     private boolean isAlwaysSecure = false;
-    private List<Address> toAdresses;
-    private List<Address> ccAdresses;
-    private List<Address> bccAdresses;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
-    private boolean dirty;
     private boolean isReplyToEncryptedMessage = false;
 
 
@@ -125,7 +121,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         recipientMvpView.setLoaderManager(loaderManager);
         onSwitchAccount(account);
         updateCryptoStatus();
-        setupPEPStatusPolling();
     }
 
     private void setupPEPStatusPolling() {
@@ -241,7 +236,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
         recipientMvpView.setpEpRating(privacyState);
-        setupPEPStatusPolling();
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -493,14 +487,12 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     void onBccTokenAdded() {
         forceUnencrypted = true;
         updateCryptoStatus();
-        dirty = true;
         listener.onRecipientsChanged();
     }
 
     void onBccTokenRemoved() {
         forceUnencrypted = false;
         updateCryptoStatus();
-        dirty = true;
         listener.onRecipientsChanged();
     }
 
@@ -782,6 +774,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
 
     public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
+        List<Address> bccAdresses = recipientMvpView.getBccAddresses();
         if (bccAdresses == null || bccAdresses.size() == 0) {
             switch (scope) {
                 case MESSAGE:
@@ -798,8 +791,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         } else {
             forceUnencrypted = !forceUnencrypted;
         }
-        dirty = true;
-        handlepEpState();
+        updateCryptoStatus();
     }
 
     public boolean isForceUnencrypted() {
@@ -812,7 +804,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     public void onResume() {
         refreshRecipients();
-        setupPEPStatusPolling();
+        updateCryptoStatus();
     }
 
     public void onPause() {
@@ -848,8 +840,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     @Override
     public void echoMessageReceived(@NonNull String from, @NonNull String to) {
-        dirty = true;
-        loadPEpStatus();
+        updateCryptoStatus();
         if (account.ispEpPrivacyProtected() && K9.ispEpForwardWarningEnabled()) {
             if (to.equalsIgnoreCase(recipientMvpView.getFromAddress().getAddress())) {
                 recipientMvpView.updateRecipientsFromEcho(from);
@@ -899,45 +890,34 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> newToAdresses = recipientMvpView.getToAddresses();
         List<Address> newCcAdresses = recipientMvpView.getCcAddresses();
         List<Address> newBccAdresses = recipientMvpView.getBccAddresses();
-        toAdresses = initializeAdresses(toAdresses);
-        ccAdresses = initializeAdresses(ccAdresses);
-        bccAdresses = initializeAdresses(bccAdresses);
         if (privacyState.value != Rating.pEpRatingUndefined.value && newToAdresses.isEmpty() && newCcAdresses.isEmpty() && newBccAdresses.isEmpty()) {
             showDefaultStatus();
             recipientMvpView.messageRatingLoaded();
             return;
         }
-        if (fromAddress != null
-                && (dirty
-                || addressesChanged(toAdresses, newToAdresses)
-                || addressesChanged(ccAdresses, newCcAdresses)
-                || addressesChanged(bccAdresses, newBccAdresses))) {
-            dirty = false;
-            toAdresses = newToAdresses;
-            ccAdresses = newCcAdresses;
-            bccAdresses = newBccAdresses;
-            recipientMvpView.messageRatingIsBeingLoaded();
-            pEp.getRating(fromAddress, toAdresses, ccAdresses, bccAdresses, new PEpProvider.ResultCallback<Rating>() {
-                @Override
-                public void onLoaded(Rating rating) {
-                    if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
-                        showDefaultStatus();
-                        handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
-                    } else {
-                        privacyState = rating;
-                        showRatingFeedback(rating);
-                    }
-                    recipientMvpView.messageRatingLoaded();
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    recipientMvpView.showError(throwable);
+        recipientMvpView.messageRatingIsBeingLoaded();
+        long requestTime = System.currentTimeMillis();
+        lastRequestTime = requestTime;
+        pEp.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PEpProvider.ResultCallback<Rating>() {
+            @Override
+            public void onLoaded(Rating rating) {
+                if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                     showDefaultStatus();
-                    recipientMvpView.messageRatingLoaded();
+                    handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
+                } else {
+                    privacyState = rating;
+                    showRatingFeedback(rating);
                 }
-            });
-        }
+                recipientMvpView.messageRatingLoaded();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                recipientMvpView.showError(throwable);
+                showDefaultStatus();
+                recipientMvpView.messageRatingLoaded();
+            }
+        });
         recipientMvpView.messageRatingLoaded();
     }
 
@@ -978,7 +958,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public void refreshRecipients() {
-        dirty = true;
         recipientMvpView.notifyRecipientsChanged(
                 recipientMvpView.getToRecipients(),
                 recipientMvpView.getCcRecipients(),
