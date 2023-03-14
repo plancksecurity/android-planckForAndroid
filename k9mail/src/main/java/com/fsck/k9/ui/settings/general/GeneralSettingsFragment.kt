@@ -266,10 +266,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
         val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
-        pEpProvider.apply {
-            keyResetAllOwnKeys()
-            close()
-        }
+        pEpProvider.keyResetAllOwnKeys()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {

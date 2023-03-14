@@ -1847,7 +1847,6 @@ public class K9 extends MultiDexApplication {
             if (activityCount == 0) {
                 KeySyncCleaner.queueAutoConsumeMessages();
                 if (pEpProvider.isSyncRunning()) pEpProvider.stopSync();
-                pEpProvider.close();
             }
         }
     };

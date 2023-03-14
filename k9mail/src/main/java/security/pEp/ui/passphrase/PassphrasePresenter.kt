@@ -87,8 +87,6 @@ class PassphrasePresenter @Inject constructor(
                pEp.stopSync()
             } catch (e: Exception) {
                 Timber.e(e, "pEpEngine")
-            } finally {
-                pEp.close()
             }
 
         }
