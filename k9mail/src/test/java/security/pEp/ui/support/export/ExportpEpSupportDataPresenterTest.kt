@@ -8,7 +8,8 @@ import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -74,11 +75,12 @@ class ExportpEpSupportDataPresenterTest : RobolectricTest() {
     }
 
     @Test
-    fun `presenter_export() uses PEpDatabaseExporter to export files`() = runBlocking {
+    fun `presenter_export() uses PEpDatabaseExporter to export files`() = runTest {
         coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
+        advanceUntilIdle()
 
 
         val baseFolderSlot = slot<File>()
@@ -95,11 +97,12 @@ class ExportpEpSupportDataPresenterTest : RobolectricTest() {
     }
 
     @Test
-    fun `when export is successful, view shows successful screen`() = runBlocking {
+    fun `when export is successful, view shows successful screen`() = runTest {
         coEvery { exportpEpSupportData(any(), any()) }.returns(Result.success(Unit))
 
 
         presenter.export()
+        advanceUntilIdle()
 
 
         coVerify { view.hideLoading() }
@@ -107,11 +110,12 @@ class ExportpEpSupportDataPresenterTest : RobolectricTest() {
     }
 
     @Test
-    fun `when export fails, view shows failed screen`() = runBlocking {
+    fun `when export fails, view shows failed screen`() = runTest {
         coEvery { exportpEpSupportData(any(), any()) }.returns(Result.failure(CouldNotExportPEpDataException()))
 
 
         presenter.export()
+        advanceUntilIdle()
 
 
         coVerify { view.hideLoading() }
@@ -119,13 +123,13 @@ class ExportpEpSupportDataPresenterTest : RobolectricTest() {
     }
 
     @Test
-    fun `when there is not enough space left in device, view shows it on screen`() = runBlocking {
+    fun `when there is not enough space left in device, view shows it on screen`() = runTest {
         coEvery { exportpEpSupportData(any(), any()) }
             .returns(Result.failure(NotEnoughSpaceInDeviceException(0, 0)))
 
 
         presenter.export()
-
+        advanceUntilIdle()
 
 
         coVerify { view.hideLoading() }

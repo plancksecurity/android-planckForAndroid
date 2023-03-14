@@ -8,6 +8,8 @@ import foundation.pEp.jniadapter.Rating
 import io.mockk.*
 import junit.framework.TestCase.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -173,7 +175,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients gets rating for recipients using PEpProvider`() {
+    fun `rateRecipients gets rating for recipients using PEpProvider`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
         val recipient1 = Recipient(address1)
@@ -181,6 +183,7 @@ class UnsecureAddressHelperTest {
 
 
         helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        advanceUntilIdle()
 
 
         coVerify { pEp.getRating(address1) }
@@ -188,7 +191,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients calls listener with rated recipients`() {
+    fun `rateRecipients calls listener with rated recipients`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
         coEvery { pEp.getRating(address1) }.returns(Rating.pEpRatingTrustedAndAnonymized)
@@ -198,7 +201,7 @@ class UnsecureAddressHelperTest {
 
 
         helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
-
+        advanceUntilIdle()
 
         val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
         coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientsSlot)) }
@@ -217,7 +220,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `sortRecipientsByRating gets rating for recipients using PEpProvider`() {
+    fun `sortRecipientsByRating gets rating for recipients using PEpProvider`() = runTest {
         val undefinedAddress: Address = mockk()
         val secureAddress: Address = mockk()
         val trustedAddress: Address = mockk()
@@ -230,6 +233,7 @@ class UnsecureAddressHelperTest {
             arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
             listener
         )
+        advanceUntilIdle()
 
 
         coVerify { pEp.getRating(undefinedAddress) }
@@ -238,7 +242,7 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `sortRecipientsByRating calls listener with recipients sorted by rating`() {
+    fun `sortRecipientsByRating calls listener with recipients sorted by rating`() = runTest {
         val undefinedAddress: Address = mockk()
         val secureAddress: Address = mockk()
         val trustedAddress: Address = mockk()
@@ -254,6 +258,7 @@ class UnsecureAddressHelperTest {
             arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
             listener
         )
+        advanceUntilIdle()
 
 
         val sortedRecipientsSlot = slot<MutableList<Recipient>>()

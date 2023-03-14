@@ -16,6 +16,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import java.util.*
@@ -36,11 +38,12 @@ class CalendarInvitePresenterTest {
     )
 
     @Test
-    fun `when presenter is initialized, view shows and hides loading`() {
+    fun `when presenter is initialized, view shows and hides loading`() = runTest {
         stubAttachment(TestICalendarCreator.getMacosCalendarInvite())
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
 
 
         verify { view.showLoading() }
@@ -48,13 +51,14 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `when presenter is initialized with a calendar from MacOS, populates view with calendar invite fields`() {
+    fun `when presenter is initialized with a calendar from MacOS, populates view with calendar invite fields`() = runTest {
         val startDate = Date(Date().time + ONE_HOUR)
         val endDate = Date(startDate.time + ONE_HOUR)
         stubAttachment(TestICalendarCreator.getMacosCalendarInvite(startDate, endDate))
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
 
 
         verify { view.setSummary(TestICalendarCreator.EVENT_SUMMARY) }
@@ -72,7 +76,7 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `when message content is not relevant, view changes it for event description`() {
+    fun `when message content is not relevant, view changes it for event description`() = runTest {
         val startDate = Date(Date().time + ONE_HOUR)
         val endDate = Date(startDate.time + ONE_HOUR)
         stubAttachment(TestICalendarCreator.getMacosCalendarInvite(startDate, endDate))
@@ -80,6 +84,7 @@ class CalendarInvitePresenterTest {
 
         presenter.onHtmlSet("some content")
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
 
 
         verify { view.hideMessageContent() }
@@ -87,13 +92,14 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `when presenter is initialized with a calendar from Google, populates view with calendar invite fields`() {
+    fun `when presenter is initialized with a calendar from Google, populates view with calendar invite fields`() = runTest {
         val startDate = Date(Date().time + ONE_HOUR)
         val endDate = Date(startDate.time + ONE_HOUR)
         stubAttachment(TestICalendarCreator.getGoogleCalendarRequest(startDate, endDate))
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
 
 
 
@@ -112,7 +118,7 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `if there was a problem parsing calendar invite, view shows error screen`() {
+    fun `if there was a problem parsing calendar invite, view shows error screen`() = runTest {
         val part: Part = mockk()
         every { part.body }.throws(RuntimeException())
         calendarAttachment = AttachmentViewInfo(
@@ -127,18 +133,20 @@ class CalendarInvitePresenterTest {
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
 
 
         verify { view.showErrorScreen() }
     }
 
     @Test
-    fun `on calendar button clicked view delegate opens calendar app`() {
+    fun `on calendar button clicked view delegate opens calendar app`() = runTest {
         val invite = TestICalendarCreator.getMacosCalendarInvite()
         stubAttachment(invite)
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
         presenter.openCalendar()
 
 
@@ -146,13 +154,14 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `if ViewDelegate has no calendar app, view_showNoCalendarApp() is called`() {
+    fun `if ViewDelegate has no calendar app, view_showNoCalendarApp() is called`() = runTest {
         val invite = TestICalendarCreator.getMacosCalendarInvite()
         stubAttachment(invite)
         every { viewDelegate.openCalendarApp(any()) }.returns(false)
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
         presenter.openCalendar()
 
 
@@ -161,13 +170,14 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `showShortInvitees calls view_setShortInvitees`() {
+    fun `showShortInvitees calls view_setShortInvitees`() = runTest {
         val invite = TestICalendarCreator.getMacosCalendarInvite()
         stubAttachment(invite)
         every { viewDelegate.openCalendarApp(any()) }.returns(false)
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
         presenter.showShortInvitees()
 
 
@@ -182,7 +192,7 @@ class CalendarInvitePresenterTest {
     }
 
     @Test
-    fun `showLontInvitees calls view_setLongInvitees`() {
+    fun `showLontInvitees calls view_setLongInvitees`() = runTest {
         val invite = TestICalendarCreator.getMacosCalendarInvite()
         stubAttachment(invite)
         every { viewDelegate.openCalendarApp(any()) }.returns(false)
@@ -190,6 +200,7 @@ class CalendarInvitePresenterTest {
 
 
         presenter.initialize(view, viewDelegate, calendarAttachment, messageViewInfo)
+        advanceUntilIdle()
         presenter.showLongInvitees()
 
 
