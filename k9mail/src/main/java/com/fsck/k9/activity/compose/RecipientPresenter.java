@@ -102,6 +102,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     private boolean isAlwaysSecure = false;
     private Rating privacyState = Rating.pEpRatingUnencrypted;
     private boolean isReplyToEncryptedMessage = false;
+    private long lastRequestTime;
 
 
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
@@ -901,6 +902,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         pEp.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
+                if (lastRequestTime > requestTime) {
+                    return;
+                }
                 if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
                     showDefaultStatus();
                     handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
@@ -914,6 +918,9 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             @Override
             public void onError(Throwable throwable) {
                 recipientMvpView.showError(throwable);
+                if (lastRequestTime > requestTime) {
+                    return;
+                }
                 showDefaultStatus();
                 recipientMvpView.messageRatingLoaded();
             }
