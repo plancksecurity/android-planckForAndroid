@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 
 import com.fsck.k9.Account;
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -28,6 +29,7 @@ import com.fsck.k9.account.AccountCreator;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
+import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.activity.setup.AuthTypeAdapter;
 import com.fsck.k9.activity.setup.AuthTypeHolder;
 import com.fsck.k9.activity.setup.ConnectionSecurityAdapter;
@@ -532,7 +534,11 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
                 getActivity().finish();
             }
         } else {
-            accountSetupNavigator.goForward(getFragmentManager(), mAccount);
+            if (BuildConfig.IS_ENTERPRISE) {
+                AccountSetupNames.actionSetNames(getActivity(), mAccount, true);
+            } else {
+                accountSetupNavigator.goForward(getParentFragmentManager(), mAccount);
+            }
         }
     }
 
