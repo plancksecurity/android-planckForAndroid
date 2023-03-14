@@ -971,14 +971,4 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                 recipientMvpView.getBccRecipients()
         );
     }
-    private List<Address> initializeAdresses(List<Address> addresses) {
-        if(addresses == null) {
-            addresses = Collections.emptyList();
-        }
-        return addresses;
-    }
-
-    private boolean addressesChanged(List<Address> oldAdresses, List<Address> newAdresses) {
-        return !oldAdresses.equals(newAdresses);
-    }
 }
