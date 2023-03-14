@@ -383,7 +383,6 @@ public class PEpUtils {
         foundation.pEp.jniadapter.Identity myIdentity = PEpUtils.createIdentity(new Address(account.getEmail(), account.getName()), context);
         myIdentity = pEp.myself(myIdentity);
         updateSyncFlag(account, pEp, myIdentity);
-        pEp.close();
 
         // As global sync cannot be enabled if there is no enabled account, we disable it if we only
         // have one account an disabled sync on it
