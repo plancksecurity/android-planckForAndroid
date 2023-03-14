@@ -255,7 +255,7 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
-        return when {
+        when {
             rating == null ->
                 R.string.pep_rating_none
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
@@ -275,9 +275,28 @@ object PEpUIUtils {
             rating.value < Rating.pEpRatingTrusted.value ->
                 R.string.pep_rating_secure
             rating.value >= Rating.pEpRatingTrusted.value ->
-                R.string.pep_rating_secure_trusted
+                R.string.pep_rating_trusted
             else ->
                 R.string.pep_rating_none
+        }
+        if(!pEpEnabled)
+            return R.string.pep_rating_forced_unencrypt
+        return when(rating) {
+            null -> R.string.pep_rating_none
+            Rating.pEpRatingUndefined -> R.string.pep_rating_undefined
+            Rating.pEpRatingCannotDecrypt -> R.string.pep_rating_cannot_decrypt
+            Rating.pEpRatingHaveNoKey -> R.string.pep_rating_no_key
+            Rating.pEpRatingUnencrypted -> R.string.pep_rating_unencrypt
+            Rating.pEpRatingUnencryptedForSome -> R.string.pep_rating_unencrypted_for_some
+            Rating.pEpRatingUnreliable -> R.string.pep_rating_unreliable
+            Rating.pEpRatingReliable -> R.string.pep_rating_secure
+            Rating.pEpRatingTrusted -> R.string.pep_rating_trusted
+            Rating.pEpRatingTrustedAndAnonymized -> R.string.pep_rating_trusted_anon
+            Rating.pEpRatingFullyAnonymous -> R.string.pep_rating_full_anon
+            Rating.pEpRatingMistrust -> R.string.pep_rating_mistrusted
+            Rating.pEpRatingB0rken -> R.string.pep_rating_broken
+            Rating.pEpRatingUnderAttack -> R.string.pep_rating_under_attack
+            else -> R.string.pep_rating_none
         }
     }
 

@@ -250,11 +250,6 @@
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
-    <string name="pep_rating_secure_trusted">Secure &amp; Trusted</string>
-    <string name="pep_rating_secure">Secure</string>
-    <string name="pep_rating_mistrusted">Mistrusted</string>
-    <string name="pep_rating_forced_unencrypt">Disabled</string>
-    <string name="pep_rating_none" translatable="false"/>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
     <!-- Key sync dialog Strings -->
@@ -389,5 +384,50 @@
     <string name="error_happened_restart_app">An error happened, please restart app.</string>
     <string name="needs_your_permission_to_work">NEEDS YOUR PERMISSION TO WORK</string>
     <string name="account_setup_failed_dlg_oauth_wrong_email_address">The email address %1$s used for login is not allowed by your IT admin. Please use the provided %2$s instead to use the app.</string>
+
+    <!-- Rating Texts   -->
+
+    <!--    Rating.pEpRatingUndefined 0 -->
+    <string name="pep_rating_undefined">Undefined</string>
+
+    <!--    Rating.pEpRatingCannotDecrypt 1 -->
+    <string name="pep_rating_cannot_decrypt">Cannot Decrypt</string>
+
+    <!--    Rating.pEpRatingHaveNoKey 2 -->
+    <string name="pep_rating_no_key">No Key</string>
+
+    <!--    Rating.pEpRatingUnencrypted 3 -->
+    <string name="pep_rating_unencrypt">Unencrypted</string>
+
+    <!--    Rating.pEpRatingUnencryptedForSome 4 -->
+    <string name="pep_rating_unencrypted_for_some">Unencrypted for some</string>
+
+    <!--    Rating.pEpRatingUnreliable 5-->
+    <string name="pep_rating_unreliable">Unreliable</string>
+
+    <!--    Rating.pEpRatingReliable 6 -->
+    <string name="pep_rating_secure">Secure</string>
+
+    <!--    Rating.pEpRatingTrusted 7 -->
+    <string name="pep_rating_trusted">Secure &amp; Trusted</string>
+
+    <!--    Rating.pEpRatingTrustedAndAnonymized 8 -->
+    <string name="pep_rating_trusted_anon">Secure &amp; Trusted &amp; Anonymized</string>
+
+    <!--    Rating.pEpRatingFullyAnonymous 9 -->
+    <string name="pep_rating_full_anon">Fully Anonymous</string>
+
+    <!--    Rating.pEpRatingMistrust -1 -->
+    <string name="pep_rating_mistrusted">Mistrusted</string>
+
+    <!--    Rating.pEpRatingB0rken -2 -->
+    <string name="pep_rating_broken">Broken</string>
+
+    <!--    Rating.pEpRatingUnderAttack -3 -->
+    <string name="pep_rating_under_attack">Under Attack</string>
+
+    <string name="pep_rating_none" translatable="false"/>
+
+    <string name="pep_rating_forced_unencrypt">Disabled</string>
 
 </resources>

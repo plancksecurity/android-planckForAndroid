@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Rating Texts   -->
+
+    <!--    Rating.pEpRatingUndefined 0 -->
+    <string name="pep_rating_undefined">@string/pep_rating_none</string>
+
+    <!--    Rating.pEpRatingCannotDecrypt 1 -->
+    <string name="pep_rating_cannot_decrypt">Nicht Entchlüsselbar</string>
+
+    <!--    Rating.pEpRatingHaveNoKey 2 -->
+    <string name="pep_rating_no_key">@string/pep_rating_none</string>
+
+    <!--    Rating.pEpRatingUnencrypted 3 -->
+    <string name="pep_rating_unencrypt">Unverschlüsselt</string>
+
+    <!--    Rating.pEpRatingUnencryptedForSome 4 -->
+    <string name="pep_rating_unencrypted_for_some">Schwach Verschlüsselt</string>
+
+    <!--    Rating.pEpRatingUnreliable 5-->
+    <string name="pep_rating_unreliable">Verschlüsselt</string>
+
+    <!--    Rating.pEpRatingReliable 6 -->
+    <string name="pep_rating_secure">Verschlüsselt</string>
+
+    <!--    Rating.pEpRatingTrusted 7 -->
+    <string name="pep_rating_trusted">Vertrauenswürdig</string>
+
+    <!--    Rating.pEpRatingTrustedAndAnonymized 8 -->
+    <string name="pep_rating_trusted_anon">@string/pep_rating_none</string>
+
+    <!--    Rating.pEpRatingFullyAnonymous 9 -->
+    <string name="pep_rating_full_anon">@string/pep_rating_none</string>
+
+    <!--    Rating.pEpRatingMistrust -1 -->
+    <string name="pep_rating_mistrusted">Gefährlich</string>
+
+    <!--    Rating.pEpRatingB0rken -2 -->
+    <string name="pep_rating_broken">Gefährlich</string>
+
+    <!--    Rating.pEpRatingUnderAttack -3 -->
+    <string name="pep_rating_under_attack">Gefährlich</string>
+
+</resources>
