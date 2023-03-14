@@ -10,6 +10,7 @@ import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
 import org.junit.Assume.assumeFalse
 import org.junit.Before
@@ -21,7 +22,7 @@ import security.pEp.network.UrlChecker
 @ExperimentalCoroutinesApi
 class NonProvisioningManagerTest: RobolectricTest() {
     @get:Rule
-    val coroutinesTestRule = CoroutineTestRule()
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher = UnconfinedTestDispatcher())
 
     private val k9: K9 = mockk(relaxed = true)
     private val urlChecker: UrlChecker = mockk()

@@ -9,20 +9,20 @@ import androidx.test.core.app.ApplicationProvider
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.PEpProvider
-import com.nhaarman.mockito_kotlin.mock
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.verify
 import security.pEp.ui.passphrase.PassphraseInputView
 import security.pEp.ui.passphrase.PassphrasePresenter
 import security.pEp.ui.passphrase.PassphraseRequirementType
 
 class PassphrasePresenterTest: RobolectricTest() {
     lateinit var  context: Context
-    private val view: PassphraseInputView = mock()
+    private val view: PassphraseInputView = mockk(relaxed = true)
     lateinit var presenter: PassphrasePresenter
-    private val pEpProvider: PEpProvider = mock()
-    private val preferences: Preferences = mock()
+    private val pEpProvider: PEpProvider = mockk()
+    private val preferences: Preferences = mockk()
 
     @Before
     fun setup() {
@@ -33,16 +33,16 @@ class PassphrasePresenterTest: RobolectricTest() {
     fun `when initializing the present view is also initialized`() {
         presenter.init(view, PassphraseRequirementType.MISSING_PASSPHRASE)
 
-        verify(view).init()
-        verify(view).initAffirmativeListeners()
+        verify { view.init() }
+        verify { view.initAffirmativeListeners() }
     }
 
     @Test
     fun `when initializing due to missing password view shows password request`() {
         presenter.init(view, PassphraseRequirementType.MISSING_PASSPHRASE)
 
-        verify(view).showPasswordRequest()
-        verify(view).enableNonSyncDismiss()
+        verify { view.showPasswordRequest() }
+        verify { view.enableNonSyncDismiss() }
 
     }
 
@@ -50,8 +50,8 @@ class PassphrasePresenterTest: RobolectricTest() {
     fun `when initializing due to *wrong* password view shows retry password request`() {
         presenter.init(view, PassphraseRequirementType.WRONG_PASSPHRASE)
 
-        verify(view).showRetryPasswordRequest()
-        verify(view).enableNonSyncDismiss()
+        verify {view.showRetryPasswordRequest() }
+        verify {view.enableNonSyncDismiss() }
 
     }
 
@@ -59,15 +59,15 @@ class PassphrasePresenterTest: RobolectricTest() {
     fun `when initializing due to sync password view shows retry password request`() {
         presenter.init(view, PassphraseRequirementType.SYNC_PASSPHRASE)
 
-        verify(view).showSyncPasswordRequest()
-        verify(view).enableSyncDismiss()
+        verify { view.showSyncPasswordRequest() }
+        verify { view.enableSyncDismiss() }
 
     }
     @Test
     fun `when initializing the present view listeners are initialized`() {
         presenter.init(view, PassphraseRequirementType.MISSING_PASSPHRASE)
 
-        verify(view).initAffirmativeListeners()
+        verify { view.initAffirmativeListeners() }
     }
 
     @Test
@@ -76,7 +76,7 @@ class PassphrasePresenterTest: RobolectricTest() {
 
         presenter.cancel()
 
-        verify(view).finish()
+        verify { view.finish() }
     }
 
     @Test
@@ -85,7 +85,7 @@ class PassphrasePresenterTest: RobolectricTest() {
 
         presenter.validateInput("")
 
-        verify(view).enableActionConfirmation(false)
+        verify { view.enableActionConfirmation(false) }
     }
 
     @Test
@@ -94,7 +94,7 @@ class PassphrasePresenterTest: RobolectricTest() {
 
         presenter.validateInput("passphrase")
 
-        verify(view).enableActionConfirmation(true)
+        verify { view.enableActionConfirmation(true) }
     }
 
     @Test
@@ -105,7 +105,7 @@ class PassphrasePresenterTest: RobolectricTest() {
         presenter.deliverPassphrase(passphrase)
 
         //verify(provider).configPassphrase(passphrase)
-        verify(view).finish()
+        verify{ view.finish() }
     }
 
 }
