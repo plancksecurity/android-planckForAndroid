@@ -1909,6 +1909,9 @@ public class TestUtils {
 
     public void setupAccountIfNeeded() {
         skipTutorialAndAllowPermissionsIfNeeded();
+        if (UtilsPackage.exists(Espresso.onView(withId(R.id.other_method_sign_in_button_card)))) {
+            Espresso.onView(withId(R.id.other_method_sign_in_button_card)).perform(ViewActions.click());
+        }
         if(exists(onView(withText(R.string.account_setup_basics_title)))) {
             setupAccountAutomatically(false);
         }
