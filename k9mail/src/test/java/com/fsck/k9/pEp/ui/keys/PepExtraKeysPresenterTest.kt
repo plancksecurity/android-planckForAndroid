@@ -10,6 +10,8 @@ import com.fsck.k9.preferences.StorageEditor
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -48,8 +50,9 @@ class PepExtraKeysPresenterTest {
     }
 
     @Test
-    fun `presenter gets master key info on initialization`() {
+    fun `presenter gets master key info on initialization`() = runTest {
         presenter.initialize(view)
+        advanceUntilIdle()
 
 
         verify { K9.getMasterKeys() }
@@ -57,8 +60,9 @@ class PepExtraKeysPresenterTest {
     }
 
     @Test
-    fun `view shows keys on presenter initialization`() {
+    fun `view shows keys on presenter initialization`() = runTest {
         presenter.initialize(view)
+        advanceUntilIdle()
 
 
         val slot = slot<List<KeyListItem>>()
@@ -75,7 +79,7 @@ class PepExtraKeysPresenterTest {
     }
 
     @Test
-    fun `onPause saves K9 app settings to disk`() {
+    fun `onPause saves K9 app settings to disk`() = runTest {
         val storage: Storage = mockk()
         val storageEditor: StorageEditor = mockk(relaxed = true)
         coEvery { preferences.storage }.returns(storage)
@@ -84,7 +88,7 @@ class PepExtraKeysPresenterTest {
 
         presenter.initialize(view)
         presenter.onPause()
-
+        advanceUntilIdle()
 
         coVerify { K9.save(storageEditor) }
         coVerify { storageEditor.commit() }

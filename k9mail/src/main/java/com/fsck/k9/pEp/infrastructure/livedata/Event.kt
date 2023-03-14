@@ -3,7 +3,7 @@ package com.fsck.k9.pEp.infrastructure.livedata
 /**
  * Used as a wrapper for data that is exposed via a LiveData/StateFlow that represents an event.
  */
-class Event<out T>(private val content: T) {
+data class Event<out T>(private val content: T, val isReady: Boolean = true) {
 
     var hasBeenHandled = false
         private set

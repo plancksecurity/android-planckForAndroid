@@ -11,6 +11,7 @@ import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.*
 import security.pEp.mdm.ConfigurationManager
 import security.pEp.network.UrlChecker
@@ -20,7 +21,7 @@ private const val TEST_PROVISIONING_URL = "https://test/url"
 @ExperimentalCoroutinesApi
 class ProvisioningManagerTest: RobolectricTest() {
     @get:Rule
-    val coroutinesTestRule = CoroutineTestRule()
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher = UnconfinedTestDispatcher())
 
     private val k9: K9 = mockk(relaxed = true)
     private val urlChecker: UrlChecker = mockk()

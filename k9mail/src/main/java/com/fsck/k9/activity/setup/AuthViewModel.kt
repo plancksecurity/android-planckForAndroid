@@ -19,6 +19,8 @@ import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
+import com.fsck.k9.pEp.DefaultDispatcherProvider
+import com.fsck.k9.pEp.DispatcherProvider
 import com.fsck.k9.pEp.infrastructure.livedata.Event
 import com.fsck.k9.pEp.ui.ConnectionSettings
 import com.fsck.k9.pEp.ui.fragments.toServerSettings
@@ -32,8 +34,6 @@ import net.openid.appauth.*
 import timber.log.Timber
 
 private const val KEY_AUTHORIZATION = "app.pep_auth"
-private const val SCOPE_OPENID = "openid"
-private const val SCOPE_EMAIL = "email"
 private const val ACCESS_DENIED_BY_USER = "access_denied"
 
 class AuthViewModel(
@@ -42,9 +42,11 @@ class AuthViewModel(
     private val oAuthConfigurationProvider: OAuthConfigurationProvider,
     private val jwtTokenDecoder: JwtTokenDecoder,
     private val mailSettingsDiscovery: ProvidersXmlDiscovery,
+    private val authServiceFactory: AuthServiceFactory = AuthServiceFactory(application),
+    private val authState: AuthState = AuthState(),
+    private val dispatcherProvider: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(application) {
     private var authService: AuthorizationService? = null
-    private val authState = AuthState()
 
     private var account: Account? = null
 
@@ -57,25 +59,30 @@ class AuthViewModel(
         private set
 
     private val _connectionSettings =
-        MutableLiveData<Pair<Event<ConnectionSettings?>, Boolean>>(Pair(Event(null), false))
-    val connectionSettings: LiveData<Pair<Event<ConnectionSettings?>, Boolean>> =
+        MutableLiveData<Event<ConnectionSettings?>>(Event(null, false))
+    val connectionSettings: LiveData<Event<ConnectionSettings?>> =
         _connectionSettings
 
     fun discoverMailSettingsAsync(email: String, oAuthProviderType: OAuthProviderType? = null) {
         viewModelScope.launch {
             discoverMailSettings(email, oAuthProviderType)
-                .also { _connectionSettings.value = Pair(Event(it), true) }
+                .also { settings ->
+                    if (settings != null) {
+                        discoverMailSettingsSuccess()
+                    }
+                    _connectionSettings.value = Event(settings)
+                }
         }
     }
 
-    fun discoverMailSettingsSuccess() {
+    private fun discoverMailSettingsSuccess() {
         needsMailSettingsDiscovery = false
     }
 
     private suspend fun discoverMailSettings(
         email: String,
         oAuthProviderType: OAuthProviderType? = null
-    ): ConnectionSettings? = withContext(Dispatchers.IO) {
+    ): ConnectionSettings? = withContext(dispatcherProvider.io()) {
         val discoveryResults = mailSettingsDiscovery.discover(
             email,
             oAuthProviderType
@@ -94,7 +101,7 @@ class AuthViewModel(
 
     @Synchronized
     private fun getAuthService(): AuthorizationService {
-        return authService ?: AuthorizationService(getApplication<Application>()).also { authService = it }
+        return authService ?: authServiceFactory.create().also { authService = it }
     }
 
     fun init(activityResultRegistry: ActivityResultRegistry, lifecycle: Lifecycle) {
@@ -148,7 +155,7 @@ class AuthViewModel(
     }
 
     private suspend fun startLogin(account: Account, config: OAuthConfiguration) {
-        val authRequestIntent = withContext(Dispatchers.IO) {
+        val authRequestIntent = withContext(dispatcherProvider.io()) {
             createAuthorizationRequestIntent(account.email, config)
         }
 
@@ -170,7 +177,7 @@ class AuthViewModel(
 
         val scopeString = config.scopes.joinToString(separator = " ")
         val authRequest = authRequestBuilder
-            .setScopes(scopeString, SCOPE_OPENID, SCOPE_EMAIL)
+            .setScope(scopeString)
             .setLoginHint(email)
             .build()
 
@@ -180,11 +187,13 @@ class AuthViewModel(
     }
 
     private fun findOAuthConfiguration(account: Account): OAuthConfiguration? {
-        val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
         return when (account.mandatoryOAuthProviderType) {
-            null -> oAuthConfigurationProvider.getConfiguration(
-                incomingSettings?.host ?: error("account not initialized here!")
-            )
+            null -> {
+                val incomingSettings = account.storeUri?.let { RemoteStore.decodeStoreUri(it) }
+                oAuthConfigurationProvider.getConfiguration(
+                    incomingSettings?.host ?: error("account not initialized here!")
+                )
+            }
             OAuthProviderType.GOOGLE -> oAuthConfigurationProvider.googleConfiguration
             OAuthProviderType.MICROSOFT -> oAuthConfigurationProvider.microsoftConfiguration
         }
@@ -215,7 +224,7 @@ class AuthViewModel(
     }
 
     private fun exchangeToken(response: AuthorizationResponse) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcherProvider.io()) {
             val authService = getAuthService()
 
             val tokenRequest = response.createTokenExchangeRequest()
@@ -376,3 +385,7 @@ sealed interface AuthFlowState {
 }
 
 class WrongEmailAddressException(val adminEmail: String, val userWrongEmail: String): Exception()
+
+class AuthServiceFactory(private val application: Application) {
+    fun create(): AuthorizationService = AuthorizationService(application)
+}

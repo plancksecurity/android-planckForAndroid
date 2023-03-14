@@ -128,6 +128,7 @@ dependencies {
     testImplementation "com.nhaarman:mockito-kotlin:${versions.mockitoKotlin}"
     testImplementation "io.mockk:mockk:${versions.mockk}"
     testImplementation "org.jdom:jdom2:${versions.jdom}"
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
 
     implementation "androidx.test.espresso:espresso-idling-resource:${versions.espresso}"
 
