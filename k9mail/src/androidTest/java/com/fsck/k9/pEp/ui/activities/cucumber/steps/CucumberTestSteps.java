@@ -420,6 +420,22 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
+    @When("^I stress Engine threads")
+    public void I_stress_Engine() {
+        for (int loop = 0; loop < 10000; loop++) {
+            for (int loop2 = 0; loop2 < 40; loop2++) {
+                I_click_message_compose_button();
+                I_enter_text_in_field("myself", "messageTo");
+                I_fill_recipients(3, "messageTo");
+                I_remove_address_clicking_X(3);
+                I_remove_address_clicking_X(2);
+                I_remove_address_clicking_X(1);
+                I_send_message_to_address(1, "bot1", "loop: " + loop2, "Body");
+            }
+            I_remove_all_messages();
+        }
+    }
+
     @When("^I paste (\\d+) recipients in the (\\S+) field")
     public void I_paste_n_recipients(int recipients, String field) {
         timeRequiredForThisMethod(1);
