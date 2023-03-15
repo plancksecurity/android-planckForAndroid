@@ -578,6 +578,7 @@
             android:theme="@style/OverlayTheme"/>
         <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
+            android:hardwareAccelerated="true"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />
 
