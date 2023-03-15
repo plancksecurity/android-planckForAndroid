@@ -902,7 +902,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         pEp.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PEpProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
-                if (lastRequestTime > requestTime) {
+                if (isRequestOutdated(requestTime)) {
                     return;
                 }
                 if (addressesAreEmpty(newToAdresses, newCcAdresses, newBccAdresses)) {
@@ -918,7 +918,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             @Override
             public void onError(Throwable throwable) {
                 recipientMvpView.showError(throwable);
-                if (lastRequestTime > requestTime) {
+                if (isRequestOutdated(requestTime)) {
                     return;
                 }
                 showDefaultStatus();
@@ -926,6 +926,10 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             }
         });
         recipientMvpView.messageRatingLoaded();
+    }
+
+    private boolean isRequestOutdated(long requestTime) {
+        return lastRequestTime > requestTime;
     }
 
     private boolean addressesAreEmpty(List<Address> newToAdresses, List<Address> newCcAdresses, List<Address> newBccAdresses) {
