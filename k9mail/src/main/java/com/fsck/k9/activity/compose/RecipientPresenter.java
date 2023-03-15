@@ -240,7 +240,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public void onSaveInstanceState(Bundle outState) {
-        poller.stopPolling();
         outState.putBoolean(STATE_KEY_CC_SHOWN, recipientMvpView.isCcVisible());
         outState.putBoolean(STATE_KEY_BCC_SHOWN, recipientMvpView.isBccVisible());
         outState.putString(STATE_KEY_LAST_FOCUSED_TYPE, lastFocusedType.toString());
@@ -806,10 +805,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     public void onResume() {
         refreshRecipients();
         updateCryptoStatus();
-    }
-
-    public void onPause() {
-        poller.stopPolling();
     }
 
     public void onPEpPrivacyStatus() {
