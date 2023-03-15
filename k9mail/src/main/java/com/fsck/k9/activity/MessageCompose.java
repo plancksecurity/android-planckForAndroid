@@ -278,8 +278,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PEpProvider pEp;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
-    private TextView unsafeDeliveryWarning;
-    private View unsafeDeliveryWarningSeparator;
+    private TextView userActionBanner;
+    private View userActionBannerSeparator;
     private String lastError;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
@@ -381,8 +381,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        unsafeDeliveryWarning = findViewById(R.id.unsecure_recipients_warning);
-        unsafeDeliveryWarningSeparator = findViewById(R.id.unsecure_recipients_warning_separator);
+        userActionBanner = findViewById(R.id.user_action_banner);
+        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -2068,20 +2068,20 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
         if (lastError != null) return; // do not hide errors
-        unsafeDeliveryWarning.setText(getResources().getQuantityString(
+        userActionBanner.setText(getResources().getQuantityString(
                 R.plurals.compose_unsecure_delivery_warning,
                 unsecureRecipientsCount,
                 unsecureRecipientsCount
         ));
-        unsafeDeliveryWarning.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
-        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
+        userActionBanner.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
+        userActionBanner.setVisibility(View.VISIBLE);
+        userActionBannerSeparator.setVisibility(View.VISIBLE);
     }
 
     public void hideUnsecureDeliveryWarning() {
         if (lastError != null) return; // do not hide errors
-        unsafeDeliveryWarning.setVisibility(View.GONE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.GONE);
+        userActionBanner.setVisibility(View.GONE);
+        userActionBannerSeparator.setVisibility(View.GONE);
     }
 
     public void setAndShowError(@NotNull Throwable throwable) {
@@ -2092,10 +2092,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void showError(@NotNull String error) {
-        unsafeDeliveryWarning.setText(error);
-        unsafeDeliveryWarning.setOnClickListener(null);
-        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
+        userActionBanner.setText(error);
+        userActionBanner.setOnClickListener(null);
+        userActionBanner.setVisibility(View.VISIBLE);
+        userActionBannerSeparator.setVisibility(View.VISIBLE);
     }
 
     private Handler internalMessageHandler = new Handler() {
