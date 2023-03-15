@@ -708,8 +708,8 @@ public class K9 extends MultiDexApplication {
 
         MessagingController messagingController = MessagingController.getInstance(this);
         // Perform engine provisioning just after its initialization in MessagingController
-        component.provisioningManager().performInitializedEngineProvisioning();
         pEpProvider = messagingController.getpEpProvider();
+        component.provisioningManager().performInitializedEngineProvisioning();
 
         initJobManager(prefs, messagingController);
 
