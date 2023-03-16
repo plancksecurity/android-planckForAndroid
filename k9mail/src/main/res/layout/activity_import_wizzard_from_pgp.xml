@@ -104,15 +104,17 @@
         android:id="@+id/fpr_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:gravity="start"
         android:orientation="vertical"
+        android:paddingBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trustwordsContainer"
-        tools:visibility="gone">
+        app:layout_constraintBottom_toTopOf="@id/currentState"
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/fpr_title"
@@ -160,7 +162,6 @@
             android:id="@+id/fpr_new_device_value"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:breakStrategy="simple"
             android:ellipsize="none"
             android:textStyle="bold"
@@ -174,11 +175,14 @@
         android:layout_height="55dp"
         android:indeterminateDrawable="@drawable/add_second_device"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@id/dissmissActionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fpr_container" />
+        app:layout_constraintTop_toBottomOf="@+id/fpr_container"
+        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/currentState"
@@ -186,20 +190,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fpr_container"
-        tools:visibility="gone" />
-
-    <ImageView
-        android:id="@+id/syncState"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@id/dissmissActionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -243,7 +236,6 @@
         android:textColor="?attr/defaultColorOnBackground"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="cancel" />
