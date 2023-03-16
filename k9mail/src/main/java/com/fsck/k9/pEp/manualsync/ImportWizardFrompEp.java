@@ -64,6 +64,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     Button reject;
     @Bind(R.id.currentState)
     ImageView currentState;
+    @Bind(R.id.syncState)
+    ImageView syncState;
     @Bind(R.id.trustwords)
     TextView tvTrustwords;
     @Bind(R.id.show_long_trustwords)
@@ -253,7 +255,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showGroupCreated() {
         description.setText(R.string.keysync_wizard_group_creation_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_2nd_device_synced);
+        syncState.setImageResource(R.drawable.ic_sync_2nd_device_synced);
 
         showKeySyncDone();
     }
@@ -261,7 +263,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showJoinedGroup() {
         description.setText(R.string.keysync_wizard_group_joining_done_message);
-        currentState.setImageResource(R.drawable.ic_sync_3rd_device_synced);
+        syncState.setImageResource(R.drawable.ic_sync_3rd_device_synced);
         showKeySyncDone();
     }
 
@@ -274,7 +276,8 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
         action.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.defaultColorOnBackground));
         action.setOnClickListener(v -> finish());
-        currentState.setVisibility(View.VISIBLE);
+        syncState.setVisibility(View.VISIBLE);
+        currentState.setVisibility(View.GONE);
     }
 
     @Override
