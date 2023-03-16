@@ -48,7 +48,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/description"
         app:layout_constraintVertical_bias="0.0"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/trustwords_title"
@@ -224,7 +224,8 @@
         app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
         app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
         app:layout_constraintVertical_bias="1.0"
-        tools:text="Reject" />
+        tools:text="Reject"
+        tools:visibility="visible"/>
 
     <Button
         android:id="@+id/dissmissActionButton"
