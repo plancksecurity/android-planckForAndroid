@@ -701,7 +701,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
 
         checkToSaveDraftImplicitly();
-        recipientPresenter.onPause();
     }
 
     /**
