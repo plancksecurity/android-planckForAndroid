@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import kotlinx.coroutines.*
 import security.pEp.provisioning.ProvisioningFailedException
 import security.pEp.provisioning.ProvisioningStage
@@ -52,7 +53,7 @@ class ConfigurationManager(
 
     suspend fun loadConfigurationsSuspend(
         provisioningStage: ProvisioningStage = ProvisioningStage.ProvisioningDone,
-    ): Result<Unit> = withContext(Dispatchers.IO) {
+    ): Result<Unit> = withContext(PEpDispatcher) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>

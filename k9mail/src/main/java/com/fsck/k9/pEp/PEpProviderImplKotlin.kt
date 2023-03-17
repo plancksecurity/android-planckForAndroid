@@ -21,6 +21,7 @@ import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase
 import com.fsck.k9.pEp.infrastructure.extensions.mapError
 import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread
 import com.fsck.k9.pEp.infrastructure.threading.EngineThreadLocal
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.HandshakeData
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem
 import foundation.pEp.jniadapter.*
@@ -557,7 +558,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) = withContext(Dispatchers.Default) {
+    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) = withContext(PEpDispatcher) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         //TODO review this; we are in another thread so we should get a new engine anyways??
@@ -643,7 +644,7 @@ class PEpProviderImplKotlin(
 
     private suspend fun loadMessageRatingAfterResetTrustSuspend(
             mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity,
-            resultCallback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+            resultCallback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
         try {
             engine.get().keyResetTrust(id)
             val pEpMessage = PEpMessageBuilder(mimeMessage).createMessage(context)
@@ -675,14 +676,14 @@ class PEpProviderImplKotlin(
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-            val result = withContext(Dispatchers.IO) {
+            val result = withContext(PEpDispatcher) {
                 incomingMessageRatingSuspend(message)
             }
             callback.onLoaded(result)
         }
     }
 
-    private suspend fun incomingMessageRatingSuspend(message: MimeMessage) = withContext(Dispatchers.IO) {
+    private suspend fun incomingMessageRatingSuspend(message: MimeMessage) = withContext(PEpDispatcher) {
         try {
             val pEpMessage = PEpMessageBuilder(message).createMessage(context)
             engine.get().re_evaluate_message_rating(pEpMessage)
@@ -750,7 +751,7 @@ class PEpProviderImplKotlin(
 
     private suspend fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
                                          ccAddresses: List<Address>, bccAddresses: List<Address>,
-                                         callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+                                         callback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
         Timber.i("Counter of PEpProviderImpl +1")
         EspressoTestingIdlingResource.increment()
         when {
@@ -839,7 +840,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(Dispatchers.IO) {
+    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
         try {
             val rating = engine.get().identity_rating(identity)
             notifyLoaded(rating, callback)
@@ -849,7 +850,7 @@ class PEpProviderImplKotlin(
     }
 
     override fun startSync() {
-        val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val ioScope = CoroutineScope(PEpDispatcher + SupervisorJob())
 
         ioScope.launch {
             try {
@@ -892,7 +893,7 @@ class PEpProviderImplKotlin(
 
     private suspend fun trustwordsSuspend(
             myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-            callback: SimpleResultCallback<String>) = withContext(Dispatchers.IO) {
+            callback: SimpleResultCallback<String>) = withContext(PEpDispatcher) {
         try {
             val result = engine.get().get_trustwords(myself, partner, lang, !isShort)
             notifyLoaded(result, callback)
@@ -913,7 +914,7 @@ class PEpProviderImplKotlin(
 
     private suspend fun obtainTrustwordsSuspend(
             self: Identity, other: Identity, lang: String, areKeysyncTrustwords: Boolean,
-            callback: ResultCallback<HandshakeData>) = withContext(Dispatchers.IO) {
+            callback: ResultCallback<HandshakeData>) = withContext(PEpDispatcher) {
         try {
             val myself: Identity
             val another: Identity
@@ -943,7 +944,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
+    private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(PEpDispatcher) {
         Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.get().trustPersonalKey(id)
     }
@@ -955,7 +956,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun trustOwnKeySuspend(id: Identity) = withContext(Dispatchers.IO) {
+    private suspend fun trustOwnKeySuspend(id: Identity) = withContext(PEpDispatcher) {
         Timber.i("%s %s", TAG, "Calling trust own key")
         engine.get().trustOwnKey(id)
     }
@@ -967,7 +968,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun keyMistrustedSuspend(id: Identity) = withContext(Dispatchers.IO) {
+    private suspend fun keyMistrustedSuspend(id: Identity) = withContext(PEpDispatcher) {
         engine.get().keyMistrusted(id)
     }
 
@@ -978,7 +979,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun resetTrustSuspend(id: Identity) = withContext(Dispatchers.IO) {
+    private suspend fun resetTrustSuspend(id: Identity) = withContext(PEpDispatcher) {
         engine.get().keyResetTrust(id)
     }
 
@@ -1083,7 +1084,7 @@ class PEpProviderImplKotlin(
         }
     }
 
-    private suspend fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) = withContext(Dispatchers.IO) {
+    private suspend fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) = withContext(PEpDispatcher) {
         try {
             val identitiesVector: List<Identity> = engine.get().own_identities_retrieve()
             notifyLoaded(identitiesVector, callback)
@@ -1100,7 +1101,7 @@ class PEpProviderImplKotlin(
     }
 
     private suspend fun setIdentityFlagSuspend(identity: Identity, flags: Int,
-                                               completedCallback: CompletedCallback) = withContext(Dispatchers.IO) {
+                                               completedCallback: CompletedCallback) = withContext(PEpDispatcher) {
         try {
             engine.get().set_identity_flags(identity, flags)
             notifyCompleted(completedCallback)
@@ -1118,7 +1119,7 @@ class PEpProviderImplKotlin(
     }
 
     private suspend fun unsetIdentityFlagSuspend(identity: Identity, flags: Int,
-                                                 completedCallback: CompletedCallback) = withContext(Dispatchers.IO) {
+                                                 completedCallback: CompletedCallback) = withContext(PEpDispatcher) {
         try {
             engine.get().unset_identity_flags(identity, flags)
             notifyCompleted(completedCallback)
@@ -1151,7 +1152,7 @@ class PEpProviderImplKotlin(
 
     @WorkerThread
     override fun printLog() {
-        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val uiScope = CoroutineScope(PEpDispatcher + SupervisorJob())
         uiScope.launch {
             log.split("\n")
                     .filter { it.isNotBlank() }
@@ -1172,14 +1173,14 @@ class PEpProviderImplKotlin(
 
     override fun getLog(): String {
         var result = ""
-        val uiScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val uiScope = CoroutineScope(PEpDispatcher + SupervisorJob())
         uiScope.launch {
             result = getLogSuspend()
         }
         return result
     }
 
-    private suspend fun getLogSuspend(): String = withContext(Dispatchers.IO) {
+    private suspend fun getLogSuspend(): String = withContext(PEpDispatcher) {
         engine.get().getCrashdumpLog(100)
     }
 

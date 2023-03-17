@@ -15,6 +15,7 @@ import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.ThemeManager
@@ -264,7 +265,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun ownKeyReset() = withContext(Dispatchers.Default) {
+    private suspend fun ownKeyReset() = withContext(PEpDispatcher) {
         val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
         pEpProvider.keyResetAllOwnKeys()
     }

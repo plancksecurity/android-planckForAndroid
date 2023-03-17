@@ -29,6 +29,7 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
 import com.fsck.k9.pEp.PEpImporterActivity
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.pEp.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -631,7 +632,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         uiScope.launch {
 
             if (selectedContextAccount is Account) {
-                withContext(Dispatchers.IO) {
+                withContext(PEpDispatcher) {
                     val realAccount = selectedContextAccount as Account?
                     try {
                         realAccount!!.localStore.delete()

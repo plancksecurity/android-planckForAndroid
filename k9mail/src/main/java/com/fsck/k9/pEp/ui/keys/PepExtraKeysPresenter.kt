@@ -64,7 +64,7 @@ class PepExtraKeysPresenter @Inject constructor(
     }
 
     private suspend fun getMasterKeyInfo(): List<KeyListItem>? =
-        withContext(dispatcherProvider.io()) {
+        withContext(dispatcherProvider.pEpDispatcher()) {
             pEp.masterKeysInfo
         }
 }
