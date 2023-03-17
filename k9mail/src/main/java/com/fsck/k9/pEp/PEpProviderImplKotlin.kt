@@ -201,6 +201,10 @@ class PEpProviderImplKotlin(
         }
     }
 
+    override fun close() {
+        engine.close()
+    }
+
     override fun setPassiveModeEnabled(enable: Boolean) {
         engine.use { engine.get().config_passive_mode(enable) }
     }

@@ -135,6 +135,11 @@ public interface PEpProvider {
                           ResultCallback<HandshakeData> callback);
 
     /**
+     * Close the engine/session associated to the provider
+     */
+    void close();
+
+    /**
      * Returns a identity with the attributes related to the given identity filler, like fpr if available.
      *
      * @param id identity to fill
