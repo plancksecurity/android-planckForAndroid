@@ -14,6 +14,7 @@ import com.fsck.k9.mail.internet.MimeHeader
 import com.fsck.k9.mail.internet.MimeMessage
 import com.fsck.k9.message.SimpleMessageFormat
 import com.fsck.k9.pEp.PEpProvider.*
+import com.fsck.k9.pEp.infrastructure.ResultCompat
 import com.fsck.k9.pEp.infrastructure.exceptions.AppCannotDecryptException
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded
@@ -173,7 +174,7 @@ class PEpProviderImplKotlin(
     }
 
     private fun isEncrypted(identity: Identity): Boolean {
-        return getRating(identity).value > Rating.pEpRatingUnencrypted.value
+        return getRating(identity).getOrDefault(Rating.pEpRatingUndefined).value > Rating.pEpRatingUnencrypted.value
     }
 
     private fun convertExtraKeys(extraKeys: Array<String>?): Vector<String>? {
@@ -788,19 +789,15 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(address: Address): Rating = runBlocking(PEpDispatcher) {
+    override fun getRating(address: Address): ResultCompat<Rating> = runBlocking(PEpDispatcher) {
         val identity = PEpUtils.createIdentity(address, context)
         getRating(identity)
     }
 
     @WorkerThread //already done
-    override fun getRating(identity: Identity): Rating {
-        return try {
-            engine.get().identity_rating(identity)
-        } catch (e: pEpException) {
-            Timber.e(e, "%s %s", TAG, "getRating: ")
-            Rating.pEpRatingUndefined
-        }
+    override fun getRating(identity: Identity): ResultCompat<Rating> {
+        return ResultCompat.of { engine.get().identity_rating(identity) }
+            .onFailure { Timber.e(it, "%s %s", TAG, "getRating: ") }
     }
 
     override fun getRating(address: Address, callback: ResultCallback<Rating>) {
