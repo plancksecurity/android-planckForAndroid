@@ -158,24 +158,6 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `getRecipientRating calls view_showError when getRating is not successful`() {
-        every { view.hasRecipient(any()) }.returns(true)
-        val address: Address = mockk()
-        val recipient: Recipient = mockk()
-        every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onError(TestException("test")) }
-
-
-        helper.getRecipientRating(recipient, true, callback)
-
-
-        verify { view.showError(TestException("test")) }
-    }
-
-    @Test
     fun `getRecipientRating does not add unsecure address channel when getRating is not successful and is not pEp privacy protected`() {
         every { view.hasRecipient(any()) }.returns(true)
         val address: Address = mockk()
@@ -191,6 +173,79 @@ class UnsecureAddressHelperTest {
 
 
         assertEquals(0, helper.unsecureAddressChannelCount)
+    }
+
+    @Test
+    fun `getRecipientRating calls callback_onLoaded with rating undefined if view is always unsecure`() {
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        every { view.isAlwaysUnsecure }.returns(true)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        verify { callback.onLoaded(Rating.pEpRatingUnencrypted) }
+    }
+
+    @Test
+    fun `getRecipientRating adds unsecure address channel if view is always unsecure`() {
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        every { view.isAlwaysUnsecure }.returns(true)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
+    }
+
+    @Test
+    fun `getRecipientRating does not add unsecure address channel when unsecure forward warning is disabled`() {
+        every { view.hasRecipient(any()) }.returns(true)
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onError(RuntimeException()) }
+        every { K9.ispEpForwardWarningEnabled() }.returns(false)
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        assertEquals(0, helper.unsecureAddressChannelCount)
+    }
+
+    @Test
+    fun `getRecipientRating calls view_showError when getRating is not successful`() {
+        every { view.hasRecipient(any()) }.returns(true)
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onError(TestException("test")) }
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        verify { view.showError(TestException("test")) }
     }
 
     @Test
@@ -401,61 +456,6 @@ class UnsecureAddressHelperTest {
 
 
         coVerify(exactly = 3) { view.showError(TestException("test")) }
-    }
-
-    @Test
-    fun `getRecipientRating calls callback_onLoaded with rating undefined if view is always unsecure`() {
-        val address: Address = mockk()
-        val recipient: Recipient = mockk()
-        every { recipient.address }.returns(address)
-        every { view.isAlwaysUnsecure }.returns(true)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
-
-
-        helper.getRecipientRating(recipient, true, callback)
-
-
-        verify { callback.onLoaded(Rating.pEpRatingUnencrypted) }
-    }
-
-    @Test
-    fun `getRecipientRating adds unsecure address channel if view is always unsecure`() {
-        val address: Address = mockk()
-        val recipient: Recipient = mockk()
-        every { recipient.address }.returns(address)
-        every { view.isAlwaysUnsecure }.returns(true)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
-
-
-        helper.getRecipientRating(recipient, true, callback)
-
-
-        assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
-    }
-
-    @Test
-    fun `getRecipientRating does not add unsecure address channel when unsecure forward warning is disabled`() {
-        every { view.hasRecipient(any()) }.returns(true)
-        val address: Address = mockk()
-        val recipient: Recipient = mockk()
-        every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onError(RuntimeException()) }
-        every { K9.ispEpForwardWarningEnabled() }.returns(false)
-
-
-        helper.getRecipientRating(recipient, true, callback)
-
-
-        assertEquals(0, helper.unsecureAddressChannelCount)
     }
 
     private data class TestException(override val message: String) : Throwable()
