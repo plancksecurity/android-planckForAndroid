@@ -217,7 +217,6 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
             public void onError(Throwable throwable) {
                 if (listener != null) {
                     listener.handleUnsecureTokenWarning();
-                    listener.onError(throwable);
                 }
                 setCountColorIfNeeded();
                 holder.updateRating(Rating.pEpRatingUndefined);
@@ -899,6 +898,13 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     @Override
     public boolean isAlwaysUnsecure() {
         return alwaysUnsecure;
+    }
+
+    @Override
+    public void showError(@NonNull Throwable throwable) {
+        if (listener != null) {
+            listener.onError(throwable);
+        }
     }
 
     public enum RecipientCryptoStatus {

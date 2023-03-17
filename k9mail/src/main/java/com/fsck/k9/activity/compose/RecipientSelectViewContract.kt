@@ -4,4 +4,6 @@ interface RecipientSelectViewContract {
     val isAlwaysUnsecure: Boolean
 
     fun hasRecipient(recipient: Recipient): Boolean
+
+    fun showError(throwable: Throwable)
 }
