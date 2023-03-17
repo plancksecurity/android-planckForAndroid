@@ -80,6 +80,7 @@ import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.pEp.infrastructure.exceptions.AuthFailureWrongPassphrase;
+import com.fsck.k9.pEp.infrastructure.threading.AutoCloseableEngineThread;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
@@ -179,7 +180,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         this.transportProvider = transportProvider;
         this.pEpProvider = pEpProvider;
         this.preferences = preferences;
-        controllerThread = new Thread(new Runnable() {
+        controllerThread = new AutoCloseableEngineThread(new Runnable() {
             @Override
             public void run() {
                 runInBackground();
