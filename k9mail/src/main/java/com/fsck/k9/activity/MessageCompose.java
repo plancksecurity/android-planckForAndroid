@@ -2111,10 +2111,20 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void setAndShowError(@NotNull Throwable throwable) {
         userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.compose_unsecure_delivery_warning));
-        lastError = BuildConfig.DEBUG
-                ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
-                : getString(R.string.error_happened_restart_app);
+        if (BuildConfig.DEBUG) {
+            addNewDebugErrorText(ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH));
+        } else {
+            lastError = getString(R.string.error_happened_restart_app);
+        }
         showError(lastError);
+    }
+
+    private void addNewDebugErrorText(String newErrorText) {
+        if (lastError == null) {
+            lastError = newErrorText;
+        } else {
+            lastError += "\n" + newErrorText;
+        }
     }
 
     private void showError(@NotNull String error) {
