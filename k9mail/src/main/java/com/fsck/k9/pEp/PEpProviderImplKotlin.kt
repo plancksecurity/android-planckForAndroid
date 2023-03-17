@@ -204,7 +204,7 @@ class PEpProviderImplKotlin(
         engine.close()
     }
 
-    override fun setPassiveModeEnabled(enable: Boolean) {
+    override fun setPassiveModeEnabled(enable: Boolean) = runBlocking(PEpDispatcher) {
         engine.get().config_passive_mode(enable)
     }
 
@@ -233,7 +233,7 @@ class PEpProviderImplKotlin(
         engine.get().disable_all_sync_channels()
     }
     @WorkerThread
-    override fun updateSyncAccountsConfig() {
+    override fun updateSyncAccountsConfig() = runBlocking (PEpDispatcher) {
         disableSyncForAllIdentites()
         for (account in Preferences.getPreferences(context).accounts) {
             var id = PEpUtils.createIdentity(
@@ -265,8 +265,8 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun obtainLanguages(): Map<String, PEpLanguage>? {
-        return try {
+    override fun obtainLanguages(): Map<String, PEpLanguage>? = runBlocking(PEpDispatcher) {
+        try {
             val supportedLocales = listOf("en", "de")
             val pEpRawLanguages = engine.get()._languagelist
 
@@ -809,9 +809,9 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(address: Address): Rating {
+    override fun getRating(address: Address): Rating = runBlocking(PEpDispatcher) {
         val identity = PEpUtils.createIdentity(address, context)
-        return getRating(identity)
+        getRating(identity)
     }
 
     @WorkerThread //already done
