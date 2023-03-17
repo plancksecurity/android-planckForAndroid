@@ -30,7 +30,10 @@ class UnsecureAddressHelper @Inject constructor(
     ) {
         coroutineScope.launch {
             recipients.map { recipient ->
-                Pair(recipient, pEp.getRating(recipient.address))
+                val rating = pEp.getRating(recipient.address)
+                    .onFailure { view.showError(it) }
+                    .getOrDefault(Rating.pEpRatingUndefined)
+                Pair(recipient, rating)
             }.sortedBy { pair ->
                 pair.second
             }.map { pair ->
@@ -49,7 +52,11 @@ class UnsecureAddressHelper @Inject constructor(
             .filter { it.address in unsecureAddresses }
             .map { recipient ->
                 recipient
-                    .toRatedRecipient(pEp.getRating(recipient.address))
+                    .toRatedRecipient(
+                        pEp.getRating(recipient.address)
+                            .onFailure { view.showError(it) }
+                            .getOrDefault(Rating.pEpRatingUndefined)
+                    )
                     .also {
                         if (!PEpUtils.isRatingUnsecure(it.rating)) {
                             removeUnsecureAddressChannel(it.baseRecipient.address)
@@ -66,7 +73,11 @@ class UnsecureAddressHelper @Inject constructor(
     ) {
         coroutineScope.launch {
             recipients.map { recipient ->
-                recipient.toRatedRecipient(pEp.getRating(recipient.address))
+                recipient.toRatedRecipient(
+                    pEp.getRating(recipient.address)
+                        .onFailure { view.showError(it) }
+                        .getOrDefault(Rating.pEpRatingUndefined)
+                )
             }.also { ratedRecipientsReadyListener.ratedRecipientsReady(it.toMutableList()) }
         }
     }
@@ -97,6 +108,7 @@ class UnsecureAddressHelper @Inject constructor(
                 if (isPEpPrivacyProtected && view.hasRecipient(recipient)) {
                     addUnsecureAddressChannel(address)
                 }
+                view.showError(throwable)
                 callback.onError(throwable)
             }
         })
