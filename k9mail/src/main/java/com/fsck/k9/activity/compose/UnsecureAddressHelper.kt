@@ -92,7 +92,7 @@ class UnsecureAddressHelper @Inject constructor(
             override fun onLoaded(rating: Rating) {
                 val viewRating =
                     if (K9.ispEpForwardWarningEnabled() && view.isAlwaysUnsecure) {
-                        Rating.pEpRatingUndefined
+                        Rating.pEpRatingUnencrypted
                     } else {
                         rating
                     }
