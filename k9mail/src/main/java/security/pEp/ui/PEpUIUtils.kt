@@ -26,42 +26,21 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getDrawableForRating(context: Context, rating: Rating?): Drawable? {
-        if(BuildConfig.IS_ENTERPRISE){
-            return when {
-                rating == null ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-                rating.value == Rating.pEpRatingCannotDecrypt.value ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_cannot_decrypt)
-                rating.value == Rating.pEpRatingMistrust.value ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_mistrusted)
-                rating.value == Rating.pEpRatingUnderAttack.value
-                        || rating.value == Rating.pEpRatingB0rken.value-> //-2 and under
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_under_attack)
-                rating.value == Rating.pEpRatingTrusted.value ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_trusted)
-                rating.value == Rating.pEpRatingReliable.value ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_green)
-                rating.value >= Rating.pEpRatingUnencrypted.value
-                        || rating.value == Rating.pEpRatingUnencryptedForSome.value
-                        || rating.value == Rating.pEpRatingUnreliable.value -> //3 to 5
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
-                else ->
-                    ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-            }
-        }
-        return when {
-            rating == null ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-            isRatingUnsecure(rating) ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
-            rating.value == Rating.pEpRatingMistrust.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_red)
-            rating.value >= Rating.pEpRatingTrusted.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_green)
-            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
-                ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
-            else ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+        return when(rating){
+            Rating.pEpRatingUndefined -> ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+            Rating.pEpRatingCannotDecrypt -> ContextCompat.getDrawable(context, R.drawable.pep_status_cannot_decrypt)
+            Rating.pEpRatingHaveNoKey -> ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+            Rating.pEpRatingUnencrypted -> ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
+            Rating.pEpRatingUnencryptedForSome -> ContextCompat.getDrawable(context, R.drawable.pep_status_yellow)
+            Rating.pEpRatingUnreliable -> ContextCompat.getDrawable(context, R.drawable.pep_status_green)
+            Rating.pEpRatingReliable -> ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
+            Rating.pEpRatingTrusted -> ContextCompat.getDrawable(context, R.drawable.pep_status_trusted)
+            Rating.pEpRatingTrustedAndAnonymized -> if (BuildConfig.IS_ENTERPRISE) ContextCompat.getDrawable(context, R.drawable.pep_status_gray) else  ContextCompat.getDrawable(context, R.drawable.pep_status_trusted)
+            Rating.pEpRatingFullyAnonymous -> if (BuildConfig.IS_ENTERPRISE) ContextCompat.getDrawable(context, R.drawable.pep_status_gray) else ContextCompat.getDrawable(context, R.drawable.pep_status_trusted)
+            Rating.pEpRatingMistrust -> ContextCompat.getDrawable(context, R.drawable.pep_status_mistrusted)
+            Rating.pEpRatingB0rken -> ContextCompat.getDrawable(context, R.drawable.pep_status_under_attack)
+            Rating.pEpRatingUnderAttack -> ContextCompat.getDrawable(context, R.drawable.pep_status_under_attack)
+            null -> ContextCompat.getDrawable(context, R.drawable.pep_status_gray)
         }
     }
 
@@ -255,7 +234,29 @@ object PEpUIUtils {
 
     @JvmStatic
     fun getRatingTextRes(rating: Rating?, pEpEnabled: Boolean = true): Int {
-        when {
+        if(BuildConfig.IS_ENTERPRISE){
+            if(!pEpEnabled)
+                return R.string.pep_rating_forced_unencrypt
+            return when(rating) {
+                null -> R.string.pep_rating_none
+                Rating.pEpRatingUndefined -> R.string.pep_rating_undefined
+                Rating.pEpRatingCannotDecrypt -> R.string.pep_rating_cannot_decrypt
+                Rating.pEpRatingHaveNoKey -> R.string.pep_rating_no_key
+                Rating.pEpRatingUnencrypted -> R.string.pep_rating_unencrypt
+                Rating.pEpRatingUnencryptedForSome -> R.string.pep_rating_unencrypted_for_some
+                Rating.pEpRatingUnreliable -> R.string.pep_rating_unreliable
+                Rating.pEpRatingReliable -> R.string.pep_rating_secure
+                Rating.pEpRatingTrusted -> R.string.pep_rating_trusted
+                Rating.pEpRatingTrustedAndAnonymized -> R.string.pep_rating_trusted_anon
+                Rating.pEpRatingFullyAnonymous -> R.string.pep_rating_full_anon
+                Rating.pEpRatingMistrust -> R.string.pep_rating_mistrusted
+                Rating.pEpRatingB0rken -> R.string.pep_rating_broken
+                Rating.pEpRatingUnderAttack -> R.string.pep_rating_under_attack
+                else -> R.string.pep_rating_none
+            }
+
+        }
+        return when {
             rating == null ->
                 R.string.pep_rating_none
             rating == Rating.pEpRatingB0rken || rating == Rating.pEpRatingHaveNoKey ->
@@ -278,25 +279,6 @@ object PEpUIUtils {
                 R.string.pep_rating_trusted
             else ->
                 R.string.pep_rating_none
-        }
-        if(!pEpEnabled)
-            return R.string.pep_rating_forced_unencrypt
-        return when(rating) {
-            null -> R.string.pep_rating_none
-            Rating.pEpRatingUndefined -> R.string.pep_rating_undefined
-            Rating.pEpRatingCannotDecrypt -> R.string.pep_rating_cannot_decrypt
-            Rating.pEpRatingHaveNoKey -> R.string.pep_rating_no_key
-            Rating.pEpRatingUnencrypted -> R.string.pep_rating_unencrypt
-            Rating.pEpRatingUnencryptedForSome -> R.string.pep_rating_unencrypted_for_some
-            Rating.pEpRatingUnreliable -> R.string.pep_rating_unreliable
-            Rating.pEpRatingReliable -> R.string.pep_rating_secure
-            Rating.pEpRatingTrusted -> R.string.pep_rating_trusted
-            Rating.pEpRatingTrustedAndAnonymized -> R.string.pep_rating_trusted_anon
-            Rating.pEpRatingFullyAnonymous -> R.string.pep_rating_full_anon
-            Rating.pEpRatingMistrust -> R.string.pep_rating_mistrusted
-            Rating.pEpRatingB0rken -> R.string.pep_rating_broken
-            Rating.pEpRatingUnderAttack -> R.string.pep_rating_under_attack
-            else -> R.string.pep_rating_none
         }
     }
 
