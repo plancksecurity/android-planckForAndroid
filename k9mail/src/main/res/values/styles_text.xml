@@ -133,7 +133,6 @@
     <style name="UnsecureRecipientsWarning">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">@color/compose_unsecure_delivery_warning</item>
         <item name="android:textSize">15sp</item>
         <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:paddingTop">2dp</item>

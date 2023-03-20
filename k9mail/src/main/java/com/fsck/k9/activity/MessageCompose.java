@@ -41,6 +41,7 @@ import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.Account.MessageFormat;
@@ -261,6 +262,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private SimpleMessageFormat currentMessageFormat;
 
     private boolean isInSubActivity = false;
+    private BannerType currentBanner = BannerType.NONE;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -278,8 +280,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     PEpProvider pEp;
 
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
-    private TextView unsafeDeliveryWarning;
-    private View unsafeDeliveryWarningSeparator;
+    private TextView userActionBanner;
+    private View userActionBannerSeparator;
     private String lastError;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
@@ -381,8 +383,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         subjectView = findViewById(R.id.subject);
         subjectView.getInputExtras(true).putBoolean("allowEmoji", true);
 
-        unsafeDeliveryWarning = findViewById(R.id.unsecure_recipients_warning);
-        unsafeDeliveryWarningSeparator = findViewById(R.id.unsecure_recipients_warning_separator);
+        userActionBanner = findViewById(R.id.user_action_banner);
+        userActionBannerSeparator = findViewById(R.id.user_action_banner_separator);
 
         EolConvertingEditText upperSignature = findViewById(R.id.upper_signature);
         EolConvertingEditText lowerSignature = findViewById(R.id.lower_signature);
@@ -688,7 +690,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Override
     public void onPause() {
         super.onPause();
-        hideUnsecureDeliveryWarning();
+        hideUserActionBanner();
         MessagingController.getInstance(this).removeListener(messagingListener);
         MessagingController.getInstance(this).setEchoMessageReceivedListener(null);
 
@@ -2067,24 +2069,57 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
-        if (lastError != null) return; // do not hide errors
-        unsafeDeliveryWarning.setText(getResources().getQuantityString(
-                R.plurals.compose_unsecure_delivery_warning,
-                unsecureRecipientsCount,
-                unsecureRecipientsCount
-        ));
-        unsafeDeliveryWarning.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
-        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
+        if (wasAbleToChangeBanner(BannerType.UNSECURE_DELIVERY)) {
+            userActionBanner.setTextColor(ContextCompat.getColor(
+                    this, R.color.compose_unsecure_delivery_warning));
+            userActionBanner.setText(getResources().getQuantityString(
+                    R.plurals.compose_unsecure_delivery_warning,
+                    unsecureRecipientsCount,
+                    unsecureRecipientsCount
+            ));
+            userActionBanner.setOnClickListener(v -> recipientPresenter.clearUnsecureRecipients());
+            showUserActionBanner();
+        }
+    }
+
+    private void showUserActionBanner() {
+        userActionBanner.setVisibility(View.VISIBLE);
+        userActionBannerSeparator.setVisibility(View.VISIBLE);
     }
 
     public void hideUnsecureDeliveryWarning() {
-        if (lastError != null) return; // do not hide errors
-        unsafeDeliveryWarning.setVisibility(View.GONE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.GONE);
+        hideUserActionBanner(BannerType.UNSECURE_DELIVERY);
+    }
+
+    private void hideUserActionBanner() {
+        hideUserActionBanner(BannerType.ERROR);
+    }
+
+    private void hideUserActionBanner(BannerType bannerType) {
+        if (currentBanner == bannerType) {
+            currentBanner = null;
+            userActionBanner.setVisibility(View.GONE);
+            userActionBannerSeparator.setVisibility(View.GONE);
+        }
+    }
+
+    public void showSingleRecipientHandshakeBanner() {
+        if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
+            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.pep_green));
+            userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
+            userActionBanner.setOnClickListener(
+                    v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)
+            );
+            showUserActionBanner();
+        }
+    }
+
+    public void hideSingleRecipientHandshakeBanner() {
+        hideUserActionBanner(BannerType.HANDSHAKE);
     }
 
     public void setAndShowError(@NotNull Throwable throwable) {
+        userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.compose_unsecure_delivery_warning));
         lastError = BuildConfig.DEBUG
                 ? ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH)
                 : getString(R.string.error_happened_restart_app);
@@ -2092,10 +2127,17 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     }
 
     private void showError(@NotNull String error) {
-        unsafeDeliveryWarning.setText(error);
-        unsafeDeliveryWarning.setOnClickListener(null);
-        unsafeDeliveryWarning.setVisibility(View.VISIBLE);
-        unsafeDeliveryWarningSeparator.setVisibility(View.VISIBLE);
+        currentBanner = BannerType.ERROR;
+        userActionBanner.setText(error);
+        userActionBanner.setOnClickListener(null);
+        showUserActionBanner();
+    }
+
+    private boolean wasAbleToChangeBanner(BannerType bannerType) {
+        if (currentBanner == null || currentBanner.priority <= bannerType.priority) {
+            currentBanner = bannerType;
+            return true;
+        } else return false;
     }
 
     private Handler internalMessageHandler = new Handler() {
@@ -2140,6 +2182,19 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         @StringRes
         public int getTitleResource() {
             return titleResource;
+        }
+    }
+
+    private enum BannerType {
+        NONE(0),
+        HANDSHAKE(1),
+        UNSECURE_DELIVERY(2),
+        ERROR(Integer.MAX_VALUE);
+
+        final int priority;
+
+        BannerType(int priority) {
+            this.priority = priority;
         }
     }
 }
