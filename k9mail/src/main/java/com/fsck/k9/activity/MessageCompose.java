@@ -1126,9 +1126,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
                 if (isMessageRatingBeingLoaded) {
                     FeedbackTools.showShortFeedback(getRootView(), getString(R.string.message_loading_error));
                 } else if (!isProcessingSendClick) {
-                    if (isMessageRatingNotAvailable()) {
-                        messageRatingIsBeingLoaded();
-                    }
                     checkToSendMessage();
                 }
                 break;
@@ -1164,12 +1161,6 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private boolean isMessageRatingNotAvailable() {
-        return !recipientPresenter.isForceUnencrypted()
-                && account.ispEpPrivacyProtected();
-    }
-
 
     private void handlePEpState() {
         recipientPresenter.handlepEpState();
