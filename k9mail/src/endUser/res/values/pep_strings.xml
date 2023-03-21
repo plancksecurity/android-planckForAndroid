@@ -15,4 +15,8 @@
         <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
         <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
+
+    <string name="pep_rating_secure_trusted">Secure &amp; Trusted</string>
+    <string name="pep_rating_secure">Secure</string>
+    <string name="pep_rating_mistrusted">Mistrusted</string>
 </resources>

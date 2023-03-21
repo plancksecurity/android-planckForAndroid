@@ -15,4 +15,9 @@
         <item>Ooops: Internes Problem<!--pEpRatingB0rken--></item>
         <item>Manipuliert<!--pEpRatingUnderAttack--></item>
     </string-array>
+
+    <string name="pep_rating_secure_trusted">Sicher &amp; Verifiziert</string>
+    <string name="pep_rating_secure">Sicher</string>
+    <string name="pep_rating_mistrusted">Nicht vertrauenswürdig</string>
+
 </resources>
