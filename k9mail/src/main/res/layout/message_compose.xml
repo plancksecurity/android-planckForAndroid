@@ -8,13 +8,13 @@
 
     <include layout="@layout/toolbar_layout" />
     <TextView
-        android:id="@+id/unsecure_recipients_warning"
+        android:id="@+id/user_action_banner"
         style="@style/UnsecureRecipientsWarning"
         tools:visibility="visible"
         tools:text="1 unsecure recipient. Tap here to remove it."/>
 
     <View
-        android:id="@+id/unsecure_recipients_warning_separator"
+        android:id="@+id/user_action_banner_separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="?android:attr/listDivider" />

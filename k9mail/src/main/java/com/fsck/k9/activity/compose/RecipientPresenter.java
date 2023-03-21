@@ -21,6 +21,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Identity;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
+import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.AttachErrorState;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.ComposeCryptoStatusBuilder;
 import com.fsck.k9.activity.compose.ComposeCryptoStatus.SendErrorState;
@@ -36,6 +37,7 @@ import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
 import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.pEp.PEpUtils;
 import com.fsck.k9.pEp.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -75,6 +77,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     private static final int PGP_DIALOG_DISPLAY_THRESHOLD = 2;
     private static final int ZERO_RECIPIENTS = 0;
+    private static final int ONE_ADDRESS = 1;
 
 
     // transient state, which is either obtained during construction and initialization, or cached
@@ -148,6 +151,18 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     public void clearUnsecureRecipients() {
         recipientMvpView.clearUnsecureRecipients();
+    }
+
+    public void startHandshakeWithSingleRecipient(MessageReference relatedMessageReference) {
+        recipientMvpView.refreshRecipients();
+        if (canHandshakeSingleAddress(
+                recipientMvpView.getToAddresses(),
+                recipientMvpView.getCcAddresses(),
+                recipientMvpView.getBccAddresses()
+        )) {
+            recipientMvpView.setMessageReference(relatedMessageReference);
+            onPEpPrivacyStatus();
+        }
     }
 
     private List<Recipient> getAllRecipients() {
@@ -905,6 +920,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
                     handleUnsecureDeliveryWarning(ZERO_RECIPIENTS);
                 } else {
                     privacyState = rating;
+                    handleSingleAddressHandshakeFeedback(newToAdresses, newCcAdresses, newBccAdresses);
                     showRatingFeedback(rating);
                 }
                 recipientMvpView.messageRatingLoaded();
@@ -945,6 +961,30 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         } else {
             recipientMvpView.hideUnsecureDeliveryWarning();
         }
+    }
+
+    private void handleSingleAddressHandshakeFeedback(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        if (canHandshakeSingleAddress(newToAdresses, newCcAdresses, newBccAdresses)) {
+            recipientMvpView.showSingleRecipientHandshakeBanner();
+        } else {
+            recipientMvpView.hideSingleRecipientHandshakeBanner();
+        }
+    }
+
+    private boolean canHandshakeSingleAddress(
+            List<Address> newToAdresses,
+            List<Address> newCcAdresses,
+            List<Address> newBccAdresses
+    ) {
+        if (!newBccAdresses.isEmpty()) return false;
+        List<Address> candidates = new ArrayList<>();
+        candidates.addAll(newToAdresses);
+        candidates.addAll(newCcAdresses);
+        return candidates.size() == ONE_ADDRESS && PEpUtils.isRatingJustReliable(privacyState);
     }
 
     private int getUnsecureRecipientsCount() {

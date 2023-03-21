@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
@@ -381,7 +382,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
                 : R.string.is_always_secure
         );
 
-        return true;
+        return !BuildConfig.IS_ENTERPRISE;
     }
 
     @Override

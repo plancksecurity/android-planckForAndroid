@@ -562,6 +562,14 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         activity.hideUnsecureDeliveryWarning();
     }
 
+    public void showSingleRecipientHandshakeBanner() {
+        activity.showSingleRecipientHandshakeBanner();
+    }
+
+    public void hideSingleRecipientHandshakeBanner() {
+        activity.hideSingleRecipientHandshakeBanner();
+    }
+
     public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
         recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
