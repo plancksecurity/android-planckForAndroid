@@ -5,8 +5,8 @@
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingHaveNoKey--></item>
         <item>Nicht sicher<!--pEpRatingUnencrypted--></item>
-        <item>Teilweise unsicher<!--pEpRatingUnencryptedForSome--></item>
         <item>Unzuverlässig<!--pEpRatingUnreliable--></item>
+        <item>Sicher<!--pEpRatingMediaKeyProtected--></item>
         <item>Sicher<!--pEpRatingReliable--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrusted--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrustedAndAnonymized--></item>

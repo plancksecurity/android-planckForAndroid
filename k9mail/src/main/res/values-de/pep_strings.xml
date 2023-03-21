@@ -44,12 +44,12 @@
     <string name="pep_sync_enable_account">Dieses Konto synchronisieren</string>
     <string name="synchronize_these_accounts_between_my_devices">Diese Konten zwischen meinen Geräten synchronisieren</string>
     <string-array name="pep_title">
-        <item>Nicht sicher<!--pEpRatingUndefined--></item>
+        <item><!--pEpRatingUndefined--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingCannotDecrypt--></item>
         <item>Entschlüsselung ist nicht möglich<!--pEpRatingHaveNoKey--></item>
         <item>Nicht sicher<!--pEpRatingUnencrypted--></item>
-        <item>Nicht sicher<!--pEpRatingUnencryptedForSome--></item>
         <item>Nicht sicher<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Sicher<!--pEpRatingReliable--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrusted--></item>
         <item>Sicher &amp; vertrauenswürdig<!--pEpRatingTrustedAndAnonymized--></item>
@@ -63,8 +63,8 @@
         <item>Diese Nachricht kann nicht entschlüsselt werden.<!--pEpRatingCannotDecrypt--></item>
         <item>Der Schlüssel zur Entschlüsselung dieser Nachricht wurde nicht gefunden..<!--pEpRatingHaveNoKey--></item>
         <item>Diese Nachricht ist unsicher.<!--pEpRatingUnencrypted--></item>
-        <item>Diese Nachricht kann an einige Kommunikationspartner nicht sicher übertragen werden.<!--pEpRatingUnencryptedForSome--></item>
         <item>Diese Nachricht wurde nicht zuverlässig geschützt.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Diese Nachricht ist sicher, aber Sie sollten die Identität Ihres Kommunikationspartners prüfen.<!--pEpRatingReliable--></item>
         <item>Diese Nachricht ist sicher und vertrauenswürdig.<!--pEpRatingTrusted--></item>
         <item>Diese Nachricht ist sicher und vertrauenswürdig.<!--pEpRatingTrustedAndAnonymized--></item>
@@ -78,8 +78,8 @@
         <item>Falls diese Nachricht für Sie verschlüsselt wurde, informieren Sie den Absender, dass Sie nicht im Besitz des notwendigen Schlüssels sind.<!--pEpRatingCannotDecrypt--></item>
         <item>Falls diese Nachricht für Sie verschlüsselt wurde, informieren Sie den Absender, dass Sie nicht im Besitz des notwendigen Schlüssels sind.<!--pEpRatingHaveNoKey--></item>
         <item>Bitten Sie Ihren Kommunikationspartner, eine Verschlüsselungslösung einzusetzen oder p≡p zu installieren.<!--pEpRatingUnencrypted--></item>
-        <item>Bitte stellen Sie sicher, dass der Privacy Status aller Kommunikationspartner mindestens \"Sicher\" ist.<!--pEpRatingUnencryptedForSome--></item>
         <item>Diese Nachricht besitzt keine zuverlässige Verschlüsselung oder keine digitale Signatur. Bitten Sie Ihren Kommunikationspartner, seine Verschlüsselungslösung zu verbessern oder p≡p zu installieren.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Führen Sie einen Handshake mit dem Kommunikationspartner durch. Nach einem erfolgreichen Handshake wird jede folgende Korrespondenz mit diesem Kommunikationspartner als sicher und vertrauenswürdig eingestuft.<!--pEpRatingReliable--></item>
         <item>Keine weiteren Schritte nötig!<!--pEpRatingTrusted--></item>
         <item>Keine weiteren Schritte nötig!<!--pEpRatingTrustedAndAnonymized--></item>
@@ -279,7 +279,6 @@
 
 
     <string name="compose_unsecure_delivery_warning">Sichere Nachrichtenübertragung unmöglich. Bitte erwägen Sie, markierte Empfänger zu entfernen, um eine sichere Emailübertragung zu gewährleisten.</string>
-    <string name="enterprise_unsecure">Nicht sicher</string>
     <string name="waiting_for_provisioning">Warten auf die Bereitstellung</string>
     <string name="provisioning_in_progress">Bereitstellung in Bearbeitung</string>
     <string name="initializing_application">Initialisieren der Anwendung</string>

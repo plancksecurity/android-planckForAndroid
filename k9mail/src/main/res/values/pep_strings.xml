@@ -16,8 +16,8 @@
         <item>pEpRatingCannotDecrypt</item>
         <item>pEpRatingHaveNoKey</item>
         <item>pEpRatingUnencrypted</item>
-        <item>pEpRatingUnencryptedForSome</item>
         <item>pEpRatingUnreliable</item>
+        <item>pEpRatingMediaKeyProtected</item>
         <item>pEpRatingReliable</item>
         <item>pEpRatingTrusted</item>
         <item>pEpRatingTrustedAndAnonymized</item>
@@ -31,8 +31,8 @@
         <item>@color/pep_no_color<!--pEpRatingCannotDecrypt--></item>
         <item>@color/pep_no_color<!--pEpRatingHaveNoKey--></item>
         <item>@color/pep_no_color<!--pEpRatingUnencrypted--></item>
-        <item>@color/pep_no_color<!--pEpRatingUnencryptedForSome--></item>
         <item>@color/pep_no_color<!--pEpRatingUnreliable--></item>
+        <item>@color/pep_no_color<!--pEpRatingMediaKeyProtected--></item>
         <item>@color/pep_yellow<!--pEpRatingReliable--></item>
         <item>@color/pep_green<!--pEpRatingTrusted--></item>
         <item>@color/pep_green<!--pEpRatingTrustedAndAnonymized--></item>
@@ -122,27 +122,27 @@
     <string name="device_offline_warning">Your device seems to be offline, please check your connection before you can continue</string>
     <string name="permissions_needed_message">Not granting required permissions might cause unexpected behavior. Press OK to grant the permissions.</string>
     <string-array name="pep_title">
-        <item>Unsecure<!--pEpRatingUndefined--></item>
+        <item><!--pEpRatingUndefined--></item>
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
         <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
-        <item>Unsecure<!--pEpRatingUnencrypted--></item>
-        <item>Unsecure<!--pEpRatingUnencryptedForSome--></item>
-        <item>Unsecure<!--pEpRatingUnreliable--></item>
-        <item>Secure<!--pEpRatingReliable--></item>
-        <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
-        <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>Secure &amp; Trusted<!--pEpRatingFullyAnonymous--></item>
-        <item>Mistrusted<!--pEpRatingMissTrust--></item>
-        <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
-        <item>Under Attack<!--pEpRatingUnderAttack--></item>
+        <item>Not encrypted<!--pEpRatingUnencrypted--></item>
+        <item>Weakly Encrypted<!--pEpRatingUnreliable--></item>
+        <item>Encrypted<!--pEpRatingMediaKeyProtected--></item>
+        <item>Encrypted<!--pEpRatingReliable--></item>
+        <item>Trusted<!--pEpRatingTrusted--></item>
+        <item>Trusted<!--pEpRatingTrustedAndAnonymized--></item>
+        <item>Trusted<!--pEpRatingFullyAnonymous--></item>
+        <item>Dangerous<!--pEpRatingMissTrust--></item>
+        <item>Dangerous<!--pEpRatingB0rken--></item>
+        <item>Dangerous<!--pEpRatingUnderAttack--></item>
     </string-array>
     <string-array name="pep_explanation">
         <item>This message does not contain enough information to determine if it is secure.<!--pEpRatingUndefined--></item>
         <item>This message cannot be decrypted.<!--pEpRatingCannotDecrypt--></item>
         <item>This message cannot be decrypted because the key is not available.<!--pEpRatingHaveNoKey--></item>
         <item>This message is unsecure.<!--pEpRatingUnencrypted--></item>
-        <item>This message is unsecure for some communication partners.<!--pEpRatingUnencryptedForSome--></item>
         <item>This message has unreliable protection.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>This message is secure but you still need to verify the identity of your communication partner.<!--pEpRatingReliable--></item>
         <item>This message is secure and trusted.<!--pEpRatingTrusted--></item>
         <item>This message is secure and trusted.<!--pEpRatingTrustedAndAnonymized--></item>
@@ -156,8 +156,8 @@
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingHaveNoKey--></item>
         <item>Please ask your communication partner to use an encryption solution or install p≡p.<!--pEpRatingUnencrypted--></item>
-        <item>Make sure the privacy status for each communication partner listed is at least secure.<!--pEpRatingUnencryptedForSome--></item>
         <item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.<!--pEpRatingUnreliable--></item>
+        <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.<!--pEpRatingReliable--></item>
         <item>No action needed!<!--pEpRatingTrusted--></item>
         <item>No action needed!<!--pEpRatingTrustedAndAnonymized--></item>
@@ -250,10 +250,13 @@
     <string name="intro_frag_fourth_text_1">@string/pep_title_activity_privacy_status</string>
     <string name="intro_frag_fourth_text_2">The icon in the top bar reflects the Privacy Status of the message, which is the lowest common denominator of all communication partners of that message, for example:</string>
     <string name="intro_frag_fourth_text_3">In this case the Privacy Status of the message is Secure, because this is the lowest common denominator of the two communication partners.</string>
-    <string name="pep_rating_secure_trusted">Secure &amp; Trusted</string>
-    <string name="pep_rating_secure">Secure</string>
-    <string name="pep_rating_mistrusted">Mistrusted</string>
+    <string name="pep_rating_trusted">Trusted</string>
+    <string name="pep_rating_encrypted">Encrypted</string>
+    <string name="pep_rating_dangerous">Dangerous</string>
     <string name="pep_rating_forced_unencrypt">Disabled</string>
+    <string name="pep_rating_not_encrypted">Not encrypted</string>
+    <string name="pep_rating_weakly_encrypted">Weakly Encrypted</string>
+    <string name="pep_rating_cannot_decrypt">Cannot decrypt</string>
     <string name="pep_rating_none" translatable="false"/>
     <string name="action_tutorial">Tutorial</string>
     <string name="only_own_identities">This is an own message, no other communication partner involved.</string>
@@ -358,7 +361,6 @@
         <item quantity="other">%1$d unsecure recipients. Tap here to remove them.</item>
     </plurals>
 
-    <string name="enterprise_unsecure">Unsecure</string>
     <string name="use_trustwords_setting_title">Use trustwords</string>
     <string name="use_trustwords_setting_description">Use trustwords to stablish trust with a partner</string>
     <string name="waiting_for_provisioning">Waiting for provisioning</string>
