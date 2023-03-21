@@ -592,8 +592,12 @@ public class PEpUtils {
         return rating.value < Rating.pEpRatingUnreliable.value;
     }
 
-    public static boolean isRatingJustReliable(Rating rating) {
+    public static boolean isHandshakeRating(Rating rating) {
         return rating.value == Rating.pEpRatingReliable.value;
+    }
+
+    public static boolean isRatingTrusted(Rating rating){
+        return rating.value >= Rating.pEpRatingTrusted.value;
     }
 }
 
