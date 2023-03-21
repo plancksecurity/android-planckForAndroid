@@ -299,7 +299,6 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
 
     public void addBccAddresses(Address... bccRecipients) {
         if (bccRecipients.length > 0) {
-            forceUnencrypted = true;
             addRecipientsFromAddresses(RecipientType.BCC, bccRecipients);
             String bccAddress = account.getAlwaysBcc();
 
@@ -500,13 +499,11 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     void onBccTokenAdded() {
-        forceUnencrypted = true;
         updateCryptoStatus();
         listener.onRecipientsChanged();
     }
 
     void onBccTokenRemoved() {
-        forceUnencrypted = false;
         updateCryptoStatus();
         listener.onRecipientsChanged();
     }
