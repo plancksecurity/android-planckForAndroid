@@ -292,7 +292,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
     private fun initializeSyncEnvironmentOnStartup() {
         if(!k9.ispEpSyncEnvironmentInitialized()) {
-            val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+            val scope = CoroutineScope(PEpDispatcher)
             scope.launch {
                 k9.pEpInitSyncEnvironment()
             }

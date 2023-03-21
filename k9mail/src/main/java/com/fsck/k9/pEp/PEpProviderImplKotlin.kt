@@ -312,8 +312,8 @@ class PEpProviderImplKotlin(
         }
     }
 
-    override fun isSyncRunning(): Boolean {
-        return engine.get().isSyncRunning
+    override fun isSyncRunning(): Boolean = runBlocking(PEpDispatcher) {
+        engine.get().isSyncRunning
     }
 
     private fun getElementAtPosition(chain: String): String {
@@ -457,7 +457,7 @@ class PEpProviderImplKotlin(
         deliverHandshakeResult(SyncHandshakeResult.SyncHandshakeCancel)
     }
 
-    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) {
+    private fun deliverHandshakeResult(syncResult: SyncHandshakeResult) = runBlocking(PEpDispatcher) {
         engine.get().deliverHandshakeResult(syncResult, Vector())
     }
 
@@ -613,11 +613,11 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun myself(myId: Identity?): Identity? {
+    override fun myself(myId: Identity?): Identity? = runBlocking(PEpDispatcher) {
         myId?.user_id = PEP_OWN_USER_ID
         myId?.me = true
         Timber.e("%s %s", TAG, "calling myself")
-        return try {
+        try {
             engine.get().myself(myId)
         } catch (exception: pEpException) {
             Timber.e(exception, "%s %s", TAG, "error in PEpProviderImpl.myself")
@@ -663,8 +663,8 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun incomingMessageRating(message: MimeMessage): Rating {
-        return try {
+    override fun incomingMessageRating(message: MimeMessage): Rating = runBlocking(PEpDispatcher) {
+        try {
             val pEpMessage = PEpMessageBuilder(message).createMessage(context)
             engine.get().re_evaluate_message_rating(pEpMessage)
         } catch (e: pEpException) {
@@ -694,12 +694,12 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread //Already done
-    override fun getRating(message: com.fsck.k9.mail.Message): Rating {
+    override fun getRating(message: com.fsck.k9.mail.Message): Rating = runBlocking(PEpDispatcher) {
         val from = message.from[0]
         val to = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.TO))
         val cc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.CC))
         val bcc = listOf(*message.getRecipients(com.fsck.k9.mail.Message.RecipientType.BCC))
-        return getRating(from, to, cc, bcc)
+        getRating(from, to, cc, bcc)
     }
 
     override fun getRating(message: com.fsck.k9.mail.Message, callback: ResultCallback<Rating>) {
@@ -863,7 +863,7 @@ class PEpProviderImplKotlin(
 
     }
 
-    override fun stopSync() {
+    override fun stopSync() = runBlocking(PEpDispatcher) {
         Timber.d("%s %s", TAG, "stopSync")
         engine.get().stopSync()
     }
@@ -984,7 +984,7 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetIdentity(ident: Identity, fpr: String?) {
+    override fun keyResetIdentity(ident: Identity, fpr: String?) = runBlocking(PEpDispatcher) {
         val identity = updateIdentity(ident)
         try {
             engine.get().key_reset_identity(identity, fpr)
@@ -996,7 +996,7 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun keyResetUser(userId: String, fpr: String?) {
+    override fun keyResetUser(userId: String, fpr: String?) = runBlocking(PEpDispatcher) {
         try {
             engine.get().key_reset_user(userId, fpr)
         } catch (e: pEpPassphraseRequired) { // TODO: 04/08/2020 Review if still needed, or callback covering it
@@ -1019,37 +1019,37 @@ class PEpProviderImplKotlin(
 
     @WorkerThread
     @Throws(pEpException::class) // TODO: 13/1/23 review where to handle this exception.
-    override fun leaveDeviceGroup() {
+    override fun leaveDeviceGroup() = runBlocking(PEpDispatcher) {
         engine.get().leave_device_group()
     }
 
     @WorkerThread
-    override fun updateIdentity(id: Identity): Identity {
-        return engine.get().updateIdentity(id)
+    override fun updateIdentity(id: Identity): Identity = runBlocking(PEpDispatcher) {
+        engine.get().updateIdentity(id)
     }
 
     @WorkerThread
-    override fun getBlacklistInfo(): List<KeyListItem>? {
+    override fun getBlacklistInfo(): List<KeyListItem>? = runBlocking(PEpDispatcher) {
         try {
             val identities: MutableList<KeyListItem> = ArrayList()
             val keys = engine.get().OpenPGP_list_keyinfo("")
             keys?.forEach { key ->
       //          identities.add(KeyListItem(key.first, key.second, engine.get().blacklist_is_listed(key.first)))
             }
-            return identities
+            return@runBlocking identities
         } catch (e: pEpException) {
             Timber.e(e, "%s %s", TAG, "getBlacklistInfo")
         }
-        return null
+        null
     }
 
     @WorkerThread
-    override fun addToBlacklist(fpr: String) {
+    override fun addToBlacklist(fpr: String) = runBlocking(PEpDispatcher) {
       //  engine.get().blacklist_add(fpr)
     }
 
     @WorkerThread
-    override fun deleteFromBlacklist(fpr: String) {
+    override fun deleteFromBlacklist(fpr: String) = runBlocking(PEpDispatcher) {
     //    engine.get().blacklist_delete(fpr)
     }
 
@@ -1130,7 +1130,7 @@ class PEpProviderImplKotlin(
     }
 
     @WorkerThread
-    override fun setIdentityFlag(identity: Identity, sync: Boolean) {
+    override fun setIdentityFlag(identity: Identity, sync: Boolean) = runBlocking(PEpDispatcher) {
         try {
             when {
                 sync -> engine.get().enable_identity_for_sync(identity)
