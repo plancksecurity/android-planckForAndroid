@@ -183,6 +183,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private static final int REQUEST_MASK_ATTACHMENT_PRESENTER = (1 << 10);
     private static final int REQUEST_MASK_MESSAGE_BUILDER = (1 << 11);
     private static final int DEBUG_STACK_TRACE_DEPTH = 1;
+    private static final String NEW_LINE_INSERT = "\n";
 
     /**
      * Regular expression to remove the first localized "Re:" prefix in subjects.
@@ -2123,7 +2124,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (lastError == null) {
             lastError = newErrorText;
         } else {
-            lastError += "\n" + newErrorText;
+            lastError += NEW_LINE_INSERT + newErrorText;
         }
     }
 
