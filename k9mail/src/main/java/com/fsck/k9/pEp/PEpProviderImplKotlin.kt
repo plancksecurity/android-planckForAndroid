@@ -43,6 +43,7 @@ class PEpProviderImplKotlin(
     private val sendMessageSet = false
     private val showHandshakeSet = false
     private var echoMessageReceivedListener: EchoMessageReceivedListener? = null
+    private val engineScope = CoroutineScope(PEpDispatcher)
 
     override fun setEchoMessageReceivedListener(listener: EchoMessageReceivedListener?) {
         echoMessageReceivedListener = listener
@@ -552,13 +553,12 @@ class PEpProviderImplKotlin(
 
     override fun decryptMessage(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
         Timber.d("%s %s", TAG, "decryptMessage() enter")
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             decryptMessageSuspend(source, account, callback)
         }
     }
 
-    private suspend fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) = withContext(PEpDispatcher) {
+    private fun decryptMessageSuspend(source: MimeMessage, account: Account, callback: ResultCallback<DecryptResult>) {
         var srcMsg: Message? = null
         var decReturn: decrypt_message_Return? = null
         //TODO review this; we are in another thread so we should get a new engine anyways??
@@ -628,23 +628,21 @@ class PEpProviderImplKotlin(
     override fun loadOutgoingMessageRatingAfterResetTrust(
             identity: Identity, from: Address, toAddresses: List<Address>, ccAddresses: List<Address>,
             bccAddresses: List<Address>, callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             getRatingSuspend(identity, from, toAddresses, ccAddresses, bccAddresses, callback)
         }
     }
 
     override fun loadMessageRatingAfterResetTrust(
             mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity, resultCallback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             loadMessageRatingAfterResetTrustSuspend(mimeMessage, isIncoming, id, resultCallback)
         }
     }
 
-    private suspend fun loadMessageRatingAfterResetTrustSuspend(
+    private fun loadMessageRatingAfterResetTrustSuspend(
             mimeMessage: MimeMessage?, isIncoming: Boolean, id: Identity,
-            resultCallback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
+            resultCallback: ResultCallback<Rating>) {
         try {
             engine.get().keyResetTrust(id)
             val pEpMessage = PEpMessageBuilder(mimeMessage).createMessage(context)
@@ -676,10 +674,7 @@ class PEpProviderImplKotlin(
     override fun incomingMessageRating(message: MimeMessage, callback: ResultCallback<Rating>) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         uiScope.launch {
-            val result = withContext(PEpDispatcher) {
-                incomingMessageRatingSuspend(message)
-            }
-            callback.onLoaded(result)
+            callback.onLoaded(incomingMessageRatingSuspend(message))
         }
     }
 
@@ -689,7 +684,7 @@ class PEpProviderImplKotlin(
             engine.get().re_evaluate_message_rating(pEpMessage)
         } catch (e: pEpException) {
             Timber.e(e)
-            Rating.pEpRatingUndefined
+            Rating.pEpRatingUndefined // FIXME: SORT LAUNCH/WITHCONTEXT AFTER REMOVING THIS DEFAULT RATING
         }
     }
 
@@ -715,8 +710,7 @@ class PEpProviderImplKotlin(
                            ccAddresses: List<Address>,
                            bccAddresses: List<Address>,
                            callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             getRatingSuspend(null, from, toAddresses, ccAddresses, bccAddresses, callback)
         }
     }
@@ -749,9 +743,9 @@ class PEpProviderImplKotlin(
         return Rating.pEpRatingUndefined
     }
 
-    private suspend fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
+    private fun getRatingSuspend(identity: Identity?, from: Address?, toAddresses: List<Address>,
                                          ccAddresses: List<Address>, bccAddresses: List<Address>,
-                                         callback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
+                                         callback: ResultCallback<Rating>) {
         Timber.i("Counter of PEpProviderImpl +1")
         EspressoTestingIdlingResource.increment()
         when {
@@ -825,8 +819,7 @@ class PEpProviderImplKotlin(
     }
 
     override fun getRating(address: Address, callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             val identity = PEpUtils.createIdentity(address, context)
             getRatingSuspend(identity, callback)
         }
@@ -834,13 +827,12 @@ class PEpProviderImplKotlin(
     }
 
     override fun getRating(identity: Identity, callback: ResultCallback<Rating>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             getRatingSuspend(identity, callback)
         }
     }
 
-    private suspend fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) = withContext(PEpDispatcher) {
+    private fun getRatingSuspend(identity: Identity, callback: ResultCallback<Rating>) {
         try {
             val rating = engine.get().identity_rating(identity)
             notifyLoaded(rating, callback)
@@ -885,15 +877,14 @@ class PEpProviderImplKotlin(
 
     override fun trustwords(myself: Identity, partner: Identity, lang: String, isShort: Boolean,
                             callback: SimpleResultCallback<String>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             trustwordsSuspend(myself, partner, lang, isShort, callback)
         }
     }
 
-    private suspend fun trustwordsSuspend(
+    private fun trustwordsSuspend(
             myself: Identity, partner: Identity, lang: String, isShort: Boolean,
-            callback: SimpleResultCallback<String>) = withContext(PEpDispatcher) {
+            callback: SimpleResultCallback<String>) {
         try {
             val result = engine.get().get_trustwords(myself, partner, lang, !isShort)
             notifyLoaded(result, callback)
@@ -906,15 +897,14 @@ class PEpProviderImplKotlin(
     override fun obtainTrustwords(self: Identity, other: Identity, lang: String,
                                   areKeysyncTrustwords: Boolean,
                                   callback: ResultCallback<HandshakeData>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             obtainTrustwordsSuspend(self, other, lang, areKeysyncTrustwords, callback)
         }
     }
 
-    private suspend fun obtainTrustwordsSuspend(
+    private fun obtainTrustwordsSuspend(
             self: Identity, other: Identity, lang: String, areKeysyncTrustwords: Boolean,
-            callback: ResultCallback<HandshakeData>) = withContext(PEpDispatcher) {
+            callback: ResultCallback<HandshakeData>) {
         try {
             val myself: Identity
             val another: Identity
@@ -938,48 +928,44 @@ class PEpProviderImplKotlin(
 
 
     override fun trustPersonaKey(id: Identity) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             trustPersonaKeySuspend(id)
         }
     }
 
-    private suspend fun trustPersonaKeySuspend(id: Identity) = withContext(PEpDispatcher) {
+    private fun trustPersonaKeySuspend(id: Identity) {
         Timber.i("%s %s", TAG, "Calling trust personal key")
         engine.get().trustPersonalKey(id)
     }
 
     override fun trustOwnKey(id: Identity) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             trustOwnKeySuspend(id)
         }
     }
 
-    private suspend fun trustOwnKeySuspend(id: Identity) = withContext(PEpDispatcher) {
+    private fun trustOwnKeySuspend(id: Identity) {
         Timber.i("%s %s", TAG, "Calling trust own key")
         engine.get().trustOwnKey(id)
     }
 
     override fun keyMistrusted(id: Identity) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             keyMistrustedSuspend(id)
         }
     }
 
-    private suspend fun keyMistrustedSuspend(id: Identity) = withContext(PEpDispatcher) {
+    private fun keyMistrustedSuspend(id: Identity) {
         engine.get().keyMistrusted(id)
     }
 
     override fun resetTrust(id: Identity) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             resetTrustSuspend(id)
         }
     }
 
-    private suspend fun resetTrustSuspend(id: Identity) = withContext(PEpDispatcher) {
+    private fun resetTrustSuspend(id: Identity) {
         engine.get().keyResetTrust(id)
     }
 
@@ -1078,13 +1064,12 @@ class PEpProviderImplKotlin(
     }
 
     override fun loadOwnIdentities(callback: ResultCallback<List<Identity>>) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             loadOwnIdentitiesSuspend(callback)
         }
     }
 
-    private suspend fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) = withContext(PEpDispatcher) {
+    private fun loadOwnIdentitiesSuspend(callback: ResultCallback<List<Identity>>) {
         try {
             val identitiesVector: List<Identity> = engine.get().own_identities_retrieve()
             notifyLoaded(identitiesVector, callback)
@@ -1094,14 +1079,13 @@ class PEpProviderImplKotlin(
     }
 
     override fun setIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             setIdentityFlagSuspend(identity, flags, completedCallback)
         }
     }
 
-    private suspend fun setIdentityFlagSuspend(identity: Identity, flags: Int,
-                                               completedCallback: CompletedCallback) = withContext(PEpDispatcher) {
+    private fun setIdentityFlagSuspend(identity: Identity, flags: Int,
+                                               completedCallback: CompletedCallback) {
         try {
             engine.get().set_identity_flags(identity, flags)
             notifyCompleted(completedCallback)
@@ -1112,14 +1096,13 @@ class PEpProviderImplKotlin(
     }
 
     override fun unsetIdentityFlag(identity: Identity, flags: Int, completedCallback: CompletedCallback) {
-        val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-        uiScope.launch {
+        engineScope.launch {
             unsetIdentityFlagSuspend(identity, flags, completedCallback)
         }
     }
 
-    private suspend fun unsetIdentityFlagSuspend(identity: Identity, flags: Int,
-                                                 completedCallback: CompletedCallback) = withContext(PEpDispatcher) {
+    private fun unsetIdentityFlagSuspend(identity: Identity, flags: Int,
+                                                 completedCallback: CompletedCallback) {
         try {
             engine.get().unset_identity_flags(identity, flags)
             notifyCompleted(completedCallback)
@@ -1171,17 +1154,13 @@ class PEpProviderImplKotlin(
         return result
     }
 
-    override fun getLog(): String {
-        var result = ""
-        val uiScope = CoroutineScope(PEpDispatcher + SupervisorJob())
-        uiScope.launch {
-            result = getLogSuspend()
-        }
-        return result
+    @WorkerThread
+    override fun getLog(): String = runBlocking(PEpDispatcher) {
+        getLogSuspend()
     }
 
-    private suspend fun getLogSuspend(): String = withContext(PEpDispatcher) {
-        engine.get().getCrashdumpLog(100)
+    private fun getLogSuspend(): String {
+        return engine.get().getCrashdumpLog(100)
     }
 
     fun Message.isEncrypted(): Boolean {
