@@ -36,7 +36,6 @@ public class PePUIArtefactCache
     private String[] titles;
     private String[] explanations;
     private String[] suggestions;
-    private int[] color;
     private static PePUIArtefactCache instance = null;
     private ArrayList<Identity> recipients;
     private Resources resources;
@@ -68,12 +67,6 @@ public class PePUIArtefactCache
         titles = resources.getStringArray(R.array.pep_title);
         explanations = resources.getStringArray(R.array.pep_explanation);
         suggestions = resources.getStringArray(R.array.pep_suggestion);
-
-        TypedArray colors = resources.obtainTypedArray(R.array.pep_color);
-        color = new int[colors.length()];
-        for(int idx=0; idx < colors.length(); idx++)
-            color[idx] = colors.getColor(idx, 0);
-        colors.recycle();
 
     }
 
