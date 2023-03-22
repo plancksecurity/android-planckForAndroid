@@ -53,7 +53,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_bordered)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green_bordered)
-            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
+            rating.value >= Rating.pEpRatingUnreliable.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_bordered)
             else ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
@@ -71,7 +71,7 @@ object PEpUIUtils {
                 ContextCompat.getDrawable(context, R.drawable.pep_status_red_white)
             rating.value >= Rating.pEpRatingTrusted.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_green_dark)
-            rating.value >= Rating.pEpRatingUnreliable.value -> // TODO: change this to the media key rating when implemented on engine side.
+            rating.value >= Rating.pEpRatingUnreliable.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_white)
             else ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
