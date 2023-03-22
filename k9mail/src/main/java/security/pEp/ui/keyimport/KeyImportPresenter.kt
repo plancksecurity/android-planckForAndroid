@@ -9,6 +9,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PEpUtils
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
@@ -48,7 +49,7 @@ class KeyImportPresenter @Inject constructor(
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
             accountIdentity = PEpUtils.createIdentity(Address(address), context)
-            withContext(Dispatchers.IO) { currentFpr = pEp.myself(accountIdentity).fpr }
+            withContext(PEpDispatcher) { currentFpr = pEp.myself(accountIdentity).fpr }
         }
     }
 
@@ -88,7 +89,7 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private suspend fun onKeyImportConfirmed(): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(PEpDispatcher) {
             var result = false
             runBlocking {
                 try {
@@ -111,7 +112,7 @@ class KeyImportPresenter @Inject constructor(
         }
     }
 
-    private suspend fun importKey(uri: Uri): Identity? = withContext(Dispatchers.IO) {
+    private suspend fun importKey(uri: Uri): Identity? = withContext(PEpDispatcher) {
         var result: Identity?
         try {
             val resolver = context.contentResolver

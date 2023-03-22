@@ -395,7 +395,7 @@ public class PEpUtils {
         } else {
             app.pEpInitSyncEnvironment();
         }
-
+        pEp.close();
     }
 
     private static void updateSyncFlag(Account account, PEpProvider pEp, Identity myIdentity) {
