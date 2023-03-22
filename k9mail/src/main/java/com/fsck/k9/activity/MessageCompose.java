@@ -283,7 +283,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     private PEpSecurityStatusLayout pEpSecurityStatusLayout;
     private TextView userActionBanner;
     private View userActionBannerSeparator;
-    private String lastError;
+    private StringBuilder lastError;
 
     public static Intent actionEditDraftIntent(Context context, MessageReference messageReference) {
         Intent intent = new Intent(context, MessageCompose.class);
@@ -726,7 +726,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-        outState.putString(STATE_LAST_ERROR, lastError);
+        outState.putString(STATE_LAST_ERROR, lastError.toString());
         // TODO: trigger pep?
 
     }
@@ -796,9 +796,10 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
         updateMessageFormat();
         restoreMessageComposeConfigurationInstance();
-        lastError = savedInstanceState.getString(STATE_LAST_ERROR);
-        if (lastError != null) {
-            showError(lastError);
+        String errorText = savedInstanceState.getString(STATE_LAST_ERROR);
+        if (errorText != null) {
+            lastError = new StringBuilder(errorText);
+            showError(errorText);
         }
     }
 
@@ -2115,17 +2116,18 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         if (BuildConfig.DEBUG) {
             addNewDebugErrorText(ThrowableKt.getStackTrace(throwable, DEBUG_STACK_TRACE_DEPTH));
         } else {
-            lastError = getString(R.string.error_happened_restart_app);
+            lastError = new StringBuilder(getString(R.string.error_happened_restart_app));
         }
-        showError(lastError);
+        showError(lastError.toString());
     }
 
     private void addNewDebugErrorText(String newErrorText) {
         if (lastError == null) {
-            lastError = newErrorText;
+            lastError = new StringBuilder();
         } else {
-            lastError += NEW_LINE_INSERT + newErrorText;
+            lastError.append(NEW_LINE_INSERT);
         }
+        lastError.append(newErrorText);
     }
 
     private void showError(@NotNull String error) {
