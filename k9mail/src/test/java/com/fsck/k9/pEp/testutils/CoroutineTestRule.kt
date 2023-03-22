@@ -16,6 +16,7 @@ class CoroutineTestRule(val testDispatcher: TestDispatcher = StandardTestDispatc
         override fun io(): CoroutineDispatcher = testDispatcher
         override fun main(): CoroutineDispatcher = testDispatcher
         override fun unconfined(): CoroutineDispatcher = testDispatcher
+        override fun pEpDispatcher(): CoroutineDispatcher = testDispatcher
     }
 
     override fun starting(description: Description) {

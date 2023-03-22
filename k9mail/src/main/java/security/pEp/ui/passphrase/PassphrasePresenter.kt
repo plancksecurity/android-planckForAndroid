@@ -3,8 +3,8 @@ package security.pEp.ui.passphrase
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import security.pEp.ui.PassphraseProvider
@@ -50,7 +50,7 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun deliverPassphrase(passphrase: String) {
-        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        val scope = CoroutineScope(PEpDispatcher + SupervisorJob())
 
         when (type) {
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
@@ -81,8 +81,8 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancelSync() {
-        val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-        ioScope.launch {
+        val scope = CoroutineScope(PEpDispatcher + SupervisorJob())
+        scope.launch {
             try {
                pEp.stopSync()
             } catch (e: Exception) {

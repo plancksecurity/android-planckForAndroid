@@ -1,5 +1,6 @@
 package com.fsck.k9.pEp.infrastructure.threading
 
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.controller.MessagingController
 import foundation.pEp.jniadapter.Engine
@@ -17,6 +18,7 @@ class EngineThreadLocal private constructor(
 
     private fun createEngineInstanceIfNeeded(): Engine {
         return super.get() ?: let {
+            ensureThread()
             return try {
                 val engine = Engine()
                 initEngineConfig(engine)
@@ -25,6 +27,15 @@ class EngineThreadLocal private constructor(
             } catch (e: pEpException) {
                 Timber.e(e, "%s %s", TAG, "createIfNeeded " + Thread.currentThread().id)
                 throw e
+            }
+        }
+    }
+
+    private fun ensureThread() {
+        if (BuildConfig.DEBUG) {
+            val thread = Thread.currentThread()
+            if (thread !is AutoCloseableEngineThread) {
+                error("CURRENT THREAD IS NOOOOOT AUTOCLOSEABLE ENGINE THREAD, ON THREAD: ${thread.name}")
             }
         }
     }
