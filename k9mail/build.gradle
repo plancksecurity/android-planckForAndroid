@@ -29,6 +29,9 @@ apply from: '../gradle/plugins/utils/git-version.gradle'
 apply from: '../gradle/plugins/utils/addaccount.gradle'
 apply from: '../gradle/plugins/cucumber.gradle'
 apply from: '../gradle/plugins/customTest.gradle'
+try {
+    apply from: '../gradle/plugins/mdmDemoConfig.gradle'
+} catch(Exception ignored) {}
 
 if (rootProject.testCoverage) {
     apply plugin: "jacoco"
@@ -245,6 +248,16 @@ android {
             dimension "type"
         }
 
+        if (hasMdmDemoProperties()) {
+            mdmDemo {
+                buildConfigField "boolean", "IS_ENTERPRISE", "true"
+                versionName "${gitVersionName}" + ".enterprise" + demoAppVersionNameSuffix
+                dimension "type"
+                applicationIdSuffix ".enterprise" + demoAppIdSuffix
+                versionCode demoVersionCode
+            }
+        }
+
         playStore {
             dimension "store"
         }
@@ -258,8 +271,13 @@ android {
     variantFilter { variant ->
         def names = variant.getFlavors()*.name
         if (names.contains('enterprise') && names.contains('fDroid')) {
-            println("names: $names")
             variant.setIgnore(true)
+        }
+        if (hasMdmDemoProperties()) {
+            def type = variant.getBuildType().name
+            if (names.contains('mdmDemo') && (names.contains('fDroid') || type != 'release')) {
+                variant.setIgnore(true)
+            }
         }
     }
 
@@ -267,9 +285,15 @@ android {
         release {
             if (project.hasProperty("storeFile")) {
                 productFlavors.endUser.signingConfig signingConfigs.endUserRelease
+                if (hasMdmDemoProperties() && demoUseEndUserSigningConfig) {
+                    productFlavors.mdmDemo.signingConfig signingConfigs.endUserRelease
+                }
             }
             if (project.hasProperty("enterpriseStoreFile")) {
                 productFlavors.enterprise.signingConfig signingConfigs.enterpriseRelease
+                if (hasMdmDemoProperties() && !demoUseEndUserSigningConfig) {
+                    productFlavors.mdmDemo.signingConfig signingConfigs.enterpriseRelease
+                }
             }
 
             buildConfigField "boolean", "DEVELOPER_MODE", "false"
@@ -338,6 +362,12 @@ android {
             manifest.srcFile "src/androidTest/AndroidManifest.xml"
             assets.srcDirs = ['src/androidTest/assets']
         }
+        if (hasMdmDemoProperties()) {
+            mdmDemo {
+                res.srcDirs += ['src/enterprise/res']
+                java.srcDirs += ['src/enterprise/java']
+            }
+        }
     }
 
     testOptions {
@@ -354,9 +384,19 @@ android {
 
 private static void defineOAuthConfigs(variant) {
     def mergedFlavor = variant.getMergedFlavor()
-    mergedFlavor.manifestPlaceholders = ['appAuthRedirectScheme': variant.applicationId.replace("pEp", "pep")]
+    if (variant.name == "mdmDemoPlayStoreRelease") {
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"security.pEp.enterprise\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "security.pep.enterprise"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "security.pEp.enterprise"
+    } else {
+        variant.buildConfigField "String", "OAUTH_APP_ID", "\"${variant.applicationId}\""
+        mergedFlavor.manifestPlaceholders["appAuthRedirectScheme"] = "${variant.applicationId.toLowerCase()}"
+        mergedFlavor.manifestPlaceholders["oAuthAppId"] = "${variant.applicationId}"
+    }
+    //noinspection GroovyFallthrough
     switch (variant.name) {
         case "enterprisePlayStoreRelease":
+        case "mdmDemoPlayStoreRelease":
             variant.buildConfigField "String", "OAUTH_GMAIL_CLIENT_ID", "\"690214278127-erualq1hufqvi6beiqdqdc5cej6fu88i.apps.googleusercontent.com\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_CLIENT_ID", "\"1533a73d-1918-4d6e-b16f-9be285c34e92\""
             variant.buildConfigField "String", "OAUTH_MICROSOFT_REDIRECT_URI", "\"msauth://security.pEp.enterprise/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D\""
@@ -393,3 +433,20 @@ androidExtensions {
         coroutines "enable"
     }
 }*/
+
+afterEvaluate {
+    if (hasMdmDemoProperties()) {
+        tasks.findAll { task ->
+            task.name.contains("MdmDemo") && (task.name.contains("test") || task.name.contains("lint"))
+        }.forEach {
+            it.enabled = false
+        }
+    }
+}
+
+boolean hasMdmDemoProperties() {
+    return project.hasProperty("demoAppVersionNameSuffix") &&
+            project.hasProperty("demoAppIdSuffix") &&
+            project.hasProperty("demoVersionCode") &&
+            project.hasProperty("demoUseEndUserSigningConfig")
+}

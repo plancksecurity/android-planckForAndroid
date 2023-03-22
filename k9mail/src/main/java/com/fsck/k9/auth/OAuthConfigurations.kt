@@ -8,7 +8,7 @@ const val SCOPE_OPENID = "openid"
 const val SCOPE_EMAIL = "email"
 
 fun createOAuthConfigurationProvider(): OAuthConfigurationProvider {
-    val redirectUriSlash = BuildConfig.APPLICATION_ID + ":/oauth2redirect"
+    val redirectUriSlash = BuildConfig.OAUTH_APP_ID + ":/oauth2redirect"
     val commonScopes = listOf(SCOPE_OPENID, SCOPE_EMAIL)
 
     val googleConfig = OAuthConfiguration(
