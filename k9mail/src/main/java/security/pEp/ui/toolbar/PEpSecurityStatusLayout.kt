@@ -57,21 +57,18 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
             securityStatusIcon?.clearColorFilter()
 
         if (!BuildConfig.IS_ENTERPRISE) {
-            securityStatusText?.setTextColor(
-                PEpUIUtils.getRatingColor(
-                    context,
-                    rating,
-                    ispEpEnabled
-                )
-            )
-            secondLineText?.setTextColor(
-                PEpUIUtils.getRatingColor(
-                    context,
-                    rating,
-                    ispEpEnabled
-                )
-            )
+            setTextColor(rating)
         }
+    }
+
+    private fun setTextColor(rating: Rating?) {
+        val textColor = PEpUIUtils.getRatingColor(
+            context,
+            rating,
+            ispEpEnabled
+        )
+        securityStatusText?.setTextColor(textColor)
+        secondLineText?.setTextColor(textColor)
     }
 
     private fun setSecurityStatusText(rating: Rating?) {
