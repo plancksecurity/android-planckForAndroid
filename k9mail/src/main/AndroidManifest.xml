@@ -547,6 +547,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="security.pEp.ui.terms.TermsConditionsActivity"
+            android:label="@string/terms_conditions"
+            android:windowSoftInputMode="adjustPan"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName="com.fsck.k9.activity.setup.AccountSetupBasics">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fsck.k9.activity.setup.AccountSetupBasics"/>
+        </activity>
+        <activity
             android:name=".pEp.ui.activities.provisioning.ProvisioningActivity"
             android:launchMode="singleInstance"
             android:theme="@style/SplashTheme"/>

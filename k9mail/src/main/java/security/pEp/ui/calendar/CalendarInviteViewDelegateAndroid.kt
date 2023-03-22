@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.fsck.k9.R
 import com.fsck.k9.mailstore.AttachmentViewInfo
+import com.fsck.k9.pEp.launchIntent
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -21,11 +22,6 @@ class CalendarInviteViewDelegateAndroid @Inject constructor(
     }
 
     private fun launchCalendarIntent(intent: Intent): Boolean {
-        return if (intent.resolveActivity(context.applicationContext.packageManager) != null) {
-            context.startActivity(intent)
-            true
-        } else {
-            false
-        }
+        return context.launchIntent(intent)
     }
 }

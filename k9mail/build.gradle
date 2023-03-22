@@ -237,6 +237,7 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
+            buildConfigField "String", "TERMS_CONDITIONS_LINK", "\"https://www.pep.security/en/terms\""
             versionName "${gitVersionName}" + ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
@@ -244,6 +245,7 @@ android {
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
+            buildConfigField "String", "TERMS_CONDITIONS_LINK", "\"https://www.pep.security/en/terms\""
             versionName "${gitVersionName}"
             dimension "type"
         }
