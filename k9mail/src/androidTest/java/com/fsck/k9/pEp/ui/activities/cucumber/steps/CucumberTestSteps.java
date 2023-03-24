@@ -368,10 +368,13 @@ public class CucumberTestSteps {
         textViewEditor(cucumberBody, "message_content");
     }
 
-    @When("^I enter (\\d+) recipients in the (\\S+) field")
-    public void I_fill_n_recipients(int recipients, String field) {
+    @When("^I enter (\\d+) recipients in the messageTo field")
+    public void I_fill_n_recipients(int recipients, boolean isBot) {
         timeRequiredForThisMethod(1);
-        String recipient = "recipients@email.pep";
+        String address = "@any.mail";
+        if (isBot) {
+            address = "@sq.pep.security";
+        }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
             scroll.swipe(Direction.UP, 1f);
@@ -386,7 +389,7 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to_label)).perform(click());
             waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + recipient));
+            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + "_" + System.currentTimeMillis() + address));
             waitForIdle();
         }
     }
@@ -420,8 +423,8 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @When("^I stress Engine threads")
-    public void I_stress_Engine() {
+    @When("^I stress Engine threads with (\\d+) recipients")
+    public void I_stress_Engine(int recipients) {
         for (int loop = 0; loop < 10000; loop++) {
             for (int loop2 = 0; loop2 < 40; loop2++) {
                 I_click_message_compose_button();
@@ -430,9 +433,15 @@ public class CucumberTestSteps {
                 I_remove_address_clicking_X(3);
                 I_remove_address_clicking_X(2);
                 I_remove_address_clicking_X(1);
-                I_send_message_to_address(1, "bot1", "loop: " + loop2, "Body");
+                I_fill_n_recipients(recipients, false);
+                I_remove_unsecure_email_addresses();
+                I_fill_n_recipients(recipients, true);
+                I_fill_subject_field("Loop " + loop + " - " + loop2 + " - Recipients " + recipients);
+                I_click_the_send_message_button();
+                I_wait_for_the_new_message();
+                I_remove_all_messages();
+                //I_send_message_to_address(1, "bot1", "loop: " + loop2, "Body");
             }
-            I_remove_all_messages();
         }
     }
 
@@ -512,15 +521,15 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I check insecurity warnings are there")
-    public void I_check_insecurity_warnings_are_there() {
+    @When("^I check unsecure warnings are there")
+    public void I_check_unsecure_warnings_are_there() {
         // This method requires 2 or more Unsecure recipients to check the red color in the recipients and in the "+X"
-        if (!viewIsDisplayed(onView(withId(R.id.unsecure_recipients_warning)))) {
+        if (!viewIsDisplayed(onView(withId(R.id.user_action_banner)))) {
             assertFailWithMessage("Is not showing the Alert message");
         }
         String unsecureText = resources.getQuantityString(testUtils.pluralsStringToID("compose_unsecure_delivery_warning"), 2);
         unsecureText = unsecureText.substring(4);
-        if (!getTextFromView(onView(withId(R.id.unsecure_recipients_warning))).contains(unsecureText)) {
+        if (!getTextFromView(onView(withId(R.id.user_action_banner))).contains(unsecureText)) {
             assertFailWithMessage("The text in the Alert message is not correct");
         }
         if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
@@ -1943,6 +1952,13 @@ public class CucumberTestSteps {
     public void I_remove_account() {
         timeRequiredForThisMethod(25);
         testUtils.goBackAndRemoveAccount();
+    }
+
+    @Then("^I remove unsecure email addresses$")
+    public void I_remove_unsecure_email_addresses() {
+        waitForIdle();
+        onView(withId(R.id.user_action_banner)).perform(click());
+        waitForIdle();
     }
 
     @Then("^I remove email address$")
