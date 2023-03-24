@@ -3,6 +3,7 @@ package com.fsck.k9.activity.compose
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
 import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.pEp.infrastructure.ResultCompat
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Rating
 import io.mockk.*
@@ -22,7 +23,7 @@ class UnsecureAddressHelperTest {
     private val pEp: PEpProvider = mockk(relaxed = true)
     private val listener: RecipientsReadyListener = mockk(relaxed = true)
     private val ratedListener: RatedRecipientsReadyListener = mockk(relaxed = true)
-    private val view: RecipientSelectViewContract = mockk()
+    private val view: RecipientSelectViewContract = mockk(relaxed = true)
 
     private val helper = UnsecureAddressHelper(pEp)
 
@@ -74,13 +75,13 @@ class UnsecureAddressHelperTest {
         val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
         val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
         every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
         helper.getRecipientRating(recipient, true, callback)
 
 
-        verify { callback.onLoaded(Rating.pEpRatingUndefined) }
+        verify { callback.onLoaded(Rating.pEpRatingCannotDecrypt) }
         assertTrue(helper.hasHiddenUnsecureAddressChannel(arrayOf(address), 1))
     }
 
@@ -93,13 +94,13 @@ class UnsecureAddressHelperTest {
         val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
         val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
         every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
         helper.getRecipientRating(recipient, true, callback)
 
 
-        verify { callback.onLoaded(Rating.pEpRatingUndefined) }
+        verify { callback.onLoaded(Rating.pEpRatingCannotDecrypt) }
         assertEquals(0, helper.unsecureAddressChannelCount)
     }
 
@@ -111,7 +112,7 @@ class UnsecureAddressHelperTest {
         val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
         val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
         every { pEp.getRating(address, capture(callbackSlot)) }
-            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingUndefined) }
+            .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
         helper.getRecipientRating(recipient, false, callback)
@@ -175,102 +176,6 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients gets rating for recipients using PEpProvider`() = runTest {
-        val address1: Address = mockk()
-        val address2: Address = mockk()
-        val recipient1 = Recipient(address1)
-        val recipient2 = Recipient(address2)
-
-
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
-        advanceUntilIdle()
-
-
-        coVerify { pEp.getRating(address1) }
-        coVerify { pEp.getRating(address2) }
-    }
-
-    @Test
-    fun `rateRecipients calls listener with rated recipients`() = runTest {
-        val address1: Address = mockk()
-        val address2: Address = mockk()
-        coEvery { pEp.getRating(address1) }.returns(Rating.pEpRatingTrustedAndAnonymized)
-        coEvery { pEp.getRating(address2) }.returns(Rating.pEpRatingUndefined)
-        val recipient1 = Recipient(address1)
-        val recipient2 = Recipient(address2)
-
-
-        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
-        advanceUntilIdle()
-
-        val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
-        coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientsSlot)) }
-
-        assertEquals(RatedRecipient::class.java, ratedRecipientsSlot.captured[0]::class.java)
-        assertEquals(recipient1, ratedRecipientsSlot.captured[0].baseRecipient)
-        assertEquals(
-            Rating.pEpRatingTrustedAndAnonymized,
-            ratedRecipientsSlot.captured[0].rating
-        )
-        assertEquals(recipient2, ratedRecipientsSlot.captured[1].baseRecipient)
-        assertEquals(
-            Rating.pEpRatingUndefined,
-            ratedRecipientsSlot.captured[1].rating
-        )
-    }
-
-    @Test
-    fun `sortRecipientsByRating gets rating for recipients using PEpProvider`() = runTest {
-        val undefinedAddress: Address = mockk()
-        val secureAddress: Address = mockk()
-        val trustedAddress: Address = mockk()
-        val undefinedRecipient = Recipient(undefinedAddress)
-        val secureRecipient = Recipient(secureAddress)
-        val trustedRecipient = Recipient(trustedAddress)
-
-
-        helper.sortRecipientsByRating(
-            arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
-            listener
-        )
-        advanceUntilIdle()
-
-
-        coVerify { pEp.getRating(undefinedAddress) }
-        coVerify { pEp.getRating(trustedAddress) }
-        coVerify { pEp.getRating(secureAddress) }
-    }
-
-    @Test
-    fun `sortRecipientsByRating calls listener with recipients sorted by rating`() = runTest {
-        val undefinedAddress: Address = mockk()
-        val secureAddress: Address = mockk()
-        val trustedAddress: Address = mockk()
-        coEvery { pEp.getRating(undefinedAddress) }.returns(Rating.pEpRatingUndefined)
-        coEvery { pEp.getRating(secureAddress) }.returns(Rating.pEpRatingReliable)
-        coEvery { pEp.getRating(trustedAddress) }.returns(Rating.pEpRatingTrustedAndAnonymized)
-        val undefinedRecipient = Recipient(undefinedAddress)
-        val secureRecipient = Recipient(secureAddress)
-        val trustedRecipient = Recipient(trustedAddress)
-
-
-        helper.sortRecipientsByRating(
-            arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
-            listener
-        )
-        advanceUntilIdle()
-
-
-        val sortedRecipientsSlot = slot<MutableList<Recipient>>()
-        coVerify { listener.recipientsReady(capture(sortedRecipientsSlot)) }
-
-
-        assertEquals(undefinedAddress, sortedRecipientsSlot.captured[0].address)
-        assertEquals(secureAddress, sortedRecipientsSlot.captured[1].address)
-        assertEquals(trustedAddress, sortedRecipientsSlot.captured[2].address)
-    }
-
-    @Test
     fun `getRecipientRating calls callback_onLoaded with rating undefined if view is always unsecure`() {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
@@ -285,7 +190,7 @@ class UnsecureAddressHelperTest {
         helper.getRecipientRating(recipient, true, callback)
 
 
-        verify { callback.onLoaded(Rating.pEpRatingUndefined) }
+        verify { callback.onLoaded(Rating.pEpRatingUnencrypted) }
     }
 
     @Test
@@ -324,4 +229,234 @@ class UnsecureAddressHelperTest {
 
         assertEquals(0, helper.unsecureAddressChannelCount)
     }
+
+    @Test
+    fun `getRecipientRating calls view_showError when getRating is not successful`() {
+        every { view.hasRecipient(any()) }.returns(true)
+        val address: Address = mockk()
+        val recipient: Recipient = mockk()
+        every { recipient.address }.returns(address)
+        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        every { pEp.getRating(address, capture(callbackSlot)) }
+            .answers { callbackSlot.captured.onError(TestException("test")) }
+
+
+        helper.getRecipientRating(recipient, true, callback)
+
+
+        verify { view.showError(TestException("test")) }
+    }
+
+    @Test
+    fun `rateRecipients gets rating for recipients using PEpProvider`() = runTest {
+        val address1: Address = mockk()
+        val address2: Address = mockk()
+        val recipient1 = Recipient(address1)
+        val recipient2 = Recipient(address2)
+        coEvery { pEp.getRating(any<Address>()) }
+            .returns(ResultCompat.success(Rating.pEpRatingReliable))
+
+
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        advanceUntilIdle()
+
+
+        coVerify { pEp.getRating(address1) }
+        coVerify { pEp.getRating(address2) }
+    }
+
+    @Test
+    fun `rateRecipients calls listener with rated recipients`() = runTest {
+        val address1: Address = mockk()
+        val address2: Address = mockk()
+        coEvery { pEp.getRating(address1) }
+            .returns(ResultCompat.success(Rating.pEpRatingTrustedAndAnonymized))
+        coEvery { pEp.getRating(address2) }
+            .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
+        val recipient1 = Recipient(address1)
+        val recipient2 = Recipient(address2)
+
+
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        advanceUntilIdle()
+
+        val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
+        coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientsSlot)) }
+
+        assertEquals(RatedRecipient::class.java, ratedRecipientsSlot.captured[0]::class.java)
+        assertEquals(recipient1, ratedRecipientsSlot.captured[0].baseRecipient)
+        assertEquals(
+            Rating.pEpRatingTrustedAndAnonymized,
+            ratedRecipientsSlot.captured[0].rating
+        )
+        assertEquals(recipient2, ratedRecipientsSlot.captured[1].baseRecipient)
+        assertEquals(
+            Rating.pEpRatingUnencrypted,
+            ratedRecipientsSlot.captured[1].rating
+        )
+    }
+
+    @Test
+    fun `rateRecipients uses rating undefined if PEpProvider_getRating fails`() = runTest {
+        val address1: Address = mockk()
+        val address2: Address = mockk()
+        coEvery { pEp.getRating(address1) }
+            .returns(ResultCompat.failure(TestException("test")))
+        coEvery { pEp.getRating(address2) }
+            .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
+        val recipient1 = Recipient(address1)
+        val recipient2 = Recipient(address2)
+
+
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        advanceUntilIdle()
+
+        val ratedRecipientsSlot = slot<MutableList<RatedRecipient>>()
+        coVerify { ratedListener.ratedRecipientsReady(capture(ratedRecipientsSlot)) }
+
+        assertEquals(RatedRecipient::class.java, ratedRecipientsSlot.captured[0]::class.java)
+        assertEquals(recipient1, ratedRecipientsSlot.captured[0].baseRecipient)
+        assertEquals(
+            Rating.pEpRatingUndefined,
+            ratedRecipientsSlot.captured[0].rating
+        )
+        assertEquals(recipient2, ratedRecipientsSlot.captured[1].baseRecipient)
+        assertEquals(
+            Rating.pEpRatingUnencrypted,
+            ratedRecipientsSlot.captured[1].rating
+        )
+    }
+
+    @Test
+    fun `rateRecipients calls view_showError if PEpProvider_getRating fails`() = runTest {
+        val address1: Address = mockk()
+        val address2: Address = mockk()
+        coEvery { pEp.getRating(address1) }
+            .returns(ResultCompat.failure(TestException("test")))
+        coEvery { pEp.getRating(address2) }
+            .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
+        val recipient1 = Recipient(address1)
+        val recipient2 = Recipient(address2)
+
+
+        helper.rateRecipients(listOf(recipient1, recipient2), ratedListener)
+        advanceUntilIdle()
+
+
+        verify { view.showError(TestException("test")) }
+    }
+
+    @Test
+    fun `sortRecipientsByRating gets rating for recipients using PEpProvider`() = runTest {
+        val undefinedAddress: Address = mockk()
+        val secureAddress: Address = mockk()
+        val trustedAddress: Address = mockk()
+        val undefinedRecipient = Recipient(undefinedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        coEvery { pEp.getRating(any<Address>()) }
+            .returns(ResultCompat.success(Rating.pEpRatingReliable))
+
+
+        helper.sortRecipientsByRating(
+            arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
+            listener
+        )
+        advanceUntilIdle()
+
+
+        coVerify { pEp.getRating(undefinedAddress) }
+        coVerify { pEp.getRating(trustedAddress) }
+        coVerify { pEp.getRating(secureAddress) }
+    }
+
+    @Test
+    fun `sortRecipientsByRating calls listener with recipients sorted by rating`() = runTest {
+        val unencryptedAddress: Address = mockk()
+        val secureAddress: Address = mockk()
+        val trustedAddress: Address = mockk()
+        coEvery { pEp.getRating(unencryptedAddress) }
+            .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
+        coEvery { pEp.getRating(secureAddress) }
+            .returns(ResultCompat.success(Rating.pEpRatingReliable))
+        coEvery { pEp.getRating(trustedAddress) }
+            .returns(ResultCompat.success(Rating.pEpRatingTrustedAndAnonymized))
+        val undefinedRecipient = Recipient(unencryptedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+
+
+        helper.sortRecipientsByRating(
+            arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
+            listener
+        )
+        advanceUntilIdle()
+
+
+        val sortedRecipientsSlot = slot<MutableList<Recipient>>()
+        coVerify { listener.recipientsReady(capture(sortedRecipientsSlot)) }
+
+
+        assertEquals(unencryptedAddress, sortedRecipientsSlot.captured[0].address)
+        assertEquals(secureAddress, sortedRecipientsSlot.captured[1].address)
+        assertEquals(trustedAddress, sortedRecipientsSlot.captured[2].address)
+    }
+
+    @Test
+    fun `sortRecipientsByRating uses undefined rating as default if PEpProvider_getRating fails`() =
+        runTest {
+            val unencryptedAddress: Address = mockk()
+            val secureAddress: Address = mockk()
+            val trustedAddress: Address = mockk()
+            coEvery { pEp.getRating(unencryptedAddress) }
+                .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
+            coEvery { pEp.getRating(secureAddress) }
+                .returns(ResultCompat.success(Rating.pEpRatingReliable))
+            coEvery { pEp.getRating(trustedAddress) }
+                .returns(ResultCompat.failure(TestException("test")))
+            val undefinedRecipient = Recipient(unencryptedAddress)
+            val secureRecipient = Recipient(secureAddress)
+            val trustedRecipient = Recipient(trustedAddress)
+
+
+            helper.sortRecipientsByRating(
+                arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
+                listener
+            )
+            advanceUntilIdle()
+
+
+            val sortedRecipientsSlot = slot<MutableList<Recipient>>()
+            coVerify { listener.recipientsReady(capture(sortedRecipientsSlot)) }
+
+
+            assertEquals(unencryptedAddress, sortedRecipientsSlot.captured[1].address)
+            assertEquals(secureAddress, sortedRecipientsSlot.captured[2].address)
+            assertEquals(trustedAddress, sortedRecipientsSlot.captured[0].address)
+        }
+
+    @Test
+    fun `sortRecipientsByRating calls view_showError if PEpProvider_getRating fails`() = runTest {
+        val undefinedAddress: Address = mockk()
+        val secureAddress: Address = mockk()
+        val trustedAddress: Address = mockk()
+        val undefinedRecipient = Recipient(undefinedAddress)
+        val secureRecipient = Recipient(secureAddress)
+        val trustedRecipient = Recipient(trustedAddress)
+        coEvery { pEp.getRating(any<Address>()) }
+            .returns(ResultCompat.failure(TestException("test")))
+
+
+        helper.sortRecipientsByRating(
+            arrayOf(trustedRecipient, secureRecipient, undefinedRecipient),
+            listener
+        )
+        advanceUntilIdle()
+
+
+        coVerify(exactly = 3) { view.showError(TestException("test")) }
+    }
+
+    private data class TestException(override val message: String) : Throwable()
 }

@@ -4,6 +4,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
+import com.fsck.k9.pEp.infrastructure.ResultCompat;
 import com.fsck.k9.pEp.ui.HandshakeData;
 import com.fsck.k9.pEp.ui.blacklist.KeyListItem;
 
@@ -112,12 +113,12 @@ public interface PEpProvider {
      * @param identity
      * @return identity trust status color
      */
-    Rating getRating(Identity identity);
+    ResultCompat<Rating> getRating(Identity identity);
 
     void getRating(Identity identity, ResultCallback<Rating> callback);
     void getRating(Address address, ResultCallback<Rating> callback);
 
-    Rating getRating(Address address);
+    ResultCompat<Rating> getRating(Address address);
 
     /**
      * Retrieve long trustwords for a given identity
