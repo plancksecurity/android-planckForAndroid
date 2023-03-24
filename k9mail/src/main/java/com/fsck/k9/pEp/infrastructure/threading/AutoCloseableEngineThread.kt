@@ -3,7 +3,7 @@ package com.fsck.k9.pEp.infrastructure.threading
 import com.fsck.k9.Globals
 import com.fsck.k9.K9
 
-class AutoCloseableEngineThread(
+open class AutoCloseableEngineThread(
     engine: EngineThreadLocal,
     target: Runnable?,
 ) : AutoCloseableThread<EngineThreadLocal>(engine, target) {
