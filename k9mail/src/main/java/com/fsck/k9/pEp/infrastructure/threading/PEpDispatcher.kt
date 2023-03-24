@@ -26,8 +26,9 @@ class PEpEnginePool(
 )
 
 class EngineThreadFactory : ThreadFactory {
+    var current = 0
+
     override fun newThread(r: Runnable?): Thread {
-        var current = 0
         return AutoCloseableEngineThread(r)
             .apply { name = "PEpDispatcher thread ${++current}" }
     }
