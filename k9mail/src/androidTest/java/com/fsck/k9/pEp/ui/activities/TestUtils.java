@@ -2532,11 +2532,11 @@ public class TestUtils {
             case "pEpRatingUnencrypted":
                 statusRating[0] = Rating.pEpRatingUnencrypted;
                 break;
-            case "pEpRatingUnencryptedForSome":
-                statusRating[0] = Rating.pEpRatingUnencryptedForSome;
-                break;
             case "pEpRatingUnreliable":
                 statusRating[0] = Rating.pEpRatingUnreliable;
+                break;
+            case "pEpRatingMediaKeyProtected":
+                statusRating[0] = Rating.pEpRatingMediaKeyProtected;
                 break;
             case "pEpRatingReliable":
                 statusRating[0] = Rating.pEpRatingReliable;

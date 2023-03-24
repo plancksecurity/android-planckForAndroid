@@ -5,8 +5,8 @@
         <item>Cannot Decrypt<!--pEpRatingCannotDecrypt--></item>
         <item>Cannot Decrypt<!--pEpRatingHaveNoKey--></item>
         <item>Unsecure<!--pEpRatingUnencrypted--></item>
-        <item>Unsecure for some<!--pEpRatingUnencryptedForSome--></item>
         <item>Unreliable Security<!--pEpRatingUnreliable--></item>
+        <item>Secure<!--pEpRatingMediaKeyProtected--></item>
         <item>Secure<!--pEpRatingReliable--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrusted--></item>
         <item>Secure &amp; Trusted<!--pEpRatingTrustedAndAnonymized--></item>
@@ -15,4 +15,8 @@
         <item>Ooops: Internal problem<!--pEpRatingB0rken--></item>
         <item>Under Attack<!--pEpRatingUnderAttack--></item>
     </string-array>
+
+    <string name="pep_rating_secure_trusted">Secure &amp; Trusted</string>
+    <string name="pep_rating_secure">Secure</string>
+    <string name="pep_rating_mistrusted">Mistrusted</string>
 </resources>

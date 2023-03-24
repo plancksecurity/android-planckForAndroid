@@ -49,21 +49,6 @@ class PEpProviderImplKotlin(
         echoMessageReceivedListener = listener
     }
 
-    @Deprecated("unencrypted for some is not supported anymore")
-    private fun isUnencryptedForSome(toAddresses: List<Address>, ccAddresses: List<Address>,
-                                     bccAddresses: List<Address>): Boolean {
-        toAddresses.forEach { toAddress ->
-            if (getRating(toAddress).value > Rating.pEpRatingUnencrypted.value) return true
-        }
-        ccAddresses.forEach { ccAddress ->
-            if (getRating(ccAddress).value > Rating.pEpRatingUnencrypted.value) return true
-        }
-        bccAddresses.forEach { bccAddress ->
-            if (getRating(bccAddress).value > Rating.pEpRatingUnencrypted.value) return true
-        }
-        return false
-    }
-
     private fun processKeyImportSyncMessages(source: Message, decReturn: decrypt_message_Return, decryptedMimeMessage: MimeMessage): DecryptResult? {
         val flags: Int
         val lastValidDate = Date(System.currentTimeMillis() - TIMEOUT)
