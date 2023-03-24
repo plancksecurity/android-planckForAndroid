@@ -258,10 +258,10 @@ public class PEpUtils {
                 return "have_no_key";
             case pEpRatingUnencrypted:
                 return "unencrypted";
-            case pEpRatingUnencryptedForSome:
-                return "unencrypted_for_some";
             case pEpRatingUnreliable:
                 return "unreliable";
+            case pEpRatingMediaKeyProtected:
+                return "media_key_protected";
             case pEpRatingReliable:
                 return "reliable";
             case pEpRatingTrusted:
@@ -297,13 +297,13 @@ public class PEpUtils {
                 || rating.equalsIgnoreCase("pEpRatingUnencrypted")) {
             return Rating.pEpRatingUnencrypted;
         }
-        if (rating.equalsIgnoreCase("unencrypted_for_some")
-                || rating.equalsIgnoreCase("pEpRatingUnencryptedForSome")) {
-            return Rating.pEpRatingUnencryptedForSome;
-        }
         if (rating.equalsIgnoreCase("unreliable")
                 || rating.equalsIgnoreCase("pEpRatingUnreliable")) {
             return Rating.pEpRatingUnreliable;
+        }
+        if (rating.equalsIgnoreCase("media_key_protected")
+                || rating.equalsIgnoreCase("pEpRatingMediaKeyProtected")) {
+            return Rating.pEpRatingMediaKeyProtected;
         }
         if (rating.equalsIgnoreCase("reliable")
                 || rating.equalsIgnoreCase("pEpRatingReliable")) {
@@ -589,11 +589,15 @@ public class PEpUtils {
     }
 
     public static boolean isRatingUnsecure(Rating rating){
-        return rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingUnreliable.value; // TODO: change this to the media key rating when implemented on engine side.
+        return rating.value < Rating.pEpRatingUnreliable.value;
     }
 
-    public static boolean isRatingJustReliable(Rating rating) {
+    public static boolean isHandshakeRating(Rating rating) {
         return rating.value == Rating.pEpRatingReliable.value;
+    }
+
+    public static boolean isRatingTrusted(Rating rating){
+        return rating.value >= Rating.pEpRatingTrusted.value;
     }
 }
 

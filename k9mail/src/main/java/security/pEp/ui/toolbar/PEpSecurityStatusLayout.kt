@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import foundation.pEp.jniadapter.Rating
 import security.pEp.ui.PEpUIUtils
@@ -55,20 +56,19 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
         else
             securityStatusIcon?.clearColorFilter()
 
-        securityStatusText?.setTextColor(
-            PEpUIUtils.getRatingColor(
-                context,
-                rating,
-                ispEpEnabled
-            )
+        if (!BuildConfig.IS_ENTERPRISE) {
+            setTextColor(rating)
+        }
+    }
+
+    private fun setTextColor(rating: Rating?) {
+        val textColor = PEpUIUtils.getRatingColor(
+            context,
+            rating,
+            ispEpEnabled
         )
-        secondLineText?.setTextColor(
-            PEpUIUtils.getRatingColor(
-                context,
-                rating,
-                ispEpEnabled
-            )
-        )
+        securityStatusText?.setTextColor(textColor)
+        secondLineText?.setTextColor(textColor)
     }
 
     private fun setSecurityStatusText(rating: Rating?) {

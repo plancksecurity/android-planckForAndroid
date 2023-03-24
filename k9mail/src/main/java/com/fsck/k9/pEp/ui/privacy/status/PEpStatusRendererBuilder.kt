@@ -37,18 +37,18 @@ class PEpStatusRendererBuilder @Inject constructor(
     override fun getPrototypeClass(content: PEpIdentity): Class<*> {
         val rating = content.rating
         var prototypeClass: Class<*> = PEpStatusUnsecureRenderer::class.java
-        if (rating.value == Rating.pEpRatingReliable.value) {
+        if (PEpUtils.isHandshakeRating(rating)) {
             prototypeClass = if(!PEpUtils.isPEpUser(content)) {
                 PEpStatusPGPIdentityRenderer::class.java
             } else {
                 PEpStatusSecureRenderer::class.java
             }
         }
-        else if (rating.value != Rating.pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
+        else if (PEpUtils.isRatingUnsecure(rating)) {
             prototypeClass = PEpStatusUnsecureRenderer::class.java
         } /*else if (rating.value == Rating.pEpRatingMistrust.value) {
             prototypeClass = PEpStatusMistrustRenderer::class.java
-        }*/ else if (rating.value >= Rating.pEpRatingTrusted.value) {
+        }*/ else if (PEpUtils.isRatingTrusted(rating)) {
             prototypeClass = PEpStatusTrustedRenderer::class.java
         }
         return prototypeClass
