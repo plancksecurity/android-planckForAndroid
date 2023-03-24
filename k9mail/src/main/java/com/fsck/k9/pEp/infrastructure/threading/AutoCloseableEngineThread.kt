@@ -3,7 +3,12 @@ package com.fsck.k9.pEp.infrastructure.threading
 import com.fsck.k9.Globals
 import com.fsck.k9.K9
 
-class AutoCloseableEngineThread @JvmOverloads constructor(
+class AutoCloseableEngineThread(
+    engine: EngineThreadLocal,
     target: Runnable?,
-    engine: EngineThreadLocal = EngineThreadLocal.getInstance(Globals.getContext() as K9)
-) : AutoCloseableThread<EngineThreadLocal>(engine, target)
+) : AutoCloseableThread<EngineThreadLocal>(engine, target) {
+    constructor(target: Runnable?) : this(
+        EngineThreadLocal.getInstance(Globals.getContext() as K9),
+        target
+    )
+}
