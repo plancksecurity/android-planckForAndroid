@@ -186,7 +186,8 @@ android {
 
     defaultConfig {
         applicationId "${appId}"
-        versionCode 501
+        versionName "${gitVersionName}"
+        versionCode buildConfig.versionCode
         minSdkVersion buildConfig.minSdk
         targetSdkVersion buildConfig.targetSdk
 
@@ -237,21 +238,20 @@ android {
 
         enterprise {
             buildConfigField "boolean", "IS_ENTERPRISE", "true"
-            versionName "${gitVersionName}" + ".enterprise"
+            versionNameSuffix ".enterprise"
             dimension "type"
             applicationIdSuffix ".enterprise"
         }
 
         endUser {
             buildConfigField "boolean", "IS_ENTERPRISE", "false"
-            versionName "${gitVersionName}"
             dimension "type"
         }
 
         if (hasMdmDemoProperties()) {
             mdmDemo {
                 buildConfigField "boolean", "IS_ENTERPRISE", "true"
-                versionName "${gitVersionName}" + ".enterprise" + demoAppVersionNameSuffix
+                versionNameSuffix ".enterprise" + demoAppVersionNameSuffix
                 dimension "type"
                 applicationIdSuffix ".enterprise" + demoAppIdSuffix
                 versionCode demoVersionCode
