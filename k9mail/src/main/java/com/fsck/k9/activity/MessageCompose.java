@@ -726,7 +726,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         outState.putString(STATE_REFERENCES, referencedMessageIds);
         outState.putBoolean(STATE_KEY_CHANGES_MADE_SINCE_LAST_SAVE, changesMadeSinceLastSave);
         outState.putBoolean(STATE_ALREADY_NOTIFIED_USER_OF_EMPTY_SUBJECT, alreadyNotifiedUserOfEmptySubject);
-        outState.putString(STATE_LAST_ERROR, lastError.toString());
+        outState.putString(STATE_LAST_ERROR, lastError == null ? null : lastError.toString());
         // TODO: trigger pep?
 
     }
