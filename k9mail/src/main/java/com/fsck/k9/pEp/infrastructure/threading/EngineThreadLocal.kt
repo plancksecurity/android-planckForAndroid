@@ -59,7 +59,7 @@ class EngineThreadLocal private constructor(
 
     override fun close() {
         super.get()?.close()
-        set(null)
+        remove()
     }
 
     fun isEmpty(): Boolean = super.get() == null
