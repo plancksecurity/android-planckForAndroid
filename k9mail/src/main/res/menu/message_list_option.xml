@@ -253,6 +253,6 @@
     <item
         android:id="@+id/tutorial"
         app:showAsAction="never"
-        android:title="@string/action_tutorial"/>
+        android:title="@string/action_user_manual"/>
 
 </menu>
