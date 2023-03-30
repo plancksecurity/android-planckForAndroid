@@ -79,7 +79,6 @@ import foundation.pEp.jniadapter.Rating;
 import security.pEp.mdm.RestrictionsListener;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -122,6 +121,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     // used for remote search
     public static final String EXTRA_SEARCH_ACCOUNT = "com.fsck.k9.search_account";
     private static final String EXTRA_SEARCH_FOLDER = "com.fsck.k9.search_folder";
+    private static final String TUTORIAL_ABOUT_LINK = "https://userguide.pep.security/pEp_for_Android_User_Guide.pdf ";
 
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
@@ -1151,7 +1151,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.tutorial: {
-                WelcomeMessageKt.startTutorialMessage(this);
+                showAboutTutorial();
                 return true;
             }
             case R.id.show_folder_list: {
@@ -1244,6 +1244,12 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return super.onOptionsItemSelected(item);
             }
         }
+    }
+
+    private void showAboutTutorial() {
+        //WelcomeMessageKt.startTutorialMessage(this);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_ABOUT_LINK));
+        startActivity(browserIntent);
     }
 
     @Override
