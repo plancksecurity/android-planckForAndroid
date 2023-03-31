@@ -2240,17 +2240,40 @@ public class TestUtils {
         assertMessageStatus(rating, status);
     }
 
-    public void assertMessageStatus(Rating rating, String status){
+    public void assertIconStatus(Rating rating){
         int statusColor;
-        clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
         }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        statusColor = getSecurityStatusDrawableColor(rating);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            int value = rating.value;
+            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+
+            //int color = R.color.compose_unsecure_delivery_warning;
+            assertsIconColor("securityStatusIcon", color);
+            viewIsDisplayed(R.id.securityStatusIcon);
+            assertSecurityStatusText(rating);
+        }
+        if (!exists(onView(withId(R.id.send)))) {
+            goBack(false);
+        }
+    }
+    public void assertMessageStatus(Rating rating, String status){
+        int statusColor;
+        //clickStatus();
+        while (!viewIsDisplayed(R.id.toolbar)) {
+            waitForIdle();
+        }
+        //onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         /*while (!viewIsDisplayed(R.id.pEpTitle)) {
             waitForIdle();
         }*/
-        waitForToolbar();
+        //waitForToolbar();
         statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
@@ -2519,6 +2542,27 @@ public class TestUtils {
 
     public int colorToID(String color){
         return resources.getIdentifier(color, "color", BuildConfig.APPLICATION_ID);
+    }
+
+    public void checkStatusText(String text) {
+        waitForIdle();
+        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
+            waitForIdle();
+        }
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        while (true) {
+            waitForIdle();
+            if (BuildConfig.IS_ENTERPRISE) {
+                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
+                    assertFailWithMessage("Status is not shown");
+                }
+            }
+            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
+                waitForIdle();
+                onView(withId(R.id.securityStatusText)).check(matches(withText(text)));
+                return;
+            }
+        }
     }
 
     public void checkPrivacyTextColor(int color) {
