@@ -1718,7 +1718,7 @@ public class CucumberTestSteps {
                 }
             }
             if (horizontalWidgetScroll == -1) { //Vertical scroll
-                device.click(5, device.getDisplayHeight() - 5);
+                //device.click(5, device.getDisplayHeight() - 5);
                 boolean openWidgetMenu = true;
                 for (scroll = 1; scroll < 30; scroll++) {
                     for (UiObject2 textView : device.findObjects(selector)) {
