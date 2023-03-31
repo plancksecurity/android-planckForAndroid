@@ -81,19 +81,19 @@ Feature: Test
 
     When I select account <account>
     When I click compose message
-    And I check if the privacy status is pEpRatingUndefined
+    And I check the privacy status is undefined
     And I enter bot1 in the messageTo field
     And I enter newContact in the messageSubject field
     And I enter bodyMailToNewContact in the messageBody field
-    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
+    Then I check the privacy status is unsecure
     When I enter empty in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I enter bot1 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check in the handshake dialog if the privacy status is pEpRatingUnencrypted
+    Then I check the privacy status is unsecure
     When I enter bodyMailToNewContact2 in the messageBody field
     And I click the send message button
     And I wait for the new message
@@ -112,7 +112,7 @@ Feature: Test
 
     When I select account <account>
     When I click compose message
-    And I check if the privacy status is pEpRatingUndefined
+    And I check the privacy status is undefined
     And I enter bot2 in the messageTo field
     And I enter TM152 in the messageSubject field
     And I enter longText in the messageBody field
@@ -137,13 +137,13 @@ Feature: Test
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter TM153 in the messageSubject field
     And I enter longText in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody from json file with longText
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -161,7 +161,7 @@ Feature: Test
     When I select account <account>
     When I send 1 message to bot2 with subject saveDraft and body saveDraftBody
     When I click compose message
-    And I check if the privacy status is pEpRatingUndefined
+    And I check the privacy status is undefined
     And I enter bot2 in the messageTo field
     And I enter TM154A in the messageSubject field
     And I enter longText in the messageBody field
@@ -169,7 +169,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longText
-    And I check if the privacy status is pep_yellow
+    And I check the privacy status is secure
     And I discard the message
     And I go back to the Inbox
 
@@ -187,13 +187,13 @@ Feature: Test
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter QTR-1976 in the messageSubject field
     And I enter longWord in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with longWord
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -210,7 +210,7 @@ Feature: Test
     When I select account <account>
     When I send 1 message to bot2 with subject saveDraft and body saveDraftBody
     When I click compose message
-    And I check if the privacy status is pEpRatingUndefined
+    And I check the privacy status is undefined
     And I enter bot2 in the messageTo field
     And I enter TM154A in the messageSubject field
     And I enter longWord in the messageBody field
@@ -218,7 +218,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longWord
-    And I check if the privacy status is pep_yellow
+    And I check the privacy status is secure
     And I discard the message
     And I go back to the Inbox
 
@@ -246,11 +246,11 @@ Feature: Test
     And I send 1 message to bot1 with subject mailFromNewContactEncryptedBody and body MailFromNewContactEncryptedBody
     And I click the last message received
     Then I compare messageBody from json file with MailFromNewContactEncryptedBody
-    And I check if the privacy status is pep_yellow
+    And I check the privacy status is secure
     When I click reply message
     And I enter extraText in the messageSubject field
     And I enter bodyText in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I click the send message button
     And I go back to the Inbox
     And I wait for the new message
@@ -270,7 +270,7 @@ Feature: Test
     And I send 1 message to bot1 with subject mailsEncryptedWhenpEpSaysSo and body MailsAreEncryptedWhen_pEp_saysSo
     And I click the last message received
     And I click reply message
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I click the send message button
     And I press back
     And I wait for the message and click it
@@ -292,17 +292,17 @@ Feature: Test
 
     When I select account <account>
     And I click compose message
-    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I send 1 message to bot1 with subject TM-10 and body TM-10
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter empty in the messageTo field
-    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I send 1 message to bot1 with subject TM-10A and body TM-10Abody
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I compare messageBody with TM-10Abody
     Examples:
       |account|
@@ -321,35 +321,35 @@ Feature: Test
 
     When I select account <account>
     And I click compose message
-    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I send 1 message to bot1 with subject TM-11 and body TM-11
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TM-11A and body TM-11A
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I press back
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter TM-11B in the messageSubject field
     And I enter TM-11B in the messageBody field
     And I enter empty in the messageTo field
-    Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I enter bot2 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I enter TM-11C in the messageSubject field
     And I enter TM-11CBody in the messageBody field
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I compare messageBody with TM-11CBody
     And I go back to the Inbox
     Examples:
@@ -376,23 +376,23 @@ Feature: Test
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pEpRatingUnencrypted
+    Then I check the privacy status is unsecure
     When I enter TM-12B in the messageSubject field
     And I enter TM-12B in the messageBody field
     And I enter empty in the messageTo field
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pep_red
+    Then I check the privacy status is unsecure
     #This is unsecure, color resource for enterprise should be created, in the meantime we will use pep_red (this is not mistrusted color)
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_red
+    Then I check the privacy status is unsecure
     #This is unsecure, color resource for enterprise should be created, in the meantime we will use pep_red (this is not mistrusted color)
     And I compare messageBody with TM-12B
     Examples:
@@ -405,7 +405,7 @@ Feature: Test
 
     When I select account <account>
     And I click compose message
-    Then I check if the privacy status is pEpRatingUndefined
+    Then I check the privacy status is undefined
     When I enter bot2 in the messageTo field
     And I enter Special1 in the messageSubject field
     And I enter specialCharacters in the messageBody field
@@ -545,10 +545,10 @@ Feature: Test
     And I enter TM-130 in the messageSubject field
     And I enter attach1File in the messageBody field
     And I attach PDF
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I compare messageBody from json file with attach1File
     And I open 1 attached files
     Examples:
@@ -585,10 +585,10 @@ Feature: Test
     And I attach PDF
     And I attach MSoffice
     And I attach picture
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check the privacy status is secure
     And I open 3 attached files
     Examples:
       |account|
@@ -617,12 +617,12 @@ Feature: Test
     And I click message at position 1
     Then I compare messageBody with saveDraft2
     And I check picture is attached in draft
-    And I check if the privacy status is pep_yellow
+    And I check the privacy status is secure
     When I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with saveDraft1
     And I check MSoffice is attached in draft
-    And I check if the privacy status is pep_yellow
+    And I check the privacy status is secure
     And I go to the drafts folder
 
     Examples:
@@ -694,7 +694,7 @@ Feature: Test
 
 
   @QTR-2316
-  Scenario Outline: Cucumber Insecurity Warning Test
+  Scenario Outline: Cucumber Unsecure Warning Test
 
     When I select account <account>
     And I click compose message
@@ -702,7 +702,7 @@ Feature: Test
 
 #FIXME: Only guaranteed to work with S22
 
-    Then I check insecurity warnings are there
+    Then I check unsecure warnings are there
     And I discard the message
 
     Examples:
