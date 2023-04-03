@@ -79,6 +79,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.pEp.mdm.RestrictionsListener;
 import security.pEp.permissions.PermissionChecker;
 import security.pEp.permissions.PermissionRequester;
+import security.pEp.ui.intro.WelcomeMessageKt;
 import security.pEp.ui.resources.ResourcesProvider;
 import security.pEp.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
@@ -1154,6 +1155,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 showAboutTutorial();
                 return true;
             }
+            case R.id.user_manual: {
+                showUserManual();
+                return true;
+            }
             case R.id.show_folder_list: {
                 onShowFolderList();
                 return true;
@@ -1247,7 +1252,10 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     }
 
     private void showAboutTutorial() {
-        //WelcomeMessageKt.startTutorialMessage(this);
+        WelcomeMessageKt.startTutorialMessage(this);
+    }
+
+    private void showUserManual() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TUTORIAL_ABOUT_LINK));
         startActivity(browserIntent);
     }
