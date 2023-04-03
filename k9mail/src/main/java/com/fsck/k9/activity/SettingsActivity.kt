@@ -19,6 +19,7 @@ import android.view.ContextMenu.ContextMenuInfo
 import android.view.View.OnClickListener
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
+import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
@@ -100,6 +101,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
      */
     private var nonConfigurationInstance: NonConfigurationInstance? = null
     private var accountsList: NestedListView? = null
+    private lateinit var termsAndConditionsTextView: TextView
     private var addAccountButton: View? = null
 
     @Inject
@@ -204,6 +206,17 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
 
         bindViews(R.layout.accounts)
         accountsList = findViewById<View>(R.id.accounts_list) as NestedListView
+        termsAndConditionsTextView = findViewById<TextView>(R.id.terms_and_conditions)
+
+        termsAndConditionsTextView.text = HtmlCompat.fromHtml(
+            "<a href=\"#\">Terms and Conditions</a>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+
+        termsAndConditionsTextView.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+        }
+
         if (!K9.isHideSpecialAccounts()) {
             createSpecialAccounts()
         }
