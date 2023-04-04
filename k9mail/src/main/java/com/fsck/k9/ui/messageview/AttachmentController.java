@@ -398,9 +398,11 @@ public class AttachmentController {
     }
 
     public static AttachmentViewInfo findCalendarInviteAttachment(MessageViewInfo messageViewInfo) {
-        for(AttachmentViewInfo attachmentViewInfo : messageViewInfo.attachments) {
-            if(attachmentViewInfo.mimeType.equals("text/calendar")) {
-                return attachmentViewInfo;
+        if (messageViewInfo.attachments != null) {
+            for (AttachmentViewInfo attachmentViewInfo : messageViewInfo.attachments) {
+                if ("text/calendar".equals(attachmentViewInfo.mimeType)) {
+                    return attachmentViewInfo;
+                }
             }
         }
         return null;
