@@ -71,7 +71,6 @@ import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assume;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -2240,7 +2239,7 @@ public class TestUtils {
         assertMessageStatus(rating, status);
     }
 
-    public void assertIconStatus(Rating rating){
+    public void assertStatus(Rating rating){
         int statusColor;
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
@@ -2258,9 +2257,6 @@ public class TestUtils {
             assertsIconColor("securityStatusIcon", color);
             viewIsDisplayed(R.id.securityStatusIcon);
             assertSecurityStatusText(rating);
-        }
-        if (!exists(onView(withId(R.id.send)))) {
-            goBack(false);
         }
     }
     public void assertMessageStatus(Rating rating, String status){
@@ -2500,7 +2496,7 @@ public class TestUtils {
         }
     }
 
-    public void assertsIconColor (String colorId, int color) {
+    public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
         waitForIdle();
         Rating [] statusRating = new Rating[1];
@@ -2508,15 +2504,9 @@ public class TestUtils {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
                 int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                String hexColor = String.format("#%06X", (0xFFFFFF & iconColor));
-                //int i = R.color.compose_unsecure_delivery_warning;
-
-                color = ContextCompat.getColor(context, color);
-                //String hexColor2 = String.format("#%06X", (0xFFFFFF & R.color.compose_unsecure_delivery_warning));
-                //getStatusRating(statusRating, status);
-                //int statusColor = getSecurityStatusIconColor(statusRating[0]);
-                if (iconColor != color) {
-                        assertFailWithMessage("");
+                expectedColor = ContextCompat.getColor(context, expectedColor);
+                if (iconColor != expectedColor) {
+                        assertFailWithMessage("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
@@ -3937,6 +3927,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
             }
         }
+        waitUntilIdle();
     }
 
     private void compareTextWithWebViewText(String textToCompare) {
