@@ -1,5 +1,5 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpJNIAdapter=botan_android_tag
+pEpJNIAdapter=botan_android
 foldableFolderList=v0.2.3
