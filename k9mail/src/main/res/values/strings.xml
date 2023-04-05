@@ -143,6 +143,7 @@
     <string name="clear_local_folder_action">Clear local messages</string>
     <string name="about_action">About</string>
     <string name="prefs_title">Settings</string>
+    <string name="action_user_manual">User manual</string>
     <string name="accounts_context_menu_title">Account options</string>
     <!-- Shown in place of the subject when a message has no subject. Showing this in parentheses is customary. -->
     <string name="general_no_subject">(No subject)</string>
