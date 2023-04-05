@@ -2,6 +2,7 @@ package com.fsck.k9.pEp.ui.fragments
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -113,6 +114,9 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
             "<a href=\"#\">Terms and Conditions</a>",
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
+        termsAndConditionTextView.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+        }
     }
 
     private fun setWelcomeBackground() {
