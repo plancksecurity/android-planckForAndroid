@@ -92,6 +92,13 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/available_accounts_title" />
                 </RelativeLayout>
+
+            <TextView
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/terms_and_conditions"
+                android:textColor="@color/black"
+                style="@style/SelectAuthScreenTermsAndConditions"
+                tools:text="Terms and Conditions" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
