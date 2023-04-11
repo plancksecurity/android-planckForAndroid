@@ -72,6 +72,15 @@ class AboutActivity : PepActivity() {
 
         license_button.setOnClickListener { openLicenseActivity(this) }
         license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+        terms_and_conditions.text = HtmlCompat.fromHtml(
+            "<a href=\"#\">Terms and Conditions</a>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+
+        terms_and_conditions.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+        }
     }
 
     override fun onResume() {
