@@ -3,7 +3,7 @@ buildscript {
         buildConfig = [
                 'compileSdk'           : 33,
                 'targetSdk'            : 33,
-                'minSdk'               : 21,
+                'minSdk'               : 23,
                 'versionCode'          : 502,
         ]
 
