@@ -15,7 +15,7 @@ workflow:
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpJNIAdapter Version = ${pEpJNIAdapter}"
-  - wget -q -O - https://git.planck.security/foundation/pEpJNIAdapter/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O --header='PRIVATE-TOKEN:${CI_BUILD_TOKEN}' - https://git.planck.security/foundation/pEpJNIAdapter/raw/${pEpJNIAdapter}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
