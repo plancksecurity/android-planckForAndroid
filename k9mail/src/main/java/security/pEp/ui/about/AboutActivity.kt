@@ -11,6 +11,8 @@ import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
+import com.fsck.k9.activity.MessageList
+import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.pEp.PepActivity
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.activity_about.*
@@ -79,7 +81,7 @@ class AboutActivity : PepActivity() {
         )
 
         terms_and_conditions.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
         }
     }
 
