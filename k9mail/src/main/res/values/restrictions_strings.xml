@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="enable_privacy_protection_title">p≡p privacy protection</string>
-    <string name="enable_privacy_protection_description">Enable or disable p≡p privacy protection for account</string>
+    <string name="enable_privacy_protection_title">planck privacy protection</string>
+    <string name="enable_privacy_protection_description">Enable or disable planck privacy protection for account</string>
     <string name="default_quoted_text_shown_description">Include original message in reply</string>
     <string name="remote_search_enabled_description">Allow to search messages on the server in addition to those on the device</string>
-    <string name="pep_sync_folder_description">Use a dedicate pEp folder for p≡p sync messages</string>
+    <string name="pep_sync_folder_description">Use a dedicate pEp folder for planck sync messages</string>
     <string name="fingerprint_title">Fingerprint</string>
     <string name="extra_keys_title">Extra keys</string>
     <string name="media_keys_title">Media keys</string>
@@ -25,7 +25,7 @@
     <string name="spam_folder_description">Set folder to be used as Spam folder</string>
     <string name="trash_folder_description">Set folder to be used as Trash folder</string>
     <string name="provisioning_url_title">Provisioning URL</string>
-    <string name="provisioning_url_description">URL to provision p≡p for Android</string>
+    <string name="provisioning_url_description">URL to provision planck for Android</string>
     <string name="mail_settings_title">Mail settings</string>
     <string name="mail_settings_description">Configure email address as well as server port, host, security, user name for incoming and outgoing mail servers. This is required for provisioning.</string>
     <string name="account_email_address_title">Email address</string>
@@ -33,7 +33,7 @@
     <string name="account_display_count_description">Number of mails displayed in message list screen by default</string>
     <string name="account_remote_search_num_results_description">Number of remote search results displayed by default</string>
     <string name="allow_pep_sync_new_devices_title">Allow to add new devices to sync group</string>
-    <string name="allow_pep_sync_new_devices_description">Allow to use p≡p sync to add new devices to sync group.</string>
+    <string name="allow_pep_sync_new_devices_description">Allow to use planck sync to add new devices to sync group.</string>
 
     <string-array name="mail_settings_security_type_entries">
         <item>@string/account_setup_incoming_security_none_label</item>

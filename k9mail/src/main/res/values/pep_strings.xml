@@ -3,12 +3,12 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <!-- Unstranslatable strings -->
-    <string name="pep" translatable="false">p≡p</string>
+    <string name="pep" translatable="false">planck</string>
     <string name="pep_long" translatable="false">pretty Easy privacy</string>
     <string name="pep_handshake" translatable="false">Handshake</string>
     <string name="pep_title_activity_trustwords" translatable="false">Trustwords</string>
     <string name="pEp_documentation_url" translatable="false">https://pep.security/docs</string>
-    <string name="pEp_trustwords">p≡p Trustwords</string>
+    <string name="pEp_trustwords">planck Trustwords</string>
     <string name="pep_user_address_format" translatable="false">%1$s &lt;%2$s&gt;</string>
     <string name="pep_user_name_format" translatable="false">%1$s</string>
     <string-array name="pep_states">
@@ -69,43 +69,43 @@
     <string name="pep_receivedSecretKey">Received this Secret Key:</string>
     <string name="pep_username">User Name</string>
     <string name="pep_userAddress">User Address</string>
-    <string name="pep_trust_server_and_store_mails_unprotected">p≡p - Trust server and store messages unprotected</string>
+    <string name="pep_trust_server_and_store_mails_unprotected">planck - Trust server and store messages unprotected</string>
     <string name="pep_mistrust_server_and_store_mails_encrypted">Store messages securely</string>
-    <string name="pep_enable_privacy_protection">Enable p≡p privacy protection</string>
+    <string name="pep_enable_privacy_protection">Enable planck privacy protection</string>
     <string name="pep_explanation">Explanation</string>
     <string name="pep_suggestion">Suggestion</string>
     <string name="pep_trust_server_description">Store server-side mails in a safe form.</string>
-    <string name="pep_account_privacy_protection_explanation">Enable p≡p privacy protection for this account </string>
+    <string name="pep_account_privacy_protection_explanation">Enable planck privacy protection for this account </string>
     <string name="pep_forward_warning">Unsecure delivery warning</string>
     <string name="pep_forward_warning_description">Show a warning when a secure channel cannot be established to deliver a message.</string>
     <string name="key_list_title">Available keys</string>
     <string name="message_list_item_removed">Removed</string>
     <string name="message_list_item_undo">UNDO</string>
     <string name="available_accounts_title">Available accounts</string>
-    <string name="pep_app_description">p≡p is a powerful free email client for Android with pretty Easy privacy.</string>
+    <string name="pep_app_description">planck is a powerful free email client for Android with pretty Easy privacy.</string>
     <string name="global_settings_title">Global settings</string>
     <string name="configure_account_action">Manage accounts</string>
-    <string name="pep_add_device_ask_trustwords">You are about to add a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
-    <string name="pep_add_device_ask_move_trustwords">You are about to move a device to another p≡p device group. Confirm by successfully verifying the following Trustwords.</string>
-    <string name="pep_device_group">p≡p Device Group</string>
+    <string name="pep_add_device_ask_trustwords">You are about to add a device to another planck device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_add_device_ask_move_trustwords">You are about to move a device to another planck device group. Confirm by successfully verifying the following Trustwords.</string>
+    <string name="pep_device_group">planck Device Group</string>
     <string name="handshake_reset_dialog_message">Warning: This communication partner was previously marked as mistrusted. Are you sure you want to continue with another Handshake\?</string>
     <string name="pep_gpg_compatibility">OpenPGP Compatibility</string>
     <string name="crash_toast_text">Oops, something went wrong</string>
     <string name="advanced_options">Advanced options</string>
     <string name="basic_options">Basic options</string>
     <string name="synchronize_these_accounts_between_my_devices">Synchronize these accounts between my devices</string>
-    <string name="pep_keysync_timeout">p≡p Sync timeout</string>
-    <string name="read_permission_first_explanation">p≡p needs permission to access the contacts on your device</string>
+    <string name="pep_keysync_timeout">planck Sync timeout</string>
+    <string name="read_permission_first_explanation">planck needs permission to access the contacts on your device</string>
     <string name="button_settings">Settings</string>
-    <string name="read_snackbar_permission_rationale">p≡p needs permission to access the contacts on your device</string>
-    <string name="read_snackbar_permission_permanently_denied">Not granting p≡p access to the contacts may cause unexpected behavior</string>
+    <string name="read_snackbar_permission_rationale">planck needs permission to access the contacts on your device</string>
+    <string name="read_snackbar_permission_permanently_denied">Not granting planck access to the contacts may cause unexpected behavior</string>
     <string name="read_permission_rationale_title">Access contacts</string>
-    <string name="download_permission_first_explanation">p≡p needs permission to download files on your device</string>
-    <string name="download_snackbar_permission_rationale">p≡p needs permission to save attachments from your emails.</string>
+    <string name="download_permission_first_explanation">planck needs permission to download files on your device</string>
+    <string name="download_snackbar_permission_rationale">planck needs permission to save attachments from your emails.</string>
     <string name="download_snackbar_permission_permanently_denied">Not granting us permission to download files might cause unexpected behavior</string>
     <string name="download_permission_rationale_title">Download files</string>
-    <string name="post_notifications_first_explanation">p≡p needs permission to display notifications on your device</string>
-    <string name="post_notifications_snackbar_permission_rationale">p≡p needs permission to display notifications of new emails and other events.</string>
+    <string name="post_notifications_first_explanation">planck needs permission to display notifications on your device</string>
+    <string name="post_notifications_snackbar_permission_rationale">planck needs permission to display notifications of new emails and other events.</string>
     <string name="post_notifications_permission_rationale_title">Display notifications</string>
     <string name="add_fpr">Add fingerprint</string>
     <string name="error_parsing_fingerprint">Error parsing fingerprint!</string>
@@ -155,8 +155,8 @@
         <item>Please add the necessary information.<!--pEpRatingUndefined--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingCannotDecrypt--></item>
         <item>If this message was addressed to you, please inform the sender that you don\'t have the key.<!--pEpRatingHaveNoKey--></item>
-        <item>Please ask your communication partner to use an encryption solution or install p≡p.<!--pEpRatingUnencrypted--></item>
-        <item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install p≡p.<!--pEpRatingUnreliable--></item>
+        <item>Please ask your communication partner to use an encryption solution or install planck.<!--pEpRatingUnencrypted--></item>
+        <item>This message has no reliable encryption or no signature. Ask your communication partner to upgrade their encryption solution or install planck.<!--pEpRatingUnreliable--></item>
         <item><!-- TODO --><!--pEpRatingMediaKeyProtected--></item>
         <item>Complete a handshake with your communication partner. A handshake is needed only once per partner and will ensure secure and trusted communication.<!--pEpRatingReliable--></item>
         <item>No action needed!<!--pEpRatingTrusted--></item>
@@ -176,26 +176,26 @@
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>
-    <string name="pep_sync">p≡p Sync</string>
-    <string name="pep_sync_enable_account">p≡p Sync this account</string>
-    <string name="pep_sync_is_enabled_global">p≡p Sync is enabled</string>
-    <string name="pep_sync_is_disabled_global">p≡p Sync is disabled</string>
-    <string name="pep_sync_leave_device_group">Leave p≡p Device Group</string>
+    <string name="pep_sync">planck Sync</string>
+    <string name="pep_sync_enable_account">planck Sync this account</string>
+    <string name="pep_sync_is_enabled_global">planck Sync is enabled</string>
+    <string name="pep_sync_is_disabled_global">planck Sync is disabled</string>
+    <string name="pep_sync_leave_device_group">Leave planck Device Group</string>
     <string name="open_pgp" translatable="false">OpenPGP</string>
     <string name="pgp" translatable="false">PGP</string>
     <string name="key_import_wizard_handshake_explanation">Please compare the following Trustwords with the ones on your other device and confirm if they match.</string>
-    <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your p≡p key from another device, and export your private key.</string>
+    <string name="key_import_wizard_from_pep_initial_text">We are about to start the key import process: This will import and use your planck key from another device, and export your private key.</string>
     <string name="key_import_wizard_from_pgp_initial_text">You are about to start the key import process from a PGP client</string>
-    <string name="key_import_wizard_from_pgp_key_sent">A message with your public p≡p key has been sent to yourself. Please open this message on your PGP device and import your public p≡p key.</string>
-    <string name="key_import_wizard_from_pgp_create_handshake_request">On your device with PGP, create an answer message to the one you received from p≡p and attach your public PGP key.</string>
-    <string name="key_import_wizard_from_pgp_send_handshake_request">Encrypt and sign the answer message with the public p≡p key you just imported and send it.</string>
+    <string name="key_import_wizard_from_pgp_key_sent">A message with your public planck key has been sent to yourself. Please open this message on your PGP device and import your public planck key.</string>
+    <string name="key_import_wizard_from_pgp_create_handshake_request">On your device with PGP, create an answer message to the one you received from planck and attach your public PGP key.</string>
+    <string name="key_import_wizard_from_pgp_send_handshake_request">Encrypt and sign the answer message with the public planck key you just imported and send it.</string>
     <string name="key_import_wizard_handshake_explanation_pgp">Please compare the PGP fingerprints of the below keys with the ones on your PGP device and confirm if they match.</string>
-    <string name="key_import_wizard_from_pgp_create_private_key_msg">On your device with PGP, create another answer message to the one you received from p≡p. This time, please attach your private PGP key.</string>
-    <string name="key_import_wizard_from_pgp_send_private_key_msg">Encrypt and sign the answer message again with the public p≡p key and send it.</string>
-    <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public p≡p key and reply with a message that: \n\n\n
+    <string name="key_import_wizard_from_pgp_create_private_key_msg">On your device with PGP, create another answer message to the one you received from planck. This time, please attach your private PGP key.</string>
+    <string name="key_import_wizard_from_pgp_send_private_key_msg">Encrypt and sign the answer message again with the public planck key and send it.</string>
+    <string name="pgp_key_import_instructions">To proceed with the Key Import, please import the attached public planck key and reply with a message that: \n\n\n
 
     1. has your public PGP key attached and \n
-    2. is encrypted and signed with the p≡p key you just imported
+    2. is encrypted and signed with the planck key you just imported
 </string>
     <string name="key_import_wizard_pep_not_initial_explanation">If you initiated a key import for the following account: %s, please click Start.</string>
     <string name="key_import_failure">Error occurred. No key imported.</string>
@@ -203,15 +203,15 @@
     <string name="key_import_from_fs_input_fpr">Please enter the Key ID or the fingerprint of the key.</string>
     <string name="reset">Reset</string>
     <string name="reset_all">Yes, Reset</string>
-    <string name="key_reset_for_identity_context_title">Reset all p≡p data for this communication partner:</string>
-    <string name="key_reset_identity_feedback">All p≡p data for this communication partner has been reset.</string>
+    <string name="key_reset_for_identity_context_title">Reset all planck data for this communication partner:</string>
+    <string name="key_reset_identity_feedback">All planck data for this communication partner has been reset.</string>
     <string name="key_reset_own_identity_feedback">The account has been reset.</string>
     <string name="key_reset_own_identity_feedback_error">The account has not been reset.</string>
     <string name="trust_identity_feedback">%s now is trusted</string>
     <string name="mistrust_identity_feedback">%s now is mistrusted</string>
     <string name="pep_key_reset_all_own_ids_summary">Reset own keys</string>
-    <string name="key_reset_all_own_identitities_feedback">All p≡p accounts have been reset.</string>
-    <string name="pep_key_reset_all_own_ids_warning">Resetting your key pair generates new private and public keys for you that p≡p will immediately start using. Are you sure?</string>
+    <string name="key_reset_all_own_identitities_feedback">All planck accounts have been reset.</string>
+    <string name="pep_key_reset_all_own_ids_warning">Resetting your key pair generates new private and public keys for you that planck will immediately start using. Are you sure?</string>
     <string name="pep_key_reset_own_id_warning">This action will reset your account. \n Are you sure you want to reset?</string>
     <string name="pep_key_reset_own_id_warning_title">Reset %s account</string>
     <string name="ellipsized_text" translatable="false">%s  …</string>
@@ -229,13 +229,13 @@
     <string name="reset_partner_keys_successful_result">You have successfully reset your partner key.</string>
     <string name="reset_partner_keys_failure">An error has occurred resetting the partner key.\n\nTry again or if the problem persist cancel and please contact with an IT Member.</string>
     <string name="reset_partner_keys_title">Reset Partner Keys</string>
-    <string name="reset_partner_keys_description">Resetting the public key of a recipient will clear the link between that key and the recipient\'s key from your database.\n\nAfter resetting and as soon as you start composing an email to the recipient, p≡p will automatically get the correct public key. Are you sure you want to reset?</string>
+    <string name="reset_partner_keys_description">Resetting the public key of a recipient will clear the link between that key and the recipient\'s key from your database.\n\nAfter resetting and as soon as you start composing an email to the recipient, planck will automatically get the correct public key. Are you sure you want to reset?</string>
 
     <!-- Folder list-->
     <string name="search_empty_error">Please write text to search</string>
     <!-- Welcome/Tutorial-->
-    <string name="intro_frag_first_text_1"><![CDATA[Welcome to the <font color="%s">p≡p</font> tutorial]]></string>
-    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="%s">p≡p</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar.]]></string>
+    <string name="intro_frag_first_text_1"><![CDATA[Welcome to the <font color="%s">planck</font> tutorial]]></string>
+    <string name="intro_frag_first_text_2"><![CDATA[You can close this tutorial any time.\n\n<font color="%s">planck</font> uses a Privacy Status to indicate how secure your communication is.\n\nThis Privacy Status is shown as an icon in the user\'s avatar.]]></string>
     <string name="intro_frag_first_text_3">And in the top bar when you open or write an e-mail:</string>
     <string name="intro_frag_second_header_1">Secure</string>
     <string name="intro_frag_second_header_2"><![CDATA[Secure & Trusted]]></string>
@@ -265,11 +265,11 @@
     <string name="keysync_wizard_waiting_message">Please give us a moment while we sync your devices. This can take a minute or more.</string>
     <string name="keysync_wizard_error_message">Something went wrong with syncing the devices. Please try again.</string>
     <!-- Group creation -->
-    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a p≡p Device Group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
-    <string name="keysync_wizard_group_creation_done_message">We successfully created a p≡p Device Group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_create_group_first_message">A second device was detected. We can form a planck Device Group to sync all your privacy on both devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_creation_done_message">We successfully created a planck Device Group. All your privacy is now synchronized.</string>
     <!-- Group extension -->
-    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your p≡p Device Group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
-    <string name="keysync_wizard_group_joining_done_message">The device is now member of your p≡p Device Group. All your privacy is now synchronized.</string>
+    <string name="keysync_wizard_add_device_to_existing_group_message">Another device was detected. We can add it to your planck Device Group to sync all your privacy on all devices. Shall we start synchronizing\?</string>
+    <string name="keysync_wizard_group_joining_done_message">The device is now member of your planck Device Group. All your privacy is now synchronized.</string>
     <!-- Key sync dialog button texts -->
     <string name="keysync_wizard_action_cancel">Cancel</string>
     <string name="keysync_wizard_action_next">Next</string>
@@ -281,11 +281,11 @@
     <string name="notification_failed_to_encrypt_text">We didn\'t send it and saved it to the draft folder instead.</string>
     <string name="license">License</string>
 
-    <string name="keysync_disable_warning_title">Disable p≡p Sync</string>
-    <string name="keysync_disable_warning_explanation">If you disable p≡p Sync your accounts on your devices will not be synchronized anymore.\n<b>Are you sure you want to disable p≡p Sync\? </b></string>
+    <string name="keysync_disable_warning_title">Disable planck Sync</string>
+    <string name="keysync_disable_warning_explanation">If you disable planck Sync your accounts on your devices will not be synchronized anymore.\n<b>Are you sure you want to disable planck Sync\? </b></string>
     <string name="keysync_disable_warning_action_disable">Disable</string>
     <string name="global_settings_extra_keys_summary">Encrypt messages with additional keys.</string>
-    <string name="global_settings_passive_mode_summary">Doesn\'t attach a pEpkey.asc if your communication partner is not using p≡p</string>
+    <string name="global_settings_passive_mode_summary">Doesn\'t attach a pEpkey.asc if your communication partner is not using planck</string>
     <string name="global_settings_subject_protection_summary">Encrypt the message subject when writing to a communication partner with OpenPGP</string>
     <string name="global_settings_blacklist_summary">Blacklist a key of an OpenPGP communication partner not to use it anymore</string>
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
@@ -305,9 +305,9 @@
     <string name="pgp_key_import_dialog_summary">Import from filesystem</string>
     <string name="pgp_key_import_dialog_empty_edittext">Fingerprint is mandatory</string>
 
-    <string name="pep_sync_folder">p≡p sync folder</string>
-    <string name="pep_sync_folder_is_enabled">p≡p sync folder is enabled</string>
-    <string name="pep_sync_folder_is_disabled"> p≡p sync folder is disabled, using INBOX</string>
+    <string name="pep_sync_folder">planck sync folder</string>
+    <string name="pep_sync_folder_is_enabled">planck sync folder is enabled</string>
+    <string name="pep_sync_folder_is_disabled"> planck sync folder is disabled, using INBOX</string>
 
     <string name="about_documentation">Documentation:</string>
 
@@ -315,7 +315,7 @@
     <string name="passhphrase_input_hint">Passphrase</string>
     <string name="passhphrase_body_insert_passphrase">Please enter your passphrase to continue</string>
     <string name="passhphrase_body_wrong_passphrase">You entered a wrong passphrase.\n Please enter the correct one to continue.</string>
-    <string name="passhphrase_body_sync_passphrase">Enter passphrase for p≡p Sync:</string>
+    <string name="passhphrase_body_sync_passphrase">Enter passphrase for planck Sync:</string>
     <string name="passhphrase_action_disable_sync">Shutdown Sync</string>
     <string name="passhphrase_body_new_keys_passphrase">We recommend using device encryption instead of a passphrase. This way you are securing all data and not only keys. If you still wish to proceed with a passphrase, please enter it below and enable it.</string>
     <string name="passhphrase_new_keys_settings_title">Use a passphrase for new keys</string>
@@ -335,8 +335,8 @@
     <string name="extra_key">Extra Key</string>
 
     <string name="support_settings_title">Support</string>
-    <string name="export_pep_support_data_preference_title">Export p≡p databases to file system</string>
-    <string name="export_pep_support_data_dialog_title">Export p≡p databases</string>
+    <string name="export_pep_support_data_preference_title">Export planck databases to file system</string>
+    <string name="export_pep_support_data_dialog_title">Export planck databases</string>
     <string name="export_pep_support_data_dialog_confirmation_msg">Do you really want to export the pEp databases to Documents/pEp/db-export/ on your local file system? Warning. The databases contain confidential information like private keys.</string>
     <string name="export_pep_support_data_dialog_failure_msg">Exporting databases failed.</string>
     <string name="export_pep_support_data_dialog_not_enough_space_msg">There is no enough space available. Exporting databases failed.</string>
@@ -370,7 +370,7 @@
     <string name="initialization_complete">Initialization complete</string>
     <string name="provisioning_error_template">Provisioning error:\n%s\nPlease contact your IT department.</string>
     <string name="initialization_error_template">Initialization error:\n%s\nPlease contact your IT department.</string>
-    <string name="account_setup_oauth_description">To use this email account with p≡p, you need to sign in and grant the app access to your emails.</string>
+    <string name="account_setup_oauth_description">To use this email account with planck, you need to sign in and grant the app access to your emails.</string>
     <!-- Displayed below the 'account_setup_oauth_description' text -->
     <string name="account_setup_oauth_sign_in">Sign in</string>
     <string name="account_setup_choose_auth_sign_in_with_microsoft">Sign in with Microsoft</string>
@@ -380,9 +380,9 @@
     <string name="account_setup_failed_dlg_oauth_flow_canceled">Authorization canceled</string>
     <string name="account_setup_failed_dlg_oauth_flow_failed">Authorization failed with the following error: <xliff:g id="error">%s</xliff:g></string>
     <string name="account_setup_failed_dlg_oauth_not_supported">OAuth 2.0 is currently not supported with this provider.</string>
-    <string name="account_setup_failed_dlg_browser_not_found">p≡p couldn\'t find a browser to use for granting access to your account.</string>
+    <string name="account_setup_failed_dlg_browser_not_found">planck couldn\'t find a browser to use for granting access to your account.</string>
     <string name="account_setup_oauth_title_retry_login">Retry login</string>
-    <string name="account_setup_oauth_description_retry_login">p≡p could not log in to account %s. Please try login again below.</string>
+    <string name="account_setup_oauth_description_retry_login">planck could not log in to account %s. Please try login again below.</string>
     <string name="mdm_settings_feedback_title" translatable="false">Current settings from MDM</string>
     <string name="mdm_settings_feedback_share_action" translatable="false">Share</string>
     <string name="account_setup_failed_dlg_could_not_discover_mail_settings">Could not discover mail settings. Please contact your IT support to get the custom mail settings needed for this account.</string>
