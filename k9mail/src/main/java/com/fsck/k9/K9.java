@@ -57,10 +57,6 @@ import com.fsck.k9.service.MailServiceLegacy;
 import com.fsck.k9.service.ShutdownReceiver;
 import com.fsck.k9.service.StorageGoneReceiver;
 import com.fsck.k9.widget.list.MessageListWidgetProvider;
-
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -92,9 +88,6 @@ import security.pEp.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-@ReportsCrashes(mailTo = "crashreport@pep.security",
-        mode = ReportingInteractionMode.TOAST,
-        resToastText = R.string.crash_toast_text)
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
@@ -671,7 +664,6 @@ public class K9 extends MultiDexApplication {
 
         initializeInjector();
 
-        ACRA.init(this);
         component.provisioningManager().startProvisioning();
     }
 
