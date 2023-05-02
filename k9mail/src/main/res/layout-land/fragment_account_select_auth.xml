@@ -20,7 +20,7 @@
 
         <ImageView
             android:id="@+id/pep_logo"
-            style="@style/AccountSelectAuthScreen.peplogo"
+            style="@style/AccountSelectAuthScreen.plancklogo"
             tools:ignore="ContentDescription" />
 
         <TextView

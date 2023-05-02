@@ -1,9 +1,7 @@
 package com.fsck.k9.activity;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -19,7 +17,6 @@ import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
@@ -120,7 +117,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 getSupportActionBar().setDisplayHomeAsUpEnabled(showUpButton);
             }
             if (ThemeManager.isDarkTheme()) {
-                toolbar.setPopupTheme(R.style.PEpThemeOverlay);
+                toolbar.setPopupTheme(R.style.planckThemeOverlay);
             }
         }
     }

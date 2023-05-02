@@ -18,5 +18,5 @@
         android:minWidth="@dimen/button_minWidth"
         android:padding="10dip"
         android:text="@string/reset_partner_keys_title"
-        android:theme="@style/PEpStyleButton.Grey"/>
+        android:theme="@style/planckStyleButton.Grey"/>
 </LinearLayout>
