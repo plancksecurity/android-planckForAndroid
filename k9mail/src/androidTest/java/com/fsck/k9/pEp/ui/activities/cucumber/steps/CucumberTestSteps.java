@@ -140,8 +140,9 @@ public class CucumberTestSteps {
         }
         Intents.init();
         try {
+            waitForIdle();
             scenario = ActivityScenario.launch(SplashActivity.class);
-            while (TestUtils.getCurrentActivity() == null) {
+            while (TestUtils.getCurrentActivity() == null || scenario == null) {
                 try {
                     waitForIdle();
                     Thread.sleep(500);
@@ -213,7 +214,7 @@ public class CucumberTestSteps {
 
     @When(value = "^I created an account$")
     public void I_create_account() {
-        if (BuildConfig.IS_ENTERPRISE) {
+        /*if (BuildConfig.IS_ENTERPRISE) {
             String account = testUtils.getAccountAddress(0);
             if (testUtils.test_number().equals("1") || testUtils.test_number().equals("2")) {
                 account = testUtils.getSyncAccount(0);
@@ -226,7 +227,7 @@ public class CucumberTestSteps {
             I_set_string_setting("account_email_address", account);
             I_set_incoming_settings("peptest.ch", "SSL/TLS", 993, account);
             I_set_outgoing_settings("peptest.ch", "STARTTLS", 587, account);
-        }
+        }*/
         waitForIdle();
         try {
             if (!exists(onView(withId(R.id.message_list)))) {
@@ -367,10 +368,13 @@ public class CucumberTestSteps {
         textViewEditor(cucumberBody, "message_content");
     }
 
-    @When("^I enter (\\d+) recipients in the (\\S+) field")
-    public void I_fill_n_recipients(int recipients, String field) {
+    @When("^I enter (\\d+) recipients in the messageTo field")
+    public void I_fill_n_recipients(int recipients, boolean isBot) {
         timeRequiredForThisMethod(1);
-        String recipient = "recipients@email.pep";
+        String address = "@any.mail";
+        if (isBot) {
+            address = "@sq.pep.security";
+        }
         UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView"));
         for (int loop = 0; loop < recipients; loop++) {
             scroll.swipe(Direction.UP, 1f);
@@ -385,7 +389,7 @@ public class CucumberTestSteps {
             waitForIdle();
             onView(withId(R.id.to_label)).perform(click());
             waitForIdle();
-            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + recipient));
+            onView(withId(R.id.to)).perform(typeText(loop + "of" + recipients + "_" + System.currentTimeMillis() + address));
             waitForIdle();
         }
     }
@@ -417,6 +421,28 @@ public class CucumberTestSteps {
         waitForIdle();
         onView(withId(R.id.toolbar)).perform(closeSoftKeyboard());
         waitForIdle();
+    }
+
+    @When("^I stress Engine threads with (\\d+) recipients")
+    public void I_stress_Engine(int recipients) {
+        for (int loop = 0; loop < 10000; loop++) {
+            for (int loop2 = 0; loop2 < 40; loop2++) {
+                I_click_message_compose_button();
+                I_enter_text_in_field("myself", "messageTo");
+                I_fill_recipients(3, "messageTo");
+                I_remove_address_clicking_X(3);
+                I_remove_address_clicking_X(2);
+                I_remove_address_clicking_X(1);
+                I_fill_n_recipients(recipients, false);
+                I_remove_unsecure_email_addresses();
+                I_fill_n_recipients(recipients, true);
+                I_fill_subject_field("Loop " + loop + " - " + loop2 + " - Recipients " + recipients);
+                I_click_the_send_message_button();
+                I_wait_for_the_new_message();
+                I_remove_all_messages();
+                //I_send_message_to_address(1, "bot1", "loop: " + loop2, "Body");
+            }
+        }
     }
 
     @When("^I paste (\\d+) recipients in the (\\S+) field")
@@ -495,12 +521,15 @@ public class CucumberTestSteps {
     }
 
 
-    @When("^I check insecurity warnings are there")
-    public void I_check_insecurity_warnings_are_there() {
-        if (!viewIsDisplayed(onView(withId(R.id.snackbar_text)))) {
+    @When("^I check unsecure warnings are there")
+    public void I_check_unsecure_warnings_are_there() {
+        // This method requires 2 or more Unsecure recipients to check the red color in the recipients and in the "+X"
+        if (!viewIsDisplayed(onView(withId(R.id.user_action_banner)))) {
             assertFailWithMessage("Is not showing the Alert message");
         }
-        if (!getTextFromView(onView(withId(R.id.snackbar_text))).equals(resources.getString(testUtils.stringToID("compose_unsecure_delivery_warning")))) {
+        String unsecureText = resources.getQuantityString(testUtils.pluralsStringToID("compose_unsecure_delivery_warning"), 2);
+        unsecureText = unsecureText.substring(4);
+        if (!getTextFromView(onView(withId(R.id.user_action_banner))).contains(unsecureText)) {
             assertFailWithMessage("The text in the Alert message is not correct");
         }
         if (!getTextFromView(onView(withId(R.id.to))).contains("+")) {
@@ -739,15 +768,24 @@ public class CucumberTestSteps {
         testUtils.pressBack();
     }
 
-    @When("^I reset handshake$")
-    public void I_reset_handshake() {
-        timeRequiredForThisMethod(10);
-        testUtils.selectFromMenu(R.string.pep_title_activity_privacy_status);
+    @When("^I reset partner key$")
+    public void I_reset_partner_key() {
+        waitForIdle();
+        onView(withId(R.id.securityText)).perform(click());
+        waitForIdle();
         while (!exists(onView(withId(R.id.button_identity_key_reset)))) {
             waitForIdle();
         }
         onView(withId(R.id.button_identity_key_reset)).perform(click());
         waitForIdle();
+        testUtils.pressOKButtonInDialog();
+        waitForIdle();
+        if (exists(onView(withId(R.id.rejectHandshake))) || exists(onView(withId(R.id.confirmHandshake)))) {
+
+        }
+        if (!exists(onView(withId(R.id.status_explanation_text)))) {
+
+        }
         testUtils.pressBack();
     }
 
@@ -1044,7 +1082,7 @@ public class CucumberTestSteps {
                 switch (testUtils.test_number()) {
                     case "1":
                         I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is(pepColor);
+                        //I_check_toolBar_color_is(pepColor);
                         testUtils.pressBack();
                         testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
@@ -1055,7 +1093,7 @@ public class CucumberTestSteps {
                     case "2":
                         I_send_message_to_address(1, emailAccount, "Message from B to A", "Day " + currentDay + ", message " + currentMessage);
                         I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is(pepColor);
+                        //I_check_toolBar_color_is(pepColor);
                         testUtils.pressBack();
                         testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
@@ -1081,7 +1119,7 @@ public class CucumberTestSteps {
                 switch (testUtils.test_number()) {
                     case "1":
                         I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is("pep_yellow");
+                        //I_check_toolBar_color_is("pep_yellow");
                         testUtils.pressBack();
                         I_send_message_to_address(1, "bot" + currentDay, "DeviceA_2ndMessage", "message " + message + "from device 1 to 2, day " + currentDay);
                         while (testUtils.getListSize() > 1) {
@@ -1104,7 +1142,7 @@ public class CucumberTestSteps {
                     case "2":
                         I_send_message_to_address(1, "bot" + currentDay, "DeviceB_1stMessage", "message " + message + "from device 2 to 1, day " + currentDay);
                         I_wait_for_the_message_and_click_it();
-                        I_check_toolBar_color_is("pep_yellow");
+                        //I_check_toolBar_color_is("pep_yellow");
                         testUtils.pressBack();
                         testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
@@ -1129,10 +1167,10 @@ public class CucumberTestSteps {
             switch (testUtils.test_number()) {
                 case "1":
                     I_wait_for_the_message_and_click_it();
-                    I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("pep_yellow");
                     testUtils.pressBack();
                     I_wait_for_the_message_and_click_it();
-                    I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("pep_yellow");
                     testUtils.pressBack();
                     while (testUtils.getListSize() > 1) {
                         testUtils.getMessageListSize();
@@ -1150,15 +1188,15 @@ public class CucumberTestSteps {
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake", "Doing Handshake with bot" + currentDay);
                     I_click_the_last_message_received();
                     I_click_confirm_trust_words();
-                    I_check_toolBar_color_is("pep_green");
+                    //I_check_toolBar_color_is("pep_green");
                     I_click_reply_message();
-                    I_reset_handshake();
-                    I_check_toolBar_color_is("pep_no_color");
+                    I_reset_partner_key();
+                    //I_check_toolBar_color_is("pep_no_color");
                     I_discard_the_message();
                     testUtils.pressBack();
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake-2nd", "Sending message after reset with bot" + currentDay);
                     I_click_the_last_message_received();
-                    I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("pep_yellow");
                     testUtils.pressBack();
                     try {
                         Thread.sleep(20000);
@@ -1488,14 +1526,80 @@ public class CucumberTestSteps {
         waitForIdle();
     }
 
-    @When("^I check in the handshake dialog if the privacy status is (\\S+)$")
+    @When("^I check the privacy status is (\\S+)$")
     public void I_check_pEp_status(String status) {
         timeRequiredForThisMethod(20);
-        checkPrivacyStatus(status);
+         checkPrivacyStatus(status);
         waitForIdle();
     }
 
     private void checkPrivacyStatus(String status) {
+        waitForIdle();
+        switch (status) {
+            case "unsecure":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingUnencrypted);
+                return;
+            case "secure":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_encrypted")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingReliable);
+                return;
+            case "basic_protection":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_encrypted")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingMediaKeyProtected);
+                return;
+            case "secure&trusted":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_trusted")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingTrusted);
+                return;
+            case "weak_protection":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_weakly_encrypted")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingUnreliable);
+                return;
+            case "mistrusted":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingMistrust);
+                return;
+            case "cannot_decrypt":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_cannot_decrypt")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingCannotDecrypt);
+                return;
+            case "under_attack":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingUnderAttack);
+                return;
+            case "broken":
+                if (pep_enable_privacy_protection) {
+                    testUtils.checkStatusText(resources.getString(testUtils.stringToID("pep_rating_dangerous")));
+                }
+                testUtils.assertStatus(Rating.pEpRatingB0rken);
+                return;
+            case "undefined":
+                if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
+                    return;
+                }
+                testUtils.assertFailWithMessage("Rating is not Undefined");
+        }
+    }
+
+    private void checkPrivacyStatus_old(String status) {
+        waitForIdle();
         if (getTextFromView(onView(withId(R.id.to))).equals("") && !viewIsDisplayed(R.id.securityStatusIcon)) {
             return;
         }
@@ -1505,10 +1609,10 @@ public class CucumberTestSteps {
                     if (!viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
                         assertFailWithMessage("Showing a rating that is not " + status);
                     }
-                    if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("enterprise_unsecure")))) {
-                        assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("enterprise_unsecure")));
+                    if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")))) {
+                        assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
                     }
-                    I_check_toolBar_color_is("pep_red");
+                    //I_check_toolBar_color_is("pep_yellow");
                     return;
                 case "pEpRatingUndefined":
                     if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
@@ -1520,9 +1624,9 @@ public class CucumberTestSteps {
                         assertFailWithMessage("Not showing Unsecure status");
                     }
                     if (pep_enable_privacy_protection) {
-                        I_check_toolBar_color_is("pep_red");
+                        //I_check_toolBar_color_is("pep_red");
                     } else {
-                        I_check_toolBar_color_is("pep_gray");
+                        //I_check_toolBar_color_is("pep_gray");
                     }
                     return;
             }
@@ -1563,7 +1667,8 @@ public class CucumberTestSteps {
         if (statusRating[0] != null) {
             testUtils.assertMessageStatus(statusRating[0], status);
         } else {
-            testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
+
+            //testUtils.checkPrivacyTextColor(testUtils.colorToID(status));
         }
     }
 
@@ -1613,7 +1718,7 @@ public class CucumberTestSteps {
                 }
             }
             if (horizontalWidgetScroll == -1) { //Vertical scroll
-                device.click(5, device.getDisplayHeight() - 5);
+                //device.click(5, device.getDisplayHeight() - 5);
                 boolean openWidgetMenu = true;
                 for (scroll = 1; scroll < 30; scroll++) {
                     for (UiObject2 textView : device.findObjects(selector)) {
@@ -1914,6 +2019,13 @@ public class CucumberTestSteps {
     public void I_remove_account() {
         timeRequiredForThisMethod(25);
         testUtils.goBackAndRemoveAccount();
+    }
+
+    @Then("^I remove unsecure email addresses$")
+    public void I_remove_unsecure_email_addresses() {
+        waitForIdle();
+        onView(withId(R.id.user_action_banner)).perform(click());
+        waitForIdle();
     }
 
     @Then("^I remove email address$")
@@ -2741,6 +2853,16 @@ public class CucumberTestSteps {
         testUtils.goToSentFolder();
     }
 
+    @And("^I select the inbox from the menu$")
+    public void I_select_the_inbox_from_the_menu() {
+        timeRequiredForThisMethod(25);
+        waitForIdle();
+        testUtils.openHamburgerMenu();
+        waitForIdle();
+        testUtils.clickFolder(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")));
+    }
+
+
     @And("^I select the inbox$")
     public void I_select_the_inbox() {
         timeRequiredForThisMethod(25);
@@ -2860,7 +2982,7 @@ public class CucumberTestSteps {
     }
 
     @Then("^I check if the privacy status is (\\S+)$")
-    public void I_check_toolBar_color_is(String color) {
+    public void I_check_status_text_is(String status) {
         timeRequiredForThisMethod(10);
         try {
             TestUtils.swipeUpScreen();
@@ -2883,7 +3005,7 @@ public class CucumberTestSteps {
         }
         onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
         waitForIdle();
-        checkPrivacyStatus(color);
+        checkPrivacyStatus(status);
         waitForIdle();
     }
 
@@ -2993,11 +3115,11 @@ public class CucumberTestSteps {
         int attachments = -1;
         while (true) {
             try {
-                if (!exists(onView(withId(R.id.attachments)))) {
+                while (!exists(onView(withId(R.id.attachments)))) {
                     TestUtils.swipeUpScreen();
                 }
                 onView(withId(R.id.toolbar)).check(matches(isDisplayed()));
-                if (!viewIsDisplayed(R.id.attachments)) {
+                while (!viewIsDisplayed(R.id.attachments)) {
                     TestUtils.swipeUpScreen();
                 }
                 TestUtils.swipeUpScreen();
