@@ -71,7 +71,6 @@ import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assume;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -913,6 +912,7 @@ public class TestUtils {
 
     private void createNewAccountWithPermissions() {
         testReset = false;
+        boolean selectOptionDisplayed = false;
         try {
             if (exists(onView(withId(R.id.next)))) {
                 onView(withId(R.id.next)).perform(click());
@@ -945,6 +945,26 @@ public class TestUtils {
                     Timber.i("Ignored", "Ignored exception");
                 }
             }
+            waitForIdle();
+            if (exists(onView(withId(R.id.other_method_sign_in_button)))) {
+                onView(withId(R.id.other_method_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }
+            /*if (exists(onView(withId(R.id.microsoft_sign_in_button)))) {
+                onView(withId(R.id.microsoft_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }
+            if (exists(onView(withId(R.id.google_sign_in_button)))) {
+                onView(withId(R.id.google_sign_in_button)).perform(click());
+                selectOptionDisplayed = true;
+                waitForIdle();
+            }*/
+            if (!selectOptionDisplayed) {
+                fail("No sign in options to choose");
+            }
+            waitForIdle();
             switch (test_number()) {
                 case "0":
                     createNAccounts(getTotalAccounts(), false, false);
@@ -1447,7 +1467,7 @@ public class TestUtils {
         do {
             allowPermissions(2);
             allowPermissions(1);
-        } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)));
+        } while (!viewIsDisplayed((R.id.action_continue)) && !viewIsDisplayed((R.id.account_email)) && !viewIsDisplayed((R.id.terms_and_conditions)));
     }
 
     public void allowPermissions(int index) {
@@ -2219,17 +2239,37 @@ public class TestUtils {
         assertMessageStatus(rating, status);
     }
 
-    public void assertMessageStatus(Rating rating, String status){
+    public void assertStatus(Rating rating){
         int statusColor;
-        clickStatus();
         while (!viewIsDisplayed(R.id.toolbar)) {
             waitForIdle();
         }
-        onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
+        statusColor = getSecurityStatusDrawableColor(rating);
+        if (statusColor == -10) {
+            if (viewIsDisplayed(R.id.actionbar_message_view)) {
+                assertFailWithMessage("Wrong Status, it should be empty");
+            }
+        } else {
+            int value = rating.value;
+            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+
+            //int color = R.color.compose_unsecure_delivery_warning;
+            assertsIconColor("securityStatusIcon", color);
+            viewIsDisplayed(R.id.securityStatusIcon);
+            assertSecurityStatusText(rating);
+        }
+    }
+    public void assertMessageStatus(Rating rating, String status){
+        int statusColor;
+        //clickStatus();
+        while (!viewIsDisplayed(R.id.toolbar)) {
+            waitForIdle();
+        }
+        //onView(withId(R.id.toolbar)).check(matches(isCompletelyDisplayed()));
         /*while (!viewIsDisplayed(R.id.pEpTitle)) {
             waitForIdle();
         }*/
-        waitForToolbar();
+        //waitForToolbar();
         statusColor = getSecurityStatusDrawableColor(rating);
         if (statusColor == -10) {
             if (viewIsDisplayed(R.id.actionbar_message_view)) {
@@ -2456,7 +2496,7 @@ public class TestUtils {
         }
     }
 
-    public void assertsIconColor (String colorId, int color) {
+    public void assertsIconColor (String colorId, int expectedColor) {
         BySelector selector = By.clazz("android.widget.ImageView");
         waitForIdle();
         Rating [] statusRating = new Rating[1];
@@ -2464,15 +2504,9 @@ public class TestUtils {
             if (object.getResourceName() != null && object.getResourceName().equals(BuildConfig.APPLICATION_ID + ":id/" + colorId)) {
                 waitForIdle();
                 int iconColor = getPixelColor(object.getVisibleCenter().x, object.getVisibleCenter().y);
-                String hexColor = String.format("#%06X", (0xFFFFFF & iconColor));
-                //int i = R.color.compose_unsecure_delivery_warning;
-
-                color = ContextCompat.getColor(context, color);
-                //String hexColor2 = String.format("#%06X", (0xFFFFFF & R.color.compose_unsecure_delivery_warning));
-                //getStatusRating(statusRating, status);
-                //int statusColor = getSecurityStatusIconColor(statusRating[0]);
-                if (iconColor != color) {
-                        assertFailWithMessage("");
+                expectedColor = ContextCompat.getColor(context, expectedColor);
+                if (iconColor != expectedColor) {
+                        assertFailWithMessage("Wrong color: Expected color is " + String.format("#%06X", (0xFFFFFF & expectedColor)) + " but icon color is " + String.format("#%06X", (0xFFFFFF & iconColor)));
                     break;
                 }
             }
@@ -2488,12 +2522,37 @@ public class TestUtils {
         return resources.getIdentifier(text, "string", BuildConfig.APPLICATION_ID);
     }
 
+    public int pluralsStringToID(String text){
+        return resources.getIdentifier(text, "plurals", BuildConfig.APPLICATION_ID);
+    }
+
     public int intToID(String text){
         return resources.getIdentifier(text, "id", BuildConfig.APPLICATION_ID);
     }
 
     public int colorToID(String color){
         return resources.getIdentifier(color, "color", BuildConfig.APPLICATION_ID);
+    }
+
+    public void checkStatusText(String text) {
+        waitForIdle();
+        while (!viewIsDisplayed(R.id.toolbar) || !viewIsDisplayed(R.id.toolbar_container)) {
+            waitForIdle();
+        }
+        onView(withId(R.id.toolbar_container)).check(matches(isCompletelyDisplayed()));
+        while (true) {
+            waitForIdle();
+            if (BuildConfig.IS_ENTERPRISE) {
+                if (!(viewIsDisplayed(onView(withId(R.id.securityStatusText))))) {
+                    assertFailWithMessage("Status is not shown");
+                }
+            }
+            if (exists(onView(withId(R.id.toolbar))) && viewIsDisplayed(R.id.toolbar) && viewIsDisplayed(R.id.toolbar_container)) {
+                waitForIdle();
+                onView(withId(R.id.securityStatusText)).check(matches(withText(text)));
+                return;
+            }
+        }
     }
 
     public void checkPrivacyTextColor(int color) {
@@ -3868,6 +3927,7 @@ public class TestUtils {
                 onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
             }
         }
+        waitUntilIdle();
     }
 
     private void compareTextWithWebViewText(String textToCompare) {

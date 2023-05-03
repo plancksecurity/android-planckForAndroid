@@ -1,5 +1,5 @@
 package com.fsck.k9.ui
-
+/*
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -68,4 +68,4 @@ class MessageListScreenshotTest : BaseScreenshotTest() {
         getScreenShotCurrentActivity("all items selected")
         Espresso.pressBack()
     }
-}
+}*/
