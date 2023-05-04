@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.scottyab.rootbeer.RootBeer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -264,6 +266,17 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onResume() {
         super.onResume();
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted() && BuildConfig.DEBUG==false) {
+            Toast.makeText(this, "Root detected!", Toast.LENGTH_SHORT).show();
+            try {
+                finalize();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(this, "Root detected! No crash tho :)", Toast.LENGTH_SHORT).show();
+        }
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
             mBase.registerConfigurationManager();
