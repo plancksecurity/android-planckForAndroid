@@ -39,6 +39,8 @@ import butterknife.OnTextChanged;
 import security.pEp.auth.OAuthTokenRevokedListener;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
+import timber.log.Timber;
+
 import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
@@ -268,15 +270,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onResume();
         RootBeer rootBeer = new RootBeer(this);
         if (rootBeer.isRooted() && BuildConfig.DEBUG==false) {
-            Toast.makeText(this, "Root detected!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Root detected! YOu can't use planck on a rooted device", Toast.LENGTH_SHORT).show();
             try {
                 finalize();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-        } else {
-            Toast.makeText(this, "Root detected! No crash tho :)", Toast.LENGTH_SHORT).show();
         }
+        Timber.e("Device is (possibly) rooted: "+rootBeer.isRooted()+" Debug: "+BuildConfig.DEBUG);
+
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
             mBase.registerConfigurationManager();
