@@ -75,7 +75,6 @@ dependencies {
     implementation "com.github.AppIntro:AppIntro:${versions.appIntro}"
     implementation "com.daimajia.swipelayout:library:${versions.swipeLayout}@aar"
     implementation "com.karumi:dexter:${versions.dexter}"
-    implementation "ch.acra:acra:${versions.acra}"
     implementation "de.cketti.safecontentresolver:safe-content-resolver-v14:${versions.safeContentResolver}"
     implementation "de.hdodenhof:circleimageview:${versions.circleImageView}"
     implementation "org.jsoup:jsoup:${versions.jsoup}"

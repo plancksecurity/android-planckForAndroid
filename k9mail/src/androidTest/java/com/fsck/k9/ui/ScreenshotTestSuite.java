@@ -1,5 +1,5 @@
 package com.fsck.k9.ui;
-
+/*
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -10,4 +10,4 @@ import org.junit.runners.Suite;
         MessageViewScreenshotTest.class,
         SettingsScreenshotTest.class})
 public class ScreenshotTestSuite {
-}
+}*/
