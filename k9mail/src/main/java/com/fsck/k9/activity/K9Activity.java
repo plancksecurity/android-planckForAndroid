@@ -268,8 +268,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onResume() {
         super.onResume();
-        RootBeer rootBeer = new RootBeer(this);
-        if (rootBeer.isRooted() && BuildConfig.DEBUG==false) {
+        boolean isRoot = new RootBeer(this).isRooted();
+        if (isRoot && BuildConfig.DEBUG==false) {
             Toast.makeText(this, "Root detected! YOu can't use planck on a rooted device", Toast.LENGTH_SHORT).show();
             try {
                 finalize();
@@ -277,7 +277,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 e.printStackTrace();
             }
         }
-        Timber.e("Device is (possibly) rooted: "+rootBeer.isRooted()+" Debug: "+BuildConfig.DEBUG);
+        Timber.e("Device is (possibly) rooted: "+isRoot+" Debug: "+BuildConfig.DEBUG);
 
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
