@@ -74,6 +74,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import dagger.hilt.android.HiltAndroidApp;
 import foundation.pEp.jniadapter.AndroidHelper;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Sync;
@@ -92,6 +93,7 @@ import security.planck.ui.passphrase.PassphraseRequirementType;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
+@HiltAndroidApp
 public class K9 extends MultiDexApplication {
     public static final int POLLING_INTERVAL = 2000;
     private Poller poller;
