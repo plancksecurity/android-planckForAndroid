@@ -270,7 +270,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         super.onResume();
         boolean isRoot = new RootBeer(this).isRooted();
         if (isRoot && BuildConfig.DEBUG==false) {
-            Toast.makeText(this, "Root detected! YOu can't use planck on a rooted device", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Unsupported Operating System", Toast.LENGTH_SHORT).show();
             try {
                 finalize();
             } catch (Throwable e) {
