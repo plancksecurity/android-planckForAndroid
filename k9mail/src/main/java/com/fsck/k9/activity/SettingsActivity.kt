@@ -23,6 +23,7 @@ import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.fsck.k9.*
+import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.activity.compose.MessageActions
 import com.fsck.k9.activity.misc.NonConfigurationInstance
 import com.fsck.k9.activity.setup.AccountSetupBasics
@@ -214,7 +215,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         )
 
         termsAndConditionsTextView.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
         }
 
         if (!K9.isHideSpecialAccounts()) {
