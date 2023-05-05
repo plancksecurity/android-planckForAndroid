@@ -16,6 +16,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import com.fsck.k9.Account
 import com.fsck.k9.R
+import com.fsck.k9.activity.MessageList
+import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.OAuthFlowActivity
 import com.fsck.k9.auth.OAuthProviderType
@@ -115,7 +117,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
             HtmlCompat.FROM_HTML_MODE_LEGACY
         )
         termsAndConditionTextView.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://userguide.pep.security/pEp_for_Android_User_Guide.pdf")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_AND_CONDITIONS_LINK)))
         }
     }
 

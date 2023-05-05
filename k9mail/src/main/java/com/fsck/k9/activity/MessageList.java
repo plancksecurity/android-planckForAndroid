@@ -122,8 +122,8 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
     // used for remote search
     public static final String EXTRA_SEARCH_ACCOUNT = "com.fsck.k9.search_account";
     private static final String EXTRA_SEARCH_FOLDER = "com.fsck.k9.search_folder";
-    private static final String TUTORIAL_ABOUT_LINK = "https://userguide.pep.security/pEp_for_Android_User_Guide.pdf ";
-
+    private static final String TUTORIAL_ABOUT_LINK = "https://userguide.planck.security/planck_for_Android_User_Guide.pdf";
+    public static final String TERMS_AND_CONDITIONS_LINK = "https://userguide.planck.security/planck_for_Android_User_Guide.pdf";
     private static final String STATE_DISPLAY_MODE = "displayMode";
     private static final String STATE_MESSAGE_LIST_WAS_DISPLAYED = "messageListWasDisplayed";
     private static final String STATE_FIRST_BACK_STACK_ID = "firstBackstackId";
