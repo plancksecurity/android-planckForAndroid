@@ -1,4 +1,4 @@
-package security.pEp.ui.support.export
+package security.planck.ui.support.export
 
 import androidx.lifecycle.Lifecycle
 import com.fsck.k9.RobolectricTest

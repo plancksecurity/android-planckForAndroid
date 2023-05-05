@@ -1,14 +1,14 @@
-package security.pEp.ui.provisioning
+package security.planck.ui.provisioning
 
 import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningPresenter
 import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningView
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
-import security.pEp.provisioning.InitializationFailedException
-import security.pEp.provisioning.ProvisionState
-import security.pEp.provisioning.ProvisioningFailedException
-import security.pEp.provisioning.ProvisioningManager
+import security.planck.provisioning.InitializationFailedException
+import security.planck.provisioning.ProvisionState
+import security.planck.provisioning.ProvisioningFailedException
+import security.planck.provisioning.ProvisioningManager
 
 class ProvisioningPresenterTest {
     private val provisioningManager: ProvisioningManager = mockk(relaxed = true)

@@ -1,4 +1,4 @@
-package security.pEp.mdm
+package security.planck.mdm
 
 import android.content.RestrictionEntry
 import android.content.res.Resources
@@ -23,8 +23,8 @@ import junit.framework.TestCase.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import security.pEp.network.UrlChecker
-import security.pEp.provisioning.*
+import security.planck.network.UrlChecker
+import security.planck.provisioning.*
 import java.util.*
 
 class ConfiguredSettingsUpdaterTest: RobolectricTest() {
@@ -967,7 +967,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = NEW_SERVER,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1018,7 +1018,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedOutgoingServer = GMAIL_OUTGOING_SERVER,
             expectedConnectionSecurity = ConnectionSecurity.SSL_TLS_REQUIRED,
             expectedUserName = NEW_EMAIL,
-            expectedAuthType = security.pEp.mdm.AuthType.XOAUTH2,
+            expectedAuthType = security.planck.mdm.AuthType.XOAUTH2,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1069,7 +1069,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = NEW_SERVER,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.EXTERNAL,
+            expectedAuthType = security.planck.mdm.AuthType.EXTERNAL,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1115,7 +1115,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = NEW_SERVER,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.CRAM_MD5,
+            expectedAuthType = security.planck.mdm.AuthType.CRAM_MD5,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1161,7 +1161,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = DEFAULT_SERVER,
             expectedConnectionSecurity = DEFAULT_SECURITY_TYPE,
             expectedUserName = DEFAULT_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
             expectedOAuthProvider = DEFAULT_OAUTH_PROVIDER
         )
     }
@@ -1213,7 +1213,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = null,
             expectedConnectionSecurity = null,
             expectedUserName = null,
-            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1266,7 +1266,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = null,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1313,7 +1313,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
             expectedIncomingServer = NEW_SERVER,
             expectedConnectionSecurity = NEW_SECURITY_TYPE,
             expectedUserName = NEW_USER_NAME,
-            expectedAuthType = security.pEp.mdm.AuthType.PLAIN,
+            expectedAuthType = security.planck.mdm.AuthType.PLAIN,
             expectedOAuthProvider = OAuthProviderType.GOOGLE
         )
     }
@@ -1412,7 +1412,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         expectedOutgoingServer: String? = expectedIncomingServer,
         expectedConnectionSecurity: ConnectionSecurity?,
         expectedUserName: String?,
-        expectedAuthType: security.pEp.mdm.AuthType,
+        expectedAuthType: security.planck.mdm.AuthType,
         expectedOAuthProvider: OAuthProviderType?
     ) {
         val slot = slot<AccountMailSettingsProvision>()

@@ -11,7 +11,10 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.K9ActivityCommon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import security.planck.mdm.*
 import kotlinx.coroutines.withContext
+import security.planck.mdm.RestrictionsListener
+import security.planck.mdm.RestrictionsProvider
 import java.lang.reflect.Field
 import javax.inject.Inject
 import javax.inject.Singleton

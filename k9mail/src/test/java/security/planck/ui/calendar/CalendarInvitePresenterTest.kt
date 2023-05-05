@@ -1,4 +1,4 @@
-package security.pEp.ui.calendar
+package security.planck.ui.calendar
 
 import android.net.Uri
 import biweekly.ICalendar
@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import security.pEp.ui.calendar.TestICalendarCreator
 import java.util.*
 
 @ExperimentalCoroutinesApi

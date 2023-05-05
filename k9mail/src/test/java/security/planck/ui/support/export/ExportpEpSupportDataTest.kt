@@ -1,4 +1,4 @@
-package security.pEp.ui.support.export
+package security.planck.ui.support.export
 
 
 import android.content.Context
@@ -19,7 +19,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.robolectric.annotation.Config
-import security.pEp.file.PEpSystemFileLocator
+import security.planck.file.PEpSystemFileLocator
 import java.io.File
 
 @ExperimentalCoroutinesApi

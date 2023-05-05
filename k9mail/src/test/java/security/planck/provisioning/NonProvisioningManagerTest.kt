@@ -1,4 +1,4 @@
-package security.pEp.provisioning
+package security.planck.provisioning
 
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
@@ -16,8 +16,8 @@ import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import security.pEp.mdm.ConfigurationManager
-import security.pEp.network.UrlChecker
+import security.planck.mdm.ConfigurationManager
+import security.planck.network.UrlChecker
 
 @ExperimentalCoroutinesApi
 class NonProvisioningManagerTest: RobolectricTest() {

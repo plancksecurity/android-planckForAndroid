@@ -1,4 +1,4 @@
-package security.pEp.ui.support.export
+package security.planck.ui.support.export
 
 
 import android.content.Context
@@ -16,7 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import security.pEp.file.PEpSystemFileLocator
+import security.planck.file.PEpSystemFileLocator
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
