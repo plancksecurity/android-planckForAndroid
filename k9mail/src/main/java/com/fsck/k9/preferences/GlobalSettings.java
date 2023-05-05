@@ -38,8 +38,8 @@ import java.util.TreeMap;
 
 import static com.fsck.k9.K9.LockScreenNotificationVisibility;
 
-import security.pEp.mdm.ManageableSetting;
-import security.pEp.mdm.ManageableSettingKt;
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 
 
 public class GlobalSettings {

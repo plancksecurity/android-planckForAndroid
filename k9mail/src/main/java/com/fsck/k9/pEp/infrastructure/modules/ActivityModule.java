@@ -13,12 +13,12 @@ import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.permissions.PepPermissionRequester;
-import security.pEp.ui.resources.PEpResourcesProvider;
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.PEpToolbarCustomizer;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.permissions.PermissionRequester;
+import security.planck.ui.permissions.PepPermissionRequester;
+import security.planck.ui.resources.PEpResourcesProvider;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.PEpToolbarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @Module
 public class ActivityModule {

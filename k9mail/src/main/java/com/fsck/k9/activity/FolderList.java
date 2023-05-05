@@ -68,9 +68,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import security.pEp.ui.PEpUIUtils;
-import security.pEp.ui.resources.PEpResourcesProvider;
-import security.pEp.ui.resources.ResourcesProvider;
+import security.planck.ui.PEpUIUtils;
+import security.planck.ui.resources.PEpResourcesProvider;
+import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 import static com.fsck.k9.activity.MessageList.EXTRA_SEARCH_ACCOUNT;
@@ -371,6 +371,7 @@ public class FolderList extends K9ListActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         setIntent(intent); // onNewIntent doesn't autoset our "internal" intent
 
         mUnreadMessageCount = 0;
@@ -388,7 +389,7 @@ public class FolderList extends K9ListActivity {
         }
 
         if (intent.getBooleanExtra(EXTRA_FROM_SHORTCUT, false) &&
-                   !K9.FOLDER_NONE.equals(mAccount.getAutoExpandFolderName())) {
+                !K9.FOLDER_NONE.equals(mAccount.getAutoExpandFolderName())) {
             onOpenFolder(mAccount.getAutoExpandFolderName());
         } else {
             initializeActivityView();

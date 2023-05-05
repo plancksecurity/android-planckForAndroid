@@ -113,7 +113,7 @@
             android:paddingTop="16dp"
             tools:text="android.studio@android.com" />
 
-        <security.pEp.ui.nav_view.NavFolderAccountButton
+        <security.planck.ui.nav_view.NavFolderAccountButton
             android:id="@+id/navFoldersAccountsButton"
             android:layout_width="32dp"
             android:layout_height="32dp"

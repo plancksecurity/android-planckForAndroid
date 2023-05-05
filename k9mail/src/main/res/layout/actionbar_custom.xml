@@ -69,7 +69,7 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <security.pEp.ui.toolbar.PEpSecurityStatusLayout
+    <security.planck.ui.toolbar.PEpSecurityStatusLayout
         android:id="@+id/actionbar_message_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -143,7 +143,7 @@
             tools:text="message subtitle that is big enough to fil"
             tools:visibility="gone" />
 
-    </security.pEp.ui.toolbar.PEpSecurityStatusLayout>
+    </security.planck.ui.toolbar.PEpSecurityStatusLayout>
 
 
 </FrameLayout>

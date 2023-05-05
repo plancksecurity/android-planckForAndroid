@@ -11,7 +11,7 @@ import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.HandshakeData
 import foundation.pEp.jniadapter.Identity
 import kotlinx.coroutines.*
-import security.pEp.permissions.PermissionChecker
+import security.planck.permissions.PermissionChecker
 import java.util.*
 
 class PEpStatusTrustwordsPresenter(

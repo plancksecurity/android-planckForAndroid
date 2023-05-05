@@ -31,9 +31,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
-import security.pEp.auth.OAuthTokenRevokedListener;
-import security.pEp.mdm.ConfigurationManager;
-import security.pEp.mdm.RestrictionsListener;
+import security.planck.auth.OAuthTokenRevokedListener;
+import security.planck.mdm.ConfigurationManager;
+import security.planck.mdm.RestrictionsListener;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,

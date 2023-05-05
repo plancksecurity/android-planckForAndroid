@@ -28,7 +28,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
-import security.pEp.permissions.PermissionRequester;
+import security.planck.permissions.PermissionRequester;
 
 /**
  * Prompts the user for the email address and password.

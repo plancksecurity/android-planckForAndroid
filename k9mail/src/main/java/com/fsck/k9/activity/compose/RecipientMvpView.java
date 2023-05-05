@@ -34,7 +34,7 @@ import java.util.List;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.message_compose.ComposeAccountRecipient;
 
 
 public class RecipientMvpView implements OnFocusChangeListener, OnClickListener {

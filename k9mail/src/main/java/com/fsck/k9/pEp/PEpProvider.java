@@ -17,7 +17,7 @@ import foundation.pEp.jniadapter.Message;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
-import security.pEp.echo.EchoMessageReceivedListener;
+import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 /**

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<security.pEp.ui.message_compose.PEpFabMenu xmlns:android="http://schemas.android.com/apk/res/android"
+<security.planck.ui.message_compose.PEpFabMenu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fab_menu"
@@ -97,4 +97,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_reply_green" />
 
-</security.pEp.ui.message_compose.PEpFabMenu>
+</security.planck.ui.message_compose.PEpFabMenu>

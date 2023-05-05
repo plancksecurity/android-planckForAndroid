@@ -20,8 +20,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.permissions.PermissionChecker;
+import security.planck.ui.permissions.PEpPermissionChecker;
 
 @Module
 public class ApplicationModule {

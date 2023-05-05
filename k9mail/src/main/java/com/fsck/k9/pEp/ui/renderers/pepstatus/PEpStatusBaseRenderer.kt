@@ -23,8 +23,8 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
-import security.pEp.permissions.PermissionChecker
-import security.pEp.ui.permissions.PEpPermissionChecker
+import security.planck.permissions.PermissionChecker
+import security.planck.ui.permissions.PEpPermissionChecker
 
 abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLoader) : Renderer<PEpIdentity>() {
     lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener

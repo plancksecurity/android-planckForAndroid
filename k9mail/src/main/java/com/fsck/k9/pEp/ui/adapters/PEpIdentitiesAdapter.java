@@ -22,7 +22,7 @@ import java.util.List;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.PEpUIUtils;
+import security.planck.ui.PEpUIUtils;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
     private final ContextActions contextActions;

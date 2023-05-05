@@ -11,8 +11,8 @@ import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.permissions.PermissionChecker;
+import security.planck.ui.permissions.PEpPermissionChecker;
 
 @Module
 public class PEpModule {

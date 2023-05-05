@@ -45,7 +45,7 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools;
 import com.fsck.k9.view.MessageHeader.OnLayoutChangedListener;
 import com.fsck.k9.view.MessageWebView;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
-import security.pEp.ui.calendar.CalendarInviteLayout;
+import security.planck.ui.calendar.CalendarInviteLayout;
 
 import java.util.HashMap;
 import java.util.Map;

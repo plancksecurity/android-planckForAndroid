@@ -13,7 +13,7 @@ import com.fsck.k9.activity.ConfirmationDialog
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
-import security.pEp.mdm.RestrictionsListener
+import security.planck.mdm.RestrictionsListener
 
 class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
     RestrictionsListener {

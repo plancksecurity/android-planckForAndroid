@@ -8,10 +8,10 @@ import com.fsck.k9.ui.settings.account.AccountSettingsViewModel
 import com.fsck.k9.ui.settings.general.GeneralSettingsDataStore
 import org.koin.android.architecture.ext.viewModel
 import org.koin.dsl.module.applicationContext
-import security.pEp.permissions.PermissionChecker
-import security.pEp.permissions.PermissionRequester
-import security.pEp.ui.permissions.PEpPermissionChecker
-import security.pEp.ui.permissions.PepPermissionRequester
+import security.planck.permissions.PermissionChecker
+import security.planck.permissions.PermissionRequester
+import security.planck.ui.permissions.PEpPermissionChecker
+import security.planck.ui.permissions.PepPermissionRequester
 import java.util.concurrent.Executors
 
 val settingsUiModule = applicationContext {

@@ -5,8 +5,8 @@ import android.content.RestrictionsManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import security.pEp.mdm.PEpRestrictions
-import security.pEp.mdm.RestrictionsProvider
+import security.planck.mdm.PEpRestrictions
+import security.planck.mdm.RestrictionsProvider
 import javax.inject.Named
 
 @Suppress("unused")

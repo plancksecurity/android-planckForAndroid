@@ -37,8 +37,8 @@ import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import security.pEp.foldable.folders.displayers.LevelItemActionListener
 import security.pEp.foldable.folders.model.LevelListItem
 import security.pEp.foldable.folders.util.LevelListBuilder
-import security.pEp.ui.PEpUIUtils
-import security.pEp.ui.nav_view.NavFolderAccountButton
+import security.planck.ui.PEpUIUtils
+import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
 import javax.inject.Named
 

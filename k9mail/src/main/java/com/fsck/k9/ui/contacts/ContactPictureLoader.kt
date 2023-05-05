@@ -2,9 +2,7 @@ package com.fsck.k9.ui.contacts
 
 import android.content.Context
 import android.graphics.*
-import android.net.Uri
 import android.widget.ImageView
-import androidx.annotation.WorkerThread
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.ResourceDecoder
@@ -16,12 +14,10 @@ import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.request.FutureTarget
-import com.fsck.k9.R
-import com.fsck.k9.activity.compose.Recipient
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
-import security.pEp.permissions.PermissionChecker
-import security.pEp.ui.PEpUIUtils.isValidGlideContext
+import security.planck.permissions.PermissionChecker
+import security.planck.ui.PEpUIUtils.isValidGlideContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named

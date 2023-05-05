@@ -17,8 +17,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
 
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.ui.permissions.PEpPermissionChecker;
 
 
 class NotificationContentCreator {

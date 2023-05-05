@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.permissions.PermissionChecker;
+import security.planck.ui.permissions.PEpPermissionChecker;
 
 public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
     /*

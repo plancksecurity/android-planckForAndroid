@@ -71,13 +71,13 @@ import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
-import security.pEp.print.Print;
-import security.pEp.print.PrintMessage;
-import security.pEp.ui.message_compose.PEpFabMenu;
-import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.permissions.PermissionChecker;
+import security.planck.permissions.PermissionRequester;
+import security.planck.print.Print;
+import security.planck.print.PrintMessage;
+import security.planck.ui.message_compose.PEpFabMenu;
+import security.planck.ui.toolbar.PEpSecurityStatusLayout;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;

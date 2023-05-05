@@ -16,7 +16,6 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.PEpUtils
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.ThemeManager
@@ -33,7 +32,7 @@ import org.koin.android.architecture.ext.sharedViewModel
 import org.koin.android.ext.android.inject
 import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.util.OpenPgpProviderUtil
-import security.pEp.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
+import security.planck.ui.keyimport.KeyImportActivity.Companion.showImportKeyDialog
 import timber.log.Timber
 
 class AccountSettingsFragment : PreferenceFragmentCompat() {
