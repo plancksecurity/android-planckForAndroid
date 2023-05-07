@@ -36,7 +36,7 @@ public class IdentitiesAdapter extends RecyclerView.Adapter<IdentityViewHolder> 
     public IdentityViewHolder onCreateViewHolder(ViewGroup parent,
                                                            int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pep_key_row, parent, false);
+                .inflate(R.layout.planck_key_row, parent, false);
 
         return new IdentityViewHolder(v, identityClickListener);
     }

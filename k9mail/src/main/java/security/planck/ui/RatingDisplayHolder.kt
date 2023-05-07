@@ -15,7 +15,7 @@ private const val NO_RATING = Int.MIN_VALUE
 data class RatingDisplayHolder(
     private val ratingValue: Int = NO_RATING,
     @StringRes val textRes: Int = R.string.pep_rating_none,
-    @ColorRes val colorRes: Int = R.color.pep_no_color,
+    @ColorRes val colorRes: Int = R.color.planck_no_color,
     @DrawableRes val iconRes: Int = NO_RESOURCE,
     val visible: Boolean = false,
 ) {

@@ -2098,7 +2098,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void showSingleRecipientHandshakeBanner() {
         if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.pep_green));
+            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.planck_green));
             userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
             userActionBanner.setOnClickListener(
                     v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)

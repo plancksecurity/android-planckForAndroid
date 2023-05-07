@@ -72,7 +72,7 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
 
         testUtils.clickMessageStatus();
 
-        checkToolbarColor(R.color.pep_yellow);
+        checkToolbarColor(R.color.planck_yellow);
         onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
         onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
                 .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingReliable.value))));
@@ -104,7 +104,7 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
 
         testUtils.clickStatus();
         if (K9.isUsingTrustwords()) {
-            checkToolbarColor(R.color.pep_green);
+            checkToolbarColor(R.color.planck_green);
             onView(withId(R.id.my_recycler_view)).check(matches(withListSize(1)));
             onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(0, R.id.tvRatingStatus))
                     .check(matches(withText(testUtils.getResourceString(R.array.pep_title, Rating.pEpRatingTrustedAndAnonymized.value))));

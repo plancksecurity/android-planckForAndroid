@@ -68,7 +68,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="8dp">
 
-        <include layout="@layout/pep_fingerprints_view" />
+        <include layout="@layout/planck_fingerprints_view" />
 
         <LinearLayout
             android:layout_width="match_parent"

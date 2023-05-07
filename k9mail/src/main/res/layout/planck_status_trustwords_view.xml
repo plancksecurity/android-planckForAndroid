@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:showIn="@layout/pep_recipient_row_with_trustwords">
+    tools:showIn="@layout/planck_recipient_row_with_trustwords">
 
     <TextView
         android:id="@+id/trustwordsLabel"

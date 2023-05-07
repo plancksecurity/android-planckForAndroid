@@ -57,7 +57,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pep_recipient_row, parent, false);
+                .inflate(R.layout.planck_recipient_row, parent, false);
         ViewHolder viewHolder = new ViewHolder(v);
         return viewHolder;
     }

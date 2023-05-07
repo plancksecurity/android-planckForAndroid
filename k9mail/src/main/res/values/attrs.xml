@@ -69,11 +69,11 @@
         <attr name="tintColorBulletPointPositive" format="reference|color"/>
         <attr name="tintColorBulletPointNeutral" format="reference|color"/>
         <attr name="tintColorBulletPointNegative" format="reference|color"/>
-        <attr name="iconpEpShield" format="reference"/>
+        <attr name="iconplanckShield" format="reference"/>
         <attr name="iconLanguage" format="reference"/>
         <attr name="iconLanguageGray" format="reference"/>
 
-        <attr name="iconpEpDeviceGroup" format="reference"/>
+        <attr name="iconplanckDeviceGroup" format="reference"/>
         <attr name="iconAdavancedSettings" format="reference"/>
         <attr name="iconFlagButton" format="reference"/>
         <attr name="iconFlagButtonGreen" format="reference"/>
@@ -87,7 +87,7 @@
         <attr name="openpgp_blue" format="reference|color" />
         <attr name="openpgp_grey" format="reference|color" />
         <attr name="openpgp_dark_grey" format="reference|color" />
-        <attr name="iconPepLogo" format="reference|color" />
+        <attr name="iconPlanckLogo" format="reference|color" />
         <attr name="toolbarDefaultColor" format="reference|color" />
         <attr name="messageViewToolbarColor" format="reference|color" />
         <attr name="messageViewStatusBarColor" format="reference|color"/>

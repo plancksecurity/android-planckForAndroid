@@ -25,6 +25,6 @@ abstract class RatingDisplay {
     companion object {
         fun getInstance(): RatingDisplay = RatingDisplayImpl()
         private const val DISABLED_TEXT_RESOURCE = R.string.pep_rating_forced_unencrypt
-        private const val DISABLED_COLOR = R.color.pep_no_color
+        private const val DISABLED_COLOR = R.color.planck_no_color
     }
 }

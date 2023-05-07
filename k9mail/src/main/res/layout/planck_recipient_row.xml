@@ -27,7 +27,7 @@
             android:visibility="gone"
             android:layout_marginRight="8dp"
             tools:visibility="visible"
-            tools:src="@drawable/pep_status_gray" />
+            tools:src="@drawable/planck_status_gray" />
 
         <LinearLayout
             android:layout_width="match_parent"

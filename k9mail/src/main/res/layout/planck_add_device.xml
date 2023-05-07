@@ -86,7 +86,7 @@
 
             <include
                 android:id="@+id/fingerprintView"
-                layout="@layout/pep_fingerprints_view"
+                layout="@layout/planck_fingerprints_view"
                 android:visibility="gone"/>
 
             <TextView
@@ -121,7 +121,7 @@
         android:padding="8dp"
         android:text="@string/pep_wrong_trustwords"
         android:textAllCaps="true"
-        android:textColor="@color/pep_red"
+        android:textColor="@color/planck_red"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/confirmTrustWords"
         app:layout_constraintEnd_toStartOf="@+id/confirmTrustWords"

@@ -113,7 +113,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         filter.setPriority(1);
         registerReceiver(receiver, filter);
 
-        setContentView(R.layout.pep_add_device);
+        setContentView(R.layout.planck_add_device);
         ButterKnife.bind(this);
         setUpToolbar(false);
 

@@ -11,7 +11,7 @@ import com.fsck.k9.pEp.PEpProvider
 class ToolbarStatusPopUpMenu(context: Context?, anchor: View?, private val recipientPresenter: RecipientPresenter) : PopupMenu(context, anchor) {
     init {
 
-        menuInflater.inflate(R.menu.pep_security_badge_options_menu, menu)
+        menuInflater.inflate(R.menu.planck_security_badge_options_menu, menu)
 
         menu.findItem(R.id.force_unencrypted)
                 .setTitle(if (!recipientPresenter.isForceUnencrypted) R.string.pep_force_unprotected else R.string.pep_force_protected)

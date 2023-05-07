@@ -17,7 +17,7 @@ import javax.inject.Inject
 class PEpStatusPGPIdentityRenderer @Inject constructor(contactsPictureLoader: ContactPictureLoader)
     : PEpStatusBaseRenderer(contactsPictureLoader), PEpStatusIdentityView {
 
-    override fun getLayout() = R.layout.pep_recipient_row_with_fingerprints
+    override fun getLayout() = R.layout.planck_recipient_row_with_fingerprints
     //FIXME Abstract between this and PEPStatusSecureRenderer
 
     private lateinit var handshakeResultListener: PEpStatusRendererBuilder.HandshakeResultListener

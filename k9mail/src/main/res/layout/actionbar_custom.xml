@@ -85,7 +85,7 @@
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/pep_status_red" />
+            tools:srcCompat="@drawable/planck_status_red" />
 
         <LinearLayout
             android:orientation="vertical"

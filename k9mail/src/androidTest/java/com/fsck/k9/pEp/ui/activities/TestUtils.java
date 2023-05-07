@@ -90,7 +90,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.PEpUIUtils;
+import security.planck.ui.PEpUIUtils;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
@@ -2312,8 +2312,8 @@ public class TestUtils {
                 assertFailWithMessage("Wrong Status, it should be empty");
             }
         } else {
-            if (R.drawable.pep_status_green != statusColor
-                    && R.drawable.pep_status_red != statusColor
+            if (R.drawable.planck_status_green != statusColor
+                    && R.drawable.planck_status_red != statusColor
                     && R.drawable.pep_status_yellow != statusColor
                     && BuildConfig.IS_ENTERPRISE
                     && R.drawable.enterprise_status_unsecure != statusColor
@@ -2326,7 +2326,7 @@ public class TestUtils {
 
             if(!enabledForThisMessage) {
                 onView(withId(R.id.securityStatusText)).check(matches(withText(R.string.pep_rating_forced_unencrypt)));
-                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.pep_no_color)));
+                onView(withId(R.id.securityStatusText)).check(matches(withTextColor(R.color.planck_no_color)));
             }
             else {
                 assertSecurityStatusText(status);
@@ -2367,9 +2367,9 @@ public class TestUtils {
                     ? R.drawable.enterprise_status_unsecure
                     : -10;
         } else if (rating.value == Rating.pEpRatingMistrust.value) {
-            color = R.drawable.pep_status_red;
+            color = R.drawable.planck_status_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            color = R.drawable.pep_status_green;
+            color = R.drawable.planck_status_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
             color = R.drawable.pep_status_yellow;
         } else {
@@ -2383,13 +2383,13 @@ public class TestUtils {
         if (rating == null) {
             color = -10;
         } else if (rating.value != pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
-            color = R.color.pep_no_color;
+            color = R.color.planck_no_color;
         } else if (rating.value == pEpRatingMistrust.value) {
-            color = R.color.pep_red;
+            color = R.color.planck_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            color = R.color.pep_green;
+            color = R.color.planck_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
-            color = R.color.pep_yellow;
+            color = R.color.planck_yellow;
         } else {
             color = -10;
         }
@@ -2403,11 +2403,11 @@ public class TestUtils {
         } else if (rating.value != pEpRatingMistrust.value && rating.value < Rating.pEpRatingReliable.value) {
             color = -10;
         } else if (rating.value == pEpRatingMistrust.value) {
-            color = R.color.pep_red;
+            color = R.color.planck_red;
         } else if (rating.value >= Rating.pEpRatingTrusted.value) {
-            color = R.color.pep_green;
+            color = R.color.planck_green;
         } else if (rating.value == Rating.pEpRatingReliable.value) {
-            color = R.color.pep_yellow;
+            color = R.color.planck_yellow;
         } else {
             color = -10;
         }

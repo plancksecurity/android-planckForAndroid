@@ -85,7 +85,7 @@
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pep_status_red" />
+            app:srcCompat="@drawable/planck_status_red" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/securityStatusText"

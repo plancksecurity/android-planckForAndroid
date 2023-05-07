@@ -73,7 +73,7 @@ public class PEpContactBadge extends QuickContactBadge {
         }
 
         if (showStatusBadge && paint.getAlpha() != 0 && currentStatus != null
-                && color != getResources().getColor(R.color.pep_no_color)) {
+                && color != getResources().getColor(R.color.planck_no_color)) {
             currentStatus.setBounds(pEpBadgeRect);
             currentStatus.draw(canvas);
         }

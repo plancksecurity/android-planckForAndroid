@@ -43,7 +43,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent,
                                          int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.pep_key_row, parent, false);
+                .inflate(R.layout.planck_key_row, parent, false);
         return new ViewHolder(v);
     }
 

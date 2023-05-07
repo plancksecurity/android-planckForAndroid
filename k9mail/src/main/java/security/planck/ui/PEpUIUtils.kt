@@ -26,17 +26,17 @@ object PEpUIUtils {
     fun getDrawableForRatingBordered(context: Context, rating: Rating?): Drawable? {
         return when {
             rating == null ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_bordered)
             isRatingUnsecure(rating) ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_bordered)
             rating.value == Rating.pEpRatingMistrust.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_red_bordered)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_red_bordered)
             rating.value >= Rating.pEpRatingTrusted.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_green_bordered)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_green_bordered)
             rating.value >= Rating.pEpRatingUnreliable.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_bordered)
             else ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_bordered)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_bordered)
         }
     }
 
@@ -44,17 +44,17 @@ object PEpUIUtils {
     fun getDrawableForRatingRecipient(context: Context, rating: Rating?): Drawable? {
         return when {
             rating == null ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_white)
             isRatingUnsecure(rating) ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_white)
             rating.value == Rating.pEpRatingMistrust.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_red_white)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_red_white)
             rating.value >= Rating.pEpRatingTrusted.value ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_green_dark)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_green_dark)
             rating.value >= Rating.pEpRatingUnreliable.value ->
                 ContextCompat.getDrawable(context, R.drawable.pep_status_yellow_white)
             else ->
-                ContextCompat.getDrawable(context, R.drawable.pep_status_gray_white)
+                ContextCompat.getDrawable(context, R.drawable.planck_status_gray_white)
         }
     }
 

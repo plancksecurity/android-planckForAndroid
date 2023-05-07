@@ -51,7 +51,7 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.pep_blacklist)
+        setContentView(R.layout.planck_blacklist)
         ButterKnife.bind(this@PepBlacklist)
         initializeViews()
         initializeToolbar(true, R.string.pep)
