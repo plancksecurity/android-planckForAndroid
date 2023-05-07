@@ -12,7 +12,7 @@ import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
 import kotlinx.android.synthetic.main.fab_menu_layout.view.*
 
 
-class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
+class PlanckFabMenu : ConstraintLayout, PlanckFabMenuView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -27,7 +27,7 @@ class PEpFabMenu : ConstraintLayout, PEpFabMenuView {
     private val slideDownReplyAll = AnimationUtils.loadAnimation(context, R.anim.slide_down_reply_all)
     private val slideDownForward = AnimationUtils.loadAnimation(context, R.anim.slide_down_forward)
 
-    val presenter: PEpFabMenuPresenter = PEpFabMenuPresenter(this)
+    val presenter: PlanckFabMenuPresenter = PlanckFabMenuPresenter(this)
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

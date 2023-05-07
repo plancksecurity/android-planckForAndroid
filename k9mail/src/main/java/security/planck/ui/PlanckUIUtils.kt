@@ -14,7 +14,7 @@ import com.fsck.k9.pEp.PEpUtils.isRatingUnsecure
 import com.fsck.k9.pEp.models.FolderModel
 import foundation.pEp.jniadapter.Rating
 
-object PEpUIUtils {
+object PlanckUIUtils {
     private val ratingDisplay: RatingDisplay by lazy { RatingDisplay.getInstance() }
 
     @JvmStatic

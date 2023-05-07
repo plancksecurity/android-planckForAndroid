@@ -9,22 +9,22 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import security.pEp.ui.message_compose.PEpFabMenuPresenter
-import security.pEp.ui.message_compose.PEpFabMenuView
+import security.planck.ui.message_compose.PlanckFabMenuPresenter
+import security.planck.ui.message_compose.PlanckFabMenuView
 
-class PEpFabMenuPresenterIntegrationTest {
+class PlanckFabMenuPresenterIntegrationTest {
 
     @Mock
-    private lateinit var view: PEpFabMenuView
+    private lateinit var view: PlanckFabMenuView
     @Mock
     private lateinit var listener: OnMessageOptionsListener
 
-    private lateinit var presenter: PEpFabMenuPresenter
+    private lateinit var presenter: PlanckFabMenuPresenter
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        presenter = PEpFabMenuPresenter(view)
+        presenter = PlanckFabMenuPresenter(view)
         presenter.listener = listener
     }
 

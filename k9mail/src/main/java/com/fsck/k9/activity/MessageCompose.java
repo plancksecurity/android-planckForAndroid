@@ -126,7 +126,7 @@ import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.message_compose.ComposeAccountRecipient;
 import security.planck.ui.resources.ResourcesProvider;
-import security.planck.ui.toolbar.PEpSecurityStatusLayout;
+import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
@@ -280,7 +280,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     PEpProvider pEp;
 
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private TextView userActionBanner;
     private View userActionBannerSeparator;
     private StringBuilder lastError;
@@ -565,12 +565,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbar(true);
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
-            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             if (K9.isUsingTrustwords()) {
-                pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+                planckSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             }
             if (!BuildConfig.IS_ENTERPRISE) {
-                pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+                planckSecurityStatusLayout.setOnLongClickListener(view -> {
                     PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                             view, recipientPresenter);
                     statusMenu.show();
@@ -2057,8 +2057,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void setToolbarRating(Rating rating, boolean forceHide) {
         boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
-        pEpSecurityStatusLayout.setRating(rating, forceHide);
+        planckSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
+        planckSecurityStatusLayout.setRating(rating, forceHide);
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {

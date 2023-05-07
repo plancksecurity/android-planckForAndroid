@@ -10,7 +10,7 @@ import com.fsck.k9.pEp.saveToDocuments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils
-import security.planck.file.PEpSystemFileLocator
+import security.planck.file.PlanckSystemFileLocator
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -18,7 +18,7 @@ import javax.inject.Named
 
 class ExportpEpSupportData @Inject constructor(
     @Named("AppContext") private val context: Context,
-    private val systemFileLocator: PEpSystemFileLocator,
+    private val systemFileLocator: PlanckSystemFileLocator,
 ) {
     suspend operator fun invoke(
         baseFolder: File,

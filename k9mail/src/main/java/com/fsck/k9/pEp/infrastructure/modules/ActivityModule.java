@@ -14,7 +14,7 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import security.planck.permissions.PermissionRequester;
-import security.planck.ui.permissions.PepPermissionRequester;
+import security.planck.ui.permissions.PlanckPermissionRequester;
 import security.planck.ui.resources.PEpResourcesProvider;
 import security.planck.ui.resources.ResourcesProvider;
 import security.planck.ui.toolbar.PEpToolbarCustomizer;
@@ -43,7 +43,7 @@ public class ActivityModule {
 
     @Provides
     PermissionRequester providepEpPermissionRequestProvider() {
-        return new PepPermissionRequester(activity);
+        return new PlanckPermissionRequester(activity);
     }
 
     @Provides

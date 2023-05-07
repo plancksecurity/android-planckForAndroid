@@ -12,7 +12,7 @@ import android.widget.QuickContactBadge;
 import com.fsck.k9.R;
 
 import foundation.pEp.jniadapter.Rating;
-import security.planck.ui.PEpUIUtils;
+import security.planck.ui.PlanckUIUtils;
 
 public class PEpContactBadge extends QuickContactBadge {
     Rating pEpRating;
@@ -46,9 +46,9 @@ public class PEpContactBadge extends QuickContactBadge {
         } else {
             this.pEpRating = Rating.pEpRatingUndefined;
         }
-        color = PEpUIUtils.getRatingColor(context, this.pEpRating);
+        color = PlanckUIUtils.getRatingColor(context, this.pEpRating);
         paint.setColor(color);
-        currentStatus = PEpUIUtils.getDrawableForRatingBordered(context, this.pEpRating);
+        currentStatus = PlanckUIUtils.getDrawableForRatingBordered(context, this.pEpRating);
         invalidate();
     }
 

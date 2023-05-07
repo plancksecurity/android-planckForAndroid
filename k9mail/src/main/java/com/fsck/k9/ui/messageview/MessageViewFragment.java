@@ -75,8 +75,8 @@ import security.planck.permissions.PermissionChecker;
 import security.planck.permissions.PermissionRequester;
 import security.planck.print.Print;
 import security.planck.print.PrintMessage;
-import security.planck.ui.message_compose.PEpFabMenu;
-import security.planck.ui.toolbar.PEpSecurityStatusLayout;
+import security.planck.ui.message_compose.PlanckFabMenu;
+import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
@@ -99,7 +99,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
     private PePUIArtefactCache pePUIArtefactCache;
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PlanckSecurityStatusLayout planckSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
         MessageViewFragment fragment = new MessageViewFragment();
@@ -112,7 +112,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     }
 
     private MessageTopView mMessageView;
-    private PEpFabMenu pEpFabMenu;
+    private PlanckFabMenu pEpFabMenu;
     private Account mAccount;
     private MessageReference mMessageReference;
     private LocalMessage mMessage;
@@ -162,8 +162,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     };
 
     public void hideInitialStatus() {
-        if (pEpSecurityStatusLayout != null) {
-            pEpSecurityStatusLayout.hideRating();
+        if (planckSecurityStatusLayout != null) {
+            planckSecurityStatusLayout.hideRating();
         }
     }
 
@@ -217,7 +217,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         Toolbar toolbar = ((MessageList) getActivity()).getToolbar();
         if (toolbar != null) {
-            pEpSecurityStatusLayout = toolbar.findViewById(R.id.actionbar_message_view);
+            planckSecurityStatusLayout = toolbar.findViewById(R.id.actionbar_message_view);
         }
 
         mMessageView = view.findViewById(R.id.message_view);
@@ -241,8 +241,8 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void onDestroyView() {
-        if (pEpSecurityStatusLayout != null) {
-            pEpSecurityStatusLayout.hideRating();
+        if (planckSecurityStatusLayout != null) {
+            planckSecurityStatusLayout.hideRating();
         }
         super.onDestroyView();
     }
@@ -259,7 +259,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
                 displayHtml);
         displayMessage();
         if (K9.isUsingTrustwords()) {
-            pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+            planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
         }
     }
 
@@ -274,7 +274,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onDestroy() {
         super.onDestroy();
         Activity activity = getActivity();
-        pEpSecurityStatusLayout.setOnClickListener(null);
+        planckSecurityStatusLayout.setOnClickListener(null);
 
         boolean isChangingConfigurations = activity != null && activity.isChangingConfigurations();
         if (isChangingConfigurations) {
@@ -336,7 +336,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     public void onStop() {
-        pEpSecurityStatusLayout.setVisibility(View.GONE);
+        planckSecurityStatusLayout.setVisibility(View.GONE);
         super.onStop();
     }
 
@@ -378,9 +378,9 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private void setToolbar() {
         if (isAdded()) {
             if (K9.isUsingTrustwords()) {
-                pEpSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
+                planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
             }
-            pEpSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+            planckSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setToolbarColor(
                     ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
             toolBarCustomizer.setStatusBarPepColor(

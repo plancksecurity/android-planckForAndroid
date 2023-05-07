@@ -3,7 +3,7 @@ package security.planck.ui.message_compose
 import com.fsck.k9.pEp.ui.infrastructure.MessageAction
 import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
 
-class PEpFabMenuPresenter(private val view: PEpFabMenuView) {
+class PlanckFabMenuPresenter(private val view: PlanckFabMenuView) {
     var open = false
     lateinit var listener: OnMessageOptionsListener
 

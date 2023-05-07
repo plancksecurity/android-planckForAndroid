@@ -29,7 +29,7 @@ import dagger.Component;
 import security.planck.mdm.ConfigurationManager;
 import security.planck.mdm.RestrictionsProvider;
 import security.planck.provisioning.ProvisioningManager;
-import security.planck.file.PEpSystemFileLocator;
+import security.planck.file.PlanckSystemFileLocator;
 import security.planck.provisioning.ProvisioningSettings;
 
 @Singleton
@@ -55,7 +55,7 @@ public interface ApplicationComponent {
 
     ProvisioningSettings provisioningSettings();
 
-    PEpSystemFileLocator pEpSystemFileLocator();
+    PlanckSystemFileLocator pEpSystemFileLocator();
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();

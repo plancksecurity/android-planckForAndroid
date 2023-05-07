@@ -1,6 +1,6 @@
 package security.planck.ui.message_compose
 
-interface PEpFabMenuView {
+interface PlanckFabMenuView {
 
     fun showInitialState()
 

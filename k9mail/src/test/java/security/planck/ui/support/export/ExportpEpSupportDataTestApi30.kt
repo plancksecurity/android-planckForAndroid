@@ -16,7 +16,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import security.planck.file.PEpSystemFileLocator
+import security.planck.file.PlanckSystemFileLocator
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -26,7 +26,7 @@ class ExportpEpSupportDataTestApi30 : RobolectricTest() {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
     private val context: Context = mockk()
-    private val systemFileLocator: PEpSystemFileLocator = mockk()
+    private val systemFileLocator: PlanckSystemFileLocator = mockk()
     private val exportpEpSupportData = ExportpEpSupportData(context, systemFileLocator)
     private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
     private val pEpFolder = File(homeFolder, ".pEp")

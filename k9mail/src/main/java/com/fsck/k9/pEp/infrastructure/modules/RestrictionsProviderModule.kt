@@ -5,7 +5,7 @@ import android.content.RestrictionsManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import security.planck.mdm.PEpRestrictions
+import security.planck.mdm.PlanckRestrictions
 import security.planck.mdm.RestrictionsProvider
 import javax.inject.Named
 
@@ -15,7 +15,7 @@ interface RestrictionsProviderModule {
 
     @Binds
     fun bindsRestrictionsProvider(
-        pEpRestrictions: PEpRestrictions
+        planckRestrictions: PlanckRestrictions
     ): RestrictionsProvider
 
     @Module

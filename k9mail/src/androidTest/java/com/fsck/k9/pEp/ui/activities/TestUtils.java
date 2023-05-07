@@ -90,7 +90,7 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
-import security.planck.ui.PEpUIUtils;
+import security.planck.ui.PlanckUIUtils;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
@@ -2251,7 +2251,7 @@ public class TestUtils {
             }
         } else {
             int value = rating.value;
-            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+            int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
 
             //int color = R.color.compose_unsecure_delivery_warning;
             assertsIconColor("securityStatusIcon", color);
@@ -2277,7 +2277,7 @@ public class TestUtils {
             }
         } else {
             int value = rating.value;
-            int color = PEpUIUtils.getRatingColorRes(Rating.getByInt(value), true);
+            int color = PlanckUIUtils.getRatingColorRes(Rating.getByInt(value), true);
 
             //int color = R.color.compose_unsecure_delivery_warning;
             assertsIconColor("securityStatusIcon", color);

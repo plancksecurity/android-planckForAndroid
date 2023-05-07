@@ -9,14 +9,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import foundation.pEp.jniadapter.Rating
-import security.planck.ui.PEpUIUtils
-import security.planck.ui.PEpUIUtils.getDrawableForToolbarRating
-import security.planck.ui.PEpUIUtils.getRatingTextRes
-import security.planck.ui.PEpUIUtils.getToolbarRatingVisibility
+import security.planck.ui.PlanckUIUtils
+import security.planck.ui.PlanckUIUtils.getDrawableForToolbarRating
+import security.planck.ui.PlanckUIUtils.getRatingTextRes
+import security.planck.ui.PlanckUIUtils.getToolbarRatingVisibility
 
 private const val MIN_LENGTH_BEFORE_LINEBREAK = 8
 
-class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
+class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
     private var securityStatusIcon: AppCompatImageView? = null
@@ -50,7 +50,7 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     private fun setSecurityStatusColors(rating: Rating?) {
         if (!ispEpEnabled)
             securityStatusIcon?.setColorFilter(
-                PEpUIUtils.getRatingColor(context, rating, ispEpEnabled),
+                PlanckUIUtils.getRatingColor(context, rating, ispEpEnabled),
                 PorterDuff.Mode.SRC_IN
             )
         else
@@ -62,7 +62,7 @@ class PEpSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
     }
 
     private fun setTextColor(rating: Rating?) {
-        val textColor = PEpUIUtils.getRatingColor(
+        val textColor = PlanckUIUtils.getRatingColor(
             context,
             rating,
             ispEpEnabled

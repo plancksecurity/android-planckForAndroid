@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import security.planck.ui.PEpUIUtils
+import security.planck.ui.PlanckUIUtils
 
 interface ToolBarCustomizer {
 
@@ -37,7 +37,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PEpColorUtils.makeColorTransparent(PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating))
+            val color = PEpColorUtils.makeColorTransparent(PlanckUIUtils.getRatingColor(activity.applicationContext, pEpRating))
             setColor(color)
         }
 
@@ -56,7 +56,7 @@ class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PEpUIUtils.getRatingColor(activity.applicationContext, pEpRating)
+            val color = PlanckUIUtils.getRatingColor(activity.applicationContext, pEpRating)
             activity.toolbar?.setBackgroundColor(color)
         }
 

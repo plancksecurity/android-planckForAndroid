@@ -17,7 +17,7 @@ import com.bumptech.glide.request.FutureTarget
 import com.fsck.k9.helper.Contacts
 import com.fsck.k9.mail.Address
 import security.planck.permissions.PermissionChecker
-import security.planck.ui.PEpUIUtils.isValidGlideContext
+import security.planck.ui.PlanckUIUtils.isValidGlideContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Named

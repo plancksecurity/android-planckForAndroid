@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import security.planck.permissions.PermissionChecker;
-import security.planck.ui.permissions.PEpPermissionChecker;
+import security.planck.ui.permissions.PlanckPermissionChecker;
 
 public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
     /*
@@ -89,7 +89,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.addresses = null;
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
-        this.permissionChecker = new PEpPermissionChecker(context);
+        this.permissionChecker = new PlanckPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Address... addresses) {
@@ -99,7 +99,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = null;
         this.cryptoProvider = cryptoProvider;
         this.lookupKeyUri = null;
-        this.permissionChecker = new PEpPermissionChecker(context);
+        this.permissionChecker = new PlanckPermissionChecker(context);
     }
 
     public RecipientLoader(Context context, String cryptoProvider, Uri contactUri, boolean isLookupKey) {
@@ -109,7 +109,7 @@ public class RecipientLoader extends AsyncTaskLoader<List<Recipient>> {
         this.contactUri = isLookupKey ? null : contactUri;
         this.lookupKeyUri = isLookupKey ? contactUri : null;
         this.cryptoProvider = cryptoProvider;
-        this.permissionChecker = new PEpPermissionChecker(context);
+        this.permissionChecker = new PlanckPermissionChecker(context);
     }
 
     @Override

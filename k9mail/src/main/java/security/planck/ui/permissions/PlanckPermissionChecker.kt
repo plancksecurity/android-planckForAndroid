@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 
 import security.planck.permissions.PermissionChecker
 
-class PEpPermissionChecker(private val context: Context) : PermissionChecker {
+class PlanckPermissionChecker(private val context: Context) : PermissionChecker {
 
     override fun hasBasicPermission(): Boolean {
         return hasContactsPermission() && hasWriteExternalPermission()

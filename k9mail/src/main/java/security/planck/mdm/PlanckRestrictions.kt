@@ -5,7 +5,7 @@ import android.content.RestrictionsManager
 import android.os.Bundle
 import javax.inject.Inject
 
-class PEpRestrictions @Inject constructor(
+class PlanckRestrictions @Inject constructor(
     private val restrictionsManager: RestrictionsManager,
     private val packageName: String,
 ): RestrictionsProvider {

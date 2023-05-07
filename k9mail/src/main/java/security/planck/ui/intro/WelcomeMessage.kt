@@ -24,7 +24,7 @@ import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.fragment_intro_first.*
 import kotlinx.android.synthetic.main.fragment_intro_fourth.*
-import security.planck.ui.PEpUIUtils
+import security.planck.ui.PlanckUIUtils
 import security.planck.ui.permissions.PermissionsActivity
 import javax.inject.Inject
 
@@ -128,7 +128,7 @@ class IntroFirstFragment : PEpFragment() {
     }
 
     private fun startTexts() {
-        val primaryColorARGB = PEpUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
+        val primaryColorARGB = PlanckUIUtils.getColorAsString(requireContext(), R.color.colorPrimary)
         headerText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_1, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
         secondText.text = HtmlCompat.fromHtml(getString(R.string.intro_frag_first_text_2, primaryColorARGB), HtmlCompat.FROM_HTML_MODE_LEGACY)
     }

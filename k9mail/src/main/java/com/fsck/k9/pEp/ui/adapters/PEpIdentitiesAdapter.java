@@ -22,7 +22,7 @@ import java.util.List;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.Rating;
-import security.planck.ui.PEpUIUtils;
+import security.planck.ui.PlanckUIUtils;
 
 public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdapter.ViewHolder> {
     private final ContextActions contextActions;
@@ -146,7 +146,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
                 identityAdress.setTextColor(context.getResources().getColor(android.R.color.black));
                 handshakeText.setTextColor(context.getResources().getColor(android.R.color.black));
             }
-            Drawable drawableForRating = PEpUIUtils.getDrawableForRatingRecipient(context, rating);
+            Drawable drawableForRating = PlanckUIUtils.getDrawableForRatingRecipient(context, rating);
             badge.setImageDrawable(drawableForRating);
         }
 
@@ -159,7 +159,7 @@ public class PEpIdentitiesAdapter extends RecyclerView.Adapter<PEpIdentitiesAdap
         }
 
         private void renderColor(Rating rating) {
-            int colorCode = PEpUIUtils.getRatingColor(context, rating);
+            int colorCode = PlanckUIUtils.getRatingColor(context, rating);
             container.setBackgroundColor(colorCode);
         }
 

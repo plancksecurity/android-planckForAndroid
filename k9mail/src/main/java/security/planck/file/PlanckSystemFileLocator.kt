@@ -13,7 +13,7 @@ private const val KEYSTORE_FOLDER = "KeyStore"
 private const val KEYS_DB_FILE = "keys.db"
 
 @Singleton
-class PEpSystemFileLocator @Inject constructor(
+class PlanckSystemFileLocator @Inject constructor(
     private val k9: K9,
 ) {
     private val homeFolder: File

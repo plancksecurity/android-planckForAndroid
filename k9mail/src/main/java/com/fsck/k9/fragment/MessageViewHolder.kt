@@ -16,7 +16,7 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.DatabasePreviewType
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import foundation.pEp.jniadapter.Rating
-import security.planck.ui.PEpUIUtils.getDrawableForMessageList
+import security.planck.ui.PlanckUIUtils.getDrawableForMessageList
 import java.util.*
 
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,

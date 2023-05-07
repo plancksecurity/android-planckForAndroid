@@ -36,12 +36,12 @@ import java.util.List;
 
 import security.planck.permissions.PermissionRequester;
 
-public class PepPermissionRequester implements PermissionRequester {
+public class PlanckPermissionRequester implements PermissionRequester {
 
     private final K9 app;
     private final Activity activity;
 
-    public PepPermissionRequester(Activity activity) {
+    public PlanckPermissionRequester(Activity activity) {
         this.activity = activity;
         this.app = ((K9) activity.getApplicationContext());
     }

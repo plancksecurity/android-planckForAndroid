@@ -12,7 +12,7 @@ import com.fsck.k9.R
 
 private const val PROGRESS_DIALOG_TAG = "progressDialog"
 
-class PEpProgressDialog(
+class PlanckProgressDialog(
         private val title: String,
         private val message: String,
         private val indeterminate: Boolean) : DialogFragment() {
@@ -34,14 +34,14 @@ class PEpProgressDialog(
 fun AppCompatActivity.showProgressDialog(
         title: String,
         message: String,
-        indeterminate: Boolean): PEpProgressDialog {
+        indeterminate: Boolean): PlanckProgressDialog {
     val ft = supportFragmentManager.beginTransaction()
     val prev = supportFragmentManager.findFragmentByTag(PROGRESS_DIALOG_TAG)
     if (prev != null)
         ft.remove(prev)
     ft.addToBackStack(null)
 
-    val dialogFragment = PEpProgressDialog(title, message, indeterminate)
+    val dialogFragment = PlanckProgressDialog(title, message, indeterminate)
     dialogFragment.show(ft, PROGRESS_DIALOG_TAG)
     return dialogFragment
 }

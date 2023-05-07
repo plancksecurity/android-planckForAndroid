@@ -12,7 +12,7 @@ import com.fsck.k9.pEp.ui.SimpleMessageLoaderHelper;
 import dagger.Module;
 import dagger.Provides;
 import security.planck.permissions.PermissionChecker;
-import security.planck.ui.permissions.PEpPermissionChecker;
+import security.planck.ui.permissions.PlanckPermissionChecker;
 
 @Module
 public class PEpModule {
@@ -33,7 +33,7 @@ public class PEpModule {
 
     @Provides
     public PermissionChecker providepEpPermissionChecker() {
-        return new PEpPermissionChecker(context.getApplicationContext());
+        return new PlanckPermissionChecker(context.getApplicationContext());
     }
 
     @Provides

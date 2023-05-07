@@ -10,8 +10,8 @@ import org.koin.android.architecture.ext.viewModel
 import org.koin.dsl.module.applicationContext
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
-import security.planck.ui.permissions.PEpPermissionChecker
-import security.planck.ui.permissions.PepPermissionRequester
+import security.planck.ui.permissions.PlanckPermissionChecker
+import security.planck.ui.permissions.PlanckPermissionRequester
 import java.util.concurrent.Executors
 
 val settingsUiModule = applicationContext {
@@ -24,8 +24,12 @@ val settingsUiModule = applicationContext {
         Executors.newSingleThreadExecutor(NamedThreadFactory("SaveSettings"))
     }
 
-    bean<PermissionChecker> { PEpPermissionChecker(get()) }
-    factory<PermissionRequester> { params -> PepPermissionRequester(params["activity"]) }
+    bean<PermissionChecker> { PlanckPermissionChecker(get()) }
+    factory<PermissionRequester> { params ->
+        PlanckPermissionRequester(
+            params["activity"]
+        )
+    }
 
     viewModel { AccountSettingsViewModel(get(), get()) }
     bean { AccountSettingsDataStoreFactory(get(), get(), get("SaveSettingsExecutorService")) }
