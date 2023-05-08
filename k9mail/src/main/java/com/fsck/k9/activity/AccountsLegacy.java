@@ -304,9 +304,9 @@ public class AccountsLegacy
 
         bindViews(R.layout.accounts_legacy);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.message_swipe);
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
-                getResources().getColor(R.color.pep_yellow),
-                getResources().getColor(R.color.pep_red));
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.planck_green),
+                getResources().getColor(R.color.planck_yellow),
+                getResources().getColor(R.color.planck_red));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

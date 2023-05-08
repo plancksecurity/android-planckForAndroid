@@ -53,10 +53,10 @@ Feature: Test
     When I set pep_use_trustwords setting to true
     And I send 1 message to bot1 with subject TrustWordsTest and body ThisTestIsForTrustWords
     And I click the last message received
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     And I confirm trust words match
     When I click confirm trust words
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I set pep_use_trustwords setting to false
 
     #Summary: This Cucumber test checks the functionality of the Planck encryption software in different scenarios where protections is disabled.

@@ -21,5 +21,5 @@ Feature: Handshake_1.2.12_WrongTrustwords
     And I wait for new message
     And I click last message
     Then I click view reply_message
-    And I check if the privacy status is pep_red
+    And I check if the privacy status is planck_red
     And I remove account
