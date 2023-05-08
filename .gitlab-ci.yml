@@ -55,6 +55,7 @@ toolchain image:
     - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
     - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
     - docker push --quiet ${IMAGE_NAME}/toolchain:latest
+    - sleep 7200 # DEBUG
   rules:
     - changes:
     # Only run this job when the Dockerfile is modified
