@@ -53,6 +53,9 @@ toolchain image:
       --tag=${IMAGE_NAME}/toolchain:latest
       --file Dockerfile.toolchain
       .
+    - echo "${IMAGE_NAME}"
+    - echo "${CI_COMMIT_SHORT_SHA}"
+    - echo "${CI_COMMIT_REF_SLUG}"
     - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
     - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
     - docker push  ${IMAGE_NAME}/toolchain:latest
