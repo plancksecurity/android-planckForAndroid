@@ -269,7 +269,7 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     protected void onResume() {
         super.onResume();
         boolean isRoot = new RootBeer(this).isRooted();
-        if (isRoot && BuildConfig.DEBUG==false) {
+        if (isRoot && !BuildConfig.DEBUG) {
             Toast.makeText(this, R.string.rooted_device_error, Toast.LENGTH_SHORT).show();
             try {
                 finalize();
@@ -277,7 +277,9 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
                 e.printStackTrace();
             }
         }
-        Timber.e("Device is (possibly) rooted: "+isRoot+" Debug: "+BuildConfig.DEBUG);
+        if(BuildConfig.DEBUG){
+            Timber.i("Device is (possibly) rooted: %s", isRoot);
+        }
 
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
