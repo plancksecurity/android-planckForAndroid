@@ -45,6 +45,7 @@ toolchain image:
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
   script:
     - docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG} || true
+    - echo "testing stuff??"
     - docker build
       --cache-from ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
       --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
