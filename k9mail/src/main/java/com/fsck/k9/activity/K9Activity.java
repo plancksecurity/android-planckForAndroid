@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.scottyab.rootbeer.RootBeer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,6 +36,8 @@ import butterknife.OnTextChanged;
 import security.pEp.auth.OAuthTokenRevokedListener;
 import security.pEp.mdm.ConfigurationManager;
 import security.pEp.mdm.RestrictionsListener;
+import timber.log.Timber;
+
 import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
@@ -261,6 +265,19 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onResume() {
         super.onResume();
+        boolean isRoot = new RootBeer(this).isRooted();
+        if (isRoot && !BuildConfig.DEBUG) {
+            Toast.makeText(this, R.string.rooted_device_error, Toast.LENGTH_SHORT).show();
+            try {
+                finalize();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+        if(BuildConfig.DEBUG){
+            Timber.i("Device is (possibly) rooted: %s", isRoot);
+        }
+
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
             mBase.registerConfigurationManager();

@@ -1090,4 +1090,5 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="remote_control_desc">Erlaube dieser App p≡p fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">p≡p Fernsteuerung</string>
     <string name="unread_widget_label">p≡p Ungelesen</string>
+    <string name="rooted_device_error">Nicht unterstütztes Betriebssystem</string>
 </resources>
