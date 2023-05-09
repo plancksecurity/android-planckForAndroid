@@ -13,9 +13,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
-import security.pEp.ui.passphrase.PassphraseInputView
-import security.pEp.ui.passphrase.PassphrasePresenter
-import security.pEp.ui.passphrase.PassphraseRequirementType
+import security.planck.ui.passphrase.PassphraseInputView
+import security.planck.ui.passphrase.PassphrasePresenter
+import security.planck.ui.passphrase.PassphraseRequirementType
 
 class PassphrasePresenterTest: RobolectricTest() {
     lateinit var  context: Context
