@@ -1,4 +1,4 @@
-package security.pEp.ui
+package security.planck.ui
 
 import com.fsck.k9.R
 import foundation.pEp.jniadapter.Rating
