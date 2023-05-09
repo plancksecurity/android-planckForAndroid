@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PepActivity
-import security.pEp.ui.toolbar.ToolBarCustomizer
+import security.planck.ui.toolbar.ToolBarCustomizer
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader

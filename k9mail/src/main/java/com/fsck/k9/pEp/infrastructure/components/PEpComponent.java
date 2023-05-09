@@ -14,9 +14,9 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
+import security.planck.ui.about.LicenseActivity;
 import security.planck.ui.calendar.CalendarInviteLayout;
 import security.planck.ui.about.AboutActivity;
-import security.planck.ui.about.LicenseActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;

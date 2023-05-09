@@ -11,7 +11,6 @@ import android.widget.ImageView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
-import com.fsck.k9.activity.MessageList
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
 import com.fsck.k9.pEp.PepActivity
 import com.fsck.k9.pEp.ui.tools.ThemeManager
@@ -72,7 +71,7 @@ class AboutActivity : PepActivity() {
         librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
 
-        license_button.setOnClickListener { openLicenseActivity(this) }
+        license_button.setOnClickListener { security.pEp.ui.about.openLicenseActivity(this) }
         license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
         terms_and_conditions.text = HtmlCompat.fromHtml(
