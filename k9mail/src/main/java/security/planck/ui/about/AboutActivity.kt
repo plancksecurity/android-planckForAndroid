@@ -71,7 +71,7 @@ class AboutActivity : PepActivity() {
         librariesText.text = HtmlCompat.fromHtml(librariesString, HtmlCompat.FROM_HTML_MODE_LEGACY)
 
 
-        license_button.setOnClickListener { security.pEp.ui.about.openLicenseActivity(this) }
+        license_button.setOnClickListener { openLicenseActivity(this) }
         license_button.paintFlags = license_button.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
         terms_and_conditions.text = HtmlCompat.fromHtml(
