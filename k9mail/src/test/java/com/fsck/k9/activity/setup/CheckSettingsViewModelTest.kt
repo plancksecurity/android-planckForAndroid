@@ -18,7 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
-import security.pEp.serversettings.ServerSettingsChecker
+import security.planck.serversettings.ServerSettingsChecker
 
 @ExperimentalCoroutinesApi
 class CheckSettingsViewModelTest : RobolectricTest() {
