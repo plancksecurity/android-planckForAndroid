@@ -38,7 +38,7 @@
                 android:padding="10dip"
                 android:stateListAnimator="@null"
                 android:text="@string/account_setup_account_type_imap_action"
-                android:theme="@style/PEpStyleButton" />
+                android:theme="@style/planckStyleButton" />
 
             <Button
                 android:id="@+id/pop"
@@ -49,7 +49,7 @@
                 android:padding="10dip"
                 android:stateListAnimator="@null"
                 android:text="@string/account_setup_account_type_pop_action"
-                android:theme="@style/PEpStyleButton" />
+                android:theme="@style/planckStyleButton" />
 
             <Button
                 android:id="@+id/webdav"
@@ -60,7 +60,7 @@
                 android:padding="10dip"
                 android:stateListAnimator="@null"
                 android:text="@string/account_setup_account_type_webdav_action"
-                android:theme="@style/PEpStyleButton" />
+                android:theme="@style/planckStyleButton" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

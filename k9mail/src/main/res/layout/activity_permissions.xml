@@ -10,7 +10,7 @@
 
         <ImageView
             android:id="@+id/pep_logo"
-            style="@style/PermissionsScreen.PEpLogo"/>
+            style="@style/PermissionsScreen.planckLogo"/>
 
         <TextView
             android:id="@+id/explanation"
