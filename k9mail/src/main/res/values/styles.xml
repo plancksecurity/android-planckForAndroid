@@ -54,7 +54,7 @@
         <item name="android:tint">?attr/tintColorBulletPointNegative</item>
     </style>
 
-    <style name="pEpIndicatorTVActionBarStyle">
+    <style name="planckIndicatorTVActionBarStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:fontFamily">@font/univers_lts_sd</item>
         <item name="android:layout_height">match_parent</item>
@@ -91,31 +91,31 @@
         <item name="android:textColorSecondary">?attr/defaultToolbarTextColor</item>
     </style>
 
-    <style name="PEpStyleButton" parent="Theme.AppCompat.Light">
+    <style name="planckStyleButton" parent="Theme.AppCompat.Light">
         <item name="android:textColor">?attr/defaultButtonTextColor</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="PEpStyleButton.Red">
+    <style name="planckStyleButton.Red">
         <item name="colorControlHighlight">@color/dark_red</item>
         <item name="colorButtonNormal">?attr/rejectButtonDefaultColor</item>
     </style>
 
-    <style name="PEpStyleButton.Green">
+    <style name="planckStyleButton.Green">
         <item name="colorControlHighlight">@color/pep_green</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="PEpStyleButton.Grey">
+    <style name="planckStyleButton.Grey">
         <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
         <item name="colorButtonNormal">@color/pep_no_color</item>
     </style>
 
-    <style name="PEpThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
+    <style name="planckThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
     </style>
 
-    <style name="PEpThemeOverlay2" parent="Theme.AppCompat.Light">
+    <style name="planckThemeOverlay2" parent="Theme.AppCompat.Light">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -300,11 +300,11 @@
         <item name="android:paddingEnd">32dp</item>
     </style>
 
-    <style name="AccountSelectAuthScreen.peplogo" parent="Widget.MaterialComponents.TextView">
+    <style name="AccountSelectAuthScreen.plancklogo" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">64dp</item>
         <item name="android:layout_marginTop">24dp</item>
-        <item name="srcCompat">@drawable/ic_peplogo</item>
+        <item name="srcCompat">@drawable/planck_logo_green_60</item>
         <item name="tint">@color/white_transparent_70</item>
     </style>
 
@@ -317,10 +317,10 @@
         <item name="android:layout_marginBottom">16dp</item>
     </style>
 
-    <style name="PermissionsScreen.PEpLogo" parent="Widget.MaterialComponents.TextView">
+    <style name="PermissionsScreen.planckLogo" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">64dp</item>
-        <item name="srcCompat">@drawable/ic_peplogo</item>
+        <item name="srcCompat">@drawable/planck_logo_green_60</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 

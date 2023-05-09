@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:minWidth="@dimen/button_minWidth"
                 android:text="@string/pep_wrong_trustwords"
-                android:theme="@style/PEpStyleButton.Red"/>
+                android:theme="@style/planckStyleButton.Red"/>
 
             <Button
                 android:id="@+id/confirmHandshake"
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:minWidth="@dimen/button_minWidth"
                 android:text="@string/pep_confirm_trustwords"
-                android:theme="@style/PEpStyleButton.Green"
+                android:theme="@style/planckStyleButton.Green"
                 android:layout_marginLeft="16dp"/>
 
         </LinearLayout>

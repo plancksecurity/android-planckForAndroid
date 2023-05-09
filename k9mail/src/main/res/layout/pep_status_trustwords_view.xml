@@ -133,7 +133,7 @@
             android:minWidth="@dimen/button_minWidth"
             android:padding="10dip"
             android:text="@string/pep_wrong_trustwords"
-            android:theme="@style/PEpStyleButton.Red" />
+            android:theme="@style/planckStyleButton.Red" />
 
         <Button
             android:id="@+id/confirmHandshake"
@@ -143,7 +143,7 @@
             android:minWidth="@dimen/button_minWidth"
             android:padding="10dip"
             android:text="@string/pep_confirm_trustwords"
-            android:theme="@style/PEpStyleButton.Green" />
+            android:theme="@style/planckStyleButton.Green" />
 
     </LinearLayout>
 </LinearLayout>

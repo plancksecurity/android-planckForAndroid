@@ -428,7 +428,7 @@
         android:title="@string/privacy_preferences"
         android:key="pep">
         <PreferenceCategory
-            app:title="p≡p General settings"
+            app:title="planck General settings"
             android:key="pep_general_settings">
 
             <SwitchPreferenceCompat
