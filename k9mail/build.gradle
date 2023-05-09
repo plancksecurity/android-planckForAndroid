@@ -43,7 +43,7 @@ repositories {
 }
 
 dependencies {
-    //Required for certification; Only used in non enterprise variants
+    //Required for certification; Only required in enterprise variants
     implementation "com.scottyab:rootbeer-lib:${versions.rootbeer}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
