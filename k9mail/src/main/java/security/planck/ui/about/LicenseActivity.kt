@@ -2,9 +2,9 @@ package security.planck.ui.about
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.text.LineBreaker
 import android.os.Build
 import android.os.Bundle
-import android.text.Layout.JUSTIFICATION_MODE_INTER_WORD
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
@@ -27,10 +27,10 @@ class LicenseActivity : PepActivity() {
 
         toolbarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT))
         initializeToolbar(true, getString(R.string.license))
-
-        findViewById<TextView>(R.id.licenseText).text = HtmlCompat.fromHtml(getString(R.string.eula_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            findViewById<TextView>(R.id.licenseText).justificationMode = JUSTIFICATION_MODE_INTER_WORD
+        val licenseText = findViewById<TextView>(R.id.licenseText);
+        licenseText.text = HtmlCompat.fromHtml(getString(R.string.eula_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            licenseText.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
         }
     }
 
