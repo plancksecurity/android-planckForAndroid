@@ -10,10 +10,8 @@ import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.crypto.openPgpModule
 import com.fsck.k9.mail.TransportProvider
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.mailstore.mailStoreModule
 import com.fsck.k9.ui.endtoend.endToEndUiModule
 import com.fsck.k9.ui.folders.FolderNameFormatter
-import com.fsck.k9.ui.settings.settingsUiModule
 import org.koin.Koin
 import org.koin.KoinContext
 import org.koin.android.ext.koin.with
@@ -36,12 +34,10 @@ object DI {
 
     val appModules = listOf(
             mainModule,
-            settingsUiModule,
             //unreadWidgetModule,
             endToEndUiModule,
             openPgpModule,
             autocryptModule,
-            mailStoreModule,
             authModule,
             autodiscoveryProvidersXmlModule,
     )
