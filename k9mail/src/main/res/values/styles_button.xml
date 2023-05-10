@@ -42,7 +42,7 @@
         <item name="android:layout_margin">8dp</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:textColor">?attr/defaultButtonTextColor</item>
-        <item name="android:background">@drawable/pep_button_selector</item>
+        <item name="android:background">@drawable/planck_button_selector</item>
     </style>
 </resources>
 

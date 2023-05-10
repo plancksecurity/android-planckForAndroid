@@ -12,7 +12,7 @@ import com.fsck.k9.pEp.DispatcherProvider
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.pEp.serversettings.ServerSettingsChecker
+import security.planck.serversettings.ServerSettingsChecker
 
 class CheckSettingsViewModel(
     private val serverSettingsChecker: ServerSettingsChecker,

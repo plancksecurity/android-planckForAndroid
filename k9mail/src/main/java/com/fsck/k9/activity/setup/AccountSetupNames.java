@@ -37,8 +37,7 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 
-import security.pEp.mdm.ConfigurationManager;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 public class AccountSetupNames extends PepActivity implements OnClickListener {
     public static final String EXTRA_ACCOUNT = "account";

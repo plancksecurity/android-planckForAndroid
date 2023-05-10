@@ -37,8 +37,8 @@ import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import security.pEp.foldable.folders.displayers.LevelItemActionListener
 import security.pEp.foldable.folders.model.LevelListItem
 import security.pEp.foldable.folders.util.LevelListBuilder
-import security.pEp.ui.PEpUIUtils
-import security.pEp.ui.nav_view.NavFolderAccountButton
+import security.planck.ui.PlanckUIUtils
+import security.planck.ui.nav_view.NavFolderAccountButton
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -179,7 +179,7 @@ class DrawerLayoutView @Inject constructor(
     }
 
     override fun setUpMainAccountView(account: Account) {
-        mainAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+        mainAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
         mainAccountName.text = account.name
         mainAccountEmail.text = account.email
     }
@@ -209,12 +209,12 @@ class DrawerLayoutView @Inject constructor(
         val firstAccount = accounts[accounts.size - 1]
         firstAccountLayout.visibility = View.VISIBLE
         secondAccountLayout.visibility = View.GONE
-        firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+        firstAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
         firstAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-                firstAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
+                firstAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 mainAccountEmail.text = firstAccount.email
                 mainAccountName.text = firstAccount.name
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
@@ -227,26 +227,26 @@ class DrawerLayoutView @Inject constructor(
         val lastAccount = accounts[accounts.size - 2]
         firstAccountLayout.visibility = View.VISIBLE
         secondAccountLayout.visibility = View.VISIBLE
-        firstAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
-        secondAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+        firstAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
+        secondAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
         firstAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(firstAccount.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(firstAccount.name)
                 mainAccountEmail.text = firstAccount.email
                 mainAccountName.text = firstAccount.name
-                firstAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
-                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                firstAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
+                secondAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 changeAccountAnimation(mainAccountLayout, firstAccountLayout, firstAccount)
             }
         }
         secondAccountLayout.setOnClickListener {
             if (!drawerLayoutPresenter.layoutClick()) {
                 messageListView.showLoadingMessages()
-                mainAccountText.text = PEpUIUtils.accountNameSummary(lastAccount.name)
+                mainAccountText.text = PlanckUIUtils.accountNameSummary(lastAccount.name)
                 mainAccountEmail.text = lastAccount.email
                 mainAccountName.text = lastAccount.name
-                secondAccountText.text = PEpUIUtils.accountNameSummary(account.name)
+                secondAccountText.text = PlanckUIUtils.accountNameSummary(account.name)
                 changeAccountAnimation(mainAccountLayout, secondAccountLayout, lastAccount)
             }
         }

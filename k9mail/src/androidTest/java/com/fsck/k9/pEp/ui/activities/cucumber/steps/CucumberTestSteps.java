@@ -1075,7 +1075,7 @@ public class CucumberTestSteps {
         testUtils.setTestNumber(0);
         testUtils.createNAccounts(1, false, false);
         testUtils.readConfigFile();
-        String pepColor = "pep_yellow";
+        String pepColor = "planck_yellow";
         for (int currentDay = 1; currentDay <= totalDays; currentDay++) {
             for (int currentMessage = 0; currentMessage < messagesInADay; currentMessage++) {
                 testUtils.getMessageListSize();
@@ -1119,7 +1119,7 @@ public class CucumberTestSteps {
                 switch (testUtils.test_number()) {
                     case "1":
                         I_wait_for_the_message_and_click_it();
-                        //I_check_toolBar_color_is("pep_yellow");
+                        //I_check_toolBar_color_is("planck_yellow");
                         testUtils.pressBack();
                         I_send_message_to_address(1, "bot" + currentDay, "DeviceA_2ndMessage", "message " + message + "from device 1 to 2, day " + currentDay);
                         while (testUtils.getListSize() > 1) {
@@ -1142,7 +1142,7 @@ public class CucumberTestSteps {
                     case "2":
                         I_send_message_to_address(1, "bot" + currentDay, "DeviceB_1stMessage", "message " + message + "from device 2 to 1, day " + currentDay);
                         I_wait_for_the_message_and_click_it();
-                        //I_check_toolBar_color_is("pep_yellow");
+                        //I_check_toolBar_color_is("planck_yellow");
                         testUtils.pressBack();
                         testUtils.selectAccount(resources.getString(testUtils.stringToID("special_mailbox_name_inbox")), accountSelected);
                         I_remove_all_messages();
@@ -1167,10 +1167,10 @@ public class CucumberTestSteps {
             switch (testUtils.test_number()) {
                 case "1":
                     I_wait_for_the_message_and_click_it();
-                    //I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("planck_yellow");
                     testUtils.pressBack();
                     I_wait_for_the_message_and_click_it();
-                    //I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("planck_yellow");
                     testUtils.pressBack();
                     while (testUtils.getListSize() > 1) {
                         testUtils.getMessageListSize();
@@ -1188,15 +1188,15 @@ public class CucumberTestSteps {
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake", "Doing Handshake with bot" + currentDay);
                     I_click_the_last_message_received();
                     I_click_confirm_trust_words();
-                    //I_check_toolBar_color_is("pep_green");
+                    //I_check_toolBar_color_is("planck_green");
                     I_click_reply_message();
                     I_reset_partner_key();
-                    //I_check_toolBar_color_is("pep_no_color");
+                    //I_check_toolBar_color_is("planck_no_color");
                     I_discard_the_message();
                     testUtils.pressBack();
                     I_send_message_to_address(1, "bot" + currentDay, "Handshake-2nd", "Sending message after reset with bot" + currentDay);
                     I_click_the_last_message_received();
-                    //I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("planck_yellow");
                     testUtils.pressBack();
                     try {
                         Thread.sleep(20000);
@@ -1612,7 +1612,7 @@ public class CucumberTestSteps {
                     if (!getTextFromView(onView(withId(R.id.securityStatusText))).equals(resources.getString(testUtils.stringToID("pep_rating_not_encrypted")))) {
                         assertFailWithMessage("Showing a text that is not " + resources.getString(testUtils.stringToID("pep_rating_not_encrypted")));
                     }
-                    //I_check_toolBar_color_is("pep_yellow");
+                    //I_check_toolBar_color_is("planck_yellow");
                     return;
                 case "pEpRatingUndefined":
                     if (getTextFromView(onView(withId(R.id.to))).equals("") && viewIsDisplayed(onView(withId(R.id.securityStatusText)))) {
@@ -1624,7 +1624,7 @@ public class CucumberTestSteps {
                         assertFailWithMessage("Not showing Unsecure status");
                     }
                     if (pep_enable_privacy_protection) {
-                        //I_check_toolBar_color_is("pep_red");
+                        //I_check_toolBar_color_is("planck_red");
                     } else {
                         //I_check_toolBar_color_is("pep_gray");
                     }

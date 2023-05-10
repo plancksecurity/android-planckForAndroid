@@ -29,8 +29,8 @@ import foundation.pEp.jniadapter.*
 import foundation.pEp.jniadapter.Sync.*
 import foundation.pEp.jniadapter.exceptions.*
 import kotlinx.coroutines.*
-import security.pEp.echo.EchoMessageReceivedListener
-import security.pEp.provisioning.ProvisioningFailedException
+import security.planck.echo.EchoMessageReceivedListener
+import security.planck.provisioning.ProvisioningFailedException
 import timber.log.Timber
 import java.util.*
 import kotlin.coroutines.CoroutineContext

@@ -44,7 +44,8 @@ toolchain image:
   # Auth to our registry using runner-provided credentials
     - mkdir -p "${HOME}"/.docker ; echo "${DOCKER_AUTH_CONFIG}" > "${HOME}"/.docker/config.json
   script:
-    - docker pull --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG} || true
+    - docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG} || true
+    - echo "testing stuff??"
     - docker build
       --cache-from ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
       --tag=${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
@@ -52,9 +53,12 @@ toolchain image:
       --tag=${IMAGE_NAME}/toolchain:latest
       --file Dockerfile.toolchain
       .
-    - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
-    - docker push --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
-    - docker push --quiet ${IMAGE_NAME}/toolchain:latest
+    - echo "${IMAGE_NAME}"
+    - echo "${CI_COMMIT_SHORT_SHA}"
+    - echo "${CI_COMMIT_REF_SLUG}"
+    - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_SHORT_SHA}
+    - docker push  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+    - docker push  ${IMAGE_NAME}/toolchain:latest
   rules:
     - changes:
     # Only run this job when the Dockerfile is modified
@@ -71,7 +75,7 @@ base image:
     - *compose_deps
   script:
     - cat DEPENDENCIES
-    - docker pull --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG} || docker pull --quiet ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
+    - docker pull  ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG} || docker pull  ${IMAGE_NAME}/toolchain:${CI_COMMIT_REF_SLUG}
     - docker build
       --cache-from ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
       --build-arg ENGINE_VERSION=${pEpEngine}
@@ -88,9 +92,9 @@ base image:
       --file Dockerfile.base
       .
     - docker image inspect ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA} | grep Size
-    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
-    - docker push --quiet ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
-    - docker push --quiet ${IMAGE_NAME}/base:latest
+    - docker push  ${IMAGE_NAME}/base:${CI_COMMIT_SHORT_SHA}
+    - docker push  ${IMAGE_NAME}/base:${CI_COMMIT_REF_SLUG}
+    - docker push  ${IMAGE_NAME}/base:latest
   rules:
     - changes:
         - DEPENDENCIES

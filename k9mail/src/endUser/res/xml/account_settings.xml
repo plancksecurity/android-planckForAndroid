@@ -424,7 +424,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="?attr/iconpEpShield"
+        android:icon="?attr/iconplanckShield"
         android:title="@string/privacy_preferences"
         android:key="pep">
         <PreferenceCategory

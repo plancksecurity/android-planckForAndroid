@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import foundation.pEp.jniadapter.Identity;
-import security.pEp.ui.resources.ResourcesProvider;
+import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 public class PEpAddDevice extends WizardActivity implements AddDeviceView {
@@ -113,7 +113,7 @@ public class PEpAddDevice extends WizardActivity implements AddDeviceView {
         filter.setPriority(1);
         registerReceiver(receiver, filter);
 
-        setContentView(R.layout.pep_add_device);
+        setContentView(R.layout.planck_add_device);
         ButterKnife.bind(this);
         setUpToolbar(false);
 

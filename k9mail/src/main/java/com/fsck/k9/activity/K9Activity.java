@@ -34,9 +34,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnTextChanged;
-import security.pEp.auth.OAuthTokenRevokedListener;
-import security.pEp.mdm.ConfigurationManager;
-import security.pEp.mdm.RestrictionsListener;
+import security.planck.auth.OAuthTokenRevokedListener;
+import security.planck.mdm.ConfigurationManager;
+import security.planck.mdm.RestrictionsListener;
 import timber.log.Timber;
 
 import org.jetbrains.annotations.NotNull;
@@ -103,12 +103,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         pePUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
     }
-
-//    @Override
-//    public void showHandshake(Identity myself, Identity partner) {
-//        Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
-//        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
-//    }
 
     public void setConfigurationManagerListener(RestrictionsListener listener) {
         mBase.setConfigurationManagerListener(listener);

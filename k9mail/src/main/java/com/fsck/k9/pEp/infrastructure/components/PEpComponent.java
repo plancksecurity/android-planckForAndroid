@@ -14,9 +14,9 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
 
-import security.pEp.ui.calendar.CalendarInviteLayout;
-import security.pEp.ui.about.AboutActivity;
-import security.pEp.ui.about.LicenseActivity;
+import security.planck.ui.about.LicenseActivity;
+import security.planck.ui.calendar.CalendarInviteLayout;
+import security.planck.ui.about.AboutActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
@@ -25,19 +25,19 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
-import security.pEp.ui.keyimport.KeyImportActivity;
+import security.planck.ui.keyimport.KeyImportActivity;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
-import security.pEp.ui.intro.IntroFirstFragment;
-import security.pEp.ui.intro.IntroFourthFragment;
-import security.pEp.ui.mdm.MdmSettingsFeedbackActivity;
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.permissions.PermissionsActivity;
-import security.pEp.ui.support.export.ExportpEpSupportDataActivity;
+import security.planck.ui.intro.IntroFirstFragment;
+import security.planck.ui.intro.IntroFourthFragment;
+import security.planck.ui.mdm.MdmSettingsFeedbackActivity;
+import security.planck.ui.passphrase.PassphraseActivity;
+import security.planck.ui.permissions.PermissionsActivity;
+import security.planck.ui.support.export.ExportpEpSupportDataActivity;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = {

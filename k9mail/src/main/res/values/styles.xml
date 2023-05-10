@@ -103,13 +103,13 @@
     </style>
 
     <style name="planckStyleButton.Green">
-        <item name="colorControlHighlight">@color/pep_green</item>
+        <item name="colorControlHighlight">@color/planck_green</item>
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
     <style name="planckStyleButton.Grey">
         <item name="colorControlHighlight">?attr/grayScaleColorOnBackground2</item>
-        <item name="colorButtonNormal">@color/pep_no_color</item>
+        <item name="colorButtonNormal">@color/planck_no_color</item>
     </style>
 
     <style name="planckThemeOverlay" parent="ThemeOverlay.AppCompat.Dark">
@@ -169,9 +169,9 @@
 
     <style name="FilePickerTheme.Light" parent="NNF_BaseTheme.Light">
         <!-- Set these to match your theme -->
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
+        <item name="colorPrimary">@color/planck_green</item>
+        <item name="colorPrimaryDark">@color/planck_green</item>
+        <item name="colorAccent">@color/planck_green</item>
 
         <!-- Setting a divider is entirely optional -->
         <item name="nnf_list_item_divider">?android:attr/listDivider</item>
@@ -185,9 +185,9 @@
 
     <style name="FilePickerTheme.Dark" parent="NNF_BaseTheme.Dark">
         <!-- Set these to match your theme -->
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
+        <item name="colorPrimary">@color/planck_green</item>
+        <item name="colorPrimaryDark">@color/planck_green</item>
+        <item name="colorAccent">@color/planck_green</item>
 
         <!-- Setting a divider is entirely optional -->
         <item name="nnf_list_item_divider">?android:attr/listDivider</item>
@@ -200,9 +200,9 @@
     </style>
 
     <style name="FilePickerAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/pep_green</item>
-        <item name="colorPrimaryDark">@color/pep_green</item>
-        <item name="colorAccent">@color/pep_green</item>
+        <item name="colorPrimary">@color/planck_green</item>
+        <item name="colorPrimaryDark">@color/planck_green</item>
+        <item name="colorAccent">@color/planck_green</item>
         <item name="android:background">?attr/defaultDialogBackground</item>
         <item name="android:textColorPrimary">?attr/defaultColorOnBackground</item>
     </style>
@@ -246,7 +246,7 @@
     </style>
 
     <style name="RedButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/pep_red</item>
+        <item name="android:textColor">@color/planck_red</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 

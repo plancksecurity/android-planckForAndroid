@@ -16,7 +16,7 @@ import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.DatabasePreviewType
 import com.fsck.k9.pEp.ui.PEpContactBadge
 import foundation.pEp.jniadapter.Rating
-import security.pEp.ui.PEpUIUtils.getDrawableForMessageList
+import security.planck.ui.PlanckUIUtils.getDrawableForMessageList
 import java.util.*
 
 class MessageViewHolder internal constructor(private val fragment: MessageListFragment,
@@ -163,7 +163,7 @@ class MessageViewHolder internal constructor(private val fragment: MessageListFr
             if (!account.ispEpPrivacyProtected()) {
                 privacyBadge?.visibility = View.GONE
             } else {
-                val pEpPrivacyDrawable = getDrawableForMessageList(fragment.context!!, pEpRating)
+                val pEpPrivacyDrawable = getDrawableForMessageList(fragment.requireContext(), pEpRating)
                 privacyBadge?.visibility = if (pEpPrivacyDrawable != null) View.VISIBLE else View.GONE
                 if (pEpPrivacyDrawable != null) privacyBadge?.setImageDrawable(pEpPrivacyDrawable)
             }

@@ -76,12 +76,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.mdm.RestrictionsListener;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.intro.WelcomeMessageKt;
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.mdm.RestrictionsListener;
+import security.planck.permissions.PermissionChecker;
+import security.planck.permissions.PermissionRequester;
+import security.planck.ui.intro.WelcomeMessageKt;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 

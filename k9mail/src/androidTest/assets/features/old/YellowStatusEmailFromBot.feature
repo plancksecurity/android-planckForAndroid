@@ -11,7 +11,7 @@ Feature: Test
     And I click last message
     Then I click view reply_message
     And I click view pEp_indicator
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     And I press back
     Then I discard message
     And I go back to message compose
@@ -21,8 +21,8 @@ Feature: Test
     And I fill messageBody field with body
     And I fill messageTo field with unknown@user.is
     Then I click view pEp_indicator
-    And I check status color is pep_yellow at position 0
-    And I check status color is pep_no_color at position 1
+    And I check status color is planck_yellow at position 0
+    And I check status color is planck_no_color at position 1
     Then I press back
     And I discard message
     And I remove account

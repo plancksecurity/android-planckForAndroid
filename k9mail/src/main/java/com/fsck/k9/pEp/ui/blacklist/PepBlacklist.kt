@@ -20,14 +20,13 @@ import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.blacklist.PepBlacklist
 import com.fsck.k9.pEp.ui.keys.KeyItemAdapter
 import com.fsck.k9.pEp.ui.keys.OnKeyClickListener
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import kotlinx.coroutines.*
-import security.pEp.ui.toolbar.ToolBarCustomizer
+import security.planck.ui.toolbar.ToolBarCustomizer
 import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
@@ -52,7 +51,7 @@ class PepBlacklist : PepActivity(), SearchView.OnQueryTextListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.pep_blacklist)
+        setContentView(R.layout.planck_blacklist)
         ButterKnife.bind(this@PepBlacklist)
         initializeViews()
         initializeToolbar(true, R.string.pep)

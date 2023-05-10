@@ -1,9 +1,8 @@
 package com.fsck.k9.pEp.ui.activities.provisioning
 
-import security.pEp.provisioning.InitializationFailedException
-import security.pEp.provisioning.ProvisionState
-import security.pEp.provisioning.ProvisioningFailedException
-import security.pEp.provisioning.ProvisioningManager
+import security.planck.provisioning.ProvisionState
+import security.planck.provisioning.ProvisioningFailedException
+import security.planck.provisioning.ProvisioningManager
 import javax.inject.Inject
 
 class ProvisioningPresenter @Inject constructor(

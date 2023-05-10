@@ -6,7 +6,7 @@ import com.fsck.k9.controller.MessagingController
 import foundation.pEp.jniadapter.CipherSuite
 import foundation.pEp.jniadapter.Engine
 import foundation.pEp.jniadapter.exceptions.pEpException
-import security.pEp.ui.PassphraseProvider
+import security.planck.ui.PassphraseProvider
 import timber.log.Timber
 
 class EngineThreadLocal private constructor(

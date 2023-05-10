@@ -80,7 +80,7 @@ public class YellowStatusEmailFromBotTest extends BaseAndroidTest {
         checkToolbarColor(
                 BuildConfig.IS_ENTERPRISE
                         ? R.color.compose_unsecure_delivery_warning
-                        : R.color.pep_no_color
+                        : R.color.planck_no_color
         );
         onView(withId(R.id.my_recycler_view)).check(matches(withListSize(2)));
 

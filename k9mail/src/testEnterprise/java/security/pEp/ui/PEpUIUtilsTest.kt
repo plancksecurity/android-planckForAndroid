@@ -12,155 +12,156 @@ import foundation.pEp.jniadapter.Rating
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test
+import security.planck.ui.PlanckUIUtils
 
 class PEpUIUtilsTest : RobolectricTest() {
     private val app = ApplicationProvider.getApplicationContext<K9>()
 
     @Test
     fun `getDrawableForMessageList returns correct drawable for each rating and getDrawableForToolbarRating returns same drawable`() {
-        assertNull(PEpUIUtils.getDrawableForMessageList(app, null))
-        assertNull(PEpUIUtils.getDrawableForToolbarRating(app, null))
+        assertNull(PlanckUIUtils.getDrawableForMessageList(app, null))
+        assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, null))
 
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_under_attack,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnderAttack)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnderAttack)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_under_attack,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnderAttack)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnderAttack)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_under_attack,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingB0rken)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingB0rken)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_under_attack,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingB0rken)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingB0rken)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_mistrusted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingMistrust)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingMistrust)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_dangerous_mistrusted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingMistrust)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingMistrust)!!
         )
 
-        assertNull(PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUndefined))
-        assertNull(PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUndefined))
+        assertNull(PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUndefined))
+        assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUndefined))
 
         assertDrawableEqualsRes(
             R.drawable.ico_cannot_decrypt,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingCannotDecrypt)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingCannotDecrypt)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_cannot_decrypt,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingCannotDecrypt)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingCannotDecrypt)!!
         )
 
-        assertNull(PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingHaveNoKey))
-        assertNull(PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey))
-
-        assertDrawableEqualsRes(
-            R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnencrypted)!!
-        )
-        assertDrawableEqualsRes(
-            R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnencrypted)!!
-        )
+        assertNull(PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingHaveNoKey))
+        assertNull(PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingHaveNoKey))
 
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnreliable)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnencrypted)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnreliable)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnencrypted)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingMediaKeyProtected)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingUnreliable)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_not_encrypted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingMediaKeyProtected)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingUnreliable)!!
+        )
+
+        assertDrawableEqualsRes(
+            R.drawable.ico_not_encrypted,
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingMediaKeyProtected)!!
+        )
+        assertDrawableEqualsRes(
+            R.drawable.ico_not_encrypted,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingMediaKeyProtected)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_encrypted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingReliable)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingReliable)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_encrypted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingReliable)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingReliable)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingTrusted)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingTrusted)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingTrusted)!!
-        )
-
-        assertDrawableEqualsRes(
-            R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingTrustedAndAnonymized)!!
-        )
-        assertDrawableEqualsRes(
-            R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingTrustedAndAnonymized)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingTrusted)!!
         )
 
         assertDrawableEqualsRes(
             R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForMessageList(app, Rating.pEpRatingFullyAnonymous)!!
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingTrustedAndAnonymized)!!
         )
         assertDrawableEqualsRes(
             R.drawable.ico_trusted,
-            PEpUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingFullyAnonymous)!!
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingTrustedAndAnonymized)!!
+        )
+
+        assertDrawableEqualsRes(
+            R.drawable.ico_trusted,
+            PlanckUIUtils.getDrawableForMessageList(app, Rating.pEpRatingFullyAnonymous)!!
+        )
+        assertDrawableEqualsRes(
+            R.drawable.ico_trusted,
+            PlanckUIUtils.getDrawableForToolbarRating(app, Rating.pEpRatingFullyAnonymous)!!
         )
     }
 
     @Test
     fun `getRatingColor returns correct color for each rating`() {
-        assertCorrectColor(R.color.pep_no_color, null)
-        assertCorrectColor(R.color.pep_red, Rating.pEpRatingUnderAttack)
-        assertCorrectColor(R.color.pep_red, Rating.pEpRatingB0rken)
-        assertCorrectColor(R.color.pep_red, Rating.pEpRatingMistrust)
-        assertCorrectColor(R.color.pep_no_color, Rating.pEpRatingUndefined)
-        assertCorrectColor(R.color.pep_yellow, Rating.pEpRatingCannotDecrypt)
-        assertCorrectColor(R.color.pep_no_color, Rating.pEpRatingHaveNoKey)
-        assertCorrectColor(R.color.pep_yellow, Rating.pEpRatingUnencrypted)
-        assertCorrectColor(R.color.pep_yellow, Rating.pEpRatingUnreliable)
-        assertCorrectColor(R.color.pep_yellow, Rating.pEpRatingMediaKeyProtected)
-        assertCorrectColor(R.color.pep_green, Rating.pEpRatingReliable)
-        assertCorrectColor(R.color.pep_green, Rating.pEpRatingTrusted)
-        assertCorrectColor(R.color.pep_green, Rating.pEpRatingTrustedAndAnonymized)
-        assertCorrectColor(R.color.pep_green, Rating.pEpRatingFullyAnonymous)
+        assertCorrectColor(R.color.planck_no_color, null)
+        assertCorrectColor(R.color.planck_red, Rating.pEpRatingUnderAttack)
+        assertCorrectColor(R.color.planck_red, Rating.pEpRatingB0rken)
+        assertCorrectColor(R.color.planck_red, Rating.pEpRatingMistrust)
+        assertCorrectColor(R.color.planck_no_color, Rating.pEpRatingUndefined)
+        assertCorrectColor(R.color.planck_yellow, Rating.pEpRatingCannotDecrypt)
+        assertCorrectColor(R.color.planck_no_color, Rating.pEpRatingHaveNoKey)
+        assertCorrectColor(R.color.planck_yellow, Rating.pEpRatingUnencrypted)
+        assertCorrectColor(R.color.planck_yellow, Rating.pEpRatingUnreliable)
+        assertCorrectColor(R.color.planck_yellow, Rating.pEpRatingMediaKeyProtected)
+        assertCorrectColor(R.color.planck_green, Rating.pEpRatingReliable)
+        assertCorrectColor(R.color.planck_green, Rating.pEpRatingTrusted)
+        assertCorrectColor(R.color.planck_green, Rating.pEpRatingTrustedAndAnonymized)
+        assertCorrectColor(R.color.planck_green, Rating.pEpRatingFullyAnonymous)
     }
 
     @Test
     fun `getRatingColorRes returns correct color resource for each rating`() {
-        assertCorrectColorRes(R.color.pep_no_color, null)
-        assertCorrectColorRes(R.color.pep_red, Rating.pEpRatingUnderAttack)
-        assertCorrectColorRes(R.color.pep_red, Rating.pEpRatingB0rken)
-        assertCorrectColorRes(R.color.pep_red, Rating.pEpRatingMistrust)
-        assertCorrectColorRes(R.color.pep_no_color, Rating.pEpRatingUndefined)
-        assertCorrectColorRes(R.color.pep_yellow, Rating.pEpRatingCannotDecrypt)
-        assertCorrectColorRes(R.color.pep_no_color, Rating.pEpRatingHaveNoKey)
-        assertCorrectColorRes(R.color.pep_yellow, Rating.pEpRatingUnencrypted)
-        assertCorrectColorRes(R.color.pep_yellow, Rating.pEpRatingUnreliable)
-        assertCorrectColorRes(R.color.pep_yellow, Rating.pEpRatingMediaKeyProtected)
-        assertCorrectColorRes(R.color.pep_green, Rating.pEpRatingReliable)
-        assertCorrectColorRes(R.color.pep_green, Rating.pEpRatingTrusted)
-        assertCorrectColorRes(R.color.pep_green, Rating.pEpRatingTrustedAndAnonymized)
-        assertCorrectColorRes(R.color.pep_green, Rating.pEpRatingFullyAnonymous)
+        assertCorrectColorRes(R.color.planck_no_color, null)
+        assertCorrectColorRes(R.color.planck_red, Rating.pEpRatingUnderAttack)
+        assertCorrectColorRes(R.color.planck_red, Rating.pEpRatingB0rken)
+        assertCorrectColorRes(R.color.planck_red, Rating.pEpRatingMistrust)
+        assertCorrectColorRes(R.color.planck_no_color, Rating.pEpRatingUndefined)
+        assertCorrectColorRes(R.color.planck_yellow, Rating.pEpRatingCannotDecrypt)
+        assertCorrectColorRes(R.color.planck_no_color, Rating.pEpRatingHaveNoKey)
+        assertCorrectColorRes(R.color.planck_yellow, Rating.pEpRatingUnencrypted)
+        assertCorrectColorRes(R.color.planck_yellow, Rating.pEpRatingUnreliable)
+        assertCorrectColorRes(R.color.planck_yellow, Rating.pEpRatingMediaKeyProtected)
+        assertCorrectColorRes(R.color.planck_green, Rating.pEpRatingReliable)
+        assertCorrectColorRes(R.color.planck_green, Rating.pEpRatingTrusted)
+        assertCorrectColorRes(R.color.planck_green, Rating.pEpRatingTrustedAndAnonymized)
+        assertCorrectColorRes(R.color.planck_green, Rating.pEpRatingFullyAnonymous)
     }
 
     @Test
@@ -287,7 +288,7 @@ class PEpUIUtilsTest : RobolectricTest() {
         enabled: Boolean = true,
         forceHide: Boolean = false
     ) {
-        assertEquals(expected, PEpUIUtils.getToolbarRatingVisibility(rating, enabled, forceHide))
+        assertEquals(expected, PlanckUIUtils.getToolbarRatingVisibility(rating, enabled, forceHide))
     }
 
     private fun assertCorrectStringRes(
@@ -295,15 +296,15 @@ class PEpUIUtilsTest : RobolectricTest() {
         rating: Rating?,
         enabled: Boolean = true
     ) {
-        assertEquals(expected, PEpUIUtils.getRatingTextRes(rating, enabled))
+        assertEquals(expected, PlanckUIUtils.getRatingTextRes(rating, enabled))
     }
 
     private fun assertCorrectColorRes(@ColorRes expected: Int, rating: Rating?) {
-        assertEquals(expected, PEpUIUtils.getRatingColorRes(rating))
+        assertEquals(expected, PlanckUIUtils.getRatingColorRes(rating))
     }
 
     private fun assertCorrectColor(@ColorRes expected: Int, rating: Rating?) {
-        assertEquals(getColor(expected), PEpUIUtils.getRatingColor(app, rating))
+        assertEquals(getColor(expected), PlanckUIUtils.getRatingColor(app, rating))
     }
 
     private fun getColor(@ColorRes res: Int): Int = ContextCompat.getColor(app, res)

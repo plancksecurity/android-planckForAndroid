@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_1"
-                android:textColor="@color/pep_yellow"
+                android:textColor="@color/planck_yellow"
                 app:layout_constraintStart_toEndOf="@+id/ic_secure"
                 app:layout_constraintTop_toTopOf="@+id/ic_secure"
                 app:layout_constraintBottom_toBottomOf="@+id/ic_secure"/>
@@ -55,7 +55,7 @@
                 android:layout_marginTop="@dimen/intro_margin_top_large"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_secure"
-                app:srcCompat="@drawable/pep_status_green" />
+                app:srcCompat="@drawable/planck_status_green" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/header_secure_trusted"
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_2"
-                android:textColor="@color/pep_green"
+                android:textColor="@color/planck_green"
                 app:layout_constraintStart_toEndOf="@+id/ic_secure_trusted"
                 app:layout_constraintTop_toTopOf="@+id/ic_secure_trusted"
                 app:layout_constraintBottom_toBottomOf="@+id/ic_secure_trusted"/>
@@ -86,7 +86,7 @@
                 android:layout_marginTop="@dimen/intro_margin_top_large"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_secure_trusted"
-                app:srcCompat="@drawable/pep_status_red" />
+                app:srcCompat="@drawable/planck_status_red" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/header_mistrusted"
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/intro_margin_start_standard"
                 android:text="@string/intro_frag_second_header_3"
-                android:textColor="@color/pep_red"
+                android:textColor="@color/planck_red"
                 app:layout_constraintStart_toEndOf="@+id/ic_mistrusted"
                 app:layout_constraintTop_toTopOf="@+id/ic_mistrusted"
                 app:layout_constraintBottom_toBottomOf="@+id/ic_mistrusted" />

@@ -121,14 +121,14 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.mdm.RestrictionsListener;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.permissions.PermissionRequester;
-import security.pEp.ui.message_compose.ComposeAccountRecipient;
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.PEpSecurityStatusLayout;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
-import security.pEp.ui.toolbar.ToolbarStatusPopUpMenu;
+import security.planck.mdm.RestrictionsListener;
+import security.planck.permissions.PermissionChecker;
+import security.planck.permissions.PermissionRequester;
+import security.planck.ui.message_compose.ComposeAccountRecipient;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
+import security.planck.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.ToolbarStatusPopUpMenu;
 import timber.log.Timber;
 
 
@@ -280,7 +280,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
     @Inject
     PEpProvider pEp;
 
-    private PEpSecurityStatusLayout pEpSecurityStatusLayout;
+    private PlanckSecurityStatusLayout planckSecurityStatusLayout;
     private TextView userActionBanner;
     private View userActionBannerSeparator;
     private StringBuilder lastError;
@@ -565,12 +565,12 @@ public class MessageCompose extends PepActivity implements OnClickListener,
         setUpToolbar(true);
         setUpToolbarHomeIcon(resourcesProvider.getAttributeResource(R.attr.iconActionCancel));
         if (getToolbar() != null) {
-            pEpSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
+            planckSecurityStatusLayout = getToolbar().findViewById(R.id.actionbar_message_view);
             if (K9.isUsingTrustwords()) {
-                pEpSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
+                planckSecurityStatusLayout.setOnClickListener(v -> onPEpPrivacyStatus(false));
             }
             if (!BuildConfig.IS_ENTERPRISE) {
-                pEpSecurityStatusLayout.setOnLongClickListener( view -> {
+                planckSecurityStatusLayout.setOnLongClickListener(view -> {
                     PopupMenu statusMenu = new ToolbarStatusPopUpMenu(this,
                             view, recipientPresenter);
                     statusMenu.show();
@@ -2057,8 +2057,8 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void setToolbarRating(Rating rating, boolean forceHide) {
         boolean pEpEnabled = recipientPresenter == null || (!recipientPresenter.isForceUnencrypted() && account.ispEpPrivacyProtected());
-        pEpSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
-        pEpSecurityStatusLayout.setRating(rating, forceHide);
+        planckSecurityStatusLayout.setIspEpEnabled(pEpEnabled);
+        planckSecurityStatusLayout.setRating(rating, forceHide);
     }
 
     public void showUnsecureDeliveryWarning(int unsecureRecipientsCount) {
@@ -2098,7 +2098,7 @@ public class MessageCompose extends PepActivity implements OnClickListener,
 
     public void showSingleRecipientHandshakeBanner() {
         if (wasAbleToChangeBanner(BannerType.HANDSHAKE)) {
-            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.pep_green));
+            userActionBanner.setTextColor(ContextCompat.getColor(this, R.color.planck_green));
             userActionBanner.setText(R.string.compose_single_recipient_handshake_banner);
             userActionBanner.setOnClickListener(
                     v -> recipientPresenter.startHandshakeWithSingleRecipient(relatedMessageReference)

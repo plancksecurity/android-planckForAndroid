@@ -308,7 +308,7 @@
     </PreferenceScreen>
 
     <PreferenceScreen
-        android:icon="?attr/iconpEpShield"
+        android:icon="?attr/iconplanckShield"
         android:key="pep_global"
         android:title="@string/privacy_preferences">
 

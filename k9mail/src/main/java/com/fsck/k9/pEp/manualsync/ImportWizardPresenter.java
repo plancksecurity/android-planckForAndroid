@@ -7,7 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
-import security.pEp.sync.SyncState;
+import security.planck.sync.SyncState;
 import timber.log.Timber;
 
 public class ImportWizardPresenter {

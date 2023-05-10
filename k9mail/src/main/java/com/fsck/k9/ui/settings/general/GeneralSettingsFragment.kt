@@ -13,7 +13,6 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.FileBrowserHelper
 import com.fsck.k9.notification.NotificationController
-import com.fsck.k9.pEp.PEpProviderFactory
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
@@ -27,10 +26,10 @@ import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
-import security.pEp.permissions.PermissionChecker
-import security.pEp.permissions.PermissionRequester
-import security.pEp.ui.passphrase.*
-import security.pEp.ui.support.export.ExportpEpSupportDataActivity
+import security.planck.permissions.PermissionChecker
+import security.planck.permissions.PermissionRequester
+import security.planck.ui.passphrase.*
+import security.planck.ui.support.export.ExportpEpSupportDataActivity
 import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {

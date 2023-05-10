@@ -1,7 +1,6 @@
 package com.fsck.k9.activity.compose
 
 import android.content.res.ColorStateList
-import android.graphics.PointF
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,8 +14,8 @@ import com.fsck.k9.pEp.ui.PEpContactBadge
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
-import security.pEp.ui.doOnLayout
-import security.pEp.ui.doOnNextLayout
+import security.planck.ui.doOnLayout
+import security.planck.ui.doOnNextLayout
 
 const val ELLIPSIS = "…"
 

@@ -24,7 +24,7 @@ import com.fsck.k9.auth.OAuthProviderType
 import com.fsck.k9.databinding.FragmentAccountSelectAuthBinding
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator
-import security.pEp.provisioning.AccountMailSettingsProvision
+import security.planck.provisioning.AccountMailSettingsProvision
 
 class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
 
@@ -79,7 +79,7 @@ class AccountSetupSelectAuthFragment : AccountSetupBasicsFragmentBase() {
         oAuthType: OAuthProviderType?
     ): Array<View> {
         return when (mailSettings.incoming.authType) {
-            security.pEp.mdm.AuthType.XOAUTH2 ->
+            security.planck.mdm.AuthType.XOAUTH2 ->
                 arrayOf(
                     passwordFlowButtonCard,
                     if (oAuthType == OAuthProviderType.GOOGLE) microsoftButtonCard

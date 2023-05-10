@@ -9,8 +9,8 @@ import com.fsck.k9.activity.compose.RecipientSelectView;
 
 import org.jetbrains.annotations.NotNull;
 
-import security.pEp.ui.input.utils.InputConnectionProvider;
-import security.pEp.ui.input.utils.InputConnectionProviderImpl;
+import security.planck.ui.input.utils.InputConnectionProvider;
+import security.planck.ui.input.utils.InputConnectionProviderImpl;
 
 public class ActionRecipientSelectView extends RecipientSelectView {
 

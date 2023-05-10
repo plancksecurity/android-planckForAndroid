@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.SystemClock;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -29,7 +28,6 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.ActivityListener;
 import com.fsck.k9.activity.MessageReference;
-import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection;
 import com.fsck.k9.cache.EmailProviderCache;
 import com.fsck.k9.controller.MessagingControllerCommands.PendingAppend;
@@ -122,8 +120,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import foundation.pEp.jniadapter.Rating;
 import foundation.pEp.jniadapter.Sync;
 import foundation.pEp.jniadapter.exceptions.pEpException;
-import security.pEp.auth.OAuthTokenRevokedReceiver;
-import security.pEp.echo.EchoMessageReceivedListener;
+import security.planck.auth.OAuthTokenRevokedReceiver;
+import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 import static com.fsck.k9.K9.MAX_SEND_ATTEMPTS;

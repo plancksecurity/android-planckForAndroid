@@ -41,7 +41,6 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -115,8 +114,8 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
-import security.pEp.ui.resources.ResourcesProvider;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.resources.ResourcesProvider;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -922,9 +921,9 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
     }
 
     private void initializePullToRefresh() {
-        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.pep_green),
-                getResources().getColor(R.color.pep_yellow),
-                getResources().getColor(R.color.pep_red));
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.planck_green),
+                getResources().getColor(R.color.planck_yellow),
+                getResources().getColor(R.color.planck_red));
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
