@@ -7,8 +7,9 @@ import com.fsck.k9.mail.Transport
 //import kotlinx.coroutines.experimental.delay
 //import kotlinx.coroutines.experimental.launch
 import org.jetbrains.anko.coroutines.experimental.bg
+import javax.inject.Inject
 
-class AutocryptSetupTransferLiveEvent : SingleLiveEvent<AutocryptSetupTransferResult>() {
+class AutocryptSetupTransferLiveEvent @Inject constructor() : SingleLiveEvent<AutocryptSetupTransferResult>() {
     fun sendMessageAsync(transport: Transport, setupMsg: AutocryptSetupMessage) {
         /*launch(UI) {
             val setupMessage = bg {
