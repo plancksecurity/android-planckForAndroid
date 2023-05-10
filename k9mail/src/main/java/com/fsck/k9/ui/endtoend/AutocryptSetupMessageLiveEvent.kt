@@ -13,8 +13,9 @@ import org.jetbrains.anko.coroutines.experimental.bg
 import org.openintents.openpgp.util.OpenPgpApi
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import javax.inject.Inject
 
-class AutocryptSetupMessageLiveEvent(val messageCreator: AutocryptTransferMessageCreator) : SingleLiveEvent<AutocryptSetupMessage>() {
+class AutocryptSetupMessageLiveEvent @Inject constructor(val messageCreator: AutocryptTransferMessageCreator) : SingleLiveEvent<AutocryptSetupMessage>() {
     fun loadAutocryptSetupMessageAsync(openPgpApi: OpenPgpApi, account: Account) {
       /*  launch(UI) {
             val setupMessage = bg {
