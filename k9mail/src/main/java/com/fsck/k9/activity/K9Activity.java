@@ -12,11 +12,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
@@ -25,6 +27,7 @@ import com.fsck.k9.activity.setup.OAuthFlowActivity;
 import com.fsck.k9.pEp.PePUIArtefactCache;
 import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.scottyab.rootbeer.RootBeer;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,6 +37,8 @@ import butterknife.OnTextChanged;
 import security.planck.auth.OAuthTokenRevokedListener;
 import security.planck.mdm.ConfigurationManager;
 import security.planck.mdm.RestrictionsListener;
+import timber.log.Timber;
+
 import org.jetbrains.annotations.NotNull;
 
 public abstract class K9Activity extends AppCompatActivity implements K9ActivityMagic,
@@ -98,12 +103,6 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         pePUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
     }
-
-//    @Override
-//    public void showHandshake(Identity myself, Identity partner) {
-//        Toast.makeText(getApplicationContext(), myself.fpr + "/n" + partner.fpr, Toast.LENGTH_LONG).show();
-//        Log.i("pEp", "showHandshake: " + myself.fpr + "/n" + partner.fpr);
-//    }
 
     public void setConfigurationManagerListener(RestrictionsListener listener) {
         mBase.setConfigurationManagerListener(listener);
@@ -261,6 +260,19 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onResume() {
         super.onResume();
+        boolean isRoot = new RootBeer(this).isRooted();
+        if (isRoot && !BuildConfig.DEBUG) {
+            Toast.makeText(this, R.string.rooted_device_error, Toast.LENGTH_SHORT).show();
+            try {
+                finalize();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+        if(BuildConfig.DEBUG){
+            Timber.i("Device is (possibly) rooted: %s", isRoot);
+        }
+
         mBase.registerPassphraseReceiver();
         if (getK9().isRunningOnWorkProfile()) {
             mBase.registerConfigurationManager();

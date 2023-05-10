@@ -1084,10 +1084,12 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="port_is_empty">Tipp darf nicht leer sein</string>
     <string name="account_settings_notification_open_system_notifications_summary">Einstellungen für Systembenachrichtigungen öffnen</string>
     <string name="account_settings_notification_open_system_notifications_label">Benachrichtigungseinstellungen</string>
+
     <string name="account_delete_dlg_instructions_fmt">Das Konto \"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\" wird aus planck entfernt.</string>
     <string name="default_signature">"-- Gesendet mit planck für Android. "</string>
     <string name="welcome_message_title">Willkommen bei planck</string>
     <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
     <string name="remote_control_label">planck Fernsteuerung</string>
     <string name="unread_widget_label">planck Ungelesen</string>
+    <string name="rooted_device_error">Nicht unterstütztes Betriebssystem</string>
 </resources>
