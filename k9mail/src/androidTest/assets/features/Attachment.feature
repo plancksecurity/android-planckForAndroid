@@ -19,7 +19,7 @@ Feature: Attachment
     And I enter bot1 in the messageTo field
     And I enter subject in the messageSubject field
     And I enter ThisIsTheBody in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I attach MSoffice
     And I click the send message button
     And I wait for the new message
@@ -50,7 +50,7 @@ Feature: Attachment
     And I enter myself in the messageTo field
     And I enter subject in the messageSubject field
     And I enter body in the messageBody field
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I attach PDF
     And I attach MSoffice
     And I attach settings
@@ -110,10 +110,10 @@ Feature: Attachment
     And I enter subject in the messageSubject field
     And I enter ThisIsTheBody in the messageBody field
     And I attach PDF
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     Then I compare messageBody from attachment with ThisIsTheBody
     And I open attached files
 
@@ -144,10 +144,10 @@ Feature: Attachment
     And I attach PDF
     And I attach MSoffice
     And I attach picture
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I open attached files
 
   @OutlookTest

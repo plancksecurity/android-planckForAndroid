@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trustwordsView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:showIn="@layout/planck_recipient_row_with_trustwords">
+
+    <TextView
+        android:id="@+id/trustwordsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:text="@string/trustwords_title"
+        android:textColor="?android:attr/textColorPrimary"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:text="Trustwords" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:paddingRight="8dp">
+
+        <TextSwitcher
+            android:id="@+id/trustwords"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="40dp"
+            android:layout_weight="1"
+            android:animateLayoutChanges="true"
+            android:measureAllChildren="false">
+
+            <TextView
+                android:id="@+id/shortTrustwords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:breakStrategy="simple"
+                android:ellipsize="none"
+                android:fontFamily="sans-serif"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="IMPORTUNER METAPHOR ARNO DIA SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+
+            <TextView
+                android:id="@+id/longTrustwords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:breakStrategy="simple"
+                android:ellipsize="none"
+                android:fontFamily="sans-serif"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="IMPORTUNER METAPHOR ARNO DIABETES SEMIYEARLY SIDEREAL CORONATE CURSEDNESS PULMONARY DUVET" />
+        </TextSwitcher>
+
+        <ImageView
+            android:id="@+id/change_language"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="?attr/iconLanguageGray" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fpr_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fpr_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:text="@string/fpr_title"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            tools:text="Fingerprints" />
+
+        <TextView
+            android:id="@+id/fpr_partner_account_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            tools:text="outlook@pep.security" />
+
+        <TextView
+            android:id="@+id/fpr_partner_account_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:breakStrategy="simple"
+            android:ellipsize="none"
+            android:textStyle="bold"
+            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
+
+        <TextView
+            android:id="@+id/fpr_current_account_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold"
+            tools:text="your_account@pep.security" />
+
+        <TextView
+            android:id="@+id/fpr_current_account_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:breakStrategy="simple"
+            android:ellipsize="none"
+            android:textStyle="bold"
+            tools:text="A629 F620 F9C4 9310 39B2\n7356 FACC 6EF3 3BD4 771D" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/rejectHandshake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/button_minWidth"
+            android:padding="10dip"
+            android:text="@string/pep_wrong_trustwords"
+            android:theme="@style/planckStyleButton.Red" />
+
+        <Button
+            android:id="@+id/confirmHandshake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:minWidth="@dimen/button_minWidth"
+            android:padding="10dip"
+            android:text="@string/pep_confirm_trustwords"
+            android:theme="@style/planckStyleButton.Green" />
+
+    </LinearLayout>
+</LinearLayout>

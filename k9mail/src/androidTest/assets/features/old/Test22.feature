@@ -13,21 +13,21 @@ Feature: Sanity_1.2.6_MailToMultipleContactsMixed
     And I click message compose
     Then I fill messageTo field with bot1
     And I fill messageTo field with bot2
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     Then I fill messageTo field with unknown@user.es
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     And I fill messageSubject field with TestCase1.2.6
     And I fill messageBody field with TestCase1.2.6
     Then I fill messageTo field with empty
     Then I fill messageTo field with bot1
     And I fill messageTo field with bot2
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     Then I fill messageTo field with unknown@user.es
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     Then I click send message button
     And I wait for new message
     And I go to sent folder
     And I click last message
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     And I compare messageBody with TestCase1.2.6
     Then I remove account

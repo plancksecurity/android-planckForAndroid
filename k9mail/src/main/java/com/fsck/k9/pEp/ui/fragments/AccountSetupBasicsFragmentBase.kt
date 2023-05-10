@@ -18,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import security.pEp.provisioning.ProvisioningSettings
+import security.planck.provisioning.ProvisioningSettings
 import timber.log.Timber
 import java.net.URISyntaxException
 import javax.inject.Inject

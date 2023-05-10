@@ -26,11 +26,11 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import security.pEp.mdm.ConfigurationManager;
-import security.pEp.mdm.RestrictionsProvider;
-import security.pEp.provisioning.ProvisioningManager;
-import security.pEp.file.PEpSystemFileLocator;
-import security.pEp.provisioning.ProvisioningSettings;
+import security.planck.mdm.ConfigurationManager;
+import security.planck.mdm.RestrictionsProvider;
+import security.planck.provisioning.ProvisioningManager;
+import security.planck.file.PlanckSystemFileLocator;
+import security.planck.provisioning.ProvisioningSettings;
 
 @Singleton
 @Component(modules = {ApplicationModule.class, RestrictionsProviderModule.class})
@@ -55,7 +55,7 @@ public interface ApplicationComponent {
 
     ProvisioningSettings provisioningSettings();
 
-    PEpSystemFileLocator pEpSystemFileLocator();
+    PlanckSystemFileLocator pEpSystemFileLocator();
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();

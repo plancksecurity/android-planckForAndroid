@@ -21,5 +21,5 @@
     <item android:drawable="@android:color/transparent" />
     <item
         android:state_selected="true"
-        android:drawable="@color/pep_green"/>
+        android:drawable="@color/planck_green"/>
 </selector>

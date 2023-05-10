@@ -52,7 +52,7 @@ import java.util.Collections;
 import java.util.List;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.echo.EchoMessageReceivedListener;
+import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
 import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;

@@ -26,8 +26,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
-import security.pEp.ui.toolbar.PEpToolbarCustomizer;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.PEpToolbarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 
 public abstract class K9PreferenceActivity extends PreferenceActivity implements LifecycleOwner {

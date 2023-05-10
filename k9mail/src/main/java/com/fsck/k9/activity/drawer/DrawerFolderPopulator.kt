@@ -6,7 +6,6 @@ import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
 import kotlinx.coroutines.*
 import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
-import security.pEp.ui.PEpUIUtils.orderFolderLists
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject

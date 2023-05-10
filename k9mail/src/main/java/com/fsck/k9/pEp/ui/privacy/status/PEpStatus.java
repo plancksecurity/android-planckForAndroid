@@ -31,7 +31,6 @@ import com.fsck.k9.pEp.models.PEpIdentity;
 import com.fsck.k9.pEp.ui.PepColoredActivity;
 
 import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.pedrogomez.renderers.AdapteeCollection;
 import com.pedrogomez.renderers.ListAdapteeCollection;
 import com.pedrogomez.renderers.RVRendererAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +119,7 @@ public class PEpStatus extends PepColoredActivity implements PEpStatusView, Conf
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadPepRating();
-        setContentView(R.layout.pep_status);
+        setContentView(R.layout.planck_status);
         ButterKnife.bind(PEpStatus.this);
         initPep();
         final Intent intent = getIntent();

@@ -107,7 +107,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         val provisionSettings = provisioningSettings.provisionedMailSettings
         if (provisionSettings != null) {
             val isExternalAuth =
-                provisionSettings.incoming.authType === security.pEp.mdm.AuthType.EXTERNAL
+                provisionSettings.incoming.authType === security.planck.mdm.AuthType.EXTERNAL
             clientCertificateCheckBox.isChecked = isExternalAuth
         }
         manualSetupButton.visibility = View.INVISIBLE

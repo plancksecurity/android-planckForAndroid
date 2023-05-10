@@ -23,8 +23,8 @@ import com.fsck.k9.pEp.ui.privacy.status.PEpStatusRendererBuilder
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.pedrogomez.renderers.Renderer
 import foundation.pEp.jniadapter.Rating
-import security.pEp.permissions.PermissionChecker
-import security.pEp.ui.permissions.PEpPermissionChecker
+import security.planck.permissions.PermissionChecker
+import security.planck.ui.permissions.PlanckPermissionChecker
 
 abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLoader) : Renderer<PEpIdentity>() {
     lateinit var resetClickListener: PEpStatusRendererBuilder.ResetClickListener
@@ -55,7 +55,7 @@ abstract class PEpStatusBaseRenderer(val contactsPictureLoader: ContactPictureLo
     protected lateinit var permissionChecker: PermissionChecker
 
     override fun inflate(inflater: LayoutInflater?, parent: ViewGroup?): View {
-        permissionChecker = PEpPermissionChecker(parent!!.context.applicationContext)
+        permissionChecker = PlanckPermissionChecker(parent!!.context.applicationContext)
         val view: View = inflater!!.inflate(getLayout(), parent, false)
         ButterKnife.bind(this, view)
         //badge.enableStatusBadge()

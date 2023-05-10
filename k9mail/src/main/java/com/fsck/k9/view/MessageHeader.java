@@ -51,7 +51,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.permissions.PermissionChecker;
+import security.planck.permissions.PermissionChecker;
 import timber.log.Timber;
 
 

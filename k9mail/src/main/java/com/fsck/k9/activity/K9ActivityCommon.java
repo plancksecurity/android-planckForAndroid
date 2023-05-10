@@ -15,22 +15,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 
-import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.pEp.LangUtils;
 import com.fsck.k9.pEp.ui.tools.ThemeManager;
 
-import java.util.List;
 import java.util.Locale;
 
-import security.pEp.auth.OAuthTokenRevokedReceiver;
-import security.pEp.mdm.ConfigurationManager;
-import security.pEp.mdm.RestrictionsListener;
-import security.pEp.ui.passphrase.PassphraseActivity;
-import security.pEp.ui.passphrase.PassphraseActivityKt;
+import security.planck.auth.OAuthTokenRevokedReceiver;
+import security.planck.mdm.ConfigurationManager;
+import security.planck.mdm.RestrictionsListener;
+import security.planck.ui.passphrase.PassphraseActivity;
+import security.planck.ui.passphrase.PassphraseActivityKt;
 import timber.log.Timber;
 
 

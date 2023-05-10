@@ -994,9 +994,9 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="error_sign_only_no_encryption">Verschlüsselung ist im Nur-Signieren-Modus nicht verfügbar!</string>
     <string name="unsigned_text_divider_label">Unsignierter Text</string>
     <string name="openpgp_enabled_error_back">Zurück</string>
-    <string name="app_name">p≡p</string>
+    <string name="app_name">planck</string>
     <string name="switch_off">Aus</string>
-    <string name="app_authors">Die K-9 Dog Walkers, p≡p Security S.A.</string>
+    <string name="app_authors">Die K-9 Dog Walkers, planck Security S.A.</string>
     <string name="ac_transfer_show_code">Setup-Code anzeigen</string>
     <string name="switch_on">Aktiviert</string>
     <string name="ac_transfer_error_send">Beim Senden der Nachricht ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihre Netzwerkverbindung und die Konfiguration des Postausgang-Servers.</string>
@@ -1036,7 +1036,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="messageview_crypto_warning_details">Details anzeigen</string>
     <string name="fetching_folders_failed">Das Abrufen der Ordnerliste ist fehlgeschlagen</string>
     <string name="mail_list_widget_loading">Nachrichten laden…</string>
-    <string name="mail_list_widget_text">p≡p Nachrichtenliste</string>
+    <string name="mail_list_widget_text">planck Nachrichtenliste</string>
     <string name="pep_menu_short_trustwords">Kurze Trustwords anzeigen</string>
     <string name="pep_menu_long_trustwords">Lange Trustwords anzeigen</string>
     <string name="decrypt_message_explanation">Diese E-Mail ist verschlüsselt und die Entschlüsselung kann einige Sekunden dauern. Möchten Sie fortfahren\?</string>
@@ -1065,7 +1065,7 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="global_settings_privacy_hide_hostname_when_connecting_detail">Als \'localhost\' ausgeben, wenn eine Verbindung zu SMTP-Servern hergestellt wird</string>
     <string name="global_settings_privacy_hide_hostname_when_connecting">Hostname ausblenden</string>
     <string name="global_settings_privacy_hide_timezone_detail">UTC anstelle der lokalen Zeitzone in Mail-Headern und Antwort-Headern verwenden</string>
-    <string name="global_settings_privacy_hide_useragent_detail">p≡p User-Agent aus den Mail-Headern entfernen</string>
+    <string name="global_settings_privacy_hide_useragent_detail">planck User-Agent aus den Mail-Headern entfernen</string>
     <string name="global_settings_confirm_menu_mark_all_read">Alle Nachrichten als gelesen markieren</string>
     <string name="global_settings_messageiew_after_delete_behavior_title">Verhalten nach dem Löschen der Nachricht</string>
     <string name="debug_delete_local_body">Nachrichtentext debuggen / löschen</string>
@@ -1078,17 +1078,18 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="status_no_network">Synchronisierung deaktiviert - Kein Netzwerk</string>
     <string name="account_clear_dlg_instructions_fmt">Lokale Kopien von Nachrichten in <xliff:g id="account">%s</xliff:g> werden entfernt. Kontoeinstellungen bleiben erhalten.</string>
     <string name="account_recreate_dlg_instructions_fmt">Alle lokalen Daten für \\\"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\\\" werden entfernt. Das Konto wird beibehalten.</string>
-    <string name="app_copyright_fmt">Copyright 2020 p≡p Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
-    <string name="shortcuts_title">p≡p Konten</string>
+    <string name="app_copyright_fmt">Copyright 2020 planck Security S.A. Copyright 2008-<xliff:g>%1$s</xliff:g> The K-9 Dog Walkers. Portions Copyright 2006-<xliff:g>%2$s</xliff:g> the Android Open Source Project.</string>
+    <string name="shortcuts_title">planck Konten</string>
     <string name="port_is_out_of_range">Der Port ist ausserhalb des erlaubten Bereichs</string>
     <string name="port_is_empty">Tipp darf nicht leer sein</string>
     <string name="account_settings_notification_open_system_notifications_summary">Einstellungen für Systembenachrichtigungen öffnen</string>
     <string name="account_settings_notification_open_system_notifications_label">Benachrichtigungseinstellungen</string>
-    <string name="account_delete_dlg_instructions_fmt">Das Konto \"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\" wird aus p≡p entfernt.</string>
-    <string name="default_signature">"-- Gesendet mit p≡p für Android. "</string>
-    <string name="welcome_message_title">Willkommen bei p≡p</string>
-    <string name="remote_control_desc">Erlaube dieser App p≡p fernzusteuern und zu konfigurieren.</string>
-    <string name="remote_control_label">p≡p Fernsteuerung</string>
-    <string name="unread_widget_label">p≡p Ungelesen</string>
+
+    <string name="account_delete_dlg_instructions_fmt">Das Konto \"&lt;xliff:g xmlns:xliff=\"urn:oasis:names:tc:xliff:document:1.2\" id=\"account\"&gt;%s&lt;/xliff:g&gt;\" wird aus planck entfernt.</string>
+    <string name="default_signature">"-- Gesendet mit planck für Android. "</string>
+    <string name="welcome_message_title">Willkommen bei planck</string>
+    <string name="remote_control_desc">Erlaube dieser App planck fernzusteuern und zu konfigurieren.</string>
+    <string name="remote_control_label">planck Fernsteuerung</string>
+    <string name="unread_widget_label">planck Ungelesen</string>
     <string name="rooted_device_error">Nicht unterstütztes Betriebssystem</string>
 </resources>

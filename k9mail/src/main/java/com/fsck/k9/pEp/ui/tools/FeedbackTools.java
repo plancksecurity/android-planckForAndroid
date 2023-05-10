@@ -36,7 +36,7 @@ public class FeedbackTools {
             Resources resources = rootView.getResources();
             Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_LONG);
             snackbar.setAction(actionText, actionListener);
-            snackbar.setActionTextColor(resources.getColor(R.color.pep_yellow));
+            snackbar.setActionTextColor(resources.getColor(R.color.planck_yellow));
             snackbar.show();
         } else {
             Timber.e(message);

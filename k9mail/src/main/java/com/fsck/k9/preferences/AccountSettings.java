@@ -3,7 +3,6 @@ package com.fsck.k9.preferences;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,8 +32,8 @@ import com.fsck.k9.preferences.Settings.SettingsUpgrader;
 import com.fsck.k9.preferences.Settings.StringSetting;
 import com.fsck.k9.preferences.Settings.V;
 
-import security.pEp.mdm.ManageableSetting;
-import security.pEp.mdm.ManageableSettingKt;
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 
 public class AccountSettings {
     static final Map<String, TreeMap<Integer, SettingsDescription>> SETTINGS;

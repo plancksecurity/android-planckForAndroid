@@ -6,8 +6,8 @@ import com.fsck.k9.BuildConfig
 import dagger.Module
 import dagger.Provides
 import security.pEp.mdm.FakeRestrictionsManager
-import security.pEp.mdm.PEpRestrictions
-import security.pEp.mdm.RestrictionsProvider
+import security.planck.mdm.PlanckRestrictions
+import security.planck.mdm.RestrictionsProvider
 import javax.inject.Named
 
 @Suppress("unused")
@@ -17,7 +17,7 @@ class TestRestrictionsProviderModule {
     @Provides
     fun provideRestrictionsProvider(
         fakeRestrictionsManager: FakeRestrictionsManager,
-        pEpRestrictions: PEpRestrictions,
+        pEpRestrictions: PlanckRestrictions,
     ): RestrictionsProvider {
         return if (BuildConfig.USE_FAKE_RESTRICTIONS_MANAGER) {
             fakeRestrictionsManager

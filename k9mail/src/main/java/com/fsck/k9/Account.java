@@ -7,8 +7,8 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 
-import security.pEp.mdm.ManageableSetting;
-import security.pEp.mdm.ManageableSettingKt;
+import security.planck.mdm.ManageableSetting;
+import security.planck.mdm.ManageableSettingKt;
 import timber.log.Timber;
 
 import androidx.annotation.NonNull;

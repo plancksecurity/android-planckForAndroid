@@ -16,8 +16,8 @@ import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.ui.toolbar.PEpToolbarCustomizer;
-import security.pEp.ui.toolbar.ToolBarCustomizer;
+import security.planck.ui.toolbar.PEpToolbarCustomizer;
+import security.planck.ui.toolbar.ToolBarCustomizer;
 
 public abstract class PepColoredActivity extends K9Activity {
     public static final String CURRENT_RATING = "current_color";

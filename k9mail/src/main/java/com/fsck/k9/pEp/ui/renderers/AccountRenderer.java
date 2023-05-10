@@ -9,7 +9,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.AccountStats;
 import com.fsck.k9.R;
 import com.fsck.k9.mail.MessagingException;
-import security.pEp.ui.PEpUIUtils;
+import security.planck.ui.PlanckUIUtils;
 import com.fsck.k9.pEp.ui.listeners.OnAccountClickListener;
 import com.pedrogomez.renderers.Renderer;
 
@@ -44,7 +44,7 @@ public class AccountRenderer extends Renderer<Account> {
     @Override
     public void render() {
         Account account = getContent();
-        accountLetter.setText(PEpUIUtils.accountNameSummary(account.getName()));
+        accountLetter.setText(PlanckUIUtils.accountNameSummary(account.getName()));
         accountEmail.setText(account.getEmail());
         renderUnreadMessages(account);
     }

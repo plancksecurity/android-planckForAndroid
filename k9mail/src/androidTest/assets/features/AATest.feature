@@ -73,13 +73,13 @@ Feature: Test
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter TM153 in the messageSubject field
     And I enter longText in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody from json file with longText
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -107,7 +107,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longText
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     And I discard the message
     And I go back to the Inbox
 
@@ -160,13 +160,13 @@ Feature: Test
     And I send 1 message to bot1 with subject sendEncrypted and body sendEncryptedTest
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter QTR-1976 in the messageSubject field
     And I enter longWord in the messageBody field
     And I click the send message button
     And I wait for the message and click it
     Then I compare messageBody with longWord
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I go back to the Inbox
     And I go to the sent folder
     And I click the first message
@@ -191,7 +191,7 @@ Feature: Test
     And I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with longWord
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     And I discard the message
     And I go back to the Inbox
 
@@ -219,11 +219,11 @@ Feature: Test
     And I send 1 message to bot1 with subject mailFromNewContactEncryptedBody and body MailFromNewContactEncryptedBody
     And I click the last message received
     Then I compare messageBody from json file with MailFromNewContactEncryptedBody
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     When I click reply message
     And I enter extraText in the messageSubject field
     And I enter bodyText in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I click the send message button
     And I go back to the Inbox
     And I wait for the new message
@@ -243,7 +243,7 @@ Feature: Test
     And I send 1 message to bot1 with subject mailsEncryptedWhenpEpSaysSo and body MailsAreEncryptedWhen_pEp_saysSo
     And I click the last message received
     And I click reply message
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I press back
     And I wait for the message and click it
@@ -269,13 +269,13 @@ Feature: Test
     When I send 1 message to bot1 with subject TM-10 and body TM-10
     And I click compose message
     And I enter bot1 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter empty in the messageTo field
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TM-10A and body TM-10Abody
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I compare messageBody with TM-10Abody
     Examples:
       |account|
@@ -297,17 +297,17 @@ Feature: Test
     Then I check in the handshake dialog if the privacy status is pEpRatingUndefined
     When I send 1 message to bot1 with subject TM-11 and body TM-11
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I press back
     And I click compose message
     And I send 1 message to bot2 with subject TM-11A and body TM-11A
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I press back
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter TM-11B in the messageSubject field
     And I enter TM-11B in the messageBody field
     And I enter empty in the messageTo field
@@ -315,14 +315,14 @@ Feature: Test
     When I enter bot2 in the messageTo field
     And I enter empty in the messageSubject field
     And I enter empty in the messageBody field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I enter TM-11C in the messageSubject field
     And I enter TM-11CBody in the messageBody field
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I compare messageBody with TM-11CBody
     And I go back to the Inbox
     Examples:
@@ -349,7 +349,7 @@ Feature: Test
     And I click compose message
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter bot5 in the messageTo field
     Then I check if the privacy status is pEpRatingUnencrypted
     When I enter TM-12B in the messageSubject field
@@ -357,14 +357,14 @@ Feature: Test
     And I enter empty in the messageTo field
     And I enter bot1 in the messageTo field
     And I enter bot2 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I enter bot5 in the messageTo field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     And I compare messageBody with TM-12B
     Examples:
       |account|
@@ -388,12 +388,12 @@ Feature: Test
     And I disable protection from privacy status menu
     And I enter TM-13 in the messageSubject field
     And I enter TM-13 in the messageBody field
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I click the send message button
     And I wait for the new message
     And I go to the sent folder
     And I click the last message received
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     Examples:
       |account|
       |  0    |
@@ -468,10 +468,10 @@ Feature: Test
     And I go back to the Inbox
     When I click compose message
     And I enter bot3 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I confirm trust words match
     When I click confirm trust words
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     Examples:
       |account|
       |  0    |
@@ -498,7 +498,7 @@ Feature: Test
     And I click the last message received
     Then I confirm trust words match
     When I click confirm trust words
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     Examples:
       |account|
       |  0    |
@@ -519,23 +519,23 @@ Feature: Test
     And I send 1 message to bot4 with subject TM-18 and body cucumberStopTrusting
     Then I check the badge color of the first message is pEpRatingReliable
     When I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click mistrust words
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
     When I go back to the Inbox
     Then I check the badge color of the first message is pEpRatingMistrust
     And I click compose message
     And I send 1 message to bot4 with subject TM-18A and body cucumberStopTrustingMistrust
     Then I check the badge color of the first message is pEpRatingMistrust
     When I click the last message received
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
     When I reset partner key
     And I go back to the Inbox
     And I click compose message
     And I send 1 message to bot4 with subject TM-18B and body cucumberStopTrustingReseted
     Then I check the badge color of the first message is pEpRatingReliable
     When I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click confirm trust words
     And I go back to the Inbox
     Then I check the badge color of the first message is pEpRatingTrusted
@@ -543,7 +543,7 @@ Feature: Test
     And I send 1 message to bot4 with subject TM-18C and body cucumberStopTrustingConfirmTrustWords
     Then I check the badge color of the first message is pEpRatingTrusted
     When I click the last message received
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
 
     Examples:
       |account|
@@ -565,12 +565,12 @@ Feature: Test
     When I send 1 message to bot1 with subject TM-19 and body handshakeWrongTrustwords
     And I click the last message received
     And I click stop trusting words
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
     When I go back to the Inbox
     And I send 1 message to bot1 with subject TM-19A and body handshakeWrongTrustwordsA
     Then I check the badge color of the first message is pEpRatingMistrust
     When I click the last message received
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
 
     Examples:
       |account|
@@ -586,9 +586,9 @@ Feature: Test
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted
     And I click the last message received
     And I click stop trusting words
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
     When I reset partner key
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     Examples:
       |account|
       |  0    |
@@ -602,9 +602,9 @@ Feature: Test
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted
     And I click the last message received
     And I click confirm trust words
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I reset partner key
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     Examples:
       |account|
       |  0    |
@@ -618,14 +618,14 @@ Feature: Test
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeTrusted2
     And I click the last message received
     And I click confirm trust words
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I click reply message
     And I reset partner key
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I send 1 messages to bot2 with subject handshake2nd and body ThisWillBeGrey
     And I select the inbox
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     Examples:
       |account|
       | 0 |
@@ -639,10 +639,10 @@ Feature: Test
     And I send 1 messages to bot2 with subject handshake and body ThisWillBeMistrusted2
     And I click the last message received
     And I click stop trusting words
-    Then I check if the privacy status is pep_red
+    Then I check if the privacy status is planck_red
     When I click reply message
     And I reset partner key
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     Examples:
       |account|
       |  0    |
@@ -766,10 +766,10 @@ Feature: Test
     And I enter TM-130 in the messageSubject field
     And I enter attach1File in the messageBody field
     And I attach PDF
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I compare messageBody from json file with attach1File
     And I open 1 attached files
     Examples:
@@ -806,10 +806,10 @@ Feature: Test
     And I attach PDF
     And I attach MSoffice
     And I attach picture
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I click the send message button
     And I wait for the message and click it
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I open 3 attached files
     Examples:
       |account|
@@ -841,12 +841,12 @@ Feature: Test
     And I click message at position 1
     Then I compare messageBody with saveDraft2
     And I check picture is attached in draft
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     When I go to the drafts folder
     And I click message at position 1
     Then I compare messageBody with saveDraft1
     And I check MSoffice is attached in draft
-    And I check if the privacy status is pep_yellow
+    And I check if the privacy status is planck_yellow
     And I go to the drafts folder
 
     Examples:
@@ -865,11 +865,11 @@ Feature: Test
     And I click compose message
     And I send 1 messages to bot7 with subject passiveMode and body TestingPassiveMode
     And I click the first message
-    Then I check if the privacy status is pep_no_color
+    Then I check if the privacy status is planck_no_color
     When I go back to the Inbox
     And I send 1 messages to bot7 with subject passiveModeEncrypted and body TestingPassiveModeEncrypted
     And I click the first message
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     When I go back to accounts list
     Then I disable passive mode
     Examples:
@@ -1015,7 +1015,7 @@ Feature: Test
     Then I remove the 2 address clicking X button
     Then I remove the 1 address clicking X button
     Then I check insecurity warnings are not there
-    #Then I check if the privacy status is pep_green
+    #Then I check if the privacy status is planck_green
 
     Examples:
       |account|

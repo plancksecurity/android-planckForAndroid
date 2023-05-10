@@ -27,19 +27,19 @@
         <item>pEpRatingUnderAttack</item>
     </string-array>
     <array name="pep_color">
-        <item>@color/pep_no_color<!--pEpRatingUndefined--></item>
-        <item>@color/pep_no_color<!--pEpRatingCannotDecrypt--></item>
-        <item>@color/pep_no_color<!--pEpRatingHaveNoKey--></item>
-        <item>@color/pep_no_color<!--pEpRatingUnencrypted--></item>
-        <item>@color/pep_no_color<!--pEpRatingUnreliable--></item>
-        <item>@color/pep_no_color<!--pEpRatingMediaKeyProtected--></item>
-        <item>@color/pep_yellow<!--pEpRatingReliable--></item>
-        <item>@color/pep_green<!--pEpRatingTrusted--></item>
-        <item>@color/pep_green<!--pEpRatingTrustedAndAnonymized--></item>
-        <item>@color/pep_green<!--pEpRatingFullyAnonymous--></item>
-        <item>@color/pep_red<!--pEpRatingMissTrust--></item>
-        <item>@color/pep_red<!--pEpRatingB0rken--></item>
-        <item>@color/pep_red<!--pEpRatingUnderAttack--></item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_no_color</item>
+        <item>@color/planck_yellow</item>
+        <item>@color/planck_green</item>
+        <item>@color/planck_green</item>
+        <item>@color/planck_green</item>
+        <item>@color/planck_red</item>
+        <item>@color/planck_red</item>
+        <item>@color/planck_red</item>
     </array>
     <!-- Translatable strings -->
     <string name="pep_account_setup_generating_keys">"Setting up your Privacy by Default "</string>

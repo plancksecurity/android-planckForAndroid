@@ -20,8 +20,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import security.pEp.permissions.PermissionChecker;
-import security.pEp.ui.permissions.PEpPermissionChecker;
+import security.planck.permissions.PermissionChecker;
+import security.planck.ui.permissions.PlanckPermissionChecker;
 
 @Module
 public class ApplicationModule {
@@ -57,7 +57,7 @@ public class ApplicationModule {
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
     @Provides
     public PermissionChecker providepEpPermissionChecker(@Named("AppContext") Context context) {
-        return new PEpPermissionChecker(context);
+        return new PlanckPermissionChecker(context);
     }
 
     @Provides

@@ -18,7 +18,7 @@ Feature: Handshake
     And I go back to the Inbox
     When I click compose message
     And I enter bot3 in the messageTo field
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
     And I confirm trust words match
     When I click confirm trust words
     Then I check if the privacy status is pEpRatingTrusted
@@ -52,14 +52,14 @@ Feature: Handshake
     When I click compose message
     And I send 1 message to bot4 with subject subject and body body
     And I click the last message received
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I stop trusting
-    Then I check if the privacy status is pep_green
+    Then I check if the privacy status is planck_green
     When I go back to the Inbox
     And I click compose message
     And I send 1 message to bot4 with subject subject and body body
     And I click the last message received
-    Then I check if the privacy status is pep_yellow
+    Then I check if the privacy status is planck_yellow
 
   @TM-19 @TM-2
   Scenario: Test Handshake WrongTrustwords

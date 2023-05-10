@@ -13,8 +13,9 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.*
-import security.pEp.mdm.ConfigurationManager
-import security.pEp.network.UrlChecker
+import security.planck.mdm.ConfigurationManager
+import security.planck.network.UrlChecker
+import security.planck.provisioning.*
 
 private const val TEST_PROVISIONING_URL = "https://test/url"
 

@@ -33,8 +33,8 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.SyncHandshakeSignal;
-import security.pEp.sync.SyncState;
-import security.pEp.ui.resources.ResourcesProvider;
+import security.planck.sync.SyncState;
+import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
 public class ImportWizardFrompEp extends WizardActivity implements ImportWizardFromPGPView {
