@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import com.fsck.k9.Account
@@ -25,8 +26,7 @@ import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.filter.Hex
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.planck.infrastructure.exceptions.DeviceOfflineException
-import org.koin.android.architecture.ext.viewModel
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -34,6 +34,7 @@ import java.security.cert.CertificateEncodingException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import java.util.*
+import javax.inject.Inject
 
 /**
  * Checks the given settings to make sure that they can be used to send and receive mail.
@@ -41,10 +42,12 @@ import java.util.*
  * XXX NOTE: The manifest for this app has it ignore config changes, because it doesn't correctly deal with restarting
  * while its thread is running.
  */
+@AndroidEntryPoint
 class AccountSetupCheckSettings : K9Activity(), ConfirmationDialogFragmentListener {
-    private val authViewModel: AuthViewModel by viewModel()
-    private val checkSettingsViewModel: CheckSettingsViewModel by viewModel()
-    private val preferences: Preferences by inject()
+    private val authViewModel: AuthViewModel by viewModels()
+    private val checkSettingsViewModel: CheckSettingsViewModel by viewModels()
+    @Inject
+    lateinit var preferences: Preferences
     //private val localKeyStoreManager: LocalKeyStoreManager by inject()
 
     private val handler = Handler(Looper.myLooper()!!)
