@@ -9,6 +9,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.TransportProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
 //import kotlinx.coroutines.experimental.android.UI
 //import kotlinx.coroutines.experimental.delay
 //import kotlinx.coroutines.experimental.launch
@@ -16,22 +17,27 @@ import org.openintents.openpgp.OpenPgpApiManager
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError
 import timber.log.Timber
+import javax.inject.Inject
 
 
-class AutocryptKeyTransferPresenter internal constructor(
-        lifecycleOwner: LifecycleOwner,
-        private val context: Context,
-        private val openPgpApiManager: OpenPgpApiManager,
-        private val transportProvider: TransportProvider,
-        private val preferences: Preferences,
-        private val viewModel: AutocryptKeyTransferViewModel,
-        private val view: AutocryptKeyTransferActivity
+class AutocryptKeyTransferPresenter @Inject internal constructor(
+    @ApplicationContext private val context: Context,
+    private val openPgpApiManager: OpenPgpApiManager,
+    private val transportProvider: TransportProvider,
+    private val preferences: Preferences
 ) {
-
     private lateinit var account: Account
     private lateinit var showTransferCodePi: PendingIntent
+    private lateinit var view: AutocryptKeyTransferView
+    private lateinit var viewModel: AutocryptKeyTransferViewModel
 
-    init {
+    internal fun initialize(
+        view: AutocryptKeyTransferView,
+        viewModel: AutocryptKeyTransferViewModel,
+        lifecycleOwner: LifecycleOwner
+    ) {
+        this.view = view
+        this.viewModel = viewModel
         viewModel.autocryptSetupMessageLiveEvent.observe(lifecycleOwner, Observer { msg -> msg?.let { onEventAutocryptSetupMessage(it) } })
         viewModel.autocryptSetupTransferLiveEvent.observe(lifecycleOwner, Observer { pi -> onLoadedAutocryptSetupTransfer(pi) })
     }
