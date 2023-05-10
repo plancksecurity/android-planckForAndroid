@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.fsck.k9.Account
@@ -16,12 +17,14 @@ import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.activity.observe
 import com.fsck.k9.fragment.ConfirmationDialogFragment
-import org.koin.android.architecture.ext.viewModel
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OAuthFlowActivity : K9Activity(), ConfirmationDialogFragment.ConfirmationDialogFragmentListener {
-    private val authViewModel: AuthViewModel by viewModel()
-    private val accountManager: Preferences by inject()
+    private val authViewModel: AuthViewModel by viewModels()
+    @Inject
+    lateinit var accountManager: Preferences
 
     private lateinit var errorText: TextView
     private lateinit var signInButton: Button
