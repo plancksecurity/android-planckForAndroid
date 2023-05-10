@@ -19,7 +19,7 @@ class RealOAuth2TokenProvider(
     context: Context,
     private val preferences: Preferences,
     private val account: Account
-) : OAuth2TokenProvider {
+) : OAuth2TokenProvider { 
     private val authService = AuthorizationService(context)
     private var requestFreshToken = false
 
