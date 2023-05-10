@@ -4,7 +4,6 @@ import android.app.Application
 import com.fsck.k9.activity.setup.authModule
 import com.fsck.k9.auth.createOAuthConfigurationProvider
 import com.fsck.k9.autodiscovery.providersxml.autodiscoveryProvidersXmlModule
-import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.ui.folders.FolderNameFormatter
 import org.koin.Koin
 import org.koin.KoinContext
@@ -17,7 +16,6 @@ import org.koin.standalone.StandAloneContext
 
 object DI {
     private val mainModule = applicationContext {
-        bean { MessagingController.getInstance(get()) }
         bean { FolderNameFormatter(get()) }
         bean { createOAuthConfigurationProvider() }
     }
