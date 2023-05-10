@@ -6,8 +6,9 @@ import com.fsck.k9.R
 import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.mailstore.FolderType
 import java.util.*
+import javax.inject.Inject
 
-class FolderNameFormatter(private val resources: Resources) {
+class FolderNameFormatter @Inject constructor(private val resources: Resources) {
     init {
         val configuration = resources.configuration
         configuration.setLocale(Locale(K9.getK9CurrentLanguage()))

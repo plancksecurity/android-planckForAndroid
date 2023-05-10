@@ -13,8 +13,10 @@ import com.fsck.k9.activity.ConfirmationDialog
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.ui.fragmentTransaction
 import com.fsck.k9.ui.fragmentTransactionWithBackStack
+import dagger.hilt.android.AndroidEntryPoint
 import security.planck.mdm.RestrictionsListener
 
+@AndroidEntryPoint
 class GeneralSettingsActivity : K9Activity(), OnPreferenceStartScreenCallback,
     RestrictionsListener {
     private var newLanguage : String? = null
