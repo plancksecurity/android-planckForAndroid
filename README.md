@@ -1,15 +1,15 @@
-p≡p
+planck
 
-p≡p is an open-source email client for Android with pretty Easy privacy
+planck is an open-source email client for Android with pretty Easy privacy
 
 ## Download
 
-p≡p can be downloaded from a couple of sources:
+planck can be downloaded from a couple of sources:
 
-- [Google Play](https://play.google.com/store/apps/details?id=security.pEp)
+- Google Play
 - [F-Droid]
 
-You might also be interested in becoming a [beta tester](https://play.google.com/apps/testing/security.pEp) to get an early look at new versions.
+You might also be interested in becoming a beta tester to get an early look at new versions.
 
 ## Need Help?
 
@@ -22,7 +22,7 @@ If the app is not behaving like it should, you might find these resources helpfu
 
 ## Contributing
 
-Please fork this repository and contribute back using [merge requests](https://pep-security.lu/gitlab/android/pep/merge_requests).
+Please fork this repository and contribute back using [merge requests](https://git.planck.security/android/pep/-/merge_requests).
 
 Any contributions, large or small, major features, bug fixes, unit/integration tests are welcomed and appreciated
 but will be thoroughly reviewed and discussed.
@@ -30,8 +30,8 @@ but will be thoroughly reviewed and discussed.
 
 ## Communication
 
-Aside from discussing changes in [merge requests](https://pep-security.lu/gitlab/android/pep/merge_requests) and
-[issues](https://pep-security.lu/gitlab/android/pep/issues) we use the following communication services:
+Aside from discussing changes in [merge requests](https://git.planck.security/android/pep/-/merge_requests) and
+[issues](https://git.planck.security/android/pep/-/issues) we use the following communication services:
 
 - IRC chat, [#prettyeasyprivacy on the Freenode network]
 - [Developer mailing list]
