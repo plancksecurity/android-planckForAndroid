@@ -61,7 +61,7 @@ buildscript {
                 'androidXjunit'      : '1.1.3',
                 'androidXcoreTest'   : '1.1.0',
                 'junit'              : '4.12',
-                'robolectric'        : '4.7.3',
+                'robolectric'        : '4.10.2',
                 'ant'                : '1.10.13',
                 'runner_rules'       : '1.4.0',
                 'mockito'            : '3.9.0',
