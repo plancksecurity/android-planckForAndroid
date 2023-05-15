@@ -18,10 +18,8 @@ import com.fsck.k9.mail.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.robolectric.annotation.Config;
 
 
-@Config(sdk = 22)
 public class ActivityListenerTest extends RobolectricTest {
     private static final String FOLDER = "folder";
     private static final String ERROR_MESSAGE = "errorMessage";
