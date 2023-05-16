@@ -60,6 +60,7 @@
     <application
         android:name=".K9"
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
         android:allowTaskReparenting="false"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher"
@@ -67,7 +68,8 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/Theme.K9.Startup"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        tools:targetApi="s">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
