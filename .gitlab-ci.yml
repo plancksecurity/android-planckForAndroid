@@ -20,7 +20,7 @@ workflow:
   - cat DEPENDENCIES
   - source DEPENDENCIES
   - echo "pEpEngine Version = ${pEpEngine}"
-  - echo "libpEpAdapter Version = ${libpEpAdapter}"
+  - echo "libPlanckAdapter Version = ${libpEpAdapter}"
   - echo "libpEpCxx11 Version = ${libpEpCxx11}"
   - wget -q -O - https://git.planck.security/foundation/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
@@ -107,7 +107,7 @@ build:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libPlanckAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
@@ -131,7 +131,7 @@ test:
   script:
     - pwd
     - echo ${HOME}
-    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libpEpAdapter" "foldable-folder-list" ;
+    - for i in "pEpEngine" "libpEpTransport" "libpEpCxx11" "pEpJNIAdapter" "libPlanckAdapter" "foldable-folder-list" ;
       do rm -f ../$i && 
       ln -s ${HOME}/code/$i ../$i ; done
     - ls -la ..
