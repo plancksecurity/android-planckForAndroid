@@ -164,13 +164,6 @@
         <item><!--pEpRatingB0rken--></item>
         <item>Separately verify the content of this message with your communication partner.<!--pEpRatingUnderAttack--></item>
     </string-array>
-    <string name="nnf_new_folder">New folder</string>
-    <string name="nnf_create_folder_error">Failed to create folder</string>
-    <string name="nnf_name">Name</string>
-    <string name="nnf_select_something_first">Please select something first</string>
-    <string name="nnf_need_valid_filename">Please enter or select a valid filename</string>
-    <string name="nnf_permission_external_write_denied">Permission to access storage denied</string>
-    <string name="nnf_filename">Filename</string>
     <string name="key_import_accept">Accept</string>
     <string name="key_import_reject">Reject</string>
     <string name="message_loading_error">Message rating is still loading, try again</string>

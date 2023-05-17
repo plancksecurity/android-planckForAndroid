@@ -119,10 +119,6 @@ object ThemeManager {
         return ContextCompat.getColor(context, resourceId)
     }
 
-    @JvmStatic
-    val filePickerThemeResourceId: Int
-        get() = if(legacyTheme == Theme.LIGHT) R.style.FilePickerTheme_Light else R.style.FilePickerTheme_Dark
-
     fun setCurrentTheme(value: String?) {
         appTheme = stringToAppTheme(value)
         updateAppTheme()

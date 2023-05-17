@@ -834,7 +834,6 @@
     <string name="settings_import_use_incoming_server_password">Use the incoming server password</string>
     <string name="activate_account_action">Activate</string>
     <string name="account_unavailable">Account \"<xliff:g id="account">%s</xliff:g>\" is unavailable; check storage</string>
-    <string name="settings_attachment_default_path">Save attachments to…</string>
     <string name="attachment_save_title">Save attachment</string>
     <string name="attachment_save_desc">No file browser found. Where would you like to save this attachment?</string>
     <string name="manage_accounts_move_up_action">Move up</string>

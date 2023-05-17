@@ -324,7 +324,6 @@ public class K9 extends MultiDexApplication {
     private static boolean mNotificationDuringQuietTimeEnabled = true;
     private static String mQuietTimeStarts = "21:00";
     private static String mQuietTimeEnds = "7:00";
-    private static String mAttachmentDefaultPath = "";
     private static boolean mWrapFolderNames = false;
     private static boolean mHideUserAgent = true;
     private static boolean mHideTimeZone = false;
@@ -609,7 +608,6 @@ public class K9 extends MultiDexApplication {
         editor.putString("notificationQuickDelete", sNotificationQuickDelete.toString());
         editor.putString("lockScreenNotificationVisibility", sLockScreenNotificationVisibility.toString());
 
-        editor.putString("attachmentdefaultpath", mAttachmentDefaultPath);
         editor.putBoolean("useBackgroundAsUnreadIndicator", sUseBackgroundAsUnreadIndicator);
         editor.putBoolean("threadedView", sThreadedViewEnabled);
         editor.putString("splitViewMode", sSplitViewMode.name());
@@ -1024,9 +1022,6 @@ public class K9 extends MultiDexApplication {
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
-
-        mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);
         sThreadedViewEnabled = storage.getBoolean("threadedView", true);
         fontSizes.load(storage);
@@ -1550,10 +1545,6 @@ public class K9 extends MultiDexApplication {
     public static String getAttachmentDefaultPath() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 .getAbsolutePath();
-    }
-
-    public static void setAttachmentDefaultPath(String attachmentDefaultPath) {
-        K9.mAttachmentDefaultPath = attachmentDefaultPath;
     }
 
     public static String getpEpNewKeysPassphrase(){

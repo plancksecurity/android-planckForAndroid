@@ -11,8 +11,6 @@ import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
-import com.fsck.k9.helper.FileBrowserHelper
-import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
 import com.fsck.k9.pEp.ui.tools.FeedbackTools
@@ -28,8 +26,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import security.planck.permissions.PermissionChecker
-import security.planck.permissions.PermissionRequester
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
 import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
 import security.planck.ui.passphrase.requestPassphraseForNewKeys
@@ -37,13 +33,6 @@ import security.planck.ui.support.export.ExportpEpSupportDataActivity
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
-    private val fileBrowserHelper: FileBrowserHelper by inject()
-    private val permissionChecker: PermissionChecker by inject()
-    private val permissionRequester: PermissionRequester by inject {
-        mapOf("activity" to requireActivity())
-    }
-
-    private lateinit var attachmentDefaultPathPreference: Preference
 
     private var syncSwitchDialog: AlertDialog? = null
     private var rootkey:String? = null
@@ -63,7 +52,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePreferences() {
-        initializeAttachmentDefaultPathPreference()
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
@@ -95,10 +83,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
             }
         }
         return false
-    }
-
-    private fun initializeAttachmentDefaultPathPreference() {
-        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.remove()
     }
 
     private fun initializeExtraKeysManagement() {
@@ -212,19 +196,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, result: Intent?) {
-        if (requestCode == REQUEST_PICK_DIRECTORY && resultCode == Activity.RESULT_OK && result != null) {
-            result.data?.path?.let {
-                setAttachmentDefaultPath(it)
-            }
-        }
-        //TODO: merge
-        if (requestCode == FILE_CODE && resultCode == Activity.RESULT_OK) {
-            val files = Utils.getSelectedFilesFromResult(result!!)
-            for (uri in files) {
-                val file = Utils.getFileForUri(uri)
-                setAttachmentDefaultPath(file.path)
-            }
-        }
         if (requestCode == PASSPHRASE_RESULT_CODE && resultCode == Activity.RESULT_OK) {
             result?.let { intent ->
                 val isChecked = intent.getBooleanExtra(PASSPHRASE_RESULT_KEY, false)
@@ -233,17 +204,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun attachmentDefaultPath() = dataStore.getString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, "")
-
-    private fun setAttachmentDefaultPath(path: String) {
-        attachmentDefaultPathPreference.summary = path
-        dataStore.putString(PREFERENCE_ATTACHMENT_DEFAULT_PATH, path)
-    }
-
     companion object {
-        private const val REQUEST_PICK_DIRECTORY = 1
-        const val FILE_CODE = 2
-        private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
