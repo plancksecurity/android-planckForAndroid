@@ -4,17 +4,14 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
-import androidx.annotation.RequiresApi
 import androidx.annotation.WorkerThread
 import org.apache.commons.io.IOUtils
 import timber.log.Timber
 import java.io.*
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
 fun InputStream.saveToDocuments(
     context: Context,
@@ -32,7 +29,6 @@ fun InputStream.saveToDocuments(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
 fun InputStream.saveToDownloads(
     context: Context,
@@ -50,7 +46,6 @@ fun InputStream.saveToDownloads(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class)
 @WorkerThread
 private fun InputStream.saveToMediaStore(
@@ -124,7 +119,6 @@ private fun writeFileToMediaStore(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 private fun getContentValues(
     displayName: String,
     mimeType: String,
@@ -139,7 +133,6 @@ private fun getContentValues(
     return contentValues
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
 private fun getContentUri(mediaType: Class<*>): Uri = when (mediaType) {
     MediaStore.Downloads::class.java ->
         MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)

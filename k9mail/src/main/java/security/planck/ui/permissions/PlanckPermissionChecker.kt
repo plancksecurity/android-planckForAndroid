@@ -13,19 +13,7 @@ import security.planck.permissions.PermissionChecker
 class PlanckPermissionChecker(private val context: Context) : PermissionChecker {
 
     override fun hasBasicPermission(): Boolean {
-        return hasContactsPermission() && hasWriteExternalPermission()
-    }
-
-    override fun hasWriteExternalPermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return true
-        val res = getExternalStoragePermission()
-        return arePermissionsGranted(res)
-    }
-
-    override fun doesntHaveWriteExternalPermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return false
-        val res = getExternalStoragePermission()
-        return arePermissionsDenied(res)
+        return hasContactsPermission()
     }
 
     override fun doesntHaveContactsPermission(): Boolean {

@@ -2,17 +2,64 @@ package security.pEp.mdm
 
 import android.app.Activity
 import android.content.RestrictionEntry
-import android.os.Build
 import android.os.Bundle
-import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.K9ActivityCommon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import security.planck.mdm.*
 import kotlinx.coroutines.withContext
+import security.planck.mdm.ConfigurationManager
+import security.planck.mdm.RESTRICTION_ACCOUNT_ARCHIVE_FOLDER
+import security.planck.mdm.RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS
+import security.planck.mdm.RESTRICTION_ACCOUNT_COMPOSITION_SENDER_NAME
+import security.planck.mdm.RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE
+import security.planck.mdm.RESTRICTION_ACCOUNT_COMPOSITION_SIGNATURE_BEFORE_QUOTED_MESSAGE
+import security.planck.mdm.RESTRICTION_ACCOUNT_COMPOSITION_USE_SIGNATURE
+import security.planck.mdm.RESTRICTION_ACCOUNT_DEFAULT_FOLDERS
+import security.planck.mdm.RESTRICTION_ACCOUNT_DESCRIPTION
+import security.planck.mdm.RESTRICTION_ACCOUNT_DRAFTS_FOLDER
+import security.planck.mdm.RESTRICTION_ACCOUNT_EMAIL_ADDRESS
+import security.planck.mdm.RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH
+import security.planck.mdm.RESTRICTION_ACCOUNT_ENABLE_SYNC
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER
+import security.planck.mdm.RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME
+import security.planck.mdm.RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE
+import security.planck.mdm.RESTRICTION_ACCOUNT_MAIL_SETTINGS
+import security.planck.mdm.RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS
+import security.planck.mdm.RESTRICTION_ACCOUNT_OAUTH_PROVIDER
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER
+import security.planck.mdm.RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME
+import security.planck.mdm.RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY
+import security.planck.mdm.RESTRICTION_ACCOUNT_SENT_FOLDER
+import security.planck.mdm.RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT
+import security.planck.mdm.RESTRICTION_ACCOUNT_SPAM_FOLDER
+import security.planck.mdm.RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY
+import security.planck.mdm.RESTRICTION_ACCOUNT_TRASH_FOLDER
+import security.planck.mdm.RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES
+import security.planck.mdm.RESTRICTION_ENABLE_ECHO_PROTOCOL
+import security.planck.mdm.RESTRICTION_PEP_DEBUG_LOG
+import security.planck.mdm.RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION
+import security.planck.mdm.RESTRICTION_PEP_EXTRA_KEYS
+import security.planck.mdm.RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT
+import security.planck.mdm.RESTRICTION_PEP_EXTRA_KEY_MATERIAL
+import security.planck.mdm.RESTRICTION_PEP_MEDIA_KEY
+import security.planck.mdm.RESTRICTION_PEP_MEDIA_KEYS
+import security.planck.mdm.RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN
+import security.planck.mdm.RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT
+import security.planck.mdm.RESTRICTION_PEP_MEDIA_KEY_MATERIAL
+import security.planck.mdm.RESTRICTION_PEP_SYNC_FOLDER
+import security.planck.mdm.RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING
+import security.planck.mdm.RESTRICTION_PEP_USE_TRUSTWORDS
 import security.planck.mdm.RestrictionsListener
 import security.planck.mdm.RestrictionsProvider
 import java.lang.reflect.Field
@@ -74,13 +121,11 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
     }
 
     fun getManifestExtraKeys(): Set<String> =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            manifestRestrictions.first {
-                it.key == RESTRICTION_PEP_EXTRA_KEYS
-            }.restrictions.map { bundleRestriction ->
-                bundleRestriction.restrictions.first().selectedString
-            }.toSet()
-        } else emptySet()
+        manifestRestrictions.first {
+            it.key == RESTRICTION_PEP_EXTRA_KEYS
+        }.restrictions.map { bundleRestriction ->
+            bundleRestriction.restrictions.first().selectedString
+        }.toSet()
 
     fun getExtraKeys(): Set<TestMdmExtraKey>? = applicationRestrictions.getParcelableArray(
         RESTRICTION_PEP_EXTRA_KEYS
@@ -411,63 +456,60 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         }
 
         fun getDefaultManifestRestrictions(): List<RestrictionEntry> =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                listOf(
-                    RestrictionEntry(
-                        RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
-                        DEFAULT_PRIVACY_PROTECTION
-                    ),
-                    getExtraKeysRestrictionEntry(),
-                    getMediaKeysRestrictionEntry(),
-                    RestrictionEntry(
-                        RESTRICTION_ENABLE_ECHO_PROTOCOL,
-                        DEFAULT_ENABLE_ECHO_PROTOCOL
-                    ),
-                    RestrictionEntry(RESTRICTION_PEP_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
-                    RestrictionEntry(
-                        RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING,
-                        DEFAULT_UNSECURE_DELIVERY_WARNING
-                    ),
-                    RestrictionEntry(RESTRICTION_PEP_SYNC_FOLDER, DEFAULT_PEP_SYNC_FOLDER),
-                    RestrictionEntry(RESTRICTION_PEP_DEBUG_LOG, DEFAULT_PEP_DEBUG_LOG),
-                    RestrictionEntry(RESTRICTION_ACCOUNT_DESCRIPTION, DEFAULT_ACCOUNT_DESCRIPTION),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
-                        DEFAULT_ACCOUNT_LOCAL_FOLDER_SIZE
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS,
-                        DEFAULT_ACCOUNT_MAX_PUSH_FOLDERS
-                    ),
-                    getCompositionRestrictionEntry(),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY,
-                        DEFAULT_ACCOUNT_QUOTE_MESSAGES_REPLY
-                    ),
-                    getFoldersRestrictionEntry(),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH,
-                        DEFAULT_ACCOUNT_ENABLE_SERVER_SEARCH
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT,
-                        DEFAULT_ACCOUNT_SERVER_SEARCH_LIMIT
-                    ),
-                    RestrictionEntry(
-                        RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY,
-                        DEFAULT_ACCOUNT_STORE_MESSAGES_SECURELY
-                    ),
-                    RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
-                    RestrictionEntry(
-                        RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES,
-                        DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES
-                    ),
+            listOf(
+                RestrictionEntry(
+                    RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
+                    DEFAULT_PRIVACY_PROTECTION
+                ),
+                getExtraKeysRestrictionEntry(),
+                getMediaKeysRestrictionEntry(),
+                RestrictionEntry(
+                    RESTRICTION_ENABLE_ECHO_PROTOCOL,
+                    DEFAULT_ENABLE_ECHO_PROTOCOL
+                ),
+                RestrictionEntry(RESTRICTION_PEP_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
+                RestrictionEntry(
+                    RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING,
+                    DEFAULT_UNSECURE_DELIVERY_WARNING
+                ),
+                RestrictionEntry(RESTRICTION_PEP_SYNC_FOLDER, DEFAULT_PEP_SYNC_FOLDER),
+                RestrictionEntry(RESTRICTION_PEP_DEBUG_LOG, DEFAULT_PEP_DEBUG_LOG),
+                RestrictionEntry(RESTRICTION_ACCOUNT_DESCRIPTION, DEFAULT_ACCOUNT_DESCRIPTION),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
+                    DEFAULT_ACCOUNT_LOCAL_FOLDER_SIZE
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS,
+                    DEFAULT_ACCOUNT_MAX_PUSH_FOLDERS
+                ),
+                getCompositionRestrictionEntry(),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY,
+                    DEFAULT_ACCOUNT_QUOTE_MESSAGES_REPLY
+                ),
+                getFoldersRestrictionEntry(),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH,
+                    DEFAULT_ACCOUNT_ENABLE_SERVER_SEARCH
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT,
+                    DEFAULT_ACCOUNT_SERVER_SEARCH_LIMIT
+                ),
+                RestrictionEntry(
+                    RESTRICTION_ACCOUNT_STORE_MESSAGES_SECURELY,
+                    DEFAULT_ACCOUNT_STORE_MESSAGES_SECURELY
+                ),
+                RestrictionEntry(RESTRICTION_ACCOUNT_ENABLE_SYNC, DEFAULT_ACCOUNT_ENABLE_SYNC),
+                RestrictionEntry(
+                    RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES,
+                    DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES
+                ),
 
-                    getMailSettingsRestrictionEntry()
-                )
-            } else emptyList()
+                getMailSettingsRestrictionEntry()
+            )
 
-        @RequiresApi(Build.VERSION_CODES.M)
         private fun getFoldersRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleEntry(
                 RESTRICTION_ACCOUNT_DEFAULT_FOLDERS,
@@ -480,7 +522,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 )
             )
 
-        @RequiresApi(Build.VERSION_CODES.M)
         private fun getCompositionRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleEntry(
                 RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS,
@@ -504,7 +545,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 )
             )
 
-        @RequiresApi(Build.VERSION_CODES.M)
         private fun getExtraKeysRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleArrayEntry(
                 RESTRICTION_PEP_EXTRA_KEYS,
@@ -525,7 +565,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 )
             )
 
-        @RequiresApi(Build.VERSION_CODES.M)
         private fun getMediaKeysRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleArrayEntry(
                 RESTRICTION_PEP_MEDIA_KEYS,
@@ -550,7 +589,6 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 )
             )
 
-        @RequiresApi(Build.VERSION_CODES.M)
         private fun getMailSettingsRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleEntry(
                 RESTRICTION_ACCOUNT_MAIL_SETTINGS,

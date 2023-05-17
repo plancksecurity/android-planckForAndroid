@@ -11,7 +11,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.net.SSLCertificateSocketFactory;
-import android.os.Build;
 import android.text.TextUtils;
 
 import com.fsck.k9.mail.MessagingException;
@@ -114,26 +113,15 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
             Timber.e(e, "Error getting information about available SSL/TLS ciphers and protocols");
         }
 
-        if (hasWeakSslImplementation()) {
-            ENABLED_CIPHERS = (enabledCiphers == null) ? null :
-                    reorder(enabledCiphers, ORDERED_KNOWN_CIPHERS, BLACKLISTED_CIPHERS);
-            ENABLED_PROTOCOLS = (supportedProtocols == null) ? null :
-                    reorder(supportedProtocols, ORDERED_KNOWN_PROTOCOLS, BLACKLISTED_PROTOCOLS);
-        } else {
-            ENABLED_CIPHERS = (enabledCiphers == null) ? null :
-                    remove(enabledCiphers, BLACKLISTED_CIPHERS);
-            ENABLED_PROTOCOLS = (supportedProtocols == null) ? null :
-                    remove(supportedProtocols, BLACKLISTED_PROTOCOLS);
-        }
+        ENABLED_CIPHERS = (enabledCiphers == null) ? null :
+                remove(enabledCiphers, BLACKLISTED_CIPHERS);
+        ENABLED_PROTOCOLS = (supportedProtocols == null) ? null :
+                remove(supportedProtocols, BLACKLISTED_PROTOCOLS);
 
     }
 
     public DefaultTrustedSocketFactory(Context context) {
         this.context = context;
-    }
-
-    private static boolean hasWeakSslImplementation() {
-        return android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
     }
 
     protected static String[] reorder(String[] enabled, String[] known, String[] blacklisted) {
@@ -216,8 +204,7 @@ public class DefaultTrustedSocketFactory implements TrustedSocketFactory {
     }
 
     public static void setSniHost(SSLSocketFactory factory, SSLSocket socket, String hostname) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-                factory instanceof android.net.SSLCertificateSocketFactory) {
+        if (factory instanceof android.net.SSLCertificateSocketFactory) {
             SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory) factory;
             sslCertificateSocketFactory.setHostname(socket, hostname);
         } else {

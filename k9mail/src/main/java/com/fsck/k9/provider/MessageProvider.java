@@ -889,7 +889,6 @@ public class MessageProvider extends ContentProvider {
             return cursor.getWantsAllOnMoveCalls();
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
         @Override
         public void setExtras(Bundle extras) {
             cursor.setExtras(extras);

@@ -2,9 +2,7 @@ package com.fsck.k9.power;
 
 
 import android.content.Context;
-import android.os.Build;
 import android.os.PowerManager;
-import androidx.annotation.RequiresApi;
 
 
 public class DozeChecker {
@@ -17,11 +15,6 @@ public class DozeChecker {
         packageName = context.getPackageName();
     }
 
-    public boolean isDeviceIdleModeSupported() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean isAppWhitelisted() {
         return powerManager.isIgnoringBatteryOptimizations(packageName);
     }

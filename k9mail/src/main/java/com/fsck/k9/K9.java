@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -800,11 +799,9 @@ public class K9 extends MultiDexApplication {
 
         notifyObservers();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            String packageName = getPackageName();
-            batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
-        }
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        String packageName = getPackageName();
+        batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
     private void clearBodyCacheIfAppUpgrade() {
@@ -1551,9 +1548,8 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getAttachmentDefaultPath() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
-                : mAttachmentDefaultPath;
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .getAbsolutePath();
     }
 
     public static void setAttachmentDefaultPath(String attachmentDefaultPath) {

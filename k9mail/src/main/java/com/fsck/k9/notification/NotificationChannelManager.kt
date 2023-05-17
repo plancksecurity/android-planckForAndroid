@@ -5,8 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -21,9 +19,6 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
     }
 
     fun updateChannels() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return
-        }
 
         Executors.newSingleThreadExecutor().execute {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -36,7 +31,6 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private fun addChannelsForAccounts(
             notificationManager: NotificationManager, accounts: List<Account>) {
         for (account in accounts) {
@@ -52,7 +46,6 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private fun removeChannelsForNonExistingOrChangedAccounts(
             notificationManager: NotificationManager, accounts: List<Account>) {
         val existingAccounts = HashMap<String, Account>()
@@ -78,7 +71,6 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private fun getChannelMessages(account: Account): NotificationChannel {
         // TODO: Use String resource file to support language translations
         val channelName = "Messages"
@@ -94,7 +86,6 @@ class NotificationChannelManager @Inject constructor(@Named("AppContext") privat
         return messagesChannel
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     private fun getChannelMiscellaneous(account: Account): NotificationChannel {
         // TODO: Use String resource file to support language translations
         val channelName = "Miscellaneous"

@@ -1,10 +1,8 @@
 package security.planck.mdm
 
 import android.content.RestrictionEntry
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
@@ -18,7 +16,14 @@ import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.pEp.PEpProvider
 import com.fsck.k9.pEp.infrastructure.extensions.mapSuccess
 import security.planck.network.UrlChecker
-import security.planck.provisioning.*
+import security.planck.provisioning.AccountMailSettingsProvision
+import security.planck.provisioning.ProvisioningSettings
+import security.planck.provisioning.SimpleMailSettings
+import security.planck.provisioning.isValidEmailAddress
+import security.planck.provisioning.isValidPort
+import security.planck.provisioning.isValidServer
+import security.planck.provisioning.toConnectionSecurity
+import security.planck.provisioning.toSimpleMailSettings
 import timber.log.Timber
 
 const val GMAIL_INCOMING_PORT = 993
@@ -46,13 +51,11 @@ class ConfiguredSettingsUpdater(
                     provisioningSettings.provisioningUrl = it
                 }
             RESTRICTION_PEP_EXTRA_KEYS ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveExtraKeys(restrictions, entry)
-                }
+                saveExtraKeys(restrictions, entry)
+
             RESTRICTION_PEP_MEDIA_KEYS ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveMediaKeys(restrictions, entry)
-                }
+                saveMediaKeys(restrictions, entry)
+
             RESTRICTION_PEP_USE_TRUSTWORDS ->
                 K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
@@ -75,15 +78,13 @@ class ConfiguredSettingsUpdater(
             RESTRICTION_ACCOUNT_MAX_PUSH_FOLDERS ->
                 saveAccountMaxPushFolders(restrictions, entry)
             RESTRICTION_ACCOUNT_COMPOSITION_DEFAULTS ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveAccountCompositionDefaults(restrictions, entry)
-                }
+                saveAccountCompositionDefaults(restrictions, entry)
+
             RESTRICTION_ACCOUNT_QUOTE_MESSAGES_REPLY ->
                 saveAccountQuoteMessagesWhenReply(restrictions, entry)
             RESTRICTION_ACCOUNT_DEFAULT_FOLDERS ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveAccountDefaultFolders(restrictions, entry)
-                }
+                saveAccountDefaultFolders(restrictions, entry)
+
             RESTRICTION_ACCOUNT_ENABLE_SERVER_SEARCH ->
                 saveAccountEnableServerSearch(restrictions, entry)
             RESTRICTION_ACCOUNT_SERVER_SEARCH_LIMIT ->
@@ -94,9 +95,7 @@ class ConfiguredSettingsUpdater(
                 saveAccountEnableSync(restrictions, entry)
 
             RESTRICTION_ACCOUNT_MAIL_SETTINGS ->
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    saveAccountMailSettings(restrictions, entry)
-                }
+                saveAccountMailSettings(restrictions, entry)
         }
     }
 
@@ -117,7 +116,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountMailSettings(restrictions: Bundle, entry: RestrictionEntry) {
         val bundle = restrictions.getBundle(entry.key)
         var incoming = SimpleMailSettings()
@@ -157,7 +155,6 @@ class ConfiguredSettingsUpdater(
         )
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveEmail(entry: RestrictionEntry, bundle: Bundle?) {
         entry.restrictions
             .firstOrNull {
@@ -170,7 +167,6 @@ class ConfiguredSettingsUpdater(
     private fun getCurrentEmail(): String? =
         preferences.accounts.firstOrNull()?.email ?: provisioningSettings.email
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun updateAuthType(
         entry: RestrictionEntry,
         bundle: Bundle?,
@@ -196,7 +192,6 @@ class ConfiguredSettingsUpdater(
             }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveOAuthProviderType(
         entry: RestrictionEntry,
         bundle: Bundle?
@@ -255,7 +250,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountMailSettings(
         restrictions: Bundle?,
         entry: RestrictionEntry,
@@ -441,7 +435,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveExtraKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
             val newMdmExtraKeys = restrictions.getParcelableArray(entry.key)
@@ -499,7 +492,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveMediaKeys(restrictions: Bundle, entry: RestrictionEntry) {
         kotlin.runCatching {
             val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
@@ -619,7 +611,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountCompositionDefaults(restrictions: Bundle, entry: RestrictionEntry) {
         val bundle = restrictions.getBundle(entry.key)
         entry.restrictions.forEach { restriction ->
@@ -676,7 +667,6 @@ class ConfiguredSettingsUpdater(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     private fun saveAccountDefaultFolders(restrictions: Bundle, entry: RestrictionEntry) {
         val firstAccount = preferences.accounts.firstOrNull()
         if (firstAccount != null) {

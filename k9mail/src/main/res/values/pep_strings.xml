@@ -101,9 +101,7 @@
     <string name="read_snackbar_permission_permanently_denied">Not granting planck access to the contacts may cause unexpected behavior</string>
     <string name="read_permission_rationale_title">Access contacts</string>
     <string name="download_permission_first_explanation">planck needs permission to download files on your device</string>
-    <string name="download_snackbar_permission_rationale">planck needs permission to save attachments from your emails.</string>
     <string name="download_snackbar_permission_permanently_denied">Not granting us permission to download files might cause unexpected behavior</string>
-    <string name="download_permission_rationale_title">Download files</string>
     <string name="post_notifications_first_explanation">planck needs permission to display notifications on your device</string>
     <string name="post_notifications_snackbar_permission_rationale">planck needs permission to display notifications of new emails and other events.</string>
     <string name="post_notifications_permission_rationale_title">Display notifications</string>

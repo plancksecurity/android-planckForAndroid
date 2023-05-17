@@ -3,7 +3,6 @@ package security.planck.ui.about
 import android.content.Context
 import android.content.Intent
 import android.graphics.text.LineBreaker
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.TextView
@@ -29,9 +28,7 @@ class LicenseActivity : PepActivity() {
         initializeToolbar(true, getString(R.string.license))
         val licenseText = findViewById<TextView>(R.id.licenseText);
         licenseText.text = HtmlCompat.fromHtml(getString(R.string.eula_license), HtmlCompat.FROM_HTML_MODE_LEGACY)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            licenseText.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
-        }
+        licenseText.justificationMode = LineBreaker.JUSTIFICATION_MODE_INTER_WORD
     }
 
     override fun inject() {

@@ -1918,7 +1918,6 @@ public class TestUtils {
         setupEmailAndPassword();
         onView(withId(R.id.next)).perform(click());
         TestUtils.waitForIdle();
-        acceptAutomaticSetupCertificatesIfNeeded();
         waitUntilViewDisplayed(R.id.account_name);
         onView(withId(R.id.account_name)).perform(replaceText("test"));
         if(!withSync && viewIsDisplayed(R.id.pep_enable_sync_account)) {
@@ -1927,30 +1926,6 @@ public class TestUtils {
         }
         onView(withId(R.id.done)).perform(click());
         waitForIdle();
-    }
-
-    public void acceptAutomaticSetupCertificatesIfNeeded() {
-        // incoming settings certificate
-        acceptCertificateIfNeeded(true);
-        // outgoing settings certificate
-        acceptCertificateIfNeeded(true);
-    }
-
-    public void acceptCertificateIfNeeded(boolean automaticSetup) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
-            if (doWaitForAlertDialog(
-                    R.string.account_setup_failed_dlg_invalid_certificate_title,
-                    automaticSetup,
-                    1000L
-                )) {
-                clickAndroidDialogAccept();
-                TestUtils.waitForIdle();
-            }
-        }
-    }
-
-    public void clickAndroidDialogAccept() {
-        onView(withId(android.R.id.button1)).perform(click());
     }
 
     private void setupEmailAndPassword() {

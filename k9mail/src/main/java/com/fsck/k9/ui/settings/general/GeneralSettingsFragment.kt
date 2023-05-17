@@ -3,16 +3,15 @@ package com.fsck.k9.ui.settings.general
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.preference.*
+import androidx.preference.CheckBoxPreference
+import androidx.preference.Preference
+import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.activity.K9Activity
 import com.fsck.k9.activity.SettingsActivity
 import com.fsck.k9.helper.FileBrowserHelper
-import com.fsck.k9.notification.NotificationController
 import com.fsck.k9.pEp.filepicker.Utils
 import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys
@@ -20,17 +19,21 @@ import com.fsck.k9.pEp.ui.tools.FeedbackTools
 import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove
-import com.fsck.k9.ui.settings.removeEntry
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
-import kotlinx.android.synthetic.main.preference_loading_widget.*
-import kotlinx.coroutines.*
+import kotlinx.android.synthetic.main.preference_loading_widget.loading
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import security.planck.permissions.PermissionChecker
 import security.planck.permissions.PermissionRequester
-import security.planck.ui.passphrase.*
+import security.planck.ui.passphrase.PASSPHRASE_RESULT_CODE
+import security.planck.ui.passphrase.PASSPHRASE_RESULT_KEY
+import security.planck.ui.passphrase.requestPassphraseForNewKeys
 import security.planck.ui.support.export.ExportpEpSupportDataActivity
-import java.io.File
 
 class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private val dataStore: GeneralSettingsDataStore by inject()
@@ -61,31 +64,18 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializePreferences() {
         initializeAttachmentDefaultPathPreference()
-        initializeConfirmActions()
-        initializeLockScreenNotificationVisibility()
-        initializeNotificationQuickDelete()
         initializeExtraKeysManagement()
         initializeGlobalpEpKeyReset()
         initializeAfterMessageDeleteBehavior()
         initializeGlobalpEpSync()
         initializeExportPEpSupportDataPreference()
         initializeNewKeysPassphrase()
-        initializeTheme()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         activity?.title = preferenceScreen.title
         dataStore.activity = activity
-    }
-
-    private fun initializeTheme() {
-        (findPreference(PREFERENCE_THEME) as? ListPreference)?.apply {
-            if (Build.VERSION.SDK_INT < 28) {
-                setEntries(R.array.theme_entries_legacy)
-                setEntryValues(R.array.theme_values_legacy)
-            }
-        }
     }
 
     private fun initializeNewKeysPassphrase() {
@@ -108,50 +98,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeAttachmentDefaultPathPreference() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.remove()
-        } else {
-            findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.apply {
-                attachmentDefaultPathPreference = this
-
-                summary = attachmentDefaultPath()
-                onClick {
-                    fileBrowserHelper.showFileBrowserActivity(this@GeneralSettingsFragment,
-                        File(attachmentDefaultPath()), REQUEST_PICK_DIRECTORY,
-                        object : FileBrowserHelper.FileBrowserFailOverCallback {
-                            override fun onPathEntered(path: String) {
-                                setAttachmentDefaultPath(path)
-                            }
-
-                            override fun onCancel() = Unit
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    private fun initializeConfirmActions() {
-        val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
-        if (!notificationActionsSupported) {
-            (findPreference(PREFERENCE_CONFIRM_ACTIONS) as? MultiSelectListPreference)?.apply {
-                removeEntry(CONFIRM_ACTION_DELETE_FROM_NOTIFICATION)
-            }
-        }
-    }
-
-    private fun initializeLockScreenNotificationVisibility() {
-        val lockScreenNotificationsSupported = NotificationController.platformSupportsLockScreenNotifications()
-        if (!lockScreenNotificationsSupported) {
-            findPreference<Preference>(PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY)?.apply { remove() }
-        }
-    }
-
-    private fun initializeNotificationQuickDelete() {
-        val notificationActionsSupported = NotificationController.platformSupportsExtendedNotifications()
-        if (!notificationActionsSupported) {
-            findPreference<Preference>(PREFERENCE_NOTIFICATION_QUICK_DELETE)?.apply { remove() }
-        }
+        findPreference<Preference>(PREFERENCE_ATTACHMENT_DEFAULT_PATH)?.remove()
     }
 
     private fun initializeExtraKeysManagement() {
@@ -196,12 +143,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
 
     private fun initializeExportPEpSupportDataPreference() {
         findPreference<Preference>(PREFERENCE_EXPORT_PEP_SUPPORT_DATA)?.onClick {
-            if (permissionChecker.doesntHaveWriteExternalPermission()) {
-                permissionRequester.requestStoragePermission((requireActivity() as K9Activity).rootView)
-            }
-            if (permissionChecker.hasWriteExternalPermission()) {
-                ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
-            }
+            ExportpEpSupportDataActivity.showExportPEpSupportDataDialog(requireActivity())
         }
     }
 
@@ -303,10 +245,6 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         const val FILE_CODE = 2
         private const val PREFERENCE_ATTACHMENT_DEFAULT_PATH = "attachment_default_path"
         private const val PREFERENCE_START_IN_UNIFIED_INBOX = "start_integrated_inbox"
-        private const val PREFERENCE_CONFIRM_ACTIONS = "confirm_actions"
-        private const val PREFERENCE_LOCK_SCREEN_NOTIFICATION_VISIBILITY = "lock_screen_notification_visibility"
-        private const val PREFERENCE_NOTIFICATION_QUICK_DELETE = "notification_quick_delete"
-        private const val CONFIRM_ACTION_DELETE_FROM_NOTIFICATION = "delete_notif"
         private const val PREFERENCE_PEP_EXTRA_KEYS = "pep_extra_keys"
         private const val PREFERENCE_PEP_OWN_IDS_KEY_RESET = "pep_key_reset"
         private const val PREFERENCE_PEP_ENABLE_SYNC = "pep_enable_sync"

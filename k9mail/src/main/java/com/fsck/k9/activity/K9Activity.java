@@ -1,8 +1,6 @@
 package com.fsck.k9.activity;
 
-import android.app.SearchManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -54,19 +52,15 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
 
     private K9ActivityCommon mBase;
     private View.OnClickListener onCloseSearchClickListener;
-    private boolean isAndroidLollipop = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP ||
-            Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
     private boolean isShowingSearchView;
     private String searchText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-                            | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            );
-        }
+        getWindow().getDecorView().setSystemUiVisibility(
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                        | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+        );
         ConfigurationManager.Factory configurationManagerFactory =
                 ((K9) getApplication()).getComponent().configurationManagerFactory();
         mBase = K9ActivityCommon.newInstance(this, configurationManagerFactory);
@@ -160,20 +154,11 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
         return (ViewGroup) ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
     }
 
-    public boolean isAndroidLollipop() {
-        return isAndroidLollipop;
-    }
-
     protected void showComposeFab(boolean show) {}
 
     public void showSearchView() {
         isShowingSearchView = true;
-        if (isAndroidLollipop) {
-            onSearchRequested();
-            showComposeFab(false);
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            searchManager.setOnDismissListener(() -> showComposeFab(true));
-        } else if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
+        if (toolbarSearchContainer != null && toolbar != null && searchInput != null) {
             toolbarSearchContainer.setVisibility(View.VISIBLE);
             toolbar.setVisibility(View.GONE);
             searchInput.setEnabled(true);

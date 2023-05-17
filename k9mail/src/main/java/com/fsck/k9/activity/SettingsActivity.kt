@@ -877,31 +877,22 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
                 }
         )
 
-        if (permissionChecker.hasWriteExternalPermission()) {
-            // TODO, prompt to allow a user to choose which accounts to export
-            var accountUuids: ArrayList<String>? = null
-            if (account != null) {
-                accountUuids = ArrayList()
-                accountUuids.add(account.uuid)
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                exportGlobalSettings = includeGlobals
-                exportAccountUuids = accountUuids
-
-                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
-
-                intent.type = "application/octet-stream"
-                intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.generateDatedExportFileName())
-
-                intent.addCategory(Intent.CATEGORY_OPENABLE)
-                startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE)
-
-            } else {
-                //Pre-Kitkat
-                startExport(includeGlobals, accountUuids, null)
-            }
+        var accountUuids: ArrayList<String>? = null
+        if (account != null) {
+            accountUuids = ArrayList()
+            accountUuids.add(account.uuid)
         }
+
+        exportGlobalSettings = includeGlobals
+        exportAccountUuids = accountUuids
+
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+
+        intent.type = "application/octet-stream"
+        intent.putExtra(Intent.EXTRA_TITLE, SettingsExporter.generateDatedExportFileName())
+
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(intent, ACTIVITY_REQUEST_SAVE_SETTINGS_FILE)
     }
 
     fun onExport(intent: Intent) {
@@ -1181,23 +1172,19 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     private fun createComposeDynamicShortcut() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
-            val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
-                .setShortLabel(resources.getString(R.string.compose_action))
-                .setLongLabel(resources.getString(R.string.compose_action))
-                .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
-                .setIntent(composeIntent)
-                .build()
-            val shortcutManager = getSystemService(ShortcutManager::class.java)
-            shortcutManager.dynamicShortcuts = listOf(composeShortcut)
-        }
+        val composeIntent = MessageActions.getDefaultComposeShortcutIntent(this)
+        val composeShortcut = ShortcutInfo.Builder(this, MessageCompose.SHORTCUT_COMPOSE)
+            .setShortLabel(resources.getString(R.string.compose_action))
+            .setLongLabel(resources.getString(R.string.compose_action))
+            .setIcon(Icon.createWithResource(this, R.drawable.ic_shortcut_compose))
+            .setIntent(composeIntent)
+            .build()
+        val shortcutManager = getSystemService(ShortcutManager::class.java)
+        shortcutManager.dynamicShortcuts = listOf(composeShortcut)
     }
 
     private fun removeComposeDynamicShortcut() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            val shortcutManager = getSystemService(ShortcutManager::class.java)
-            shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
-        }
+        val shortcutManager = getSystemService(ShortcutManager::class.java)
+        shortcutManager.removeDynamicShortcuts(listOf(MessageCompose.SHORTCUT_COMPOSE))
     }
 }

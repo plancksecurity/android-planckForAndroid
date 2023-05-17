@@ -1,10 +1,8 @@
 package com.fsck.k9.power;
 
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.PowerManager;
 
 import timber.log.Timber;
@@ -17,7 +15,7 @@ public abstract class DeviceIdleManager {
     public static synchronized DeviceIdleManager getInstance(Context context) {
         if (instance == null) {
             DozeChecker dozeChecker = new DozeChecker(context);
-            if (dozeChecker.isDeviceIdleModeSupported() && !dozeChecker.isAppWhitelisted()) {
+            if (!dozeChecker.isAppWhitelisted()) {
                 instance = RealDeviceIdleManager.newInstance(context);
             } else {
                 instance = new NoOpDeviceIdleManager();
@@ -45,7 +43,6 @@ public abstract class DeviceIdleManager {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     static class RealDeviceIdleManager extends DeviceIdleManager {
         private final Context context;
         private final DeviceIdleReceiver deviceIdleReceiver;

@@ -539,11 +539,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         onRefile(mAccount.getSpamFolderName());
     }
 
-    public void onSelectText() {
-        // FIXME
-        // mMessageView.beginSelectingText();
-    }
-
     private void startRefileActivity(int activity) {
         Intent intent = new Intent(getActivity(), ChooseFolder.class);
         intent.putExtra(ChooseFolder.EXTRA_ACCOUNT, mAccount.getUuid());
@@ -1049,41 +1044,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         currentAttachmentViewInfo = attachment;
-        createPermissionListeners();
-        if (permissionChecker.hasWriteExternalPermission()) {
-            getAttachmentController(attachment).saveAttachment();
-        }
+        getAttachmentController(attachment).saveAttachment();
     }
 
     @Override
     public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         currentAttachmentViewInfo = attachment;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getAttachmentController(attachment).saveAttachment();
-        } else {
-            FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
-                    ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
-                        @Override
-                        public void onPathEntered(String path) {
-                            getAttachmentController(attachment).saveAttachmentTo(path);
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            // Do nothing
-                        }
-                    });
-        }
+        getAttachmentController(attachment).saveAttachment();
     }
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
-    }
-
-    private void createPermissionListeners() {
-        if(permissionChecker.doesntHaveWriteExternalPermission()) {
-            permissionRequester.requestStoragePermission(getRootView());
-        }
     }
 }

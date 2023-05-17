@@ -1,27 +1,26 @@
 package com.fsck.k9.view;
 
 
-import java.io.InputStream;
-
-import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
-import timber.log.Timber;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
+
 import com.fsck.k9.mailstore.AttachmentResolver;
 import com.fsck.k9.view.MessageWebView.OnPageFinishedListener;
+
+import java.io.InputStream;
+
+import timber.log.Timber;
 
 
 /**
@@ -39,10 +38,6 @@ public abstract class K9WebViewClient extends WebViewClient {
 
 
     public static K9WebViewClient newInstance(@Nullable AttachmentResolver attachmentResolver) {
-        if (Build.VERSION.SDK_INT < 21) {
-            return new PreLollipopWebViewClient(attachmentResolver);
-        }
-
         return new LollipopWebViewClient(attachmentResolver);
     }
 
@@ -129,24 +124,7 @@ public abstract class K9WebViewClient extends WebViewClient {
         }
     }
 
-    @SuppressWarnings("deprecation")
-    private static class PreLollipopWebViewClient extends K9WebViewClient {
-        protected PreLollipopWebViewClient(AttachmentResolver attachmentResolver) {
-            super(attachmentResolver);
-        }
 
-        @Override
-        public WebResourceResponse shouldInterceptRequest(WebView webView, String url) {
-            return shouldInterceptRequest(webView, Uri.parse(url));
-        }
-
-        @Override
-        protected void addActivityFlags(Intent intent) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        }
-    }
-
-    @TargetApi(VERSION_CODES.LOLLIPOP)
     private static class LollipopWebViewClient extends K9WebViewClient {
         protected LollipopWebViewClient(AttachmentResolver attachmentResolver) {
             super(attachmentResolver);

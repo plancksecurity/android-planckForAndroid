@@ -1139,7 +1139,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             }
             case R.id.search: {
                 PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
-                drawerLayoutView.setDrawerEnabled(isAndroidLollipop());
+                drawerLayoutView.setDrawerEnabled(false);
                 showSearchView();
                 return true;
             }
@@ -1214,10 +1214,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             case R.id.copy:
             case R.id.refile_copy: {
                 mMessageViewFragment.onCopy();
-                return true;
-            }
-            case R.id.select_text: {
-                mMessageViewFragment.onSelectText();
                 return true;
             }
             case R.id.show_headers:
@@ -1331,7 +1327,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             menu.findItem(R.id.spam).setVisible(false);
             menu.findItem(R.id.refile).setVisible(false);
             menu.findItem(R.id.toggle_unread).setVisible(false);
-            menu.findItem(R.id.select_text).setVisible(false);
             menu.findItem(R.id.show_headers).setVisible(false);
             menu.findItem(R.id.hide_headers).setVisible(false);
             menu.findItem(R.id.flag).setVisible(false);
@@ -1365,9 +1360,6 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
             } else {
                 menu.findItem(R.id.toggle_unread).setTitle(R.string.mark_as_read_action);
             }
-
-            // Jellybean has built-in long press selection support
-            menu.findItem(R.id.select_text).setVisible(Build.VERSION.SDK_INT < 16);
 
             menu.findItem(R.id.delete).setVisible(K9.isMessageViewDeleteActionVisible());
 

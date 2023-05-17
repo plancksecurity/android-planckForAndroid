@@ -1,7 +1,6 @@
 package security.planck.ui.support.export
 
 import android.content.Context
-import android.os.Build
 import android.webkit.MimeTypeMap
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
@@ -33,7 +32,7 @@ class ExportpEpSupportData @Inject constructor(
 
             if (toFolder.exists() || toFolder.mkdirs()) {
                 checkSpaceAvailability(fromFolders, baseFolder).flatMap {
-                    fromFolders.forEach { copyFolder(it, baseFolder, subFolder) }
+                    fromFolders.forEach { copyFolder(it, subFolder) }
                     if (areFilesCreated(toFolder)) Result.success(Unit)
                     else Result.failure(CouldNotExportPEpDataException())
                 }
@@ -62,21 +61,15 @@ class ExportpEpSupportData @Inject constructor(
 
     private fun copyFolder(
         fromFolder: File,
-        destinationBaseFolder: File,
         destinationSubFolder: String,
     ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            fromFolder.listFiles()?.forEach { file ->
-                FileUtils.openInputStream(file).saveToDocuments(
-                    context,
-                    MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
-                    file.name,
-                    destinationSubFolder
-                )
-            }
-        } else {
-            val toFolder = File(destinationBaseFolder, destinationSubFolder)
-            FileUtils.copyDirectory(fromFolder, toFolder)
+        fromFolder.listFiles()?.forEach { file ->
+            FileUtils.openInputStream(file).saveToDocuments(
+                context,
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension).orEmpty(),
+                file.name,
+                destinationSubFolder
+            )
         }
     }
 

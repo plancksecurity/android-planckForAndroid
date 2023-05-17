@@ -122,7 +122,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="flag_action">Als wichtig markieren</string>
     <string name="unflag_action">Wichtig-Markierung entfernen</string>
     <string name="copy_action">Kopieren</string>
-    <string name="select_text_action">Text auswählen</string>
     <string name="show_headers_action">Kopfzeilen anzeigen</string>
     <string name="hide_headers_action">Kopfzeilen verbergen</string>
     <plurals name="copy_address_to_clipboard">

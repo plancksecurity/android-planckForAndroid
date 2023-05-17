@@ -2,7 +2,6 @@ package com.fsck.k9.helper
 
 import android.content.Context
 import android.content.pm.PackageInfo
-import android.os.Build
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import kotlinx.coroutines.CoroutineScope
@@ -30,12 +29,7 @@ class AppUpdater(private val context: Context, private val cacheDir: File) {
     @Suppress("DEPRECATION")
     private fun isAppUpdated(context: Context): Int {
         val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        val appVersionCode =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    packageInfo.longVersionCode
-                } else {
-                    packageInfo.versionCode.toLong()
-                }
+        val appVersionCode = packageInfo.longVersionCode
 
         val oldVersionCode = K9.getAppVersionCode()
         return when {

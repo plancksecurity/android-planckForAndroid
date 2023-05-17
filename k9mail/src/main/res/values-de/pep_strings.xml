@@ -107,9 +107,7 @@
     <string name="read_snackbar_permission_permanently_denied">Wenn p≡p nicht auf die Kontakte zuzugreifen darf, können unerwartete Probleme entstehen</string>
     <string name="read_permission_rationale_title">Zugriff auf Kontakte</string>
     <string name="download_permission_first_explanation">p≡p benötigt die Berechtigung, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um Anhänge auf Ihr Gerät herunterzuladen.</string>
     <string name="download_snackbar_permission_permanently_denied">Wenn p≡p keine Dateien herunterladen darf, können unerwartete Probleme entstehen</string>
-    <string name="download_permission_rationale_title">Dateien herunterladen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
     <string name="is_always_secure">Nachrichten auf Server gesichert speichern</string>

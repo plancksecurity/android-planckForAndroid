@@ -148,7 +148,7 @@ public class PlanckPermissionRequester implements PermissionRequester {
     @SuppressLint("BatteryLife")
     @Override
     public void requestBatteryOptimizationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !app.isBatteryOptimizationAsked()) {
+        if (!app.isBatteryOptimizationAsked()) {
             Intent intent = new Intent();
             String packageName = activity.getPackageName();
             PowerManager pm = (PowerManager) app.getSystemService(Context.POWER_SERVICE);
@@ -168,9 +168,6 @@ public class PlanckPermissionRequester implements PermissionRequester {
         ArrayList<String> permissions = new ArrayList<>();
         permissions.add(Manifest.permission.READ_CONTACTS);
         permissions.add(Manifest.permission.WRITE_CONTACTS);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions.add(Manifest.permission.POST_NOTIFICATIONS);
         }

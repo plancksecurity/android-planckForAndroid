@@ -3,7 +3,6 @@ package com.fsck.k9.ui.settings.account
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -254,13 +253,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializeNotifications() {
-        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let { preference ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PRE_SDK26_NOTIFICATION_PREFERENCES
-                        .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
-            } else {
-                preference.remove()
-            }
+        findPreference<Preference>(PREFERENCE_OPEN_NOTIFICATION_SETTINGS)?.let {
+            PRE_SDK26_NOTIFICATION_PREFERENCES
+                    .forEach { preferenceName -> findPreference<Preference>(preferenceName)?.remove() }
         }
     }
 

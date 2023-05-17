@@ -30,8 +30,6 @@ public class PermissionsActivity extends PepActivity {
 
     @Bind(R.id.permission_contacts)
     PEpPermissionView contactsPermissionView;
-    @Bind(R.id.permission_storage)
-    PEpPermissionView storagePermissionView;
     @Bind(R.id.permission_post_notifications)
     PEpPermissionView postNotificationsPermissionView;
     @Bind(R.id.permission_battery)
@@ -52,7 +50,6 @@ public class PermissionsActivity extends PepActivity {
         ButterKnife.bind(this);
 
         initializeContactsPermissionView();
-        initializeStoragePermissionView();
         initializePostNotificationsPermissionView();
         initializeBatteryPermissionView();
     }
@@ -72,17 +69,6 @@ public class PermissionsActivity extends PepActivity {
             );
         } else {
             postNotificationsPermissionView.setVisibility(View.GONE);
-        }
-    }
-
-    private void initializeStoragePermissionView() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            storagePermissionView.initialize(
-                    getString(R.string.download_permission_rationale_title),
-                    getString(R.string.download_snackbar_permission_rationale)
-            );
-        } else {
-            storagePermissionView.setVisibility(View.GONE);
         }
     }
 
