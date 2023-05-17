@@ -482,7 +482,8 @@ class PEpProviderImplKotlin(
             srcMsg.recvBy = PEpUtils.createIdentity(Address(receivedBy), context)
 
             Timber.d("%s %s", TAG, "pEpdecryptMessage() before decrypt")
-            decReturn = engine.get().decrypt_message(srcMsg, Vector(), 0)
+            decReturn = engine.use { engine -> engine.get().decrypt_message(srcMsg, Vector(), 0) }
+
             Timber.d("%s %s", TAG, "pEpdecryptMessage() *after* decrypt")
 
             Timber.d("%s %s", TAG, "pEpdecryptMessage() after decrypt Subject" + decReturn.dst.shortmsg)
