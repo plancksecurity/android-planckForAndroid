@@ -52,7 +52,7 @@
         app:layout_constraintStart_toEndOf="@+id/left_constraint"
         app:layout_constraintTop_toTopOf="@+id/sender">
 
-        <com.fsck.k9.pEp.ui.PEpContactBadge
+        <com.fsck.k9.planck.ui.PEpContactBadge
             android:id="@+id/contactBadge"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:layout_width="52dp"

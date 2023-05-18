@@ -39,7 +39,7 @@ import com.fsck.k9.message.extractors.AttachmentCounter;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
-import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.planck.PEpProvider;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;

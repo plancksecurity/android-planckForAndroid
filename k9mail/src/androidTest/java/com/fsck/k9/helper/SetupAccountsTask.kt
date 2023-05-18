@@ -9,8 +9,8 @@ import androidx.test.rule.GrantPermissionRule
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.common.BaseTest
-import com.fsck.k9.pEp.ui.activities.TestUtils
-import com.fsck.k9.pEp.ui.activities.UtilsPackage
+import com.fsck.k9.planck.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.UtilsPackage
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test

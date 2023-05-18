@@ -11,7 +11,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
 
 public class AccountSetupOutgoing extends K9Activity {
     private static final String EXTRA_ACCOUNT = "account";

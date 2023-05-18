@@ -17,11 +17,11 @@ import android.webkit.WebView;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.message.html.HtmlConverter;
-import com.fsck.k9.pEp.ui.tools.Theme;
+import com.fsck.k9.planck.ui.tools.Theme;
 import com.fsck.k9.R;
 import com.fsck.k9.mailstore.AttachmentResolver;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 
 public class MessageWebView extends RigidWebView {

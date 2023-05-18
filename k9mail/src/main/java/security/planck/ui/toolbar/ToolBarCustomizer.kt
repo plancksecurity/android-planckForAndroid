@@ -9,7 +9,7 @@ import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.core.view.children
-import com.fsck.k9.pEp.PEpColorUtils
+import com.fsck.k9.planck.PEpColorUtils
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope

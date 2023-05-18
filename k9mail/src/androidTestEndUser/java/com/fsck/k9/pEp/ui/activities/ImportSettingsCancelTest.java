@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.activities;
+package com.fsck.k9.planck.ui.activities;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -14,7 +14,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.saveSizeInInt;
+import static com.fsck.k9.planck.ui.activities.UtilsPackage.saveSizeInInt;
 import static junit.framework.TestCase.assertEquals;
 
 @RunWith(AndroidJUnit4.class)

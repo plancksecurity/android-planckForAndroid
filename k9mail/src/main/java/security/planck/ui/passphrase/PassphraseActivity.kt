@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doAfterTextChanged
 import com.fsck.k9.R
-import com.fsck.k9.pEp.manualsync.WizardActivity
+import com.fsck.k9.planck.manualsync.WizardActivity
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.activity_passphrase.*
 import timber.log.Timber

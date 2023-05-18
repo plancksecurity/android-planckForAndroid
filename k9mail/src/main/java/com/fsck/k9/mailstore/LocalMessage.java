@@ -21,7 +21,7 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.planck.PEpUtils;
 
 import foundation.pEp.jniadapter.Rating;
 

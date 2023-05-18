@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fsck.k9.Account
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
-import com.fsck.k9.pEp.DefaultDispatcherProvider
-import com.fsck.k9.pEp.DispatcherProvider
+import com.fsck.k9.planck.DefaultDispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

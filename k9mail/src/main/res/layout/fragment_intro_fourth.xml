@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_privacy_status" />
 
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PEpContactBadge
                 android:id="@+id/secureBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"
@@ -60,7 +60,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/image" />
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PEpContactBadge
                 android:id="@+id/secureTrustedBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"

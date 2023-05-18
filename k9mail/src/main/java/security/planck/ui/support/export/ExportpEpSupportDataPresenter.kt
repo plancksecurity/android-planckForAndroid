@@ -6,7 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.fsck.k9.activity.misc.NonConfigurationInstance
-import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.planck.infrastructure.exceptions.NotEnoughSpaceInDeviceException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

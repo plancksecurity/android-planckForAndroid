@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.navigationdrawer
+package com.fsck.k9.planck.ui.navigationdrawer
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -14,7 +14,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.common.BaseAndroidTest
-import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.TestUtils
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters

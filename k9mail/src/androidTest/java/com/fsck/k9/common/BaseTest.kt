@@ -1,44 +1,5 @@
 package com.fsck.k9.common
 
-import android.app.Activity
-import android.app.UiAutomation
-import android.content.Context
-import android.content.res.Resources
-import android.os.Build
-import android.view.ViewGroup
-import android.widget.ScrollView
-import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.core.internal.deps.guava.collect.Iterables
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
-import androidx.test.runner.lifecycle.Stage
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiSelector
-import androidx.test.uiautomator.Until
-import com.fsck.k9.BuildConfig
-import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.activities.SplashActivity
-import com.fsck.k9.pEp.ui.activities.TestUtils
-import com.fsck.k9.pEp.ui.activities.UtilsPackage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import org.hamcrest.CoreMatchers
-import org.hamcrest.Matchers
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import timber.log.Timber
 /*
 open class BaseTest {
 

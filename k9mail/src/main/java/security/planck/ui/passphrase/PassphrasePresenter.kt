@@ -2,8 +2,8 @@ package security.planck.ui.passphrase
 
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch

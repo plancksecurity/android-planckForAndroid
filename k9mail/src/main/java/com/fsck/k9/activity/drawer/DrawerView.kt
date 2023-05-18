@@ -3,7 +3,7 @@ package com.fsck.k9.activity.drawer
 import com.fsck.k9.Account
 import com.fsck.k9.AccountStats
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.models.FolderModel
+import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection

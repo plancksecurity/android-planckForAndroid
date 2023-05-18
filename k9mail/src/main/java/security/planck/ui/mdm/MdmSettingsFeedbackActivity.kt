@@ -8,7 +8,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PepActivity
+import com.fsck.k9.planck.PepActivity
 import javax.inject.Inject
 
 class MdmSettingsFeedbackActivity : PepActivity(), MdmSettingsFeedbackView {

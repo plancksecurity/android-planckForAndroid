@@ -4,14 +4,13 @@ import android.content.Context;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
-import com.fsck.k9.Preferences;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mail.internet.MimeMessage;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PEpUtils;
 
 import foundation.pEp.jniadapter.Rating;
 

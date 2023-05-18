@@ -268,7 +268,7 @@
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_to" />
 
-        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
+        <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/to"
             style="@style/MediumComposeText"
             android:layout_width="match_parent"
@@ -340,7 +340,7 @@
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_cc" />
 
-        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
+        <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/cc"
             style="@style/MediumComposeText"
             android:layout_width="match_parent"
@@ -386,7 +386,7 @@
             android:minWidth="@dimen/min_label_width"
             android:text="@string/recipient_bcc" />
 
-        <com.fsck.k9.pEp.ui.ActionRecipientSelectView
+        <com.fsck.k9.planck.ui.ActionRecipientSelectView
             android:id="@+id/bcc"
             style="@style/MediumComposeText"
             android:layout_width="match_parent"

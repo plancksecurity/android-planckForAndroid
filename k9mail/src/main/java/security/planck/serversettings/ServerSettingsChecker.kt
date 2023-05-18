@@ -11,8 +11,8 @@ import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthenticationFailedException
 import com.fsck.k9.mail.CertificateValidationException
 import com.fsck.k9.mail.MessagingException
-import com.fsck.k9.pEp.infrastructure.exceptions.DeviceOfflineException
-import com.fsck.k9.pEp.infrastructure.extensions.mapError
+import com.fsck.k9.planck.infrastructure.exceptions.DeviceOfflineException
+import com.fsck.k9.planck.infrastructure.extensions.mapError
 import timber.log.Timber
 
 class ServerSettingsChecker(

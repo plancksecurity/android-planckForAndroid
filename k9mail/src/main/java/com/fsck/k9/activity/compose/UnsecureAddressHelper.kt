@@ -2,8 +2,8 @@ package com.fsck.k9.activity.compose
 
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.PEpUtils
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PEpUtils
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

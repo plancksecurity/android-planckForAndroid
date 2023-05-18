@@ -12,8 +12,8 @@ import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
-import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.activity_about.*
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
 import security.planck.ui.toolbar.ToolBarCustomizer

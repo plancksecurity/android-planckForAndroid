@@ -19,8 +19,8 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageCompose;
 import com.fsck.k9.activity.MessageList;
-import com.fsck.k9.pEp.ui.activities.SplashActivity;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.activities.SplashActivity;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.search.SearchAccount;
 
 

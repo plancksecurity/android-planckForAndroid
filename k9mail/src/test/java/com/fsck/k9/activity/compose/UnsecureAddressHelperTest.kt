@@ -2,9 +2,9 @@ package com.fsck.k9.activity.compose
 
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.infrastructure.ResultCompat
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.infrastructure.ResultCompat
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Rating
 import io.mockk.*
 import junit.framework.TestCase.*

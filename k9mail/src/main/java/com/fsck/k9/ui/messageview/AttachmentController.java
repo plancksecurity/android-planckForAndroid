@@ -29,9 +29,9 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalPart;
 import com.fsck.k9.mailstore.MessageViewInfo;
-import com.fsck.k9.pEp.MediaStoreUtilsKt;
-import com.fsck.k9.pEp.UriUtilsKt;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.MediaStoreUtilsKt;
+import com.fsck.k9.planck.UriUtilsKt;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.provider.AttachmentTempFileProvider;
 
 import org.apache.commons.io.IOUtils;

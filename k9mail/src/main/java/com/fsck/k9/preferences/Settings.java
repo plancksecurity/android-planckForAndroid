@@ -14,7 +14,7 @@ import timber.log.Timber;
 
 import com.fsck.k9.FontSizes;
 import com.fsck.k9.K9;
-import com.fsck.k9.pEp.PEpColorUtils;
+import com.fsck.k9.planck.PEpColorUtils;
 
 /*
  * TODO:

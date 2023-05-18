@@ -36,7 +36,7 @@ import com.fsck.k9.mail.store.StoreConfig;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.mailstore.StorageManager.StorageProvider;
-import com.fsck.k9.pEp.ui.ConnectionSettings;
+import com.fsck.k9.planck.ui.ConnectionSettings;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;

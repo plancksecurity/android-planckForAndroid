@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".pEp.ui.keysync.PEpAddDevice">
+    tools:context=".planck.ui.keysync.PEpAddDevice">
     <item
         android:id="@+id/action_advanced_options"
         android:title="@string/advanced_options"

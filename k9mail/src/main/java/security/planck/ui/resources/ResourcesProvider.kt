@@ -5,7 +5,7 @@ import android.content.res.TypedArray
 import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.tools.ThemeManager
 
 interface ResourcesProvider {
 

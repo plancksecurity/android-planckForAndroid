@@ -13,8 +13,8 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.infrastructure.extensions.mapSuccess
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
 import security.planck.provisioning.ProvisioningSettings

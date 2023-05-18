@@ -25,10 +25,10 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.PEpContactBadge;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.ui.PEpContactBadge;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.ThemeUtils;
 

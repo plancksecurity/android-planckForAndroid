@@ -7,8 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.manualsync.WizardActivity
+import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
 import kotlinx.android.synthetic.main.key_import_progress_dialog.*

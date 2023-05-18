@@ -43,7 +43,7 @@ import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
 import com.fsck.k9.message.extractors.PreviewResult;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import com.fsck.k9.pEp.PEpUtils;
+import com.fsck.k9.planck.PEpUtils;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;

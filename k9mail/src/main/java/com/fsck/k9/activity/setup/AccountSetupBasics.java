@@ -19,12 +19,12 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.pEp.PEpImporterActivity;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
-import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
-import com.fsck.k9.pEp.ui.tools.AccountSetupNavigator;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PEpImporterActivity;
+import com.fsck.k9.planck.ui.fragments.AccountSetupIncomingFragment;
+import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
+import com.fsck.k9.planck.ui.fragments.AccountSetupSelectAuthFragment;
+import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 

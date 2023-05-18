@@ -1,7 +1,7 @@
 package security.planck.ui.message_compose
 
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction
-import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
+import com.fsck.k9.planck.ui.infrastructure.MessageAction
+import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
 
 class PlanckFabMenuPresenter(private val view: PlanckFabMenuView) {
     var open = false

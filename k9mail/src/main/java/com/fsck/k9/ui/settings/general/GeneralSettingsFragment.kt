@@ -11,12 +11,11 @@ import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
-import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
-import com.fsck.k9.pEp.ui.keys.PepExtraKeys
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.ui.keys.PepExtraKeys
+import com.fsck.k9.planck.ui.tools.FeedbackTools
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
-import com.fsck.k9.ui.settings.remove
 import com.fsck.k9.ui.withArguments
 import com.takisoft.preferencex.PreferenceFragmentCompat
 import kotlinx.android.synthetic.main.preference_loading_widget.loading

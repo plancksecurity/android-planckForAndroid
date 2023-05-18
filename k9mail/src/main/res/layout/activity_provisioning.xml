@@ -7,7 +7,7 @@
     android:background="@drawable/background_startup"
     android:paddingStart="24sp"
     android:paddingEnd="24dp"
-    tools:context=".pEp.ui.activities.provisioning.ProvisioningActivity">
+    tools:context=".planck.ui.activities.provisioning.ProvisioningActivity">
 
     <ProgressBar
         android:id="@+id/provisioning_progress"

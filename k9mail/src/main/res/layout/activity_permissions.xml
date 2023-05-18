@@ -17,17 +17,17 @@
             style="@style/PermissionsScreen.explanation"
             android:text="@string/needs_your_permission_to_work" />
 
-        <com.fsck.k9.pEp.ui.PEpPermissionView
+        <com.fsck.k9.planck.ui.PEpPermissionView
             android:id="@+id/permission_contacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.fsck.k9.pEp.ui.PEpPermissionView
+        <com.fsck.k9.planck.ui.PEpPermissionView
             android:id="@+id/permission_post_notifications"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <com.fsck.k9.pEp.ui.PEpPermissionView
+        <com.fsck.k9.planck.ui.PEpPermissionView
             android:id="@+id/permission_battery"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

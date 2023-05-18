@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
+import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
 import kotlinx.android.synthetic.main.fab_menu_layout.view.*
 
 

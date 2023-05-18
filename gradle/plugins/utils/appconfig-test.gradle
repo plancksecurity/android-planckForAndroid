@@ -28,8 +28,8 @@ task automaticStartUp(type: Exec, dependsOn: 'clearDataAppConfig') {
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#automaticStartUp',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#automaticStartUp',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }
@@ -39,8 +39,8 @@ task sendMessageToSelf(type: Exec, dependsOn: 'automaticStartUp') {
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#sendMessageToSelf',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#sendMessageToSelf',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }
@@ -50,8 +50,8 @@ task messageListAppRestrictions(type: Exec, dependsOn: 'sendMessageToSelf') {
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageListAppRestrictions',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#messageListAppRestrictions',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }
@@ -61,8 +61,8 @@ task messageViewAppRestrictions(type: Exec, dependsOn: 'messageListAppRestrictio
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageViewAppRestrictions',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#messageViewAppRestrictions',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }
@@ -72,8 +72,8 @@ task messageComposeAppRestrictions(type: Exec, dependsOn: 'messageViewAppRestric
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#messageComposeAppRestrictions',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#messageComposeAppRestrictions',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }
@@ -83,8 +83,8 @@ task accountSettingsAppRestrictions(type: Exec, dependsOn: 'messageComposeAppRes
             'adb', 'shell', 'am', 'instrument', '-w', '-r', '--user', workProfileUser,
             '-e', 'debug',
             'false', '-e', 'class',
-            'com.fsck.k9.pEp.ui.restrictions.AppRestrictionsTest#accountSettingsAppRestrictions',
-            'com.fsck.k9.pEp.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
+            'com.fsck.k9.planck.ui.restrictions.AppRestrictionsTest#accountSettingsAppRestrictions',
+            'com.fsck.k9.planck.ui.activities.test/androidx.test.runner.AndroidJUnitRunner'
     ]
     commandLine command
 }

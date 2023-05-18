@@ -8,8 +8,8 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import security.planck.ui.toolbar.ToolBarCustomizer
 import javax.inject.Inject
 

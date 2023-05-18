@@ -16,8 +16,8 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.ui.fragments.PEpFragment
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.fragments.PEpFragment
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating

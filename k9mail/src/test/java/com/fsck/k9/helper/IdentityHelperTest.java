@@ -15,7 +15,7 @@ import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.internet.BinaryTempFileBody;
 import com.fsck.k9.mail.internet.MimeMessage;
-import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 
 import org.junit.Before;
 import org.junit.BeforeClass;

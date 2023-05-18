@@ -4,8 +4,8 @@ package security.planck.ui.support.export
 import android.content.Context
 import android.net.Uri
 import com.fsck.k9.RobolectricTest
-import com.fsck.k9.pEp.saveToDocuments
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.saveToDocuments
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,7 +40,7 @@ class ExportpEpSupportDataTestApi30 : RobolectricTest() {
     @Before
     fun setUp() {
         mockkStatic(FileUtils::class)
-        mockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        mockkStatic("com.fsck.k9.planck.MediaStoreUtilsKt")
         coEvery { systemFileLocator.trustwordsFolder }.returns(trustwordsFolder)
         coEvery { systemFileLocator.pEpFolder }.returns(pEpFolder)
         cleanupFiles()
@@ -115,7 +115,7 @@ class ExportpEpSupportDataTestApi30 : RobolectricTest() {
 
     @After
     fun tearDown() {
-        unmockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        unmockkStatic("com.fsck.k9.planck.MediaStoreUtilsKt")
         unmockkStatic(FileUtils::class)
         cleanupFiles()
     }

@@ -10,12 +10,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.fsck.k9.Identity;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
 public class ManageIdentities extends ChooseIdentity {
     private boolean mIdentitiesChanged = false;

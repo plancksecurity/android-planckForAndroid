@@ -5,7 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.PEpUtils
+import com.fsck.k9.planck.PEpUtils
 import com.fsck.k9.service.MailServiceLegacy
 import java.util.concurrent.ExecutorService
 

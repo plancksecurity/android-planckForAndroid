@@ -497,14 +497,14 @@
         </activity>
 
         <activity
-            android:name=".pEp.ui.privacy.status.PEpStatus"
+            android:name=".planck.ui.privacy.status.PEpStatus"
             android:label="@string/pep_title_activity_privacy_status" />
         <activity
-            android:name=".pEp.ui.blacklist.PepBlacklist"
+            android:name=".planck.ui.blacklist.PepBlacklist"
             android:label="@string/blacklist_title"
             android:theme="@style/Theme.K9.DayNight" />
         <activity
-            android:name=".pEp.ui.keysync.PEpAddDevice"
+            android:name=".planck.ui.keysync.PEpAddDevice"
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"
             android:launchMode="singleInstance"
@@ -523,13 +523,13 @@
                 <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
+        <receiver android:name=".planck.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="KEYSYNC_DISMISS" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".pEp.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
+        <receiver android:name=".planck.manualsync.ImportWizardFrompEp$SyncDialogReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="PEP_SYNC_SIGNAL" />
@@ -537,7 +537,7 @@
         </receiver>
 
         <activity
-            android:name=".pEp.ui.activities.SplashActivity"
+            android:name=".planck.ui.activities.SplashActivity"
             android:launchMode="singleInstance"
             android:theme="@style/SplashTheme"
             android:exported="true">
@@ -549,10 +549,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".pEp.ui.activities.provisioning.ProvisioningActivity"
+            android:name=".planck.ui.activities.provisioning.ProvisioningActivity"
             android:launchMode="singleInstance"
             android:theme="@style/SplashTheme"/>
-        <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
+        <activity android:name=".planck.ui.keysync.KeysyncManagement" />
         <activity android:name="security.planck.ui.about.AboutActivity"
             android:label="@string/about_action"/>
         <activity android:name="security.planck.ui.about.LicenseActivity"
@@ -562,13 +562,13 @@
             android:label="@string/mdm_settings_feedback_title"
             android:exported="false" />
         <activity
-            android:name=".pEp.ui.keys.PepExtraKeys"
+            android:name=".planck.ui.keys.PepExtraKeys"
             android:label="Extra keys" />
         <activity android:name="security.planck.ui.permissions.PermissionsActivity" />
         <activity
             android:name="security.planck.ui.keyimport.KeyImportActivity"
             android:theme="@style/OverlayTheme"/>
-        <activity android:name=".pEp.manualsync.ImportWizardFrompEp"
+        <activity android:name=".planck.manualsync.ImportWizardFrompEp"
             android:theme="@style/OverlayTheme"
             android:launchMode="singleInstance"
             android:excludeFromRecents="true" />

@@ -2,10 +2,10 @@ package security.planck.ui.support.export
 
 import android.content.Context
 import android.webkit.MimeTypeMap
-import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
-import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
-import com.fsck.k9.pEp.infrastructure.extensions.flatMap
-import com.fsck.k9.pEp.saveToDocuments
+import com.fsck.k9.planck.infrastructure.exceptions.CouldNotExportPEpDataException
+import com.fsck.k9.planck.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.planck.infrastructure.extensions.flatMap
+import com.fsck.k9.planck.saveToDocuments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.io.FileUtils

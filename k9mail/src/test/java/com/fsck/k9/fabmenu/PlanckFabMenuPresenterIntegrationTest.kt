@@ -1,7 +1,7 @@
 package com.fsck.k9.fabmenu
 
-import com.fsck.k9.pEp.ui.infrastructure.MessageAction
-import com.fsck.k9.pEp.ui.listeners.OnMessageOptionsListener
+import com.fsck.k9.planck.ui.infrastructure.MessageAction
+import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify

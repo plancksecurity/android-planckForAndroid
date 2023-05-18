@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.activities;
+package com.fsck.k9.planck.ui.activities;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 

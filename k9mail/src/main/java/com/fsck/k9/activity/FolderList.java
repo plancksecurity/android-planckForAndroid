@@ -56,7 +56,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.power.TracingPowerManager;
 import com.fsck.k9.mail.power.TracingPowerManager.TracingWakeLock;
 import com.fsck.k9.mailstore.LocalFolder;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.search.LocalSearch;
 import com.fsck.k9.search.SearchAccount;
 import com.fsck.k9.search.SearchSpecification.Attribute;

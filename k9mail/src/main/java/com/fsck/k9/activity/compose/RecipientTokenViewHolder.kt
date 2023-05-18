@@ -9,9 +9,9 @@ import androidx.core.widget.ImageViewCompat
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.ui.PEpContactBadge
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.ui.PEpContactBadge
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
 import security.planck.ui.doOnLayout

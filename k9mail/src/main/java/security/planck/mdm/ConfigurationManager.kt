@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
 import kotlinx.coroutines.*
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningStage

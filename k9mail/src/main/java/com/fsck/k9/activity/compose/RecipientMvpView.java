@@ -21,11 +21,11 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.ActionRecipientSelectView;
-import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.ui.ActionRecipientSelectView;
+import com.fsck.k9.planck.ui.privacy.status.PEpStatus;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.activity.compose.RecipientSelectView.TokenListener;
 
 import java.util.ArrayList;

@@ -10,8 +10,8 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 
 import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.Before;

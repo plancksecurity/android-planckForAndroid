@@ -9,7 +9,7 @@ import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.BinaryMemoryBody
 import com.fsck.k9.mailstore.FileBackedBody
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.pEp.DispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
 import com.fsck.k9.view.MessageWebView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

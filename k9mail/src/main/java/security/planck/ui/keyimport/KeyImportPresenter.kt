@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*

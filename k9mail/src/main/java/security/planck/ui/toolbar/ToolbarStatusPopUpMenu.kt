@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.PopupMenu
 import com.fsck.k9.R
 import com.fsck.k9.activity.compose.RecipientPresenter
-import com.fsck.k9.pEp.PEpProvider
+import com.fsck.k9.planck.PEpProvider
 
 class ToolbarStatusPopUpMenu(context: Context?, anchor: View?, private val recipientPresenter: RecipientPresenter) : PopupMenu(context, anchor) {
     init {

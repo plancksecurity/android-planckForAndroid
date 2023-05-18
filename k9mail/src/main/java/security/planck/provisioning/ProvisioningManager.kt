@@ -4,9 +4,9 @@ import android.util.Log
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.helper.Utility
-import com.fsck.k9.pEp.DispatcherProvider
-import com.fsck.k9.pEp.infrastructure.extensions.flatMapSuspend
-import com.fsck.k9.pEp.infrastructure.extensions.mapError
+import com.fsck.k9.planck.DispatcherProvider
+import com.fsck.k9.planck.infrastructure.extensions.flatMapSuspend
+import com.fsck.k9.planck.infrastructure.extensions.mapError
 import kotlinx.coroutines.runBlocking
 import security.planck.mdm.ConfigurationManager
 import security.planck.network.UrlChecker

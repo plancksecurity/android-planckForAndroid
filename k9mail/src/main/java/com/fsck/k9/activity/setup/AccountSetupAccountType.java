@@ -15,9 +15,9 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
-import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.ui.fragments.ChooseAccountTypeFragment;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
 
 import java.net.URI;

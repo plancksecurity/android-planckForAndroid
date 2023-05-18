@@ -17,8 +17,8 @@ import android.webkit.WebView;
 import com.fsck.k9.K9;
 import com.fsck.k9.activity.misc.SwipeGestureDetector;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
-import com.fsck.k9.pEp.LangUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.LangUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import java.util.Locale;
 

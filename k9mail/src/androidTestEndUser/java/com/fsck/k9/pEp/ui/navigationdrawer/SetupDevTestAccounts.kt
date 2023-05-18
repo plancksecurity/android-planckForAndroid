@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.navigationdrawer
+package com.fsck.k9.planck.ui.navigationdrawer
 
 import android.app.Activity
 import android.os.Build
@@ -17,8 +17,8 @@ import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
-import com.fsck.k9.pEp.ui.activities.TestUtils
-import com.fsck.k9.pEp.ui.activities.UtilsPackage.exists
+import com.fsck.k9.planck.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.UtilsPackage.exists
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber

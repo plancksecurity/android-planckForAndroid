@@ -4,10 +4,10 @@ package security.planck.ui.support.export
 import android.content.Context
 import android.net.Uri
 import com.fsck.k9.RobolectricTest
-import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
-import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
-import com.fsck.k9.pEp.saveToDocuments
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.infrastructure.exceptions.CouldNotExportPEpDataException
+import com.fsck.k9.planck.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.planck.saveToDocuments
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -49,7 +49,7 @@ class ExportpEpSupportDataTest: RobolectricTest() {
     fun setUp() {
         coEvery { systemFileLocator.trustwordsFolder }.returns(trustwordsFolder)
         coEvery { systemFileLocator.pEpFolder }.returns(planckFolder)
-        mockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        mockkStatic("com.fsck.k9.planck.MediaStoreUtilsKt")
         mockkStatic(FileUtils::class)
         cleanupFiles()
         fromFolders.forEach { it.mkdirs() }
@@ -161,7 +161,7 @@ class ExportpEpSupportDataTest: RobolectricTest() {
 
     @After
     fun tearDown() {
-        unmockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        unmockkStatic("com.fsck.k9.planck.MediaStoreUtilsKt")
         unmockkStatic(FileUtils::class)
         cleanupFiles()
     }
