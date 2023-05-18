@@ -6,7 +6,7 @@
 
     <LinearLayout
         style="@style/PermissionsScreen"
-        tools:context="com.fsck.k9.security.pEp.ui.permissions.PermissionsActivity">
+        tools:context="com.fsck.k9.security.planck.ui.permissions.PermissionsActivity">
 
         <ImageView
             android:id="@+id/pep_logo"

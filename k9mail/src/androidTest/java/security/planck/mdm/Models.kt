@@ -1,4 +1,4 @@
-package security.pEp.mdm
+package security.planck.mdm
 
 data class MailSettings @JvmOverloads constructor(
     var email: String? = null,

@@ -20,7 +20,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
-import security.pEp.ui.calendar.TestICalendarCreator
 import java.util.*
 
 @ExperimentalCoroutinesApi

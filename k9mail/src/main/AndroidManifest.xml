@@ -555,7 +555,7 @@
         <activity android:name=".pEp.ui.keysync.KeysyncManagement" />
         <activity android:name="security.planck.ui.about.AboutActivity"
             android:label="@string/about_action"/>
-        <activity android:name="security.pEp.ui.about.LicenseActivity"
+        <activity android:name="security.planck.ui.about.LicenseActivity"
             android:label="@string/license"/>
         <activity
             android:name="security.planck.ui.mdm.MdmSettingsFeedbackActivity"

@@ -63,7 +63,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import foundation.pEp.jniadapter.Rating;
-import security.pEp.mdm.MailSettings;
+import security.planck.mdm.MailSettings;
 import timber.log.Timber;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;

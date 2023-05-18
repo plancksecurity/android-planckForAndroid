@@ -1,4 +1,4 @@
-package security.pEp.mdm
+package security.planck.mdm
 
 import com.fsck.k9.auth.OAuthProviderType
 
@@ -34,5 +34,5 @@ const val DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT = 993
 const val DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT = 587
 const val DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY = "SSL/TLS"
 const val DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY = "STARTTLS"
-val DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE = security.planck.mdm.AuthType.PLAIN.toString()
+val DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE = AuthType.PLAIN.toString()
 const val DEFAULT_ALLOW_PEP_SYNC_NEW_DEVICES = false

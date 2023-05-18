@@ -1,4 +1,4 @@
-package security.pEp.provisioning
+package security.planck.provisioning
 
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences

@@ -23,7 +23,7 @@ import org.junit.After
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import security.pEp.mdm.ManageableSettingMdmEntry
+import security.planck.mdm.ManageableSettingMdmEntry
 
 
 @RunWith(AndroidJUnit4::class)

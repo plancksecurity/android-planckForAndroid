@@ -1,4 +1,4 @@
-package security.pEp.mdm
+package security.planck.mdm
 
 import android.app.Activity
 import android.content.RestrictionEntry
