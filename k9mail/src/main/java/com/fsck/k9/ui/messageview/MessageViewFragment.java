@@ -1044,13 +1044,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
         getAttachmentController(attachment).saveAttachment();
     }
 
-    @Override
-    public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
-        //TODO: check if we have to download the attachment first
-        currentAttachmentViewInfo = attachment;
-        getAttachmentController(attachment).saveAttachment();
-    }
-
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
     }
