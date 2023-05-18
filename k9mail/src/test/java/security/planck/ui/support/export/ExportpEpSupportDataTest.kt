@@ -2,17 +2,23 @@ package security.planck.ui.support.export
 
 
 import android.content.Context
+import android.net.Uri
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.pEp.infrastructure.exceptions.CouldNotExportPEpDataException
 import com.fsck.k9.pEp.infrastructure.exceptions.NotEnoughSpaceInDeviceException
+import com.fsck.k9.pEp.saveToDocuments
 import com.fsck.k9.pEp.testutils.CoroutineTestRule
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.spyk
+import io.mockk.unmockkStatic
 import junit.framework.TestCase.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import org.apache.commons.io.FileUtils
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -21,49 +27,69 @@ import org.junit.Test
 import org.robolectric.annotation.Config
 import security.planck.file.PlanckSystemFileLocator
 import java.io.File
+import java.io.FileInputStream
 
 @ExperimentalCoroutinesApi
-@Config(sdk = [28])
+@Config(sdk = [30])
 class ExportpEpSupportDataTest: RobolectricTest() {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
     private val context: Context = mockk()
     private val systemFileLocator: PlanckSystemFileLocator = mockk()
     private val exportpEpSupportData = ExportpEpSupportData(context, systemFileLocator)
-    private val homeFolder = File("src/test/java/security/pEp/ui/support/export/homeFolder")
-    private val pEpFolder = File(homeFolder, ".pEp")
-    private val trustwordsFolder = File("src/test/java/security/pEp/ui/support/export/trustwordsFolder")
-    private val fromFolders = listOf(pEpFolder, trustwordsFolder)
-    private val destinationBaseFolder = File("src/test/java/security/pEp/ui/support/export")
+    private val homeFolder = File("src/test/java/security/planck/ui/support/export/homeFolder")
+    private val planckFolder = File(homeFolder, ".pEp")
+    private val trustwordsFolder = File("src/test/java/security/planck/ui/support/export/trustwordsFolder")
+    private val fromFolders = listOf(planckFolder, trustwordsFolder)
+    private val destinationBaseFolder = File("src/test/java/security/planck/ui/support/export")
     private val destinationSubFolder = "toFolder"
     private val toFolder = File(destinationBaseFolder, destinationSubFolder)
 
     @Before
     fun setUp() {
-        //every { systemFileLocator.homeFolder }.returns(homeFolder)
         coEvery { systemFileLocator.trustwordsFolder }.returns(trustwordsFolder)
-        coEvery { systemFileLocator.pEpFolder }.returns(pEpFolder)
+        coEvery { systemFileLocator.pEpFolder }.returns(planckFolder)
+        mockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        mockkStatic(FileUtils::class)
         cleanupFiles()
         fromFolders.forEach { it.mkdirs() }
     }
 
     @Test
-    fun `export() copies files from origin to target directory`() {
+    fun `export() copies files from origin to target directory using MediaStoreUtils`() {
         runBlocking {
-            File(pEpFolder, "management.db").writeText("test")
-            File(pEpFolder, "keys.db").writeText("test")
-            File(trustwordsFolder, "system.db").writeText("test")
+            val managementDb = File(planckFolder, "management.db").apply { writeText("test") }
+            val keysDb = File(planckFolder, "keys.db").apply { writeText("test") }
+            val systemDb = File(trustwordsFolder, "system.db").apply { writeText("test") }
+            val managementDbIs: FileInputStream = mockk()
+            val keysDbIs: FileInputStream = mockk()
+            val systemDbIs: FileInputStream = mockk()
+            // stub FileUtils
+            coEvery { FileUtils.openInputStream(managementDb) }.returns(managementDbIs)
+            coEvery { FileUtils.openInputStream(keysDb) }.returns(keysDbIs)
+            coEvery { FileUtils.openInputStream(systemDb) }.returns(systemDbIs)
+            // stub MediaStoreUtils
+            coEvery { managementDbIs.saveToDocuments(any(), any(), any(), any()) }.returns(Uri.EMPTY)
+            coEvery { keysDbIs.saveToDocuments(any(), any(), any(), any()) }.returns(Uri.EMPTY)
+            coEvery { systemDbIs.saveToDocuments(any(), any(), any(), any()) }.returns(Uri.EMPTY)
+            // simulate files written in target folder
+            toFolder.mkdirs()
+            File(toFolder, "management.db").writeText("test")
+            File(toFolder, "keys.db").writeText("test")
+            File(toFolder, "system.db").writeText("test")
 
 
             val result = exportpEpSupportData(destinationBaseFolder, destinationSubFolder)
 
 
-            val expectedManagementDb = File(toFolder, "management.db")
-            val expectedKeysDb = File(toFolder, "keys.db")
-            val expectedSystemDb = File(toFolder, "system.db")
-            assertTrue(expectedManagementDb.exists())
-            assertTrue(expectedKeysDb.exists())
-            assertTrue(expectedSystemDb.exists())
+            coVerify { FileUtils.openInputStream(managementDb) }
+            coVerify { FileUtils.openInputStream(keysDb) }
+            coVerify { FileUtils.openInputStream(systemDb) }
+
+            coVerify { managementDbIs.saveToDocuments(context, "", "management.db", "toFolder") }
+            coVerify { keysDbIs.saveToDocuments(context, "", "keys.db", "toFolder") }
+            coVerify { systemDbIs.saveToDocuments(context, "", "system.db", "toFolder") }
+
             assertTrue(result.isSuccess)
         }
     }
@@ -90,8 +116,8 @@ class ExportpEpSupportDataTest: RobolectricTest() {
         runBlocking {
             every { systemFileLocator.pEpFolder }.throws(RuntimeException())
 
-            File(pEpFolder, "management.db").writeText("test")
-            File(pEpFolder, "keys.db").writeText("test")
+            File(planckFolder, "management.db").writeText("test")
+            File(planckFolder, "keys.db").writeText("test")
             File(trustwordsFolder, "system.db").writeText("test")
 
             val result = exportpEpSupportData(destinationBaseFolder, destinationSubFolder)
@@ -114,8 +140,8 @@ class ExportpEpSupportDataTest: RobolectricTest() {
             val baseFolderSpy = spyk(destinationBaseFolder)
             every { baseFolderSpy.freeSpace }.returns(0)
 
-            File(pEpFolder, "management.db").writeText("test")
-            File(pEpFolder, "keys.db").writeText("test")
+            File(planckFolder, "management.db").writeText("test")
+            File(planckFolder, "keys.db").writeText("test")
             File(trustwordsFolder, "system.db").writeText("test")
 
 
@@ -135,6 +161,8 @@ class ExportpEpSupportDataTest: RobolectricTest() {
 
     @After
     fun tearDown() {
+        unmockkStatic("com.fsck.k9.pEp.MediaStoreUtilsKt")
+        unmockkStatic(FileUtils::class)
         cleanupFiles()
     }
 
