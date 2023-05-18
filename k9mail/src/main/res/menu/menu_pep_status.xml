@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:context=".planck.ui.privacy.status.PEpStatus">
+      tools:context=".planck.ui.privacy.status.PlanckStatus">
     <item
         android:id="@+id/force_unencrypted"
         android:title="@string/pep_force_unprotected"

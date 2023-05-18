@@ -71,10 +71,10 @@ import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.MessageRemovalListener;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpProviderFactory;
-import com.fsck.k9.planck.PEpProviderImplKotlin;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckProviderFactory;
+import com.fsck.k9.planck.PlanckProviderImplKotlin;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.exceptions.AppDidntEncryptMessageException;
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailurePassphraseNeeded;
 import com.fsck.k9.planck.infrastructure.exceptions.AuthFailureWrongPassphrase;
@@ -163,7 +163,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     private final MemorizingMessagingListener memorizingMessagingListener = new MemorizingMessagingListener();
     private final TransportProvider transportProvider;
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
     private MessagingListener checkMailListener = null;
     private volatile boolean stopped = false;
     private final Preferences preferences;
@@ -171,12 +171,12 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     @VisibleForTesting
     MessagingController(Context context, NotificationController notificationController,
-                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PEpProvider pEpProvider) {
+                        Contacts contacts, TransportProvider transportProvider, Preferences preferences, PlanckProvider planckProvider) {
         this.context = context;
         this.notificationController = notificationController;
         this.contacts = contacts;
         this.transportProvider = transportProvider;
-        this.pEpProvider = pEpProvider;
+        this.planckProvider = planckProvider;
         this.preferences = preferences;
         controllerThread = new AutoCloseableEngineThread(new Runnable() {
             @Override
@@ -196,8 +196,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
             Contacts contacts = Contacts.getInstance(context);
             TransportProvider transportProvider = TransportProvider.getInstance();
             Preferences preferences = Preferences.getPreferences(appContext);
-            PEpProvider pEpProvider = PEpProviderFactory.createProvider(appContext);
-            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
+            PlanckProvider planckProvider = PlanckProviderFactory.createProvider(appContext);
+            inst = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
         }
         return inst;
     }
@@ -322,7 +322,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void setEchoMessageReceivedListener(EchoMessageReceivedListener listener) {
-        pEpProvider.setEchoMessageReceivedListener(listener);
+        planckProvider.setEchoMessageReceivedListener(listener);
     }
 
     public void addListener(MessagingListener listener) {
@@ -1685,14 +1685,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
                             Timber.d("pep in download loop (nr= %s ) pre", number);
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", (MimeMessage) message);
-                            final PEpProvider.DecryptResult result;
+                            final PlanckProvider.DecryptResult result;
                             //// TODO: 22/12/16  message.getFrom()[0].getAddress() != null) should ne removed when ENGINE-160 is fixed
                             boolean alreadyDecrypted = false;
                             if (message.getFrom() != null
                                     && message.getFrom().length > 0
                                     && message.getFrom()[0].getAddress() != null) {
-                                PEpProvider.DecryptResult tempResult;
-                                tempResult = pEpProvider.decryptMessage((MimeMessage) message, account.getEmail());
+                                PlanckProvider.DecryptResult tempResult;
+                                tempResult = planckProvider.decryptMessage((MimeMessage) message, account.getEmail());
                                 if (controller.shouldAppendMessageInTrustedServer(message, account)) { //trusted server
                                     Rating rating = tempResult.rating;
                                     if (!rating.equals(Rating.pEpRatingUndefined)) {
@@ -1708,7 +1708,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 result = tempResult;
                                 Timber.d("pEp", "messageDecrypted: " + (System.currentTimeMillis() - time));
                             } else {
-                                result = new PEpProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
+                                result = new PlanckProvider.DecryptResult((MimeMessage) message, Rating.pEpRatingUndefined, -1, false);
                             }
 //                    PEpUtils.dumpMimeMessage("downloadSmallMessages", result.msg);
                             // Store message
@@ -1716,10 +1716,10 @@ public class MessagingController implements Sync.MessageToSendCallback {
                                 // sync UID so we know our mail
                                 decryptedMessage.setUid(message.getUid());
 
-                                Rating ratingToSave = PEpUtils.shouldUseOutgoingRating(message, account, result.rating)
-                                        ? pEpProvider.getRating(message)
+                                Rating ratingToSave = PlanckUtils.shouldUseOutgoingRating(message, account, result.rating)
+                                        ? planckProvider.getRating(message)
                                         : result.rating;
-                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(ratingToSave));
+                                decryptedMessage.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(ratingToSave));
 
                                 // Store the updated message locally
                                     final LocalMessage localMessage = localFolder.storeSmallMessage(decryptedMessage, new Runnable() {
@@ -2229,7 +2229,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     localMessage.setUid(encryptedMessage.getUid());
                     localFolder.changeUid(localMessage);
                     if (localMessage.getFolder().getName().equals(account.getDraftsFolderName())) {
-                        localMessage.setpEpRating(pEpProvider.getRating(localMessage));
+                        localMessage.setPlanckRating(planckProvider.getRating(localMessage));
                     }
                     for (MessagingListener l : getListeners()) {
                         l.messageUidChanged(account, folder, oldUid, localMessage.getUid());
@@ -2256,7 +2256,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
     private Message getMessageToUploadToOwnDirectories(Account account, LocalMessage localMessage) throws MessagingException {
         TrustedMessageController controller = new TrustedMessageController();
-        return controller.getOwnMessageCopy(context, pEpProvider, account,
+        return controller.getOwnMessageCopy(context, planckProvider, account,
                 localMessage);
     }
 
@@ -2884,13 +2884,13 @@ public class MessagingController implements Sync.MessageToSendCallback {
 
             // Only add rating to the local copy, not on headers
             // to avoid sending the rating to the server
-            if (PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))
+            if (PlanckUtils.ispEpDisabled(account, planckProvider.getRating(message))
                     || message.isSet(X_PEP_DISABLED)) {
-                ((LocalMessage) localMessage).setpEpRating(Rating.pEpRatingUnencrypted);
+                ((LocalMessage) localMessage).setPlanckRating(Rating.pEpRatingUnencrypted);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
             } else {
-                Rating privacyState = pEpProvider.getRating(message);
-                ((LocalMessage) localMessage).setpEpRating(privacyState);
+                Rating privacyState = planckProvider.getRating(message);
+                ((LocalMessage) localMessage).setPlanckRating(privacyState);
                 //message.setHeader(MimeHeader.HEADER_PEP_RATING, privacyState.name());
             }
             localMessage.setFlag(Flag.X_DOWNLOADED_FULL, true);
@@ -3050,8 +3050,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
 //                        PEpUtils.dumpMimeMessage("beforeEncrypt", (MimeMessage) message);
                         //If it is a pEpSyncMessage there is no need to encrypt it
                         if (message.isSet(Flag.X_PEP_SYNC_MESSAGE_TO_SEND)
-                                || PEpUtils.ispEpDisabled(account, pEpProvider.getRating(message))) {
-                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(Rating.pEpRatingUnencrypted));
+                                || PlanckUtils.ispEpDisabled(account, planckProvider.getRating(message))) {
+                            message.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(Rating.pEpRatingUnencrypted));
                             sendMessage(transport, message);
                             encryptedMessage = message;
                         } else {
@@ -3060,7 +3060,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                         }
 
                         if (message.isSet(Flag.X_PEP_NEVER_UNSECURE)) {
-                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
+                            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PlanckProvider.PLANCK_ALWAYS_SECURE_TRUE);
                         }
 
                         progress++;
@@ -3164,7 +3164,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             if (pEpVersionHeader.length > 0) {
                 message.addHeader(MimeHeader.HEADER_PEP_VERSION, pEpVersionHeader[0]);
             }
-            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(message.getpEpRating()));
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(message.getPlanckRating()));
 
 
             localSentFolder.appendMessages(Collections.singletonList(message));
@@ -3177,7 +3177,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     account.getSentFolderName(), localSentFolder.getId());
 
 
-            Rating rating = PEpUtils.extractRating(message);
+            Rating rating = PlanckUtils.extractRating(message);
             TrustedMessageController controller = new TrustedMessageController();
             if (controller.shouldAppendMessageOnUntrustedServer(account, rating)) {
                 // TODO: 16/07/18 Check if this is really needed: that means review trusted servers behavior
@@ -3205,8 +3205,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
     private Message processWithpEpAndSend(Transport transport, LocalMessage message, Account account) throws MessagingException, AppDidntEncryptMessageException  {
         //TODO: Move to pEp provider
         String[] keys = K9.getMasterKeys().toArray(new String[0]);
-        List<MimeMessage> encryptedMessages = pEpProvider.encryptMessage(message, keys);
-        Message encryptedMessageToSave = encryptedMessages.get(PEpProvider.ENCRYPTED_MESSAGE_POSITION); //
+        List<MimeMessage> encryptedMessages = planckProvider.encryptMessage(message, keys);
+        Message encryptedMessageToSave = encryptedMessages.get(PlanckProvider.ENCRYPTED_MESSAGE_POSITION); //
 
         for (Message encryptedMessage : encryptedMessages) {
             sendMessage(transport, encryptedMessage);
@@ -4006,7 +4006,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     synchronized public void checkpEpSyncMail(final Context context,
-                                 final PEpProvider.CompletedCallback completedCallback) {
+                                 final PlanckProvider.CompletedCallback completedCallback) {
         Timber.d("fastpoll %s ", "add pEpSyncJob");
 
         TracingWakeLock twakeLock;
@@ -4327,7 +4327,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         // Do not notify if the user does not have notifications enabled or if the message has
         // been read or it is an pep-autoconsume-message.
         if (!account.isNotifyNewMail() || message.isSet(Flag.SEEN)
-                || PEpUtils.isAutoConsumeMessage(message)) {
+                || PlanckUtils.isAutoConsumeMessage(message)) {
             return false;
         }
 
@@ -4397,7 +4397,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
         notificationController.clearNewMailNotifications(account);
         memorizingMessagingListener.removeAccount(account);
         Address address = new Address(account.getEmail());
-        pEpProvider.setIdentityFlag(PEpUtils.createIdentity(address, context), false);
+        planckProvider.setIdentityFlag(PlanckUtils.createIdentity(address, context), false);
         notificationController.updateChannels();
     }
 
@@ -4753,7 +4753,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     }
 
     public void setSubjectProtected(boolean pEpSubjectProtection) {
-        pEpProvider.setSubjectProtection(pEpSubjectProtection);
+        planckProvider.setSubjectProtection(pEpSubjectProtection);
     }
 
     private synchronized Message appendpEpSyncMessage(final Account account, final Message message) throws MessagingException{
@@ -4786,7 +4786,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     return;
                 }
 
-                Message message = PEpProviderImplKotlin.getMimeMessage(pEpMessage);
+                Message message = PlanckProviderImplKotlin.getMimeMessage(pEpMessage);
 
                 if (message == null) {
                     Timber.e("pEpEngine  messageToSend: Cannot convert pEpMessage into K9Message");
@@ -4872,8 +4872,8 @@ public class MessagingController implements Sync.MessageToSendCallback {
         return currentAccount;
     }
 
-    public PEpProvider getpEpProvider() {
-        return pEpProvider;
+    public PlanckProvider getPlanckProvider() {
+        return planckProvider;
     }
 
     private interface MessageActor {
@@ -4927,7 +4927,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
     @WorkerThread
     public void consumeMessages(final Context context) throws MessagingException {
         Timber.e("Delete pEp-auto-consume messages older than %d min for All accounts",
-                PEpProvider.TIMEOUT / (60 * 1000));
+                PlanckProvider.TIMEOUT / (60 * 1000));
         List<Account> accounts = preferences.getAccounts();
         for (Account account : accounts) {
             consumeMessages(account);

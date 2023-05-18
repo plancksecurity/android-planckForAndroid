@@ -1,7 +1,7 @@
 package com.fsck.k9.planck.ui.keysync;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.IdentityFlags;
@@ -14,22 +14,22 @@ import javax.inject.Inject;
 public class KeysyncManagerPresenter {
 
     private KeysyncManagementView view;
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
     private List<Account> accounts;
 
     @Inject
     KeysyncManagerPresenter() {
     }
 
-    public void initialize(KeysyncManagementView view, PEpProvider pEpProvider, List<Account> accounts) {
+    public void initialize(KeysyncManagementView view, PlanckProvider planckProvider, List<Account> accounts) {
         this.view = view;
-        this.pEpProvider = pEpProvider;
+        this.planckProvider = planckProvider;
         this.accounts = accounts;
         loadIdentities(view, accounts);
     }
 
     private void loadIdentities(final KeysyncManagementView view, final List<Account> accounts) {
-        pEpProvider.loadOwnIdentities(new PEpProvider.ResultCallback<List<Identity>>() {
+        planckProvider.loadOwnIdentities(new PlanckProvider.ResultCallback<List<Identity>>() {
             @Override
             public void onLoaded(List<Identity> identities) {
                 ArrayList<Identity> identitiesToShow = new ArrayList<>();
@@ -61,10 +61,10 @@ public class KeysyncManagerPresenter {
     }
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
-        Identity updatedIdentity = pEpProvider.updateIdentity(identity);
+        Identity updatedIdentity = planckProvider.updateIdentity(identity);
 
         if (!checked) {
-            pEpProvider.setIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            planckProvider.setIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PlanckProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -76,7 +76,7 @@ public class KeysyncManagerPresenter {
                 }
             });
         } else {
-            pEpProvider.unsetIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            planckProvider.unsetIdentityFlag(updatedIdentity, IdentityFlags.pEpIdfNotForSync.value, new PlanckProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 

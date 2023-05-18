@@ -43,7 +43,7 @@ import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
 import com.fsck.k9.message.extractors.PreviewResult;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
 import org.apache.commons.io.IOUtils;
@@ -1430,8 +1430,8 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
         if (message instanceof LocalMessage) {
             //Todo improve that: Logic keep saved when it exists, if not store the original one
             //without info we just store undefined
-            pEpRating = ((LocalMessage) message).getpEpRating();
-            cv.put("pep_rating", PEpUtils.ratingToString(pEpRating));
+            pEpRating = ((LocalMessage) message).getPlanckRating();
+            cv.put("pep_rating", PlanckUtils.ratingToString(pEpRating));
         }
         if (pEpRating == null && message.getHeader(MimeHeader.HEADER_PEP_RATING).length > 0) {
             cv.put("pep_rating", message.getHeader(MimeHeader.HEADER_PEP_RATING)[0]);
@@ -1442,7 +1442,7 @@ public class LocalFolder extends Folder<LocalMessage> implements Serializable {
     }
 
     private void putAutoConsume(Message message, ContentValues cv) {
-        boolean autoconsume = PEpUtils.isAutoConsumeMessage(message);
+        boolean autoconsume = PlanckUtils.isAutoConsumeMessage(message);
         cv.put("auto_consume", autoconsume ? 1 : 0);
     }
 

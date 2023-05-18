@@ -19,7 +19,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.SettingsActivity;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
-import com.fsck.k9.planck.PEpImporterActivity;
+import com.fsck.k9.planck.PlanckImporterActivity;
 import com.fsck.k9.planck.ui.fragments.AccountSetupIncomingFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.planck.ui.fragments.AccountSetupSelectAuthFragment;
@@ -37,7 +37,7 @@ import security.planck.permissions.PermissionRequester;
  * activity. If no settings are found the settings are handed off to the
  * AccountSetupAccountType activity.
  */
-public class AccountSetupBasics extends PEpImporterActivity {
+public class AccountSetupBasics extends PlanckImporterActivity {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_EDIT_INCOMING = "extra_edit_incoming";
@@ -151,7 +151,7 @@ public class AccountSetupBasics extends PEpImporterActivity {
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override

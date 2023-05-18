@@ -8,7 +8,7 @@
     android:orientation="horizontal"
     android:padding="0dp">
 
-    <com.fsck.k9.planck.ui.PEpContactBadge
+    <com.fsck.k9.planck.ui.PlanckContactBadge
         android:id="@+id/contact_photo"
         android:layout_width="32dp"
         android:layout_height="32dp"

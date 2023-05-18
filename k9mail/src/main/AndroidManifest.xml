@@ -497,14 +497,14 @@
         </activity>
 
         <activity
-            android:name=".planck.ui.privacy.status.PEpStatus"
+            android:name=".planck.ui.privacy.status.PlanckStatus"
             android:label="@string/pep_title_activity_privacy_status" />
         <activity
-            android:name=".planck.ui.blacklist.PepBlacklist"
+            android:name=".planck.ui.blacklist.PlanckBlacklist"
             android:label="@string/blacklist_title"
             android:theme="@style/Theme.K9.DayNight" />
         <activity
-            android:name=".planck.ui.keysync.PEpAddDevice"
+            android:name=".planck.ui.keysync.PlanckAddDevice"
             android:excludeFromRecents="true"
             android:label="@string/pep_device_group"
             android:launchMode="singleInstance"
@@ -523,7 +523,7 @@
                 <action android:name="PASSPHRASE_REQUEST" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".planck.ui.keysync.PEpAddDevice$DismissKeysyncDialogReceiver"
+        <receiver android:name=".planck.ui.keysync.PlanckAddDevice$DismissKeysyncDialogReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="KEYSYNC_DISMISS" />
@@ -560,7 +560,7 @@
             android:label="@string/mdm_settings_feedback_title"
             android:exported="false" />
         <activity
-            android:name=".planck.ui.keys.PepExtraKeys"
+            android:name=".planck.ui.keys.PlanckExtraKeys"
             android:label="Extra keys" />
         <activity android:name="security.planck.ui.permissions.PermissionsActivity" />
         <activity

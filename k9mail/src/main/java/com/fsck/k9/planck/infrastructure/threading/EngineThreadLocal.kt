@@ -43,11 +43,11 @@ class EngineThreadLocal private constructor(
 
     private fun initEngineConfig(engine: Engine) {
 
-        engine.config_passive_mode(K9.getPEpPassiveMode())
-        engine.config_unencrypted_subject(!K9.ispEpSubjectProtection())
+        engine.config_passive_mode(K9.getPlanckPassiveMode())
+        engine.config_unencrypted_subject(!K9.isPlanckSubjectProtection())
         engine.config_passphrase_for_new_keys(
             K9.ispEpUsingPassphraseForNewKey(),
-            K9.getpEpNewKeysPassphrase()
+            K9.getPlanckNewKeysPassphrase()
         )
         engine.setMessageToSendCallback(MessagingController.getInstance(k9))
         engine.setNotifyHandshakeCallback(k9.notifyHandshakeCallback)

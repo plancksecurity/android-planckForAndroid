@@ -2,8 +2,8 @@ package security.planck.ui.passphrase
 
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.planck.PEpProvider
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -12,8 +12,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class PassphrasePresenter @Inject constructor(
-        private val pEp: PEpProvider,
-        private val preferences: Preferences,
+    private val planck: PlanckProvider,
+    private val preferences: Preferences,
 ) {
     lateinit var view: PassphraseInputView
     lateinit var type: PassphraseRequirementType
@@ -50,22 +50,22 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun deliverPassphrase(passphrase: String) {
-        val scope = CoroutineScope(PEpDispatcher + SupervisorJob())
+        val scope = CoroutineScope(PlanckDispatcher + SupervisorJob())
 
         when (type) {
             PassphraseRequirementType.SYNC_PASSPHRASE -> {
                 scope.launch {
-                    pEp.configPassphrase(passphrase)
+                    planck.configPassphrase(passphrase)
                 }
                 view.finish()
             }
             PassphraseRequirementType.NEW_KEYS_PASSPHRASE -> {
                 scope.launch {
-                    K9.setpEpNewKeysPassphrase(passphrase)
+                    K9.setPlanckNewKeysPassphrase(passphrase)
                     val editor = preferences.storage.edit()
                     K9.save(editor)
                     editor.commit()
-                    pEp.configPassphraseForNewKeys(true, passphrase)
+                    planck.configPassphraseForNewKeys(true, passphrase)
                     view.finish(true)
                 }
             }
@@ -81,10 +81,10 @@ class PassphrasePresenter @Inject constructor(
     }
 
     fun cancelSync() {
-        val scope = CoroutineScope(PEpDispatcher + SupervisorJob())
+        val scope = CoroutineScope(PlanckDispatcher + SupervisorJob())
         scope.launch {
             try {
-               pEp.stopSync()
+               planck.stopSync()
             } catch (e: Exception) {
                 Timber.e(e, "pEpEngine")
             }

@@ -7,9 +7,9 @@ import android.view.WindowManager;
 import androidx.annotation.DimenRes;
 
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.PlanckActivity;
 
-public abstract class WizardActivity extends PepActivity {
+public abstract class WizardActivity extends PlanckActivity {
 
     protected void setUpFloatingWindow(@DimenRes int widthDimen, @DimenRes int heightDimen) {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

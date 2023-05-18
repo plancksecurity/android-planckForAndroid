@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import com.fsck.k9.Preferences
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.PEpProvider
-import com.fsck.k9.planck.PEpUtils
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import foundation.pEp.jniadapter.Identity
 import foundation.pEp.jniadapter.exceptions.pEpException
 import kotlinx.coroutines.*
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class KeyImportPresenter @Inject constructor(
     private val preferences: Preferences,
-    private val pEp: PEpProvider
+    private val planck: PlanckProvider
 ) {
 
     private lateinit var fingerprint: String
@@ -48,8 +48,8 @@ class KeyImportPresenter @Inject constructor(
         scope.launch {
             context = view.getApplicationContext()
             address = preferences.getAccount(accountUuid).email
-            accountIdentity = PEpUtils.createIdentity(Address(address), context)
-            withContext(PEpDispatcher) { currentFpr = pEp.myself(accountIdentity).fpr }
+            accountIdentity = PlanckUtils.createIdentity(Address(address), context)
+            withContext(PlanckDispatcher) { currentFpr = planck.myself(accountIdentity).fpr }
         }
     }
 
@@ -89,30 +89,30 @@ class KeyImportPresenter @Inject constructor(
     }
 
     private suspend fun onKeyImportConfirmed(): Boolean {
-        return withContext(PEpDispatcher) {
+        return withContext(PlanckDispatcher) {
             var result = false
             runBlocking {
                 try {
-                    val id = pEp.setOwnIdentity(accountIdentity, fingerprint)
-                    result = if (id == null || !pEp.canEncrypt(address)) {
+                    val id = planck.setOwnIdentity(accountIdentity, fingerprint)
+                    result = if (id == null || !planck.canEncrypt(address)) {
                         Timber.w("Couldn't set own key: %s", fingerprint)
-                        pEp.setOwnIdentity(accountIdentity, currentFpr)
+                        planck.setOwnIdentity(accountIdentity, currentFpr)
                         false
                     } else {
-                        pEp.myself(id)
+                        planck.myself(id)
                         true
                     }
 
                 } catch (e: pEpException) {  // this means there was no right formatted key in the file.
                     result = true
-                    pEp.setOwnIdentity(accountIdentity, currentFpr)
+                    planck.setOwnIdentity(accountIdentity, currentFpr)
                 }
             }
             result
         }
     }
 
-    private suspend fun importKey(uri: Uri): Identity? = withContext(PEpDispatcher) {
+    private suspend fun importKey(uri: Uri): Identity? = withContext(PlanckDispatcher) {
         var result: Identity?
         try {
             val resolver = context.contentResolver
@@ -120,7 +120,7 @@ class KeyImportPresenter @Inject constructor(
             try {
                 val key = IOUtils.toByteArray(inputStream)
 
-                val importedIdentities = pEp.importKey(key)
+                val importedIdentities = planck.importKey(key)
                 if (importedIdentities.isEmpty()) { // This means that the file contains a key, but not a proper private key which we need.
                     result = null
                 }
@@ -132,10 +132,10 @@ class KeyImportPresenter @Inject constructor(
                     }
                 }
             } catch (e: IOException) {
-                pEp.setOwnIdentity(accountIdentity, currentFpr)
+                planck.setOwnIdentity(accountIdentity, currentFpr)
                 throw FileNotFoundException()
             } catch (e: pEpException) {  // this means there was no right formatted key in the file.
-                pEp.setOwnIdentity(accountIdentity, currentFpr)
+                planck.setOwnIdentity(accountIdentity, currentFpr)
                 result = null
             } finally {
                 try {

@@ -1,14 +1,14 @@
 package com.fsck.k9.planck.manualsync;
 
 public enum KeySourceType {
-    PGP, PEP, NONE;
+    PGP, PLANCK, NONE;
 
     public boolean isImportType() {
         return !equals(NONE);
     }
 
     public boolean ispEp() {
-        return equals(PEP);
+        return equals(PLANCK);
     }
 
     public boolean isPGP() {

@@ -37,7 +37,7 @@ class AccountSetupNamesGenerationTest {
     var namesRule = object : ActivityTestRule<AccountSetupNames>(AccountSetupNames::class.java) {
         override fun getActivityIntent(): Intent {
             account = preferences.newAccount().apply {
-                identities = listOf(Identity().apply { this.email = BuildConfig.PEP_TEST_EMAIL_ADDRESS })
+                identities = listOf(Identity().apply { this.email = BuildConfig.PLANCK_TEST_EMAIL_ADDRESS })
             }
 
             return Intent(ApplicationProvider.getApplicationContext(), AccountSetupNames::class.java).apply {
@@ -55,7 +55,11 @@ class AccountSetupNamesGenerationTest {
     fun doInBackgroundIsRunOnceAndShowProgressDialogIsRunEveryTimeWithRuleMock() {
         val activity = namesRule.activity
         val accountKeysGenerator: AccountSetupNames.AccountKeysGenerator = mock()
-        val generateAccountKeysTask = AccountSetupNames.pEpGenerateAccountKeysTask (activity, account)
+        val generateAccountKeysTask =
+            AccountSetupNames.PanckGenerateAccountKeysTask(
+                activity,
+                account
+            )
         generateAccountKeysTask.accountKeysGenerator = accountKeysGenerator
 
 

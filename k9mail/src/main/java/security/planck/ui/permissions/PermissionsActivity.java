@@ -10,8 +10,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.setup.AccountSetupBasics;
-import com.fsck.k9.planck.PepActivity;
-import com.fsck.k9.planck.ui.PEpPermissionView;
+import com.fsck.k9.planck.PlanckActivity;
+import com.fsck.k9.planck.ui.PlanckPermissionView;
 import com.fsck.k9.preferences.StorageEditor;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -26,14 +26,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import security.planck.permissions.PermissionRequester;
 
-public class PermissionsActivity extends PepActivity {
+public class PermissionsActivity extends PlanckActivity {
 
     @Bind(R.id.permission_contacts)
-    PEpPermissionView contactsPermissionView;
+    PlanckPermissionView contactsPermissionView;
     @Bind(R.id.permission_post_notifications)
-    PEpPermissionView postNotificationsPermissionView;
+    PlanckPermissionView postNotificationsPermissionView;
     @Bind(R.id.permission_battery)
-    PEpPermissionView batteryPermissionView;
+    PlanckPermissionView batteryPermissionView;
 
     @Inject
     PermissionRequester permissionRequester;
@@ -81,7 +81,7 @@ public class PermissionsActivity extends PepActivity {
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @OnClick(R.id.action_continue)

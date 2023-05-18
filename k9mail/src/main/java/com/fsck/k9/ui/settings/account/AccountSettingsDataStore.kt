@@ -5,7 +5,7 @@ import androidx.preference.PreferenceDataStore
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.service.MailServiceLegacy
 import java.util.concurrent.ExecutorService
 
@@ -35,9 +35,9 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.goToUnreadMessageSearch()
             "remote_search_enabled" -> account.allowRemoteSearch()
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly
-            "pep_disable_privacy_protection" -> account.ispEpPrivacyProtected()
+            "pep_disable_privacy_protection" -> account.isPlanckPrivacyProtected()
             "pep_save_encrypted" -> account.isUntrustedSever
-            "pep_enable_sync_account" -> account.isPepSyncEnabled
+            "pep_enable_sync_account" -> account.isPlanckSyncEnabled
             else -> defValue
         }
     }
@@ -66,8 +66,8 @@ class AccountSettingsDataStore(
             "notification_opens_unread" -> account.setGoToUnreadMessageSearch(value)
             "remote_search_enabled" -> account.setAllowRemoteSearch(value)
             "openpgp_hide_sign_only" -> account.openPgpHideSignOnly = value
-            "pep_disable_privacy_protection" -> account.setpEpPrivacyProtection(value)
-            "pep_save_encrypted" -> account.setPEpStoreEncryptedOnServer(value)
+            "pep_disable_privacy_protection" -> account.setPlanckPrivacyProtection(value)
+            "pep_save_encrypted" -> account.setPlanckStoreEncryptedOnServer(value)
             "pep_enable_sync_account" -> setSyncEnabled(value)
             else -> return
         }
@@ -225,8 +225,8 @@ class AccountSettingsDataStore(
     }
 
     private fun setSyncEnabled(value: Boolean) {
-        account.setPEpSyncAccount(value)
-        PEpUtils.updateSyncFlag(context, account,
-                (context.applicationContext as K9).pEpProvider)
+        account.setPlanckSyncAccount(value)
+        PlanckUtils.updateSyncFlag(context, account,
+                (context.applicationContext as K9).planckProvider)
     }
 }

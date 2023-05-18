@@ -21,7 +21,7 @@ import com.fsck.k9.mail.message.MessageHeaderParser;
 import com.fsck.k9.mailstore.LockableDatabase.DbCallback;
 import com.fsck.k9.mailstore.LockableDatabase.WrappedException;
 import com.fsck.k9.message.extractors.PreviewResult.PreviewType;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 
 import foundation.pEp.jniadapter.Rating;
 
@@ -46,7 +46,7 @@ public class LocalMessage extends MimeMessage {
     private String mimeType;
     private PreviewType previewType;
     private boolean headerNeedsUpdating = false;
-    private Rating pEpRating;
+    private Rating planckRating;
 
 
 
@@ -139,7 +139,7 @@ public class LocalMessage extends MimeMessage {
 
         headerNeedsUpdating = false;
 
-        this.pEpRating = PEpUtils.stringToRating(cursor.getString(26));
+        this.planckRating = PlanckUtils.stringToRating(cursor.getString(26));
     }
 
     @VisibleForTesting
@@ -540,7 +540,7 @@ public class LocalMessage extends MimeMessage {
         message.mimeType = mimeType;
         message.previewType = previewType;
         message.headerNeedsUpdating = headerNeedsUpdating;
-        message.pEpRating = pEpRating;
+        message.planckRating = planckRating;
 
         return message;
     }
@@ -633,8 +633,8 @@ public class LocalMessage extends MimeMessage {
         return getBody() == null;
     }
 
-    public void setpEpRating(final Rating pEpRating) {
-        this.pEpRating = pEpRating;
+    public void setPlanckRating(final Rating planckRating) {
+        this.planckRating = planckRating;
         try {
             this.localStore.database.execute(true, new DbCallback<Void>() {
                 @Override
@@ -644,7 +644,7 @@ public class LocalMessage extends MimeMessage {
                      * Set the new color on the message.
                      */
                     ContentValues cv = new ContentValues();
-                    cv.put("pep_rating", pEpRating.toString());
+                    cv.put("pep_rating", planckRating.toString());
                     db.update("messages", cv, "id = ?", new String[] { Long.toString(mId) });
 
                     return null;
@@ -659,7 +659,7 @@ public class LocalMessage extends MimeMessage {
         this.localStore.notifyChange();
     }
 
-    public Rating getpEpRating() {
-        return pEpRating;
+    public Rating getPlanckRating() {
+        return planckRating;
     }
 }

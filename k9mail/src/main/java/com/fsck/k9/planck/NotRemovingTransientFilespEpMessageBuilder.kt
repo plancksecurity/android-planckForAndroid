@@ -5,9 +5,9 @@ import com.fsck.k9.mail.internet.MimeMessage
 
 internal class NotRemovingTransientFilespEpMessageBuilder(
     message: MimeMessage
-) : PEpMessageBuilder(message) {
+) : PlanckMessageBuilder(message) {
 
     override fun extractBodyContent(body: Body?): ByteArray {
-        return PEpUtils.extractBodyContent(body, false)
+        return PlanckUtils.extractBodyContent(body, false)
     }
 }

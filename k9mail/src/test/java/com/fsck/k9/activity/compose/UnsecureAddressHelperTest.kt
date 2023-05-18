@@ -2,7 +2,7 @@ package com.fsck.k9.activity.compose
 
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.ResultCompat
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import foundation.pEp.jniadapter.Rating
@@ -20,34 +20,34 @@ class UnsecureAddressHelperTest {
     @get:Rule
     val coroutinesTestRule = CoroutineTestRule()
 
-    private val pEp: PEpProvider = mockk(relaxed = true)
+    private val planck: PlanckProvider = mockk(relaxed = true)
     private val listener: RecipientsReadyListener = mockk(relaxed = true)
     private val ratedListener: RatedRecipientsReadyListener = mockk(relaxed = true)
     private val view: RecipientSelectViewContract = mockk(relaxed = true)
 
-    private val helper = UnsecureAddressHelper(pEp)
+    private val helper = UnsecureAddressHelper(planck)
 
     @Before
     fun setup() {
         every { view.hasRecipient(any()) }.returns(true)
         every { view.isAlwaysUnsecure }.returns(false)
         mockkStatic(K9::class)
-        every { K9.ispEpForwardWarningEnabled() }.returns(true)
+        every { K9.isPlanckForwardWarningEnabled() }.returns(true)
         helper.initialize(view)
     }
 
     @Test
-    fun `getRecipientRating uses PEpProvider to get rating`() {
+    fun `getRecipientRating uses PlanckProvider to get rating`() {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
 
 
         helper.getRecipientRating(recipient, true, callback)
 
 
-        verify { pEp.getRating(address, any()) }
+        verify { planck.getRating(address, any()) }
     }
 
     @Test
@@ -55,9 +55,9 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
@@ -72,9 +72,9 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
@@ -91,9 +91,9 @@ class UnsecureAddressHelperTest {
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
         every { view.hasRecipient(any()) }.returns(false)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
@@ -105,13 +105,13 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `getRecipientRating does not add unsecure address channel when getRating is successful and is not pEp privacy protected`() {
+    fun `getRecipientRating does not add unsecure address channel when getRating is successful and is not planck privacy protected`() {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingCannotDecrypt) }
 
 
@@ -126,10 +126,10 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
         val testException = RuntimeException("test")
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onError(testException) }
 
 
@@ -145,9 +145,9 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onError(RuntimeException()) }
 
 
@@ -158,14 +158,14 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `getRecipientRating does not add unsecure address channel when getRating is not successful and is not pEp privacy protected`() {
+    fun `getRecipientRating does not add unsecure address channel when getRating is not successful and is not planck privacy protected`() {
         every { view.hasRecipient(any()) }.returns(true)
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onError(RuntimeException()) }
 
 
@@ -181,9 +181,9 @@ class UnsecureAddressHelperTest {
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
         every { view.isAlwaysUnsecure }.returns(true)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
@@ -199,9 +199,9 @@ class UnsecureAddressHelperTest {
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
         every { view.isAlwaysUnsecure }.returns(true)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onLoaded(Rating.pEpRatingReliable) }
 
 
@@ -217,11 +217,11 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onError(RuntimeException()) }
-        every { K9.ispEpForwardWarningEnabled() }.returns(false)
+        every { K9.isPlanckForwardWarningEnabled() }.returns(false)
 
 
         helper.getRecipientRating(recipient, true, callback)
@@ -236,9 +236,9 @@ class UnsecureAddressHelperTest {
         val address: Address = mockk()
         val recipient: Recipient = mockk()
         every { recipient.address }.returns(address)
-        val callback: PEpProvider.ResultCallback<Rating> = mockk(relaxed = true)
-        val callbackSlot = slot<PEpProvider.ResultCallback<Rating>>()
-        every { pEp.getRating(address, capture(callbackSlot)) }
+        val callback: PlanckProvider.ResultCallback<Rating> = mockk(relaxed = true)
+        val callbackSlot = slot<PlanckProvider.ResultCallback<Rating>>()
+        every { planck.getRating(address, capture(callbackSlot)) }
             .answers { callbackSlot.captured.onError(TestException("test")) }
 
 
@@ -249,12 +249,12 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `rateRecipients gets rating for recipients using PEpProvider`() = runTest {
+    fun `rateRecipients gets rating for recipients using PlanckProvider`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
         val recipient1 = Recipient(address1)
         val recipient2 = Recipient(address2)
-        coEvery { pEp.getRating(any<Address>()) }
+        coEvery { planck.getRating(any<Address>()) }
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
 
 
@@ -262,17 +262,17 @@ class UnsecureAddressHelperTest {
         advanceUntilIdle()
 
 
-        coVerify { pEp.getRating(address1) }
-        coVerify { pEp.getRating(address2) }
+        coVerify { planck.getRating(address1) }
+        coVerify { planck.getRating(address2) }
     }
 
     @Test
     fun `rateRecipients calls listener with rated recipients`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
-        coEvery { pEp.getRating(address1) }
+        coEvery { planck.getRating(address1) }
             .returns(ResultCompat.success(Rating.pEpRatingTrustedAndAnonymized))
-        coEvery { pEp.getRating(address2) }
+        coEvery { planck.getRating(address2) }
             .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
         val recipient1 = Recipient(address1)
         val recipient2 = Recipient(address2)
@@ -301,9 +301,9 @@ class UnsecureAddressHelperTest {
     fun `rateRecipients uses rating undefined if PEpProvider_getRating fails`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
-        coEvery { pEp.getRating(address1) }
+        coEvery { planck.getRating(address1) }
             .returns(ResultCompat.failure(TestException("test")))
-        coEvery { pEp.getRating(address2) }
+        coEvery { planck.getRating(address2) }
             .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
         val recipient1 = Recipient(address1)
         val recipient2 = Recipient(address2)
@@ -332,9 +332,9 @@ class UnsecureAddressHelperTest {
     fun `rateRecipients calls view_showError if PEpProvider_getRating fails`() = runTest {
         val address1: Address = mockk()
         val address2: Address = mockk()
-        coEvery { pEp.getRating(address1) }
+        coEvery { planck.getRating(address1) }
             .returns(ResultCompat.failure(TestException("test")))
-        coEvery { pEp.getRating(address2) }
+        coEvery { planck.getRating(address2) }
             .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
         val recipient1 = Recipient(address1)
         val recipient2 = Recipient(address2)
@@ -348,14 +348,14 @@ class UnsecureAddressHelperTest {
     }
 
     @Test
-    fun `sortRecipientsByRating gets rating for recipients using PEpProvider`() = runTest {
+    fun `sortRecipientsByRating gets rating for recipients using PlanckProvider`() = runTest {
         val undefinedAddress: Address = mockk()
         val secureAddress: Address = mockk()
         val trustedAddress: Address = mockk()
         val undefinedRecipient = Recipient(undefinedAddress)
         val secureRecipient = Recipient(secureAddress)
         val trustedRecipient = Recipient(trustedAddress)
-        coEvery { pEp.getRating(any<Address>()) }
+        coEvery { planck.getRating(any<Address>()) }
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
 
 
@@ -366,9 +366,9 @@ class UnsecureAddressHelperTest {
         advanceUntilIdle()
 
 
-        coVerify { pEp.getRating(undefinedAddress) }
-        coVerify { pEp.getRating(trustedAddress) }
-        coVerify { pEp.getRating(secureAddress) }
+        coVerify { planck.getRating(undefinedAddress) }
+        coVerify { planck.getRating(trustedAddress) }
+        coVerify { planck.getRating(secureAddress) }
     }
 
     @Test
@@ -376,11 +376,11 @@ class UnsecureAddressHelperTest {
         val unencryptedAddress: Address = mockk()
         val secureAddress: Address = mockk()
         val trustedAddress: Address = mockk()
-        coEvery { pEp.getRating(unencryptedAddress) }
+        coEvery { planck.getRating(unencryptedAddress) }
             .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
-        coEvery { pEp.getRating(secureAddress) }
+        coEvery { planck.getRating(secureAddress) }
             .returns(ResultCompat.success(Rating.pEpRatingReliable))
-        coEvery { pEp.getRating(trustedAddress) }
+        coEvery { planck.getRating(trustedAddress) }
             .returns(ResultCompat.success(Rating.pEpRatingTrustedAndAnonymized))
         val undefinedRecipient = Recipient(unencryptedAddress)
         val secureRecipient = Recipient(secureAddress)
@@ -409,11 +409,11 @@ class UnsecureAddressHelperTest {
             val unencryptedAddress: Address = mockk()
             val secureAddress: Address = mockk()
             val trustedAddress: Address = mockk()
-            coEvery { pEp.getRating(unencryptedAddress) }
+            coEvery { planck.getRating(unencryptedAddress) }
                 .returns(ResultCompat.success(Rating.pEpRatingUnencrypted))
-            coEvery { pEp.getRating(secureAddress) }
+            coEvery { planck.getRating(secureAddress) }
                 .returns(ResultCompat.success(Rating.pEpRatingReliable))
-            coEvery { pEp.getRating(trustedAddress) }
+            coEvery { planck.getRating(trustedAddress) }
                 .returns(ResultCompat.failure(TestException("test")))
             val undefinedRecipient = Recipient(unencryptedAddress)
             val secureRecipient = Recipient(secureAddress)
@@ -444,7 +444,7 @@ class UnsecureAddressHelperTest {
         val undefinedRecipient = Recipient(undefinedAddress)
         val secureRecipient = Recipient(secureAddress)
         val trustedRecipient = Recipient(trustedAddress)
-        coEvery { pEp.getRating(any<Address>()) }
+        coEvery { planck.getRating(any<Address>()) }
             .returns(ResultCompat.failure(TestException("test")))
 
 

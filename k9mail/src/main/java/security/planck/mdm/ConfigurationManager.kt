@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import kotlinx.coroutines.*
 import security.planck.provisioning.ProvisioningFailedException
 import security.planck.provisioning.ProvisioningStage
@@ -53,7 +53,7 @@ class ConfigurationManager(
 
     suspend fun loadConfigurationsSuspend(
         provisioningStage: ProvisioningStage = ProvisioningStage.ProvisioningDone,
-    ): Result<Unit> = withContext(PEpDispatcher) {
+    ): Result<Unit> = withContext(PlanckDispatcher) {
         kotlin.runCatching {
             val restrictions = restrictionsManager.applicationRestrictions
             val entries: List<RestrictionEntry>
@@ -67,12 +67,12 @@ class ConfigurationManager(
                         .filterNot { it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.InitializedEngine -> {
-                    settingsUpdater.pEp = k9.component.pEpProvider()
+                    settingsUpdater.planck = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                         .filter{ it.key in INITIALIZED_ENGINE_RESTRICTIONS }
                 }
                 is ProvisioningStage.ProvisioningDone -> {
-                    settingsUpdater.pEp = k9.component.pEpProvider()
+                    settingsUpdater.planck = k9.component.pEpProvider()
                     entries = restrictionsManager.manifestRestrictions
                 }
             }

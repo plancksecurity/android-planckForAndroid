@@ -48,12 +48,12 @@ open class SetupDevTestAccounts {
     }
 
     fun setupAccounts() {
-        addAccount(ANDROID_DEV_TEST_1_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "1")
+        addAccount(ANDROID_DEV_TEST_1_ADDRESS, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD, "1")
         Thread.sleep(2000)
         clickAddAccountButton()
-        addAccount(ANDROID_DEV_TEST_2_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "2")
+        addAccount(ANDROID_DEV_TEST_2_ADDRESS, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD, "2")
         clickAddAccountButton()
-        addAccount(ANDROID_DEV_TEST_3_ADDRESS, BuildConfig.PEP_TEST_EMAIL_PASSWORD, "3")
+        addAccount(ANDROID_DEV_TEST_3_ADDRESS, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD, "3")
     }
 
     private fun addAccount(emailAddress: String, password: String, accountName: String) {

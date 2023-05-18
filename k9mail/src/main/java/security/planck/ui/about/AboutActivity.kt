@@ -12,7 +12,7 @@ import androidx.core.text.HtmlCompat
 import com.fsck.k9.BuildConfig
 import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList.TERMS_AND_CONDITIONS_LINK
-import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.android.synthetic.main.activity_about.*
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity
@@ -21,7 +21,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class AboutActivity : PepActivity() {
+class AboutActivity : PlanckActivity() {
 
     @Inject
     lateinit var toolbarCustomizer: ToolBarCustomizer
@@ -86,7 +86,7 @@ class AboutActivity : PepActivity() {
     }
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     private fun buildAboutString(): String {

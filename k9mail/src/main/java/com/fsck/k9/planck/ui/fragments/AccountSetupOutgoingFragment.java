@@ -48,7 +48,7 @@ import java.net.URISyntaxException;
 
 import javax.inject.Inject;
 
-public class AccountSetupOutgoingFragment extends PEpFragment {
+public class AccountSetupOutgoingFragment extends PlanckFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String STATE_SECURITY_TYPE_POSITION = "stateSecurityTypePosition";
@@ -76,7 +76,8 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     private View rootView;
     private boolean mEdit;
 
-    @Inject PEpSettingsChecker pEpSettingsChecker;
+    @Inject
+    PlanckSettingsChecker planckSettingsChecker;
     @Inject Preferences preferences;
 
     private AccountSetupNavigator accountSetupNavigator;
@@ -110,7 +111,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setupPEpFragmentToolbar();
+        setupPlanckFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_outgoing, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_outgoing_title);
@@ -250,7 +251,7 @@ public class AccountSetupOutgoingFragment extends PEpFragment {
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     private void checkSettings() {

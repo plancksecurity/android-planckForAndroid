@@ -10,7 +10,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.blacklist.KeyListItem;
 
 import java.util.Comparator;
@@ -86,7 +86,7 @@ public class KeyItemAdapter extends RecyclerView.Adapter<KeyItemAdapter.ViewHold
             final String fpr = keyItem.getFpr();
             String username = keyItem.getGpgUid();
             identityUserName.setText(username);
-            String formattedFpr = PEpUtils.formatFpr(fpr);
+            String formattedFpr = PlanckUtils.formatFpr(fpr);
             identityAddress.setText(formattedFpr);
             isBlacklistedCheckbox.setChecked(keyItem.isSelected());
             isBlacklistedCheckbox.setOnClickListener(v -> {

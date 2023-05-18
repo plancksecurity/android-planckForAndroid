@@ -75,7 +75,7 @@ public class Account implements BaseAccount, StoreConfig {
      */
     public static final String OUTBOX = "PEP_INTERNAL_OUTBOX";
     private final boolean DEFAULT_PEP_SYNC_ENABLED = true;
-    private boolean pEpSyncEnabled;
+    private boolean planckSyncEnabled;
     private String oAuthState;
     private OAuthProviderType mandatoryOAuthProviderType;
 
@@ -103,16 +103,16 @@ public class Account implements BaseAccount, StoreConfig {
         this.oAuthState = oAuthState;
     }
 
-    public boolean ispEpPrivacyProtected() {
-        return pEpPrivacyProtected.getValue();
+    public boolean isPlanckPrivacyProtected() {
+        return planckPrivacyProtected.getValue();
     }
 
-    public ManageableSetting<Boolean> getpEpPrivacyProtected() {
-        return pEpPrivacyProtected;
+    public ManageableSetting<Boolean> getPlanckPrivacyProtected() {
+        return planckPrivacyProtected;
     }
 
-    public void setpEpPrivacyProtection(ManageableSetting<Boolean> config) {
-        pEpPrivacyProtected = config;
+    public void setPlanckPrivacyProtection(ManageableSetting<Boolean> config) {
+        planckPrivacyProtected = config;
     }
 
     public void setMailSettings(
@@ -155,16 +155,16 @@ public class Account implements BaseAccount, StoreConfig {
         }
     }
 
-    public void setpEpPrivacyProtection(boolean privacyProtection) {
-        this.pEpPrivacyProtected.setValue(privacyProtection);
+    public void setPlanckPrivacyProtection(boolean privacyProtection) {
+        this.planckPrivacyProtected.setValue(privacyProtection);
     }
 
-    public Boolean isPepSyncEnabled() {
-        return pEpSyncEnabled;
+    public Boolean isPlanckSyncEnabled() {
+        return planckSyncEnabled;
     }
 
-    public void setPEpSyncAccount(Boolean pEpSyncEnabled) {
-        this.pEpSyncEnabled = pEpSyncEnabled;
+    public void setPlanckSyncAccount(Boolean planckSyncEnabled) {
+        this.planckSyncEnabled = planckSyncEnabled;
     }
 
     @NonNull
@@ -359,8 +359,8 @@ public class Account implements BaseAccount, StoreConfig {
     private boolean remoteSearchFullText;
     private int remoteSearchNumResults;
 
-    private boolean pEpUntrustedServer;
-    private ManageableSetting<Boolean> pEpPrivacyProtected;
+    private boolean planckUntrustedServer;
+    private ManageableSetting<Boolean> planckPrivacyProtected;
 
     /**
      * Indicates whether this account is enabled, i.e. ready for use, or not.
@@ -469,12 +469,12 @@ public class Account implements BaseAccount, StoreConfig {
         notificationSetting.setRingtone("content://settings/system/notification_sound");
         notificationSetting.setLedColor(chipColor);
 
-        pEpUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
-        pEpPrivacyProtected = new ManageableSetting<>(
+        planckUntrustedServer = DEFAULT_PEP_ENC_ON_SERVER;
+        planckPrivacyProtected = new ManageableSetting<>(
                 DEFAULT_PEP_PRIVACY_PROTECTED,
                 BuildConfig.IS_ENTERPRISE
         );
-        pEpSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
+        planckSyncEnabled = DEFAULT_PEP_SYNC_ENABLED;
     }
 
     /*
@@ -609,12 +609,12 @@ public class Account implements BaseAccount, StoreConfig {
         isEnabled = storage.getBoolean(accountUuid + ".enabled", true);
         markMessageAsReadOnView = storage.getBoolean(accountUuid + ".markMessageAsReadOnView", true);
         alwaysShowCcBcc = storage.getBoolean(accountUuid + ".alwaysShowCcBcc", false);
-        pEpUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
+        planckUntrustedServer = storage.getBoolean(accountUuid + ".pEpStoreEncryptedOnServer",  DEFAULT_PEP_ENC_ON_SERVER);
 
-        pEpPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
+        planckPrivacyProtected = ManageableSettingKt.decodeBooleanFromString(
                 storage.getString(accountUuid + ".pEpPrivacyProtected", null)
         );
-        pEpSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
+        planckSyncEnabled = storage.getBoolean(accountUuid + ".pEpSync", DEFAULT_PEP_SYNC_ENABLED);
 
         // Use email address as account description if necessary
         if (description == null) {
@@ -906,9 +906,9 @@ public class Account implements BaseAccount, StoreConfig {
         editor.putString(accountUuid + ".ringtone", notificationSetting.getRingtone());
         editor.putBoolean(accountUuid + ".led", notificationSetting.isLedEnabled());
         editor.putInt(accountUuid + ".ledColor", notificationSetting.getLedColor());
-        editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", pEpUntrustedServer);
-        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(pEpPrivacyProtected));
-        editor.putBoolean(accountUuid + ".pEpSync", pEpSyncEnabled);
+        editor.putBoolean(accountUuid + ".pEpStoreEncryptedOnServer", planckUntrustedServer);
+        editor.putString(accountUuid + ".pEpPrivacyProtected", ManageableSettingKt.encodeBooleanToString(planckPrivacyProtected));
+        editor.putBoolean(accountUuid + ".pEpSync", planckSyncEnabled);
         editor.putString(accountUuid + ".oAuthState", oAuthState);
         editor.putString(
                 accountUuid + ".oAuthProviderType",
@@ -1832,11 +1832,11 @@ public class Account implements BaseAccount, StoreConfig {
 
     // TODO: pEp: do we really *need* synchronized here?!
     public synchronized boolean isUntrustedSever() {
-        return pEpUntrustedServer;
+        return planckUntrustedServer;
     }
 
-    public synchronized void setPEpStoreEncryptedOnServer(boolean mPEpStoreEncryptedOnServer) {
-        this.pEpUntrustedServer = mPEpStoreEncryptedOnServer;
+    public synchronized void setPlanckStoreEncryptedOnServer(boolean mPlanckStoreEncryptedOnServer) {
+        this.planckUntrustedServer = mPlanckStoreEncryptedOnServer;
     }
 
     /**

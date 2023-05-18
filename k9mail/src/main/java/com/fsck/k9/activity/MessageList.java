@@ -45,8 +45,8 @@ import com.fsck.k9.fragment.MessageListFragment.MessageListFragmentListener;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.StorageManager;
 import com.fsck.k9.notification.NotificationChannelManager;
-import com.fsck.k9.planck.PePUIArtefactCache;
-import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.infrastructure.Router;
@@ -90,7 +90,7 @@ import timber.log.Timber;
  * shows a list of messages.
  * From this Activity the user can perform all standard message operations.
  */
-public class MessageList extends PepActivity implements MessageListFragmentListener,
+public class MessageList extends PlanckActivity implements MessageListFragmentListener,
         MessageViewFragmentListener, OnBackStackChangedListener, OnSwitchCompleteListener, MessageListView, DrawerLocker, RestrictionsListener {
 
     @Inject
@@ -263,7 +263,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void updateLastUsedAccount() {
-        PePUIArtefactCache.getInstance(this).setLastUsedAccount(mAccount);
+        PlanckUIArtefactCache.getInstance(this).setLastUsedAccount(mAccount);
     }
 
     @Override
@@ -429,7 +429,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -886,7 +886,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
 
     private void updateToolbarColorToOriginal() {
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(this, ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(this, ThemeManager.ToolbarType.DEFAULT));
     }
 
     /**
@@ -1138,7 +1138,7 @@ public class MessageList extends PepActivity implements MessageListFragmentListe
                 return true;
             }
             case R.id.search: {
-                PePUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
+                PlanckUIArtefactCache.getInstance(MessageList.this).setLastUsedAccount(mAccount);
                 drawerLayoutView.setDrawerEnabled(false);
                 showSearchView();
                 return true;

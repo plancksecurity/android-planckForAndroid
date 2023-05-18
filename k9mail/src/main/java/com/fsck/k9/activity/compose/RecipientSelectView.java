@@ -35,8 +35,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.AlternateRecipientAdapter.AlternateRecipientListener;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.components.ApplicationComponent;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.tokenautocomplete.CountSpan;
@@ -75,7 +75,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
     private TokenListener<Recipient> listener;
     private Context context;
     private Account account;
-    private PePUIArtefactCache uiCache;
+    private PlanckUIArtefactCache uiCache;
     private boolean alwaysUnsecure;
 
 
@@ -110,7 +110,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
         this.context = context;
         getApplicationComponent(context).inject(this);
 
-        uiCache = PePUIArtefactCache.getInstance(context);
+        uiCache = PlanckUIArtefactCache.getInstance(context);
 
         alternatesPopup = new ListPopupWindow(context);
         alternatesAdapter.setUp(this);
@@ -201,8 +201,8 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
 
         unsecureAddressHelper.getRecipientRating(
                 recipient,
-                account.ispEpPrivacyProtected(),
-                new PEpProvider.ResultCallback<Rating>() {
+                account.isPlanckPrivacyProtected(),
+                new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 if (listener != null) {

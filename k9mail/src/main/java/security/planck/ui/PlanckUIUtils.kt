@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import com.fsck.k9.Account
 import com.fsck.k9.R
 import com.fsck.k9.activity.FolderInfoHolder
-import com.fsck.k9.planck.PEpUtils.isRatingUnsecure
+import com.fsck.k9.planck.PlanckUtils.isRatingUnsecure
 import com.fsck.k9.planck.models.FolderModel
 import foundation.pEp.jniadapter.Rating
 

@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ImportSettingsAcceptTest : BaseAndroidTest() {
     @Before
-    fun startpEpApp() {
+    fun startPlanckApp() {
         testUtils.setupAccountIfNeeded()
     }
 
@@ -34,7 +34,7 @@ class ImportSettingsAcceptTest : BaseAndroidTest() {
         testUtils.clickAcceptButton()
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header)
         Espresso.onView(ViewMatchers.withId(R.id.incoming_server_password))
-            .perform(ViewActions.replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD))
+            .perform(ViewActions.replaceText(BuildConfig.PLANCK_TEST_EMAIL_PASSWORD))
         testUtils.clickAcceptButton()
         TestUtils.waitForIdle()
         Espresso.onView(ViewMatchers.withId(R.id.accounts_list))
