@@ -9,7 +9,7 @@ import android.view.WindowManager
 import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.core.view.children
-import com.fsck.k9.planck.PEpColorUtils
+import com.fsck.k9.planck.PlanckColorUtils
 import foundation.pEp.jniadapter.Rating
 import kotlinx.android.synthetic.main.toolbar.*
 import kotlinx.coroutines.CoroutineScope
@@ -20,43 +20,43 @@ import security.planck.ui.PlanckUIUtils
 
 interface ToolBarCustomizer {
 
-    fun setStatusBarPepColor(pEpRating: Rating?)
+    fun setStatusBarPlanckColor(planckRating: Rating?)
 
-    fun setStatusBarPepColor(@ColorInt colorReference: Int)
+    fun setStatusBarPlanckColor(@ColorInt colorReference: Int)
 
-    fun setToolbarColor(pEpRating: Rating?)
+    fun setToolbarColor(planckRating: Rating?)
 
     fun setToolbarColor(@ColorInt colorReference: Int)
 
     fun colorizeToolbarActionItemsAndNavButton(@ColorInt colorReference: Int)
 }
 
-class PEpToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
+class PlanckToolbarCustomizer(private val activity: Activity) : ToolBarCustomizer {
 
-    override fun setStatusBarPepColor(pEpRating: Rating?) {
+    override fun setStatusBarPlanckColor(planckRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PEpColorUtils.makeColorTransparent(PlanckUIUtils.getRatingColor(activity.applicationContext, pEpRating))
+            val color = PlanckColorUtils.makeColorTransparent(PlanckUIUtils.getRatingColor(activity.applicationContext, planckRating))
             setColor(color)
         }
 
     }
 
-    override fun setStatusBarPepColor(@ColorInt colorReference: Int) {
+    override fun setStatusBarPlanckColor(@ColorInt colorReference: Int) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PEpColorUtils.makeColorTransparent(colorReference)
+            val color = PlanckColorUtils.makeColorTransparent(colorReference)
             setColor(color)
         }
     }
 
-    override fun setToolbarColor(pEpRating: Rating?) {
+    override fun setToolbarColor(planckRating: Rating?) {
         val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         uiScope.launch {
-            val color = PlanckUIUtils.getRatingColor(activity.applicationContext, pEpRating)
+            val color = PlanckUIUtils.getRatingColor(activity.applicationContext, planckRating)
             activity.toolbar?.setBackgroundColor(color)
         }
 

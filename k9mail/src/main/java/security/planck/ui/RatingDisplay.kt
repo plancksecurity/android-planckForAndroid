@@ -1,7 +1,7 @@
 package security.planck.ui
 
 import com.fsck.k9.R
-import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.PlanckUtils
 import foundation.pEp.jniadapter.Rating
 
 abstract class RatingDisplay {
@@ -12,7 +12,7 @@ abstract class RatingDisplay {
         return when {
             rating == null
                     || pEpEnabled
-                    || PEpUtils.isRatingUnsecure(rating) -> originalHolder
+                    || PlanckUtils.isRatingUnsecure(rating) -> originalHolder
             else -> {
                 originalHolder.copy(
                     textRes = DISABLED_TEXT_RESOURCE,

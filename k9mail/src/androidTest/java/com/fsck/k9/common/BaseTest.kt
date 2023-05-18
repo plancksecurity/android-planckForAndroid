@@ -219,7 +219,7 @@ open class BaseTest {
     }
 
     fun sendNewMessageToSelf() {
-        sendMessage(BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+        sendMessage(BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
     }
 
     private fun sendMessage(email: String) {

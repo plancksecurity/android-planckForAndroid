@@ -7,13 +7,13 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.planck.DefaultDispatcherProvider;
 import com.fsck.k9.planck.DispatcherProvider;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.threading.JobExecutor;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
 import com.fsck.k9.planck.infrastructure.threading.UIThread;
-import com.fsck.k9.planck.ui.fragments.PEpSettingsCheck;
-import com.fsck.k9.planck.ui.fragments.PEpSettingsChecker;
+import com.fsck.k9.planck.ui.fragments.PlanckSettingsCheck;
+import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -46,12 +46,12 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
-    public PEpSettingsChecker providepEpSettingsCheck(
+    public PlanckSettingsChecker providepEpSettingsCheck(
             K9 application,
             ThreadExecutor jobExecutor,
             UIThread uiThread
     ) {
-        return new PEpSettingsCheck(application, jobExecutor, uiThread);
+        return new PlanckSettingsCheck(application, jobExecutor, uiThread);
     }
 
     //FIXME Reorganize modules, to avoid duplicating dependencies! (this are here and on pEpModule
@@ -66,8 +66,8 @@ public class ApplicationModule {
     }
 
     @Provides
-    public PEpProvider providepEpProvider(K9 application) {
-        return application.getpEpProvider();
+    public PlanckProvider providepEpProvider(K9 application) {
+        return application.getPlanckProvider();
     }
 
     @Provides

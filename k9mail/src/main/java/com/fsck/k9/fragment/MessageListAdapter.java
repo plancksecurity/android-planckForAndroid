@@ -21,7 +21,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import foundation.pEp.jniadapter.Rating;
 
@@ -151,9 +151,9 @@ public class MessageListAdapter extends CursorAdapter {
         Address[] ccAddrs = Address.unpack(ccList);
         Rating pEpRating;
         try {
-            pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            pEpRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
         } catch (IllegalArgumentException ex) {
-            pEpRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            pEpRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
         }
         boolean fromMe = fragment.messageHelper.toMe(account, fromAddrs);
 

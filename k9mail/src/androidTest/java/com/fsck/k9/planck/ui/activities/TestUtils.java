@@ -63,8 +63,8 @@ import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.common.GetListSizeAction;
-import com.fsck.k9.planck.PEpColorUtils;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckColorUtils;
+import com.fsck.k9.planck.PlanckUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -416,7 +416,7 @@ public class TestUtils {
         File downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File directory = new File(downloadsDirectory.getAbsolutePath() + File.separator + "test");
         File configFile = new File(directory, "test_config.txt");
-        if (!configFile.exists()) return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        if (!configFile.exists()) return BuildConfig.PLANCK_TEST_EMAIL_ADDRESS;
 
         FileInputStream fin;
         if (configFile.canRead()) {
@@ -1939,8 +1939,8 @@ public class TestUtils {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
-        String accountEmail = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        String pass = BuildConfig.PLANCK_TEST_EMAIL_PASSWORD;
+        String accountEmail = BuildConfig.PLANCK_TEST_EMAIL_ADDRESS;
         onView(withId(R.id.account_email)).perform(replaceText(accountEmail));
         TestUtils.waitForIdle();
         onView(withId(R.id.account_password)).perform(replaceText(pass));
@@ -2317,7 +2317,7 @@ public class TestUtils {
             if(K9.isUsingTrustwords() && clickableExpected) {
                 waitForIdle();
                 waitForToolbar();
-                checkToolbarColor(getPEpStatusDueColor(status));
+                checkToolbarColor(getPlanckStatusDueColor(status));
                 waitForIdle();
                 pressBack();
             }
@@ -2341,7 +2341,7 @@ public class TestUtils {
         int color;
         if (rating == null) {
             color = -10;
-        } else if (PEpUtils.isRatingUnsecure(rating)) {
+        } else if (PlanckUtils.isRatingUnsecure(rating)) {
             color = BuildConfig.IS_ENTERPRISE
                     ? R.drawable.enterprise_status_unsecure
                     : -10;
@@ -2357,7 +2357,7 @@ public class TestUtils {
         return color;
     }
 
-    private int getPEpStatusDueColor(Rating rating) {
+    private int getPlanckStatusDueColor(Rating rating) {
         int color;
         if (rating == null) {
             color = -10;
@@ -2759,7 +2759,7 @@ public class TestUtils {
     }
 
     private void checkUpperToolbar (int color){
-        int colorFromResource = PEpColorUtils.makeColorTransparent(
+        int colorFromResource = PlanckColorUtils.makeColorTransparent(
                 ContextCompat.getColor(InstrumentationRegistry.getInstrumentation().getTargetContext(), color));
         float[] hsv = new float[3];
         Color.RGBToHSV(Color.red(colorFromResource), Color.green(colorFromResource), Color.blue(colorFromResource), hsv);
@@ -5118,13 +5118,13 @@ public class TestUtils {
     @NonNull
     private String getEmail() {
         return "test006@peptest.ch";
-        //return BuildConfig.PEP_TEST_EMAIL_ADDRESS;
+        //return BuildConfig.PLANCK_TEST_EMAIL_ADDRESS;
     }
 
     @NonNull
     private String getPassword() {
         return "";
-        //return BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        //return BuildConfig.PLANCK_TEST_EMAIL_PASSWORD;
     }
 
     public static class BasicMessage {

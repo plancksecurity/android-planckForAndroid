@@ -104,22 +104,22 @@ public class SetupDragonAccountWithErrorsTest extends BaseAndroidTest {
 
     @NonNull
     private String getUsername() {
-        return BuildConfig.PEP_DRAGON_USERNAME;
+        return BuildConfig.PLANCK_DRAGON_USERNAME;
     }
 
     @NonNull
     private String getServer() {
-        return BuildConfig.PEP_DRAGON_SERVER;
+        return BuildConfig.PLANCK_DRAGON_SERVER;
     }
 
     @NonNull
     private String getPassword() {
-        return BuildConfig.PEP_DRAGON_PASSWORD;
+        return BuildConfig.PLANCK_DRAGON_PASSWORD;
     }
 
     @NonNull
     private String getEmail() {
-        return BuildConfig.PEP_DRAGON_EMAIL_ADDRESS;
+        return BuildConfig.PLANCK_DRAGON_EMAIL_ADDRESS;
     }
 
 

@@ -39,7 +39,7 @@ import com.fsck.k9.message.extractors.AttachmentCounter;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.MessageFulltextCreator;
 import com.fsck.k9.message.extractors.MessagePreviewCreator;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;
@@ -670,7 +670,7 @@ public class LocalStore extends Store implements Serializable {
                         " FROM messages INNER JOIN folders ON (messages.folder_id = folders.id) " +
                         " WHERE auto_consume = 1 " +
                         " AND empty = 0 AND deleted = 0" +
-                        " AND (((strftime(date) + " + PEpProvider.TIMEOUT + ") < strftime('%s','now')*1000) or date is null)";
+                        " AND (((strftime(date) + " + PlanckProvider.TIMEOUT + ") < strftime('%s','now')*1000) or date is null)";
 
                 cursor = db.rawQuery(query, null);
 

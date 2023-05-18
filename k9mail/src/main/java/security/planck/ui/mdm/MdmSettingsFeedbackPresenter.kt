@@ -33,7 +33,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
 
         return """
             <p><b>MDM enabled:</b> ${k9.isRunningOnWorkProfile}</p>
-            <p><b>p≡p privacy protection:</b> ${account.ispEpPrivacyProtected()}</p>
+            <p><b>p≡p privacy protection:</b> ${account.isPlanckPrivacyProtected()}</p>
             <br/>
             <b>Extra keys:</b><p> 
             ${
@@ -57,8 +57,8 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
                 }.joinToString("\n")
         }
             <br/>
-            <p><b>Use trustwords:</b> ${K9.getpEpUseTrustwords().value}</p>
-            <p><b>Unsecure delivery warning:</b> ${K9.ispEpForwardWarningEnabled()}</p>
+            <p><b>Use trustwords:</b> ${K9.getPlanckUseTrustwords().value}</p>
+            <p><b>Unsecure delivery warning:</b> ${K9.isPlanckForwardWarningEnabled()}</p>
             <p><b>p≡p sync folder:</b> ${K9.isUsingpEpSyncFolder()}</p>
             <p><b>Enable debug logging:</b> ${K9.isDebug()}</p>
             <p><b>Enable echo protocol:</b> ${K9.isEchoProtocolEnabled()}</p>
@@ -84,7 +84,7 @@ class MdmSettingsFeedbackPresenter @Inject constructor(
             <p><b>Enable server search:</b> ${account.allowRemoteSearch()}</p>
             <p><b>Server search limit:</b> ${account.remoteSearchNumResults}</p>
             <p><b>Store messages securely:</b> ${account.isUntrustedSever}</p>
-            <p><b>p≡p Sync this account:</b> ${account.isPepSyncEnabled}</p>
+            <p><b>p≡p Sync this account:</b> ${account.isPlanckSyncEnabled}</p>
             <p><b>Allow to add new devices to sync group:</b> ${K9.isAllowpEpSyncNewDevices()}</p>
             <br/>
             <p><b>Mail settings:</b></p>

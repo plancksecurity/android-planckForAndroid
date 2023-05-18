@@ -9,8 +9,8 @@ import androidx.core.widget.ImageViewCompat
 import com.fsck.k9.Account
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.planck.PEpUtils
-import com.fsck.k9.planck.ui.PEpContactBadge
+import com.fsck.k9.planck.PlanckUtils
+import com.fsck.k9.planck.ui.PlanckContactBadge
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import foundation.pEp.jniadapter.Rating
@@ -27,7 +27,7 @@ class RecipientTokenViewHolder internal constructor(
 ) {
 
     private val name: TextView = view.findViewById(android.R.id.text1)
-    private val contactPhoto: PEpContactBadge = view.findViewById(R.id.contact_photo)
+    private val contactPhoto: PlanckContactBadge = view.findViewById(R.id.contact_photo)
     private val cryptoStatusRed: View = view.findViewById(R.id.contact_crypto_status_red)
     private val cryptoStatusOrange: View = view.findViewById(R.id.contact_crypto_status_orange)
     private val cryptoStatusGreen: View = view.findViewById(R.id.contact_crypto_status_green)
@@ -76,7 +76,7 @@ class RecipientTokenViewHolder internal constructor(
     }
 
     fun updateRating(rating: Rating) {
-        setpEpRating(rating)
+        setPlanckRating(rating)
         val hasCryptoProvider = cryptoProvider != null
         if (!hasCryptoProvider) {
             cryptoStatusRed.visibility = View.GONE
@@ -107,9 +107,9 @@ class RecipientTokenViewHolder internal constructor(
             }
     }
 
-    private fun setpEpRating(rating: Rating) {
-        if (K9.ispEpForwardWarningEnabled()) {
-            if (account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)) {
+    private fun setPlanckRating(rating: Rating) {
+        if (K9.isPlanckForwardWarningEnabled()) {
+            if (account.isPlanckPrivacyProtected() && PlanckUtils.isRatingUnsecure(rating)) {
                 view.setBackgroundResource(R.drawable.recipient_unsecure_token_shape)
                 val warningColor = ContextCompat.getColor(
                     name.context,

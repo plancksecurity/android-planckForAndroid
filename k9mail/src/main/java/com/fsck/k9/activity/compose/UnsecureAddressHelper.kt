@@ -2,8 +2,8 @@ package com.fsck.k9.activity.compose
 
 import com.fsck.k9.K9
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.PEpProvider
-import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.PlanckProvider
+import com.fsck.k9.planck.PlanckUtils
 import foundation.pEp.jniadapter.Rating
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UnsecureAddressHelper @Inject constructor(
-    private val pEp: PEpProvider,
+    private val planck: PlanckProvider,
 ) {
     private val unsecureAddresses = mutableSetOf<Address>()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -30,7 +30,7 @@ class UnsecureAddressHelper @Inject constructor(
     ) {
         coroutineScope.launch {
             recipients.map { recipient ->
-                val rating = pEp.getRating(recipient.address)
+                val rating = planck.getRating(recipient.address)
                     .onFailure { view.showError(it) }
                     .getOrDefault(Rating.pEpRatingUndefined)
                 Pair(recipient, rating)
@@ -53,12 +53,12 @@ class UnsecureAddressHelper @Inject constructor(
             .map { recipient ->
                 recipient
                     .toRatedRecipient(
-                        pEp.getRating(recipient.address)
+                        planck.getRating(recipient.address)
                             .onFailure { view.showError(it) }
                             .getOrDefault(Rating.pEpRatingUndefined)
                     )
                     .also {
-                        if (!PEpUtils.isRatingUnsecure(it.rating)) {
+                        if (!PlanckUtils.isRatingUnsecure(it.rating)) {
                             removeUnsecureAddressChannel(it.baseRecipient.address)
                         }
                     }
@@ -74,7 +74,7 @@ class UnsecureAddressHelper @Inject constructor(
         coroutineScope.launch {
             recipients.map { recipient ->
                 recipient.toRatedRecipient(
-                    pEp.getRating(recipient.address)
+                    planck.getRating(recipient.address)
                         .onFailure { view.showError(it) }
                         .getOrDefault(Rating.pEpRatingUndefined)
                 )
@@ -85,18 +85,18 @@ class UnsecureAddressHelper @Inject constructor(
     fun getRecipientRating(
         recipient: Recipient,
         isPEpPrivacyProtected: Boolean,
-        callback: PEpProvider.ResultCallback<Rating>
+        callback: PlanckProvider.ResultCallback<Rating>
     ) {
         val address = recipient.address
-        pEp.getRating(address, object : PEpProvider.ResultCallback<Rating> {
+        planck.getRating(address, object : PlanckProvider.ResultCallback<Rating> {
             override fun onLoaded(rating: Rating) {
                 val viewRating =
-                    if (K9.ispEpForwardWarningEnabled() && view.isAlwaysUnsecure) {
+                    if (K9.isPlanckForwardWarningEnabled() && view.isAlwaysUnsecure) {
                         Rating.pEpRatingUnencrypted
                     } else {
                         rating
                     }
-                if (isPEpPrivacyProtected && PEpUtils.isRatingUnsecure(viewRating)
+                if (isPEpPrivacyProtected && PlanckUtils.isRatingUnsecure(viewRating)
                     && view.hasRecipient(recipient)
                 ) {
                     addUnsecureAddressChannel(address)
@@ -136,7 +136,7 @@ class UnsecureAddressHelper @Inject constructor(
     }
 
     private fun addUnsecureAddressChannel(address: Address) {
-        if (K9.ispEpForwardWarningEnabled()) {
+        if (K9.isPlanckForwardWarningEnabled()) {
             unsecureAddresses.add(address)
         }
     }

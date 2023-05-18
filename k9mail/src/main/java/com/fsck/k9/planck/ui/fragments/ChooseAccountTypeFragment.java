@@ -27,7 +27,7 @@ import static com.fsck.k9.mail.ServerSettings.Type.POP3;
 import static com.fsck.k9.mail.ServerSettings.Type.SMTP;
 import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
 
-public class ChooseAccountTypeFragment extends PEpFragment {
+public class ChooseAccountTypeFragment extends PlanckFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
@@ -51,7 +51,7 @@ public class ChooseAccountTypeFragment extends PEpFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setupPEpFragmentToolbar();
+        setupPlanckFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_choose_account_type, container, false);
         rootView.findViewById(R.id.pop).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,6 +184,6 @@ public class ChooseAccountTypeFragment extends PEpFragment {
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 }

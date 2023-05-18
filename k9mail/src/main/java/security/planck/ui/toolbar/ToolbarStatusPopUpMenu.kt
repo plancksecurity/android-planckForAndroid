@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.PopupMenu
 import com.fsck.k9.R
 import com.fsck.k9.activity.compose.RecipientPresenter
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 
 class ToolbarStatusPopUpMenu(context: Context?, anchor: View?, private val recipientPresenter: RecipientPresenter) : PopupMenu(context, anchor) {
     init {
@@ -45,6 +45,6 @@ class ToolbarStatusPopUpMenu(context: Context?, anchor: View?, private val recip
     }
 
     private fun forceUnencrypted() {
-        recipientPresenter.switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE)
+        recipientPresenter.switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE)
     }
 }

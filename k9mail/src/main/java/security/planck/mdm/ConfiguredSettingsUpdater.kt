@@ -13,7 +13,7 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
@@ -39,7 +39,7 @@ class ConfiguredSettingsUpdater(
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
-    lateinit var pEp: PEpProvider
+    lateinit var planck: PlanckProvider
 
     fun update(
         restrictions: Bundle,
@@ -57,9 +57,9 @@ class ConfiguredSettingsUpdater(
                 saveMediaKeys(restrictions, entry)
 
             RESTRICTION_PEP_USE_TRUSTWORDS ->
-                K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
+                K9.setPlanckUseTrustwords(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
-                k9.setpEpForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
+                k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_PEP_DEBUG_LOG ->
@@ -464,7 +464,7 @@ class ConfiguredSettingsUpdater(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val ids = pEp.importKey(mdmExtraKey.material.toByteArray())
+                val ids = planck.importKey(mdmExtraKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from extra key import"
@@ -525,7 +525,7 @@ class ConfiguredSettingsUpdater(
     private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
         val newMediaKeys = newMdmMediaKeys.mapSuccess { mdmMediaKey ->
             kotlin.runCatching {
-                val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
+                val ids = planck.importKey(mdmMediaKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from media key import"
@@ -564,7 +564,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry
         ) { account, newValue ->
-            account.setpEpPrivacyProtection(newValue)
+            account.setPlanckPrivacyProtection(newValue)
         }
     }
 
@@ -749,7 +749,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
         ) { account, newValue ->
-            account.setPEpStoreEncryptedOnServer(newValue)
+            account.setPlanckStoreEncryptedOnServer(newValue)
         }
     }
 
@@ -758,7 +758,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
         ) { account, newValue ->
-            account.setPEpSyncAccount(newValue)
+            account.setPlanckSyncAccount(newValue)
         }
     }
 

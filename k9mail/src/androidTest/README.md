@@ -32,14 +32,14 @@
 Prerequisites:
 
 - This globals settings need to be added
-    PEP_TEST_EMAIL_ADDRESS
-    PEP_TEST_EMAIL_PASSWORD
-    PEP_TEST_EMAIL_SERVER
+    PLANCK_TEST_EMAIL_ADDRESS
+    PLANCK_TEST_EMAIL_PASSWORD
+    PLANCK_TEST_EMAIL_SERVER
 
     Example:
-    export PEP_TEST_EMAIL_ADDRESS=account@server.com
-    export PEP_TEST_EMAIL_PASSWORD=password
-    export PEP_TEST_EMAIL_SERVER=server.com
+    export PLANCK_TEST_EMAIL_ADDRESS=account@server.com
+    export PLANCK_TEST_EMAIL_PASSWORD=password
+    export PLANCK_TEST_EMAIL_SERVER=server.com
 
 - A k9 settings should be added to the device downloads folder with name "stubAccount.k9s"
 

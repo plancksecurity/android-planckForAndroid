@@ -120,7 +120,7 @@ public class MimeMessageBuilder extends MessageBuilder {
             }
         }
 
-        mimeMsg.setReplyTo(PEpUtils.createAddresses(pEpMessage.getReplyTo()));
+        mimeMsg.setReplyTo(PlanckUtils.createAddresses(pEpMessage.getReplyTo()));
         mimeMsg.setInReplyTo(clobberVector(pEpMessage.getInReplyTo()));
         mimeMsg.setReferences(clobberVector(pEpMessage.getReferences()));
 

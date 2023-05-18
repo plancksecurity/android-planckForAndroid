@@ -48,7 +48,7 @@ import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.LocalStore;
 import com.fsck.k9.mailstore.UnavailableStorageException;
 import com.fsck.k9.notification.NotificationController;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 import com.fsck.k9.preferences.Storage;
 import com.fsck.k9.preferences.StorageEditor;
@@ -139,7 +139,7 @@ public class MessagingControllerTest extends RobolectricTest {
     @Mock
     private LocalMessage localMessageToSend1;
     @Mock
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
     @Mock
     private Preferences preferences;
     @Mock
@@ -156,7 +156,7 @@ public class MessagingControllerTest extends RobolectricTest {
         appContext = ApplicationProvider.getApplicationContext();
         stubPreferences();
 
-        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, pEpProvider);
+        controller = new MessagingController(appContext, notificationController, contacts, transportProvider, preferences, planckProvider);
 
         configureAccount();
         configureLocalStore();

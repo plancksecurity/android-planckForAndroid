@@ -603,19 +603,19 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
             )
 
         private fun getMailSettingsBundle(): Bundle = Bundle().apply {
-            putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
+            putString(RESTRICTION_ACCOUNT_EMAIL_ADDRESS, BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
             putString(RESTRICTION_ACCOUNT_OAUTH_PROVIDER, DEFAULT_ACCOUNT_OAUTH_PROVIDER)
             putBundle(
                 RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS,
                 bundleOf(
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SERVER to
-                            BuildConfig.PEP_TEST_EMAIL_SERVER,
+                            BuildConfig.PLANCK_TEST_EMAIL_SERVER,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT to
                             DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_PORT,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY_TYPE to
                             DEFAULT_ACCOUNT_INCOMING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_USER_NAME to
-                            BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                            BuildConfig.PLANCK_TEST_EMAIL_ADDRESS,
                     RESTRICTION_ACCOUNT_INCOMING_MAIL_SETTINGS_AUTH_TYPE to
                             DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
                 )
@@ -624,13 +624,13 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                 RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS,
                 bundleOf(
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SERVER to
-                            BuildConfig.PEP_TEST_EMAIL_SERVER,
+                            BuildConfig.PLANCK_TEST_EMAIL_SERVER,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT to
                             DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_PORT,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY_TYPE to
                             DEFAULT_ACCOUNT_OUTGOING_MAIL_SETTINGS_SECURITY,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME to
-                            BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                            BuildConfig.PLANCK_TEST_EMAIL_ADDRESS,
                     RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE to
                             DEFAULT_ACCOUNT_MAIL_SETTINGS_AUTH_TYPE,
                 )

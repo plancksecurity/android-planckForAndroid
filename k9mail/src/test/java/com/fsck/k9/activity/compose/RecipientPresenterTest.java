@@ -31,7 +31,7 @@ import com.fsck.k9.helper.ReplyToParser;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.message.ComposePgpInlineDecider;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class RecipientPresenterTest extends RobolectricTest {
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 
-        PEpProvider pEpProvider = mock(PEpProvider.class);
+        PlanckProvider planckProvider = mock(PlanckProvider.class);
 
         recipientMvpView = mock(RecipientMvpView.class);
         account = mock(Account.class);
@@ -87,7 +87,7 @@ public class RecipientPresenterTest extends RobolectricTest {
                 recipientMvpView,
                 account,
                 composePgpInlineDecider,
-                pEpProvider,
+                planckProvider,
                 replyToParser, listener);
         recipientPresenter.updateCryptoStatus();
     }
@@ -299,12 +299,12 @@ public class RecipientPresenterTest extends RobolectricTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void handleUnsecureDeliveryWarning_usesViewToHandleWarning() {
-        doReturn(true).when(account).ispEpPrivacyProtected();
+        doReturn(true).when(account).isPlanckPrivacyProtected();
         doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
-            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(true);
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
 
 
             recipientPresenter.handleUnsecureDeliveryWarning();
@@ -320,12 +320,12 @@ public class RecipientPresenterTest extends RobolectricTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfPEpIsDisabledForAccount() {
-        doReturn(false).when(account).ispEpPrivacyProtected();
+        doReturn(false).when(account).isPlanckPrivacyProtected();
         doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
-            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(true);
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(true);
 
 
             recipientPresenter.handleUnsecureDeliveryWarning();
@@ -341,12 +341,12 @@ public class RecipientPresenterTest extends RobolectricTest {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void handleUnsecureDeliveryWarning_CallsViewMethodWith0_IfWarningSettingNotEnabled() {
-        doReturn(true).when(account).ispEpPrivacyProtected();
+        doReturn(true).when(account).isPlanckPrivacyProtected();
         doReturn(2).when(recipientMvpView).getToUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getCcUnsecureRecipientCount();
         doReturn(2).when(recipientMvpView).getBccUnsecureRecipientCount();
         try (MockedStatic<K9> mockK9 = mockStatic(K9.class)) {
-            mockK9.when(K9::ispEpForwardWarningEnabled).thenReturn(false);
+            mockK9.when(K9::isPlanckForwardWarningEnabled).thenReturn(false);
 
 
             recipientPresenter.handleUnsecureDeliveryWarning();

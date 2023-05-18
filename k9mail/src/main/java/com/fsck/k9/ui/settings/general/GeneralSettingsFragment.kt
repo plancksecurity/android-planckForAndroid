@@ -11,8 +11,8 @@ import androidx.preference.SwitchPreferenceCompat
 import com.fsck.k9.K9
 import com.fsck.k9.R
 import com.fsck.k9.activity.SettingsActivity
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
-import com.fsck.k9.planck.ui.keys.PepExtraKeys
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
+import com.fsck.k9.planck.ui.keys.PlanckExtraKeys
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.settings.onClick
@@ -87,7 +87,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
     private fun initializeExtraKeysManagement() {
         findPreference<Preference>(PREFERENCE_PEP_EXTRA_KEYS)?.apply {
             setOnPreferenceClickListener {
-                PepExtraKeys.actionStart(context)
+                PlanckExtraKeys.actionStart(context)
                 true
             }
         }
@@ -189,8 +189,8 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
         findPreference<Preference>(PREFERENCE_PEP_OWN_IDS_KEY_RESET)?.onPreferenceClickListener = null
     }
 
-    private suspend fun ownKeyReset() = withContext(PEpDispatcher) {
-        val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
+    private suspend fun ownKeyReset() = withContext(PlanckDispatcher) {
+        val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         pEpProvider.keyResetAllOwnKeys()
     }
 

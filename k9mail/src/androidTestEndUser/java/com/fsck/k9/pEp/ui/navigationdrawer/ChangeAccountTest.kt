@@ -73,7 +73,7 @@ class ChangeAccountTest: BaseAndroidTest() {
         TestUtils.waitForIdle()
         click(getString(R.string.okay_action))
         TestUtils.waitForIdle()
-        addTextTo(R.id.incoming_server_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        addTextTo(R.id.incoming_server_password, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD)
         TestUtils.waitForIdle()
         testUtils.clickAcceptButton()
         TestUtils.waitForIdle()

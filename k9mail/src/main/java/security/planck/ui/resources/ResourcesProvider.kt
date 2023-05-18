@@ -15,7 +15,7 @@ interface ResourcesProvider {
 }
 
 //TODO: Check context scope needed
-class PEpResourcesProvider(private val context: Activity) : ResourcesProvider {
+class PlanckResourcesProvider(private val context: Activity) : ResourcesProvider {
 
     override fun getAttributeResource(@AttrRes resource: Int): Int {
         val a: TypedArray = context.theme.obtainStyledAttributes(ThemeManager.appThemeResourceId, intArrayOf(resource))

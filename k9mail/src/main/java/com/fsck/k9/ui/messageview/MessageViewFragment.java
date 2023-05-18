@@ -47,14 +47,14 @@ import com.fsck.k9.mailstore.AttachmentViewInfo;
 import com.fsck.k9.mailstore.LocalMessage;
 import com.fsck.k9.mailstore.MessageViewInfo;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpUtils;
-import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.infrastructure.MessageView;
-import com.fsck.k9.planck.ui.fragments.PEpFragment;
+import com.fsck.k9.planck.ui.fragments.PlanckFragment;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.listeners.OnMessageOptionsListener;
-import com.fsck.k9.planck.ui.privacy.status.PEpStatus;
+import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
@@ -81,7 +81,7 @@ import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
 
-public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
+public class MessageViewFragment extends PlanckFragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
 
     private static final String ARG_REFERENCE = "reference";
@@ -95,7 +95,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private static final int LOCAL_MESSAGE_LOADER_ID = 1;
     private static final int DECODE_MESSAGE_LOADER_ID = 2;
     private Rating pEpRating;
-    private PePUIArtefactCache pePUIArtefactCache;
+    private PlanckUIArtefactCache planckUIArtefactCache;
     private PlanckSecurityStatusLayout planckSecurityStatusLayout;
 
     public static MessageViewFragment newInstance(MessageReference reference) {
@@ -176,7 +176,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -232,7 +232,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         setMessageOptionsListener();
 
-        pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
+        planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
         return view;
     }
 
@@ -349,13 +349,13 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             messageCryptoPresenter.onActivityResult(requestCode, resultCode, data);
         }
 
-        if (resultCode == RESULT_OK && requestCode == PEpStatus.REQUEST_STATUS) {
-            if (requestCode == PEpStatus.REQUEST_STATUS) {
-                Rating rating = (Rating) data.getSerializableExtra(PEpStatus.CURRENT_RATING);
+        if (resultCode == RESULT_OK && requestCode == PlanckStatus.REQUEST_STATUS) {
+            if (requestCode == PlanckStatus.REQUEST_STATUS) {
+                Rating rating = (Rating) data.getSerializableExtra(PlanckStatus.CURRENT_RATING);
                 refreshRating(rating);
             } else {
-                ((K9) getApplicationContext()).getpEpProvider()
-                        .incomingMessageRating(mMessage, new PEpProvider.SimpleResultCallback<Rating>() {
+                ((K9) getApplicationContext()).getPlanckProvider()
+                        .incomingMessageRating(mMessage, new PlanckProvider.SimpleResultCallback<Rating>() {
                             @Override
                             public void onLoaded(Rating rating) {
                                 refreshRating(rating);
@@ -368,7 +368,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private void refreshRating(Rating rating) {
         pEpRating = rating;
         setToolbar();
-        mMessage.setpEpRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+        mMessage.setPlanckRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
         mMessageView.setHeaders(mMessage, mAccount);
     }
 
@@ -377,10 +377,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             if (K9.isUsingTrustwords()) {
                 planckSecurityStatusLayout.setOnClickListener(view -> onPEpPrivacyStatus(false));
             }
-            planckSecurityStatusLayout.setRating(mAccount.ispEpPrivacyProtected() ? pEpRating : pEpRatingUndefined);
+            planckSecurityStatusLayout.setRating(mAccount.isPlanckPrivacyProtected() ? pEpRating : pEpRatingUndefined);
             toolBarCustomizer.setToolbarColor(
                     ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
-            toolBarCustomizer.setStatusBarPepColor(
+            toolBarCustomizer.setStatusBarPlanckColor(
                     ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.MESSAGEVIEW));
         }
     }
@@ -476,19 +476,19 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     public void onReply() {
         if (mMessage != null) {
-            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
+            mFragmentListener.onReply(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
         }
     }
 
     public void onReplyAll() {
         if (mMessage != null) {
-            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
+            mFragmentListener.onReplyAll(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
         }
     }
 
     public void onForward() {
         if (mMessage != null) {
-            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PEpUtils.extractRating(mMessage));
+            mFragmentListener.onForward(mMessage.makeMessageReference(), messageCryptoPresenter.getDecryptionResultForReply(), PlanckUtils.extractRating(mMessage));
         }
     }
 
@@ -860,17 +860,17 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     private void refreshRecipients(Context context) {
         ArrayList<Identity> addresses = new ArrayList<>();
-        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getFrom()), context));
-        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), context));
-        addresses.addAll(PEpUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), context));
-        pePUIArtefactCache.setRecipients(mAccount, addresses);
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getFrom()), context));
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.TO)), context));
+        addresses.addAll(PlanckUtils.createIdentities(Arrays.asList(mMessage.getRecipients(Message.RecipientType.CC)), context));
+        planckUIArtefactCache.setRecipients(mAccount, addresses);
     }
 
     public void onPEpPrivacyStatus(boolean force) {
         refreshRecipients(getContext());
-        if (force || PEpUtils.isPepStatusClickable(pePUIArtefactCache.getRecipients(), pEpRating)) {
+        if (force || PlanckUtils.isPepStatusClickable(planckUIArtefactCache.getRecipients(), pEpRating)) {
             String myAddress = mAccount.getEmail();
-            PEpStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
+            PlanckStatus.actionShowStatus(getActivity(), pEpRating, mMessage.getFrom()[0].getAddress(), getMessageReference(), true, myAddress);
         }
     }
 
@@ -912,7 +912,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
         @Override
         public void onMessageDataDecryptFailed(String errorMessage) {
-            if (errorMessage.equals(PEpProvider.KEY_MISSING_ERROR_MESSAGE)) {
+            if (errorMessage.equals(PlanckProvider.KEY_MISSING_ERROR_MESSAGE)) {
                 showKeyNotFoundFeedback();
             } else {
                 showGenericErrorFeedback();
@@ -929,7 +929,7 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
             recoverRating(message);
             ((MessageList) getActivity()).setMessageViewVisible(true);
 
-            if (!mAccount.ispEpPrivacyProtected()) {
+            if (!mAccount.isPlanckPrivacyProtected()) {
                 pEpRating = pEpRatingUndefined;
             }
 
@@ -999,23 +999,23 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     private void recoverRating(LocalMessage message) {
         // recover pEpRating from db, if is null,
         // then we take the one in the header and store it
-        pEpRating = message.getpEpRating();
+        pEpRating = message.getPlanckRating();
         if (pEpRating == null) {
-            pEpRating = PEpUtils.extractRating(message);
-            message.setpEpRating(pEpRating);
+            pEpRating = PlanckUtils.extractRating(message);
+            message.setPlanckRating(pEpRating);
         }
     }
 
     private void showKeyNotFoundFeedback() {
         mMessageView.setToErrorState(
-                pePUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey),
-                pePUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
+                planckUIArtefactCache.getTitle(Rating.pEpRatingHaveNoKey),
+                planckUIArtefactCache.getSuggestion(Rating.pEpRatingHaveNoKey)
         );
     }
     private void showGenericErrorFeedback() {
         mMessageView.setToErrorState(
-                pePUIArtefactCache.getTitle(Rating.pEpRatingCannotDecrypt),
-                pePUIArtefactCache.getExplanation(Rating.pEpRatingCannotDecrypt)
+                planckUIArtefactCache.getTitle(Rating.pEpRatingCannotDecrypt),
+                planckUIArtefactCache.getExplanation(Rating.pEpRatingCannotDecrypt)
         );
     }
 

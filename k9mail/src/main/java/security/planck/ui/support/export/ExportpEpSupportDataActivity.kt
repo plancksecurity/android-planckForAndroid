@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView {
     @Inject
-    lateinit var presenter: ExportpEpSupportDataPresenter
+    lateinit var presenter: ExportPlanckSupportDataPresenter
     private lateinit var exportButton: Button
     private lateinit var cancelButton: Button
     private lateinit var messageText: TextView
@@ -22,7 +22,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
     private lateinit var successFailureImage: ImageView
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +34,7 @@ class ExportpEpSupportDataActivity : WizardActivity(), ExportpEpSupportDataView 
 
     private fun restoreNonConfigurationInstance() {
         val retainedPresenter = lastCustomNonConfigurationInstance
-        if (retainedPresenter is ExportpEpSupportDataPresenter) {
+        if (retainedPresenter is ExportPlanckSupportDataPresenter) {
             presenter = retainedPresenter
         }
     }
