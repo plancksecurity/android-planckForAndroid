@@ -77,10 +77,15 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
             var secondLine = ""
             secondTextView.text = secondLine
             if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
-                val afterLimit = firstLine.substring(MIN_LENGTH_BEFORE_LINEBREAK)
+                val beforeLimit = firstLine.substring(0, MIN_LENGTH_BEFORE_LINEBREAK)
+                val afterLimit = firstLine.substring(
+                        firstLine.length - MIN_LENGTH_BEFORE_LINEBREAK)
                 if (afterLimit.contains(" ")) {
                     secondLine = afterLimit.substringAfter(" ")
                     firstLine = firstLine.substringBefore(secondLine)
+                } else if (beforeLimit.contains(" ")) {
+                    firstLine = beforeLimit.substringBeforeLast(" ")
+                    secondLine = beforeLimit.substringAfterLast(" ") + afterLimit
                 }
             }
             if (secondLine.isNotBlank()) {
