@@ -5,7 +5,7 @@ import com.fsck.k9.mail.MessagingException
 import com.fsck.k9.mailstore.LocalFolder
 import com.fsck.k9.pEp.models.FolderModel
 import kotlinx.coroutines.*
-import security.pEp.foldable.folders.adapters.BaseLevelListRVRendererAdapter
+import security.planck.foldable.folders.adapters.BaseLevelListRVRendererAdapter
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
