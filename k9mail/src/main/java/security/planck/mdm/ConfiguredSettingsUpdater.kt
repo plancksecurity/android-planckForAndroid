@@ -50,19 +50,19 @@ class ConfiguredSettingsUpdater(
                 updateString(restrictions, entry, accepted = { it.isNotBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
-            RESTRICTION_PEP_EXTRA_KEYS ->
+            RESTRICTION_PLANCK_EXTRA_KEYS ->
                 saveExtraKeys(restrictions, entry)
 
-            RESTRICTION_PEP_MEDIA_KEYS ->
+            RESTRICTION_PLANCK_MEDIA_KEYS ->
                 saveMediaKeys(restrictions, entry)
 
-            RESTRICTION_PEP_USE_TRUSTWORDS ->
+            RESTRICTION_PLANCK_USE_TRUSTWORDS ->
                 K9.setPlanckUseTrustwords(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
+            RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
                 k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_SYNC_FOLDER ->
+            RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_DEBUG_LOG ->
+            RESTRICTION_PLANCK_DEBUG_LOG ->
                 K9.setDebug(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES ->
                 k9.setAllowpEpSyncNewDevices(getBooleanOrDefault(restrictions, entry))
@@ -71,7 +71,7 @@ class ConfiguredSettingsUpdater(
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, entry)
-            RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION ->
+            RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, entry)
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
                 saveAccountLocalFolderSize(restrictions, entry)
@@ -440,8 +440,8 @@ class ConfiguredSettingsUpdater(
             val newMdmExtraKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val fingerprint = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
-                    val keyMaterial = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL)
+                    val fingerprint = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT)
+                    val keyMaterial = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL)
                     if (fingerprint != null && keyMaterial != null) {
                         MdmExtraKey(
                             fingerprint.formatPgpFingerprint(),
@@ -497,9 +497,9 @@ class ConfiguredSettingsUpdater(
             val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
-                    val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
-                    val keyMaterial = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
+                    val addressPattern = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
+                    val fingerprint = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT)
+                    val keyMaterial = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL)
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
                         MdmMediaKey(
                             addressPattern,
