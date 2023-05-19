@@ -27,7 +27,6 @@ import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
 import security.planck.ui.about.AboutActivity;
-import security.planck.ui.about.LicenseActivity;
 import security.planck.ui.calendar.CalendarInviteLayout;
 import security.planck.ui.intro.IntroFirstFragment;
 import security.planck.ui.intro.IntroFourthFragment;
@@ -50,8 +49,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(KeysyncManagement activity);
 
     void inject(AboutActivity activity);
-
-    void inject(LicenseActivity activity);
 
     void inject(PermissionsActivity activity);
 

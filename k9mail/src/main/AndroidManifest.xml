@@ -555,8 +555,6 @@
         <activity android:name=".planck.ui.keysync.KeysyncManagement" />
         <activity android:name="security.planck.ui.about.AboutActivity"
             android:label="@string/about_action"/>
-        <activity android:name="security.planck.ui.about.LicenseActivity"
-            android:label="@string/license"/>
         <activity
             android:name="security.planck.ui.mdm.MdmSettingsFeedbackActivity"
             android:label="@string/mdm_settings_feedback_title"
