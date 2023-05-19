@@ -108,7 +108,7 @@ class BootReceiver : CoreReceiver() {
                     // we want to match all intents
                     return true
                 }
-            }, 0))
+            }, FLAG_IMMUTABLE))
         }
     }
 
