@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -73,20 +72,13 @@ public class K9ActivityCommon {
         Resources resources = context.getResources();
         Configuration config = resources.getConfiguration();
         config.locale = locale;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) Locale.setDefault(locale);
-        else {
-            Configuration systemConfig = Resources.getSystem().getConfiguration();
-            systemConfig.setLocale(locale);
-            Resources.getSystem().updateConfiguration(systemConfig, null);
-        }
+        Locale.setDefault(locale);
 
         resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 
     private static void invalidateChromeLocaleForWebView(Context context) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            new WebView(context).destroy();
-        }
+        new WebView(context).destroy();
     }
 
     public void setConfigurationManagerListener(RestrictionsListener listener) {
@@ -129,7 +121,7 @@ public class K9ActivityCommon {
     }
 
     public static void configureNavigationBar(Activity activity) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ThemeManager.isDarkTheme()) {
+        if(ThemeManager.isDarkTheme()) {
             View decorView = activity.getWindow().getDecorView();
             int vis = decorView.getSystemUiVisibility();
             vis &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;

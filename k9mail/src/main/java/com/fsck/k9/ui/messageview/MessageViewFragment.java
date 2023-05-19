@@ -1,5 +1,9 @@
 package com.fsck.k9.ui.messageview;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
+
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -7,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -30,16 +33,14 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.ChooseFolder;
 import com.fsck.k9.activity.MessageList;
 import com.fsck.k9.activity.MessageLoaderHelper;
-import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderCallbacks;
+import com.fsck.k9.activity.MessageLoaderHelper.MessageLoaderDecryptCallbacks;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.fragment.AttachmentDownloadDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment;
 import com.fsck.k9.fragment.ConfirmationDialogFragment.ConfirmationDialogFragmentListener;
-import com.fsck.k9.helper.FileBrowserHelper;
-import com.fsck.k9.helper.FileBrowserHelper.FileBrowserFailOverCallback;
 import com.fsck.k9.mail.Flag;
 import com.fsck.k9.mail.Message;
 import com.fsck.k9.mailstore.AttachmentViewInfo;
@@ -79,10 +80,6 @@ import security.planck.ui.message_compose.PlanckFabMenu;
 import security.planck.ui.toolbar.PlanckSecurityStatusLayout;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 import timber.log.Timber;
-
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
-import static foundation.pEp.jniadapter.Rating.pEpRatingUndefined;
 
 public class MessageViewFragment extends PEpFragment implements ConfirmationDialogFragmentListener,
         AttachmentViewCallback, OnClickShowCryptoKeyListener, OnSwipeGestureListener {
@@ -537,11 +534,6 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
 
     public void onSpam() {
         onRefile(mAccount.getSpamFolderName());
-    }
-
-    public void onSelectText() {
-        // FIXME
-        // mMessageView.beginSelectingText();
     }
 
     private void startRefileActivity(int activity) {
@@ -1049,41 +1041,10 @@ public class MessageViewFragment extends PEpFragment implements ConfirmationDial
     public void onSaveAttachment(AttachmentViewInfo attachment) {
         //TODO: check if we have to download the attachment first
         currentAttachmentViewInfo = attachment;
-        createPermissionListeners();
-        if (permissionChecker.hasWriteExternalPermission()) {
-            getAttachmentController(attachment).saveAttachment();
-        }
-    }
-
-    @Override
-    public void onSaveAttachmentToUserProvidedDirectory(final AttachmentViewInfo attachment) {
-        //TODO: check if we have to download the attachment first
-        currentAttachmentViewInfo = attachment;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getAttachmentController(attachment).saveAttachment();
-        } else {
-            FileBrowserHelper.getInstance().showFileBrowserActivity(MessageViewFragment.this, null,
-                    ACTIVITY_CHOOSE_DIRECTORY, new FileBrowserFailOverCallback() {
-                        @Override
-                        public void onPathEntered(String path) {
-                            getAttachmentController(attachment).saveAttachmentTo(path);
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            // Do nothing
-                        }
-                    });
-        }
+        getAttachmentController(attachment).saveAttachment();
     }
 
     private AttachmentController getAttachmentController(AttachmentViewInfo attachment) {
         return new AttachmentController(mController, downloadManager, this, attachment);
-    }
-
-    private void createPermissionListeners() {
-        if(permissionChecker.doesntHaveWriteExternalPermission()) {
-            permissionRequester.requestStoragePermission(getRootView());
-        }
     }
 }

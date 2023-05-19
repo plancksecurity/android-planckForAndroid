@@ -4,16 +4,13 @@ package com.fsck.k9.power;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PowerManager;
-import androidx.annotation.RequiresApi;
 
 import com.fsck.k9.service.MailServiceLegacy;
 
 import timber.log.Timber;
 
 
-@RequiresApi(api = Build.VERSION_CODES.M)
 class DeviceIdleReceiver extends BroadcastReceiver {
     private final PowerManager powerManager;
 

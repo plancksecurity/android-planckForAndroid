@@ -2,7 +2,6 @@ package security.planck.ui.intro
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +21,11 @@ import com.fsck.k9.pEp.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
 import foundation.pEp.jniadapter.Rating
-import kotlinx.android.synthetic.main.fragment_intro_first.*
-import kotlinx.android.synthetic.main.fragment_intro_fourth.*
+import kotlinx.android.synthetic.main.fragment_intro_first.contactBadge
+import kotlinx.android.synthetic.main.fragment_intro_first.headerText
+import kotlinx.android.synthetic.main.fragment_intro_first.secondText
+import kotlinx.android.synthetic.main.fragment_intro_fourth.secureBadge
+import kotlinx.android.synthetic.main.fragment_intro_fourth.secureTrustedBadge
 import security.planck.ui.PlanckUIUtils
 import security.planck.ui.permissions.PermissionsActivity
 import javax.inject.Inject
@@ -54,10 +56,8 @@ class WelcomeMessage : AppIntro() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(ThemeManager.appThemeResourceId)
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            window.decorView.systemUiVisibility =
-                    FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        }
+        window.decorView.systemUiVisibility =
+                FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         K9ActivityCommon.configureNavigationBar(this)
         addSlide(IntroFirstFragment())
         addSlide(IntroSecondFragment())

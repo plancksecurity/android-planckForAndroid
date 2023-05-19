@@ -30,11 +30,7 @@ public class ChooseIdentity extends K9ListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            requestWindowFeature(Window.getDefaultFeatures(this));
-        } else {
-            requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        }
+        supportRequestWindowFeature(Window.getDefaultFeatures(this));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_content_simple);
 

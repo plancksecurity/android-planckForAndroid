@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -325,7 +324,6 @@ public class K9 extends MultiDexApplication {
     private static boolean mNotificationDuringQuietTimeEnabled = true;
     private static String mQuietTimeStarts = "21:00";
     private static String mQuietTimeEnds = "7:00";
-    private static String mAttachmentDefaultPath = "";
     private static boolean mWrapFolderNames = false;
     private static boolean mHideUserAgent = true;
     private static boolean mHideTimeZone = false;
@@ -610,7 +608,6 @@ public class K9 extends MultiDexApplication {
         editor.putString("notificationQuickDelete", sNotificationQuickDelete.toString());
         editor.putString("lockScreenNotificationVisibility", sLockScreenNotificationVisibility.toString());
 
-        editor.putString("attachmentdefaultpath", mAttachmentDefaultPath);
         editor.putBoolean("useBackgroundAsUnreadIndicator", sUseBackgroundAsUnreadIndicator);
         editor.putBoolean("threadedView", sThreadedViewEnabled);
         editor.putString("splitViewMode", sSplitViewMode.name());
@@ -800,11 +797,9 @@ public class K9 extends MultiDexApplication {
 
         notifyObservers();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            String packageName = getPackageName();
-            batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
-        }
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        String packageName = getPackageName();
+        batteryOptimizationAsked = powerManager.isIgnoringBatteryOptimizations(packageName);
     }
 
     private void clearBodyCacheIfAppUpgrade() {
@@ -1027,9 +1022,6 @@ public class K9 extends MultiDexApplication {
         pEpSyncEnabled = storage.getBoolean("pEpEnableSync", true);
         usingpEpSyncFolder = storage.getBoolean("pEpSyncFolder", pEpSyncEnabled);
         appVersionCode = storage.getLong("appVersionCode", -1);
-
-        mAttachmentDefaultPath = storage.getString("attachmentdefaultpath",
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString());
         sUseBackgroundAsUnreadIndicator = storage.getBoolean("useBackgroundAsUnreadIndicator", false);
         sThreadedViewEnabled = storage.getBoolean("threadedView", true);
         fontSizes.load(storage);
@@ -1551,13 +1543,8 @@ public class K9 extends MultiDexApplication {
     }
 
     public static String getAttachmentDefaultPath() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath()
-                : mAttachmentDefaultPath;
-    }
-
-    public static void setAttachmentDefaultPath(String attachmentDefaultPath) {
-        K9.mAttachmentDefaultPath = attachmentDefaultPath;
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                .getAbsolutePath();
     }
 
     public static String getpEpNewKeysPassphrase(){

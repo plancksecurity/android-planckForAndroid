@@ -9,16 +9,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
-
-import androidx.annotation.RequiresApi;
-import androidx.annotation.WorkerThread;
-import timber.log.Timber;
 import android.view.View;
 
+import androidx.annotation.WorkerThread;
+
 import com.fsck.k9.Account;
-import com.fsck.k9.BuildConfig;
 import com.fsck.k9.K9;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
@@ -46,6 +42,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 public class AttachmentController {
@@ -153,12 +151,7 @@ public class AttachmentController {
         String filename = FileHelper.sanitizeFilename(attachment.displayName);
         File file;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            file = writeAttachmentToMediaStoreDownloads(filename);
-        } else {
-            file = FileHelper.createUniqueFile(directory, filename);
-            writeAttachmentToStorage(file);
-        }
+        file = writeAttachmentToMediaStoreDownloads(filename);
 
         if (file != null) {
             addSavedAttachmentToDownloadsDatabase(file);
@@ -182,7 +175,6 @@ public class AttachmentController {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     private File writeAttachmentToMediaStoreDownloads(String filename) throws IOException {
         InputStream in = context.getContentResolver().openInputStream(attachment.internalUri);
         Uri mediaStoreUri = MediaStoreUtilsKt.saveToDownloads(

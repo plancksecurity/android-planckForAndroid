@@ -107,9 +107,7 @@
     <string name="read_snackbar_permission_permanently_denied">Wenn p≡p nicht auf die Kontakte zuzugreifen darf, können unerwartete Probleme entstehen</string>
     <string name="read_permission_rationale_title">Zugriff auf Kontakte</string>
     <string name="download_permission_first_explanation">p≡p benötigt die Berechtigung, um Dateien auf Ihr Gerät herunterzuladen</string>
-    <string name="download_snackbar_permission_rationale">p≡p benötigt die Berechtigung, um Anhänge auf Ihr Gerät herunterzuladen.</string>
     <string name="download_snackbar_permission_permanently_denied">Wenn p≡p keine Dateien herunterladen darf, können unerwartete Probleme entstehen</string>
-    <string name="download_permission_rationale_title">Dateien herunterladen</string>
     <string name="add_fpr">Fingerabdruck hinzufügen</string>
     <string name="error_parsing_fingerprint">Fehler beim Analysieren des Fingerabdrucks!</string>
     <string name="is_always_secure">Nachrichten auf Server gesichert speichern</string>
@@ -169,13 +167,6 @@
     <string name="pep_sync">p≡p Sync</string>
     <string name="message_loading_error">Die Bewertung der Nachricht wird noch geladen, versuchen Sie es erneut</string>
     <string name="key_import_accept">Akzeptieren</string>
-    <string name="nnf_filename">Dateiname</string>
-    <string name="nnf_permission_external_write_denied">Zugriff auf den Speicher verweigert</string>
-    <string name="nnf_need_valid_filename">Bitte einen gültigen Dateinamen eingeben oder auswählen</string>
-    <string name="nnf_select_something_first">Bitte wählen Sie zuerst etwas aus</string>
-    <string name="nnf_name">Name</string>
-    <string name="nnf_create_folder_error">Fehler beim Erstellen des Ordners</string>
-    <string name="nnf_new_folder">Neuer Ordner</string>
     <string name="permissions_needed_message">Ohne die notwendigen Berechtigungen können unerwartete Probleme entstehen. Mit OK können Sie die Berechtigungen erteilen.</string>
     <string name="device_offline_warning">Ihr Gerät scheint offline zu sein. Prüfen Sie Ihre Verbindung, bevor Sie fortfahren.</string>
     <string name="account_already_exists">Dieses Konto existiert bereits</string>

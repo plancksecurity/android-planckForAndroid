@@ -3,7 +3,6 @@ package com.fsck.k9.pEp.ui.tools
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.TypedArray
-import android.os.Build
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatDelegate
@@ -27,7 +26,7 @@ object ThemeManager {
         get() = when (appTheme) {
             AppTheme.DARK -> Theme.DARK
             AppTheme.LIGHT -> Theme.LIGHT
-            AppTheme.FOLLOW_SYSTEM -> if (Build.VERSION.SDK_INT < 28) Theme.LIGHT else systemTheme
+            AppTheme.FOLLOW_SYSTEM -> systemTheme
         }
 
     private val systemTheme: Theme
@@ -82,11 +81,7 @@ object ThemeManager {
             AppTheme.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
             AppTheme.DARK -> AppCompatDelegate.MODE_NIGHT_YES
             AppTheme.FOLLOW_SYSTEM -> {
-                if (Build.VERSION.SDK_INT < 28) {
-                    AppCompatDelegate.MODE_NIGHT_NO
-                } else {
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                }
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         }
         AppCompatDelegate.setDefaultNightMode(defaultNightMode)
@@ -123,10 +118,6 @@ object ThemeManager {
         val resourceId = getAttributeResource(context, resource)
         return ContextCompat.getColor(context, resourceId)
     }
-
-    @JvmStatic
-    val filePickerThemeResourceId: Int
-        get() = if(legacyTheme == Theme.LIGHT) R.style.FilePickerTheme_Light else R.style.FilePickerTheme_Dark
 
     fun setCurrentTheme(value: String?) {
         appTheme = stringToAppTheme(value)

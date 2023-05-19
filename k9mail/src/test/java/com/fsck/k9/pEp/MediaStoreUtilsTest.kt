@@ -28,7 +28,7 @@ import java.io.OutputStream
 
 
 @RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE, sdk = [29], application = Application::class)
+@Config(manifest = Config.NONE, sdk = [30], application = Application::class)
 class MediaStoreUtilsTest {
 
     private val inputStream: InputStream = mock()

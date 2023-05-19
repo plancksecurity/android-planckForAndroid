@@ -3,10 +3,10 @@ package com.fsck.k9.notification;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
+import android.text.TextUtils;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import android.text.TextUtils;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.K9;
@@ -42,15 +42,6 @@ public class NotificationController {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(appContext);
         return new NotificationController(appContext, notificationManager);
     }
-
-    public static boolean platformSupportsExtendedNotifications() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-    }
-
-    public static boolean platformSupportsLockScreenNotifications() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    }
-
 
     NotificationController(Context context, NotificationManagerCompat notificationManager) {
         this.context = context;

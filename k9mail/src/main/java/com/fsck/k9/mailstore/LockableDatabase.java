@@ -1,22 +1,21 @@
 package com.fsck.k9.mailstore;
 
-import java.io.File;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import static java.lang.System.currentTimeMillis;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
-import timber.log.Timber;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.helper.FileHelper;
 import com.fsck.k9.mail.MessagingException;
 
-import static java.lang.System.currentTimeMillis;
+import java.io.File;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import timber.log.Timber;
 
 
 public class LockableDatabase {
@@ -499,15 +498,9 @@ public class LockableDatabase {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void deleteDatabase(File database) {
         boolean deleted;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            deleted = SQLiteDatabase.deleteDatabase(database);
-        } else {
-            deleted = database.delete();
-            deleted |= new File(database.getPath() + "-journal").delete();
-        }
+        deleted = SQLiteDatabase.deleteDatabase(database);
         if (!deleted) {
             Timber.i("LockableDatabase: deleteDatabase(): No files deleted.");
         }

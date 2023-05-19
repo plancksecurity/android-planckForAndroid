@@ -1,10 +1,11 @@
 package com.fsck.k9.message.html
 
+import com.fsck.k9.RobolectricTest
 import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class DisplayHtmlTest {
+class DisplayHtmlTest: RobolectricTest() {
     val displayHtml = DisplayHtml(HtmlSettings(useFixedWidthFont = false))
 
     @Test

@@ -122,7 +122,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="flag_action">Als wichtig markieren</string>
     <string name="unflag_action">Wichtig-Markierung entfernen</string>
     <string name="copy_action">Kopieren</string>
-    <string name="select_text_action">Text auswählen</string>
     <string name="show_headers_action">Kopfzeilen anzeigen</string>
     <string name="hide_headers_action">Kopfzeilen verbergen</string>
     <plurals name="copy_address_to_clipboard">
@@ -825,7 +824,6 @@ Bitte senden Sie Fehlerberichte, Ideen für neue Funktionen und stellen Sie Frag
     <string name="settings_import_use_incoming_server_password">Passwort des Posteingangsservers verwenden</string>
     <string name="activate_account_action">Aktivieren</string>
     <string name="account_unavailable">Konto \"<xliff:g id="account">%s</xliff:g>\" ist nicht verfügbar; Überprüfen Sie den Speicher</string>
-    <string name="settings_attachment_default_path">Speicherort für Anhänge…</string>
     <string name="attachment_save_title">Anhang speichern</string>
     <string name="attachment_save_desc">Es wurde kein Dateimanager gefunden. Wo soll der Anhang abgelegt werden?</string>
     <string name="manage_accounts_move_up_action">Nach oben verschieben</string>

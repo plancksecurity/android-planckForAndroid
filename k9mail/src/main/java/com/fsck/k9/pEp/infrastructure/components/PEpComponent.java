@@ -8,15 +8,10 @@ import com.fsck.k9.activity.setup.AccountSetupBasics;
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings;
 import com.fsck.k9.activity.setup.AccountSetupNames;
 import com.fsck.k9.fragment.MessageListFragment;
-import com.fsck.k9.pEp.filepicker.SelectPathFragment;
 import com.fsck.k9.pEp.infrastructure.PerActivity;
 import com.fsck.k9.pEp.infrastructure.modules.ActivityModule;
 import com.fsck.k9.pEp.infrastructure.modules.PEpModule;
 import com.fsck.k9.pEp.manualsync.ImportWizardFrompEp;
-
-import security.planck.ui.about.LicenseActivity;
-import security.planck.ui.calendar.CalendarInviteLayout;
-import security.planck.ui.about.AboutActivity;
 import com.fsck.k9.pEp.ui.blacklist.PepBlacklist;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupBasicsFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupIncomingFragment;
@@ -25,15 +20,18 @@ import com.fsck.k9.pEp.ui.fragments.AccountSetupOutgoingFragment;
 import com.fsck.k9.pEp.ui.fragments.AccountSetupSelectAuthFragment;
 import com.fsck.k9.pEp.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.pEp.ui.keys.PepExtraKeys;
-import security.planck.ui.keyimport.KeyImportActivity;
 import com.fsck.k9.pEp.ui.keysync.KeysyncManagement;
 import com.fsck.k9.pEp.ui.keysync.PEpAddDevice;
 import com.fsck.k9.pEp.ui.privacy.status.PEpStatus;
 import com.fsck.k9.ui.messageview.MessageViewFragment;
 
 import dagger.Component;
+import security.planck.ui.about.AboutActivity;
+import security.planck.ui.about.LicenseActivity;
+import security.planck.ui.calendar.CalendarInviteLayout;
 import security.planck.ui.intro.IntroFirstFragment;
 import security.planck.ui.intro.IntroFourthFragment;
+import security.planck.ui.keyimport.KeyImportActivity;
 import security.planck.ui.mdm.MdmSettingsFeedbackActivity;
 import security.planck.ui.passphrase.PassphraseActivity;
 import security.planck.ui.permissions.PermissionsActivity;
@@ -78,8 +76,6 @@ public interface PEpComponent extends ActivityComponent {
     void inject(AccountSetupOptionsFragment accountSetupOptionsFragment);
 
     void inject(MessageList activity);
-
-    void inject(SelectPathFragment selectPathFragment);
 
     void inject(KeyImportActivity activity);
 
