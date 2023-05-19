@@ -12,9 +12,9 @@ import com.fsck.k9.pEp.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection
-import security.pEp.foldable.folders.model.LevelListItem
-import security.pEp.foldable.folders.util.Constants
-import security.pEp.foldable.folders.util.LevelListBuilderImpl
+import security.planck.foldable.folders.model.LevelListItem
+import security.planck.foldable.folders.util.Constants
+import security.planck.foldable.folders.util.LevelListBuilderImpl
 import javax.inject.Inject
 import javax.inject.Named
 
