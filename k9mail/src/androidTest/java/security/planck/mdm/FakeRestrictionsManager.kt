@@ -70,54 +70,54 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
     fun getManifestExtraKeys(): Set<String> =
         manifestRestrictions.first {
-            it.key == RESTRICTION_PEP_EXTRA_KEYS
+            it.key == RESTRICTION_PLANCK_EXTRA_KEYS
         }.restrictions.map { bundleRestriction ->
             bundleRestriction.restrictions.first().selectedString
         }.toSet()
 
     fun getExtraKeys(): Set<TestMdmExtraKey>? = applicationRestrictions.getParcelableArray(
-        RESTRICTION_PEP_EXTRA_KEYS
+        RESTRICTION_PLANCK_EXTRA_KEYS
     )?.map {
         val bundle = it as Bundle
-        val fpr = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
-        val material = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL)
+        val fpr = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT)
+        val material = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL)
         TestMdmExtraKey(fpr, material)
     }?.toSet()
 
     fun getMediaKeys(): Set<TestMdmMediaKey>? = applicationRestrictions.getParcelableArray(
-        RESTRICTION_PEP_MEDIA_KEYS
+        RESTRICTION_PLANCK_MEDIA_KEYS
     )?.map {
         val bundle = it as Bundle
-        val pattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
-        val fpr = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
-        val material = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
+        val pattern = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
+        val fpr = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT)
+        val material = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL)
         TestMdmMediaKey(pattern, fpr, material)
     }?.toSet()
 
     fun setExtraKeys(keys: Set<TestMdmExtraKey>?) = if (keys == null) {
-        applicationRestrictions.remove(RESTRICTION_PEP_EXTRA_KEYS)
+        applicationRestrictions.remove(RESTRICTION_PLANCK_EXTRA_KEYS)
     } else {
         applicationRestrictions.putParcelableArray(
-            RESTRICTION_PEP_EXTRA_KEYS,
+            RESTRICTION_PLANCK_EXTRA_KEYS,
             keys.map {
                 Bundle().apply {
-                    putString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT, it.fpr)
-                    putString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL, it.material)
+                    putString(RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT, it.fpr)
+                    putString(RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL, it.material)
                 }
             }.toTypedArray()
         )
     }
 
     fun setMediaKeys(keys: Set<TestMdmMediaKey>?) = if (keys == null) {
-        applicationRestrictions.remove(RESTRICTION_PEP_EXTRA_KEYS)
+        applicationRestrictions.remove(RESTRICTION_PLANCK_EXTRA_KEYS)
     } else {
         applicationRestrictions.putParcelableArray(
-            RESTRICTION_PEP_MEDIA_KEYS,
+            RESTRICTION_PLANCK_MEDIA_KEYS,
             keys.map {
                 Bundle().apply {
-                    putString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN, it.pattern)
-                    putString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT, it.fpr)
-                    putString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL, it.material)
+                    putString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN, it.pattern)
+                    putString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT, it.fpr)
+                    putString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL, it.material)
                 }
             }.toTypedArray()
         )
@@ -406,7 +406,7 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
         fun getDefaultManifestRestrictions(): List<RestrictionEntry> =
             listOf(
                 RestrictionEntry(
-                    RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION,
+                    RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION,
                     DEFAULT_PRIVACY_PROTECTION
                 ),
                 getExtraKeysRestrictionEntry(),
@@ -415,13 +415,13 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
                     RESTRICTION_ENABLE_ECHO_PROTOCOL,
                     DEFAULT_ENABLE_ECHO_PROTOCOL
                 ),
-                RestrictionEntry(RESTRICTION_PEP_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
+                RestrictionEntry(RESTRICTION_PLANCK_USE_TRUSTWORDS, DEFAULT_USE_TRUSTWORDS),
                 RestrictionEntry(
-                    RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING,
+                    RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING,
                     DEFAULT_UNSECURE_DELIVERY_WARNING
                 ),
-                RestrictionEntry(RESTRICTION_PEP_SYNC_FOLDER, DEFAULT_PEP_SYNC_FOLDER),
-                RestrictionEntry(RESTRICTION_PEP_DEBUG_LOG, DEFAULT_PEP_DEBUG_LOG),
+                RestrictionEntry(RESTRICTION_PLANCK_SYNC_FOLDER, DEFAULT_PEP_SYNC_FOLDER),
+                RestrictionEntry(RESTRICTION_PLANCK_DEBUG_LOG, DEFAULT_PEP_DEBUG_LOG),
                 RestrictionEntry(RESTRICTION_ACCOUNT_DESCRIPTION, DEFAULT_ACCOUNT_DESCRIPTION),
                 RestrictionEntry(
                     RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE,
@@ -495,17 +495,17 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
         private fun getExtraKeysRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleArrayEntry(
-                RESTRICTION_PEP_EXTRA_KEYS,
+                RESTRICTION_PLANCK_EXTRA_KEYS,
                 arrayOf(
                     RestrictionEntry.createBundleEntry(
-                        RESTRICTION_PEP_MEDIA_KEY,
+                        RESTRICTION_PLANCK_MEDIA_KEY,
                         arrayOf(
                             RestrictionEntry(
-                                RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                                RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT,
                                 DEFAULT_MEDIA_KEY_FPR
                             ),
                             RestrictionEntry(
-                                RESTRICTION_PEP_EXTRA_KEY_MATERIAL,
+                                RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL,
                                 DEFAULT_MEDIA_KEY_MATERIAL
                             ),
                         )
@@ -515,21 +515,21 @@ class FakeRestrictionsManager @Inject constructor() : RestrictionsProvider {
 
         private fun getMediaKeysRestrictionEntry(): RestrictionEntry =
             RestrictionEntry.createBundleArrayEntry(
-                RESTRICTION_PEP_MEDIA_KEYS,
+                RESTRICTION_PLANCK_MEDIA_KEYS,
                 arrayOf(
                     RestrictionEntry.createBundleEntry(
-                        RESTRICTION_PEP_MEDIA_KEY,
+                        RESTRICTION_PLANCK_MEDIA_KEY,
                         arrayOf(
                             RestrictionEntry(
-                                RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                                RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN,
                                 DEFAULT_MEDIA_KEY_PATTERN
                             ),
                             RestrictionEntry(
-                                RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                                RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT,
                                 DEFAULT_MEDIA_KEY_FPR
                             ),
                             RestrictionEntry(
-                                RESTRICTION_PEP_MEDIA_KEY_MATERIAL,
+                                RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL,
                                 DEFAULT_MEDIA_KEY_MATERIAL
                             ),
                         )

@@ -172,8 +172,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
 
         val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, false) }
-        val entry = RestrictionEntry(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, true)
+            Bundle().apply { putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, false) }
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
 
 
         updater.update(restrictions, entry)
@@ -186,7 +186,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, true)
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
 
 
         updater.update(restrictions, entry)
@@ -199,8 +199,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     fun `update() takes the value for enable pEp privacy protection from the provided restrictions`() {
 
         val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, false) }
-        val entry = RestrictionEntry(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, true)
+            Bundle().apply { putBoolean(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, false) }
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
 
 
         updater.update(restrictions, entry)
@@ -213,7 +213,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     fun `update() takes the value for enable pEp privacy protection from the restriction entry if not provided in bundle`() {
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, true)
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
 
 
         updater.update(restrictions, entry)
@@ -580,17 +580,17 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     private fun getExtraKeysRestrictionEntry() = RestrictionEntry.createBundleArrayEntry(
-        RESTRICTION_PEP_EXTRA_KEYS,
+        RESTRICTION_PLANCK_EXTRA_KEYS,
         arrayOf(
             RestrictionEntry.createBundleEntry(
-                RESTRICTION_PEP_EXTRA_KEY,
+                RESTRICTION_PLANCK_EXTRA_KEY,
                 arrayOf(
                     RestrictionEntry(
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                        RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_EXTRA_KEY_MATERIAL,
+                        RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL,
                         ""
                     )
                 )
@@ -603,36 +603,36 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         fpr2: String = KEY_FPR_2,
     ) = Bundle().apply {
         putParcelableArray(
-            RESTRICTION_PEP_EXTRA_KEYS,
+            RESTRICTION_PLANCK_EXTRA_KEYS,
             arrayOf(
                 bundleOf(
-                    RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to fpr1,
-                    RESTRICTION_PEP_EXTRA_KEY_MATERIAL to KEY_MATERIAL_1
+                    RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr1,
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_1
                 ),
                 bundleOf(
-                    RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to fpr2,
-                    RESTRICTION_PEP_EXTRA_KEY_MATERIAL to KEY_MATERIAL_2
+                    RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr2,
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_2
                 ),
             )
         )
     }
 
     private fun getMediaKeysRestrictionEntry() = RestrictionEntry.createBundleArrayEntry(
-        RESTRICTION_PEP_MEDIA_KEYS,
+        RESTRICTION_PLANCK_MEDIA_KEYS,
         arrayOf(
             RestrictionEntry.createBundleEntry(
-                RESTRICTION_PEP_MEDIA_KEY,
+                RESTRICTION_PLANCK_MEDIA_KEY,
                 arrayOf(
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                        RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                        RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_MATERIAL,
+                        RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL,
                         ""
                     )
                 )
@@ -647,17 +647,17 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         fpr2: String = KEY_FPR_2,
     ) = Bundle().apply {
         putParcelableArray(
-            RESTRICTION_PEP_MEDIA_KEYS,
+            RESTRICTION_PLANCK_MEDIA_KEYS,
             arrayOf(
                 bundleOf(
-                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern1,
-                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr1,
-                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to KEY_MATERIAL_1
+                    RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN to pattern1,
+                    RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT to fpr1,
+                    RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL to KEY_MATERIAL_1
                 ),
                 bundleOf(
-                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern2,
-                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr2,
-                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to KEY_MATERIAL_2
+                    RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN to pattern2,
+                    RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT to fpr2,
+                    RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL to KEY_MATERIAL_2
                 ),
             )
         )
