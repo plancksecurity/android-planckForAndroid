@@ -39,14 +39,13 @@ import com.fsck.k9.mail.internet.TextBody;
 import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
-import com.fsck.k9.pEp.EspressoTestingIdlingResource;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.infrastructure.threading.JobExecutor;
-import com.fsck.k9.pEp.infrastructure.threading.PostExecutionThread;
-import com.fsck.k9.pEp.infrastructure.threading.ThreadExecutor;
-import com.fsck.k9.pEp.infrastructure.threading.UIThread;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.EspressoTestingIdlingResource;
+import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.infrastructure.threading.JobExecutor;
+import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
+import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
+import com.fsck.k9.planck.infrastructure.threading.UIThread;
 
 import org.apache.james.mime4j.codec.EncoderUtil;
 import org.apache.james.mime4j.util.MimeUtil;
@@ -54,12 +53,8 @@ import foundation.pEp.jniadapter.Blob;
 import foundation.pEp.jniadapter.Message;
 
 import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
-import timber.log.Timber;
 
 
 public abstract class MessageBuilder {

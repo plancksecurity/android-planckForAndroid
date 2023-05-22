@@ -19,11 +19,11 @@ import com.fsck.k9.autodiscovery.providersxml.ProvidersXmlDiscovery
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
 import com.fsck.k9.oauth.OAuthConfigurationProvider
-import com.fsck.k9.pEp.DefaultDispatcherProvider
-import com.fsck.k9.pEp.DispatcherProvider
-import com.fsck.k9.pEp.infrastructure.livedata.Event
-import com.fsck.k9.pEp.ui.ConnectionSettings
-import com.fsck.k9.pEp.ui.fragments.toServerSettings
+import com.fsck.k9.planck.DefaultDispatcherProvider
+import com.fsck.k9.planck.DispatcherProvider
+import com.fsck.k9.planck.infrastructure.livedata.Event
+import com.fsck.k9.planck.ui.ConnectionSettings
+import com.fsck.k9.planck.ui.fragments.toServerSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

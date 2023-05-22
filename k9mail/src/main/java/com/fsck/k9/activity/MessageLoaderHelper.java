@@ -1,8 +1,8 @@
 package com.fsck.k9.activity;
 
 
-import static com.fsck.k9.pEp.PEpProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
-import static com.fsck.k9.pEp.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
+import static com.fsck.k9.planck.PEpProvider.KEY_COULD_NOT_DECRYPT_MESSAGE;
+import static com.fsck.k9.planck.PEpProvider.KEY_MISSING_ERROR_MESSAGE;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +38,7 @@ import com.fsck.k9.mailstore.MessageViewInfoExtractor;
 import com.fsck.k9.message.extractors.AttachmentInfoExtractor;
 import com.fsck.k9.message.extractors.EncryptionVerifier;
 import com.fsck.k9.message.html.DisplayHtml;
-import com.fsck.k9.pEp.PEpProvider;
+import com.fsck.k9.planck.PEpProvider;
 import com.fsck.k9.ui.crypto.MessageCryptoAnnotations;
 import com.fsck.k9.ui.crypto.MessageCryptoCallback;
 import com.fsck.k9.ui.crypto.MessageCryptoHelper;

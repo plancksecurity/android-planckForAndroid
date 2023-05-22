@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.navigationdrawer
+package com.fsck.k9.planck.ui.navigationdrawer
 
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +17,8 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.common.GetNavigationAccountEmailAction
 import com.fsck.k9.common.GetNavigationFolderTextAction
 import com.fsck.k9.common.GetTextViewTextAction
-import com.fsck.k9.pEp.ui.activities.SplashActivity
-import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.planck.ui.activities.SplashActivity
+import com.fsck.k9.planck.ui.activities.TestUtils
 import com.schibsted.spain.barista.internal.matcher.HelperMatchers.atPosition
 import org.hamcrest.CoreMatchers
 import org.hamcrest.core.IsNot.not

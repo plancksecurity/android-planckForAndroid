@@ -5,8 +5,8 @@ import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import com.fsck.k9.K9
 import com.fsck.k9.R
-import com.fsck.k9.pEp.ui.tools.Theme
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.tools.Theme
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import javax.inject.Inject
 import javax.inject.Named
 

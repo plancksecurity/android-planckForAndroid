@@ -5,9 +5,9 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
-import com.fsck.k9.pEp.EspressoTestingIdlingResource
-import com.fsck.k9.pEp.ui.activities.SplashActivity
-import com.fsck.k9.pEp.ui.activities.TestUtils
+import com.fsck.k9.planck.EspressoTestingIdlingResource
+import com.fsck.k9.planck.ui.activities.SplashActivity
+import com.fsck.k9.planck.ui.activities.TestUtils
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

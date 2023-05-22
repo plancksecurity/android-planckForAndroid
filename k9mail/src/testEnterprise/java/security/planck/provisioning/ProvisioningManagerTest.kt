@@ -5,8 +5,8 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
-import com.fsck.k9.pEp.PEpProviderImplKotlin
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.PEpProviderImplKotlin
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue

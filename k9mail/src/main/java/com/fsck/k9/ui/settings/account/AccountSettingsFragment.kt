@@ -15,9 +15,9 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.pEp.PEpUtils
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.ui.tools.FeedbackTools
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
 import com.fsck.k9.ui.settings.onClick
 import com.fsck.k9.ui.settings.remove

@@ -14,7 +14,7 @@ import com.fsck.k9.R
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.DatabasePreviewType
-import com.fsck.k9.pEp.ui.PEpContactBadge
+import com.fsck.k9.planck.ui.PEpContactBadge
 import foundation.pEp.jniadapter.Rating
 import security.planck.ui.PlanckUIUtils.getDrawableForMessageList
 import java.util.*

@@ -196,8 +196,8 @@ android {
         setProperty("archivesBaseName", "${gitVersionName}-${versionCode}")
         generatedDensities = ["mdpi", "hdpi", "xhdpi"]
 
-        testApplicationId "com.fsck.k9.pEp.ui.activities.test"
-        testInstrumentationRunner "com.fsck.k9.pEp.ui.activities.test.CucumberTestCase"
+        testApplicationId "com.fsck.k9.planck.ui.activities.test"
+        testInstrumentationRunner "com.fsck.k9.planck.ui.activities.test.CucumberTestCase"
         //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true

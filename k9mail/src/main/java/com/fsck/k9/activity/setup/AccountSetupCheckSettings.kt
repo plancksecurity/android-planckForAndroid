@@ -24,7 +24,7 @@ import com.fsck.k9.mail.CertificateValidationException
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.filter.Hex
 import com.fsck.k9.mail.store.RemoteStore
-import com.fsck.k9.pEp.infrastructure.exceptions.DeviceOfflineException
+import com.fsck.k9.planck.infrastructure.exceptions.DeviceOfflineException
 import org.koin.android.architecture.ext.viewModel
 import org.koin.android.ext.android.inject
 import timber.log.Timber

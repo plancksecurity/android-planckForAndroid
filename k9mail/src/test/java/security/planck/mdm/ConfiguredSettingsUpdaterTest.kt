@@ -15,8 +15,8 @@ import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.mailstore.FolderRepository
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.mailstore.FolderType
-import com.fsck.k9.pEp.PEpProvider
-import com.fsck.k9.pEp.testutils.ReturnBehavior
+import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.testutils.ReturnBehavior
 import foundation.pEp.jniadapter.Identity
 import io.mockk.*
 import junit.framework.TestCase.assertEquals

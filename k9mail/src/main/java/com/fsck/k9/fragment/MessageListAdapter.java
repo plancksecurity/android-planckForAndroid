@@ -21,8 +21,8 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.helper.Utility;
 import com.fsck.k9.mail.Address;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import foundation.pEp.jniadapter.Rating;
 
 import static android.view.View.GONE;

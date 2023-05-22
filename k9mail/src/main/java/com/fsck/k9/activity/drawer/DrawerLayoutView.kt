@@ -24,9 +24,9 @@ import com.fsck.k9.activity.ActivityListener
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.models.FolderModel
-import com.fsck.k9.pEp.ui.renderers.AccountRenderer
-import com.fsck.k9.pEp.ui.renderers.FolderRenderer
+import com.fsck.k9.planck.models.FolderModel
+import com.fsck.k9.planck.ui.renderers.AccountRenderer
+import com.fsck.k9.planck.ui.renderers.FolderRenderer
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.google.android.material.navigation.NavigationView

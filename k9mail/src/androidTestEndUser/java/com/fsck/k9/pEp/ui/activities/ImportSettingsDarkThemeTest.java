@@ -1,9 +1,9 @@
-package com.fsck.k9.pEp.ui.activities;
+package com.fsck.k9.planck.ui.activities;
 
 import com.fsck.k9.R;
 import com.fsck.k9.common.BaseAndroidTest;
-import com.fsck.k9.pEp.ui.tools.Theme;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.Theme;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -68,7 +68,7 @@ task customTest() {
     doLast {
         // 3. Uninstall previous test app
         try {
-            execCommand("adb$deviceText uninstall com.fsck.k9.pEp.ui.activities.test", verbose)
+            execCommand("adb$deviceText uninstall com.fsck.k9.planck.ui.activities.test", verbose)
         } catch (Throwable ex) {
             if (verbose) {
                 ex.printStackTrace()
@@ -91,7 +91,7 @@ task customTest() {
         execCommand(
                 "adb$deviceText shell am instrument --user $user -w -m -e useCucumber " +
                         "$useCucumber -e package com -e debug false " +
-                        "com.fsck.k9.pEp.ui.activities.test/com.fsck.k9.pEp.ui.activities.test.CucumberTestCase",
+                        "com.fsck.k9.planck.ui.activities.test/com.fsck.k9.planck.ui.activities.test.CucumberTestCase",
                 verbose
         )
     }

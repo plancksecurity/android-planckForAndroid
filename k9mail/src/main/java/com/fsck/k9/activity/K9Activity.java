@@ -22,9 +22,9 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.ui.tools.KeyboardUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
 
 import butterknife.Bind;

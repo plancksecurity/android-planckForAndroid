@@ -13,8 +13,8 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.pEp.PepActivity
-import com.fsck.k9.pEp.ui.tools.FeedbackTools
+import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.view.MessageWebView
 import javax.inject.Inject
 

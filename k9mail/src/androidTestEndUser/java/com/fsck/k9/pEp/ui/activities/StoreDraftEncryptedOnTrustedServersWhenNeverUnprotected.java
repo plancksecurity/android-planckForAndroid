@@ -1,4 +1,4 @@
-package com.fsck.k9.pEp.ui.activities;
+package com.fsck.k9.planck.ui.activities;
 
 import android.content.res.Resources;
 
@@ -23,8 +23,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.exists;
-import static com.fsck.k9.pEp.ui.activities.UtilsPackage.withRecyclerView;
+import static com.fsck.k9.planck.ui.activities.UtilsPackage.exists;
+import static com.fsck.k9.planck.ui.activities.UtilsPackage.withRecyclerView;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)

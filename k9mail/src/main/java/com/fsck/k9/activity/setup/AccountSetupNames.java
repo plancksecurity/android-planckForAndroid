@@ -29,11 +29,11 @@ import com.fsck.k9.activity.misc.ExtendedAsyncTask;
 import com.fsck.k9.activity.misc.NonConfigurationInstance;
 import com.fsck.k9.controller.MessagingController;
 import com.fsck.k9.helper.Utility;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.PePUIArtefactCache;
-import com.fsck.k9.pEp.PepActivity;
-import com.fsck.k9.pEp.ui.tools.KeyboardUtils;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.ui.tools.KeyboardUtils;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import javax.inject.Inject;
 

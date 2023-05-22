@@ -22,7 +22,7 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 import security.planck.ui.toolbar.PEpToolbarCustomizer;
 import security.planck.ui.toolbar.ToolBarCustomizer;

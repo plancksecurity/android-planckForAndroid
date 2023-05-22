@@ -7,8 +7,8 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.controller.SimpleMessagingListener
 import com.fsck.k9.mailstore.LocalFolder
-import com.fsck.k9.pEp.AccountUtils
-import com.fsck.k9.pEp.models.FolderModel
+import com.fsck.k9.planck.AccountUtils
+import com.fsck.k9.planck.models.FolderModel
 import com.fsck.k9.search.LocalSearch
 import com.fsck.k9.search.SearchAccount
 import com.pedrogomez.renderers.ListAdapteeCollection

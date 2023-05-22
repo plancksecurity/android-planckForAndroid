@@ -1,7 +1,7 @@
 package security.planck.ui.provisioning
 
-import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningPresenter
-import com.fsck.k9.pEp.ui.activities.provisioning.ProvisioningView
+import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningPresenter
+import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningView
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test

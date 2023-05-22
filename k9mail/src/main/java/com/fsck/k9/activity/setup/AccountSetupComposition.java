@@ -15,7 +15,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.K9Activity;
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 
 public class AccountSetupComposition extends K9Activity {
 

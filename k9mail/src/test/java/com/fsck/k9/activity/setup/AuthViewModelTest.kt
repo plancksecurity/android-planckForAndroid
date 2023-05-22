@@ -28,9 +28,9 @@ import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.oauth.OAuthConfiguration
-import com.fsck.k9.pEp.infrastructure.livedata.Event
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
-import com.fsck.k9.pEp.ui.ConnectionSettings
+import com.fsck.k9.planck.infrastructure.livedata.Event
+import com.fsck.k9.planck.testutils.CoroutineTestRule
+import com.fsck.k9.planck.ui.ConnectionSettings
 import io.mockk.*
 import junit.framework.TestCase.*
 import kotlinx.coroutines.CoroutineScope

@@ -36,9 +36,9 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
-import com.fsck.k9.pEp.PEpProvider;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.infrastructure.Poller;
+import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
@@ -55,8 +55,8 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
-import static com.fsck.k9.pEp.ui.PepColoredActivity.CURRENT_RATING;
-import static com.fsck.k9.pEp.ui.privacy.status.PEpStatus.REQUEST_STATUS;
+import static com.fsck.k9.planck.ui.PepColoredActivity.CURRENT_RATING;
+import static com.fsck.k9.planck.ui.privacy.status.PEpStatus.REQUEST_STATUS;
 
 
 public class RecipientPresenter implements EchoMessageReceivedListener {

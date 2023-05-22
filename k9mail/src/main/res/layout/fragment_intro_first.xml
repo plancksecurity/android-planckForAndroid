@@ -42,7 +42,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/headerText" />
 
-            <com.fsck.k9.pEp.ui.PEpContactBadge
+            <com.fsck.k9.planck.ui.PEpContactBadge
                 android:id="@+id/contactBadge"
                 android:layout_width="@dimen/intro_contact_badge_width_height"
                 android:layout_height="@dimen/intro_contact_badge_width_height"

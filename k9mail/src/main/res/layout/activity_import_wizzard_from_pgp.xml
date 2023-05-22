@@ -13,7 +13,7 @@
     android:paddingEnd="@dimen/key_import_floating_horizontal_margin"
     android:paddingRight="@dimen/key_import_floating_horizontal_margin"
     android:paddingBottom="@dimen/key_import_floating_vertical_margin"
-    tools:context="com.fsck.k9.pEp.manualsync.ImportWizardFrompEp"
+    tools:context="com.fsck.k9.planck.manualsync.ImportWizardFrompEp"
     tools:layout_editor_absoluteX="16dp"
     tools:layout_editor_absoluteY="16dp"
     tools:layout_gravity="center"

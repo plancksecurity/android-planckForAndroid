@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.preference.PreferenceDataStore
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import kotlinx.coroutines.*
 import java.util.concurrent.ExecutorService
 

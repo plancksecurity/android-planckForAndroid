@@ -12,7 +12,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.RobolectricTest;
-import com.fsck.k9.pEp.ui.keys.FakeAndroidKeyStore;
+import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;

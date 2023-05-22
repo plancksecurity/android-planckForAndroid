@@ -11,9 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import com.fsck.k9.pEp.ui.tools.ThemeManager;
+import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.pEp.ui.fragments.PEpFragment;
+import com.fsck.k9.planck.ui.fragments.PEpFragment;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -80,10 +80,10 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.pEp.PEpUtils;
-import com.fsck.k9.pEp.ui.infrastructure.DrawerLocker;
-import com.fsck.k9.pEp.ui.infrastructure.MessageSwipeDirection;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
+import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.preferences.StorageEditor;
 import com.fsck.k9.provider.EmailProvider;
 import com.fsck.k9.provider.EmailProvider.MessageColumns;

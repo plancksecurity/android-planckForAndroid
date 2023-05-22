@@ -16,8 +16,8 @@ import androidx.core.app.ActivityCompat;
 
 import com.fsck.k9.K9;
 import com.fsck.k9.R;
-import com.fsck.k9.pEp.ui.PermissionErrorListener;
-import com.fsck.k9.pEp.ui.tools.FeedbackTools;
+import com.fsck.k9.planck.ui.PermissionErrorListener;
+import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;

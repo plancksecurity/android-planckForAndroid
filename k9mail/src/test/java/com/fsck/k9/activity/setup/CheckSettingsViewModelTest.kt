@@ -6,7 +6,7 @@ import com.fsck.k9.Account
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.activity.setup.AccountSetupCheckSettings.CheckDirection
 import com.fsck.k9.activity.setup.CheckSettingsState.*
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

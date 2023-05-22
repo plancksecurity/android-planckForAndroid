@@ -11,7 +11,7 @@ import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.BinaryMemoryBody
 import com.fsck.k9.mailstore.LocalMessage
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.pEp.testutils.CoroutineTestRule
+import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

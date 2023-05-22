@@ -1,6 +1,6 @@
 package com.fsck.k9.message.html
 
-import com.fsck.k9.pEp.ui.tools.ThemeManager
+import com.fsck.k9.planck.ui.tools.ThemeManager
 import javax.inject.Inject
 
 class DisplayHtml @Inject constructor(private val settings: HtmlSettings) {

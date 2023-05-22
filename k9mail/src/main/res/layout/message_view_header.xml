@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.fsck.k9.pEp.ui.PEpContactBadge
+                <com.fsck.k9.planck.ui.PEpContactBadge
                     android:id="@+id/contact_badge"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"

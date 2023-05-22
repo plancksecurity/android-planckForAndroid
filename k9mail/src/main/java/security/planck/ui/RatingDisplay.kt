@@ -1,9 +1,8 @@
 package security.planck.ui
 
 import com.fsck.k9.R
-import com.fsck.k9.pEp.PEpUtils
+import com.fsck.k9.planck.PEpUtils
 import foundation.pEp.jniadapter.Rating
-import security.planck.ui.RatingDisplayImpl
 
 abstract class RatingDisplay {
     protected abstract val ratingDisplayHolderList: List<RatingDisplayHolder>
