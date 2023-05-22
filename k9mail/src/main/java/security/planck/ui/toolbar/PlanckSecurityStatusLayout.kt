@@ -78,8 +78,7 @@ class PlanckSecurityStatusLayout(context: Context, attrs: AttributeSet?) :
             secondTextView.text = secondLine
             if (firstLine.length > MIN_LENGTH_BEFORE_LINEBREAK) {
                 val beforeLimit = firstLine.substring(0, MIN_LENGTH_BEFORE_LINEBREAK)
-                val afterLimit = firstLine.substring(
-                        firstLine.length - MIN_LENGTH_BEFORE_LINEBREAK)
+                val afterLimit = firstLine.substringAfter(beforeLimit)
                 if (afterLimit.contains(" ")) {
                     secondLine = afterLimit.substringAfter(" ")
                     firstLine = firstLine.substringBefore(secondLine)
