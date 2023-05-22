@@ -25,7 +25,7 @@ ARG LIBPEPTRANSPORT_VERSION
 ARG FOLDABLE_FOLDER_VERSION
 
 # Fetch pEp for Android First-Party Dependencies
-RUN git clone --depth=1 https://git.planck.security/foundation/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
+RUN git clone --depth=1 https://git.planck.security/foundation/planckCoreV3.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
 RUN git clone --depth=1 https://git.planck.security/foundation/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckWrapper.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libPlanckAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libPlanckCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libPlanckCxx11
@@ -35,12 +35,12 @@ COPY . /root/code/pEp
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
 # TODO PEMA-103 move this to chuck all files into a local include
-RUN echo "PREFIX=$HOME/code/pEpEngine/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
+RUN echo "PREFIX=$HOME/code/planckCoreV3/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
 RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
 
 
 # WORKAROUND JNI-176
-RUN cd $HOME/code/pEpEngine && \
+RUN cd $HOME/code/planckCoreV3 && \
     sh build-android/takeOutHeaderFiles.sh $PWD
 
 # SET GRADLE DAEMON CONFIGURATION

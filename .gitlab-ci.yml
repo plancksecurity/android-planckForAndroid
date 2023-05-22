@@ -22,7 +22,7 @@ workflow:
   - echo "pEpEngine Version = ${pEpEngine}"
   - echo "libPlanckWrapper Version = ${libpEpAdapter}"
   - echo "libPlanckCxx11 Version = ${libpEpCxx11}"
-  - wget -q -O - https://git.planck.security/foundation/pEpEngine/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
+  - wget -q -O - https://git.planck.security/foundation/planckCoreV3/raw/${pEpEngine}/DEPENDENCIES | sed '/^#/d' >> DEPENDENCIES
   - echo -e "\n" >> DEPENDENCIES
   - cat DEPENDENCIES
   - source DEPENDENCIES
