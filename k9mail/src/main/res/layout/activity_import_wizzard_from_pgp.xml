@@ -205,9 +205,8 @@
         android:layout_height="wrap_content"
         android:text="@string/keysync_wizard_action_next"
         android:textColor="?attr/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@+id/dissmissActionButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
         tools:text="next" />
 
     <Button
@@ -221,7 +220,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/afirmativeActionButton"
         app:layout_constraintStart_toEndOf="@+id/dissmissActionButton"
-        app:layout_constraintTop_toTopOf="@+id/dissmissActionButton"
         app:layout_constraintVertical_bias="1.0"
         tools:text="Reject" />
 
