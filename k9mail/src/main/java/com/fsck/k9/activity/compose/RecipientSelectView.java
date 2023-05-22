@@ -829,6 +829,7 @@ public class RecipientSelectView extends TokenCompleteTextView<Recipient> implem
                         } else {
                             holder.updateRating(recipient.getRating());
                             postInvalidateDelayed(100);
+                            listener.handleUnsecureTokenWarning();
                         }
                     }
                 }
