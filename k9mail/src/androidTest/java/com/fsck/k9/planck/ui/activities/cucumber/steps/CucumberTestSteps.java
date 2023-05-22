@@ -4,11 +4,13 @@ package com.fsck.k9.planck.ui.activities.cucumber.steps;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,8 +49,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.*;
 import java.security.MessageDigest;
@@ -66,6 +70,7 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.mdm.MailSettings;
 import timber.log.Timber;
 
+import static androidx.core.content.ContextCompat.getSystemService;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -125,7 +130,7 @@ public class CucumberTestSteps {
     private ActivityScenario<SplashActivity> scenario;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         if (testUtils == null) {
             instrumentation = InstrumentationRegistry.getInstrumentation();
             device = UiDevice.getInstance(instrumentation);
@@ -139,6 +144,7 @@ public class CucumberTestSteps {
             //testUtils.testReset = true;
         }
         Intents.init();
+        I_set_wifi("true");
         try {
             waitForIdle();
             scenario = ActivityScenario.launch(SplashActivity.class);
@@ -986,6 +992,20 @@ public class CucumberTestSteps {
             waitForIdle();
         }
         return webViewText;
+    }
+
+    @When("^I set wifi to (\\S+)")
+    public void I_set_wifi(String active) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+        boolean airplaneMode;
+        if (active.equals("true")) {
+            airplaneMode = true;
+        } else if (active.equals("false")) {
+            airplaneMode = false;
+        } else {
+            testUtils.assertFailWithMessage("Boolean value of aireplane mode " + active + " doesn't exist");
+        }
+        testUtils.setWifi(false);
+        waitForIdle();
     }
 
     @When("^I click stop trusting words$")
