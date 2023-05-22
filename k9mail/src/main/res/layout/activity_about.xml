@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        tools:context="com.fsck.k9.security.pEp.ui.about.AboutActivity">
+        tools:context="com.fsck.k9.security.planck.ui.about.AboutActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package security.pEp.ui
+package security.planck.ui
 
 import android.view.View
 import androidx.annotation.ColorRes
@@ -12,7 +12,6 @@ import foundation.pEp.jniadapter.Rating
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
 import org.junit.Test
-import security.planck.ui.PlanckUIUtils
 
 class PEpUIUtilsTest : RobolectricTest() {
     private val app = ApplicationProvider.getApplicationContext<K9>()

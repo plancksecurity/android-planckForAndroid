@@ -5,7 +5,7 @@ import android.content.RestrictionsManager
 import com.fsck.k9.BuildConfig
 import dagger.Module
 import dagger.Provides
-import security.pEp.mdm.FakeRestrictionsManager
+import security.planck.mdm.FakeRestrictionsManager
 import security.planck.mdm.PlanckRestrictions
 import security.planck.mdm.RestrictionsProvider
 import javax.inject.Named

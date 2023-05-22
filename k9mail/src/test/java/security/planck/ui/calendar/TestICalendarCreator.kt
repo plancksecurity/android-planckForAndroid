@@ -1,4 +1,4 @@
-package security.pEp.ui.calendar
+package security.planck.ui.calendar
 
 import biweekly.Biweekly
 import biweekly.ICalendar

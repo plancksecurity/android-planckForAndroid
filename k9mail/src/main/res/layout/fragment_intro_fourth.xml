@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            tools:context="com.fsck.k9.security.pEp.ui.intro.IntroFourthFragment"
+            tools:context="com.fsck.k9.security.planck.ui.intro.IntroFourthFragment"
             android:paddingBottom="@dimen/intro_fragment_bottom_padding">
 
             <androidx.appcompat.widget.AppCompatTextView

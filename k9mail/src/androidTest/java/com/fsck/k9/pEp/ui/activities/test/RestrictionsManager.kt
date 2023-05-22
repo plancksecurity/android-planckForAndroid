@@ -4,9 +4,9 @@ import androidx.test.core.app.ApplicationProvider
 import com.fsck.k9.common.BaseAndroidTest
 import com.fsck.k9.pEp.infrastructure.TestK9
 import com.fsck.k9.pEp.ui.activities.TestUtils
-import security.pEp.mdm.FakeRestrictionsManager
-import security.pEp.mdm.MailIncomingOutgoingSettings
-import security.pEp.mdm.MailSettings
+import security.planck.mdm.FakeRestrictionsManager
+import security.planck.mdm.MailIncomingOutgoingSettings
+import security.planck.mdm.MailSettings
 import timber.log.Timber
 
 
