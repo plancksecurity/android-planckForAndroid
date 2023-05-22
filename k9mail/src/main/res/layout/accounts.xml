@@ -96,8 +96,7 @@
             <TextView
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/terms_and_conditions"
-                android:textColor="@color/black"
-                style="@style/SelectAuthScreenTermsAndConditions"
+                style="@style/TermsAndConditionsText"
                 tools:text="Terms and Conditions" />
         </LinearLayout>
     </ScrollView>
