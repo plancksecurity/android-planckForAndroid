@@ -16,7 +16,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -81,6 +83,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.sql.Connection;
@@ -2497,7 +2501,13 @@ public class TestUtils {
             }
         }
     }
-
+    public void setWifi (boolean enable) throws IOException {
+        if (enable) {
+            device.executeShellCommand("svc wifi enable");
+        } else {
+            device.executeShellCommand("svc wifi disable");
+        }
+    }
     public void summonThreads () {
         clickStatus();
         pressBack();
