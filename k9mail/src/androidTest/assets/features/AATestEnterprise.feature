@@ -17,7 +17,10 @@ Feature: Test
     And I switch off Wi-Fi
     And I wait 10 seconds
     And I switch on Wi-Fi
-    And I wait for the message and click it
+    And I wait for the new message
+    And I switch off Wi-Fi
+    And I wait 10 seconds
+    And I click the first message
     Then I check the privacy status is secure
     And I open 3 attached files
 
