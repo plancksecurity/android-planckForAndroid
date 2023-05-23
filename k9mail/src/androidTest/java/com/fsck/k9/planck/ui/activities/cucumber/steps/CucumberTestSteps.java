@@ -144,7 +144,7 @@ public class CucumberTestSteps {
             //testUtils.testReset = true;
         }
         Intents.init();
-        I_set_wifi("true");
+        I_switch_wifi("on");
         try {
             waitForIdle();
             scenario = ActivityScenario.launch(SplashActivity.class);
@@ -994,17 +994,16 @@ public class CucumberTestSteps {
         return webViewText;
     }
 
-    @When("^I set wifi to (\\S+)")
-    public void I_set_wifi(String active) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
-        boolean airplaneMode;
-        if (active.equals("true")) {
-            airplaneMode = true;
-        } else if (active.equals("false")) {
-            airplaneMode = false;
+    @When("^I switch (\\S+) Wi-Fi")
+    public void I_switch_wifi(String active) throws NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+        boolean wifi;
+        if (active.equals("off")) {
+            testUtils.setWifi(false);
+        } else if (active.equals("on")) {
+            testUtils.setWifi(true);
         } else {
-            testUtils.assertFailWithMessage("Boolean value of aireplane mode " + active + " doesn't exist");
+            testUtils.assertFailWithMessage("Option of Wi-Fi: " + active + "; doesn't exist");
         }
-        testUtils.setWifi(false);
         waitForIdle();
     }
 
