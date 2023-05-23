@@ -3,6 +3,35 @@ Feature: Test
     Given I created an account
 
 
+  Scenario: Cucumber Send big attachment and cut Internet Connection
+    When I send 1 messages to bot1 with subject FirstMessage and body AttachmentsTest
+    And I click compose message
+    And I enter bot1 in the messageTo field
+    And I enter SecondMessage in the messageSubject field
+    And I enter AtachmentsHere in the messageBody field
+    And I attach PDF
+    And I attach MSoffice
+    And I attach picture
+    Then I check the privacy status is secure
+    When I click the send message button
+    And I switch off Wi-Fi
+    And I wait 10 seconds
+    And I switch on Wi-Fi
+    And I wait for the message and click it
+    Then I check the privacy status is secure
+    And I open 3 attached files
+
+
+  Scenario: Cucumber Key Reset with no Internet Connection
+    When I send 1 messages to bot1 with subject First and body ConnectionTest
+    And I switch off Wi-Fi
+    And I reset my own key
+    And I switch on Wi-Fi
+    And I send 1 messages to bot1 with subject Second and body NoConnectionTest
+    And I click the first message
+    Then I check the privacy status is secure
+
+
   Scenario Outline: Cucumber Stress
     When I stress Engine threads with 4 recipients
 
