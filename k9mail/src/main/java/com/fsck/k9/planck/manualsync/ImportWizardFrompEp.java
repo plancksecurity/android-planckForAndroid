@@ -266,9 +266,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     private void showKeySyncDone() {
         loading.setVisibility(View.GONE);
-        cancel.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.grayScaleColorOnBackground3));
-        cancel.setText(R.string.keysync_wizard_action_leave);
-        cancel.setOnClickListener(v -> presenter.leaveDeviceGroup());
+        cancel.setVisibility(View.GONE);
         action.setVisibility(View.VISIBLE);
 
         action.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.defaultColorOnBackground));
@@ -279,10 +277,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
     @Override
     public void showSomethingWentWrong() {
         description.setText(R.string.keysync_wizard_error_message);
-        cancel.setVisibility(View.VISIBLE);
-        cancel.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.grayScaleColorOnBackground3));
-        cancel.setText(R.string.cancel_action);
-        cancel.setOnClickListener(v -> presenter.leaveDeviceGroup());
+        cancel.setVisibility(View.GONE);
 
         action.setVisibility(View.VISIBLE);
         action.setTextColor(resourcesProvider.getColorFromAttributeResource(R.attr.defaultColorOnBackground));
