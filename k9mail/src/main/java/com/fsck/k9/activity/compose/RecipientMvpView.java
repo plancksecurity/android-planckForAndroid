@@ -21,10 +21,10 @@ import com.fsck.k9.activity.MessageReference;
 import com.fsck.k9.activity.compose.RecipientPresenter.CryptoMode;
 import com.fsck.k9.mail.Address;
 import com.fsck.k9.mail.Message.RecipientType;
-import com.fsck.k9.planck.PEpUtils;
-import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.ui.ActionRecipientSelectView;
-import com.fsck.k9.planck.ui.privacy.status.PEpStatus;
+import com.fsck.k9.planck.ui.privacy.status.PlanckStatus;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.activity.compose.RecipientSelectView.TokenListener;
 
@@ -70,9 +70,9 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     private final Account mAccount;
 
     // pEp stuff
-    private Rating pEpRating = Rating.pEpRatingUndefined;
+    private Rating planckRating = Rating.pEpRatingUndefined;
 
-    PePUIArtefactCache pEpUiCache;
+    PlanckUIArtefactCache pEpUiCache;
     private RecipientPresenter presenter;
     private MessageReference messageReference;
 
@@ -110,7 +110,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         ccWrapper.setOnClickListener(this);
         bccWrapper.setOnClickListener(this);
 
-        pEpUiCache = PePUIArtefactCache.getInstance(activity.getApplicationContext());
+        pEpUiCache = PlanckUIArtefactCache.getInstance(activity.getApplicationContext());
     }
 
     private void setOnCutCopyPasteListenerToView(ActionRecipientSelectView view) {
@@ -122,7 +122,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
             @Override
             public void onCopy() {
-                copyFromView(PEpUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
+                copyFromView(PlanckUtils.addressesToString(RecipientMvpView.this.toView.getAddresses()));
             }
         });
     }
@@ -132,7 +132,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     private void cutFromView(ActionRecipientSelectView view) {
-        copyFromView(PEpUtils.addressesToString(view.getAddresses()));
+        copyFromView(PlanckUtils.addressesToString(view.getAddresses()));
         view.emptyAddresses();
     }
 
@@ -398,7 +398,7 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
     }
 
     public boolean isPepStatusClickable() {
-        return PEpUtils.isPepStatusClickable(pEpUiCache.getRecipients(), pEpRating);
+        return PlanckUtils.isPepStatusClickable(pEpUiCache.getRecipients(), planckRating);
     }
 
     public void showCryptoStatus(CryptoStatusDisplayType cryptoStatusDisplayType) {
@@ -538,17 +538,17 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
         bccView.setOnFocusChangeListener(pEpChangeTracker);
     }
 
-    public void setpEpRating(Rating pEpRating) {
-        this.pEpRating = pEpRating;
+    public void setPlanckRating(Rating planckRating) {
+        this.planckRating = planckRating;
     }
 
-    public Rating getpEpRating() {
-        return pEpRating;
+    public Rating getPlanckRating() {
+        return planckRating;
     }
 
     void handlepEpState(boolean forceHide) {
-        if (mAccount.ispEpPrivacyProtected()) {
-            activity.setToolbarRating(pEpRating, forceHide);
+        if (mAccount.isPlanckPrivacyProtected()) {
+            activity.setToolbarRating(planckRating, forceHide);
         } else {
             activity.setToolbarRating(Rating.pEpRatingUnencrypted, forceHide);
         }
@@ -572,15 +572,15 @@ public class RecipientMvpView implements OnFocusChangeListener, OnClickListener 
 
     public void refreshRecipients() {
         ArrayList<Identity> recipients = new ArrayList<>();
-        recipients.addAll(PEpUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
-        recipients.addAll(PEpUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
-        recipients.addAll(PEpUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getToAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getCcAddresses(), activity.getApplicationContext()));
+        recipients.addAll(PlanckUtils.createIdentities(getBccAddresses(), activity.getApplicationContext()));
         pEpUiCache.setRecipients(mAccount, recipients);
     }
 
         void onPEpPrivacyStatus() {
-            PendingIntent pendingIntent = PEpStatus.pendingIntentShowStatus(activity, pEpRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
-            launchUserInteractionPendingIntent(pendingIntent, PEpStatus.REQUEST_STATUS);
+            PendingIntent pendingIntent = PlanckStatus.pendingIntentShowStatus(activity, planckRating, getFrom(), messageReference, false, getFrom(), presenter.isForceUnencrypted(), presenter.isAlwaysSecure());
+            launchUserInteractionPendingIntent(pendingIntent, PlanckStatus.REQUEST_STATUS);
 
         //FIXME P4A-934: "Caused by: android.os.TransactionTooLargeException: data parcel size 1064328 bytes", not always reproducible.
     }

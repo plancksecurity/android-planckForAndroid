@@ -7,15 +7,15 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.activity.AlternateRecipientAdapter;
 import com.fsck.k9.activity.K9Activity;
 import com.fsck.k9.planck.DispatcherProvider;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 import com.fsck.k9.planck.infrastructure.modules.ApplicationModule;
 import com.fsck.k9.planck.infrastructure.modules.RestrictionsProviderModule;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
-import com.fsck.k9.planck.ui.PepColoredActivity;
+import com.fsck.k9.planck.ui.PlanckColoredActivity;
 import com.fsck.k9.planck.ui.activities.provisioning.ProvisioningActivity;
-import com.fsck.k9.planck.ui.fragments.PEpFragment;
-import com.fsck.k9.planck.ui.fragments.PEpSettingsChecker;
+import com.fsck.k9.planck.ui.fragments.PlanckFragment;
+import com.fsck.k9.planck.ui.fragments.PlanckSettingsChecker;
 import com.fsck.k9.view.MessageHeader;
 import com.fsck.k9.activity.compose.RecipientSelectView;
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator;
@@ -38,15 +38,15 @@ public interface ApplicationComponent {
 
     void inject(K9Activity k9Activity);
 
-    void inject(PepColoredActivity pepColoredActivity);
+    void inject(PlanckColoredActivity planckColoredActivity);
 
-    void inject(PEpFragment pEpFragment);
+    void inject(PlanckFragment planckFragment);
 
     ThreadExecutor getThreadExecutor();
 
     PostExecutionThread getPostExecutionThread();
 
-    PEpSettingsChecker settingsChecker();
+    PlanckSettingsChecker settingsChecker();
     AccountSetupNavigator accountSetupNavigator();
 
     DispatcherProvider dispatcherProvider();
@@ -59,7 +59,7 @@ public interface ApplicationComponent {
     Preferences preferences();
     ConfigurationManager.Factory configurationManagerFactory();
     RestrictionsProvider restrictionsProvider();
-    PEpProvider pEpProvider();
+    PlanckProvider pEpProvider();
 
     @Component.Factory
     interface Factory {

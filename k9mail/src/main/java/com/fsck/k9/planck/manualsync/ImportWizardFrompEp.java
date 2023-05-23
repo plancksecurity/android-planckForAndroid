@@ -159,7 +159,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override
@@ -297,7 +297,7 @@ public class ImportWizardFrompEp extends WizardActivity implements ImportWizardF
 
     @Override
     public void leaveDeviceGroup() {
-        this.getK9().setpEpSyncEnabled(false);
+        this.getK9().setPlanckSyncEnabled(false);
         finish();
     }
 

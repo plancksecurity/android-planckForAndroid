@@ -56,7 +56,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
         onView(withId(R.id.manual_setup)).perform(click());
         setupIncomingSettings();
         setupOutgoingSettings();
-        accountSetupPEpOptions();
+        accountSetupPlanckOptions();
         accountSetupName(false);
         checkLastAccountInSettings();
     }
@@ -82,7 +82,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
-        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
+        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PLANCK_TEST_EMAIL_PASSWORD));
         testUtils.clickAcceptButton();
         TestUtils.waitForIdle();
         checkLastAccountInSettings();
@@ -117,7 +117,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
         onView(withId(R.id.done)).perform(click());
     }
 
-    private void accountSetupPEpOptions() {
+    private void accountSetupPlanckOptions() {
         testUtils.waitUntilViewDisplayed(R.id.next);
         onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class))))
@@ -135,7 +135,7 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
         testUtils.waitUntilViewDisplayed(onView(allOf(isAssignableFrom(TextView.class),
                 withParent(isAssignableFrom(Toolbar.class)), withText(stringResource))));
 
-        String server = BuildConfig.PEP_TEST_EMAIL_SERVER;
+        String server = BuildConfig.PLANCK_TEST_EMAIL_SERVER;
 
         onView(withId(R.id.account_server)).perform(replaceText(server));
         TestUtils.waitForIdle();
@@ -154,8 +154,8 @@ public class AccountSetupBasicsTest extends BaseAndroidTest {
                 withParent(isAssignableFrom(Toolbar.class))))
                 .check(matches(withText(R.string.account_setup_basics_title)));
 
-        String email = BuildConfig.PEP_TEST_EMAIL_ADDRESS;
-        String pass = BuildConfig.PEP_TEST_EMAIL_PASSWORD;
+        String email = BuildConfig.PLANCK_TEST_EMAIL_ADDRESS;
+        String pass = BuildConfig.PLANCK_TEST_EMAIL_PASSWORD;
         onView(withId(R.id.account_email)).perform(replaceText(email));
         onView(withId(R.id.account_password)).perform(replaceText(pass));
     }

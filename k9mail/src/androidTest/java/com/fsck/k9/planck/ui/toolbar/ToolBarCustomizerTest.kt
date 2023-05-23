@@ -29,13 +29,13 @@ class ToolBarCustomizerTest {
     fun check_if_status_bar_changes_color_by_color_resource() {
         val colorRes = R.color.white
 
-        mActivityRule.activity.setStatusBarPepColor(colorRes)
+        mActivityRule.activity.setStatusBarPlanckColor(colorRes)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         val beforeColour = mActivityRule.activity.window.statusBarColor
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
-        mActivityRule.activity.setStatusBarPepColor(colorRes)
+        mActivityRule.activity.setStatusBarPlanckColor(colorRes)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
 
         onView(withId(android.R.id.statusBarBackground))

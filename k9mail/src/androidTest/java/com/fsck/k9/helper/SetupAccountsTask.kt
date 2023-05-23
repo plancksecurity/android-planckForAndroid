@@ -41,7 +41,7 @@ class SetupAccountsTask : BaseTest() {
         TestUtils.waitForIdle()
         addAccount(
             emailAddress = ANDROID_DEV_TEST_1_ADDRESS,
-            password = BuildConfig.PEP_TEST_EMAIL_PASSWORD,
+            password = BuildConfig.PLANCK_TEST_EMAIL_PASSWORD,
             accountName = "account"
         )
     }

@@ -17,7 +17,7 @@
         android:elevation="3dp"
         android:paddingBottom="8dp">
 
-        <com.fsck.k9.planck.ui.PEpContactBadge
+        <com.fsck.k9.planck.ui.PlanckContactBadge
             android:id="@+id/status_badge"
             style="?android:attr/quickContactBadgeStyleWindowLarge"
             android:layout_width="52dp"

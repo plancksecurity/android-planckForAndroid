@@ -15,7 +15,7 @@ import com.fsck.k9.mailstore.Folder
 import com.fsck.k9.mailstore.FolderRepository
 import com.fsck.k9.mailstore.FolderRepositoryManager
 import com.fsck.k9.mailstore.FolderType
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.testutils.ReturnBehavior
 import foundation.pEp.jniadapter.Identity
 import io.mockk.*
@@ -172,61 +172,61 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     fun `update() takes the value for unsecure delivery warning from the provided restrictions`() {
 
         val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, false) }
-        val entry = RestrictionEntry(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, true)
+            Bundle().apply { putBoolean(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, false) }
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setpEpForwardWarningEnabled(false) }
+        verify { k9.setPlanckForwardWarningEnabled(false) }
     }
 
     @Test
     fun `update() takes the value for unsecure delivery warning from the restriction entry if not provided in bundle`() {
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING, true)
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING, true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { k9.setpEpForwardWarningEnabled(true) }
+        verify { k9.setPlanckForwardWarningEnabled(true) }
     }
 
     @Test
     fun `update() takes the value for enable pEp privacy protection from the provided restrictions`() {
 
         val restrictions =
-            Bundle().apply { putBoolean(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, false) }
-        val entry = RestrictionEntry(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, true)
+            Bundle().apply { putBoolean(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, false) }
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.setpEpPrivacyProtection(false) }
+        verify { account.setPlanckPrivacyProtection(false) }
     }
 
     @Test
     fun `update() takes the value for enable pEp privacy protection from the restriction entry if not provided in bundle`() {
 
         val restrictions = Bundle()
-        val entry = RestrictionEntry(RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION, true)
+        val entry = RestrictionEntry(RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION, true)
 
 
         updater.update(restrictions, entry)
 
 
-        verify { account.setpEpPrivacyProtection(true) }
+        verify { account.setPlanckPrivacyProtection(true) }
     }
 
     @Test
     fun `update() takes the value for extra keys from the provided restrictions`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp, defaultImportExtraKeyBehaviors)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        updater.planck = planck
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -235,8 +235,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_1.toByteArray())
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_1.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_1,
@@ -274,9 +274,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with blank or missing fields`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp, defaultImportExtraKeyBehaviors)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        updater.planck = planck
         val restrictions = getExtraKeysBundle(fpr1 = " ")
         val entry = getExtraKeysRestrictionEntry()
 
@@ -285,7 +285,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -296,9 +296,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys with badly formatted fingerprints`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp, defaultImportExtraKeyBehaviors)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        updater.planck = planck
         val restrictions = getExtraKeysBundle(fpr1 = WRONG_FPR)
         val entry = getExtraKeysRestrictionEntry()
 
@@ -307,7 +307,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -318,9 +318,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() does not set extra keys if all keys are blank or have errors`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp, defaultImportExtraKeyBehaviors)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck, defaultImportExtraKeyBehaviors)
+        updater.planck = planck
         val restrictions = getExtraKeysBundle(
             fpr1 = " ",
             fpr2 = WRONG_FPR
@@ -332,21 +332,21 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify(exactly = 0) {
-            pEp.importKey(any())
+            planck.importKey(any())
             K9.setMasterKeys(any())
         }
     }
 
     @Test
     fun `update() ignores extra keys for which PEpProvider returns bad key import result`() {
-        val pEp: PEpProvider = mockk()
+        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
-            pEp,
+            planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        updater.pEp = pEp
+        updater.planck = planck
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -355,7 +355,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -366,14 +366,14 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores extra keys for which PEpProvider throws an exception`() {
-        val pEp: PEpProvider = mockk()
+        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
-            pEp,
+            planck,
             defaultImportExtraKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        updater.pEp = pEp
+        updater.planck = planck
         val restrictions = getExtraKeysBundle()
         val entry = getExtraKeysRestrictionEntry()
 
@@ -382,7 +382,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMasterKeys(
                 setOf(
                     KEY_FPR_2
@@ -393,9 +393,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() takes the value for media keys from the provided restrictions`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck)
+        updater.planck = planck
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -404,8 +404,8 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_1.toByteArray())
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_1.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
                     MediaKey(
@@ -450,9 +450,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with blank or missing fields`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck)
+        updater.planck = planck
         val restrictions = getMediaKeysBundle(pattern1 = " ")
         val entry = getMediaKeysRestrictionEntry()
 
@@ -461,7 +461,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
                     MediaKey(
@@ -475,9 +475,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores media keys with badly formated fingerprints`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck)
+        updater.planck = planck
         val restrictions = getMediaKeysBundle(fpr1 = WRONG_FPR)
         val entry = getMediaKeysRestrictionEntry()
 
@@ -486,7 +486,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
                     MediaKey(
@@ -500,9 +500,9 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() does not set media keys if all keys are blank or have errors`() {
-        val pEp: PEpProvider = mockk()
-        stubImportKeyBehavior(pEp)
-        updater.pEp = pEp
+        val planck: PlanckProvider = mockk()
+        stubImportKeyBehavior(planck)
+        updater.planck = planck
         val restrictions = getMediaKeysBundle(
             pattern1 = " ",
             fpr2 = WRONG_FPR
@@ -514,21 +514,21 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify(exactly = 0) {
-            pEp.importKey(any())
+            planck.importKey(any())
             K9.setMediaKeys(any())
         }
     }
 
     @Test
     fun `update() ignores media keys for which PEpProvider returns bad key import result`() {
-        val pEp: PEpProvider = mockk()
+        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
-            pEp,
+            planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Return(null)
             }
         )
-        updater.pEp = pEp
+        updater.planck = planck
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -537,7 +537,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
                     MediaKey(
@@ -551,14 +551,14 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
     @Test
     fun `update() ignores media keys for which PEpProvider throws an exception`() {
-        val pEp: PEpProvider = mockk()
+        val planck: PlanckProvider = mockk()
         stubImportKeyBehavior(
-            pEp,
+            planck,
             defaultImportMediaKeyBehaviors.apply {
                 this[KEY_MATERIAL_1] = ReturnBehavior.Throw(RuntimeException())
             }
         )
-        updater.pEp = pEp
+        updater.planck = planck
         val restrictions = getMediaKeysBundle()
         val entry = getMediaKeysRestrictionEntry()
 
@@ -567,7 +567,7 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
 
 
         verify {
-            pEp.importKey(KEY_MATERIAL_2.toByteArray())
+            planck.importKey(KEY_MATERIAL_2.toByteArray())
             K9.setMediaKeys(
                 setOf(
                     MediaKey(
@@ -580,17 +580,17 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     private fun getExtraKeysRestrictionEntry() = RestrictionEntry.createBundleArrayEntry(
-        RESTRICTION_PEP_EXTRA_KEYS,
+        RESTRICTION_PLANCK_EXTRA_KEYS,
         arrayOf(
             RestrictionEntry.createBundleEntry(
-                RESTRICTION_PEP_EXTRA_KEY,
+                RESTRICTION_PLANCK_EXTRA_KEY,
                 arrayOf(
                     RestrictionEntry(
-                        RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT,
+                        RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_EXTRA_KEY_MATERIAL,
+                        RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL,
                         ""
                     )
                 )
@@ -603,36 +603,36 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         fpr2: String = KEY_FPR_2,
     ) = Bundle().apply {
         putParcelableArray(
-            RESTRICTION_PEP_EXTRA_KEYS,
+            RESTRICTION_PLANCK_EXTRA_KEYS,
             arrayOf(
                 bundleOf(
-                    RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to fpr1,
-                    RESTRICTION_PEP_EXTRA_KEY_MATERIAL to KEY_MATERIAL_1
+                    RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr1,
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_1
                 ),
                 bundleOf(
-                    RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT to fpr2,
-                    RESTRICTION_PEP_EXTRA_KEY_MATERIAL to KEY_MATERIAL_2
+                    RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT to fpr2,
+                    RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL to KEY_MATERIAL_2
                 ),
             )
         )
     }
 
     private fun getMediaKeysRestrictionEntry() = RestrictionEntry.createBundleArrayEntry(
-        RESTRICTION_PEP_MEDIA_KEYS,
+        RESTRICTION_PLANCK_MEDIA_KEYS,
         arrayOf(
             RestrictionEntry.createBundleEntry(
-                RESTRICTION_PEP_MEDIA_KEY,
+                RESTRICTION_PLANCK_MEDIA_KEY,
                 arrayOf(
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN,
+                        RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT,
+                        RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT,
                         ""
                     ),
                     RestrictionEntry(
-                        RESTRICTION_PEP_MEDIA_KEY_MATERIAL,
+                        RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL,
                         ""
                     )
                 )
@@ -647,28 +647,28 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
         fpr2: String = KEY_FPR_2,
     ) = Bundle().apply {
         putParcelableArray(
-            RESTRICTION_PEP_MEDIA_KEYS,
+            RESTRICTION_PLANCK_MEDIA_KEYS,
             arrayOf(
                 bundleOf(
-                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern1,
-                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr1,
-                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to KEY_MATERIAL_1
+                    RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN to pattern1,
+                    RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT to fpr1,
+                    RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL to KEY_MATERIAL_1
                 ),
                 bundleOf(
-                    RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN to pattern2,
-                    RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT to fpr2,
-                    RESTRICTION_PEP_MEDIA_KEY_MATERIAL to KEY_MATERIAL_2
+                    RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN to pattern2,
+                    RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT to fpr2,
+                    RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL to KEY_MATERIAL_2
                 ),
             )
         )
     }
 
     fun stubImportKeyBehavior(
-        pEp: PEpProvider,
+        planck: PlanckProvider,
         material: String,
         behavior: ReturnBehavior<Vector<Identity?>>
     ) {
-        every { pEp.importKey(material.toByteArray()) }.answers {
+        every { planck.importKey(material.toByteArray()) }.answers {
             when (behavior) {
                 is ReturnBehavior.Return -> behavior.value
                 is ReturnBehavior.Throw -> throw behavior.e
@@ -677,11 +677,11 @@ class ConfiguredSettingsUpdaterTest: RobolectricTest() {
     }
 
     private fun stubImportKeyBehavior(
-        pEp: PEpProvider,
+        planck: PlanckProvider,
         behaviors: MutableMap<String, ReturnBehavior<Vector<Identity?>>> = defaultImportMediaKeyBehaviors
     ) {
         val keySlot = mutableListOf<ByteArray>()
-        every { pEp.importKey(capture(keySlot)) }.answers {
+        every { planck.importKey(capture(keySlot)) }.answers {
             val material = keySlot.last()
             behaviors[material.decodeToString()]!!.let { behavior ->
                 when (behavior) {

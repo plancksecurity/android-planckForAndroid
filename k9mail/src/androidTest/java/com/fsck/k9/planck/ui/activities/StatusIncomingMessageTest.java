@@ -115,7 +115,7 @@ public class StatusIncomingMessageTest extends BaseAndroidTest {
     private void fillMessage() {
         testUtils.fillMessage(
                 new TestUtils.BasicMessage(
-                        BuildConfig.PEP_TEST_EMAIL_ADDRESS,
+                        BuildConfig.PLANCK_TEST_EMAIL_ADDRESS,
                         MESSAGE_SUBJECT,
                         MESSAGE_BODY,
                         messageTo

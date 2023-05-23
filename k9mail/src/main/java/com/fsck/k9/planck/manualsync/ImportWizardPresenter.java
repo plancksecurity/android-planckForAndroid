@@ -1,8 +1,9 @@
 package com.fsck.k9.planck.manualsync;
 
 import com.fsck.k9.K9;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
+
 import java.util.List;
 import javax.inject.Inject;
 import foundation.pEp.jniadapter.Identity;
@@ -18,15 +19,15 @@ public class ImportWizardPresenter {
     private Identity myself;
     private Identity partner;
     private SyncHandshakeSignal signal;
-    private PEpProvider pEp;
+    private PlanckProvider planck;
     private SyncState state;
     private String trustwordsLanguage = K9.getK9CurrentLanguage();
     private String trustWords = "";
     private boolean showingShort = true;
 
     @Inject
-    public ImportWizardPresenter(PEpProvider pEp) {
-        this.pEp = pEp;
+    public ImportWizardPresenter(PlanckProvider planck) {
+        this.planck = planck;
     }
 
 
@@ -39,7 +40,7 @@ public class ImportWizardPresenter {
     }
 
     public void cancel() {
-        pEp.cancelSync();
+        planck.cancelSync();
         state.finish();
         view.cancel();
         trustWords = "";
@@ -110,18 +111,18 @@ public class ImportWizardPresenter {
         showInitialScreen(isFormingGroup);
 
         fixUnsupportedLanguage();
-        pEp.trustwords(myself, partner, trustwordsLanguage, true, new PEpProvider.SimpleResultCallback<String>() {
+        planck.trustwords(myself, partner, trustwordsLanguage, true, new PlanckProvider.SimpleResultCallback<String>() {
             @Override
             public void onLoaded(String newTrustwords) {
                 trustWords = newTrustwords;
             }
         });
 
-        this.view.setFingerPrintTexts(PEpUtils.formatFpr(this.myself.fpr), PEpUtils.formatFpr(this.partner.fpr));
+        this.view.setFingerPrintTexts(PlanckUtils.formatFpr(this.myself.fpr), PlanckUtils.formatFpr(this.partner.fpr));
     }
 
     private void fixUnsupportedLanguage() {
-        if (!PEpUtils.trustWordsAvailableForLang(trustwordsLanguage)) {
+        if (!PlanckUtils.trustWordsAvailableForLang(trustwordsLanguage)) {
             trustwordsLanguage = DEFAULT_TRUSTWORDS_LANGUAGE;
         }
     }
@@ -153,7 +154,7 @@ public class ImportWizardPresenter {
 
     boolean changeTrustwordsLanguage(int languagePosition) {
         showDebugInfo();
-        final List<String> pEpLanguages = PEpUtils.getPEpLocales();
+        final List<String> pEpLanguages = PlanckUtils.getPlanckLocales();
         String language = pEpLanguages.get(languagePosition);
         changeTrustwords(language);
         return true;
@@ -165,7 +166,7 @@ public class ImportWizardPresenter {
     }
 
     private void refreshTrustWords() {
-        pEp.trustwords(myself, partner, trustwordsLanguage, showingShort, new PEpProvider.SimpleResultCallback<String>() {
+        planck.trustwords(myself, partner, trustwordsLanguage, showingShort, new PlanckProvider.SimpleResultCallback<String>() {
             @Override
             public void onLoaded(String newTrustwords) {
                 trustWords = newTrustwords;
@@ -175,7 +176,7 @@ public class ImportWizardPresenter {
     }
 
     public void acceptHandshake() {
-        pEp.acceptSync();
+        planck.acceptSync();
         next();
     }
 
@@ -204,7 +205,7 @@ public class ImportWizardPresenter {
     }
 
     public void rejectHandshake() {
-        pEp.rejectSync();
+        planck.rejectSync();
         view.disableSync();
     }
 }

@@ -25,7 +25,7 @@ public class BackButtonDeviceAfterHandshakeButtonPressedTest extends BaseAndroid
     private String messageTo;
 
     @Before
-    public void startpEpApp() {
+    public void startPlanckApp() {
         messageTo = System.currentTimeMillis() + "@" + HOST;
         testUtils.setupAccountIfNeeded();
     }

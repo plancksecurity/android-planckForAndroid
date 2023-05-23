@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Locale;
 
 import security.planck.ui.PlanckUIUtils;
-import security.planck.ui.resources.PEpResourcesProvider;
+import security.planck.ui.resources.PlanckResourcesProvider;
 import security.planck.ui.resources.ResourcesProvider;
 import timber.log.Timber;
 
@@ -265,7 +265,7 @@ public class FolderList extends K9ListActivity {
             return;
         }
 
-        resourcesProvider = new PEpResourcesProvider(this);
+        resourcesProvider = new PlanckResourcesProvider(this);
         actionBarProgressView = getActionBarProgressView();
         setContentView(R.layout.folder_list);
         initializeActionBar();

@@ -24,19 +24,19 @@ ARG LIBPEPCXX_VERSION
 ARG LIBPEPTRANSPORT_VERSION
 ARG FOLDABLE_FOLDER_VERSION
 
-# Fetch pEp for Android First-Party Dependencies
+# Fetch planck for Android First-Party Dependencies
 RUN git clone --depth=1 https://git.planck.security/foundation/pEpEngine.git -b ${ENGINE_VERSION} $HOME/code/pEpEngine
 RUN git clone --depth=1 https://git.planck.security/foundation/pEpJNIAdapter.git -b ${JNI_ADAPTER_VERSION} $HOME/code/pEpJNIAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libpEpAdapter.git -b ${LIBPEPADAPTER_VERSION} $HOME/code/libpEpAdapter
 RUN git clone --depth=1 https://git.planck.security/foundation/libpEpCxx11.git -b ${LIBPEPCXX_VERSION} $HOME/code/libpEpCxx11
 RUN git clone --depth=1 https://git.planck.security/foundation/libpEpTransport.git -b ${LIBPEPTRANSPORT_VERSION} $HOME/code/libpEpTransport
 RUN git clone --depth=1 http://git.pep.security/android/foldable-folder-list.git -b ${FOLDABLE_FOLDER_VERSION} $HOME/code/foldable-folder-list
-COPY . /root/code/pEp
+COPY . /root/code/planck
 
 RUN echo "YML2_PATH=$HOME/yml2" >> $HOME/code/pEpJNIAdapter/local.conf
 # TODO PEMA-103 move this to chuck all files into a local include
 RUN echo "PREFIX=$HOME/code/pEpEngine/build-android/" >> $HOME/code/pEpJNIAdapter/local.conf
-RUN echo "rootProject.name = 'pEp'" >> $HOME/code/pEp/settings.gradle
+RUN echo "rootProject.name = 'planck'" >> $HOME/code/planck/settings.gradle
 
 
 # WORKAROUND JNI-176
@@ -51,12 +51,12 @@ RUN cat $HOME/.gradle/gradle.properties
 
 
 # BUILD DEPENDENCIES
-WORKDIR /root/code/pEp
+WORKDIR /root/code/planck
 
 RUN ./gradlew -q externalNativeBuildDebug
 RUN du -hs $HOME && \
     du -hs $HOME/* && \
     du -hs $HOME/code/* && \
-    rm -rf $HOME/code/pEp
+    rm -rf $HOME/code/planck
 
 WORKDIR /root/code

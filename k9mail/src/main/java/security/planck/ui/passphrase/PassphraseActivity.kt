@@ -29,7 +29,7 @@ class PassphraseActivity : WizardActivity(), PassphraseInputView {
     lateinit var presenter: PassphrasePresenter
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -30,8 +30,8 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.controller.MessagingController
 import com.fsck.k9.helper.SizeFormatter
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.planck.PEpImporterActivity
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.PlanckImporterActivity
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import com.fsck.k9.planck.ui.listeners.IndexedFolderClickListener
 import com.fsck.k9.planck.ui.listeners.indexedFolderClickListener
 import com.fsck.k9.planck.ui.tools.FeedbackTools
@@ -66,7 +66,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 
-class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+class SettingsActivity : PlanckImporterActivity(), PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
 
     private var controller: MessagingController? = null
 
@@ -306,7 +306,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
     private fun initializeSyncEnvironmentOnStartup() {
         if(!k9.ispEpSyncEnvironmentInitialized()) {
-            CoroutineScope(PEpDispatcher).launch {
+            CoroutineScope(PlanckDispatcher).launch {
                 k9.pEpInitSyncEnvironment()
             }
         }
@@ -317,7 +317,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
     }
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     private fun setupAddAccountButton() {
@@ -645,7 +645,7 @@ class SettingsActivity : PEpImporterActivity(), PreferenceFragmentCompat.OnPrefe
         uiScope.launch {
 
             if (selectedContextAccount is Account) {
-                withContext(PEpDispatcher) {
+                withContext(PlanckDispatcher) {
                     val realAccount = selectedContextAccount as Account?
                     try {
                         realAccount!!.localStore.delete()

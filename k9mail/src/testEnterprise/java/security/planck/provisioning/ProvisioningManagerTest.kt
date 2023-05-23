@@ -5,7 +5,7 @@ import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
 import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.ConnectionSecurity
-import com.fsck.k9.planck.PEpProviderImplKotlin
+import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
@@ -51,8 +51,8 @@ class ProvisioningManagerTest: RobolectricTest() {
         coEvery { configurationManagerFactory.create(k9) }.returns(configurationManager)
         coEvery { configurationManager.loadConfigurationsSuspend(any()) }
             .returns(Result.success(Unit))
-        mockkObject(PEpProviderImplKotlin)
-        coEvery { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
+        mockkObject(PlanckProviderImplKotlin)
+        coEvery { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
             .returns(Result.success(Unit))
 
         mockkStatic(Utility::class)
@@ -65,7 +65,7 @@ class ProvisioningManagerTest: RobolectricTest() {
 
     @After
     fun tearDown() {
-        unmockkObject(PEpProviderImplKotlin)
+        unmockkObject(PlanckProviderImplKotlin)
         unmockkStatic(Utility::class)
     }
 
@@ -86,7 +86,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
+        coVerify { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
         coVerify { k9.finalizeSetup() }
         coVerify { listener.provisionStateChanged(ProvisionState.Initialized) }
     }
@@ -147,20 +147,20 @@ class ProvisioningManagerTest: RobolectricTest() {
     @Test
     @Ignore("provisioning url disabled")
     fun `when provisioning fails, resulting state is error`() {
-        coEvery { PEpProviderImplKotlin.provision(any(), any()) }
+        coEvery { PlanckProviderImplKotlin.provision(any(), any()) }
             .returns(Result.failure(ProvisioningFailedException("fail", RuntimeException())))
 
 
         manager.startProvisioning()
 
 
-        coVerify { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
+        coVerify { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
         assertListenerProvisionChangedWithState { state ->
             assertTrue(state is ProvisionState.Error)
             val throwable = (state as ProvisionState.Error).throwable
             assertTrue(throwable is ProvisioningFailedException)
         }
-        unmockkObject(PEpProviderImplKotlin)
+        unmockkObject(PlanckProviderImplKotlin)
     }
 
     @Test
@@ -188,7 +188,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify(exactly = 0) { PEpProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
+        coVerify(exactly = 0) { PlanckProviderImplKotlin.provision(any(), TEST_PROVISIONING_URL) }
 
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)
@@ -245,7 +245,7 @@ class ProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { PEpProviderImplKotlin.wasNot(called) }
+        coVerify { PlanckProviderImplKotlin.wasNot(called) }
         coVerify { k9.finalizeSetup() }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)

@@ -30,7 +30,7 @@ import static junit.framework.TestCase.assertEquals;
 public class ImportSettingsCancelActivateAccountTest extends BaseAndroidTest {
 
     @Before
-    public void startpEpApp() {
+    public void startPlanckApp() {
         testUtils.externalAppRespondWithFile(R.raw.test);
     }
 
@@ -48,7 +48,7 @@ public class ImportSettingsCancelActivateAccountTest extends BaseAndroidTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
-        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
+        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PLANCK_TEST_EMAIL_PASSWORD));
         testUtils.clickCancelButton();
         TestUtils.waitForIdle();
         onView(withId(R.id.accounts_list)).perform(saveSizeInInt(accountListSize, 1));
@@ -66,7 +66,7 @@ public class ImportSettingsCancelActivateAccountTest extends BaseAndroidTest {
         testUtils.doWaitForAlertDialog(R.string.settings_import_success_header);
         testUtils.clickAcceptButton();
         testUtils.doWaitForAlertDialog(R.string.settings_import_activate_account_header);
-        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PEP_TEST_EMAIL_PASSWORD));
+        onView(withId(R.id.incoming_server_password)).perform(replaceText(BuildConfig.PLANCK_TEST_EMAIL_PASSWORD));
         testUtils.clickCancelButton();
         TestUtils.waitForIdle();
         List<Account> accounts =

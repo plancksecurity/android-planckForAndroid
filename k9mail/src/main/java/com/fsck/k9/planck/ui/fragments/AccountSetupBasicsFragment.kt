@@ -18,7 +18,7 @@ import com.fsck.k9.helper.Utility
 import com.fsck.k9.mail.AuthType
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
-import com.fsck.k9.planck.PePUIArtefactCache
+import com.fsck.k9.planck.PlanckUIArtefactCache
 import com.fsck.k9.planck.ui.ConnectionSettings
 import com.fsck.k9.planck.ui.tools.AccountSetupNavigator
 import com.fsck.k9.planck.ui.tools.FeedbackTools
@@ -40,7 +40,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     private lateinit var nextButton: Button
     private lateinit var manualSetupButton: Button
     private lateinit var passwordLayout: View
-    private lateinit var pEpUIArtefactCache: PePUIArtefactCache
+    private lateinit var pEpUIArtefactCache: PlanckUIArtefactCache
 
     @Inject
     lateinit var emailValidator: EmailAddressValidator
@@ -50,7 +50,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        setupPEpFragmentToolbar()
+        setupPlanckFragmentToolbar()
         _binding = FragmentAccountLoginBinding.inflate(inflater, container, false)
         _wizardSetupBinding = WizardSetupBinding.bind(binding.root)
         setupViews()
@@ -58,7 +58,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
 
         initializeViewListeners()
         validateFields()
-        pEpUIArtefactCache = PePUIArtefactCache.getInstance(requireContext().applicationContext)
+        pEpUIArtefactCache = PlanckUIArtefactCache.getInstance(requireContext().applicationContext)
         val email = pEpUIArtefactCache.emailInPreferences
         val password = pEpUIArtefactCache.passwordInPreferences
         if (email != null && password != null) {
@@ -322,7 +322,7 @@ class AccountSetupBasicsFragment : AccountSetupBasicsFragmentBase() {
     }
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     companion object {

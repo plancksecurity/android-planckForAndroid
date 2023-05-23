@@ -15,7 +15,7 @@ import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
 import com.fsck.k9.helper.EmailHelper;
 import com.fsck.k9.mail.ServerSettings.Type;
-import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.fragments.ChooseAccountTypeFragment;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 import com.fsck.k9.setup.ServerNameSuggester;
@@ -37,7 +37,7 @@ import static com.fsck.k9.mail.ServerSettings.Type.WebDAV;
  * AccountSetupIncoming activity.
  */
 
-public class AccountSetupAccountType extends PepActivity implements OnClickListener {
+public class AccountSetupAccountType extends PlanckActivity implements OnClickListener {
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_MAKE_DEFAULT = "makeDefault";
 
@@ -63,7 +63,7 @@ public class AccountSetupAccountType extends PepActivity implements OnClickListe
         bindViews(R.layout.account_setup_account_type);
 
         initializeToolbar(true, R.string.account_setup_account_type_title);
-        toolBarCustomizer.setStatusBarPepColor(getResources().getColor(R.color.white));
+        toolBarCustomizer.setStatusBarPlanckColor(getResources().getColor(R.color.white));
 
         findViewById(R.id.pop).setOnClickListener(this);
         findViewById(R.id.imap).setOnClickListener(this);
@@ -81,7 +81,7 @@ public class AccountSetupAccountType extends PepActivity implements OnClickListe
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     @Override

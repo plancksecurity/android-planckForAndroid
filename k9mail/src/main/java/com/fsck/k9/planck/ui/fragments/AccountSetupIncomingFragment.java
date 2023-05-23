@@ -56,7 +56,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-public class AccountSetupIncomingFragment extends PEpFragment {
+public class AccountSetupIncomingFragment extends PlanckFragment {
 
     private static final String EXTRA_ACCOUNT = "account";
     private static final String EXTRA_ACTION = "action";
@@ -64,7 +64,8 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     private static final String STATE_AUTH_TYPE_POSITION = "authTypePosition";
     private static final String GMAIL_AUTH_TOKEN_TYPE = "oauth2:https://mail.google.com/";
 
-    @Inject PEpSettingsChecker pEpSettingsChecker;
+    @Inject
+    PlanckSettingsChecker planckSettingsChecker;
 
     @Inject Preferences preferences;
 
@@ -131,7 +132,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ((AccountSetupBasics) requireActivity()).configurePasswordFlowScreen();
-        setupPEpFragmentToolbar();
+        setupPlanckFragmentToolbar();
         rootView = inflater.inflate(R.layout.fragment_account_setup_incoming, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_setup_incoming_title);
@@ -347,7 +348,7 @@ public class AccountSetupIncomingFragment extends PEpFragment {
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     /**

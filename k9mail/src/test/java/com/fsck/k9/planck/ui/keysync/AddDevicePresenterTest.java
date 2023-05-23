@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import com.fsck.k9.Account;
 import com.fsck.k9.RobolectricTest;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,34 +23,34 @@ public class AddDevicePresenterTest extends RobolectricTest {
     private static final String PARTNER_ADDRESS = "partner@address";
     private AddDevicePresenter addDevicePresenter;
     @Mock private AddDeviceView view;
-    @Mock private PEpProvider pEpProvider;
+    @Mock private PlanckProvider planckProvider;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         addDevicePresenter = new AddDevicePresenter();
-        addDevicePresenter.initialize(view, pEpProvider, identity(), identity(), accounts(),false, "");
+        addDevicePresenter.initialize(view, planckProvider, identity(), identity(), accounts(),false, "");
     }
 
     @Test
     public void shouldAcceptHandshakeOnEngineWhenAccepting() {
         addDevicePresenter.acceptHandshake();
 
-        verify(pEpProvider).acceptSync();
+        verify(planckProvider).acceptSync();
     }
 
     @Test
     public void shouldCancelHandshakeOnEngineWhenCancelling() {
         addDevicePresenter.cancelHandshake();
 
-        verify(pEpProvider).cancelSync();
+        verify(planckProvider).cancelSync();
     }
 
     @Test
     public void shouldRejectHandshakeOnEngineWhenRejecting() {
         addDevicePresenter.rejectHandshake();
 
-        verify(pEpProvider).rejectSync();
+        verify(planckProvider).rejectSync();
     }
 
     @Test

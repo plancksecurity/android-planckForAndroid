@@ -13,7 +13,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.MessageList
 import com.fsck.k9.mailstore.AttachmentViewInfo
 import com.fsck.k9.mailstore.MessageViewInfo
-import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.PlanckActivity
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.view.MessageWebView
 import javax.inject.Inject
@@ -185,6 +185,6 @@ class CalendarInviteLayout(
     }
 
     private fun initializeInjector() {
-        (context as PepActivity).getpEpComponent().inject(this)
+        (context as PlanckActivity).getPlanckComponent().inject(this)
     }
 }

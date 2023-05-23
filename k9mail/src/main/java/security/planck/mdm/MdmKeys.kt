@@ -1,20 +1,20 @@
 package security.planck.mdm
 
 const val RESTRICTION_PROVISIONING_URL = "pep_user_provisioning_url"
-const val RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION = "pep_enable_privacy_protection"
-const val RESTRICTION_PEP_EXTRA_KEYS = "pep_extra_keys"
-const val RESTRICTION_PEP_EXTRA_KEY = "pep_extra_key"
-const val RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT = "extra_key_fingerprint"
-const val RESTRICTION_PEP_EXTRA_KEY_MATERIAL = "extra_key_material"
-const val RESTRICTION_PEP_MEDIA_KEYS = "pep_media_keys"
-const val RESTRICTION_PEP_MEDIA_KEY = "pep_media_key"
-const val RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN = "media_key_address_pattern"
-const val RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT = "media_key_fingerprint"
-const val RESTRICTION_PEP_MEDIA_KEY_MATERIAL = "media_key_material"
-const val RESTRICTION_PEP_USE_TRUSTWORDS = "pep_use_trustwords"
-const val RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
-const val RESTRICTION_PEP_SYNC_FOLDER = "pep_sync_folder"
-const val RESTRICTION_PEP_DEBUG_LOG = "debug_logging"
+const val RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION = "pep_enable_privacy_protection"
+const val RESTRICTION_PLANCK_EXTRA_KEYS = "pep_extra_keys"
+const val RESTRICTION_PLANCK_EXTRA_KEY = "pep_extra_key"
+const val RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT = "extra_key_fingerprint"
+const val RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL = "extra_key_material"
+const val RESTRICTION_PLANCK_MEDIA_KEYS = "pep_media_keys"
+const val RESTRICTION_PLANCK_MEDIA_KEY = "pep_media_key"
+const val RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN = "media_key_address_pattern"
+const val RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT = "media_key_fingerprint"
+const val RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL = "media_key_material"
+const val RESTRICTION_PLANCK_USE_TRUSTWORDS = "pep_use_trustwords"
+const val RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING = "unsecure_delivery_warning"
+const val RESTRICTION_PLANCK_SYNC_FOLDER = "pep_sync_folder"
+const val RESTRICTION_PLANCK_DEBUG_LOG = "debug_logging"
 const val RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES = "allow_pep_sync_new_devices"
 const val RESTRICTION_ENABLE_ECHO_PROTOCOL = "pep_enable_echo_protocol"
 
@@ -59,7 +59,7 @@ const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_USER_NAME = "outgoing_mail_
 const val RESTRICTION_ACCOUNT_OUTGOING_MAIL_SETTINGS_AUTH_TYPE = "outgoing_mail_settings_auth_type"
 
 val INITIALIZED_ENGINE_RESTRICTIONS = listOf(
-    RESTRICTION_PEP_EXTRA_KEYS,
-    RESTRICTION_PEP_MEDIA_KEYS
+    RESTRICTION_PLANCK_EXTRA_KEYS,
+    RESTRICTION_PLANCK_MEDIA_KEYS
 )
 

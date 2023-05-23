@@ -14,7 +14,7 @@ import static junit.framework.TestCase.assertEquals;
 public class ImportSettingsDarkThemeTest extends BaseAndroidTest {
 
     @Before
-    public void startpEpApp() {
+    public void startPlanckApp() {
         testUtils.goToSettingsAndRemoveAllAccountsIfNeeded();
         testUtils.externalAppRespondWithFile(R.raw.settingsthemedark);
     }

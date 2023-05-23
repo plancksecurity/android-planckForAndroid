@@ -11,7 +11,7 @@ import android.view.View;
 import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.R;
-import com.fsck.k9.planck.PepActivity;
+import com.fsck.k9.planck.PlanckActivity;
 import com.fsck.k9.planck.ui.adapters.IdentitiesAdapter;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
 
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class KeysyncManagement extends PepActivity implements KeysyncManagementView {
+public class KeysyncManagement extends PlanckActivity implements KeysyncManagementView {
 
     @Inject
     KeysyncManagerPresenter presenter;
@@ -49,12 +49,12 @@ public class KeysyncManagement extends PepActivity implements KeysyncManagementV
 
     @Override
     public void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     private void initializePresenter() {
         List<Account> accounts = Preferences.getPreferences(KeysyncManagement.this).getAccounts();
-        presenter.initialize(this, getpEp(), accounts);
+        presenter.initialize(this, getPlanck(), accounts);
     }
 
     @Override

@@ -44,13 +44,13 @@ class GeneralSettingsDataStore(
             "privacy_hide_timezone" -> K9.hideTimeZone()
             "debug_logging" -> K9.isDebug()
             "sensitive_logging" -> K9.DEBUG_SENSITIVE
-            "pep_use_keyserver" -> K9.getPEpUseKeyserver()
-            "pep_passive_mode" -> K9.getPEpPassiveMode()
-            "pep_subject_protection" -> K9.ispEpSubjectProtection()
-            "pep_forward_warning" -> K9.ispEpForwardWarningEnabled()
-            "pep_enable_sync" -> K9.ispEpSyncEnabled()
+            "pep_use_keyserver" -> K9.getPlanckUseKeyserver()
+            "pep_passive_mode" -> K9.getPlanckPassiveMode()
+            "pep_subject_protection" -> K9.isPlanckSubjectProtection()
+            "pep_forward_warning" -> K9.isPlanckForwardWarningEnabled()
+            "pep_enable_sync" -> K9.isPlanckSyncEnabled()
             "pep_sync_folder" -> K9.isUsingpEpSyncFolder()
-            "pep_use_passphrase_for_new_keys" -> K9.ispEpUsePassphraseForNewKeys()
+            "pep_use_passphrase_for_new_keys" -> K9.isPlanckUsePassphraseForNewKeys()
             else -> defValue
         }
     }
@@ -85,13 +85,13 @@ class GeneralSettingsDataStore(
             "privacy_hide_timezone" -> K9.setHideTimeZone(value)
             "debug_logging" -> K9.setDebug(value)
             "sensitive_logging" -> K9.DEBUG_SENSITIVE = value
-            "pep_use_keyserver" -> app.setPEpUseKeyserver(value)
-            "pep_passive_mode" -> app.setPEpPassiveMode(value)
-            "pep_subject_protection" -> app.setpEpSubjectProtection(value)
-            "pep_forward_warning" -> app.setpEpForwardWarningEnabled(value)
-            "pep_enable_sync" -> app.setpEpSyncEnabled(value) //TODO: CHECK
+            "pep_use_keyserver" -> app.setPlanckUseKeyserver(value)
+            "pep_passive_mode" -> app.setPlanckPassiveMode(value)
+            "pep_subject_protection" -> app.setPlanckSubjectProtection(value)
+            "pep_forward_warning" -> app.setPlanckForwardWarningEnabled(value)
+            "pep_enable_sync" -> app.setPlanckSyncEnabled(value) //TODO: CHECK
             "pep_sync_folder" -> K9.setUsingpEpSyncFolder(value)
-            "pep_use_passphrase_for_new_keys" -> K9.setpEpUsePassphraseForNewKeys(value)
+            "pep_use_passphrase_for_new_keys" -> K9.setPlanckUsePassphraseForNewKeys(value)
             else -> return
         }
 

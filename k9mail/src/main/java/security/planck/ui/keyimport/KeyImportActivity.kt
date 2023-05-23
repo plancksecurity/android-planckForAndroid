@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.fsck.k9.R
-import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.manualsync.WizardActivity
 import foundation.pEp.jniadapter.Identity
 import kotlinx.android.synthetic.main.import_key_dialog.*
@@ -21,7 +21,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
     internal lateinit var presenter: KeyImportPresenter
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +80,7 @@ class KeyImportActivity : WizardActivity(), KeyImportView {
 
     override fun showKeyImportConfirmationDialog(firstIdentity: Identity, filename: String) {
         addressText.text = getString(R.string.pep_user_address_format, firstIdentity.username, firstIdentity.address)
-        fingerprintTextView.text = PEpUtils.formatFpr(firstIdentity.fpr)
+        fingerprintTextView.text = PlanckUtils.formatFpr(firstIdentity.fpr)
     }
 
     override fun showLayout() {
