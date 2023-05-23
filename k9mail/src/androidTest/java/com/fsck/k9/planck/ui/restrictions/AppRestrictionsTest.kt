@@ -162,8 +162,8 @@ class AppRestrictionsTest : BaseDeviceAdminTest() {
 
     private fun addFirstAccount() {
         click()
-        addTextTo(R.id.account_email, BuildConfig.PEP_TEST_EMAIL_ADDRESS)
-        addTextTo(R.id.account_password, BuildConfig.PEP_TEST_EMAIL_PASSWORD)
+        addTextTo(R.id.account_email, BuildConfig.PLANCK_TEST_EMAIL_ADDRESS)
+        addTextTo(R.id.account_password, BuildConfig.PLANCK_TEST_EMAIL_PASSWORD)
         closeKeyboardWithDelay()
 
         click(R.id.next)

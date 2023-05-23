@@ -40,8 +40,8 @@ import com.fsck.k9.mailstore.BinaryMemoryBody;
 import com.fsck.k9.mailstore.TempFileBody;
 import com.fsck.k9.message.quote.InsertableHtmlContent;
 import com.fsck.k9.planck.EspressoTestingIdlingResource;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.threading.JobExecutor;
 import com.fsck.k9.planck.infrastructure.threading.PostExecutionThread;
 import com.fsck.k9.planck.infrastructure.threading.ThreadExecutor;
@@ -92,7 +92,7 @@ public abstract class MessageBuilder {
     private Vector<Blob> blobAttachments;
     private Message.EncFormat encondingFormat;
     private boolean isAlwaysSecure;
-    private Rating pEpRating;
+    private Rating planckRating;
 
     protected MessageBuilder(Context context, MessageIdGenerator messageIdGenerator, BoundaryGenerator boundaryGenerator) {
         this.context = context;
@@ -155,11 +155,11 @@ public abstract class MessageBuilder {
 
         if (isAlwaysSecure) {
             message.setFlag(Flag.X_PEP_NEVER_UNSECURE, true);
-            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PEpProvider.PEP_ALWAYS_SECURE_TRUE);
+            message.setHeader(MimeHeader.HEADER_PEP_ALWAYS_SECURE, PlanckProvider.PLANCK_ALWAYS_SECURE_TRUE);
         }
 
-        if (pEpRating != null) {
-            message.setHeader(MimeHeader.HEADER_PEP_RATING, PEpUtils.ratingToString(pEpRating));
+        if (planckRating != null) {
+            message.setHeader(MimeHeader.HEADER_PEP_RATING, PlanckUtils.ratingToString(planckRating));
         }
     }
 
@@ -519,7 +519,7 @@ public abstract class MessageBuilder {
             queuedException = null;
             queuedPendingIntent = null;
         }
-        PEpProvider.CompletedCallback completedCallback = new PEpProvider.CompletedCallback() {
+        PlanckProvider.CompletedCallback completedCallback = new PlanckProvider.CompletedCallback() {
 
             @Override
             public void onComplete() {
@@ -640,7 +640,7 @@ public abstract class MessageBuilder {
         com.fsck.k9.Identity k9Identity = new com.fsck.k9.Identity();
         k9Identity.setSignatureUse(false);
         k9Identity.setSignature("");
-        k9Identity.setReplyTo(PEpUtils.getReplyTo(replyTo));
+        k9Identity.setReplyTo(PlanckUtils.getReplyTo(replyTo));
         k9Identity.setName(from.username);
         k9Identity.setDescription("");
         k9Identity.setEmail(from.address);
@@ -654,8 +654,8 @@ public abstract class MessageBuilder {
         return this;
     }
 
-    public void setpEpRating(Rating pEpRating) {
-        this.pEpRating = pEpRating;
+    public void setPlanckRating(Rating planckRating) {
+        this.planckRating = planckRating;
     }
 
     private void addBlobAttachmentsToMessage(final MimeMultipart mp) throws MessagingException {

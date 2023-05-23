@@ -23,7 +23,7 @@ import timber.log.Timber
 import java.net.URISyntaxException
 import javax.inject.Inject
 
-abstract class AccountSetupBasicsFragmentBase : PEpFragment() {
+abstract class AccountSetupBasicsFragmentBase : PlanckFragment() {
 
     protected var account: Account? = null
     private var checkedIncoming = false

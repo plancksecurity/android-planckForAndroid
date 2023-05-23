@@ -1,8 +1,8 @@
 package com.fsck.k9.planck.ui.keysync;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpProvider.ResultCallback;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckProvider.ResultCallback;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +21,8 @@ public class KeysyncManagerPresenterTest {
 
     private KeysyncManagerPresenter presenter;
     @Mock KeysyncManagementView view;
-    @Mock PEpProvider provider;
+    @Mock
+    PlanckProvider provider;
 
     @Before
     public void setUp() throws Exception {

@@ -36,8 +36,8 @@ import com.fsck.k9.mail.Message.RecipientType;
 import com.fsck.k9.message.ComposePgpInlineDecider;
 import com.fsck.k9.message.MessageBuilder;
 import com.fsck.k9.message.PgpMessageBuilder;
-import com.fsck.k9.planck.PEpProvider;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckProvider;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.infrastructure.Poller;
 
 import org.openintents.openpgp.OpenPgpApiManager;
@@ -55,8 +55,8 @@ import foundation.pEp.jniadapter.Rating;
 import security.planck.echo.EchoMessageReceivedListener;
 import timber.log.Timber;
 
-import static com.fsck.k9.planck.ui.PepColoredActivity.CURRENT_RATING;
-import static com.fsck.k9.planck.ui.privacy.status.PEpStatus.REQUEST_STATUS;
+import static com.fsck.k9.planck.ui.PlanckColoredActivity.CURRENT_RATING;
+import static com.fsck.k9.planck.ui.privacy.status.PlanckStatus.REQUEST_STATUS;
 
 
 public class RecipientPresenter implements EchoMessageReceivedListener {
@@ -94,7 +94,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     private OpenPgpApiManager openPgpApiManager;
 
     private OpenPgpServiceConnection openPgpServiceConnection;
-    private PEpProvider pEp;
+    private PlanckProvider planck;
 
     // persistent state, saved during onSaveInstanceState
     private RecipientType lastFocusedType = RecipientType.TO;
@@ -111,13 +111,13 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     public RecipientPresenter(Context context,  LoaderManager loaderManager,
             OpenPgpApiManager openPgpApiManager, RecipientMvpView recipientMvpView, Account account,
             ComposePgpInlineDecider composePgpInlineDecider,
-            PEpProvider pEpProvider,
+            PlanckProvider planckProvider,
             ReplyToParser replyToParser, RecipientsChangedListener recipientsChangedListener) {
         this.recipientMvpView = recipientMvpView;
         this.context = context;
         this.composePgpInlineDecider = composePgpInlineDecider;
         this.replyToParser = replyToParser;
-        this.pEp = pEpProvider;
+        this.planck = planckProvider;
         this.listener = recipientsChangedListener;
         this.openPgpApiManager = openPgpApiManager;
 
@@ -127,7 +127,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         updateCryptoStatus();
     }
 
-    private void setupPEPStatusPolling() {
+    private void setupPlanckStatusPolling() {
         if (poller == null) {
             poller = new Poller(new Handler());
             poller.init(POLLING_INTERVAL, this::loadPEpStatus);
@@ -251,7 +251,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         isAlwaysSecure = savedInstanceState.getBoolean(STATE_ALWAYS_SECURE);
         privacyState = (Rating) savedInstanceState.getSerializable(STATE_RATING);
         updateRecipientExpanderVisibility();
-        recipientMvpView.setpEpRating(privacyState);
+        recipientMvpView.setPlanckRating(privacyState);
     }
 
     public void onSaveInstanceState(Bundle outState) {
@@ -597,7 +597,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
             boolean forceUncrypted = data.getBooleanExtra(STATE_FORCE_UNENCRYPTED, this.forceUnencrypted);
             boolean alwaysSecure = data.getBooleanExtra(STATE_ALWAYS_SECURE, this.isAlwaysSecure);
             if (forceUncrypted != this.forceUnencrypted) {
-                switchPrivacyProtection(PEpProvider.ProtectionScope.MESSAGE);
+                switchPrivacyProtection(PlanckProvider.ProtectionScope.MESSAGE);
             }
             if (alwaysSecure != this.isAlwaysSecure) {
                 setAlwaysSecure(alwaysSecure);
@@ -785,7 +785,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
 
-    public void switchPrivacyProtection(PEpProvider.ProtectionScope scope, boolean... protection) {
+    public void switchPrivacyProtection(PlanckProvider.ProtectionScope scope, boolean... protection) {
         List<Address> bccAdresses = recipientMvpView.getBccAddresses();
         if (bccAdresses == null || bccAdresses.size() == 0) {
             switch (scope) {
@@ -828,7 +828,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public boolean isForwardedMessageWeakestThanOriginal(Rating originalMessageRating) {
-        Rating currentRating = recipientMvpView.getpEpRating();
+        Rating currentRating = recipientMvpView.getPlanckRating();
         return currentRating.value < Rating.pEpRatingReliable.value && currentRating.value < originalMessageRating.value;
     }
 
@@ -849,7 +849,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     @Override
     public void echoMessageReceived(@NonNull String from, @NonNull String to) {
         updateCryptoStatus();
-        if (account.ispEpPrivacyProtected() && K9.ispEpForwardWarningEnabled()) {
+        if (account.isPlanckPrivacyProtected() && K9.isPlanckForwardWarningEnabled()) {
             if (to.equalsIgnoreCase(recipientMvpView.getFromAddress().getAddress())) {
                 recipientMvpView.updateRecipientsFromEcho(from);
             }
@@ -906,7 +906,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         recipientMvpView.messageRatingIsBeingLoaded();
         long requestTime = System.currentTimeMillis();
         lastRequestTime = requestTime;
-        pEp.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PEpProvider.ResultCallback<Rating>() {
+        planck.getRating(fromAddress, newToAdresses, newCcAdresses, newBccAdresses, new PlanckProvider.ResultCallback<Rating>() {
             @Override
             public void onLoaded(Rating rating) {
                 if (isRequestOutdated(requestTime)) {
@@ -945,8 +945,8 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     public void handleUnsecureDeliveryWarning() {
-        int unsecureRecipientsCount = K9.ispEpForwardWarningEnabled()
-                && account.ispEpPrivacyProtected()
+        int unsecureRecipientsCount = K9.isPlanckForwardWarningEnabled()
+                && account.isPlanckPrivacyProtected()
                 ? getUnsecureRecipientsCount()
                 : ZERO_RECIPIENTS;
         handleUnsecureDeliveryWarning(unsecureRecipientsCount);
@@ -981,7 +981,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
         List<Address> candidates = new ArrayList<>();
         candidates.addAll(newToAdresses);
         candidates.addAll(newCcAdresses);
-        return candidates.size() == ONE_ADDRESS && PEpUtils.isHandshakeRating(privacyState);
+        return candidates.size() == ONE_ADDRESS && PlanckUtils.isHandshakeRating(privacyState);
     }
 
     private int getUnsecureRecipientsCount() {
@@ -996,7 +996,7 @@ public class RecipientPresenter implements EchoMessageReceivedListener {
     }
 
     private void showRatingFeedback(Rating rating) {
-        recipientMvpView.setpEpRating(rating);
+        recipientMvpView.setPlanckRating(rating);
         handlepEpState();
     }
 

@@ -1,14 +1,14 @@
 import com.android.build.OutputFile
 
-def pEpTestEmailAddress = "\"$System.env.PEP_TEST_EMAIL_ADDRESS\""
-def pEpTestEmailPassword = "\"$System.env.PEP_TEST_EMAIL_PASSWORD\""
-def pEpTestEmailServer = "\"$System.env.PEP_TEST_EMAIL_SERVER\""
+def planckTestEmailAddress = "\"$System.env.PLANCK_TEST_EMAIL_ADDRESS\""
+def planckTestEmailPassword = "\"$System.env.PLANCK_TEST_EMAIL_PASSWORD\""
+def planckTestEmailServer = "\"$System.env.PLANCK_TEST_EMAIL_SERVER\""
 
 
-def pEpDragonEmail = "\"$System.env.PEP_DRAGON_EMAIL_ADDRESS\""
-def pEpDragonPassword = "\"$System.env.PEP_DRAGON_PASSWORD\""
-def pEpDragonServer = "\"$System.env.PEP_DRAGON_SERVER\""
-def pEpDragonUsername = "\"$System.env.PEP_DRAGON_USERNAME\""
+def planckDragonEmail = "\"$System.env.PLANCK_DRAGON_EMAIL_ADDRESS\""
+def planckDragonPassword = "\"$System.env.PLANCK_DRAGON_PASSWORD\""
+def planckDragonServer = "\"$System.env.PLANCK_DRAGON_SERVER\""
+def planckDragonUsername = "\"$System.env.PLANCK_DRAGON_USERNAME\""
 
 buildscript {
     repositories {
@@ -203,15 +203,15 @@ android {
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
 
-        buildConfigField "String", "PEP_TEST_EMAIL_ADDRESS", "${pEpTestEmailAddress}"
-        buildConfigField "String", "PEP_TEST_EMAIL_PASSWORD", "${pEpTestEmailPassword}"
-        buildConfigField "String", "PEP_TEST_EMAIL_SERVER", "${pEpTestEmailServer}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_ADDRESS", "${planckTestEmailAddress}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_PASSWORD", "${planckTestEmailPassword}"
+        buildConfigField "String", "PLANCK_TEST_EMAIL_SERVER", "${planckTestEmailServer}"
 
-        buildConfigField "String", "PEP_DRAGON_EMAIL_ADDRESS", "${pEpDragonEmail}"
-        buildConfigField "String", "PEP_DRAGON_PASSWORD", "${pEpDragonPassword}"
-        buildConfigField "String", "PEP_DRAGON_SERVER", "${pEpDragonServer}"
+        buildConfigField "String", "PLANCK_DRAGON_EMAIL_ADDRESS", "${planckDragonEmail}"
+        buildConfigField "String", "PLANCK_DRAGON_PASSWORD", "${planckDragonPassword}"
+        buildConfigField "String", "PLANCK_DRAGON_SERVER", "${planckDragonServer}"
 
-        buildConfigField "String", "PEP_DRAGON_USERNAME", "${pEpDragonUsername}"
+        buildConfigField "String", "PLANCK_DRAGON_USERNAME", "${planckDragonUsername}"
 
         buildConfigField "boolean", "USE_CUCUMBER", "${project.property("useCucumber")}"
         buildConfigField "boolean", "USE_FAKE_RESTRICTIONS_MANAGER", "${project.property("useFakeManager")}"

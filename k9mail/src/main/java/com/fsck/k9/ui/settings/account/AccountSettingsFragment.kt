@@ -15,7 +15,7 @@ import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.activity.setup.AccountSetupComposition
 import com.fsck.k9.mail.Address
 import com.fsck.k9.mailstore.StorageManager
-import com.fsck.k9.planck.PEpUtils
+import com.fsck.k9.planck.PlanckUtils
 import com.fsck.k9.planck.ui.tools.FeedbackTools
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.observe
@@ -200,7 +200,7 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun initializePepPrivacyProtection() {
-        if (account.getpEpPrivacyProtected().locked) {
+        if (account.getPlanckPrivacyProtected().locked) {
                 (findPreference(PREFERENCE_PEP_DISABLE_PRIVACY_PROTECTION) as SwitchPreferenceCompat?)?.apply {
                 this.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, _ ->
                     showMDMDialog(this.title)
@@ -247,9 +247,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
         // if the account is disabled it can be always enabled
 
         val accounts = Preferences.getPreferences(context).accounts
-        val enabledSyncAccount = accounts.sumBy { if (it.isPepSyncEnabled) 1 else 0 }
+        val enabledSyncAccount = accounts.sumBy { if (it.isPlanckSyncEnabled) 1 else 0 }
 
-        return !account.isPepSyncEnabled || enabledSyncAccount != 1
+        return !account.isPlanckSyncEnabled || enabledSyncAccount != 1
     }
 
     private fun initializeNotifications() {
@@ -288,10 +288,10 @@ class AccountSettingsFragment : PreferenceFragmentCompat() {
     }
 
     private suspend fun keyReset(account: Account): Boolean = withContext(Dispatchers.Default) {
-        val pEpProvider = (requireContext().applicationContext as K9).pEpProvider
+        val pEpProvider = (requireContext().applicationContext as K9).planckProvider
         try {
             val address = Address(account.email, account.name)
-            var id = PEpUtils.createIdentity(address, context)
+            var id = PlanckUtils.createIdentity(address, context)
             id = pEpProvider.updateIdentity(id)
             pEpProvider.keyResetIdentity(id, null)
             true

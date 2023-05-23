@@ -16,7 +16,7 @@ import com.fsck.k9.R
 import com.fsck.k9.activity.K9ActivityCommon
 import com.fsck.k9.activity.setup.AccountSetupBasics
 import com.fsck.k9.mail.Address
-import com.fsck.k9.planck.ui.fragments.PEpFragment
+import com.fsck.k9.planck.ui.fragments.PlanckFragment
 import com.fsck.k9.planck.ui.tools.ThemeManager
 import com.fsck.k9.ui.contacts.ContactPictureLoader
 import com.github.paolorotolo.appintro.AppIntro
@@ -108,13 +108,13 @@ class WelcomeMessage : AppIntro() {
     }
 
 }
-class IntroFirstFragment : PEpFragment() {
+class IntroFirstFragment : PlanckFragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -135,7 +135,7 @@ class IntroFirstFragment : PEpFragment() {
 
     private fun startImage() {
         val address = Address("A")
-        contactBadge.setPepRating(Rating.pEpRatingReliable, true)
+        contactBadge.setPlanckRating(Rating.pEpRatingReliable, true)
         contactsPictureLoader.setContactPicture(contactBadge, address)
     }
 }
@@ -156,13 +156,13 @@ class IntroThirdFragment : Fragment() {
 
 }
 
-class IntroFourthFragment : PEpFragment() {
+class IntroFourthFragment : PlanckFragment() {
 
     @Inject
     lateinit var contactsPictureLoader: ContactPictureLoader
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -176,10 +176,10 @@ class IntroFourthFragment : PEpFragment() {
 
     private fun startImage() {
         var address = Address("A")
-        secureBadge.setPepRating(Rating.pEpRatingReliable, true)
+        secureBadge.setPlanckRating(Rating.pEpRatingReliable, true)
         contactsPictureLoader.setContactPicture(secureBadge, address)
         address = Address("B")
-        secureTrustedBadge.setPepRating(Rating.pEpRatingTrusted, true)
+        secureTrustedBadge.setPlanckRating(Rating.pEpRatingTrusted, true)
         contactsPictureLoader.setContactPicture(secureTrustedBadge, address)
     }
 

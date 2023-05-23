@@ -11,9 +11,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 
+import com.fsck.k9.planck.ui.fragments.PlanckFragment;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
-import com.fsck.k9.planck.ui.fragments.PEpFragment;
 import com.fsck.k9.search.SqlQueryBuilderInvoker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -80,7 +80,7 @@ import com.fsck.k9.mail.Message;
 import com.fsck.k9.mail.MessagingException;
 import com.fsck.k9.mailstore.LocalFolder;
 import com.fsck.k9.mailstore.LocalMessage;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.infrastructure.DrawerLocker;
 import com.fsck.k9.planck.ui.infrastructure.MessageSwipeDirection;
 import com.fsck.k9.planck.ui.tools.FeedbackTools;
@@ -135,7 +135,7 @@ import static com.fsck.k9.fragment.MLFProjectionInfo.THREAD_ROOT_COLUMN;
 import static com.fsck.k9.fragment.MLFProjectionInfo.UID_COLUMN;
 
 
-public class MessageListFragment extends PEpFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
+public class MessageListFragment extends PlanckFragment implements ConfirmationDialogFragmentListener, LoaderCallbacks<Cursor> {
 
     private static final long CLICK_THRESHOLD_MILLIS = 300;
     private FloatingActionButton fab;
@@ -562,7 +562,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     private boolean anyAccountWasDeleted() {
@@ -878,7 +878,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         MessageList activity = (MessageList) getActivity();
         if (!activity.isMessageViewVisible() && activity.isThreadDisplayed()) {
             toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
         }
         if (shouldHideComposeFab()) {
             fab.hide();
@@ -1003,16 +1003,16 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
                             break;
                         }
                         case R.id.reply: {
-                            onReply(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onReply(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.reply_all: {
-                            onReplyAll(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onReplyAll(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.forward: {
                             //TODO: Check how to avoid to retrive the whole message
-                            onForward(getMessageAtPosition(position), PEpUtils.extractRating(getLocalMessageAtPosition(position)));
+                            onForward(getMessageAtPosition(position), PlanckUtils.extractRating(getLocalMessageAtPosition(position)));
                             break;
                         }
                         case R.id.send_again: {
@@ -3077,7 +3077,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
 
     private void updateToolbarColorToOriginal() {
         toolBarCustomizer.setToolbarColor(ThemeManager.getToolbarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
-        toolBarCustomizer.setStatusBarPepColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
+        toolBarCustomizer.setStatusBarPlanckColor(ThemeManager.getStatusBarColor(requireContext(), ThemeManager.ToolbarType.DEFAULT));
     }
 
     boolean isMessageSelected(Cursor cursor) {
@@ -3089,7 +3089,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         int worstRatingValue = Rating.pEpRatingFullyAnonymous.value;
         worstThreadRating = Rating.pEpRatingFullyAnonymous;
         for (int i = 0; i < cursor.getCount(); i++) {
-            Rating messageRating = PEpUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
+            Rating messageRating = PlanckUtils.stringToRating(cursor.getString(PEP_RATING_COLUMN));
             int messageRatingValue = messageRating.value;
             if (messageRatingValue <= worstRatingValue) {
                 worstRatingValue = messageRatingValue;
@@ -3099,7 +3099,7 @@ public class MessageListFragment extends PEpFragment implements ConfirmationDial
         }
         if (!((MessageList) getActivity()).isMessageViewVisible()) {
             toolBarCustomizer.setToolbarColor(worstThreadRating);
-            toolBarCustomizer.setStatusBarPepColor(worstThreadRating);
+            toolBarCustomizer.setStatusBarPlanckColor(worstThreadRating);
         }
     }
 

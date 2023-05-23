@@ -8,7 +8,7 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
@@ -21,13 +21,13 @@ class PassphrasePresenterTest: RobolectricTest() {
     lateinit var  context: Context
     private val view: PassphraseInputView = mockk(relaxed = true)
     lateinit var presenter: PassphrasePresenter
-    private val pEpProvider: PEpProvider = mockk()
+    private val planckProvider: PlanckProvider = mockk()
     private val preferences: Preferences = mockk()
 
     @Before
     fun setup() {
         context = ApplicationProvider.getApplicationContext<Context>()
-        presenter = PassphrasePresenter(pEpProvider, preferences)
+        presenter = PassphrasePresenter(planckProvider, preferences)
     }
     @Test
     fun `when initializing the present view is also initialized`() {

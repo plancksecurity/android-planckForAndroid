@@ -13,7 +13,7 @@ import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.Transport
 import com.fsck.k9.mail.store.RemoteStore
 import com.fsck.k9.mailstore.FolderRepositoryManager
-import com.fsck.k9.planck.PEpProvider
+import com.fsck.k9.planck.PlanckProvider
 import com.fsck.k9.planck.infrastructure.extensions.mapSuccess
 import security.planck.network.UrlChecker
 import security.planck.provisioning.AccountMailSettingsProvision
@@ -39,7 +39,7 @@ class ConfiguredSettingsUpdater(
     private val folderRepositoryManager: FolderRepositoryManager = FolderRepositoryManager(),
     private val provisioningSettings: ProvisioningSettings = k9.component.provisioningSettings(),
 ) {
-    lateinit var pEp: PEpProvider
+    lateinit var planck: PlanckProvider
 
     fun update(
         restrictions: Bundle,
@@ -50,19 +50,19 @@ class ConfiguredSettingsUpdater(
                 updateString(restrictions, entry, accepted = { it.isNotBlank() }) {
                     provisioningSettings.provisioningUrl = it
                 }
-            RESTRICTION_PEP_EXTRA_KEYS ->
+            RESTRICTION_PLANCK_EXTRA_KEYS ->
                 saveExtraKeys(restrictions, entry)
 
-            RESTRICTION_PEP_MEDIA_KEYS ->
+            RESTRICTION_PLANCK_MEDIA_KEYS ->
                 saveMediaKeys(restrictions, entry)
 
-            RESTRICTION_PEP_USE_TRUSTWORDS ->
-                K9.setpEpUseTrustwords(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_UNSECURE_DELIVERY_WARNING ->
-                k9.setpEpForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_SYNC_FOLDER ->
+            RESTRICTION_PLANCK_USE_TRUSTWORDS ->
+                K9.setPlanckUseTrustwords(getBooleanOrDefault(restrictions, entry))
+            RESTRICTION_PLANCK_UNSECURE_DELIVERY_WARNING ->
+                k9.setPlanckForwardWarningEnabled(getBooleanOrDefault(restrictions, entry))
+            RESTRICTION_PLANCK_SYNC_FOLDER ->
                 K9.setUsingpEpSyncFolder(getBooleanOrDefault(restrictions, entry))
-            RESTRICTION_PEP_DEBUG_LOG ->
+            RESTRICTION_PLANCK_DEBUG_LOG ->
                 K9.setDebug(getBooleanOrDefault(restrictions, entry))
             RESTRICTION_ALLOW_PEP_SYNC_NEW_DEVICES ->
                 k9.setAllowpEpSyncNewDevices(getBooleanOrDefault(restrictions, entry))
@@ -71,7 +71,7 @@ class ConfiguredSettingsUpdater(
 
             RESTRICTION_ACCOUNT_DESCRIPTION ->
                 saveAccountDescription(restrictions, entry)
-            RESTRICTION_PEP_ENABLE_PRIVACY_PROTECTION ->
+            RESTRICTION_PLANCK_ENABLE_PRIVACY_PROTECTION ->
                 savePrivacyProtection(restrictions, entry)
             RESTRICTION_ACCOUNT_LOCAL_FOLDER_SIZE ->
                 saveAccountLocalFolderSize(restrictions, entry)
@@ -440,8 +440,8 @@ class ConfiguredSettingsUpdater(
             val newMdmExtraKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val fingerprint = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_FINGERPRINT)
-                    val keyMaterial = bundle.getString(RESTRICTION_PEP_EXTRA_KEY_MATERIAL)
+                    val fingerprint = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_FINGERPRINT)
+                    val keyMaterial = bundle.getString(RESTRICTION_PLANCK_EXTRA_KEY_MATERIAL)
                     if (fingerprint != null && keyMaterial != null) {
                         MdmExtraKey(
                             fingerprint.formatPgpFingerprint(),
@@ -464,7 +464,7 @@ class ConfiguredSettingsUpdater(
     private fun saveFilteredExtraKeys(newMdmExtraKeys: List<MdmExtraKey>) {
         val newExtraKeys = newMdmExtraKeys.mapSuccess { mdmExtraKey ->
             kotlin.runCatching {
-                val ids = pEp.importKey(mdmExtraKey.material.toByteArray())
+                val ids = planck.importKey(mdmExtraKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from extra key import"
@@ -497,9 +497,9 @@ class ConfiguredSettingsUpdater(
             val newMdmMediaKeys = restrictions.getParcelableArray(entry.key)
                 ?.mapNotNull {
                     val bundle = it as Bundle
-                    val addressPattern = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_ADDRESS_PATTERN)
-                    val fingerprint = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_FINGERPRINT)
-                    val keyMaterial = bundle.getString(RESTRICTION_PEP_MEDIA_KEY_MATERIAL)
+                    val addressPattern = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_ADDRESS_PATTERN)
+                    val fingerprint = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_FINGERPRINT)
+                    val keyMaterial = bundle.getString(RESTRICTION_PLANCK_MEDIA_KEY_MATERIAL)
                     if (addressPattern != null && fingerprint != null && keyMaterial != null) {
                         MdmMediaKey(
                             addressPattern,
@@ -525,7 +525,7 @@ class ConfiguredSettingsUpdater(
     private fun saveFilteredMediaKeys(newMdmMediaKeys: List<MdmMediaKey>) {
         val newMediaKeys = newMdmMediaKeys.mapSuccess { mdmMediaKey ->
             kotlin.runCatching {
-                val ids = pEp.importKey(mdmMediaKey.material.toByteArray())
+                val ids = planck.importKey(mdmMediaKey.material.toByteArray())
                 val errorMsg = when {
                     ids == null ->
                         "Error: got null from media key import"
@@ -564,7 +564,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry
         ) { account, newValue ->
-            account.setpEpPrivacyProtection(newValue)
+            account.setPlanckPrivacyProtection(newValue)
         }
     }
 
@@ -749,7 +749,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
         ) { account, newValue ->
-            account.setPEpStoreEncryptedOnServer(newValue)
+            account.setPlanckStoreEncryptedOnServer(newValue)
         }
     }
 
@@ -758,7 +758,7 @@ class ConfiguredSettingsUpdater(
             restrictions,
             entry,
         ) { account, newValue ->
-            account.setPEpSyncAccount(newValue)
+            account.setPlanckSyncAccount(newValue)
         }
     }
 

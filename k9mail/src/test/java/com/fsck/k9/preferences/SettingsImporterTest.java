@@ -10,7 +10,7 @@ import com.fsck.k9.Account;
 import com.fsck.k9.Preferences;
 import com.fsck.k9.RobolectricTest;
 import com.fsck.k9.mail.AuthType;
-import com.fsck.k9.planck.PEpUtils;
+import com.fsck.k9.planck.PlanckUtils;
 import com.fsck.k9.planck.ui.keys.FakeAndroidKeyStore;
 
 import org.apache.tools.ant.filters.StringInputStream;
@@ -150,7 +150,7 @@ public class SettingsImporterTest extends RobolectricTest {
 
     @Test
     public void importSettings_disablesAccountsNeedingPasswords() throws SettingsImportExportException {
-        MockedStatic<PEpUtils> pEpUtilsMock = Mockito.mockStatic(PEpUtils.class);
+        MockedStatic<PlanckUtils> pEpUtilsMock = Mockito.mockStatic(PlanckUtils.class);
         String validUUID = UUID.randomUUID().toString();
         InputStream inputStream = new StringInputStream("<k9settings format=\"1\" version=\"1\">" +
                 "<accounts><account uuid=\"" + validUUID + "\"><name>Account</name>" +

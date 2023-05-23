@@ -15,9 +15,9 @@ import dagger.Module;
 import dagger.Provides;
 import security.planck.permissions.PermissionRequester;
 import security.planck.ui.permissions.PlanckPermissionRequester;
-import security.planck.ui.resources.PEpResourcesProvider;
+import security.planck.ui.resources.PlanckResourcesProvider;
 import security.planck.ui.resources.ResourcesProvider;
-import security.planck.ui.toolbar.PEpToolbarCustomizer;
+import security.planck.ui.toolbar.PlanckToolbarCustomizer;
 import security.planck.ui.toolbar.ToolBarCustomizer;
 
 @Module
@@ -48,12 +48,12 @@ public class ActivityModule {
 
     @Provides
     ToolBarCustomizer providepEpToolbarCustomizer() {
-        return new PEpToolbarCustomizer(activity);
+        return new PlanckToolbarCustomizer(activity);
     }
 
     @Provides
     public ResourcesProvider providepEpResourcesProvider() {
-        return new PEpResourcesProvider(activity);
+        return new PlanckResourcesProvider(activity);
     }
 
     @Provides

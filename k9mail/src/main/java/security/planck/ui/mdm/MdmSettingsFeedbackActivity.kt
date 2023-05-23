@@ -8,10 +8,10 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import com.fsck.k9.R
-import com.fsck.k9.planck.PepActivity
+import com.fsck.k9.planck.PlanckActivity
 import javax.inject.Inject
 
-class MdmSettingsFeedbackActivity : PepActivity(), MdmSettingsFeedbackView {
+class MdmSettingsFeedbackActivity : PlanckActivity(), MdmSettingsFeedbackView {
     private var settingsTextView: TextView? = null
 
     @Inject
@@ -58,7 +58,7 @@ class MdmSettingsFeedbackActivity : PepActivity(), MdmSettingsFeedbackView {
     }
 
     override fun inject() {
-        getpEpComponent().inject(this)
+        getPlanckComponent().inject(this)
     }
 
     override fun displaySettings(settingsText: String) {

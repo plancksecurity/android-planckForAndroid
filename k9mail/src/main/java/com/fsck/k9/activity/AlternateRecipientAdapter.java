@@ -25,9 +25,9 @@ import com.fsck.k9.K9;
 import com.fsck.k9.R;
 import com.fsck.k9.activity.compose.RatedRecipient;
 import com.fsck.k9.activity.compose.Recipient;
-import com.fsck.k9.planck.PEpUtils;
-import com.fsck.k9.planck.PePUIArtefactCache;
-import com.fsck.k9.planck.ui.PEpContactBadge;
+import com.fsck.k9.planck.PlanckUtils;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
+import com.fsck.k9.planck.ui.PlanckContactBadge;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.fsck.k9.ui.contacts.ContactPictureLoader;
 import com.fsck.k9.view.ThemeUtils;
@@ -52,7 +52,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
     private Account account;
     private List<RatedRecipient> recipients;
     private RatedRecipient currentRecipient;
-    private final PePUIArtefactCache uiCache;
+    private final PlanckUIArtefactCache uiCache;
 
 
     @Inject
@@ -62,7 +62,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         super();
         this.context = context;
         this.contactPictureLoader = contactPictureLoader;
-        this.uiCache = PePUIArtefactCache.getInstance(context);
+        this.uiCache = PlanckUIArtefactCache.getInstance(context);
     }
 
     public void setUp(AlternateRecipientListener listener) {
@@ -213,9 +213,9 @@ public class AlternateRecipientAdapter extends BaseAdapter {
             TextView textView,
             @ColorInt int defaultColor
     ) {
-        if (K9.ispEpForwardWarningEnabled() && account != null) {
+        if (K9.isPlanckForwardWarningEnabled() && account != null) {
             Rating rating = recipient.getRating();
-            int textColor = account.ispEpPrivacyProtected() && PEpUtils.isRatingUnsecure(rating)
+            int textColor = account.isPlanckPrivacyProtected() && PlanckUtils.isRatingUnsecure(rating)
                     ? ContextCompat.getColor(context, R.color.compose_unsecure_delivery_warning)
                     : defaultColor;
             textView.setTextColor(textColor);
@@ -273,7 +273,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
         public final View layoutHeader, layoutItem;
         public final TextView headerName;
         public final TextView headerAddressLabel;
-        public final PEpContactBadge headerPhoto;
+        public final PlanckContactBadge headerPhoto;
         public final View headerRemove;
         public final TextView itemAddress;
         public final TextView itemAddressLabel;
@@ -287,7 +287,7 @@ public class AlternateRecipientAdapter extends BaseAdapter {
 
             headerName = (TextView) view.findViewById(R.id.alternate_header_name);
             headerAddressLabel = (TextView) view.findViewById(R.id.alternate_header_label);
-            headerPhoto = (PEpContactBadge) view.findViewById(R.id.alternate_contact_photo);
+            headerPhoto = (PlanckContactBadge) view.findViewById(R.id.alternate_contact_photo);
             headerRemove = view.findViewById(R.id.alternate_remove);
 
             itemAddress = (TextView) view.findViewById(R.id.alternate_address);

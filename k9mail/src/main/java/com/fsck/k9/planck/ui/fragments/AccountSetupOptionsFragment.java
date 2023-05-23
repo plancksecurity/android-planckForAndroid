@@ -25,7 +25,7 @@ import timber.log.Timber;
  * Created by arturo on 7/14/17.
  */
 
-public class AccountSetupOptionsFragment extends PEpFragment {
+public class AccountSetupOptionsFragment extends PlanckFragment {
     private static final String EXTRA_ACCOUNT = "account";
 
     private Spinner mCheckFrequencyView;
@@ -53,7 +53,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        setupPEpFragmentToolbar();
+        setupPlanckFragmentToolbar();
         rootView = inflater.inflate(R.layout.account_setup_options, container, false);
 
         ((K9Activity) getActivity()).initializeToolbar(true, R.string.account_settings_title_fmt);
@@ -145,7 +145,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
 
     @Override
     protected void inject() {
-        getpEpComponent().inject(this);
+        getPlanckComponent().inject(this);
     }
 
     private void onDone() {
@@ -163,7 +163,7 @@ public class AccountSetupOptionsFragment extends PEpFragment {
             mAccount.setFolderPushMode(Account.FolderMode.NONE);
         }
 
-        mAccount.setPEpStoreEncryptedOnServer(!mUntrustedServer.isChecked());
+        mAccount.setPlanckStoreEncryptedOnServer(!mUntrustedServer.isChecked());
 
         if (mAccount.equals(Preferences.getPreferences(getActivity()).getDefaultAccount())) {
             Preferences.getPreferences(getActivity()).setDefaultAccount(mAccount);

@@ -22,7 +22,7 @@ import com.fsck.k9.R;
 import com.fsck.k9.activity.K9ActivityCommon.K9ActivityMagic;
 import com.fsck.k9.activity.misc.SwipeGestureDetector.OnSwipeGestureListener;
 import com.fsck.k9.activity.setup.OAuthFlowActivity;
-import com.fsck.k9.planck.PePUIArtefactCache;
+import com.fsck.k9.planck.PlanckUIArtefactCache;
 import com.fsck.k9.planck.ui.tools.KeyboardUtils;
 import com.fsck.k9.planck.ui.tools.ThemeManager;
 import com.scottyab.rootbeer.RootBeer;
@@ -93,8 +93,8 @@ public abstract class K9Activity extends AppCompatActivity implements K9Activity
     @Override
     protected void onDestroy() {
         mBase = null;
-        PePUIArtefactCache pePUIArtefactCache = PePUIArtefactCache.getInstance(getApplicationContext());
-        pePUIArtefactCache.removeCredentialsInPreferences();
+        PlanckUIArtefactCache planckUIArtefactCache = PlanckUIArtefactCache.getInstance(getApplicationContext());
+        planckUIArtefactCache.removeCredentialsInPreferences();
         super.onDestroy();
     }
 

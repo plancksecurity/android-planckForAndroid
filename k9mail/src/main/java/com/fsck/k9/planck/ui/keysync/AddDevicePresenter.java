@@ -3,7 +3,7 @@ package com.fsck.k9.planck.ui.keysync;
 import android.util.Log;
 
 import com.fsck.k9.Account;
-import com.fsck.k9.planck.PEpProvider;
+import com.fsck.k9.planck.PlanckProvider;
 
 import foundation.pEp.jniadapter.Identity;
 import foundation.pEp.jniadapter.IdentityFlags;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 public class AddDevicePresenter {
 
     private AddDeviceView view;
-    private PEpProvider pEpProvider;
+    private PlanckProvider planckProvider;
     private Identity partner;
     private Identity myself;
     private List<Account> accounts;
@@ -28,11 +28,11 @@ public class AddDevicePresenter {
     AddDevicePresenter() {
     }
 
-    public void initialize(AddDeviceView view, PEpProvider pEpProvider, Identity myId,
+    public void initialize(AddDeviceView view, PlanckProvider planckProvider, Identity myId,
                            Identity partnerId,
                            List<Account> accounts, boolean isManualSync, String keylist) {
         this.view = view;
-        this.pEpProvider = pEpProvider;
+        this.planckProvider = planckProvider;
         this.accounts = accounts;
         partner = partnerId;
         myself = myId;
@@ -68,7 +68,7 @@ public class AddDevicePresenter {
     }
 
     public void advancedOptionsClicked() {
-        pEpProvider.loadOwnIdentities(new PEpProvider.ResultCallback<List<Identity>>() {
+        planckProvider.loadOwnIdentities(new PlanckProvider.ResultCallback<List<Identity>>() {
             @Override
             public void onLoaded(List<Identity> identities) {
                 ArrayList<Identity> identitiesToShow = new ArrayList<>();
@@ -101,7 +101,7 @@ public class AddDevicePresenter {
 
     public void identityCheckStatusChanged(Identity identity, Boolean checked) {
         if (!checked) {
-            pEpProvider.setIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            planckProvider.setIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PlanckProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -113,7 +113,7 @@ public class AddDevicePresenter {
                 }
             });
         } else {
-            pEpProvider.unsetIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PEpProvider.CompletedCallback() {
+            planckProvider.unsetIdentityFlag(identity, IdentityFlags.pEpIdfNotForSync.value, new PlanckProvider.CompletedCallback() {
                 @Override
                 public void onComplete() {
 
@@ -173,12 +173,12 @@ public class AddDevicePresenter {
     private class ManualpEpKeyImportStrategy extends KeyImportStrategy{
         @Override
         void acceptHandshake(Identity partner) {
-            pEpProvider.trustOwnKey(partner);
+            planckProvider.trustOwnKey(partner);
         }
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.keyMistrusted(partner);
+            planckProvider.keyMistrusted(partner);
         }
 
         @Override
@@ -190,12 +190,12 @@ public class AddDevicePresenter {
     private class ManualPGPKeyImportStrategy extends KeyImportStrategy{
         @Override
         void acceptHandshake(Identity partner) {
-            pEpProvider.trustOwnKey(partner);
+            planckProvider.trustOwnKey(partner);
         }
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.keyMistrusted(partner);
+            planckProvider.keyMistrusted(partner);
         }
 
         @Override
@@ -207,18 +207,18 @@ public class AddDevicePresenter {
 
         @Override
         void acceptHandshake(Identity partner) {
-            Log.e("pEpEngine", String.format("acceptSync: myself(%s), partner(%s)", pEpProvider.myself(partner), partner) );
-            pEpProvider.acceptSync();
+            Log.e("pEpEngine", String.format("acceptSync: myself(%s), partner(%s)", planckProvider.myself(partner), partner) );
+            planckProvider.acceptSync();
         }
 
         @Override
         void rejectHandshake(Identity partner) {
-            pEpProvider.rejectSync();
+            planckProvider.rejectSync();
         }
 
         @Override
         void cancelHandshake(Identity partner) {
-            pEpProvider.cancelSync();
+            planckProvider.cancelSync();
         }
     }
 }

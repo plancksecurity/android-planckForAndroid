@@ -4,7 +4,7 @@ import com.fsck.k9.BuildConfig
 import com.fsck.k9.K9
 import com.fsck.k9.Preferences
 import com.fsck.k9.RobolectricTest
-import com.fsck.k9.planck.PEpProviderImplKotlin
+import com.fsck.k9.planck.PlanckProviderImplKotlin
 import com.fsck.k9.planck.testutils.CoroutineTestRule
 import io.mockk.*
 import junit.framework.TestCase.assertEquals
@@ -42,7 +42,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
     @Before
     fun setUp() {
         assumeFalse(BuildConfig.IS_ENTERPRISE)
-        mockkObject(PEpProviderImplKotlin)
+        mockkObject(PlanckProviderImplKotlin)
 
         manager.addListener(listener)
         verify { listener.provisionStateChanged(any()) }
@@ -51,7 +51,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
 
     @After
     fun tearDown() {
-        unmockkObject(PEpProviderImplKotlin)
+        unmockkObject(PlanckProviderImplKotlin)
     }
 
     @Test
@@ -59,7 +59,7 @@ class NonProvisioningManagerTest: RobolectricTest() {
         manager.startProvisioning()
 
 
-        coVerify { PEpProviderImplKotlin.wasNot(called) }
+        coVerify { PlanckProviderImplKotlin.wasNot(called) }
         coVerify { k9.finalizeSetup() }
         assertListenerProvisionChangedWithState { state ->
             assertEquals(ProvisionState.Initialized, state)

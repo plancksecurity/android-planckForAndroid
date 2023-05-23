@@ -1,6 +1,6 @@
 package com.fsck.k9.planck
 
-import com.fsck.k9.planck.infrastructure.threading.PEpDispatcher
+import com.fsck.k9.planck.infrastructure.threading.PlanckDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
@@ -11,7 +11,7 @@ interface DispatcherProvider {
     fun default(): CoroutineDispatcher = Dispatchers.Default
     fun io(): CoroutineDispatcher = Dispatchers.IO
     fun unconfined(): CoroutineDispatcher = Dispatchers.Unconfined
-    fun pEpDispatcher(): CoroutineDispatcher = PEpDispatcher
+    fun pEpDispatcher(): CoroutineDispatcher = PlanckDispatcher
 
 }
 
