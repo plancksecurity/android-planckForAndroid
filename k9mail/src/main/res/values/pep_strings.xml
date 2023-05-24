@@ -276,7 +276,7 @@
     <string name="keysync_disable_warning_explanation">If you disable planck Sync your accounts on your devices will not be synchronized anymore.\n<b>Are you sure you want to disable planck Sync\? </b></string>
     <string name="keysync_disable_warning_action_disable">Disable</string>
     <string name="global_settings_extra_keys_summary">Encrypt messages with additional keys.</string>
-    <string name="global_settings_passive_mode_summary">Doesn\'t attach a pEpkey.asc if your communication partner is not using planck</string>
+    <string name="global_settings_passive_mode_summary">Doesn\'t attach a sender_key.asc if your communication partner is not using planck</string>
     <string name="global_settings_subject_protection_summary">Encrypt the message subject when writing to a communication partner with OpenPGP</string>
     <string name="global_settings_blacklist_summary">Blacklist a key of an OpenPGP communication partner not to use it anymore</string>
     <string name="account_settings_save_encrypted_summary_enabled">Stores encrypted messages encrypted on the server.</string>
@@ -328,7 +328,7 @@
     <string name="support_settings_title">Support</string>
     <string name="export_pep_support_data_preference_title">Export planck databases to file system</string>
     <string name="export_pep_support_data_dialog_title">Export planck databases</string>
-    <string name="export_pep_support_data_dialog_confirmation_msg">Do you really want to export the pEp databases to Documents/pEp/db-export/ on your local file system? Warning. The databases contain confidential information like private keys.</string>
+    <string name="export_pep_support_data_dialog_confirmation_msg">Do you really want to export the planck databases to Documents/planck/db-export/ on your local file system? Warning. The databases contain confidential information like private keys.</string>
     <string name="export_pep_support_data_dialog_failure_msg">Exporting databases failed.</string>
     <string name="export_pep_support_data_dialog_not_enough_space_msg">There is no enough space available. Exporting databases failed.</string>
     <string name="export_pep_support_data_dialog_success_msg">Databases successfully exported.</string>
