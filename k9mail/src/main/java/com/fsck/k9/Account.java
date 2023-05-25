@@ -1197,14 +1197,14 @@ public class Account implements BaseAccount, StoreConfig {
 
     public String getCurrentpEpSyncFolderName() {
         if (K9.isUsingpEpSyncFolder()) {
-            return Store.PEP_FOLDER;
+            return Store.PLANCK_FOLDER;
         } else {
             return inboxFolderName;
         }
     }
 
     public String getDefaultpEpSyncFolderName() {
-        return Store.PEP_FOLDER;
+        return Store.PLANCK_FOLDER;
     }
 
     public synchronized String getDraftsFolderName() {

@@ -2070,7 +2070,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     Timber.d("Done processing pending command '%s'", command);
                 } catch (MessagingException me) {
                      if (command instanceof PendingAppend
-                            && ((PendingAppend) command).folder.equalsIgnoreCase("pEp")) {
+                            && ((PendingAppend) command).folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                         Timber.e(me, "pEpEngine append to pEp folder failed");
                     }
 
@@ -2108,7 +2108,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
      * TODO update the local message UID instead of deleting it
      */
     void processPendingAppend(PendingAppend command, Account account) throws MessagingException {
-        if (command.folder.equalsIgnoreCase("pEp")) {
+        if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
             Timber.e("pEpEngine start pEp folder append");
         }
         Folder remoteFolder = null;
@@ -2130,7 +2130,7 @@ public class MessagingController implements Sync.MessageToSendCallback {
             remoteFolder = remoteStore.getFolder(folder);
             if (!remoteFolder.exists()) {
                 if (!remoteFolder.create(FolderType.HOLDS_MESSAGES)) {
-                    if (folder.equalsIgnoreCase("pEp")) {
+                    if (folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                         Timber.e("pEpEngine could not create pEp sync folder");
                     }
                     return;
@@ -2242,14 +2242,14 @@ public class MessagingController implements Sync.MessageToSendCallback {
                     }
                 }
             }
-            if (command.folder.equalsIgnoreCase("pEp")) {
+            if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)) {
                 Timber.e("pEpEngine finish pEp folder append success");
             }
         } finally {
             closeFolder(remoteFolder);
             closeFolder(localFolder);
         }
-        if (command.folder.equalsIgnoreCase("pEp")){
+        if (command.folder.equalsIgnoreCase(Store.PLANCK_FOLDER)){
             Timber.e("pEpEngine finish pEp folder append");
         }
     }
