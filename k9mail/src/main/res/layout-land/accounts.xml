@@ -104,6 +104,7 @@
             android:layout_centerHorizontal="true"
             style="@style/TermsAndConditionsText"
             tools:text="Terms and Conditions"
+            android:visibility="gone"
             android:layout_below="@id/add_account_container"/>
     </RelativeLayout>
 

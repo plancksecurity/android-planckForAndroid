@@ -97,6 +97,7 @@
                 android:layout_gravity="center_horizontal"
                 android:id="@+id/terms_and_conditions"
                 style="@style/TermsAndConditionsText"
+                android:visibility="gone"
                 tools:text="Terms and Conditions" />
         </LinearLayout>
     </ScrollView>
