@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
+const val SUPPORT_EXPORT_TARGET_SUBFOLDER = "planck/db-export"
+
 class ExportPlanckSupportDataPresenter @Inject constructor(
     private val exportPlanckSupportData: ExportPlanckSupportData,
 ) : LifecycleObserver, NonConfigurationInstance {
@@ -85,7 +87,7 @@ class ExportPlanckSupportDataPresenter @Inject constructor(
 
     private suspend fun exportInternal(): Result<Unit> {
         val documentsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-        val subFolder = "pEp/db-export/${sdf.format(Date())}"
+        val subFolder = "$SUPPORT_EXPORT_TARGET_SUBFOLDER/${sdf.format(Date())}"
         return exportPlanckSupportData(documentsFolder, subFolder)
     }
 
