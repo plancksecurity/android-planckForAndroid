@@ -91,6 +91,7 @@ import java.util.concurrent.TimeUnit;
 
 import foundation.pEp.jniadapter.Rating;
 import security.planck.ui.PlanckUIUtils;
+import security.planck.ui.support.export.ExportPlanckSupportDataPresenterKt;
 import timber.log.Timber;
 
 import static android.content.ContentValues.TAG;
@@ -1638,7 +1639,7 @@ public class TestUtils {
     public Cursor getCursorFromDB(String db, String table, String column, String valueToFindInColumn) {
         String keys = "";
         try {
-            File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+            File directory = getExportFolder();
             String[] directoryPath = directory.list();
             SQLiteDatabase database = openOrCreateDatabase(directory.getAbsolutePath() + "/" + directoryPath[0] + "/management.db", null);
             Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
@@ -1664,7 +1665,7 @@ public class TestUtils {
         boolean rightValue = false;
         String valueInDB = "";
         try {
-            File directory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+            File directory = getExportFolder();
             String[] directoryPath = directory.list();
             SQLiteDatabase database = openOrCreateDatabase(directory.getAbsolutePath() + "/" + directoryPath[0] + "/management.db", null);
             Cursor cursor = database.rawQuery("SELECT * FROM " + table, null);
@@ -1714,7 +1715,7 @@ public class TestUtils {
     }
 
     public void removeDBFolder() {
-        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+        File directory= getExportFolder();
         if (directory.exists()) {
             try {
                 FileUtils.deleteDirectory(directory);
@@ -1728,7 +1729,7 @@ public class TestUtils {
     }
 
     private FileWriter readDBFile() {
-        File directory= new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/pEp/db-export/");
+        File directory= getExportFolder();
         String[] directoryPath = directory.list();
         if (directoryPath.length > 1) {
             assertFailWithMessage("There are more than 1 DB");
@@ -1740,6 +1741,15 @@ public class TestUtils {
             e.printStackTrace();
         }
         return dbFile;
+    }
+
+    private File getExportFolder() {
+        return new File(
+                Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DOCUMENTS)
+                        + "/" +
+                        ExportPlanckSupportDataPresenterKt.SUPPORT_EXPORT_TARGET_SUBFOLDER
+                        + "/");
     }
 
 

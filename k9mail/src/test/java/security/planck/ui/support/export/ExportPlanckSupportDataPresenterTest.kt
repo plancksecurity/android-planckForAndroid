@@ -93,7 +93,7 @@ class ExportPlanckSupportDataPresenterTest : RobolectricTest() {
         val subFolder = subFolderSlot.captured
         val toPath = File(baseFolder, subFolder).absolutePath
 
-        assertTrue(toPath.contains("$DOCUMENTS_FOLDER/pEp/db-export/"))
+        assertTrue(toPath.contains("$DOCUMENTS_FOLDER/${SUPPORT_EXPORT_TARGET_SUBFOLDER}/"))
     }
 
     @Test
